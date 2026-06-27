@@ -8,12 +8,11 @@ Gem::Specification.new do |spec|
   spec.authors = ["Matt Solt"]
   spec.email = ["mattsolt@gmail.com"]
 
-  spec.summary = "TODO: Write a short summary, because RubyGems requires one."
-  spec.description = "TODO: Write a longer description or delete this line."
+  spec.summary = "AI-Native Component Library for Rails"
+  spec.description = "AI-Native Component Library for Rails."
   spec.homepage = "https://github.com/roboruby/poetry"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.0"
-  spec.metadata["allowed_push_host"] = "TODO: Set to your gem server 'https://example.com'"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry/blob/main/CHANGELOG.md"
@@ -22,7 +21,7 @@ Gem::Specification.new do |spec|
   # This helps protect your gem from supply chain attacks by ensuring
   # no one can publish a new version without multi-factor authentication.
   # See: https://guides.rubygems.org/mfa-requirement-opt-in/
-  # spec.metadata["rubygems_mfa_required"] = "true"
+  spec.metadata["rubygems_mfa_required"] = "true"
 
   # Specify which files should be added to the gem when it is released.
   # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
@@ -37,8 +36,7 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "example-gem", "~> 1.0"
+  spec.add_dependency "zeitwerk", "~> 2.6"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://guides.rubygems.org/make-your-own-gem/

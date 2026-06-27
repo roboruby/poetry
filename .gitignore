@@ -24,3 +24,6 @@
 !/demo/storage/.keep
 /demo/log/*.log
 /demo/vendor/bundle/
+
+# Ruby LSP
+/.ruby-lsp/

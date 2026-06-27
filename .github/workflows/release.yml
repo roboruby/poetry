@@ -1,0 +1,29 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Push gem to RubyGems.org
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write   # create the GitHub release / tag
+      id-token: write   # MANDATORY for OIDC trusted publishing
+
+    environment: rubygems.org   # must match the rubygems.org trusted-publisher config
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          bundler-cache: true
+          ruby-version: ruby
+      - name: Publish to RubyGems (OIDC trusted publishing)
+        uses: rubygems/release-gem@v1
