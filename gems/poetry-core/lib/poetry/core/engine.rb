@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
 require "rails/engine"
+# Rails::Engine::Configuration references ActionDispatch::Routing::RouteSet as
+# soon as `config` is touched (below), so action_dispatch must be loaded for the
+# engine to be requirable standalone (e.g. via `require "poetry/core"`), not only
+# inside an already-booted Rails app.
+require "action_dispatch"
 
 module Poetry
   module Core
