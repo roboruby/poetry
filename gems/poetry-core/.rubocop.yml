@@ -21,6 +21,8 @@ Metrics/BlockLength:
   Exclude:
     - "test/**/*"
     - "*.gemspec"
+    # ActiveSupport::Concern `class_methods do ... end` blocks carry the ported DSL.
+    - "app/components/poetry/core/concerns/*.rb"
 
 Naming/FileName:
   # lib/poetry-core.rb is the hyphenated Bundler auto-require entrypoint for the
@@ -52,10 +54,13 @@ Metrics/ClassLength:
 Metrics/ModuleLength:
   Enabled: false
 
-# `has_attribute?` is part of the public HTML::Attributes contract.
+# `has_attribute?` is part of the public HTML::Attributes contract; the
+# `has_*_attribute?` predicates are part of the public Styles/Options DSL contract.
 Naming/PredicatePrefix:
   AllowedMethods:
     - has_attribute?
+    - has_style_attribute?
+    - has_option_attribute?
 
 # Comprehensive, multi-assertion unit tests are intentional.
 Minitest/MultipleAssertions:
