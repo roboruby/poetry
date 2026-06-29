@@ -1,0 +1,29 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+
+Naming/FileName:
+  # lib/poetry-core.rb is the hyphenated Bundler auto-require entrypoint for the
+  # Poetry::Core namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-core.rb"

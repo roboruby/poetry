@@ -1,0 +1,26 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/doc/
+/log/
+/pkg/
+/spec/reports/
+/tmp/
+
+.env
+.DS_Store
+.overmind.sock
+
+# Dummy host app (generated; not committed)
+/test/dummy/.bundle/
+/test/dummy/app/assets/builds/
+/test/dummy/tmp/
+/test/dummy/node_modules/
+/test/dummy/config/master.key
+/test/dummy/log/*.log
+/test/dummy/storage/*
+!/test/dummy/storage/.keep
+
+# Ruby LSP
+/.ruby-lsp/
