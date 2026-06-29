@@ -1,13 +1,46 @@
 # frozen_string_literal: true
 
+require "pathname"
+require "zeitwerk"
+require "active_support/concern"
+require "active_model/type/symbol"
+
+ActiveModel::Type.register(:symbol, ActiveModel::Type::Symbol)
+
+require "view_component"
+require "tailwind_merge"
+require "class_variants"
+
 require_relative "core/version"
 
 module Poetry
   # The framework layer of poetry: the Rails engine, the component DSL, and the
   # shared primitives. Concrete components live in poetry-ui.
   module Core
-    class Error < StandardError; end
+    class << self
+      # Gem root (the directory containing lib/, app/, etc.).
+      def root
+        @root ||= Pathname.new(File.expand_path("../..", __dir__))
+      end
 
-    # Engine, autoloading, and the component DSL are wired in during M0/U2.
+      # The dedicated Zeitwerk loader for poetry-core's lib/ tree.
+      def loader
+        @loader ||= Zeitwerk::Loader.new.tap do |loader|
+          loader.tag = "poetry-core"
+          loader.inflector.inflect("css" => "CSS", "html" => "HTML")
+          loader.push_dir("#{root}/lib")
+          loader.ignore("#{root}/lib/poetry-core.rb") # hyphenated auto-require shim
+          loader.ignore("#{root}/lib/poetry/core/version.rb") # required directly above
+          loader.ignore("#{root}/lib/poetry/core/engine.rb")  # required after setup
+          loader.ignore("#{root}/lib/poetry/core/errors.rb")  # required after setup
+          loader.setup
+        end
+      end
+    end
   end
 end
+
+Poetry::Core.loader
+
+require_relative "core/errors"
+require_relative "core/engine"

@@ -1,0 +1,44 @@
+# frozen_string_literal: true
+
+require "rails/engine"
+
+module Poetry
+  module Core
+    class Engine < ::Rails::Engine
+      # isolate_namespace Poetry::Core
+
+      config.poetry_core = Poetry::Core::Config.current
+
+      # Add components to autoload paths for Zeitwerk
+      config.autoload_paths << "#{Poetry::Core.root}/app/components"
+      config.eager_load_paths << "#{Poetry::Core.root}/app/components"
+
+      initializer "poetry_core.tag_helper" do
+        ActiveSupport.on_load(:action_view) do
+          include Poetry::Core::TagHelper
+        end
+      end
+
+      initializer "poetry_core.previews" do
+        ActiveSupport.on_load(:view_component) do
+          ViewComponent::Preview.extend Poetry::Core::Preview::Sidecarable
+        end
+      end
+
+      initializer "poetry_core.view_component" do |app|
+        app.config.view_component.previews.paths << "#{Poetry::Core.root}/app/components"
+      end
+
+      initializer "poetry_core.setup_lookbook" do |app|
+        app.config.lookbook.preview_paths << "#{Poetry::Core.root}/app/components"
+      end
+
+      initializer "poetry_core.assets", before: "propshaft.set_manifest" do |_app|
+        # Add JavaScript to asset paths for Propshaft
+        if Rails.application.config.respond_to?(:assets)
+          Rails.application.config.assets.paths << Poetry::Core.root.join("app/javascript")
+        end
+      end
+    end
+  end
+end
