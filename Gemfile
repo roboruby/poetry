@@ -5,6 +5,11 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in poetry.gemspec
 gemspec
 
+# poetry-core is developed as a sibling repo. Until it is published to RubyGems,
+# depend on it by local path for development; it becomes a gemspec dependency
+# once released.
+gem "poetry-core", path: "../poetry-core"
+
 gem "irb"
 gem "rake", "~> 13.0"
 

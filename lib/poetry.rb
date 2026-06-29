@@ -10,3 +10,12 @@ loader.setup
 module Poetry
   class Error < StandardError; end
 end
+
+# poetry-core supplies the Rails engine, the component DSL, and the primitives.
+# It is wired as a dev path dependency until it is published and added to the
+# gemspec; the rescue lets the umbrella load standalone until then.
+begin
+  require "poetry/core"
+rescue LoadError
+  # poetry-core is not installed yet — the umbrella still loads on its own.
+end

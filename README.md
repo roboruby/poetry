@@ -1,34 +1,22 @@
-# Poetry
+# poetry
 
-TODO: Delete this and the text below, and describe your gem
+An AI-native, Rails-first component library — a shadcn/ui-parity design system built on ViewComponent, Hotwire, and Tailwind, designed so coding agents compose UI inside a constrained design system.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/poetry`. To experiment with that code, run `bin/console` for an interactive prompt.
+> **Status: early release.** This `0.0.1` reserves the gem name on RubyGems while the library is in active planning. There is no public API yet.
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
 ```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle add poetry
 ```
-
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
-
-## Usage
-
-TODO: Write usage instructions here
 
 ## Development
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+After checking out the repo, run `bin/setup` to install dependencies, then `bundle exec rake` to run the tests and RuboCop. `bin/console` gives an interactive prompt.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+## Release
+
+Releases publish to [RubyGems.org](https://rubygems.org) via GitHub Actions OIDC **trusted publishing** (no API keys). To cut a release: bump `Poetry::VERSION` in `lib/poetry/version.rb`, commit, then push a `vX.Y.Z` tag — the `Release` workflow builds and publishes the gem.
 
 ## Contributing
 
@@ -36,4 +24,4 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/roboru
 
 ## License
 
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
