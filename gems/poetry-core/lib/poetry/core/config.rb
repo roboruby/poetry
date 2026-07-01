@@ -73,7 +73,10 @@ module Poetry
                                                      # :tailwind emits resolved utility classes (default);
                                                      # :bem emits the BEM token IR for bring-your-own-CSS
                                                      # hosts (no:both, deliberately).
-                                                     css_mode: :tailwind
+                                                     css_mode: :tailwind,
+                                                     # The active icon set (: Lucide default; sets
+                                                     # register via Poetry::Core::Icons.register).
+                                                     icon_library: :lucide
                                                    })
         end
 
