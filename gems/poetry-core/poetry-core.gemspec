@@ -32,7 +32,6 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "class_variants", "~> 1.1"
   spec.add_dependency "rails", "~> 8.0"
   spec.add_dependency "tailwind_merge", "~> 1.3"
   spec.add_dependency "view_component", "~> 4.0"

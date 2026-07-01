@@ -9,7 +9,6 @@ ActiveModel::Type.register(:symbol, ActiveModel::Type::Symbol)
 
 require "view_component"
 require "tailwind_merge"
-require "class_variants"
 
 require_relative "core/version"
 

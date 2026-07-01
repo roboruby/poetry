@@ -27,12 +27,20 @@ module Poetry
       #   merger.merge(:rounded, :'text-center')
       #   # => 'rounded text-center' (symbols converted to strings)
       class Merger
+        # Bounded FIFO cache over merge results: components render the same
+        # class combinations over and over, so tailwind_merge runs once per
+        # DISTINCT combo instead of once per render (the Phlex-derived
+        # base-level perf steal - see the BEM pipeline plan, M2/M3).
+        CACHE_LIMIT = 512
+
         # Initializes a new CSS merger instance.
         #
         # Creates an underlying TailwindMerge::Merger instance that handles the
         # core logic of identifying and resolving Tailwind CSS class conflicts.
         def initialize
           @base_merger = TailwindMerge::Merger.new
+          @cache = {}
+          @mutex = Mutex.new
         end
 
         # Merges multiple Tailwind CSS class names, resolving any styling conflicts.
@@ -76,7 +84,15 @@ module Poetry
           normalized = classes.flatten.compact_blank.map(&:to_s)
           return nil if normalized.empty?
 
-          @base_merger.merge normalized.join(" ")
+          key = normalized.join(" ")
+          @mutex.synchronize do
+            if @cache.key?(key)
+              @cache[key]
+            else
+              @cache.shift if @cache.size >= CACHE_LIMIT # Hash keeps insertion order: shift = FIFO eviction
+              @cache[key] = @base_merger.merge(key)
+            end
+          end
         end
       end
     end

@@ -2,7 +2,6 @@ PATH
   remote: .
   specs:
     poetry-core (0.0.1)
-      class_variants (~> 1.1)
       rails (~> 8.0)
       tailwind_merge (~> 1.3)
       view_component (~> 4.0)
@@ -94,7 +93,6 @@ GEM
     bundler-audit (0.9.3)
       bundler (>= 1.2.0)
       thor (~> 1.0)
-    class_variants (1.1.1)
     concurrent-ruby (1.3.7)
     connection_pool (3.0.2)
     crass (1.0.7)
@@ -338,7 +336,6 @@ CHECKSUMS
   bigdecimal (4.1.2) sha256=53d217666027eab4280346fba98e7d5b66baaae1b9c3c1c0ffe89d48188a3fbd
   builder (3.3.0) sha256=497918d2f9dca528fdca4b88d84e4ef4387256d984b8154e9d5d3fe5a9c8835f
   bundler-audit (0.9.3) sha256=81c8766c71e47d0d28a0f98c7eed028539f21a6ea3cd8f685eb6f42333c9b4e9
-  class_variants (1.1.1) sha256=5576c890decb123f7e86264b917791f9452208ea33f88bda346448a32d44f4d5
   concurrent-ruby (1.3.7) sha256=4412caec3a5ea2e5fdc52076724c071a81f2c0593d83b2ac8cbb8ca63b3151b0
   connection_pool (3.0.2) sha256=33fff5ba71a12d2aa26cb72b1db8bba2a1a01823559fb01d29eb74c286e62e0a
   crass (1.0.7) sha256=94868719948664c89ddcaf0a37c65048413dfcb1c869470a5f7a7ceb5390b295
