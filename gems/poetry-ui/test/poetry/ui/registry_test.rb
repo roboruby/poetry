@@ -11,7 +11,7 @@ module Poetry
 
       def test_discovers_poetry_ui_components
         expected = %w[poetry/ui/alert poetry/ui/badge poetry/ui/button poetry/ui/card
-                      poetry/ui/icon poetry/ui/link]
+                      poetry/ui/dialog poetry/ui/icon poetry/ui/link]
 
         assert_equal expected, registry.entries.keys.sort
       end

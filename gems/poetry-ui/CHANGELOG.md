@@ -23,3 +23,9 @@
   vcplus motivating bug) with a typed icon slot; Card composes via
   data-slot; every component ships agent rules + previews and renders in
   both css modes. Dialog + the P1–P3 primitives are M6b.
+- M6b: the Dialog — the depth-moat overlay on the PLATFORM trap (:
+  native <dialog>/showModal owns focus trap, Esc, top-layer, focus
+  return; the poetry--core--dialog controller adds data-state, backdrop
+  dismissal, dismissible: false, and the scroll lock). Typed Button
+  trigger slot, REQUIRED title (aria-labelledby always wired, unique per
+  instance), i18n'd icon-only close button.

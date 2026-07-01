@@ -138,6 +138,39 @@ components:
     - Compose with the slots (title/description/action/footer) - never rebuild the
       header grid by hand.
     - The card body is the content block; use CardAction for the header-corner control.
+  poetry/ui/dialog:
+    class_name: Poetry::Ui::Dialog::Component
+    identifier: poetry--ui--dialog
+    bem_block: poetry-ui-dialog
+    styles: []
+    options:
+    - name: dismissible
+      type: boolean
+      default: true
+    slots:
+    - name: trigger
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - content
+    - header
+    - title
+    - description
+    - footer
+    - close
+    capsule: 34b8235035d2
+    agent_rules:
+    - Open dialogs with with_trigger(...) - never a hand-wired button.
+    - with_title is REQUIRED (the accessible name); with_description when the purpose
+      needs explaining.
+    - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
+      stop closing).'
+    - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon

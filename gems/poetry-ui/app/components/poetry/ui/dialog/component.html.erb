@@ -1,0 +1,19 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:dialog, **Poetry::Core::HTML::Attributes.new(dialog_attributes).to_attributes) do %>
+    <div data-slot="dialog-header" class="<%= css(:header) %>">
+      <h2 id="<%= title_id %>" data-slot="dialog-title" class="<%= css(:title) %>"><%= title %></h2>
+      <% if description? %>
+        <p id="<%= description_id %>" data-slot="dialog-description" class="<%= css(:description) %>"><%= description %></p>
+      <% end %>
+    </div>
+    <%= content %>
+    <% if footer? %><div data-slot="dialog-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
+    <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                 label: t("poetry.dialog.close"),
+                                                 class: css(:close),
+                                                 data: { action: "poetry--core--dialog#close" }) do %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+    <% end %>
+  <% end %>
+<% end %>

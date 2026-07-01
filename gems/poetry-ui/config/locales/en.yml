@@ -2,3 +2,5 @@ en:
   poetry:
     button:
       loading: "Loading…"
+    dialog:
+      close: "Close"
