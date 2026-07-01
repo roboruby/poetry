@@ -4,8 +4,10 @@
 // esbuild / Vite / jsbundling hosts. Never requires a bundler.
 
 import StateController from "@poetry/controllers/state_controller"
+import DialogController from "@poetry/controllers/dialog_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
+export { default as DialogController } from "@poetry/controllers/dialog_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -14,7 +16,8 @@ export * from "@poetry/controllers/helpers/escape"
 
 // identifier -> controller class, for every sidecar controller poetry ships.
 export const controllers = {
-  "poetry--core--state": StateController
+  "poetry--core--state": StateController,
+  "poetry--core--dialog": DialogController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the
