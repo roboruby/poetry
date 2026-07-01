@@ -1,0 +1,9 @@
+/.bundle/
+/doc/
+/pkg/
+/tmp/
+/coverage/
+Gemfile.lock
+
+# Ruby LSP
+/.ruby-lsp/
