@@ -357,6 +357,10 @@ module Poetry
 
           case mode
           when :tailwind
+            # A component with no sidecar Style class has no dictionary -
+            # it renders unstyled (caught dogfooding poetry-ui's Icon).
+            return nil unless styler
+
             style_attributes = styles.merge(options)
             styler.css(element, **style_attributes, &)
           when :bem

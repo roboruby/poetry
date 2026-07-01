@@ -21,8 +21,12 @@ module Poetry
       RELATIVE_PATH = "config/component_registry.yml"
 
       # @param components [Enumerable<Class>, nil] component classes; defaults
-      #   to every named Poetry::Core::Component descendant (eager-loaded).
-      def initialize(components: nil)
+      #   to every named Poetry::Core::Component descendant (eager-loaded)
+      #   whose source lives under source_root.
+      # @param source_root [Pathname, String] the gem root to discover in and
+      #   write the registry to - poetry-ui passes its own root.
+      def initialize(components: nil, source_root: Poetry::Core.root)
+        @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
       end
 
@@ -34,7 +38,7 @@ module Poetry
         HEADER + YAML.dump({ "components" => entries })
       end
 
-      def generate!(root: Poetry::Core.root)
+      def generate!(root: @source_root)
         path = Pathname.new(root).join(RELATIVE_PATH)
         path.dirname.mkpath
         path.write(to_yaml)
@@ -42,21 +46,28 @@ module Poetry
       end
 
       # False when the committed registry does not match a fresh build.
-      def verified?(root: Poetry::Core.root)
+      def verified?(root: @source_root)
         path = Pathname.new(root).join(RELATIVE_PATH)
         path.exist? && path.read == to_yaml
       end
 
       private
 
-      # Named Component descendants whose source lives inside this gem's
+      # Named Component descendants whose source lives inside source_root's
       # app/ tree - excludes host-app AND test-defined components, so
       # discovery is identical under a fresh boot and inside the test suite.
+      # The components dir is eager-loaded first: `descendants` only sees
+      # loaded classes, and lazy autoloading (tests) would otherwise make
+      # discovery order-dependent.
       def discover
-        app_root = Poetry::Core.root.join("app").to_s
+        app_root = @source_root.join("app")
+        components_dir = app_root.join("components")
+        if defined?(Rails) && Rails.respond_to?(:autoloaders) && components_dir.directory?
+          Rails.autoloaders.main.eager_load_dir(components_dir)
+        end
         Poetry::Core::Component.descendants.select(&:name).select do |component|
           path = Object.const_source_location(component.name)&.first
-          path&.start_with?(app_root)
+          path&.start_with?(app_root.to_s)
         end
       end
 
