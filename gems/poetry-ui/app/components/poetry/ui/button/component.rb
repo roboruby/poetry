@@ -19,6 +19,7 @@ module Poetry
         # llms.txt, and the generated agent-rules.md).
         AGENT_RULES = [
           "Use poetry_button - never a raw <button> with hand-written Tailwind.",
+          "The visible text is the content block: poetry_button { \"Save\" }. label: is ONLY the accessible name.",
           "Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).",
           "Link-styled actions use variant: :link - not <a> with button classes.",
           "Loading via loading: - never a manual disabled + spinner.",
@@ -49,6 +50,17 @@ module Poetry
           # The accessible-icon rule (the base contract base-contract borrow): an
           # icon-only control without an accessible name never ships.
           raise ArgumentError, "icon-only Button requires label: (the accessible name)"
+        end
+
+        # An empty button ships nothing a user can see - the browser pass
+        # showed label:-only usage silently rendering blank squares (label:
+        # is the accessible name, not visible text).
+        def before_render
+          return if content? || leading? || trailing? || loading
+
+          raise ArgumentError,
+                "Button renders nothing visible: pass a content block (the visible text), " \
+                "an icon slot (with_leading/with_trailing), or loading: - label: is only the accessible name"
         end
 
         def icon_only?

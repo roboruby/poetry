@@ -25,6 +25,16 @@ module Poetry
                           'data-action="cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose"'
         end
 
+        def test_closed_dialog_stays_hidden_under_ua_styles
+          html = render_dialog
+
+          # open:grid, never bare grid: a bare display class defeats the
+          # UA's dialog:not([open]) display:none and shows the dialog
+          # inline while closed (2026-07-01 browser pass).
+          assert_includes html, "open:grid"
+          refute_match(/class="[^"]*(?<![:\w-])grid[ "]/, html, "no unconditional display class on the <dialog>")
+        end
+
         def test_trigger_is_a_poetry_button_wired_to_open
           html = render_dialog
 

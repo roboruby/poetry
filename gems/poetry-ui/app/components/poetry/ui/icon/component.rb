@@ -48,6 +48,12 @@ module Poetry
         def default_svg_attributes
           {
             "xmlns" => "http://www.w3.org/2000/svg",
+            # Lucide's intrinsic box. Without it a standalone icon fills its
+            # container (the 2026-07-01 browser pass rendered a 352px
+            # rocket); inside components the [&_svg]:size-4 rules still win
+            # (CSS beats presentation attributes).
+            "width" => "24",
+            "height" => "24",
             "viewBox" => "0 0 24 24",
             "fill" => "none",
             "stroke" => "currentColor",

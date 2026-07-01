@@ -17,11 +17,14 @@ module Poetry
       assert_file "app/assets/tailwind/poetry/tokens.css", /--background: oklch\(1 0 0\)/
       assert_file "app/assets/tailwind/poetry/theme.css", /@theme inline/
       assert_file "app/assets/tailwind/poetry/animate.css", /--animate-in/
+      assert_file "app/assets/tailwind/poetry/base.css", /background-color: var\(--background\)/
       # NOTE: the cold-boot half (Style.descendants empty until eager_load!)
       # can't be reproduced here - this suite has already loaded every
       # component. The fresh-app install proof covers it.
       assert_file "app/assets/tailwind/poetry/safelist.txt" do |safelist|
         assert_match(/bg-primary/, safelist)
+        assert_match(/^sr-only$/, safelist, "committed template classes included (no herb needed in a host)")
+        assert_match(/^animate-spin$/, safelist)
         assert_operator safelist.lines.size, :>, 100, "the full dictionary, not a stub"
       end
       assert_file "config/initializers/poetry.rb", /icon_library/
@@ -41,6 +44,25 @@ module Poetry
       InstallGenerator::ENTRY_LINES.each do |line|
         assert_equal 1, content.scan(line).size, "#{line} appended exactly once"
       end
+    end
+
+    def test_poetry_controllers_are_registered_in_the_stimulus_index_once
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, <<~JS)
+        import { application } from "controllers/application"
+        import { eagerLoadControllersFrom } from "@hotwired/stimulus-loading"
+        eagerLoadControllersFrom("controllers", application)
+      JS
+
+      run_generator
+      run_generator
+      content = File.read(index)
+
+      # Pins alone register nothing - the browser pass caught the dialog
+      # trigger dead in a fresh host without this call.
+      assert_equal 1, content.scan("registerPoetryControllers(application)").size
+      assert_includes content, %(import { registerPoetryControllers } from "@poetry/controllers")
     end
 
     def test_engine_mount_is_added_to_routes_once

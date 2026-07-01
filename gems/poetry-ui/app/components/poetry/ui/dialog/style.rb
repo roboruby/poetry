@@ -7,7 +7,11 @@ module Poetry
       # <dialog> element (the :content element), centered by the top layer,
       # its backdrop styled via the backdrop: variant.
       class Style < Poetry::Core::Style
-        element :content, "relative m-auto grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border " \
+        # open:grid, NOT grid: a bare display class would defeat the UA's
+        # dialog:not([open]) { display: none } and render the dialog inline
+        # while closed (caught by the 2026-07-01 browser pass - invisible
+        # to jsdom, which has no UA stylesheet).
+        element :content, "relative m-auto open:grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border " \
                           "bg-background p-6 text-foreground shadow-lg sm:max-w-lg " \
                           "backdrop:bg-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 " \
                           "data-[state=open]:zoom-in-95"

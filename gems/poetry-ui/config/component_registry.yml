@@ -50,6 +50,8 @@ components:
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
       Button for actions.
+    - 'The visible text is the content block: render ... { "beta" } - there is no
+      label: option.'
     - Pick the variant by intent (destructive = error states), never by color preference.
   poetry/ui/button:
     class_name: Poetry::Ui::Button::Component
@@ -106,6 +108,8 @@ components:
     capsule: aa16559d9dce
     agent_rules:
     - Use poetry_button - never a raw <button> with hand-written Tailwind.
+    - 'The visible text is the content block: poetry_button { "Save" }. label: is
+      ONLY the accessible name.'
     - 'Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).'
     - 'Link-styled actions use variant: :link - not <a> with button classes.'
     - 'Loading via loading: - never a manual disabled + spinner.'
@@ -163,7 +167,7 @@ components:
     - description
     - footer
     - close
-    capsule: 34b8235035d2
+    capsule: 371e0022a6fe
     agent_rules:
     - Open dialogs with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name); with_description when the purpose

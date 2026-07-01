@@ -46,6 +46,12 @@ module Poetry
         assert_includes destructive, "dark:bg-destructive/60"
       end
 
+      def test_badge_without_text_refuses_to_render
+        error = assert_raises(ArgumentError) { render_inline(Badge::Component.new) }
+
+        assert_match(/content block/, error.message)
+      end
+
       # -- Alert --------------------------------------------------------------
 
       def test_alert_default_is_polite_status

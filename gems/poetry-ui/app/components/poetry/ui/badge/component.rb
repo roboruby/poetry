@@ -11,10 +11,17 @@ module Poetry
 
         AGENT_RULES = [
           "Badges are non-interactive status labels - never attach click handlers; use Button for actions.",
+          "The visible text is the content block: render ... { \"beta\" } - there is no label: option.",
           "Pick the variant by intent (destructive = error states), never by color preference."
         ].freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS
+
+        # A status label with no text is an invisible sliver (browser pass,
+        # 2026-07-01 - a stray label: attribute rendered an empty pill).
+        def before_render
+          raise ArgumentError, "Badge requires a content block (the visible status text)" unless content?
+        end
 
         def call
           content_tag(:span, content, **root_attributes.to_attributes)

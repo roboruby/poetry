@@ -16,6 +16,23 @@ module Poetry
           assert_includes html, 'data-component="icon"'
         end
 
+        def test_standalone_icon_carries_lucide_intrinsic_box
+          html = render_inline(Component.new(name: :rocket)).to_html
+
+          # Without width/height a standalone icon fills its container
+          # (the 352px rocket, 2026-07-01 browser pass); [&_svg]:size-4
+          # rules still win inside components.
+          assert_includes html, 'width="24"'
+          assert_includes html, 'height="24"'
+        end
+
+        def test_intrinsic_box_is_overridable
+          html = render_inline(Component.new(name: :rocket, width: "48", height: "48")).to_html
+
+          assert_includes html, 'width="48"'
+          refute_includes html, 'width="24"'
+        end
+
         def test_decorative_by_default
           html = render_inline(Component.new(name: :trash)).to_html
 

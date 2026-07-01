@@ -25,6 +25,21 @@ module Poetry
           assert_includes html, %(<span data-slot="label">Save</span>)
         end
 
+        def test_a_button_with_nothing_visible_refuses_to_render
+          # label: is the accessible name, not visible text - silently
+          # rendering a blank square is the agent footgun the 2026-07-01
+          # browser pass caught.
+          error = assert_raises(ArgumentError) { render_inline(Component.new(label: "Primary")) }
+
+          assert_match(/renders nothing visible/, error.message)
+        end
+
+        def test_loading_alone_is_visible_enough
+          html = render_inline(Component.new(loading: true, label: "Saving")).to_html
+
+          assert_includes html, 'data-slot="spinner"'
+        end
+
         def test_variant_and_size_classes_resolve_through_the_dictionary
           html = render_button(variant: :destructive, size: :lg)
 

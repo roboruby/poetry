@@ -27,8 +27,27 @@ module Poetry
       %(@import "./poetry/tokens.css";),
       %(@import "./poetry/theme.css";),
       %(@import "./poetry/animate.css";),
+      %(@import "./poetry/base.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
+
+    # The shadcn base layer (its init writes the same into globals.css):
+    # without it body/border/outline don't ride the tokens and dark mode
+    # only flips the components (2026-07-01 browser pass). Seeded once,
+    # user-owned - re-install never overwrites.
+    BASE_CSS = <<~CSS
+      /* poetry base layer (shadcn-parity defaults) - yours to edit. */
+      @layer base {
+        * {
+          border-color: var(--border);
+          outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+        }
+        body {
+          background-color: var(--background);
+          color: var(--foreground);
+        }
+      }
+    CSS
 
     desc "Install poetry: tokens, Tailwind theme, safelist, initializer, and the component manifest"
 
@@ -39,6 +58,7 @@ module Poetry
                   Poetry::Core.root.join("tokens/tailwind-theme.css").read, force: true
       create_file "app/assets/tailwind/poetry/animate.css",
                   Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css").read, force: true
+      create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
     end
 
     def generate_safelist
@@ -47,7 +67,12 @@ module Poetry
       # this; the dummy suite masked it by eager-loading first).
       Rails.application.eager_load!
       styles = Poetry::Core::Style.descendants.select(&:name)
-      safelist = Poetry::Core::CSS::Safelist.new(style_classes: styles, template_classes: template_classes)
+      # Template-static classes (sr-only, animate-spin) come from the
+      # COMMITTED list - herb-extracted and drift-gated in poetry's CI,
+      # never required in a host (the browser pass caught the live-scan
+      # skip purging them).
+      safelist = Poetry::Core::CSS::Safelist.new(style_classes: styles,
+                                                 template_classes: Poetry::Ui.template_classes)
       create_file "app/assets/tailwind/poetry/safelist.txt", safelist.text, force: true
     end
 
@@ -73,6 +98,23 @@ module Poetry
       create_file "config/poetry_components.yml", "components: {}\n", skip: true
     end
 
+    # Pins alone don't register controllers: without this call every poetry
+    # controller is dead JS (the browser pass caught the dialog trigger
+    # doing nothing in a fresh host).
+    def register_controllers
+      index = "app/javascript/controllers/index.js"
+      unless File.exist?(File.join(destination_root, index))
+        say_status :note, "no #{index} - register poetry's controllers yourself: " \
+                          "registerPoetryControllers(application) from \"@poetry/controllers\"", :yellow
+        return
+      end
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryControllers } from "@poetry/controllers"
+        registerPoetryControllers(application)
+      JS
+    end
+
     # The llms.txt / llms-full.txt agent docs are engine routes - without
     # the mount they are unreachable (the fresh-app proof caught this).
     def mount_engine
@@ -84,21 +126,6 @@ module Poetry
     end
 
     private
-
-    # Static template classes join the safelist when herb is present; herb
-    # is a build-time tool, never forced on a host (poetry templates keep
-    # class logic in Style dictionaries, so skipping loses nothing today).
-    def template_classes
-      unless Poetry::Core::CSS::TemplateClasses.available?
-        say_status :skip, "template-class scan (herb gem not installed)", :yellow
-        return []
-      end
-
-      scan = Poetry::Core::CSS::TemplateClasses.scan(root: Poetry::Ui.root)
-      raise Poetry::Core::Error, scan.errors.join("\n") if scan.errors.any?
-
-      scan.classes
-    end
 
     # The idempotency lives in the file-mutation primitive, not the
     # generator (the vite_ruby review lesson): appending is a no-op when
