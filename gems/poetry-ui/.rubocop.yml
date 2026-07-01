@@ -5,6 +5,10 @@ plugins:
 
 AllCops:
   TargetRubyVersion: 3.3
+  Exclude:
+    - "test/tmp/**/*" # generator-test destinations
+    - "test/dummy/tmp/**/*"
+    - "vendor/**/*"
   NewCops: enable
   SuggestExtensions: false
 

@@ -16,7 +16,14 @@ module Poetry
 
       assert_file "app/assets/tailwind/poetry/tokens.css", /--background: oklch\(1 0 0\)/
       assert_file "app/assets/tailwind/poetry/theme.css", /@theme inline/
-      assert_file "app/assets/tailwind/poetry/safelist.txt", /bg-primary/
+      assert_file "app/assets/tailwind/poetry/animate.css", /--animate-in/
+      # NOTE: the cold-boot half (Style.descendants empty until eager_load!)
+      # can't be reproduced here - this suite has already loaded every
+      # component. The fresh-app install proof covers it.
+      assert_file "app/assets/tailwind/poetry/safelist.txt" do |safelist|
+        assert_match(/bg-primary/, safelist)
+        assert_operator safelist.lines.size, :>, 100, "the full dictionary, not a stub"
+      end
       assert_file "config/initializers/poetry.rb", /icon_library/
       assert_file "config/poetry_components.yml", /components: \{\}/
     end
@@ -31,8 +38,33 @@ module Poetry
       content = File.read(entry)
 
       assert_includes content, %(@import "tailwindcss";), "host content preserved"
-      assert_equal 1, content.scan('@import "./poetry/tokens.css";').size
-      assert_equal 1, content.scan('@source "./poetry/safelist.txt";').size
+      InstallGenerator::ENTRY_LINES.each do |line|
+        assert_equal 1, content.scan(line).size, "#{line} appended exactly once"
+      end
+    end
+
+    def test_engine_mount_is_added_to_routes_once
+      routes = File.join(destination_root, "config/routes.rb")
+      FileUtils.mkdir_p(File.dirname(routes))
+      File.write(routes, "Rails.application.routes.draw do\nend\n")
+
+      run_generator
+      run_generator
+      content = File.read(routes)
+
+      assert_equal 1, content.scan("mount Poetry::Ui::Engine").size, "mounted exactly once"
+    end
+
+    def test_a_stale_entry_gains_only_the_missing_lines_on_rerun
+      entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
+      FileUtils.mkdir_p(File.dirname(entry))
+      File.write(entry, %(@import "tailwindcss";\n@import "./poetry/tokens.css";\n))
+
+      run_generator
+      content = File.read(entry)
+
+      assert_equal 1, content.scan('@import "./poetry/tokens.css";').size, "pre-existing line not duplicated"
+      assert_equal 1, content.scan('@import "./poetry/animate.css";').size, "the upgrade path: new lines appended"
     end
   end
 

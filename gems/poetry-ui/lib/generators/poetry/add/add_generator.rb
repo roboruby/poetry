@@ -34,6 +34,9 @@ module Poetry
 
       resolved.each { |name| copy_component(name) }
       record_in_manifest(resolved)
+      # A newly-shadowing file is not hot-reloaded over the already-loaded
+      # gem constant (fresh-app proof, 2026-07-01).
+      say_status :note, "restart your server so the local copies take precedence over the gem", :yellow
     end
 
     private

@@ -12,4 +12,4 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[test rubocop registry:verify]
+task default: %i[test rubocop registry:verify css:verify_compiled]
