@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description = "The Rails engine, component DSL, and primitives of the poetry component library."
   spec.homepage = "https://github.com/roboruby/poetry-core"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 3.2.0"
+  spec.required_ruby_version = ">= 3.3.0"
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/roboruby/poetry-core"
   spec.metadata["changelog_uri"] = "https://github.com/roboruby/poetry-core/blob/main/CHANGELOG.md"
