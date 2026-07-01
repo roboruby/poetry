@@ -1,0 +1,48 @@
+/* A hand-built stand-in for a compiled Tailwind stylesheet.
+   Exercises the selector shapes the Verifier must parse:
+   escaped variants (\:), fractions (\/), arbitrary values (\[ \]),
+   decimals (\.), rules nested in @media, and declaration bodies
+   that must NOT contribute class names (.5rem, .25rem). */
+
+:root {
+  --spacing: .25rem;
+}
+
+.p-4 {
+  padding: 1rem;
+}
+
+.rounded {
+  border-radius: .25rem;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.size-3\.5 {
+  width: .875rem;
+  height: .875rem;
+}
+
+.stroke-red-600\/50 {
+  stroke: color-mix(in oklab, red 50%, transparent);
+}
+
+.group-hover\:stroke-red-600\/75:is(:where(.group):hover *) {
+  stroke: color-mix(in oklab, red 75%, transparent);
+}
+
+.data-\[state\=open\]\:block[data-state=open] {
+  display: block;
+}
+
+@media (min-width: 40.5rem) {
+  .sm\:flex {
+    display: flex;
+  }
+}
+
+.text-red-600 {
+  color: red;
+}

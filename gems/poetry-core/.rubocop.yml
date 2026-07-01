@@ -23,6 +23,8 @@ Metrics/BlockLength:
     - "*.gemspec"
     # ActiveSupport::Concern `class_methods do ... end` blocks carry the ported DSL.
     - "app/components/poetry/core/concerns/*.rb"
+    # Rake namespace blocks are naturally long task lists.
+    - "rakelib/**/*.rake"
 
 Naming/FileName:
   # lib/poetry-core.rb is the hyphenated Bundler auto-require entrypoint for the
