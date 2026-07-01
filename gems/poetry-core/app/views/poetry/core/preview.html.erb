@@ -1,0 +1,10 @@
+<%# The default preview wrapper (Preview::Template's fallback): renders the
+    component passed by Preview::Base#render_component, with its content
+    block, inside the preview's configured container class. %>
+<div class="<%= defined?(container_class) && container_class.presence || "p-4" %>">
+  <% if defined?(content_block) && content_block %>
+    <%= render(component, &content_block) %>
+  <% else %>
+    <%= render(component) %>
+  <% end %>
+</div>

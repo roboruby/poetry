@@ -85,6 +85,9 @@ module Poetry
           entry["elements"] = style.resolver.elements.keys.map(&:to_s)
           entry["capsule"] = style.capsule
         end
+        # Component-specific constraints agents must honor (the contract's
+        # agent_rules section) - declared as an AGENT_RULES constant.
+        entry["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
         entry
       end
 
