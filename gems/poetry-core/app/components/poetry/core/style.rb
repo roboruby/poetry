@@ -103,6 +103,25 @@ module Poetry
         def variant_options
           resolver.variant_options
         end
+
+        # The sibling component class by convention
+        # (Poetry::Core::X::Style -> Poetry::Core::X::Component).
+        def component_class
+          module_parent.const_get(:Component, false)
+        rescue NameError
+          nil
+        end
+
+        # The BEM block this dictionary belongs to, derived from the sibling
+        # component ("poetry/core/x" -> "poetry-core-x").
+        def bem_block
+          component_class&.component_path&.tr("/", "-")
+        end
+
+        # The capsule digest of this dictionary (the :bem leak-guard).
+        def capsule
+          resolver.digest
+        end
       end
 
       # Instance-level mirror so `styler.css(...)` keeps working from the

@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require "digest"
+
 module Poetry
   module Core
     module CSS
@@ -88,6 +90,14 @@ module Poetry
           @variants.transform_values(&:keys)
         end
 
+        # The capsule digest (the capsule-digest leak guard): a
+        # deterministic content hash of the whole dictionary. Embedded in the
+        # generated :bem reference stylesheet, so CSS written against an older
+        # dictionary is detectable instead of silently drifting.
+        def digest
+          Digest::SHA256.hexdigest(canonical_dictionary.inspect)[0, 12]
+        end
+
         # Every utility class string in the dictionary (bases, elements,
         # variants, compounds) - the Verifier's and the safelist's input.
         def all_classes
@@ -100,6 +110,18 @@ module Poetry
         end
 
         private
+
+        # A stable, order-insensitive serialization of the dictionary for the
+        # capsule digest.
+        def canonical_dictionary
+          {
+            bases: @bases,
+            elements: @elements.sort_by { |name, _| name.to_s }.to_h { |name, v| [name, v] },
+            variants: @variants.sort_by { |attr, _| attr.to_s }
+                               .map { |attr, mapping| [attr, mapping.sort_by { |value, _| value.to_s }] },
+            compounds: @compounds.map { |rule| [rule.criteria.sort_by { |k, _| k.to_s }, rule.classes] }
+          }
+        end
 
         def root_classes(criteria)
           classes = @bases.dup

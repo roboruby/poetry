@@ -341,12 +341,56 @@ module Poetry
 
         # Generates CSS classes based on style attributes and additional options.
         #
+        # The emission is governed by `css_mode`: `:tailwind` (default)
+        # resolves the style values to utility classes through the sidecar
+        # Style dictionary; `:bem` emits the stable BEM token IR instead, for
+        # hosts that bring their own CSS (styled against the generated
+        # reference stylesheet). Override per call with `css_mode:`, or
+        # globally via `Poetry::Core::Config.current.css_mode`.
+        #
+        # @param element [Symbol, nil] a named element (BEM `block__element`)
         # @param options [Hash] additional style options to merge
         # @yield optional block passed to the style class
         # @return [String] the generated CSS classes
-        def css(**options, &)
-          style_attributes = styles.merge(options)
-          styler.css(**style_attributes, &)
+        def css(element = nil, **options, &)
+          mode = options.delete(:css_mode) || Poetry::Core::Config.current.css_mode
+
+          case mode
+          when :tailwind
+            style_attributes = styles.merge(options)
+            styler.css(element, **style_attributes, &)
+          when :bem
+            extra = options.delete(:class)
+            [bem(element, **options), extra].compact.join(" ")
+          else
+            raise Poetry::Core::Error, "unknown css_mode #{mode.inspect} (expected :tailwind or :bem)"
+          end
+        end
+
+        # The component's BEM block name - the stable, framework-agnostic
+        # class contract of the token IR ("poetry/core/x" -> "poetry-core-x").
+        #
+        # @return [String]
+        def bem_block
+          self.class.component_path.tr("/", "-")
+        end
+
+        # The BEM token IR for this component (the pipeline's Step 2): the
+        # block class plus one modifier class per style value - symbols as
+        # `block--attr-value`, booleans as presence modifiers (`block--attr`).
+        # A named element returns `block__element`.
+        #
+        # @param element [Symbol, nil] a named element
+        # @param overrides [Hash] style overrides merged over the resolved values
+        # @return [String] space-separated BEM classes
+        def bem(element = nil, **overrides)
+          return "#{bem_block}__#{element}" if element
+
+          styles.merge(overrides).each_with_object([bem_block]) do |(attr, value), tokens|
+            next if value.nil? || value == false
+
+            tokens << (value == true ? "#{bem_block}--#{attr}" : "#{bem_block}--#{attr}-#{value}")
+          end.join(" ")
         end
       end
     end

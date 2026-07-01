@@ -69,7 +69,11 @@ module Poetry
           ActiveSupport::OrderedOptions.new.merge!({
                                                      classname_merger: Poetry::Core::CSS::Merger.new,
                                                      stimulus_merger: Poetry::Core::Stimulus::Merger.new,
-                                                     raise_on_asset_not_found: true
+                                                     raise_on_asset_not_found: true,
+                                                     # :tailwind emits resolved utility classes (default);
+                                                     # :bem emits the BEM token IR for bring-your-own-CSS
+                                                     # hosts (no:both, deliberately).
+                                                     css_mode: :tailwind
                                                    })
         end
 
