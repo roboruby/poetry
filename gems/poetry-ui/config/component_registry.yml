@@ -2,6 +2,55 @@
 # DO NOT EDIT: CI verifies this file matches a fresh build (rake registry:verify).
 ---
 components:
+  poetry/ui/alert:
+    class_name: Poetry::Ui::Alert::Component
+    identifier: poetry--ui--alert
+    bem_block: poetry-ui-alert
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - destructive
+      default: default
+      required: true
+    options: []
+    slots:
+    - name: icon
+      many: false
+    - name: title
+      many: false
+    elements:
+    - title
+    - description
+    capsule: 6bb258e12975
+    agent_rules:
+    - Use poetry_alert for inline callouts - it carries role/aria-live; never a hand-rolled
+      div.
+    - destructive announces assertively (role=alert) - reserve it for errors, not
+      emphasis.
+  poetry/ui/badge:
+    class_name: Poetry::Ui::Badge::Component
+    identifier: poetry--ui--badge
+    bem_block: poetry-ui-badge
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - secondary
+      - destructive
+      - outline
+      default: default
+      required: true
+    options: []
+    slots: []
+    elements: []
+    capsule: 025c0440036f
+    agent_rules:
+    - Badges are non-interactive status labels - never attach click handlers; use
+      Button for actions.
+    - Pick the variant by intent (destructive = error states), never by color preference.
   poetry/ui/button:
     class_name: Poetry::Ui::Button::Component
     identifier: poetry--ui--button
@@ -62,6 +111,33 @@ components:
     - 'Loading via loading: - never a manual disabled + spinner.'
     - Never nest an interactive element inside a Button.
     - Pick the variant by intent; one primary (default) action per view.
+  poetry/ui/card:
+    class_name: Poetry::Ui::Card::Component
+    identifier: poetry--ui--card
+    bem_block: poetry-ui-card
+    styles: []
+    options: []
+    slots:
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: action
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - header
+    - title
+    - description
+    - action
+    - content
+    - footer
+    capsule: c81b01706570
+    agent_rules:
+    - Compose with the slots (title/description/action/footer) - never rebuild the
+      header grid by hand.
+    - The card body is the content block; use CardAction for the header-corner control.
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -80,3 +156,34 @@ components:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
     - Never inline raw <svg> markup where an icon exists - use poetry_icon.
+  poetry/ui/link:
+    class_name: Poetry::Ui::Link::Component
+    identifier: poetry--ui--link
+    bem_block: poetry-ui-link
+    styles:
+    - name: underline
+      type: symbol
+      variants:
+      - hover
+      - always
+      - none
+      default: hover
+    options:
+    - name: current
+      type: boolean
+      default: false
+    - name: external
+      type: boolean
+      default: false
+    - name: href
+      type: string
+      required: true
+    slots: []
+    elements: []
+    capsule: 3053be361b99
+    agent_rules:
+    - Use poetry_link for navigation - poetry_button for actions (never an <a> styled
+      by hand).
+    - 'Mark the active nav item with current: true (aria-current), never with a bespoke
+      class.'
+    - 'external: true handles target/rel safely - never hand-write target=_blank.'

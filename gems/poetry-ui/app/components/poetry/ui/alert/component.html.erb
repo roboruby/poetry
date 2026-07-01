@@ -1,0 +1,5 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= icon %>
+  <% if title? %><div data-slot="alert-title" class="<%= css(:title) %>"><%= title %></div><% end %>
+  <div data-slot="alert-description" class="<%= css(:description) %>"><%= content %></div>
+<% end %>

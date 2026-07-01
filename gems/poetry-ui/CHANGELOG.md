@@ -17,3 +17,9 @@
 - M5: Icon reworked onto the pluggable icon-set registry — the full
   Lucide set via poetry-lucide (1745 icons, pinned SHA, sanitized at vendor
   time), `config.icon_library` swap + per-render `library:` override.
+- M6a: Link, Badge, Card, Alert — shadcn new-york-v4 parity (Link is
+  poetry's own navigation contract; shadcn ships none). Alert carries the
+  a11y the reference lacks (role=alert/status by severity — the original
+  vcplus motivating bug) with a typed icon slot; Card composes via
+  data-slot; every component ships agent rules + previews and renders in
+  both css modes. Dialog + the P1–P3 primitives are M6b.

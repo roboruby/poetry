@@ -10,7 +10,10 @@ module Poetry
       end
 
       def test_discovers_poetry_ui_components
-        assert_equal %w[poetry/ui/button poetry/ui/icon], registry.entries.keys.sort
+        expected = %w[poetry/ui/alert poetry/ui/badge poetry/ui/button poetry/ui/card
+                      poetry/ui/icon poetry/ui/link]
+
+        assert_equal expected, registry.entries.keys.sort
       end
 
       def test_button_entry_carries_the_golden_contract
