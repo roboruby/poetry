@@ -171,6 +171,33 @@ components:
     - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
       stop closing).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
+  poetry/ui/field:
+    class_name: Poetry::Ui::Field::Component
+    identifier: poetry--ui--field
+    bem_block: poetry-ui-field
+    styles: []
+    options:
+    - name: error
+      type: string
+    - name: hint
+      type: string
+    - name: id
+      type: string
+      required: true
+    - name: label_text
+      type: string
+    - name: required
+      type: boolean
+      default: false
+    slots: []
+    elements:
+    - hint
+    - error
+    capsule: 0c204c4dfa15
+    agent_rules:
+    - Wire the control with field.control_attributes - never hand-write aria-describedby.
+    - 'Error text arrives via error: (from model errors upstream) - never a bare red
+      <p>.'
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -189,6 +216,50 @@ components:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
     - Never inline raw <svg> markup where an icon exists - use poetry_icon.
+  poetry/ui/input:
+    class_name: Poetry::Ui::Input::Component
+    identifier: poetry--ui--input
+    bem_block: poetry-ui-input
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: invalid
+      type: boolean
+      default: false
+    - name: name
+      type: string
+    - name: placeholder
+      type: string
+    - name: type
+      type: string
+      default: text
+    - name: value
+      type: string
+    slots: []
+    elements: []
+    capsule: f0c8d25982d7
+    agent_rules:
+    - Inside a form, never render Input directly - use the FormBuilder's field (it
+      wires ids, errors, and aria).
+    - Error styling comes from aria-invalid, set from model errors - never hand-toggle
+      error classes.
+  poetry/ui/label:
+    class_name: Poetry::Ui::Label::Component
+    identifier: poetry--ui--label
+    bem_block: poetry-ui-label
+    styles: []
+    options:
+    - name: for_id
+      type: string
+      required: true
+    slots: []
+    elements: []
+    capsule: 0da43bf4aac4
+    agent_rules:
+    - Every control gets a Label wired via for_id - placeholder text is never the
+      label.
   poetry/ui/link:
     class_name: Poetry::Ui::Link::Component
     identifier: poetry--ui--link

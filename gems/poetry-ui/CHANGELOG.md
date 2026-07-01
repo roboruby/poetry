@@ -29,3 +29,9 @@
   dismissal, dismissible: false, and the scroll lock). Typed Button
   trigger slot, REQUIRED title (aria-labelledby always wired, unique per
   instance), i18n'd icon-only close button.
+- M7: the forms foundation — Input + Label + Field (the error quartet:
+  label/control/hint/error with auto aria-describedby via
+  Field#control_attributes) + Poetry::Ui::FormBuilder (`form.field(:email)`:
+  i18n labels from human_attribute_name, model errors auto-flow to
+  aria-invalid + the error paragraph, presence validators become
+  aria-required ONLY — never the native attribute).
