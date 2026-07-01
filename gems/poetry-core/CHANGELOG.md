@@ -1,5 +1,23 @@
 ## [Unreleased]
 
+- M3: `prop_definitions` introspection shim — the machine-readable
+  prop surface (styles / options / slots, with types, variants, defaults —
+  proc defaults reported as `:dynamic` — and required flags), derived from
+  the metadata the DSLs already carry.
+- M3: the generated component registry (`config/component_registry.yml`) —
+  built from source via `prop_definitions` + the Style dictionaries
+  (elements, capsule digest), plain YAML, CI-verified against a fresh
+  build (`rake registry:verify` in the default task).
+- M3: `data-component` / `data-slot` self-identification helpers on the
+  base component (the live-DOM → component contract).
+- M3: JS distribution — one source tree, two channels: the engine
+  merges its importmap pins into the host (`@poetry/controllers` +
+  subpaths, zero build), and the same tree is the `@poetry/controllers`
+  npm package (ESM, exports subpaths, Stimulus as a peer dep) with
+  `registerPoetryControllers(app)`. First shipped controller:
+  `poetry--core--state` (the controllable-state convention), plus the P0
+  helper layer (state / collection / direction / tabbable / escape).
+- M3: Vitest + jsdom as the JS unit-test runner (a `javascript` CI job).
 - M2: `class_variants` absorbed in-tree as `CSS::Resolver` — the
   base / element / variant / compound dictionary DSL on `Style`, with **no
   defaults storage** (defaults live only on the component's
