@@ -18,4 +18,5 @@ gem "rubocop-performance", require: false
 gem "rubocop-rake", require: false
 
 gem "bundler-audit", require: false
+gem "nokogiri"
 gem "simplecov", require: false

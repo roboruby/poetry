@@ -1,0 +1,6 @@
+<%# The poetry arm: what an agent WITH poetry writes for the task
+    "a destructive 'Delete account' button with a leading trash icon". %>
+<%= poetry_button(variant: :destructive) do |button| %>
+  <% button.with_leading { poetry_icon(name: :trash) } %>
+  Delete account
+<% end %>
