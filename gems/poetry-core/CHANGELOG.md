@@ -1,5 +1,22 @@
 ## [Unreleased]
 
+- M2: `class_variants` absorbed in-tree as `CSS::Resolver` — the
+  base / element / variant / compound dictionary DSL on `Style`, with **no
+  defaults storage** (defaults live only on the component's
+  `style :attr, default:` — the single source of truth) and a bounded FIFO
+  cache on the shared `CSS::Merger` (tailwind_merge runs once per distinct
+  combo). One fewer runtime dependency.
+- M2: the BEM token IR (`Styles#bem`, block from `component_path`) +
+  `config.css_mode =:tailwind |:bem` — `:bem` emits the stable
+  class contract for bring-your-own-CSS hosts; `CSS::BemReference`
+  generates the documented reference stylesheet, capsule-digest-stamped
+  (the capsule-digest leak guard).
+- M2: the class Verifier (`CSS::Verifier`) — validates every
+  dictionary class against a compiled Tailwind stylesheet, with
+  did-you-mean suggestions for hallucinated classes; `CSS::Safelist` +
+  `CSS::TemplateClasses` (Herb-AST static-class extraction + the herb
+  parse gate). Rake: `css:safelist`, `css:verify[compiled.css]`,
+  `css:bem_reference`, `css:herb`.
 - M1: canonical DTCG design tokens (`tokens/tokens.dtcg.json`) — OKLCH semantic
   roles, shadcn/ui v4 drop-in var set, light + dark (`.dark` class convention).
 - M1: token generators (`rake tokens:generate`) emitting `tokens/tokens.css`,
