@@ -43,6 +43,7 @@ module Poetry
       include Poetry::Core::Concerns::Styles
       include Poetry::Core::Concerns::Options
       include Poetry::Core::Concerns::Stimulus
+      include Poetry::Core::Concerns::Introspection
 
       class << self
         # Returns the current Poetry::Core configuration.
@@ -92,6 +93,25 @@ module Poetry
         def component_title
           component_path.split("/").last # dot
         end
+      end
+
+      # The self-identification markup contract (M3, the golden Button's
+      # convention): `data-component` on the component root maps live DOM
+      # back to the component that rendered it - the hook agents, the
+      # Verifier, and the browser-verification loop key on.
+      #
+      # @return [Hash] e.g. { "data-component" => "button" }
+      def component_data_attributes
+        { "data-component" => self.class.component_title }
+      end
+
+      # `data-slot` for a named part of the component's anatomy
+      # (skeleton parts carry their role: icon, label, spinner, ...).
+      #
+      # @param part [Symbol, String] the anatomy part name
+      # @return [Hash] e.g. { "data-slot" => "icon" }
+      def slot_data_attributes(part)
+        { "data-slot" => part.to_s }
       end
 
       # Indicates whether this component instance is persisted.
