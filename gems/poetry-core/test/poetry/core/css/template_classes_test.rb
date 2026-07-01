@@ -26,6 +26,10 @@ module Poetry
           assert_empty result.classes
         end
 
+        def test_available_reflects_herb_presence
+          assert_predicate TemplateClasses, :available?, "herb is bundled in poetry's own CI"
+        end
+
         def test_parse_errors_are_surfaced_not_swallowed
           result = TemplateClasses.extract("<div <span></div>")
 

@@ -22,6 +22,15 @@ module Poetry
         Result = Struct.new(:classes, :errors)
 
         class << self
+          # Whether the herb gem is loadable (extraction is optional at
+          # install time in a host app; required in poetry's own CI).
+          def available?
+            herb!
+            true
+          rescue Poetry::Core::Error
+            false
+          end
+
           # Extracts static classes from one ERB source string.
           #
           # @return [Result] classes (Array<String>) + errors (Array<String>)
