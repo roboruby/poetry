@@ -10,6 +10,7 @@ require "action_view/railtie"
 require "view_component"
 require "poetry/core"
 require "poetry/ui"
+require "poetry/lucide"
 
 module Dummy
   # Minimal Rails host for exercising poetry-ui's components in tests.

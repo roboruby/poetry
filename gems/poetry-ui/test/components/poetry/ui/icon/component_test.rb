@@ -33,7 +33,37 @@ module Poetry
         end
 
         def test_unknown_icon_name_is_invalid
-          refute_predicate Component.new(name: :sparkles), :valid?
+          refute_predicate Component.new(name: :"definitely-not-an-icon"), :valid?
+        end
+
+        def test_the_full_lucide_set_is_available
+          # M5: the real vendored set, not the M3.5 three-icon stub.
+          html = render_inline(Component.new(name: :calendar)).to_html
+
+          assert_includes html, "<path"
+        end
+
+        # Swap the icon set via config.
+        def test_swapping_the_icon_set_via_config
+          fake = Class.new do
+            def include?(_name) = true
+            def fetch(_name) = '<circle cx="12" cy="12" r="10"/>'
+            def names = [:dot]
+          end.new
+          Poetry::Core::Icons.register(:fake_set, fake)
+          Poetry::Core::Config.current.icon_library = :fake_set
+
+          html = render_inline(Component.new(name: :anything)).to_html
+
+          assert_includes html, "<circle"
+        ensure
+          Poetry::Core::Config.current.icon_library = :lucide
+        end
+
+        def test_per_render_library_override
+          html = render_inline(Component.new(name: :plus, library: :lucide)).to_html
+
+          assert_includes html, 'data-component="icon"'
         end
       end
     end

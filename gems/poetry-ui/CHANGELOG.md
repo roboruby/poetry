@@ -14,3 +14,6 @@
   agent-rules.md force-refreshed from the registry + user-owned
   house-rules.md seeded once) with idempotent marker-import into
   CLAUDE.md/AGENTS.md (detect-but-never-rewrite on broken markers).
+- M5: Icon reworked onto the pluggable icon-set registry — the full
+  Lucide set via poetry-lucide (1745 icons, pinned SHA, sanitized at vendor
+  time), `config.icon_library` swap + per-render `library:` override.

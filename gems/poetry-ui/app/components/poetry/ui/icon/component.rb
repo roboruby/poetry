@@ -3,26 +3,15 @@
 module Poetry
   module Ui
     module Icon
-      # The minimal Icon (M3.5 - pulled forward from M5 because Button's
-      # anatomy composes it). Template-less; renders an inline SVG from a
-      # tiny vendored Lucide subset. The full icon pipeline (pinned-SHA
-      # vendoring + sanitization + per-set adapters + poetry-lucide) lands
-      # at M5 - this component keeps the same public surface.
+      # The Icon component: template-less, rendering an icon's vendored,
+      # pre-sanitized inner markup from the configured icon set ( -
+      # `config.icon_library`, Lucide by default via poetry-lucide;
+      # override per render with `library:`).
       #
       # The ARIA contract (locked at M5 spec time):
       # - `label:` given  -> standalone/informative: role="img" + aria-label
       # - no `label:`     -> decorative: aria-hidden="true" + focusable="false"
       class Component < Poetry::Core::Component
-        # Vendored, hand-audited Lucide path data (24x24, stroke-based).
-        # Trusted content by construction; the M5 pipeline sanitizes at
-        # vendor time, never at render time.
-        ICONS = {
-          plus: '<path d="M5 12h14"/><path d="M12 5v14"/>',
-          trash: '<path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>' \
-                 '<path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
-          "chevron-right": '<path d="m9 18 6-6-6-6"/>'
-        }.freeze
-
         AGENT_RULES = [
           "Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.",
           "Never inline raw <svg> markup where an icon exists - use poetry_icon."
@@ -30,14 +19,27 @@ module Poetry
 
         option :name, :symbol, required: true
         option :label, :string
+        option :library, :symbol
 
-        validates :name, inclusion: { in: ICONS.keys }
+        validate :icon_must_exist
 
         def call
-          content_tag(:svg, ICONS.fetch(name).html_safe, **svg_attributes.to_attributes)
+          # Vendored + sanitized at vendor time (the fetch pipeline) - the
+          # inner markup is trusted by construction; render never parses.
+          content_tag(:svg, icon_set.fetch(name).html_safe, **svg_attributes.to_attributes)
         end
 
         private
+
+        def icon_set
+          Poetry::Core::Icons.set(library)
+        end
+
+        def icon_must_exist
+          return if name.blank? || icon_set.include?(name)
+
+          errors.add(:name, "unknown icon #{name.inspect} in the #{library || self.class.config.icon_library} set")
+        end
 
         def svg_attributes
           html_attributes.merge_if_not_set(default_svg_attributes.merge(aria_attributes))

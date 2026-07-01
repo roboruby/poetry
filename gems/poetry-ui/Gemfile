@@ -6,6 +6,7 @@ gemspec
 
 # The engine under development next door (published dependency once released).
 gem "poetry-core", path: "../poetry-core"
+gem "poetry-lucide", path: "../poetry-lucide"
 
 gem "irb"
 gem "rake", "~> 13.0"
