@@ -53,3 +53,15 @@ jobs:
           bundler-cache: true
       - name: Audit dependencies for known CVEs
         run: bundle exec bundle-audit check --update
+
+  javascript:
+    name: JavaScript (Vitest)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm test

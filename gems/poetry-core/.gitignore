@@ -24,3 +24,6 @@
 
 # Ruby LSP
 /.ruby-lsp/
+
+# npm (the @poetry/controllers dev install)
+/node_modules/

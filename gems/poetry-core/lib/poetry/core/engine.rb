@@ -46,6 +46,17 @@ module Poetry
           Rails.application.config.assets.paths << Poetry::Core.root.join("app/javascript")
         end
       end
+
+      # The importmap-first JS channel: merge poetry's pins into the
+      # host's importmap so `import ... from "@poetry/controllers"` works
+      # with zero build. Guarded - bundler hosts (esbuild/Vite) use the npm
+      # channel instead and never load importmap-rails.
+      initializer "poetry_core.importmap", before: "importmap" do |app|
+        if app.config.respond_to?(:importmap)
+          app.config.importmap.paths << Poetry::Core.root.join("config/importmap.rb")
+          app.config.importmap.cache_sweepers << Poetry::Core.root.join("app/javascript")
+        end
+      end
     end
   end
 end

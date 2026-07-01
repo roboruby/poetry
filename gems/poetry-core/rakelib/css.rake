@@ -3,7 +3,12 @@
 # The M2 CSS toolchain tasks. These boot the on-disk dummy host so the
 # engine's Style classes are loadable, then operate on every Style
 # dictionary + the component templates.
-
+#
+# The shared boot for EVERY poetry rake task that touches the library: the
+# dummy environment loads Rails before poetry-core, so railtie-registered
+# config (config.view_component, ...) exists. Never `require_relative` the
+# lib directly in a task - requiring view_component before Rails poisons a
+# later boot in the same process.
 def poetry_css_boot!
   ENV["RAILS_ENV"] ||= "test"
   ENV["COVERAGE"] ||= "0"

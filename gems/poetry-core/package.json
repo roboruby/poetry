@@ -1,0 +1,26 @@
+{
+  "name": "@poetry/controllers",
+  "version": "0.0.1",
+  "private": true,
+  "description": "poetry's Stimulus controllers + DOM helpers. Importmap-first; this package is the opt-in npm channel for esbuild/Vite/jsbundling hosts. One source, two channels - never requires a bundler.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./app/javascript/poetry/core/index.js",
+    "./*": "./app/javascript/poetry/core/*.js"
+  },
+  "files": [
+    "app/javascript"
+  ],
+  "peerDependencies": {
+    "@hotwired/stimulus": ">= 3.2"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "jsdom": "^26.0.0",
+    "vitest": "^3.0.0"
+  },
+  "scripts": {
+    "test": "vitest run"
+  }
+}
