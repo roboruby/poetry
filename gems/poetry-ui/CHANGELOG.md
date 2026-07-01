@@ -35,3 +35,10 @@
   i18n labels from human_attribute_name, model errors auto-flow to
   aria-invalid + the error paragraph, presence validators become
   aria-required ONLY — never the native attribute).
+- M8: the distribution generators — `poetry:install` (tokens + @theme +
+  live-generated safelist into the host's Tailwind entry, idempotent
+  injection; initializer; manifest), `poetry:add Component` (copy-in with
+  recursive dependency resolution; existing files SKIPPED — local edits
+  win; version provenance recorded in config/poetry_components.yml), and
+  the `poetry:verify` host-app rake task ( — the Verifier + herb
+  gates in the consumer's app, graceful when tools are absent).

@@ -1,0 +1,6 @@
+---
+components:
+  button:
+    version: 0.0.1
+  icon:
+    version: 0.0.1
