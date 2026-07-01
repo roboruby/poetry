@@ -1,0 +1,705 @@
+{
+  "$description": "poetry canonical design tokens (DTCG). The single source of truth: tokens.css, tailwind-theme.css, and the DESIGN.md front matter are generated from this file (bin/rake tokens:generate). Semantic roles only - components never reference raw palette values.",
+  "color": {
+    "$description": "Semantic role tokens, shadcn/ui v4 neutral compatible (drop-in var set). Modes: light (:root) and dark (.dark).",
+    "light": {
+      "background": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.145,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "card": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "card-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.145,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "popover": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "popover-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.145,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "primary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.97,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "secondary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "muted": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.97,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "muted-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.545,
+            0,
+            0
+          ]
+        },
+        "$description": "Parity delta vs shadcn neutral (0.556): darkened to clear the locked WCAG AA floor - 4.54:1 on muted, 4.96:1 on background (shadcn's own value is 4.34:1 on muted)."
+      },
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.97,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "accent-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "destructive": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.577,
+            0.245,
+            27.325
+          ]
+        }
+      },
+      "border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.922,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "input": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.922,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "ring": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.708,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-1": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.87,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-2": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.556,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-3": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.439,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-4": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.371,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-5": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.145,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-primary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.97,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-accent-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.922,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-ring": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.708,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    },
+    "dark": {
+      "background": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.145,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "card": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "card-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "popover": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "popover-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.922,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "primary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "secondary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "muted": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "muted-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.708,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "accent-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "destructive": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.704,
+            0.191,
+            22.216
+          ]
+        }
+      },
+      "border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.1
+        }
+      },
+      "input": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.15
+        }
+      },
+      "ring": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.556,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-1": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.87,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-2": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.556,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-3": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.439,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-4": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.371,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "chart-5": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.205,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-primary": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.488,
+            0.243,
+            264.376
+          ]
+        }
+      },
+      "sidebar-primary-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-accent": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.269,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-accent-foreground": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.985,
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "sidebar-border": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            1.0,
+            0.0,
+            0.0
+          ],
+          "alpha": 0.1
+        }
+      },
+      "sidebar-ring": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "oklch",
+          "components": [
+            0.556,
+            0.0,
+            0.0
+          ]
+        }
+      }
+    }
+  },
+  "dimension": {
+    "radius": {
+      "$type": "dimension",
+      "$value": {
+        "value": 0.625,
+        "unit": "rem"
+      }
+    }
+  }
+}
