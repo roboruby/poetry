@@ -15,6 +15,17 @@ module Poetry
         SIZES = %i[default xs sm lg icon icon-xs icon-sm icon-lg].freeze
         TYPES = %i[button submit reset].freeze
 
+        # The contract's agent-rules section (projected into the registry,
+        # llms.txt, and the generated agent-rules.md).
+        AGENT_RULES = [
+          "Use poetry_button - never a raw <button> with hand-written Tailwind.",
+          "Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).",
+          "Link-styled actions use variant: :link - not <a> with button classes.",
+          "Loading via loading: - never a manual disabled + spinner.",
+          "Never nest an interactive element inside a Button.",
+          "Pick the variant by intent; one primary (default) action per view."
+        ].freeze
+
         style :variant, default: :default, required: true, variants: VARIANTS
         style :size, default: :default, required: true, variants: SIZES
 

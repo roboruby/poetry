@@ -55,6 +55,13 @@ components:
       many: false
     elements: []
     capsule: aa16559d9dce
+    agent_rules:
+    - Use poetry_button - never a raw <button> with hand-written Tailwind.
+    - 'Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).'
+    - 'Link-styled actions use variant: :link - not <a> with button classes.'
+    - 'Loading via loading: - never a manual disabled + spinner.'
+    - Never nest an interactive element inside a Button.
+    - Pick the variant by intent; one primary (default) action per view.
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -67,3 +74,7 @@ components:
       type: symbol
       required: true
     slots: []
+    agent_rules:
+    - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
+      alone.'
+    - Never inline raw <svg> markup where an icon exists - use poetry_icon.

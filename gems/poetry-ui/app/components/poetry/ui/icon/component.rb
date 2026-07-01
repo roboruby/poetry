@@ -23,6 +23,11 @@ module Poetry
           "chevron-right": '<path d="m9 18 6-6-6-6"/>'
         }.freeze
 
+        AGENT_RULES = [
+          "Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.",
+          "Never inline raw <svg> markup where an icon exists - use poetry_icon."
+        ].freeze
+
         option :name, :symbol, required: true
         option :label, :string
 
