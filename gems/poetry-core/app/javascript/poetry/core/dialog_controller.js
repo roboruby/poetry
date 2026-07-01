@@ -30,12 +30,19 @@ export default class extends Controller {
     this.unlockScroll()
   }
 
-  // A click on the <dialog> element itself (not its children) is a
-  // backdrop click - the native element receives it because the backdrop
-  // is rendered by the dialog.
+  // A backdrop click targets the <dialog> element itself AND lands outside
+  // its bounding rect (the backdrop is rendered by the dialog). The target
+  // check alone is not enough: clicks on the dialog's own padding / grid
+  // gaps also target the element (2026-07-01 browser pass - they were
+  // incorrectly dismissing).
   backdropClose(event) {
     if (!this.dismissibleValue) return
-    if (event.target === this.dialogTarget) this.close()
+    if (event.target !== this.dialogTarget) return
+
+    const rect = this.dialogTarget.getBoundingClientRect()
+    const inside = rect.top <= event.clientY && event.clientY <= rect.bottom &&
+      rect.left <= event.clientX && event.clientX <= rect.right
+    if (!inside) this.close()
   }
 
   lockScroll() {

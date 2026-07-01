@@ -51,11 +51,30 @@ describe("poetry--core--dialog", () => {
     expect(document.body.style.overflow).toBe("")
   })
 
-  it("a backdrop click (the dialog element itself) dismisses", () => {
-    document.getElementById("trigger").click()
-    document.getElementById("dlg").dispatchEvent(new MouseEvent("click", { bubbles: true }))
+  // jsdom has no layout - give the dialog a real rect so the
+  // backdrop-vs-padding coordinate discrimination is testable.
+  const stubPanelRect = (dlg) => {
+    dlg.getBoundingClientRect = () => ({ top: 100, left: 100, right: 500, bottom: 400 })
+  }
 
-    expect(document.getElementById("dlg").open).toBe(false)
+  it("a backdrop click (dialog target, coords outside the panel) dismisses", () => {
+    document.getElementById("trigger").click()
+    const dlg = document.getElementById("dlg")
+    stubPanelRect(dlg)
+    dlg.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 10, clientY: 10 }))
+
+    expect(dlg.open).toBe(false)
+  })
+
+  it("clicks on the dialog's own padding (target dialog, coords inside) do NOT dismiss", () => {
+    // The 2026-07-01 browser pass: p-6 / grid-gap clicks target the
+    // <dialog> element itself - target-only discrimination dismissed them.
+    document.getElementById("trigger").click()
+    const dlg = document.getElementById("dlg")
+    stubPanelRect(dlg)
+    dlg.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 110, clientY: 110 }))
+
+    expect(dlg.open).toBe(true)
   })
 
   it("clicks on dialog CONTENT do not dismiss", () => {
@@ -69,9 +88,11 @@ describe("poetry--core--dialog", () => {
     application.stop()
     application = await mount(false)
     document.getElementById("trigger").click()
-    document.getElementById("dlg").dispatchEvent(new MouseEvent("click", { bubbles: true }))
+    const dlg = document.getElementById("dlg")
+    stubPanelRect(dlg)
+    dlg.dispatchEvent(new MouseEvent("click", { bubbles: true, clientX: 10, clientY: 10 }))
 
-    expect(document.getElementById("dlg").open).toBe(true)
+    expect(dlg.open).toBe(true)
   })
 
   it("Esc (the native cancel event) routes through close, keeping state in sync", () => {
