@@ -29,6 +29,61 @@ components:
       div.
     - destructive announces assertively (role=alert) - reserve it for errors, not
       emphasis.
+  poetry/ui/attachment:
+    class_name: Poetry::Ui::Attachment::Component
+    identifier: poetry--ui--attachment
+    bem_block: poetry-ui-attachment
+    styles:
+    - name: orientation
+      type: symbol
+      variants:
+      - horizontal
+      - vertical
+      default: horizontal
+      required: true
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      - xs
+      default: default
+      required: true
+    options:
+    - name: state
+      type: symbol
+      default: done
+    slots:
+    - name: media
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: actions
+      many: true
+    - name: trigger
+      many: false
+    elements:
+    - media
+    - content
+    - title
+    - description
+    - actions
+    - trigger
+    - group
+    capsule: edad85abbad6
+    agent_rules:
+    - 'State is server-owned: render data-state and flip it by Turbo Stream replace
+      - never toggle it in JS.'
+    - 'with_media(variant: :image) wraps the caller''s <img>; file names and URLs
+      are user content - never render them html_safe.'
+    - 'Actions are with_action(...) poetry Buttons (ghost/icon-xs defaults) - each
+      needs label: (icon-only).'
+    - with_trigger makes the whole chip the control (a stretched overlay UNDER the
+      actions) - don't also wrap the chip in a link.
+    - error state needs a with_description explaining the failure - the tint alone
+      is not the message.
   poetry/ui/badge:
     class_name: Poetry::Ui::Badge::Component
     identifier: poetry--ui--badge
@@ -53,6 +108,47 @@ components:
     - 'The visible text is the content block: render ... { "beta" } - there is no
       label: option.'
     - Pick the variant by intent (destructive = error states), never by color preference.
+  poetry/ui/bubble:
+    class_name: Poetry::Ui::Bubble::Component
+    identifier: poetry--ui--bubble
+    bem_block: poetry-ui-bubble
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - secondary
+      - muted
+      - tinted
+      - outline
+      - ghost
+      - destructive
+      default: default
+      required: true
+    options:
+    - name: align
+      type: symbol
+      default: start
+    - name: href
+      type: string
+    - name: tag
+      type: symbol
+      default: div
+    slots:
+    - name: reactions
+      many: false
+    elements:
+    - group
+    - content
+    - reactions
+    capsule: 846f16b098a4
+    agent_rules:
+    - One Bubble per message; stack a sender's run inside poetry_bubble_group.
+    - 'Quick replies are tag: :button (with the caller''s data-action) or tag: :a
+      + href: - never a click handler on a div.'
+    - ghost is for tool output / system text flowing full-width - not a visual preference.
+    - 'Reactions REQUIRE label: (the accessible name for the cluster).'
+    - Inside a Message, alignment follows the Message's align - do not set both.
   poetry/ui/button:
     class_name: Poetry::Ui::Button::Component
     identifier: poetry--ui--button
@@ -300,3 +396,68 @@ components:
     - 'Mark the active nav item with current: true (aria-current), never with a bespoke
       class.'
     - 'external: true handles target/rel safely - never hand-write target=_blank.'
+  poetry/ui/marker:
+    class_name: Poetry::Ui::Marker::Component
+    identifier: poetry--ui--marker
+    bem_block: poetry-ui-marker
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - separator
+      - border
+      default: default
+      required: true
+    options:
+    - name: announce
+      type: symbol
+      default: none
+    - name: tag
+      type: symbol
+      default: div
+    slots:
+    - name: icon
+      many: false
+    elements:
+    - icon
+    - content
+    capsule: 3ba6d98024fa
+    agent_rules:
+    - The marker text is real announced content - never mark it aria-hidden or role=separator.
+    - 'announce: :status is for the ONE in-flight marker (streaming status); static
+      dividers never announce.'
+    - Icons in markers ride the typed icon slot (decorative always).
+    - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
+  poetry/ui/message:
+    class_name: Poetry::Ui::Message::Component
+    identifier: poetry--ui--message
+    bem_block: poetry-ui-message
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: start
+    slots:
+    - name: avatar
+      many: false
+    - name: header
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - group
+    - avatar
+    - content
+    - header
+    - footer
+    capsule: 87068aab9f92
+    agent_rules:
+    - 'One Message per turn: avatar slot + header/footer slots; the body block holds
+      the Bubbles.'
+    - 'align: :end is the local user''s side - set it on the Message, never on the
+      Bubbles inside.'
+    - The avatar slot is decorative context by default - pass meaningful sender identity
+      in the header.
+    - Timestamps and delivery state belong in the footer slot (it lifts the avatar
+      automatically).

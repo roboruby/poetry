@@ -94,6 +94,27 @@ module Poetry
             })
           ]
         },
+        "chat_transcript" => {
+          "description" => "A chat transcript: date divider, assistant message with an attachment " \
+                           "and a quick reply, and a live 'thinking' status",
+          "gates" => [
+            Gate.new(:attachment_described, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("quarterly-report.pdf") && doc.text.include?("1.2 MB")
+            }),
+            Gate.new(:quick_replies_are_real_controls, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? &&
+                doc.xpath(".//*[contains(text(), 'Summarize')]").any? do |n|
+                  INTERACTIVE_TAGS.include?(n.name) || n.ancestors.any? { |a| INTERACTIVE_TAGS.include?(a.name) }
+                end
+            }),
+            Gate.new(:live_status_announced, :cross_arm, lambda { |doc, _html|
+              doc.css(%([role="status"], [aria-live])).any?
+            }),
+            Gate.new(:decorative_icons_hidden, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [
@@ -112,7 +133,9 @@ module Poetry
 
       POETRY_ONLY = [
         Gate.new(:stayed_in_system, :poetry_only, lambda { |doc, _html|
-          doc.css("button, [role=button]").all? { |control| control["data-component"] }
+          # A control is in-system as a component root (data-component) OR
+          # as a named part of one (data-slot - e.g. a Bubble quick-reply).
+          doc.css("button, [role=button]").all? { |control| control["data-component"] || control["data-slot"] }
         }),
         Gate.new(:registry_conformance, :poetry_only, lambda { |doc, _html|
           registry = Poetry::Core::Registry.new(source_root: Poetry::Ui.root).entries

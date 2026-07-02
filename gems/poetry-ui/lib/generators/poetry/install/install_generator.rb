@@ -27,6 +27,7 @@ module Poetry
       %(@import "./poetry/tokens.css";),
       %(@import "./poetry/theme.css";),
       %(@import "./poetry/animate.css";),
+      %(@import "./poetry/utilities.css";),
       %(@import "./poetry/base.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
@@ -58,6 +59,10 @@ module Poetry
                   Poetry::Core.root.join("tokens/tailwind-theme.css").read, force: true
       create_file "app/assets/tailwind/poetry/animate.css",
                   Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css").read, force: true
+      # shadcn's first-party utility layer (shimmer / scroll-fade families +
+      # the chat-set keyframes), vendored verbatim at a pinned SHA (N1).
+      create_file "app/assets/tailwind/poetry/utilities.css",
+                  Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css").read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
     end
 

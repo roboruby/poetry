@@ -1,0 +1,4 @@
+<%= content_tag(tag, **root_attributes.to_attributes) do %>
+  <% if icon? %><span data-slot="marker-icon" aria-hidden="true" class="<%= css(:icon) %>"><%= icon %></span><% end %>
+  <span data-slot="marker-content" class="<%= css(:content) %>"><%= content %></span>
+<% end %>

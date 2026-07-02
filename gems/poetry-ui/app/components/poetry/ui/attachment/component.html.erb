@@ -1,0 +1,13 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= media %>
+  <% if title? || description? %>
+    <div data-slot="attachment-content" class="<%= css(:content) %>">
+      <% if title? %><span data-slot="attachment-title" class="<%= css(:title) %>"><%= title %></span><% end %>
+      <% if description? %><span data-slot="attachment-description" class="<%= css(:description) %>"><%= description %></span><% end %>
+    </div>
+  <% end %>
+  <%= content %>
+  <% if actions? %><div data-slot="attachment-actions" class="<%= css(:actions) %>"><% actions.each do |action| %><%= action %><% end %></div><% end %>
+  <% if announced? %><span data-slot="attachment-status" role="status" class="sr-only"><%= t("poetry.attachment.state.#{state}") %></span><% end %>
+<% end %>

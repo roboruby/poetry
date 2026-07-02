@@ -1,0 +1,23 @@
+<%# The poetry arm: "a chat transcript: a date divider, an assistant
+    message with an attachment and a quick reply, and a live 'thinking'
+    status". %>
+<%= poetry_message_group do %>
+  <%= poetry_marker(variant: :separator) { "Yesterday" } %>
+  <%= poetry_message do |message| %>
+    <% message.with_header { "Assistant" } %>
+    <%= poetry_bubble_group do %>
+      <%= poetry_bubble { "Here's the report you asked for." } %>
+      <%= poetry_attachment do |attachment| %>
+        <% attachment.with_media { poetry_icon(name: :file) } %>
+        <% attachment.with_title { "quarterly-report.pdf" } %>
+        <% attachment.with_description { "1.2 MB" } %>
+        <% attachment.with_action(label: "Download") { poetry_icon(name: :download) } %>
+      <% end %>
+      <%= poetry_bubble(variant: :outline, tag: :button) { "Summarize it" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_marker(announce: :status) do |marker| %>
+    <% marker.with_icon(name: :sparkles) %>
+    Assistant is thinking…
+  <% end %>
+<% end %>

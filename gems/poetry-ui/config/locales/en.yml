@@ -4,3 +4,8 @@ en:
       loading: "Loading…"
     dialog:
       close: "Close"
+    attachment:
+      state:
+        uploading: "Uploading attachment"
+        processing: "Processing attachment"
+        error: "Attachment failed"

@@ -1,0 +1,8 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% if avatar? %><div data-slot="message-avatar" class="<%= css(:avatar) %>"><%= avatar %></div><% end %>
+  <div data-slot="message-content" class="<%= css(:content) %>">
+    <% if header? %><div data-slot="message-header" class="<%= css(:header) %>"><%= header %></div><% end %>
+    <%= content %>
+    <% if footer? %><div data-slot="message-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
+  </div>
+<% end %>

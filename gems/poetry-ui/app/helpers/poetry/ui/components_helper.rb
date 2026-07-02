@@ -51,6 +51,45 @@ module Poetry
       def poetry_field(**, &)
         render(Poetry::Ui::Field::Component.new(**), &)
       end
+
+      def poetry_bubble(**, &)
+        render(Poetry::Ui::Bubble::Component.new(**), &)
+      end
+
+      # A styled wrapper stacking one sender's consecutive bubbles - a
+      # dictionary element, not a component (see Bubble).
+      def poetry_bubble_group(**attrs, &)
+        poetry_chat_group(Poetry::Ui::Bubble::Style, "bubble-group", **attrs, &)
+      end
+
+      def poetry_message(**, &)
+        render(Poetry::Ui::Message::Component.new(**), &)
+      end
+
+      def poetry_message_group(**attrs, &)
+        poetry_chat_group(Poetry::Ui::Message::Style, "message-group", **attrs, &)
+      end
+
+      def poetry_marker(**, &)
+        render(Poetry::Ui::Marker::Component.new(**), &)
+      end
+
+      def poetry_attachment(**, &)
+        render(Poetry::Ui::Attachment::Component.new(**), &)
+      end
+
+      # The horizontally-scrolling attachment rail (scroll-fade + snap).
+      def poetry_attachment_group(**attrs, &)
+        poetry_chat_group(Poetry::Ui::Attachment::Style, "attachment-group", **attrs, &)
+      end
+
+      private
+
+      # The chat-set group wrappers are dictionary ELEMENTS, not components.
+      def poetry_chat_group(style, slot, **attrs, &)
+        classes = [style.css(slot.tr("-", "_").split("_").last.to_sym), attrs.delete(:class)].compact.join(" ")
+        tag.div(**attrs.merge(class: classes, "data-slot" => slot), &)
+      end
     end
   end
 end
