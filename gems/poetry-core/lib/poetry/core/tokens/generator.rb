@@ -55,7 +55,16 @@ module Poetry
         end
 
         def tailwind_theme_css
-          lines = ["/* #{HEADER} */", "", "@theme inline {"]
+          lines = ["/* #{HEADER} */", ""]
+          #: poetry dark mode is the.dark CLASS convention. Without
+          # re-mapping Tailwind's dark: variant (whose default is the
+          # prefers-color-scheme media query), a dark-OS user in a light
+          # app gets dark: utilities firing while the .dark tokens do not -
+          # the split-brain the 2026-07-02 browser pass caught on the
+          # tinted Bubble. Travels with the theme mapping.
+          lines << "@custom-variant dark (&:where(.dark, .dark *));"
+          lines << ""
+          lines << "@theme inline {"
           RADIUS_SCALE.each { |step, value| lines << "  --radius-#{step}: #{value};" }
           @tokens.color_names("light").each do |name|
             lines << "  --color-#{name}: var(--#{name});"
