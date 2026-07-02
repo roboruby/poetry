@@ -1,6 +1,7 @@
 <%# The poetry arm: "a chat transcript: a date divider, an assistant
     message with an attachment and a quick reply, and a live 'thinking'
     status". %>
+<%= poetry_message_scroller(id: "eval-chat", class: "h-96") do %>
 <%= poetry_message_group do %>
   <%= poetry_marker(variant: :separator) { "Yesterday" } %>
   <%= poetry_message do |message| %>
@@ -20,4 +21,5 @@
     <% marker.with_icon(name: :sparkles) %>
     Assistant is thinking…
   <% end %>
+<% end %>
 <% end %>

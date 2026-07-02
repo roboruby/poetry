@@ -1,0 +1,15 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <div <%= tag.attributes(viewport_attributes) %>>
+    <div <%= tag.attributes(content_attributes) %>>
+      <%= content %>
+      <div <%= tag.attributes(spacer_attributes) %>></div>
+    </div>
+  </div>
+  <% if jump_button %>
+    <%= render Poetry::Ui::Button::Component.new(variant: :secondary, size: :"icon-sm",
+                                                 label: t("poetry.message_scroller.scroll_to_end"),
+                                                 **button_attributes) do %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :"arrow-down") %>
+    <% end %>
+  <% end %>
+<% end %>

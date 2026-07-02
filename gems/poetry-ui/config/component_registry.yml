@@ -461,3 +461,43 @@ components:
       in the header.
     - Timestamps and delivery state belong in the footer slot (it lifts the avatar
       automatically).
+  poetry/ui/message_scroller:
+    class_name: Poetry::Ui::MessageScroller::Component
+    identifier: poetry--ui--message_scroller
+    bem_block: poetry-ui-message_scroller
+    styles: []
+    options:
+    - name: auto_scroll
+      type: boolean
+      default: true
+    - name: default_scroll_position
+      type: symbol
+      default: end
+    - name: id
+      type: string
+      required: true
+    - name: jump_button
+      type: boolean
+      default: true
+    - name: preserve_scroll_on_prepend
+      type: boolean
+      default: true
+    - name: track_visibility
+      type: boolean
+      default: false
+    slots: []
+    elements:
+    - viewport
+    - content
+    - item
+    - button
+    capsule: f625c06ba66b
+    agent_rules:
+    - Stream by UPDATING a row's text (morph/replace) - appending nodes per token
+      re-announces the row to AT.
+    - 'Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring
+      and Streams find them.'
+    - Append new turns with a Turbo Stream targeting the content element's dom id.
+    - History loads PREPEND into the content element - the controller preserves the
+      reading position.
+    - Never nest a second scroll container inside the viewport.

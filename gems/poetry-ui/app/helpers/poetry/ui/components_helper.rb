@@ -83,6 +83,19 @@ module Poetry
         poetry_chat_group(Poetry::Ui::Attachment::Style, "attachment-group", **attrs, &)
       end
 
+      def poetry_message_scroller(**, &)
+        render(Poetry::Ui::MessageScroller::Component.new(**), &)
+      end
+
+      # One transcript row - the id is how anchoring and Turbo Streams
+      # find it (data-message-id; anchor: pins the reading position).
+      def poetry_message_scroller_item(id:, anchor: false, **attrs, &)
+        classes = [Poetry::Ui::MessageScroller::Style.css(:item), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "message-scroller-item", "message-id": id }
+        data[:"scroll-anchor"] = "true" if anchor
+        tag.div(**attrs.merge(class: classes, data: data), &)
+      end
+
       private
 
       # The chat-set group wrappers are dictionary ELEMENTS, not components.
