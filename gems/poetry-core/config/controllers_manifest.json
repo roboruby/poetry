@@ -19,6 +19,58 @@
       "unlockScroll"
     ]
   },
+  "poetry--core--message-scroller": {
+    "targets": [
+      "button",
+      "content",
+      "spacer",
+      "viewport"
+    ],
+    "values": {
+      "autoScroll": {
+        "type": "Boolean",
+        "default": false
+      },
+      "defaultScrollPosition": {
+        "type": "String",
+        "default": "end"
+      },
+      "preserveScrollOnPrepend": {
+        "type": "Boolean",
+        "default": true
+      },
+      "trackVisibility": {
+        "type": "Boolean",
+        "default": false
+      },
+      "scrollEdgeThreshold": {
+        "type": "Number",
+        "default": 8
+      },
+      "scrollPreviousItemPeek": {
+        "type": "Number",
+        "default": 64
+      },
+      "scrollMargin": {
+        "type": "Number",
+        "default": 0
+      }
+    },
+    "classes": [],
+    "methods": [
+      "autoScrollValueChanged",
+      "connect",
+      "defaultScrollPositionValueChanged",
+      "disconnect",
+      "jump",
+      "keydownIntent",
+      "scrollToEnd",
+      "scrollToMessage",
+      "scrollToStart",
+      "syncAfterScroll",
+      "userScrollIntent"
+    ]
+  },
   "poetry--core--state": {
     "targets": [],
     "values": {

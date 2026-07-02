@@ -5,19 +5,23 @@
 
 import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
+import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
+export { default as MessageScrollerController } from "@poetry/controllers/message_scroller_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
 export * from "@poetry/controllers/helpers/tabbable"
 export * from "@poetry/controllers/helpers/escape"
+export * from "@poetry/controllers/helpers/scroller_geometry"
 
 // identifier -> controller class, for every sidecar controller poetry ships.
 export const controllers = {
   "poetry--core--state": StateController,
-  "poetry--core--dialog": DialogController
+  "poetry--core--dialog": DialogController,
+  "poetry--core--message-scroller": MessageScrollerController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the
