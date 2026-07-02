@@ -16,12 +16,17 @@ module Poetry
           "Destructive confirmations pair a destructive Button in the footer - never auto-submit."
         ].freeze
 
+        # The controller identifier, declared ONCE - every data attribute
+        # derives from it through the Stimulus Builder, validated against
+        # the controllers manifest (no hand-written wiring strings).
+        CONTROLLER = %i[poetry core dialog].freeze
+
         option :dismissible, :boolean, default: true
 
         # The trigger is a poetry Button wired to open the dialog - agents
         # pass Button props: with_trigger(variant: :outline) { "Open" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: "poetry--core--dialog#open" }.merge(options[:data] || {})
+          options[:data] = { action: stimulus.action(:open) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
         renders_one :title
@@ -42,11 +47,12 @@ module Poetry
 
         def root_attributes
           html_attributes.merge_if_not_set(
-            {
-              "data-slot" => "dialog",
-              "data-controller" => "poetry--core--dialog",
-              "data-poetry--core--dialog-dismissible-value" => dismissible
-            }.merge(component_data_attributes)
+            { "data-slot" => "dialog" }
+              .merge(stimulus_attributes do |dialog|
+                dialog.register_controller
+                dialog.with_value(:dismissible, dismissible)
+              end)
+              .merge(component_data_attributes)
           )
         end
 
@@ -55,15 +61,36 @@ module Poetry
             "class" => css(:content),
             "data-slot" => "dialog-content",
             "data-state" => "closed",
-            "data-poetry--core--dialog-target" => "dialog",
-            "data-action" => "cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose",
             "aria-labelledby" => title_id
-          }
+          }.merge(stimulus_attributes do |dialog|
+            dialog.with_target(:dialog)
+            dialog.with_action(:close, on: :cancel)
+            dialog.with_action(:backdrop_close, on: :click)
+          end)
           attrs["aria-describedby"] = description_id if description?
           attrs
         end
 
+        # Validated action descriptor for the template's close button.
+        def close_action
+          stimulus.action(:close)
+        end
+
         private
+
+        # A manifest-validated Builder for descriptor strings (pure - never
+        # touches the component's own html_attributes).
+        def stimulus
+          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
+        end
+
+        # Builds one element's Stimulus attributes through the Builder so
+        # every target / value / action name is manifest-validated.
+        def stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          attrs.to_attributes
+        end
 
         # Server-stable unique id for the aria wiring (two dialogs on one
         # page must not share label ids).
