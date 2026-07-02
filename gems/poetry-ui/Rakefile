@@ -6,10 +6,14 @@ require "minitest/test_task"
 Minitest::TestTask.create do |t|
   # test_helper loads SimpleCov before minitest/autorun (see poetry-core).
   t.framework = %(require "test_helper")
+  # The dommy tier (test/dommy_tier) has its own helper and task
+  # (test:dommy, rakelib/dommy.rake) - kept out of the unit globs so the
+  # default gate doesn't run it twice.
+  t.test_globs = ["test/{components,generators,poetry}/**/*_test.rb"]
 end
 
 require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[test rubocop registry:verify css:template_classes:verify css:verify_compiled]
+task default: %i[test test:dommy rubocop registry:verify css:template_classes:verify css:verify_compiled]
