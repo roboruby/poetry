@@ -1,0 +1,11 @@
+/* poetry-owned component var aliases (hand-authored, NOT generated).
+   The menus-family popper aliases (DropdownMenu
+   install_actions): shadcn's source-exact class strings reference
+   Radix-namespaced content vars; poetry--core--popper ships the generic
+   --radix-popper-* names - these aliases bind them so class strings stay
+   source-exact (the same pattern serves Select/Popover later). */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"] {
+  --radix-dropdown-menu-content-available-height: var(--radix-popper-available-height);
+  --radix-dropdown-menu-content-transform-origin: var(--radix-popper-transform-origin);
+}
