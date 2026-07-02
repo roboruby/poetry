@@ -120,7 +120,10 @@ components:
     identifier: poetry--ui--card
     bem_block: poetry-ui-card
     styles: []
-    options: []
+    options:
+    - name: title_tag
+      type: symbol
+      default: h3
     slots:
     - name: title
       many: false
@@ -142,6 +145,8 @@ components:
     - Compose with the slots (title/description/action/footer) - never rebuild the
       header grid by hand.
     - The card body is the content block; use CardAction for the header-corner control.
+    - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
+      page outline.'
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog

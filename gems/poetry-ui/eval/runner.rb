@@ -5,18 +5,19 @@ require "nokogiri"
 
 module Poetry
   module Eval
-    # The thinnest eval slice: renders each arm of a
-    # Button-scoped task and runs the gate array, emitting the first
-    # scorecard. This validates the HARNESS - arms render, gates run, the
-    # scorecard emits - not the thesis; thesis-level receipts accrue from
-    # M6 as real components, the skill, and live generation land.
+    # The eval harness: five frozen task pairs covering the
+    # full 10-component catalog, each rendered per arm and scored by
+    # deterministic gates. Arms are FROZEN representative generations
+    # (realistic, never strawmen) so the eval runs without burning tokens
+    # (the hifumi lesson); thesis-level receipts accrue as the skill and
+    # live generation land.
     #
     # The scorer-portability rule (the A/B honesty split): CROSS_ARM gates
     # run identically on every arm and are the only comparable numbers;
     # POETRY_ONLY gates cannot structurally fail a non-poetry artifact and
     # are reported as diagnostics, never as comparisons.
     class Runner
-      TASK = "A destructive 'Delete account' button with a leading trash icon"
+      INTERACTIVE_TAGS = %w[button a].freeze
 
       Gate = Struct.new(:name, :scope, :check) do
         def run(doc, html)
@@ -24,23 +25,90 @@ module Poetry
         end
       end
 
-      CROSS_ARM = [
-        Gate.new(:renders, :cross_arm, ->(doc, _html) { doc.css("button, [role=button]").any? }),
-        Gate.new(:accessible_name, :cross_arm, lambda { |doc, _html|
-          control = doc.css("button, [role=button]").first
-          control && (control.text.strip.length.positive? || control["aria-label"].to_s.strip.length.positive?)
-        }),
-        Gate.new(:explicit_type, :cross_arm, lambda { |doc, _html|
-          types = %w[button submit reset]
-          doc.css("button").all? { |button| types.include?(button["type"]) }
-        }),
-        Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") }),
+      # Gates every arm of every task faces (checkable on ANY html).
+      UNIVERSAL = [
         Gate.new(:no_raw_colors, :cross_arm, lambda { |_doc, html|
           # The cheapest slop-detector rule: arbitrary color values
-          # bypass the theme. Checkable on ANY html, no Herb needed.
+          # bypass the theme.
           !html.match?(/\b(?:bg|text|border|ring|stroke|fill)-\[(?:#|rgb|hsl|oklch)/)
         })
       ].freeze
+
+      TASKS = {
+        "button" => {
+          "description" => "A destructive 'Delete account' button with a leading trash icon",
+          "gates" => [
+            Gate.new(:renders, :cross_arm, ->(doc, _html) { doc.css("button, [role=button]").any? }),
+            Gate.new(:accessible_name, :cross_arm, lambda { |doc, _html|
+              control = doc.css("button, [role=button]").first
+              control && (control.text.strip.length.positive? || control["aria-label"].to_s.strip.length.positive?)
+            }),
+            Gate.new(:explicit_type, :cross_arm, lambda { |doc, _html|
+              types = %w[button submit reset]
+              doc.css("button").all? { |button| types.include?(button["type"]) }
+            }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
+        "dialog" => {
+          "description" => "A settings dialog opened by a button, with a description and a confirm action",
+          "gates" => [
+            Gate.new(:modal_semantics, :cross_arm, ->(doc, _html) { doc.css("dialog, [role=dialog]").any? }),
+            Gate.new(:labelled_overlay, :cross_arm, lambda { |doc, _html|
+              overlay = doc.css("dialog, [role=dialog]").first
+              !overlay.nil? && !(overlay["aria-labelledby"] || overlay["aria-label"]).nil?
+            }),
+            Gate.new(:trigger_present, :cross_arm, ->(doc, _html) { doc.css("button").any? }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
+        "form_field" => {
+          "description" => "An email field labeled 'Work email', required, with a hint and the error 'can't be blank'",
+          "gates" => [
+            Gate.new(:label_wired, :cross_arm, lambda { |doc, _html|
+              input = doc.css("input").first
+              !input.nil? && (doc.css(%(label[for="#{input["id"]}"])).any? || !input["aria-label"].nil?)
+            }),
+            Gate.new(:error_associated, :cross_arm, lambda { |doc, _html|
+              input = doc.css("input").first
+              ids = input ? input["aria-describedby"].to_s.split : []
+              ids.any? && ids.all? { |id| doc.css(%([id="#{id}"])).any? }
+            }),
+            Gate.new(:invalid_marked, :cross_arm, ->(doc, _html) { doc.css(%(input[aria-invalid="true"])).any? }),
+            Gate.new(:required_signalled, :cross_arm, lambda { |doc, _html|
+              doc.css("input[required], input[aria-required=true]").any?
+            })
+          ]
+        },
+        "alert" => {
+          "description" => "A destructive alert 'Payment failed' with a description and a warning icon",
+          "gates" => [
+            Gate.new(:assertive_announcement, :cross_arm, lambda { |doc, _html|
+              doc.css(%([role="alert"], [aria-live="assertive"])).any?
+            }),
+            Gate.new(:icon_decorative, :cross_arm, lambda { |doc, _html|
+              doc.css("svg").all? { |svg| svg["aria-hidden"] == "true" }
+            }),
+            Gate.new(:title_and_body, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Payment failed") && doc.text.include?("declined")
+            })
+          ]
+        },
+        "card" => {
+          "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
+          "gates" => [
+            Gate.new(:heading_semantics, :cross_arm, ->(doc, _html) { doc.css("h1,h2,h3,h4,h5,h6").any? }),
+            Gate.new(:real_link, :cross_arm, lambda { |doc, _html|
+              doc.css("a").any? && doc.css("a").all? { |a| a["href"].to_s.strip.length.positive? }
+            }),
+            Gate.new(:badge_not_interactive, :cross_arm, lambda { |doc, _html|
+              badge = doc.xpath(".//*[normalize-space(text())='beta']").first
+              !badge.nil? && !INTERACTIVE_TAGS.include?(badge.name) &&
+                badge.ancestors.none? { |node| INTERACTIVE_TAGS.include?(node.name) }
+            })
+          ]
+        }
+      }.freeze
 
       POETRY_ONLY = [
         Gate.new(:stayed_in_system, :poetry_only, lambda { |doc, _html|
@@ -54,20 +122,24 @@ module Poetry
         })
       ].freeze
 
-      def arms
-        Dir.glob(Poetry::Ui.root.join("eval/arms/*.html.erb")).to_h do |path|
+      def arms(task)
+        Dir.glob(Poetry::Ui.root.join("eval/arms/#{task}/*.html.erb")).to_h do |path|
           [File.basename(path, ".html.erb"), File.read(path)]
         end
       end
 
       def scorecard
-        results = arms.to_h { |name, erb| [name, score_arm(name, erb)] }
+        exercised = []
+        tasks = TASKS.to_h do |task, spec|
+          results = arms(task).to_h { |arm, erb| [arm, score_arm(task, arm, erb, exercised)] }
+          [task, { "description" => spec["description"], "arms" => results }]
+        end
         {
-          "task" => TASK,
-          "generated_note" => "M3.5 plumbing slice: frozen arms, deterministic gates. " \
-                              "cross_arm gates are the only comparable numbers; " \
-                              "poetry_only gates are diagnostics (they cannot fail a non-poetry arm).",
-          "arms" => results
+          "generated_note" => "Frozen arms, deterministic gates. cross_arm gates are the only " \
+                              "comparable numbers; poetry_only gates are diagnostics (they cannot " \
+                              "fail a non-poetry arm).",
+          "tasks" => tasks,
+          "components_exercised" => exercised.uniq.sort
         }
       end
 
@@ -80,15 +152,19 @@ module Poetry
 
       private
 
-      def score_arm(name, erb)
+      def score_arm(task, arm, erb, exercised)
         html = render(erb)
         doc = Nokogiri::HTML5.fragment(html)
-        cross = CROSS_ARM.to_h { |gate| gate.run(doc, html) }
+        gates = TASKS.fetch(task)["gates"] + UNIVERSAL
+        cross = gates.to_h { |gate| gate.run(doc, html) }
         result = {
           "cross_arm" => cross,
           "cross_arm_score" => "#{cross.values.count(true)}/#{cross.size}"
         }
-        result["poetry_only_diagnostics"] = POETRY_ONLY.to_h { |gate| gate.run(doc, html) } if name.include?("poetry")
+        if arm.include?("poetry")
+          result["poetry_only_diagnostics"] = POETRY_ONLY.to_h { |gate| gate.run(doc, html) }
+          exercised.concat(doc.css("[data-component]").map { |node| node["data-component"] })
+        end
         result
       end
 

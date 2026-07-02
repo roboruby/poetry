@@ -1,0 +1,6 @@
+<%# The poetry arm: "an email field labeled 'Work email', required, with
+    a hint and the error 'can't be blank'". %>
+<%= poetry_field(id: "work-email", label_text: "Work email", hint: "We never share it.",
+                 error: "can't be blank", required: true) do |field| %>
+  <%= poetry_input(type: "email", name: "work_email", **field.control_attributes.transform_keys(&:to_sym)) %>
+<% end %>

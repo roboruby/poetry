@@ -1,0 +1,11 @@
+<%# The raw-Tailwind arm for the same field task - realistic, not a
+    strawman: the label IS wired (agents usually get for/id right), but
+    the error text floats unassociated (no aria-describedby), the input
+    is not marked aria-invalid, and the hint is invisible to AT. %>
+<div class="space-y-1">
+  <label for="work-email" class="text-sm font-medium">Work email</label>
+  <input id="work-email" name="work_email" type="email" required
+         class="w-full rounded-md border border-red-500 px-3 py-2 text-sm" />
+  <p class="text-sm text-gray-500">We never share it.</p>
+  <p class="text-sm text-red-600">can't be blank</p>
+</div>

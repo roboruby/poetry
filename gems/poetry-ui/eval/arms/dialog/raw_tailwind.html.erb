@@ -1,0 +1,18 @@
+<%# The raw-Tailwind arm: a FROZEN, representative agent generation for
+    the same dialog task - deliberately realistic, not a strawman: a
+    plausible div-overlay modal that LOOKS right, with the typical raw
+    tells (no dialog semantics / aria-modal, an unlabelled overlay, no
+    focus-visible treatment, inline onclick wiring, no focus trap). %>
+<button class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50" onclick="document.getElementById('settings-modal').classList.remove('hidden')">
+  Settings
+</button>
+<div id="settings-modal" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('settings-modal').classList.add('hidden')"></div>
+  <div class="relative mx-auto mt-24 w-full max-w-lg rounded-lg bg-white p-6 shadow-lg">
+    <h2 class="text-lg font-semibold">Settings</h2>
+    <p class="mt-1 text-sm text-gray-500">Manage your workspace preferences.</p>
+    <div class="mt-4 flex justify-end">
+      <button class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white hover:bg-gray-800">Save changes</button>
+    </div>
+  </div>
+</div>

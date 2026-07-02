@@ -1,0 +1,11 @@
+<%# The poetry arm: "a plan card: title, description, a 'beta' badge,
+    body copy, and a 'Learn more' link". %>
+<%= poetry_card do |card| %>
+  <% card.with_title { "Team plan" } %>
+  <% card.with_description { "Everything in Starter, plus shared workspaces." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "beta" } %>
+  <% end %>
+  Invite unlimited collaborators and manage roles from one place.
+  <%= render Poetry::Ui::Link::Component.new(href: "/plans/team") { "Learn more" } %>
+<% end %>
