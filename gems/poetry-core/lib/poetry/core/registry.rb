@@ -30,6 +30,9 @@ module Poetry
         @components = (components || discover).sort_by(&:name)
       end
 
+      # The discovered component classes (the registry's working set).
+      attr_reader :components
+
       def entries
         @components.to_h { |component| [component.component_path, entry_for(component)] }
       end

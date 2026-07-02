@@ -21,6 +21,7 @@
     "vitest": "^3.0.0"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
   }
 }

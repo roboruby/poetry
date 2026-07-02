@@ -141,7 +141,7 @@ module Poetry
         class NamespacedComponent < Poetry::Core::Component
           include Poetry::Core::Concerns::Stimulus
 
-          stimulated_with [:poetry, :dropdown] do |controller|
+          stimulated_with [:acme, :dropdown] do |controller|
             controller.with_value(:open, false)
           end
 
@@ -297,7 +297,7 @@ module Poetry
         end
 
         def test_stimulated_with_handles_array_identifier
-          assert NamespacedComponent.stimulus_controllers.key?("poetry--dropdown")
+          assert NamespacedComponent.stimulus_controllers.key?("acme--dropdown")
         end
 
         def test_stimulated_with_defines_accessor_method
@@ -528,7 +528,7 @@ module Poetry
           component = NamespacedComponent.new
           result = render_inline(component)
 
-          assert_includes result.to_html, 'data-controller="poetry--dropdown"'
+          assert_includes result.to_html, 'data-controller="acme--dropdown"'
         end
 
         # Test inheritance - use named test classes

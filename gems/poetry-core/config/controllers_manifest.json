@@ -1,0 +1,38 @@
+{
+  "poetry--core--dialog": {
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "dismissible": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "backdropClose",
+      "close",
+      "disconnect",
+      "lockScroll",
+      "open",
+      "unlockScroll"
+    ]
+  },
+  "poetry--core--state": {
+    "targets": [],
+    "values": {
+      "state": {
+        "type": "String",
+        "default": "closed"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "connect",
+      "open",
+      "toggle"
+    ]
+  }
+}

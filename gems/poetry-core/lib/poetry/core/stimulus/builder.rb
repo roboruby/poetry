@@ -71,6 +71,9 @@ module Poetry
         #   )
         def initialize(identifier, html_attributes, options = {})
           @identifier = format_identifier identifier
+          # nil for host-app controllers; poetry-namespaced identifiers are
+          # validated against the committed controllers manifest.
+          @definition = Manifest.definition(@identifier)
           @html_attributes = html_attributes
           register_values options[:values]
           register_classes options[:classes]
@@ -113,7 +116,28 @@ module Poetry
         #   builder.with_value(:open, false)
         #   # Adds: data-dropdown-open-value="false"
         def with_value(name, value)
+          validate! camelize(name), @definition&.fetch("values", {})&.keys, "value"
           html_attributes.merge_stimulus! key(name, :value) => value
+        end
+
+        # Adds a Stimulus target attribute to the HTML attributes
+        #
+        # @param name [String, Symbol] The target name (snake_case camelizes)
+        # @return [void]
+        #
+        # @example
+        #   builder.with_target(:dialog)
+        #   # Adds: data-dropdown-target="dialog"
+        def with_target(name)
+          html_attributes.merge_stimulus! target_attribute_name => target(name)
+        end
+
+        # Validates and returns the JS target name
+        #
+        # @param name [String, Symbol] The target name
+        # @return [String] The camelCase target name
+        def target(name)
+          camelize(name).tap { |js_name| validate! js_name, @definition&.fetch("targets", []), "target" }
         end
 
         # Adds a Stimulus class reference to the HTML attributes
@@ -216,7 +240,9 @@ module Poetry
         #   builder.action(:show, on: [:mouseenter, :focus])
         #   # => "mouseenter->dropdown#show focus->dropdown#show"
         def action(method, on: nil, at: nil)
-          controller_method = "#{identifier}##{method}"
+          js_method = camelize(method)
+          validate! js_method, @definition&.fetch("methods", []), "action method"
+          controller_method = "#{identifier}##{js_method}"
 
           if on.nil?
             controller_method
@@ -227,7 +253,7 @@ module Poetry
               if event.nil?
                 actions << controller_method
               else
-                event = "#{event}@#{event}" if at.present?
+                event = "#{event}@#{at}" if at.present?
                 actions << "#{event}->#{controller_method}"
               end
             end
@@ -255,6 +281,21 @@ module Poetry
         private
 
         delegate :format_identifier, to: :class
+
+        # Ruby snake_case -> Stimulus camelCase (the JS-side name).
+        def camelize(name)
+          name.to_s.gsub(/_([a-z\d])/) { Regexp.last_match(1).upcase }
+        end
+
+        # No-op for host-app controllers (no definition); raises with the
+        # known list for poetry controllers - the message IS the fix
+        # (agent-teachable failures).
+        def validate!(js_name, known, kind)
+          return if known.nil? || known.include?(js_name)
+
+          raise Manifest::UnknownName,
+                "unknown #{kind} #{js_name.inspect} for #{identifier} - known #{kind}s: #{known.sort.join(", ")}"
+        end
 
         # Builds an attribute key from parts
         #
