@@ -49,6 +49,9 @@ module Poetry
           html = render_accordion
 
           assert_includes html, "data-poetry-collection-item"
+          # The browser pass caught this missing: the roving keydown action
+          # must be WIRED by the consumer - registration alone is deaf.
+          assert_includes html, "keydown->poetry--core--roving-focus#keydown"
           assert_includes html, 'data-action="click->poetry--core--accordion#toggle"'
         end
 

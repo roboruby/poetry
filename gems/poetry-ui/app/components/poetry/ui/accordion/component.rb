@@ -107,6 +107,7 @@ module Poetry
           roving.register_controller
           roving.with_value(:orientation, "vertical")
           roving.with_value(:manage_tabindex, false)
+          roving.with_action(:keydown, on: :keydown)
           attrs.to_attributes
         end
 
