@@ -4,8 +4,10 @@ require "pathname"
 require "zeitwerk"
 require "active_support/concern"
 require "active_model/type/symbol"
+require "active_model/type/list"
 
 ActiveModel::Type.register(:symbol, ActiveModel::Type::Symbol)
+ActiveModel::Type.register(:list, ActiveModel::Type::List)
 
 require "view_component"
 require "tailwind_merge"
