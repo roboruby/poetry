@@ -28,6 +28,7 @@ module Poetry
       %(@import "./poetry/theme.css";),
       %(@import "./poetry/animate.css";),
       %(@import "./poetry/utilities.css";),
+      %(@import "./poetry/aliases.css";),
       %(@import "./poetry/base.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
@@ -63,6 +64,8 @@ module Poetry
       # the chat-set keyframes), vendored verbatim at a pinned SHA (N1).
       create_file "app/assets/tailwind/poetry/utilities.css",
                   Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css").read, force: true
+      create_file "app/assets/tailwind/poetry/aliases.css",
+                  Poetry::Core.root.join("tokens/aliases.css").read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
     end
 

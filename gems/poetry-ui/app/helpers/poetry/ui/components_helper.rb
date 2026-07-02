@@ -104,6 +104,10 @@ module Poetry
         render(Poetry::Ui::Accordion::Component.new(**), &)
       end
 
+      def poetry_dropdown_menu(**, &)
+        render(Poetry::Ui::DropdownMenu::Component.new(**), &)
+      end
+
       private
 
       # The chat-set group wrappers are dictionary ELEMENTS, not components.

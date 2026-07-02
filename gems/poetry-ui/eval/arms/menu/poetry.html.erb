@@ -1,0 +1,12 @@
+<%# The poetry arm: "a row-actions dropdown menu behind an 'Options'
+    button - account items, a checkbox preference, a destructive tail". %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Options" } %>
+  <% menu.with_label { "My Account" } %>
+  <% menu.with_item(shortcut: "⇧⌘P") { "Profile" } %>
+  <% menu.with_item { "Billing" } %>
+  <% menu.with_separator %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Email notifications" } %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive) { "Delete project" } %>
+<% end %>

@@ -17,6 +17,7 @@ module Poetry
       assert_file "app/assets/tailwind/poetry/tokens.css", /--background: oklch\(1 0 0\)/
       assert_file "app/assets/tailwind/poetry/theme.css", /@theme inline/
       assert_file "app/assets/tailwind/poetry/animate.css", /--animate-in/
+      assert_file "app/assets/tailwind/poetry/aliases.css", /--radix-dropdown-menu-content-transform-origin/
       assert_file "app/assets/tailwind/poetry/base.css", /background-color: var\(--background\)/
       # NOTE: the cold-boot half (Style.descendants empty until eager_load!)
       # can't be reproduced here - this suite has already loaded every

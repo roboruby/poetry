@@ -334,6 +334,79 @@ components:
     - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
       stop closing).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
+  poetry/ui/dropdown_menu:
+    class_name: Poetry::Ui::DropdownMenu::Component
+    identifier: poetry--ui--dropdown_menu
+    bem_block: poetry-ui-dropdown_menu
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: center
+    - name: align_offset
+      type: integer
+      default: 0
+    - name: avoid_collisions
+      type: boolean
+      default: true
+    - name: dir
+      type: symbol
+    - name: disabled
+      type: boolean
+      default: false
+    - name: loop
+      type: boolean
+      default: false
+    - name: modal
+      type: boolean
+      default: true
+    - name: open
+      type: boolean
+      default: false
+    - name: side
+      type: symbol
+      default: bottom
+    - name: side_offset
+      type: integer
+      default: 4
+    slots:
+    - name: items
+      many: true
+    - name: trigger
+      many: false
+    elements:
+    - content
+    - item
+    - checkbox_item
+    - radio_item
+    - label
+    - separator
+    - shortcut
+    - sub_trigger
+    - sub_content
+    - item_indicator
+    - item_indicator_state
+    - indicator_check
+    - indicator_circle
+    - sub_indicator
+    capsule: 50291ddc0945
+    agent_rules:
+    - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
+    - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
+      it with radio items.
+    - 'Icon-only triggers MUST have an accessible name (the composed Button''s label:
+      rule).'
+    - Never write data-state without its aria twin (aria-expanded / aria-checked)
+      - the controller writes both; agents patching DOM must too.
+    - 'Destructive items use variant: :destructive AND still confirm irreversible
+      actions via a dialog.'
+    - 'shortcut: is a visual hint only - it does NOT bind the key; wire a real hotkey
+      separately or omit it.'
+    - Do not nest interactive elements inside items (a menuitem IS the interactive
+      unit).
+    - Keep submenus <= 2 levels; prefer grouping + separators over deep nesting.
+    - Critical actions must exist somewhere reachable without JS (menus are JS-required
+      interaction).
   poetry/ui/field:
     class_name: Poetry::Ui::Field::Component
     identifier: poetry--ui--field

@@ -134,6 +134,31 @@ module Poetry
             })
           ]
         },
+        "menu" => {
+          "description" => "A row-actions dropdown menu behind an 'Options' button: account items, " \
+                           "a checkbox preference, and a destructive delete",
+          "gates" => [
+            Gate.new(:trigger_is_a_real_button, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("button").any?
+            }),
+            Gate.new(:expansion_state_exposed, :cross_arm, lambda { |doc, _html|
+              doc.css(%([aria-haspopup="menu"])).any? && doc.css("[aria-expanded]").any?
+            }),
+            Gate.new(:menu_semantics, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=menu]").any? && doc.css("[role=menuitem]").size >= 2
+            }),
+            Gate.new(:menu_wired_to_trigger, :cross_arm, lambda { |doc, _html|
+              controls = doc.css("[aria-haspopup]").filter_map { |node| node["aria-controls"] }
+              controls.any? && controls.all? { |id| doc.css(%([id="#{id}"][role=menu])).any? }
+            }),
+            Gate.new(:toggle_state_accessible, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=menuitemcheckbox][aria-checked]").any?
+            }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Billing") && doc.text.include?("Delete project")
+            })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [

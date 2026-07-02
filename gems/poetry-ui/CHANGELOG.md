@@ -1,5 +1,18 @@
 ## [Unreleased]
 
+- DropdownMenu — the menus-family ANCHOR (DropdownMenu):
+  the full item union (item/checkbox/radio-group/label/separator/group/
+  recursive sub) as one ordered polymorphic slot collection, a typed
+  poetry-Button trigger owning the aria-haspopup/expanded/controls wiring,
+  and two Builder-wired hosts (root: poetry--core--menu + popper; content:
+  layer controllers token-ACTIVATED by the controller on open — never
+  server-rendered). Source-exact new-york-v4 classes; each sub is its own
+  popper instance (side flips under dir: :rtl); duplicate radio values
+  raise; shortcut is a visual, aria-hidden hint. Ships the `menu` eval
+  task pair, a dommy-tier behavior test (click/keyboard open, focus per
+  data-open-reason, select-close), and the popper var alias shim in
+  poetry-core's utilities layer binding the source-exact
+  --radix-dropdown-menu-content-* names to --radix-popper-*.
 - M3.5: the golden Button (the v2 contract reference component) + the
   minimal Icon (pulled forward from M5) - the first components, built
   entirely on poetry-core's public DSL (the dogfooding guarantee).

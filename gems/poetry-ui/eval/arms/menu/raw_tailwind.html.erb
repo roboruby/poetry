@@ -1,0 +1,24 @@
+<%# The raw-Tailwind arm for the same task - realistic: a plausible
+    dropdown with the classic tells (an onclick div toggle, no
+    aria-haspopup/expanded, styled divs instead of role=menu/menuitem,
+    the checkbox state is a bare glyph). %>
+<div class="relative inline-block text-left">
+  <div class="inline-flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
+       onclick="document.getElementById('menu-panel').classList.toggle('hidden')">
+    Options <span class="text-gray-400">⌄</span>
+  </div>
+  <div id="menu-panel" class="hidden absolute left-0 z-10 mt-2 w-56 rounded-md border bg-white p-1 shadow-lg">
+    <div class="px-2 py-1.5 text-sm font-medium">My Account</div>
+    <div class="flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-100">
+      Profile <span class="text-xs text-gray-400">⇧⌘P</span>
+    </div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100">Billing</div>
+    <div class="my-1 h-px bg-gray-200"></div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100"
+         onclick="this.querySelector('span').textContent = this.querySelector('span').textContent ? '' : '✓'">
+      <span>✓</span> Email notifications
+    </div>
+    <div class="my-1 h-px bg-gray-200"></div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm text-red-600 hover:bg-red-50">Delete project</div>
+  </div>
+</div>
