@@ -1,4 +1,22 @@
 {
+  "poetry--core--accordion": {
+    "targets": [],
+    "values": {
+      "type": {
+        "type": "String",
+        "default": "single"
+      },
+      "collapsible": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "toggle"
+    ]
+  },
   "poetry--core--dialog": {
     "targets": [
       "dialog"
