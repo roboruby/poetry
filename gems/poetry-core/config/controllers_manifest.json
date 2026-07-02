@@ -127,7 +127,10 @@
     ]
   },
   "poetry--core--state": {
-    "targets": [],
+    "targets": [
+      "content",
+      "trigger"
+    ],
     "values": {
       "state": {
         "type": "String",
@@ -138,6 +141,7 @@
     "methods": [
       "close",
       "connect",
+      "disconnect",
       "open",
       "toggle"
     ]
