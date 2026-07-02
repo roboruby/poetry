@@ -69,6 +69,47 @@
       "disconnect"
     ]
   },
+  "poetry--core--menu": {
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false
+      },
+      "typeaheadTimeout": {
+        "type": "Number",
+        "default": 1000
+      },
+      "closeOnSelect": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "close",
+      "closeSub",
+      "connect",
+      "disconnect",
+      "keydown",
+      "open",
+      "openSub",
+      "openValueChanged",
+      "subEnter",
+      "subLeave",
+      "toggle",
+      "triggerKeydown"
+    ]
+  },
   "poetry--core--message-scroller": {
     "targets": [
       "button",

@@ -42,6 +42,8 @@ export default class RovingFocusController extends Controller {
 
   // Action: keydown->poetry--core--roving-focus#keydown on the group root.
   keydown(event) {
+    if (event.defaultPrevented) return // a nested group (an open menu level) already moved focus
+
     const items = this.#items()
 
     if (items.length === 0) return
@@ -54,8 +56,22 @@ export default class RovingFocusController extends Controller {
     this.#focusItem(items[nextIndex], items)
   }
 
+  // The group's OWN items only: a hidden subtree (a closed submenu level) is
+  // not navigable, data-disabled items are filtered at query time (the menu
+  // contract), and an item claimed by a DESCENDANT roving group (an open
+  // submenu's content) roves there, not here - nested groups self-scope
+  // without any registration bookkeeping (the DOM is the registry).
   #items() {
-    return collectionItems(this.element)
+    return collectionItems(this.element).filter((item) => this.#owns(item))
+  }
+
+  #owns(item) {
+    if (item.closest("[hidden]")) return false
+    if (item.hasAttribute("data-disabled")) return false
+
+    const scope = item.parentElement?.closest(`[data-controller~="${this.identifier}"]`)
+
+    return !scope || scope === this.element
   }
 
   #indexFor(target, items) {
