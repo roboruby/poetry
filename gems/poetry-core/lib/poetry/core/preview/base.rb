@@ -168,7 +168,17 @@ module Poetry
         #   def default
         #     render_with(title: "Hello", message: "World")
         #   end
+        # Renders a NESTED component inside a slot/content block. Plain
+        # render() there resolves to the preview DSL's own render (a
+        # declaration returning a hash) and the nested component silently
+        # vanishes - button icons, card actions, dialog footer buttons were
+        # all missing from every preview until the N2 a11y rig caught it.
+        def embed(component, &block)
+          ApplicationController.new.view_context.render(component, &block)
+        end
+
         def render_with(**locals)
+
           render_with_template(locals: locals)
         end
 
