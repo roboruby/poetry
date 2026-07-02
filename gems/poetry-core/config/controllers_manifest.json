@@ -19,6 +19,38 @@
       "unlockScroll"
     ]
   },
+  "poetry--core--dismissable": {
+    "targets": [],
+    "values": {
+      "disableOutsidePointerEvents": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
+  },
+  "poetry--core--focus-scope": {
+    "targets": [],
+    "values": {
+      "trapped": {
+        "type": "Boolean",
+        "default": true
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
+  },
   "poetry--core--message-scroller": {
     "targets": [
       "button",
@@ -69,6 +101,29 @@
       "scrollToStart",
       "syncAfterScroll",
       "userScrollIntent"
+    ]
+  },
+  "poetry--core--roving-focus": {
+    "targets": [],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "vertical"
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": true
+      },
+      "manageTabindex": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown"
     ]
   },
   "poetry--core--state": {
