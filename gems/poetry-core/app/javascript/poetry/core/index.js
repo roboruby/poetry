@@ -10,6 +10,7 @@ import AccordionController from "@poetry/controllers/accordion_controller"
 import RovingFocusController from "@poetry/controllers/roving_focus_controller"
 import FocusScopeController from "@poetry/controllers/focus_scope_controller"
 import DismissableController from "@poetry/controllers/dismissable_controller"
+import PopperController from "@poetry/controllers/popper_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -18,6 +19,7 @@ export { default as AccordionController } from "@poetry/controllers/accordion_co
 export { default as RovingFocusController } from "@poetry/controllers/roving_focus_controller"
 export { default as FocusScopeController } from "@poetry/controllers/focus_scope_controller"
 export { default as DismissableController } from "@poetry/controllers/dismissable_controller"
+export { default as PopperController } from "@poetry/controllers/popper_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -35,7 +37,8 @@ export const controllers = {
   "poetry--core--accordion": AccordionController,
   "poetry--core--roving-focus": RovingFocusController,
   "poetry--core--focus-scope": FocusScopeController,
-  "poetry--core--dismissable": DismissableController
+  "poetry--core--dismissable": DismissableController,
+  "poetry--core--popper": PopperController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

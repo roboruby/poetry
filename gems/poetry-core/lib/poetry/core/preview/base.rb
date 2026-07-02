@@ -173,12 +173,11 @@ module Poetry
         # declaration returning a hash) and the nested component silently
         # vanishes - button icons, card actions, dialog footer buttons were
         # all missing from every preview until the N2 a11y rig caught it.
-        def embed(component, &block)
-          ApplicationController.new.view_context.render(component, &block)
+        def embed(component, &)
+          ApplicationController.new.view_context.render(component, &)
         end
 
         def render_with(**locals)
-
           render_with_template(locals: locals)
         end
 

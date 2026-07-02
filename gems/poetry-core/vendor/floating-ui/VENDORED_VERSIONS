@@ -1,0 +1,15 @@
+@floating-ui/dom 1.7.6 (dist/floating-ui.dom.mjs)
+@floating-ui/core 1.7.5 (dist/floating-ui.core.mjs)
+@floating-ui/utils 0.2.11 (dist/floating-ui.utils.mjs, dist/floating-ui.utils.dom.mjs)
+
+Vendored ESM dists live at app/javascript/poetry/core/vendor/floating_ui_*.js
+(so they ship over BOTH channels - the importmap pin_all_from and the npm
+package's exports map). Cross-package import specifiers are rewritten
+to "@poetry/controllers/vendor/floating_ui_*"; the code is otherwise byte-
+identical to the npm tarball dists. All three packages are MIT (identical
+LICENSE text, alongside).
+
+To update: download the new tarballs from registry.npmjs.org, take the same
+dist files, rewrite the "@floating-ui/*" specifiers (longest first, so
+"@floating-ui/utils/dom" is handled before "@floating-ui/utils"), refresh
+the banner comments and this file, and run npx vitest.

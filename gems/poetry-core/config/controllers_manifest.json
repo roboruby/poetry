@@ -121,6 +121,55 @@
       "userScrollIntent"
     ]
   },
+  "poetry--core--popper": {
+    "targets": [
+      "anchor",
+      "arrow",
+      "content"
+    ],
+    "values": {
+      "anchor": {
+        "type": "String",
+        "default": ""
+      },
+      "anchorPoint": {
+        "type": "String",
+        "default": ""
+      },
+      "side": {
+        "type": "String",
+        "default": "bottom"
+      },
+      "align": {
+        "type": "String",
+        "default": "center"
+      },
+      "sideOffset": {
+        "type": "Number",
+        "default": 0
+      },
+      "alignOffset": {
+        "type": "Number",
+        "default": 0
+      },
+      "avoidCollisions": {
+        "type": "Boolean",
+        "default": true
+      },
+      "strategy": {
+        "type": "String",
+        "default": "fixed"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "anchorPointValueChanged",
+      "connect",
+      "disconnect",
+      "reposition",
+      "setAnchor"
+    ]
+  },
   "poetry--core--roving-focus": {
     "targets": [],
     "values": {
