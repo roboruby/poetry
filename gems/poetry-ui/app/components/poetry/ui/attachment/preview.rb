@@ -48,7 +48,7 @@ module Poetry
         private
 
         def icon(name)
-          render(Icon::Component.new(name: name))
+          embed(Icon::Component.new(name: name))
         end
       end
     end

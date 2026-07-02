@@ -1,0 +1,5 @@
+<%# The Label preview pair: a label wired to a real control via for_id. %>
+<div class="p-4">
+  <%= render component.with_content("Full name") %>
+  <%= render Poetry::Ui::Input::Component.new(name: "full_name", id: "label-full-name") %>
+</div>

@@ -50,7 +50,7 @@ module Poetry
 
         def icon_only
           render_component(size: :icon, label: "Add item") do |component|
-            component.with_leading { render(Icon::Component.new(name: :plus)) }
+            component.with_leading { embed(Icon::Component.new(name: :plus)) }
           end
         end
 
@@ -72,7 +72,7 @@ module Poetry
 
         def with_icons
           render_component(variant: :destructive) do |component|
-            component.with_leading { render(Icon::Component.new(name: :trash)) }
+            component.with_leading { embed(Icon::Component.new(name: :trash)) }
             "Delete"
           end
         end

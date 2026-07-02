@@ -14,6 +14,36 @@ def poetry_ui_template_classes_text
   ([TEMPLATE_CLASSES_HEADER] + templates.classes).join("\n") << "\n"
 end
 
+# Compile the real Tailwind build a host's safelist produces: tokens +
+# theme + vendored animate/shadcn utilities, sourced from the Style
+# dictionaries plus the COMMITTED template classes. Shared by
+# css:verify_compiled (the drift gate) and browser:assets (the stylesheet
+# the real-browser preview pages load).
+def poetry_ui_compile_tailwind
+  require "tailwindcss/ruby"
+  require "tmpdir"
+
+  styles = Poetry::Core::Style.descendants.select(&:name)
+
+  Dir.mktmpdir("poetry-css") do |dir|
+    safelist = Poetry::Core::CSS::Safelist.new(style_classes: styles,
+                                               template_classes: Poetry::Ui.template_classes)
+    File.write(File.join(dir, "safelist.txt"), safelist.text)
+    File.write(File.join(dir, "entry.css"), <<~CSS)
+      @import "tailwindcss";
+      @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
+      @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
+      @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
+      @import "#{Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css")}";
+      @source "#{File.join(dir, "safelist.txt")}";
+    CSS
+    out = File.join(dir, "out.css")
+    system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,
+           exception: true, out: File::NULL, err: File::NULL)
+    File.read(out)
+  end
+end
+
 namespace :css do
   namespace :template_classes do
     desc "Regenerate config/template_classes.txt from the gem's templates (herb)"
@@ -40,30 +70,11 @@ namespace :css do
        "(Dialog shipped tw-animate-css classes nothing provided)"
   task :verify_compiled do
     poetry_ui_boot!
-    require "tailwindcss/ruby"
-    require "tmpdir"
 
+    # The COMMITTED template classes (drift-gated by template_classes:verify),
+    # so this build is byte-for-byte what a host's safelist produces.
+    compiled = poetry_ui_compile_tailwind
     styles = Poetry::Core::Style.descendants.select(&:name)
-
-    compiled = Dir.mktmpdir("poetry-css") do |dir|
-      # The COMMITTED template classes (drift-gated by template_classes:verify),
-      # so this build is byte-for-byte what a host's safelist produces.
-      safelist = Poetry::Core::CSS::Safelist.new(style_classes: styles,
-                                                 template_classes: Poetry::Ui.template_classes)
-      File.write(File.join(dir, "safelist.txt"), safelist.text)
-      File.write(File.join(dir, "entry.css"), <<~CSS)
-        @import "tailwindcss";
-        @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
-        @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
-        @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
-        @import "#{Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css")}";
-        @source "#{File.join(dir, "safelist.txt")}";
-      CSS
-      out = File.join(dir, "out.css")
-      system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,
-             exception: true, out: File::NULL, err: File::NULL)
-      File.read(out)
-    end
 
     verifier = Poetry::Core::CSS::Verifier.new(compiled_css: compiled)
     failures = styles.flat_map do |style|

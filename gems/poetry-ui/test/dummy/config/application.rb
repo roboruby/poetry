@@ -19,5 +19,17 @@ module Dummy
     config.eager_load = false
     config.logger = Logger.new(nil) # Suppress logs in tests
     config.active_support.test_order = :random
+
+    # The real-browser preview rig (rake test:accessibility / test:visual):
+    # every preview example is a page at /previews/<preview_name>/<example>,
+    # rendered by PreviewsController inside the component_preview layout
+    # (compiled Tailwind + poetry's Stimulus controllers via importmap).
+    config.view_component.previews.enabled = true
+    config.view_component.previews.route = "/previews"
+    config.view_component.previews.controller = "PreviewsController"
+    config.view_component.previews.default_layout = "component_preview"
+
+    # Serve the generated static assets (rake browser:assets) from public/.
+    config.public_file_server.enabled = true
   end
 end

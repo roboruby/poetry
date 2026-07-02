@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - "test/tmp/**/*" # generator-test destinations
     - "test/dummy/tmp/**/*"
+    - "test/dommy_tier/support/browser_harness.rb" # vendored from dommy-js-quickjs, kept byte-identical
     - "vendor/**/*"
   NewCops: enable
   SuggestExtensions: false

@@ -1,0 +1,9 @@
+<%# Shared template for every Field preview example: render the field with
+    a real Input wired through control_attributes - the canonical host
+    composition (see eval/arms/form_field/poetry.html.erb). %>
+<div class="p-4">
+  <%= render component do |field| %>
+    <%= render Poetry::Ui::Input::Component.new(**input_options,
+                                                **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

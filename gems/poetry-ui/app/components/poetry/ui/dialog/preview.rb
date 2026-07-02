@@ -10,7 +10,7 @@ module Poetry
             dialog.with_title { "Edit profile" }
             dialog.with_description { "Make changes and save when done." }
             dialog.with_footer do
-              render(Poetry::Ui::Button::Component.new.with_content("Save changes"))
+              embed(Poetry::Ui::Button::Component.new.with_content("Save changes"))
             end
             "Profile form goes here."
           end
@@ -22,7 +22,7 @@ module Poetry
             dialog.with_title { "Are you absolutely sure?" }
             dialog.with_description { "This permanently deletes your account and all data." }
             dialog.with_footer do
-              render(Poetry::Ui::Button::Component.new(variant: :destructive).with_content("Delete"))
+              embed(Poetry::Ui::Button::Component.new(variant: :destructive).with_content("Delete"))
             end
             ""
           end
