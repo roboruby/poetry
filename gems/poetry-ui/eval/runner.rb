@@ -115,6 +115,25 @@ module Poetry
             })
           ]
         },
+        "disclosure" => {
+          "description" => "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
+          "gates" => [
+            Gate.new(:triggers_are_real_buttons, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("button").size >= 3
+            }),
+            Gate.new(:expansion_state_exposed, :cross_arm, lambda { |doc, _html|
+              doc.css("[aria-expanded=true]").any? && doc.css("[aria-expanded=false]").any?
+            }),
+            Gate.new(:panels_wired, :cross_arm, lambda { |doc, _html|
+              controls = doc.css("[aria-controls]").map { |n| n["aria-controls"] }
+              controls.any? && controls.all? { |id| doc.css(%([id="#{id}"])).any? }
+            }),
+            Gate.new(:headings_present, :cross_arm, ->(doc, _html) { doc.css("h1,h2,h3,h4,h5,h6").any? }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Two business days") && doc.text.include?("Thirty days")
+            })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [

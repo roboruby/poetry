@@ -2,6 +2,45 @@
 # DO NOT EDIT: CI verifies this file matches a fresh build (rake registry:verify).
 ---
 components:
+  poetry/ui/accordion:
+    class_name: Poetry::Ui::Accordion::Component
+    identifier: poetry--ui--accordion
+    bem_block: poetry-ui-accordion
+    styles: []
+    options:
+    - name: collapsible
+      type: boolean
+      default: false
+    - name: heading_level
+      type: symbol
+      default: h3
+    - name: open
+      type: list
+      default: dynamic
+    - name: type
+      type: symbol
+      default: single
+    slots:
+    - name: items
+      many: true
+    elements:
+    - item
+    - header
+    - trigger
+    - indicator
+    - content
+    - inner
+    capsule: 8957749480d6
+    agent_rules:
+    - Items via with_item(value:, title:) { panel content } - value is the open-state
+      key.
+    - 'type: :single (default) opens one at a time; pass collapsible: true to allow
+      closing it.'
+    - 'Server-render the open item(s) via open: %w[value] - never toggle data-state
+      by hand.'
+    - 'heading_level: fits the page outline (h3 default) - the trigger button lives
+      inside it.'
+    - The chevron is built in - never add another indicator icon to the trigger.
   poetry/ui/alert:
     class_name: Poetry::Ui::Alert::Component
     identifier: poetry--ui--alert
@@ -243,6 +282,25 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+  poetry/ui/collapsible:
+    class_name: Poetry::Ui::Collapsible::Component
+    identifier: poetry--ui--collapsible
+    bem_block: poetry-ui-collapsible
+    styles: []
+    options:
+    - name: open
+      type: boolean
+      default: false
+    slots:
+    - name: trigger
+      many: false
+    agent_rules:
+    - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
+    - 'Server-render the initial state via open: - never toggle data-state by hand.'
+    - Content stays in the DOM when closed (hidden) - do not conditionally render
+      it.
+    - 'For URL-controlled disclosure without JS, render open: from params - the same
+      markup serves both.'
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog

@@ -1,0 +1,4 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:div, content, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) %>
+<% end %>

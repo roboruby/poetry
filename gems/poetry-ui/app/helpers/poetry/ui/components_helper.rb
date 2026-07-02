@@ -96,6 +96,14 @@ module Poetry
         tag.div(**attrs.merge(class: classes, data: data), &)
       end
 
+      def poetry_collapsible(**, &)
+        render(Poetry::Ui::Collapsible::Component.new(**), &)
+      end
+
+      def poetry_accordion(**, &)
+        render(Poetry::Ui::Accordion::Component.new(**), &)
+      end
+
       private
 
       # The chat-set group wrappers are dictionary ELEMENTS, not components.
