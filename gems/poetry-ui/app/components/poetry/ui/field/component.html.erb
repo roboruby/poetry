@@ -1,6 +1,10 @@
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
   <% if label_text.present? %>
-    <%= render Poetry::Ui::Label::Component.new(for_id: id).with_content(label_text) %>
+    <% if group %>
+      <%= render Poetry::Ui::Label::Component.new(for_id: nil, id: label_id).with_content(label_text) %>
+    <% else %>
+      <%= render Poetry::Ui::Label::Component.new(for_id: id).with_content(label_text) %>
+    <% end %>
   <% end %>
   <%= content %>
   <% if hint.present? %><p id="<%= hint_id %>" data-slot="field-hint" class="<%= css(:hint) %>"><%= hint %></p><% end %>

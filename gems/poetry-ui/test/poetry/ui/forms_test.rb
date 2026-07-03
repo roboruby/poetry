@@ -153,7 +153,14 @@ module Poetry
         inputs = fragment.css('input[type="radio"]')
 
         assert_equal "poetry_ui_forms_test_subscription_plan", root["id"], "the Field id lands on the root"
-        assert_equal "Plan", root["aria-label"]
+        # The group is named by the VISIBLE Field label (aria-labelledby) -
+        # for= would be inert on a div (Chrome flags it), and a duplicated
+        # aria-label string could drift from the rendered text.
+        group_label = fragment.css('label[data-slot="label"]').find { |label| label.text == "Plan" }
+
+        assert_equal group_label["id"], root["aria-labelledby"]
+        assert_nil group_label["for"], "no inert label[for] pointing at the group div"
+        assert_nil root["aria-label"]
         assert_equal "true", root["aria-required"], "presence validator -> aria-required (root, never native)"
         assert_includes root["aria-describedby"], "-hint"
         # collection_radio_buttons-identical serialization: shared derived

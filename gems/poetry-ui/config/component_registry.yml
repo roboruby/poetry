@@ -770,6 +770,9 @@ components:
     options:
     - name: error
       type: string
+    - name: group
+      type: boolean
+      default: false
     - name: hint
       type: string
     - name: id
@@ -946,7 +949,6 @@ components:
     options:
     - name: for_id
       type: string
-      required: true
     slots: []
     elements: []
     capsule: 0da43bf4aac4

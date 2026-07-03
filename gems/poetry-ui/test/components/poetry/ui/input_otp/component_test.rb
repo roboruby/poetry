@@ -37,7 +37,8 @@ module Poetry
           assert_equal "false", input["spellcheck"]
           assert_equal "off", input["autocapitalize"]
           assert_equal "off", input["autocorrect"]
-          assert_equal "input->poetry--core--otp#sync focus->poetry--core--otp#sync blur->poetry--core--otp#sync",
+          assert_equal "input->poetry--core--otp#sync focus->poetry--core--otp#sync " \
+                       "blur->poetry--core--otp#sync paste->poetry--core--otp#paste",
                        input["data-action"]
         end
 

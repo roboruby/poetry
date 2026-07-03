@@ -62,17 +62,16 @@ module Poetry
       # to collection_radio_buttons (one hidden native radio per item,
       # shared name; nothing submits when none is checked).
       def radio_group(method, collection, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, group: true)
         @template.render(field_component) do
           @template.render RadioGroup::Component.new(
             name: field_name(method),
             value: object.public_send(method).presence&.to_s,
             required: required?(method),
             invalid: field_component.invalid?,
-            # The group name doubles the visible Field label (aria-label -
-            # the Field's label element carries no id to point
-            # aria-labelledby at).
-            label: field_component.label_text,
+            # The group is named by the VISIBLE Field label via
+            # aria-labelledby (in group_control_attributes) - never a
+            # duplicated aria-label string that can drift from it.
             **group_control_attributes(field_component),
             **options.transform_keys(&:to_sym)
           ) do |group|
@@ -90,7 +89,7 @@ module Poetry
       # ["200", "800"] - Rails' own array convention). Field wraps for
       # hint/error; the describedby lands on each THUMB.
       def slider(method, range: false, hint: nil, **options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint, group: true)
         value = object.public_send(method)
         slider_options = {
           name: field_name(method),
@@ -98,6 +97,10 @@ module Poetry
           **group_control_attributes(field_component),
           **options.transform_keys(&:to_sym)
         }
+        # The thumbs carry their own names (label: - a range REQUIRES two
+        # distinct ones, which a group pointer would override); the Field
+        # label is visual-only here, so drop the group aria-labelledby.
+        slider_options.delete(:"aria-labelledby")
         describedby = slider_options.delete(:"aria-describedby")
         slider_options[:described_by] = describedby if describedby
         if range
@@ -244,16 +247,19 @@ module Poetry
       # component's own options (aria-invalid belongs on the ITEMS, not
       # the root).
       def group_control_attributes(field_component)
-        field_component.control_attributes.slice("id", "aria-describedby").transform_keys(&:to_sym)
+        field_component.control_attributes
+                       .slice("id", "aria-describedby", "aria-labelledby")
+                       .transform_keys(&:to_sym)
       end
 
-      def field_for(method, hint: nil)
+      def field_for(method, hint: nil, group: false)
         Field::Component.new(
           id: field_id(method),
           label_text: object.class.human_attribute_name(method),
           hint: hint,
           error: error_for(method),
-          required: required?(method)
+          required: required?(method),
+          group: group
         )
       end
 

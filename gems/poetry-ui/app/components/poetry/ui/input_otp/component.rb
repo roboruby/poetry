@@ -191,6 +191,9 @@ module Poetry
           stimulus_attributes do |otp|
             otp.with_target(:input)
             otp.with_action(:sync, on: %i[input focus blur])
+            # maxlength truncates RAW clipboard text before the input event
+            # - the controller filters the paste itself.
+            otp.with_action(:paste, on: :paste)
           end
         end
 

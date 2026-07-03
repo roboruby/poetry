@@ -21,9 +21,15 @@ module Poetry
         option :hint, :string
         option :error, :string
         option :required, :boolean, default: false
+        # group: the control is a role-bearing <div> (RadioGroup, Slider) -
+        # label[for] would be inert (Chrome flags it), so the label drops
+        # for=, carries label_id, and control_attributes names the group
+        # via aria-labelledby (the visible label, i18n-proof).
+        option :group, :boolean, default: false
 
         def hint_id = "#{id}-hint"
         def error_id = "#{id}-error"
+        def label_id = "#{id}-label"
 
         def invalid? = error.present?
 
@@ -31,6 +37,7 @@ module Poetry
         # the FormBuilder (or the caller) into the control's attributes.
         def control_attributes
           attrs = { "id" => id }
+          attrs["aria-labelledby"] = label_id if group && label_text.present?
           describedby = []
           describedby << error_id if invalid?
           describedby << hint_id if hint.present?
