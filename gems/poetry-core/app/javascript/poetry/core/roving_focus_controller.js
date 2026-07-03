@@ -17,7 +17,7 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 // roving tabindex the moment items enter or leave.
 export default class RovingFocusController extends Controller {
   static values = {
-    orientation: { type: String, default: "vertical" }, // horizontal | vertical
+    orientation: { type: String, default: "vertical" }, // horizontal | vertical | both
     loop: { type: Boolean, default: true },
     // false = focus-nav-only mode (the APG accordion contract): every
     // trigger stays tabbable and arrows are convenience navigation, not a
@@ -104,15 +104,24 @@ export default class RovingFocusController extends Controller {
   }
 
   // Orientation gates the axis; the cross-axis arrows fall through untouched
-  // (a vertical menu must not swallow Left/Right). RTL is read per keystroke
-  // from the closest [dir] ancestor, so a dir flip needs no reconnect.
+  // (a vertical menu must not swallow Left/Right). "both" activates all four
+  // arrows (the APG radio contract - Radix RadioGroup passes orientation
+  // undefined so RovingFocusGroup lives on both axes): Down/Right advance,
+  // Up/Left retreat, with ONLY the horizontal pair RTL-flipped. RTL is read
+  // per keystroke from the closest [dir] ancestor, so a dir flip needs no
+  // reconnect.
   #arrowDelta(key) {
-    if (this.orientationValue === "horizontal") {
+    const axis = this.orientationValue
+
+    if (axis !== "vertical" && (key === "ArrowRight" || key === "ArrowLeft")) {
       const rtl = directionOf(this.element) === "rtl"
 
       if (key === "ArrowRight") return rtl ? -1 : 1
-      if (key === "ArrowLeft") return rtl ? 1 : -1
-    } else {
+
+      return rtl ? 1 : -1
+    }
+
+    if (axis !== "horizontal") {
       if (key === "ArrowDown") return 1
       if (key === "ArrowUp") return -1
     }

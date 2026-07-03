@@ -17,6 +17,24 @@
       "toggle"
     ]
   },
+  "poetry--core--checked": {
+    "targets": [],
+    "values": {
+      "inputId": {
+        "type": "String",
+        "default": ""
+      }
+    },
+    "classes": [],
+    "methods": [
+      "check",
+      "connect",
+      "disconnect",
+      "set",
+      "toggle",
+      "uncheck"
+    ]
+  },
   "poetry--core--context-menu": {
     "targets": [],
     "values": {
@@ -235,6 +253,29 @@
       "userScrollIntent"
     ]
   },
+  "poetry--core--otp": {
+    "targets": [
+      "input",
+      "slot"
+    ],
+    "values": {
+      "length": {
+        "type": "Number",
+        "default": 6
+      },
+      "pattern": {
+        "type": "String",
+        "default": "\\d"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "focusInput",
+      "sync"
+    ]
+  },
   "poetry--core--popover": {
     "targets": [],
     "values": {
@@ -306,6 +347,36 @@
       "setAnchor"
     ]
   },
+  "poetry--core--pressed": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "press",
+      "set",
+      "toggle",
+      "unpress"
+    ]
+  },
+  "poetry--core--radio-group": {
+    "targets": [
+      "input"
+    ],
+    "values": {
+      "value": {
+        "type": "String",
+        "default": ""
+      }
+    },
+    "classes": [],
+    "methods": [
+      "check",
+      "connect",
+      "entryCheck",
+      "setValue",
+      "valueValueChanged"
+    ]
+  },
   "poetry--core--roving-focus": {
     "targets": [],
     "values": {
@@ -327,6 +398,96 @@
       "connect",
       "disconnect",
       "keydown"
+    ]
+  },
+  "poetry--core--select": {
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false
+      },
+      "value": {
+        "type": "String",
+        "default": ""
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false
+      },
+      "typeaheadTimeout": {
+        "type": "Number",
+        "default": 1000
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "commit",
+      "connect",
+      "disconnect",
+      "keydown",
+      "nativeChanged",
+      "open",
+      "openValueChanged",
+      "scrollHoldStart",
+      "scrollHoldStop",
+      "setValue",
+      "syncScrollButtons",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
+    ]
+  },
+  "poetry--core--slider": {
+    "targets": [
+      "input",
+      "range",
+      "thumb",
+      "track"
+    ],
+    "values": {
+      "min": {
+        "type": "Number",
+        "default": 0
+      },
+      "max": {
+        "type": "Number",
+        "default": 100
+      },
+      "step": {
+        "type": "Number",
+        "default": 1
+      },
+      "value": {
+        "type": "Array",
+        "default": []
+      },
+      "minStepsBetweenThumbs": {
+        "type": "Number",
+        "default": 0
+      },
+      "orientation": {
+        "type": "String",
+        "default": "horizontal"
+      },
+      "inverted": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "pointerdown",
+      "setValue",
+      "valueValueChanged"
     ]
   },
   "poetry--core--state": {
@@ -396,6 +557,21 @@
       "disconnect",
       "focusRegion",
       "reflow"
+    ]
+  },
+  "poetry--core--toggle-group": {
+    "targets": [],
+    "values": {
+      "type": {
+        "type": "String",
+        "default": "single"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "setValue",
+      "toggle"
     ]
   },
   "poetry--core--tooltip": {

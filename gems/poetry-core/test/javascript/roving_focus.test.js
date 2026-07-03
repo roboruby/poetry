@@ -186,4 +186,54 @@ describe("poetry--core--roving-focus", () => {
     expect(el("a").getAttribute("tabindex")).toBe("0")
     expect(el("c").getAttribute("tabindex")).toBe("-1")
   })
+
+  // The orientation: "both" extension (the APG radio contract, shipped with
+  // RadioGroup): all four arrows navigate - Down/Right next, Up/Left
+  // previous - with ONLY the horizontal pair RTL-flipped.
+  describe('orientation "both"', () => {
+    beforeEach(async () => {
+      application.stop()
+      application = await mount({ orientation: "both" })
+      return () => application.stop()
+    })
+
+    it("all four arrows navigate: Down/Right advance, Up/Left retreat", () => {
+      el("a").focus()
+      press(el("a"), "ArrowDown")
+      expect(document.activeElement).toBe(el("b"))
+
+      press(el("b"), "ArrowRight")
+      expect(document.activeElement).toBe(el("c"))
+
+      press(el("c"), "ArrowUp")
+      expect(document.activeElement).toBe(el("b"))
+
+      press(el("b"), "ArrowLeft")
+      expect(document.activeElement).toBe(el("a"))
+    })
+
+    it("handled arrows preventDefault on both axes", () => {
+      el("a").focus()
+      expect(press(el("a"), "ArrowRight")).toBe(false) // false = preventDefault'ed
+      expect(press(el("b"), "ArrowDown")).toBe(false)
+    })
+
+    it("RTL flips the horizontal pair ONLY (Up/Down unchanged)", async () => {
+      application.stop()
+      application = await mount({ orientation: "both", dir: "rtl" })
+
+      el("a").focus()
+      press(el("a"), "ArrowLeft") // rtl: Left advances
+      expect(document.activeElement).toBe(el("b"))
+
+      press(el("b"), "ArrowRight") // rtl: Right retreats
+      expect(document.activeElement).toBe(el("a"))
+
+      press(el("a"), "ArrowDown") // vertical pair untouched by dir
+      expect(document.activeElement).toBe(el("b"))
+
+      press(el("b"), "ArrowUp")
+      expect(document.activeElement).toBe(el("a"))
+    })
+  })
 })

@@ -3,6 +3,7 @@ import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 
 // The menus-family controller (the DropdownMenu contract's ANCHOR - Radix's
 // one @radix-ui/react-menu behind DropdownMenu / ContextMenu / Menubar).
@@ -81,8 +82,7 @@ export default class MenuController extends Controller {
   #claimed = new WeakSet() // events already handled once (data-action + delegation both firing)
   #suppressRestore = false
   #cancelExit = null
-  #typeaheadBuffer = ""
-  #typeaheadTimer = null
+  #typeahead = createTypeahead()
   #subOpenTimers = new Map()
   #subCloseTimers = new Map()
 
@@ -115,7 +115,7 @@ export default class MenuController extends Controller {
 
     this.#subOpenTimers.clear()
     this.#subCloseTimers.clear()
-    this.#resetTypeahead()
+    this.#typeahead.reset()
     this.#cancelExit?.()
     this.#cancelExit = null
   }
@@ -207,7 +207,7 @@ export default class MenuController extends Controller {
         return
       case "Enter":
       case " ":
-        if (event.key === " " && this.#typeaheadBuffer !== "") break // space extends a live search
+        if (event.key === " " && this.#typeahead.pending()) break // space extends a live search
 
         event.preventDefault()
 
@@ -226,7 +226,7 @@ export default class MenuController extends Controller {
 
     if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault()
-      this.#typeahead(event.key, menu)
+      this.#search(event.key, menu)
     }
   }
 
@@ -304,7 +304,7 @@ export default class MenuController extends Controller {
       this.#closeSubTree(subTrigger, { focusTrigger: false })
     }
 
-    this.#resetTypeahead()
+    this.#typeahead.reset()
     // Focus return to the trigger is focus-scope's disconnect job - vetoed
     // for Tab-out and for outside interaction on a non-modal menu (Radix's
     // non-modal semantics: focus follows the click).
@@ -444,43 +444,18 @@ export default class MenuController extends Controller {
   }
 
   // --- typeahead (APG: 1s buffer, wrap, same-letter cycling, per level) ---
+  // The algorithm lives in helpers/typeahead.js (shared with Select); the
+  // menu keeps only its own wiring: enabled items per level, the focused
+  // item as the search anchor, and focus as the match action.
 
-  #typeahead(key, menu) {
-    window.clearTimeout(this.#typeaheadTimer)
-    this.#typeaheadTimer = window.setTimeout(() => { this.#typeaheadBuffer = "" }, this.typeaheadTimeoutValue)
-    this.#typeaheadBuffer += key
-
+  #search(key, menu) {
     const items = this.#enabledItems(menu)
+    const active = document.activeElement instanceof Element
+      ? document.activeElement.closest(ITEM_SELECTOR)
+      : null
+    const match = this.#typeahead.search(key, items, { active, timeout: this.typeaheadTimeoutValue })
 
-    if (items.length === 0) return
-
-    // Radix's getNextMatch: a repeated same-letter buffer cycles matches; a
-    // growing buffer keeps the current item first so continued typing stays
-    // put while it still matches; single-letter search excludes the current
-    // item so it always advances. Disabled items are already filtered.
-    const buffer = this.#typeaheadBuffer
-    const repeated = buffer.length > 1 && Array.from(buffer).every((char) => char === buffer[0])
-    const search = (repeated ? buffer[0] : buffer).toLowerCase()
-    const active = document.activeElement instanceof Element ? document.activeElement.closest(ITEM_SELECTOR) : null
-    const currentIndex = Math.max(items.indexOf(active), 0)
-
-    let ordered = items.map((_, offset) => (currentIndex + offset) % items.length)
-
-    if (search.length === 1) ordered = ordered.filter((index) => items[index] !== active)
-
-    const match = ordered.find((index) => this.#labelOf(items[index]).toLowerCase().startsWith(search))
-
-    if (match !== undefined) items[match].focus()
-  }
-
-  #labelOf(item) {
-    return (item.dataset.textValue ?? item.textContent ?? "").trim()
-  }
-
-  #resetTypeahead() {
-    window.clearTimeout(this.#typeaheadTimer)
-    this.#typeaheadTimer = null
-    this.#typeaheadBuffer = ""
+    match?.focus()
   }
 
   // --- submenus ---

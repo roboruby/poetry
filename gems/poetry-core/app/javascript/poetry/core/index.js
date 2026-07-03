@@ -19,6 +19,13 @@ import TooltipController from "@poetry/controllers/tooltip_controller"
 import HoverCardController from "@poetry/controllers/hover_card_controller"
 import ToastController from "@poetry/controllers/toast_controller"
 import ToasterController from "@poetry/controllers/toaster_controller"
+import CheckedController from "@poetry/controllers/checked_controller"
+import PressedController from "@poetry/controllers/pressed_controller"
+import ToggleGroupController from "@poetry/controllers/toggle_group_controller"
+import RadioGroupController from "@poetry/controllers/radio_group_controller"
+import SliderController from "@poetry/controllers/slider_controller"
+import OtpController from "@poetry/controllers/otp_controller"
+import SelectController from "@poetry/controllers/select_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -36,6 +43,13 @@ export { default as TooltipController } from "@poetry/controllers/tooltip_contro
 export { default as HoverCardController } from "@poetry/controllers/hover_card_controller"
 export { default as ToastController } from "@poetry/controllers/toast_controller"
 export { default as ToasterController } from "@poetry/controllers/toaster_controller"
+export { default as CheckedController } from "@poetry/controllers/checked_controller"
+export { default as PressedController } from "@poetry/controllers/pressed_controller"
+export { default as ToggleGroupController } from "@poetry/controllers/toggle_group_controller"
+export { default as RadioGroupController } from "@poetry/controllers/radio_group_controller"
+export { default as SliderController } from "@poetry/controllers/slider_controller"
+export { default as OtpController } from "@poetry/controllers/otp_controller"
+export { default as SelectController } from "@poetry/controllers/select_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -45,6 +59,7 @@ export * from "@poetry/controllers/helpers/focus_guards"
 export * from "@poetry/controllers/helpers/presence"
 export * from "@poetry/controllers/helpers/scroller_geometry"
 export * from "@poetry/controllers/helpers/announce"
+export * from "@poetry/controllers/helpers/typeahead"
 
 // identifier -> controller class, for every sidecar controller poetry ships.
 export const controllers = {
@@ -63,7 +78,14 @@ export const controllers = {
   "poetry--core--tooltip": TooltipController,
   "poetry--core--hover-card": HoverCardController,
   "poetry--core--toast": ToastController,
-  "poetry--core--toaster": ToasterController
+  "poetry--core--toaster": ToasterController,
+  "poetry--core--checked": CheckedController,
+  "poetry--core--pressed": PressedController,
+  "poetry--core--toggle-group": ToggleGroupController,
+  "poetry--core--radio-group": RadioGroupController,
+  "poetry--core--slider": SliderController,
+  "poetry--core--otp": OtpController,
+  "poetry--core--select": SelectController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

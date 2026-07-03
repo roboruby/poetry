@@ -1,0 +1,58 @@
+// The APG typeahead buffer (P2), shared: printable keys accumulate into a
+// search buffer that resets after a timeout (1s default), matching wraps
+// from the current item, and a repeated same-letter buffer cycles matches.
+// Extracted VERBATIM from menu_controller.js (the Select contract's gated
+// extraction) so the menu family and the Select listbox run the identical
+// algorithm - the buffer/timer state lives in the instance this factory
+// returns, one per consuming controller.
+
+// The label an item types against: data-text-value overrides textContent
+// (icon-rich content, the Radix textValue prop).
+export function typeaheadLabel(item) {
+  return (item.dataset.textValue ?? item.textContent ?? "").trim()
+}
+
+export function createTypeahead() {
+  let buffer = ""
+  let timer = null
+
+  return {
+    // A live buffer means Space extends the search instead of activating.
+    pending() {
+      return buffer !== ""
+    },
+
+    reset() {
+      window.clearTimeout(timer)
+      timer = null
+      buffer = ""
+    },
+
+    // Radix's getNextMatch: a repeated same-letter buffer cycles matches; a
+    // growing buffer keeps the current item first so continued typing stays
+    // put while it still matches; single-letter search excludes the current
+    // item so it always advances. Callers pass ENABLED items only (disabled
+    // filtering is the consumer's collection contract). Returns the matched
+    // item or null - the consumer decides what a match means (menus focus
+    // it; a closed Select trigger commits it).
+    search(key, items, { active = null, timeout = 1000, labelOf = typeaheadLabel } = {}) {
+      window.clearTimeout(timer)
+      timer = window.setTimeout(() => { buffer = "" }, timeout)
+      buffer += key
+
+      if (items.length === 0) return null
+
+      const repeated = buffer.length > 1 && Array.from(buffer).every((char) => char === buffer[0])
+      const search = (repeated ? buffer[0] : buffer).toLowerCase()
+      const currentIndex = Math.max(items.indexOf(active), 0)
+
+      let ordered = items.map((_, offset) => (currentIndex + offset) % items.length)
+
+      if (search.length === 1) ordered = ordered.filter((index) => items[index] !== active)
+
+      const match = ordered.find((index) => labelOf(items[index]).toLowerCase().startsWith(search))
+
+      return match === undefined ? null : items[match]
+    }
+  }
+}

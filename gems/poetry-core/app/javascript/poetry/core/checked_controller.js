@@ -1,0 +1,177 @@
+import { Controller } from "@hotwired/stimulus"
+import { setState, stateOf } from "@poetry/controllers/helpers/state"
+
+// The toggle family's checked-state owner (Checkbox introduces it; Switch
+// reuses it VERBATIM - zero fork, CI-asserted). The architecture is the
+// STORE INVERSION: the hidden native <input type=checkbox> is the form
+// participant AND the store - the visual button[role=checkbox|switch] only
+// REFLECTS it (aria-checked incl. "mixed" + data-state on the control and
+// every data-state-carrying part: the checkbox indicator, the switch
+// thumb). Every transition writes the input FIRST, dispatches a REAL
+// bubbling change event (no synthetic prototype-setter dance - Radix's
+// BubbleInput direction inverted), then reflects attributes.
+//
+// The three states: checked / unchecked / indeterminate. Indeterminate is
+// server/programmatic only (aria-checked=mixed, input.indeterminate - a
+// JS-only property re-derived from data-state on connect); the first user
+// toggle resolves it to CHECKED (Radix-exact). A Switch never renders it
+// (ArgumentError upstream), so that branch is simply dormant there.
+//
+// Enter is suppressed on role=checkbox ONLY (WAI-ARIA: checkboxes activate
+// on Space alone - Radix's onKeyDown guard); role=switch has no keydown
+// handler, so Enter toggles via the native button click (Radix-exact
+// asymmetry, keyed off the role - no controller fork).
+//
+// No inputId value -> pure visual mode: state lives on the button's
+// data-state alone (controlled-UI cases like DataTable row selection).
+export default class CheckedController extends Controller {
+  static values = {
+    inputId: { type: String, default: "" }
+  }
+
+  #keydown = null
+  #reset = null
+  #form = null
+  #initialIndeterminate = false
+
+  connect() {
+    const input = this.#input()
+
+    // Reconcile-on-connect: data-state is the server truth (Turbo Stream
+    // re-render safe); input.indeterminate has no attribute - derive it.
+    if (input) {
+      const state = this.#state()
+
+      this.#initialIndeterminate = state === "indeterminate"
+      input.checked = state === "checked"
+      input.indeterminate = this.#initialIndeterminate
+
+      // Native form reset restores the server-rendered checked attribute -
+      // initial-state restore for free (vs Radix's manual ref); rAF because
+      // reset fires BEFORE the browser restores input values.
+      this.#form = input.form
+
+      if (this.#form) {
+        this.#reset = () => window.requestAnimationFrame(() => {
+          input.indeterminate = this.#initialIndeterminate
+          this.#reflect(input.indeterminate ? "indeterminate" : (input.checked ? "checked" : "unchecked"))
+        })
+        this.#form.addEventListener("reset", this.#reset)
+      }
+    }
+
+    // WAI-ARIA: a checkbox does not activate on Enter (Space only - the
+    // form's Enter-to-submit is unaffected). Keyed off the role so the
+    // Switch reuse keeps its native Enter-toggles behavior.
+    if (this.element.getAttribute("role") === "checkbox") {
+      this.#keydown = (event) => {
+        if (event.key === "Enter") event.preventDefault()
+      }
+      this.element.addEventListener("keydown", this.#keydown)
+    }
+  }
+
+  disconnect() {
+    if (this.#keydown) this.element.removeEventListener("keydown", this.#keydown)
+    if (this.#reset && this.#form) this.#form.removeEventListener("reset", this.#reset)
+
+    this.#keydown = null
+    this.#reset = null
+    this.#form = null
+  }
+
+  // Control activation (click / Space / label-for): indeterminate resolves
+  // to checked (Radix-exact), else flip.
+  toggle() {
+    if (this.#disabled()) return
+
+    const state = this.#state()
+    const wasIndeterminate = state === "indeterminate"
+
+    this.#commit(wasIndeterminate ? true : state !== "checked", { wasIndeterminate })
+  }
+
+  // --- the programmatic controllable-state surface ---
+
+  check() {
+    this.set(true)
+  }
+
+  uncheck() {
+    this.set(false)
+  }
+
+  // set(true | false | "indeterminate") reaches all three states (the
+  // select-all recipe re-enters indeterminate this way).
+  set(state) {
+    if (this.#disabled()) return
+
+    if (state === "indeterminate") this.#commitIndeterminate()
+    else this.#commit(Boolean(state), { wasIndeterminate: this.#state() === "indeterminate" })
+  }
+
+  // --- the one write path: input first, real change event, then reflect ---
+
+  #commit(checked, { wasIndeterminate = false } = {}) {
+    const input = this.#input()
+
+    if (input) {
+      input.indeterminate = false
+      input.checked = checked
+      input.dispatchEvent(new Event("change", { bubbles: true }))
+    }
+
+    this.#reflect(checked ? "checked" : "unchecked")
+
+    // The component-flavored observe surface (poetry:checkbox:change /
+    // poetry:switch:change) without forking the shared controller: the
+    // prefix derives from the host's data-component self-id.
+    this.dispatch("change", {
+      prefix: `poetry:${this.element.dataset.component ?? "checked"}`,
+      detail: { checked, was_indeterminate: wasIndeterminate }
+    })
+  }
+
+  #commitIndeterminate() {
+    const input = this.#input()
+
+    if (input) {
+      input.checked = false
+      input.indeterminate = true
+      input.dispatchEvent(new Event("change", { bubbles: true }))
+    }
+
+    this.#reflect("indeterminate")
+    this.dispatch("change", {
+      prefix: `poetry:${this.element.dataset.component ?? "checked"}`,
+      detail: { checked: false, was_indeterminate: false, indeterminate: true }
+    })
+  }
+
+  // aria-checked (mixed mapping) and data-state are written TOGETHER, on
+  // the control AND every part that mirrors data-state (indicator / thumb).
+  #reflect(state) {
+    this.element.setAttribute("aria-checked", state === "indeterminate" ? "mixed" : String(state === "checked"))
+    setState(this.element, state)
+
+    for (const part of this.element.querySelectorAll("[data-state]")) setState(part, state)
+  }
+
+  #state() {
+    const state = stateOf(this.element)
+
+    if (state) return state
+
+    const aria = this.element.getAttribute("aria-checked")
+
+    return aria === "mixed" ? "indeterminate" : (aria === "true" ? "checked" : "unchecked")
+  }
+
+  #input() {
+    return this.inputIdValue ? document.getElementById(this.inputIdValue) : null
+  }
+
+  #disabled() {
+    return this.element.hasAttribute("disabled") || this.element.getAttribute("aria-disabled") === "true"
+  }
+}
