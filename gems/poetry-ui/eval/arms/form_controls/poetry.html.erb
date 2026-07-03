@@ -31,6 +31,18 @@
   <%= poetry_slider(name: "settings[alert_volume]", value: 60, label: "Alert volume",
                     value_text: ->(value) { "#{value}%" }) %>
   <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-sound") { "Notification sound" } %>
+    <%# The value-choosing listbox: options ARE values (actions would be a
+        DropdownMenu). The visually-hidden native <select> serializes the
+        value - it posts before any JS. %>
+    <%= poetry_select(name: "settings[sound]", id: "settings-sound", value: "chime",
+                      placeholder: "Pick a sound") do |select| %>
+      <% select.with_item(value: "chime") { "Chime" } %>
+      <% select.with_item(value: "ping") { "Ping" } %>
+      <% select.with_item(value: "none") { "Silent" } %>
+    <% end %>
+  </div>
+  <div class="grid gap-2">
     <%= poetry_label(for_id: "settings-note") { "Unsubscribe note" } %>
     <%= poetry_textarea(name: "settings[note]", id: "settings-note",
                         placeholder: "Tell us why you're leaving.") %>

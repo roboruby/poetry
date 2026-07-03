@@ -130,7 +130,63 @@ module Poetry
         end
       end
 
+      # The FormBuilder#select-equivalent (the listbox capstone): a
+      # Field wrapping a Select, everything derived from the object. The
+      # hidden native <select> is the serialization truth (name/value/
+      # required ride it), the Field's control_attributes land on the
+      # TRIGGER (id + aria-describedby error-before-hint + aria-invalid),
+      # and label[for: id] click-focuses the combobox.
+      #
+      # choices accept the Rails shapes: [["Label", value], ...] pairs,
+      # flat %w[a b], grouped {"Group" => [["Label", value], ...]}, or nil
+      # plus a block of select.with_item calls. include_blank: "Choose..."
+      # doubles as the placeholder text (Rails include_blank semantics -
+      # the blank option posts "" and fails native required validation,
+      # which is the correct behavior).
+      def poetry_select(method, choices = nil, include_blank: nil, hint: nil, **options, &block)
+        if options.key?(:multiple)
+          raise ArgumentError, "poetry_select does not support multiple: - multi-select is Combobox territory"
+        end
+
+        field_component = field_for(method, hint: hint)
+        placeholder = include_blank.is_a?(String) ? include_blank : options.delete(:placeholder)
+        select_options = {
+          name: field_name(method),
+          value: object.public_send(method).presence&.to_s,
+          placeholder: placeholder,
+          required: required?(method),
+          **options.transform_keys(&:to_sym),
+          **field_component.control_attributes.transform_keys(&:to_sym)
+        }
+        @template.render(field_component) do
+          @template.render(Select::Component.new(**select_options)) do |select|
+            populate_select_choices(select, choices) if choices
+            block&.call(select)
+          end
+        end
+      end
+
       private
+
+      # Rails choice shapes -> Select parts: a Hash groups (label part per
+      # key), arrays are ["Label", value] pairs (options_for_select-exact)
+      # or bare values (value doubles as the label).
+      def populate_select_choices(owner, choices)
+        if choices.is_a?(Hash)
+          choices.each do |group_label, group_choices|
+            owner.with_group(label: group_label.to_s) do |group|
+              group_choices.each { |choice| add_select_item(group, choice) }
+            end
+          end
+        else
+          choices.each { |choice| add_select_item(owner, choice) }
+        end
+      end
+
+      def add_select_item(owner, choice)
+        label, value = choice.is_a?(Array) ? choice : [choice.to_s, choice]
+        owner.with_item(value: value.to_s) { label.to_s }
+      end
 
       # Group-shaped controls take the id (item ids derive from it) and
       # the describedby wiring from the Field; invalid/required ride the

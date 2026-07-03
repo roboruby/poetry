@@ -1051,6 +1051,93 @@ components:
     - '7+ options: use Select instead.'
     - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
       - never a bare red ring.'
+  poetry/ui/select:
+    class_name: Poetry::Ui::Select::Component
+    identifier: poetry--ui--select
+    bem_block: poetry-ui-select
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: start
+    - name: avoid_collisions
+      type: boolean
+      default: true
+    - name: dir
+      type: symbol
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: loop
+      type: boolean
+      default: false
+    - name: modal
+      type: boolean
+      default: true
+    - name: name
+      type: string
+    - name: open
+      type: boolean
+      default: false
+    - name: placeholder
+      type: string
+    - name: required
+      type: boolean
+      default: false
+    - name: side
+      type: symbol
+      default: bottom
+    - name: side_offset
+      type: integer
+      default: 4
+    - name: size
+      type: symbol
+      default: default
+    - name: value
+      type: string
+    slots:
+    - name: trigger
+      many: false
+    - name: items
+      many: true
+    elements:
+    - trigger
+    - content
+    - viewport
+    - item
+    - label
+    - separator
+    - scroll_button
+    - item_indicator
+    - item_indicator_state
+    - native
+    - trigger_icon
+    - indicator_check
+    - scroll_icon
+    capsule: 00ef27226e61
+    agent_rules:
+    - Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox
+      popups, and never fake a select with DropdownMenu radio items bound to a hidden
+      field.
+    - Options are VALUES. If activating an option should DO something beyond setting
+      a value, it's a DropdownMenu item.
+    - In forms, ALWAYS go through f.poetry_select - it wires name/id/value/errors/required;
+      bare poetry_select in a form is a smell.
+    - 'Every Select MUST be named: a Field label (id: + label[for]) or aria-label.
+      A bare unnamed select fails at render - do not suppress it.'
+    - NEVER write aria-selected without its data-state twin, and NEVER write the display
+      text without writing the native select's value first - the controller does all
+      three; agents patching DOM must too.
+    - Do not put interactive elements inside options (an option IS the interactive
+      unit).
+    - Long/filterable/async lists or multi-select -> Combobox, not a 50-option Select;
+      2-4 options -> RadioGroup.
+    - The hidden native select is plumbing - never target it with styles, labels,
+      or Capybara selectors (drive the combobox like a user).
+    - 'Positioning is popper-only: poetry Select drops below the trigger (shadcn''s
+      item-aligned overlay mode is not ported - a documented parity delta).'
   poetry/ui/sheet:
     class_name: Poetry::Ui::Sheet::Component
     identifier: poetry--ui--sheet

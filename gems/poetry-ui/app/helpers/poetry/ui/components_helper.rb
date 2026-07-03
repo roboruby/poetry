@@ -206,6 +206,13 @@ module Poetry
         render(Poetry::Ui::DropdownMenu::Component.new(**), &)
       end
 
+      # The value-choosing listbox (options ARE values; actions belong to
+      # poetry_dropdown_menu). Must be named: a Field label (id: +
+      # label[for]) or aria-label. In forms, prefer f.poetry_select.
+      def poetry_select(**, &)
+        render(Poetry::Ui::Select::Component.new(**), &)
+      end
+
       def poetry_context_menu(**, &)
         render(Poetry::Ui::ContextMenu::Component.new(**), &)
       end

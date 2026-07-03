@@ -1,0 +1,15 @@
+<%# The option union renders FIRST (into a capture) so the shared
+    OptionSet is populated before the native <select> and the trigger's
+    value display derive from it - one server-side truth, three surfaces. %>
+<% listbox_body = capture do %>
+  <% items.each do |item| %><%= item %><% end %>
+<% end %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= native_select %>
+  <%= trigger_button %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+    <%= scroll_button(:up) %>
+    <%= content_tag(:div, listbox_body, viewport_attributes) %>
+    <%= scroll_button(:down) %>
+  <% end %>
+<% end %>
