@@ -22,6 +22,17 @@
   --radix-menubar-content-transform-origin: var(--radix-popper-transform-origin);
 }
 
+/* The listbox (Select install_actions): the menus
+   alias pair PLUS the anchor-size pair - popper measures the anchor
+   (--radix-popper-anchor-width/-height as-built) so the source-exact
+   trigger-width/-height viewport classes bind in popper mode. */
+[data-slot="select-content"] {
+  --radix-select-content-available-height: var(--radix-popper-available-height);
+  --radix-select-content-transform-origin: var(--radix-popper-transform-origin);
+  --radix-select-trigger-width: var(--radix-popper-anchor-width);
+  --radix-select-trigger-height: var(--radix-popper-anchor-height);
+}
+
 /* The popper-consumer trio (Popover / Tooltip /
    HoverCard install_actions) - the same alias pattern, one per consumer,
    so the source-exact origin-(--radix-*-content-transform-origin) classes
