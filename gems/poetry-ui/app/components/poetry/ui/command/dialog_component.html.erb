@@ -1,0 +1,20 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:dialog, **Poetry::Core::HTML::Attributes.new(dialog_attributes).to_attributes) do %>
+    <%# sr-only header (source-exact): the dialog stays labelled/described
+        while the palette owns the visible surface. %>
+    <div data-slot="dialog-header" class="sr-only">
+      <h2 id="<%= title_id %>" data-slot="dialog-title"><%= title %></h2>
+      <p id="<%= description_id %>" data-slot="dialog-description"><%= description %></p>
+    </div>
+    <%= render(command) %>
+    <% if show_close_button %>
+      <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                   label: t("poetry.dialog.close"),
+                                                   class: Poetry::Ui::Dialog::Style.css(:close),
+                                                   data: { action: close_action }) do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

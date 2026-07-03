@@ -1,0 +1,29 @@
+<%# The option union renders FIRST (into a capture) so the shared
+    OptionSet is populated - server-stable option ids assigned, the
+    initial highlight decided - before the native <select>, the trigger's
+    value display, and the input's aria-activedescendant derive from it:
+    one server-side truth, four surfaces (the Select + Command capture
+    patterns fused). %>
+<% list_body = capture do %>
+  <% items.each do |item| %><%= item %><% end %>
+<% end %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= native_select %>
+  <%= trigger_button %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+    <%# The EMBEDDED Command anatomy (Command::Style + the engine
+        controller reused verbatim; chrome flattened - rounded/border ride
+        the content). %>
+    <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(command_attributes).to_attributes) do %>
+      <div data-slot="command-input-wrapper" class="<%= Poetry::Ui::Command::Style.css(:input_wrapper) %>">
+        <span data-slot="command-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: Poetry::Ui::Command::Style.css(:search_icon))) %></span>
+        <%= tag.input(**Poetry::Core::HTML::Attributes.new(input_attributes).to_attributes) %>
+      </div>
+      <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
+        <%= empty_part %>
+        <%= list_body %>
+      <% end %>
+      <%= status_part %>
+    <% end %>
+  <% end %>
+<% end %>

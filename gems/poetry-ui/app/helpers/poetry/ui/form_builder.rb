@@ -166,6 +166,43 @@ module Poetry
         end
       end
 
+      # The poetry_select twin for the type-to-filter picker (the
+      # combobox capstone): a Field wrapping a Combobox, everything
+      # derived from the object. The hidden native <select> is the
+      # serialization truth, the Field's control_attributes land on the
+      # TRIGGER (id + aria-describedby error-before-hint + aria-invalid),
+      # and label[for: id] click-focuses the combobox.
+      #
+      # choices accept the same Rails shapes as poetry_select:
+      # [["Label", value], ...] pairs, flat %w[a b], grouped
+      # {"Group" => [["Label", value], ...]} (group parts wear Command's
+      # heading:), or nil plus a block of combobox.with_item calls.
+      # include_blank: "Choose..." doubles as the placeholder text (the
+      # blank option posts "" and fails native required validation -
+      # deselection is a form affordance, never a re-click toggle).
+      def poetry_combobox(method, choices = nil, include_blank: nil, hint: nil, **options, &block)
+        if options.key?(:multiple)
+          raise ArgumentError, "poetry_combobox does not support multiple: - multi-select/chips is not shipped"
+        end
+
+        field_component = field_for(method, hint: hint)
+        placeholder = include_blank.is_a?(String) ? include_blank : options.delete(:placeholder)
+        combobox_options = {
+          name: field_name(method),
+          value: object.public_send(method).presence&.to_s,
+          placeholder: placeholder,
+          required: required?(method),
+          **options.transform_keys(&:to_sym),
+          **field_component.control_attributes.transform_keys(&:to_sym)
+        }
+        @template.render(field_component) do
+          @template.render(Combobox::Component.new(**combobox_options)) do |combobox|
+            populate_combobox_choices(combobox, choices) if choices
+            block&.call(combobox)
+          end
+        end
+      end
+
       private
 
       # Rails choice shapes -> Select parts: a Hash groups (label part per
@@ -186,6 +223,20 @@ module Poetry
       def add_select_item(owner, choice)
         label, value = choice.is_a?(Array) ? choice : [choice.to_s, choice]
         owner.with_item(value: value.to_s) { label.to_s }
+      end
+
+      # The same Rails shapes onto Combobox parts - groups wear the
+      # embedded Command's heading: (vs Select's label:).
+      def populate_combobox_choices(owner, choices)
+        if choices.is_a?(Hash)
+          choices.each do |group_heading, group_choices|
+            owner.with_group(heading: group_heading.to_s) do |group|
+              group_choices.each { |choice| add_select_item(group, choice) }
+            end
+          end
+        else
+          choices.each { |choice| add_select_item(owner, choice) }
+        end
       end
 
       # Group-shaped controls take the id (item ids derive from it) and

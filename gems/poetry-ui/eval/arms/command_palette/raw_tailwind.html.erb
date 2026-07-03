@@ -1,0 +1,29 @@
+<%# The raw-Tailwind arm for the same task - realistic: a plausible
+    hand-rolled palette with the classic tells (a bare styled input - no
+    role=combobox/aria-controls/aria-autocomplete, an oninput substring
+    filter, div rows with onclick + tabindex=0 instead of options under an
+    activedescendant, headings as styled divs with no group semantics, no
+    result-count announcement). %>
+<div class="w-full max-w-md rounded-lg border bg-white shadow-md">
+  <div class="flex items-center gap-2 border-b px-3">
+    <svg class="h-4 w-4 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    <input type="text" placeholder="Type a command or search..." class="h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-400"
+           oninput="document.querySelectorAll('#cmd-list .cmd-item').forEach(function(el){ el.classList.toggle('hidden', !el.textContent.toLowerCase().includes(this.value.toLowerCase())) }, this)">
+  </div>
+  <div id="cmd-list" class="max-h-[300px] overflow-y-auto p-1">
+    <div class="px-2 py-1.5 text-xs font-medium text-gray-500">Suggestions</div>
+    <div class="cmd-item flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+         onclick="console.log('calendar')">Calendar</div>
+    <div class="cmd-item flex cursor-pointer items-center gap-2 rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+         onclick="console.log('emoji')">Search Emoji</div>
+    <div class="cmd-item flex items-center gap-2 rounded px-2 py-1.5 text-sm opacity-50">Calculator</div>
+    <div class="my-1 h-px bg-gray-200"></div>
+    <div class="px-2 py-1.5 text-xs font-medium text-gray-500">Settings</div>
+    <div class="cmd-item flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+         onclick="console.log('profile')">Profile <span class="text-xs text-gray-400">⌘P</span></div>
+    <div class="cmd-item flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+         onclick="console.log('billing')">Billing <span class="text-xs text-gray-400">⌘B</span></div>
+    <div class="cmd-item flex cursor-pointer items-center justify-between rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+         onclick="console.log('settings')">Settings <span class="text-xs text-gray-400">⌘S</span></div>
+  </div>
+</div>

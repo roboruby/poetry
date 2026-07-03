@@ -213,8 +213,28 @@ module Poetry
         render(Poetry::Ui::Select::Component.new(**), &)
       end
 
+      # The type-to-filter value picker (Select's shell x Command's
+      # engine): options ARE values, committed to a hidden native select.
+      # Must be named (Field label via id: or aria-label). In forms,
+      # prefer f.poetry_combobox.
+      def poetry_combobox(**, &)
+        render(Poetry::Ui::Combobox::Component.new(**), &)
+      end
+
       def poetry_context_menu(**, &)
         render(Poetry::Ui::ContextMenu::Component.new(**), &)
+      end
+
+      # The filterable command-palette listbox (the cmdk port): items DO
+      # things - picking a VALUE for a form is Combobox territory.
+      def poetry_command(**, &)
+        render(Poetry::Ui::Command::Component.new(**), &)
+      end
+
+      # The ⌘K variant: a Command inside the Dialog chrome (sr-only
+      # title/description) with the OPT-IN hotkey: global shortcut.
+      def poetry_command_dialog(**, &)
+        render(Poetry::Ui::Command::DialogComponent.new(**), &)
       end
 
       def poetry_menubar(**, &)

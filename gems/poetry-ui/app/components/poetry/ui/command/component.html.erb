@@ -1,0 +1,19 @@
+<%# The item union renders FIRST (into a capture) so the shared ItemSet
+    has assigned every server-stable option id - and decided the initial
+    highlight - before the input derives aria-activedescendant from it
+    (the Select capture pattern, activedescendant-flavored). %>
+<% list_body = capture do %>
+  <% items.each do |item| %><%= item %><% end %>
+<% end %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <div data-slot="command-input-wrapper" class="<%= css(:input_wrapper) %>">
+    <span data-slot="command-search-icon"><%= render(Poetry::Ui::Icon::Component.new(name: :search, class: css(:search_icon))) %></span>
+    <%= tag.input(**Poetry::Core::HTML::Attributes.new(input_attributes).to_attributes) %>
+  </div>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
+    <%= empty_part %>
+    <%= loading_part %>
+    <%= list_body %>
+  <% end %>
+  <%= status_part %>
+<% end %>

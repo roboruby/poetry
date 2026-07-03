@@ -225,6 +225,115 @@ module Poetry
             })
           ]
         },
+        "command_palette" => {
+          "description" => "A command palette: a search box filtering a grouped list of app commands " \
+                           "(Suggestions: Calendar, Search Emoji, Calculator; Settings: Profile, " \
+                           "Billing, Settings - with ⌘ shortcut hints), keyboard-first filter-then-activate",
+          "gates" => [
+            Gate.new(:combobox_input, :cross_arm, lambda { |doc, _html|
+              # The APG editable-combobox surface: a real text input wearing
+              # role=combobox + list autocomplete - a bare styled <input>
+              # promises nothing to AT.
+              doc.css(%(input[role="combobox"][aria-autocomplete="list"])).any?
+            }),
+            Gate.new(:input_controls_a_listbox, :cross_arm, lambda { |doc, _html|
+              controls = doc.css(%(input[role="combobox"])).filter_map { |node| node["aria-controls"] }
+              controls.any? && controls.all? { |id| doc.css(%([id="#{id}"][role=listbox])).any? }
+            }),
+            Gate.new(:listbox_named, :cross_arm, lambda { |doc, _html|
+              lists = doc.css("[role=listbox]")
+              lists.any? && lists.all? do |list|
+                list["aria-label"].to_s.strip.length.positive? ||
+                  (list["aria-labelledby"] && doc.css(%([id="#{list["aria-labelledby"]}"])).any?)
+              end
+            }),
+            Gate.new(:options_are_options, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=listbox] [role=option]").size >= 4
+            }),
+            Gate.new(:options_carry_stable_ids, :cross_arm, lambda { |doc, _html|
+              # The aria-activedescendant contract: every option needs an id
+              # the input can point at.
+              options = doc.css("[role=option]")
+              options.any? && options.all? { |option| option["id"].to_s.strip.length.positive? }
+            }),
+            Gate.new(:options_never_focusable, :cross_arm, lambda { |doc, _html|
+              # Activedescendant, not roving focus: options must not be tab
+              # stops (and a palette input keeps focus for the whole session).
+              doc.css("[role=option][tabindex]").empty? &&
+                doc.css("[role=listbox] [tabindex]:not([tabindex='-1'])").empty?
+            }),
+            Gate.new(:groups_labelled, :cross_arm, lambda { |doc, _html|
+              groups = doc.css("[role=listbox] [role=group]")
+              groups.any? && groups.all? do |group|
+                group["aria-labelledby"] && doc.css(%([id="#{group["aria-labelledby"]}"])).any?
+              end
+            }),
+            Gate.new(:no_inline_handlers, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick or @oninput or @onkeydown or @onkeyup]").empty?
+            }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Calendar") && doc.text.include?("Billing")
+            })
+          ]
+        },
+        "searchable_select" => {
+          "description" => "A labelled framework picker: a combobox-role control with a hidden form " \
+                           "serialization opening a type-to-filter popup over Next.js/SvelteKit/" \
+                           "Nuxt.js/Remix/Astro options",
+          "gates" => [
+            Gate.new(:combobox_role_control, :cross_arm, lambda { |doc, _html|
+              # The APG surface: a control WEARING role=combobox with a
+              # dynamic expansion state - a styled button div promises
+              # nothing to AT.
+              doc.css("[role=combobox][aria-expanded]").any?
+            }),
+            Gate.new(:combobox_controls_a_listbox, :cross_arm, lambda { |doc, _html|
+              controls = doc.css("[role=combobox]").filter_map { |node| node["aria-controls"] }
+              controls.any? && controls.all? { |id| doc.css(%([id="#{id}"][role=listbox])).any? }
+            }),
+            Gate.new(:options_are_options, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=listbox] [role=option]").size >= 4
+            }),
+            Gate.new(:filter_input_wears_list_autocomplete, :cross_arm, lambda { |doc, _html|
+              doc.css(%(input[aria-autocomplete="list"])).any?
+            }),
+            Gate.new(:combobox_named, :cross_arm, lambda { |doc, _html|
+              controls = doc.css("[role=combobox]")
+              controls.any? && controls.all? do |control|
+                control["aria-label"].to_s.strip.length.positive? ||
+                  (control["aria-labelledby"] && doc.css(%([id="#{control["aria-labelledby"]}"])).any?) ||
+                  (control["id"] && doc.css(%(label[for="#{control["id"]}"])).any?)
+              end
+            }),
+            Gate.new(:options_never_focusable, :cross_arm, lambda { |doc, _html|
+              # Activedescendant, not roving focus: options must not be
+              # tab stops.
+              doc.css("[role=option][tabindex]").empty? &&
+                doc.css("[role=listbox] [tabindex]:not([tabindex='-1'])").empty?
+            }),
+            Gate.new(:no_inline_handlers, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick or @oninput or @onkeydown or @onkeyup]").empty?
+            }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Next.js") && doc.text.include?("SvelteKit")
+            })
+          ],
+          # Task-scoped poetry diagnostics (never run against a raw arm -
+          # the A/B honesty rule): the form story no raw popup ever ships.
+          "poetry_gates" => [
+            Gate.new(:hidden_native_select_serializes, :poetry_only, lambda { |doc, _html|
+              native = doc.css(%(select[data-slot="combobox-native"][name])).first
+              !native.nil? && native["aria-hidden"] == "true" &&
+                native.css(%(option[value="next.js"])).any?
+            }),
+            Gate.new(:twin_write_pair_present, :poetry_only, lambda { |doc, _html|
+              options = doc.css("[role=option]")
+              options.any? && options.all? do |option|
+                (option["aria-selected"] == "true") == (option["data-state"] == "checked")
+              end && doc.css(%([role=option][aria-selected="true"][data-state="checked"])).size == 1
+            })
+          ]
+        },
         "overlay" => {
           "description" => "A destructive 'Delete API key' confirmation that must be answered " \
                            "(alert dialog), plus a 'Filter results' panel sliding in from the " \
@@ -403,7 +512,8 @@ module Poetry
           "cross_arm_score" => "#{cross.values.count(true)}/#{cross.size}"
         }
         if arm.include?("poetry")
-          result["poetry_only_diagnostics"] = POETRY_ONLY.to_h { |gate| gate.run(doc, html) }
+          diagnostics = POETRY_ONLY + TASKS.fetch(task).fetch("poetry_gates", [])
+          result["poetry_only_diagnostics"] = diagnostics.to_h { |gate| gate.run(doc, html) }
           exercised.concat(doc.css("[data-component]").map { |node| node["data-component"] })
         end
         result

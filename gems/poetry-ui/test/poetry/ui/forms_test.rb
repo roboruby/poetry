@@ -437,6 +437,109 @@ module Poetry
         assert_includes error.message, "multiple"
       end
 
+      # -- The poetry_combobox builder method (the poetry_select twin) ---------
+
+      COMBOBOX_ERB = <<~ERB
+        <%= form_with(model: model, url: "/tickets", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.poetry_combobox(:department, [["Engineering", "eng"], ["Design", "design"]],
+                                   include_blank: "Choose department", hint: "Routes your ticket.") %>
+        <% end %>
+      ERB
+
+      def render_combobox_ticket(model)
+        html = ApplicationController.renderer.render(inline: COMBOBOX_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_poetry_combobox_derives_the_field_quartet_and_the_native_select_from_the_object
+        fragment = render_combobox_ticket(Ticket.new(department: "design"))
+        trigger = fragment.css('[data-slot="combobox-trigger"]').first
+        native = fragment.css('select[data-slot="combobox-native"]').first
+
+        # The Field id lands on the TRIGGER - label[for] click-focuses the combobox.
+        assert_equal "poetry_ui_forms_test_ticket_department", trigger["id"]
+        assert_equal 1, fragment.css(%(label[for="#{trigger["id"]}"])).size
+        assert_includes trigger["aria-describedby"], "-hint"
+        assert_equal "true", trigger["aria-required"], "presence validator -> aria-required on the combobox"
+        # The hidden native select is the serialization truth: derived name,
+        # the object's value selected, native required (the Select-family
+        # exception - constraint validation rides the REAL control).
+        assert_equal "poetry_ui_forms_test_ticket[department]", native["name"]
+        assert native.key?("required")
+        assert_equal(["", "eng", "design"], native.css("option").map { |option| option["value"] })
+        assert native.css('option[value="design"]').first.key?("selected")
+        # include_blank doubles as the placeholder text + the blank option label.
+        assert_equal "Choose department", native.css('option[value=""]').first.text
+        assert_equal "Design", fragment.css('[data-slot="combobox-value"]').first.text,
+                     "the display shows the LABEL of the object's value"
+        refute trigger.key?("data-placeholder")
+        # The twin-write pair lands on the object's option.
+        selected = fragment.css('[data-slot="command-item"][aria-selected="true"]')
+        selected_values = selected.map { |item| item["data-value"] }
+
+        assert_equal ["design"], selected_values
+        assert_equal "checked", selected.first["data-state"]
+      end
+
+      def test_poetry_combobox_without_a_value_rests_on_the_blank_option
+        fragment = render_combobox_ticket(Ticket.new)
+        trigger = fragment.css('[data-slot="combobox-trigger"]').first
+        native = fragment.css('[data-slot="combobox-native"]').first
+
+        assert trigger.key?("data-placeholder")
+        assert_equal "Choose department", fragment.css('[data-slot="combobox-value"]').first.text
+        assert native.css('option[value=""]').first.key?("selected")
+        assert_empty fragment.css('[data-slot="command-item"][aria-selected="true"]')
+      end
+
+      def test_poetry_combobox_model_errors_flow_onto_the_trigger
+        model = Ticket.new
+        model.validate
+
+        fragment = render_combobox_ticket(model)
+        trigger = fragment.css('[data-slot="combobox-trigger"]').first
+
+        assert_equal "true", trigger["aria-invalid"]
+        assert_equal "#{trigger["id"]}-error #{trigger["id"]}-hint", trigger["aria-describedby"],
+                     "error before hint, on the combobox"
+        assert_includes fragment.css('[data-slot="field-error"]').first.text, "blank"
+      end
+
+      GROUPED_COMBOBOX_ERB = <<~ERB
+        <%= form_with(model: model, url: "/tickets", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.poetry_combobox(:region, { "Americas" => [["United States", "us"]],
+                                              "Europe" => [["Germany", "de"], ["France", "fr"]] }) %>
+        <% end %>
+      ERB
+
+      def test_poetry_combobox_grouped_choices_become_heading_labelled_group_parts
+        html = ApplicationController.renderer.render(inline: GROUPED_COMBOBOX_ERB,
+                                                     locals: { model: Ticket.new(region: "de") }, layout: false)
+        fragment = Nokogiri::HTML5.fragment(html)
+        groups = fragment.css('[data-slot="command-group"]')
+
+        assert_equal 2, groups.size
+        assert_equal %w[Americas Europe], fragment.css('[data-slot="command-group-heading"]').map(&:text)
+        assert_equal(%w[us de fr],
+                     fragment.css('[data-slot="combobox-native"] option:not([value=""])').map { |o| o["value"] })
+        assert_equal "Germany", fragment.css('[data-slot="combobox-value"]').first.text
+      end
+
+      def test_poetry_combobox_rejects_multiple
+        # The controller renderer wraps render-time raises in Template::Error.
+        error = assert_raises(ActionView::Template::Error, ArgumentError) do
+          ApplicationController.renderer.render(
+            inline: <<~ERB, locals: { model: Ticket.new }, layout: false
+              <%= form_with(model: model, url: "/tickets", builder: Poetry::Ui::FormBuilder) do |form| %>
+                <%= form.poetry_combobox(:department, %w[eng design], multiple: true) %>
+              <% end %>
+            ERB
+          )
+        end
+
+        assert_includes error.message, "multiple"
+      end
+
       def test_labels_come_from_i18n
         I18n.backend.store_translations(:en, activemodel: {
                                           attributes: { "poetry/ui/forms_test/contact": { email: "Work email" } }

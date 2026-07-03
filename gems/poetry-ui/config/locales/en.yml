@@ -2,6 +2,20 @@ en:
   poetry:
     button:
       loading: "Loading…"
+    combobox:
+      empty: "No results found."
+      filter_label: "Filter options"
+    command:
+      empty: "No results found."
+      loading: "Loading…"
+      results:
+        zero: "0 results"
+        one: "1 result"
+        other: "%{count} results"
+      list_label: "Commands"
+      input_label: "Search commands"
+      dialog_title: "Command palette"
+      dialog_description: "Search for a command to run…"
     dialog:
       close: "Close"
     sheet:

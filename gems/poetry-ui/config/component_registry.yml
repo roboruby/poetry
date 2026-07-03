@@ -395,6 +395,205 @@ components:
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
       markup serves both.'
+  poetry/ui/combobox:
+    class_name: Poetry::Ui::Combobox::Component
+    identifier: poetry--ui--combobox
+    bem_block: poetry-ui-combobox
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: start
+    - name: avoid_collisions
+      type: boolean
+      default: true
+    - name: dir
+      type: symbol
+    - name: disabled
+      type: boolean
+      default: false
+    - name: filter
+      type: boolean
+      default: true
+    - name: id
+      type: string
+    - name: loop
+      type: boolean
+      default: false
+    - name: modal
+      type: boolean
+      default: false
+    - name: name
+      type: string
+    - name: open
+      type: boolean
+      default: false
+    - name: placeholder
+      type: string
+    - name: required
+      type: boolean
+      default: false
+    - name: search_placeholder
+      type: string
+    - name: side
+      type: symbol
+      default: bottom
+    - name: side_offset
+      type: integer
+      default: 4
+    - name: value
+      type: string
+    - name: width
+      type: string
+      default: w-[200px]
+    slots:
+    - name: trigger
+      many: false
+    - name: empty
+      many: false
+    - name: items
+      many: true
+    elements:
+    - trigger
+    - value
+    - content
+    - input_scale
+    - item_indicator
+    - item_indicator_state
+    - native
+    - trigger_icon
+    - indicator_check
+    capsule: c20180479cd0
+    agent_rules:
+    - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
+      this component IS that wiring, with the form story done right.
+    - Combobox picks VALUES. Filter-then-ACT is bare Command; short known lists are
+      Select; free text is Input.
+    - 'Every Combobox MUST be named (Field label via id: or aria-label) - a nameless
+      bare combobox fails at render.'
+    - NEVER write aria-selected from highlight logic (position is data-highlighted
+      + aria-activedescendant); NEVER write the display without the native select
+      first - the commit pipeline does all of it; agents patching DOM must too.
+    - 'Async options: filter: false + the Turbo-frame ?q= recipe - AND the frame must
+      render the twin native <option> for every committable item (the recipe''s one
+      hard rule).'
+    - 'In forms, always f.poetry_combobox; multiple: raises - multi-select/chips is
+      not shipped (do not fake it with hidden inputs).'
+    - Do not put interactive elements inside options (an option IS the interactive
+      unit).
+    - Deselection is include_blank (a visible blank option), never a re-click toggle
+      - committing the already-selected value closes without change.
+  poetry/ui/command:
+    class_name: Poetry::Ui::Command::Component
+    identifier: poetry--ui--command
+    bem_block: poetry-ui-command
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: filter
+      type: boolean
+      default: true
+    - name: id
+      type: string
+    - name: list_label
+      type: string
+      default: dynamic
+    - name: loop
+      type: boolean
+      default: false
+    - name: placeholder
+      type: string
+    - name: value
+      type: string
+    slots:
+    - name: empty
+      many: false
+    - name: loading
+      many: false
+    - name: items
+      many: true
+    elements:
+    - input_wrapper
+    - input
+    - list
+    - empty
+    - loading
+    - group
+    - heading
+    - item
+    - shortcut
+    - separator
+    - status
+    - sr_only
+    - search_icon
+    - dialog_content
+    - dialog_overrides
+    capsule: bdce293b6abf
+    agent_rules:
+    - Use poetry_command - never hand-roll a filterable listbox with an input + a
+      list and ad-hoc JS.
+    - Command items DO things; they carry no form value. Picking a value for a form
+      is Combobox (which wraps this) - never bind a hidden input to a bare Command.
+    - 'Every item needs a unique value: (ArgumentError) and gets a server id - never
+      strip item ids (aria-activedescendant depends on them).'
+    - Never put tabindex or focus on options; never write aria-selected in a bare
+      Command - highlight is data-highlighted + activedescendant only.
+    - 'Filtering is hide-only: never reorder, remove, or re-append items to ''sort''
+      results - DOM order is the contract.'
+    - The poetry:command:select event is the ONLY activation surface - act in a listener
+      (or item data-action); don't patch the controller to navigate.
+    - 'Long/async data: filter: false + a Turbo frame (the recipe) - don''t render
+      5,000 items and hope.'
+    - 'Icon-rich labels: set filter_value:/keywords: rather than stuffing hidden text
+      into items.'
+  poetry/ui/command/dialog:
+    class_name: Poetry::Ui::Command::DialogComponent
+    identifier: poetry--ui--command--dialog
+    bem_block: poetry-ui-command-dialog
+    styles: []
+    options:
+    - name: description
+      type: string
+      default: dynamic
+    - name: dismissible
+      type: boolean
+      default: true
+    - name: filter
+      type: boolean
+      default: true
+    - name: hotkey
+      type: string
+    - name: id
+      type: string
+    - name: list_label
+      type: string
+    - name: loop
+      type: boolean
+      default: false
+    - name: placeholder
+      type: string
+    - name: show_close_button
+      type: boolean
+      default: true
+    - name: title
+      type: string
+      default: dynamic
+    - name: value
+      type: string
+    slots:
+    - name: trigger
+      many: false
+    agent_rules:
+    - 'App-wide palettes use poetry_command_dialog with hotkey: (''meta+k'') - never
+      a hand-wired window keydown listener around poetry_dialog.'
+    - Open it with with_trigger(...) too - the hotkey is an accelerator, not the only
+      way in.
+    - 'The sr-only title/description default to the source strings - override title:/description:
+      rather than removing them (they are the dialog''s accessible name).'
+    - 'Item wiring is Command''s: act on poetry:command:select; close the dialog in
+      the listener if the action should dismiss the palette.'
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu

@@ -1,0 +1,34 @@
+<%# The raw-Tailwind arm for the same task - realistic: a plausible
+    hand-rolled searchable dropdown with the classic tells (the trigger is
+    a styled button WITHOUT role=combobox/aria-controls, the search box is
+    a bare input with an oninput substring filter, rows are onclick divs
+    with tabindex=0 instead of options under an activedescendant, and
+    NOTHING serializes - the picked value lives in a span, no form field
+    ever posts it). %>
+<div class="relative w-[200px]">
+  <button type="button" aria-expanded="false" id="framework-trigger"
+          class="flex h-9 w-full items-center justify-between rounded-md border bg-white px-4 py-2 text-sm shadow-sm hover:bg-gray-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500"
+          onclick="document.getElementById('framework-popup').classList.toggle('hidden'); this.setAttribute('aria-expanded', this.getAttribute('aria-expanded') !== 'true')">
+    <span id="framework-value" class="truncate text-gray-500">Select framework...</span>
+    <svg class="h-4 w-4 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+  </button>
+  <div id="framework-popup" class="hidden absolute z-50 mt-1 w-full rounded-md border bg-white shadow-md">
+    <div class="flex items-center gap-2 border-b px-3">
+      <svg class="h-4 w-4 shrink-0 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" placeholder="Search framework..." class="h-9 w-full bg-transparent text-sm outline-none placeholder:text-gray-400"
+             oninput="document.querySelectorAll('#framework-popup .fw-item').forEach(function(el){ el.classList.toggle('hidden', !el.textContent.toLowerCase().includes(this.value.toLowerCase())) }, this)">
+    </div>
+    <div class="max-h-[300px] overflow-y-auto p-1">
+      <div class="fw-item cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+           onclick="document.getElementById('framework-value').textContent = 'Next.js'">Next.js</div>
+      <div class="fw-item cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+           onclick="document.getElementById('framework-value').textContent = 'SvelteKit'">SvelteKit</div>
+      <div class="fw-item cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+           onclick="document.getElementById('framework-value').textContent = 'Nuxt.js'">Nuxt.js</div>
+      <div class="fw-item cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+           onclick="document.getElementById('framework-value').textContent = 'Remix'">Remix</div>
+      <div class="fw-item cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100" tabindex="0"
+           onclick="document.getElementById('framework-value').textContent = 'Astro'">Astro</div>
+    </div>
+  </div>
+</div>
