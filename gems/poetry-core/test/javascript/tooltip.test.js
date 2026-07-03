@@ -1,0 +1,347 @@
+import { beforeEach, describe, expect, it, vi } from "vitest"
+import { Application } from "@hotwired/stimulus"
+import { registerPoetryControllers } from "@poetry/controllers"
+
+// poetry--core--tooltip JS-unit: the trio's timing machine - pointer rest
+// opens after the provider delay (cold) or instantly (warm) with the right
+// data-state of the closed|delayed-open|instant-open triple; touch never
+// opens; focus opens instantly unless the pointerdown latch is set;
+// leave/blur/activate/Esc/scroll close with the right reason; will-open
+// closes the other open tooltip (one open page-wide); the warm registry
+// counts opens and expires after skip_delay; describedby toggles open-only.
+// Positioning (popper + arrow) is markup-owned - the browser pass's job.
+
+const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
+
+const el = (id) => document.getElementById(id)
+
+const DISMISS_TOKEN = "poetry--core--dismissable"
+
+const controllersOf = (id) => (el(id).getAttribute("data-controller") ?? "").split(/\s+/).filter(Boolean)
+
+const pointer = (element, type, { pointerType = "mouse", related = null } = {}) => {
+  const event = new MouseEvent(type, { bubbles: true, cancelable: true, relatedTarget: related })
+
+  Object.defineProperty(event, "pointerType", { value: pointerType })
+  element.dispatchEvent(event)
+  return event
+}
+
+const pressEscape = () =>
+  window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))
+
+const record = (type, target) => {
+  const seen = []
+  target.addEventListener(type, (event) => seen.push(event.detail))
+  return seen
+}
+
+const tooltip = (key, { open = false, delayOverride = null } = {}) => `
+  <div id="root-${key}" data-slot="tooltip" data-component="tooltip"
+       data-controller="poetry--core--tooltip"
+       data-poetry--core--tooltip-open-value="${open}"
+       ${delayOverride === null ? "" : `data-poetry--core--tooltip-delay-duration-value="${delayOverride}"`}>
+    <button type="button" id="${key}-trigger" data-slot="tooltip-trigger"
+            data-state="${open ? "instant-open" : "closed"}"
+            ${open ? `aria-describedby="${key}-content"` : ""}
+            data-action="pointermove->poetry--core--tooltip#pointerMove pointerleave->poetry--core--tooltip#pointerLeave
+                         pointerdown->poetry--core--tooltip#pointerDown click->poetry--core--tooltip#clickClose
+                         focus->poetry--core--tooltip#focusOpen blur->poetry--core--tooltip#blurClose">
+      Trigger ${key}
+    </button>
+    <div id="${key}-content" data-slot="tooltip-content" role="tooltip"
+         data-state="${open ? "instant-open" : "closed"}" ${open ? "" : "hidden"}>
+      Tooltip ${key}
+    </div>
+  </div>`
+
+// Every test mounts under a fresh provider element so the module-level warm
+// WeakMap (keyed by the provider) can never leak scope across tests.
+const markup = ({ delay = 700, skip = 300, disableHoverable = false, tooltips = {} } = {}) => `
+  <div id="provider" data-slot="tooltip-provider"
+       data-delay-duration="${delay}" data-skip-delay-duration="${skip}"
+       ${disableHoverable ? 'data-disable-hoverable-content="true"' : ""}>
+    ${tooltip("a", tooltips.a ?? {})}
+    ${tooltip("b", tooltips.b ?? {})}
+  </div>`
+
+describe("poetry--core--tooltip", () => {
+  let application
+
+  beforeEach(async () => {
+    vi.useRealTimers()
+    document.body.innerHTML = `<div id="host"></div>`
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+    return async () => {
+      vi.useRealTimers()
+      el("host")?.replaceChildren()
+      await nextFrame()
+      application.stop()
+    }
+  })
+
+  async function mount(options = {}) {
+    el("host").innerHTML = markup(options)
+    await nextFrame()
+  }
+
+  describe("the pointer open path (cold scope)", () => {
+    it("pointer rest opens after the provider delay as delayed-open, wiring describedby + the dismissable token", async () => {
+      await mount()
+      const opens = record("poetry:tooltip:open", el("root-a"))
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointermove")
+
+      await vi.advanceTimersByTimeAsync(699)
+      expect(el("a-content").dataset.state).toBe("closed")
+
+      await vi.advanceTimersByTimeAsync(1)
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+      expect(el("a-trigger").dataset.state).toBe("delayed-open")
+      expect(el("a-content").hidden).toBe(false)
+      expect(el("a-trigger").getAttribute("aria-describedby")).toBe("a-content")
+      expect(controllersOf("a-content")).toContain(DISMISS_TOKEN)
+      expect(opens).toEqual([{ state: "delayed-open" }])
+    })
+
+    it("delay 0 (the shadcn provider default) opens immediately", async () => {
+      await mount({ delay: 0 })
+
+      pointer(el("a-trigger"), "pointermove")
+
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+    })
+
+    it("a per-tooltip delayDuration value overrides the provider", async () => {
+      await mount({ delay: 700, tooltips: { a: { delayOverride: 100 } } })
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointermove")
+      await vi.advanceTimersByTimeAsync(100)
+
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+    })
+
+    it("touch pointerType NEVER opens (no long-press path either)", async () => {
+      await mount({ delay: 0 })
+
+      pointer(el("a-trigger"), "pointermove", { pointerType: "touch" })
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(el("a-trigger").hasAttribute("aria-describedby")).toBe(false)
+    })
+
+    it("pointerleave before the delay elapses cancels the pending open", async () => {
+      await mount()
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointermove")
+      await vi.advanceTimersByTimeAsync(400)
+      pointer(el("a-trigger"), "pointerleave")
+      await vi.advanceTimersByTimeAsync(1000)
+
+      expect(el("a-content").dataset.state).toBe("closed")
+    })
+  })
+
+  describe("the warm scope (the provider mechanism)", () => {
+    it("a sibling opens INSTANTLY while another tooltip in the scope is open, and the first closes as superseded", async () => {
+      await mount({ delay: 700 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointermove")
+      await vi.advanceTimersByTimeAsync(700)
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+
+      pointer(el("b-trigger"), "pointermove")
+      await vi.advanceTimersByTimeAsync(0)
+
+      expect(el("b-content").dataset.state).toBe("instant-open")
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(closes).toEqual([{ reason: "superseded" }])
+    })
+
+    it("the warm window survives a close for skip_delay ms, then the scope is cold again", async () => {
+      await mount({ delay: 700, skip: 300, disableHoverable: true })
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointermove")
+      await vi.advanceTimersByTimeAsync(700)
+      pointer(el("a-trigger"), "pointerleave")
+      await vi.advanceTimersByTimeAsync(0)
+      expect(el("a-content").dataset.state).toBe("closed")
+
+      // 100ms after the close: still warm - the sweep is instant.
+      await vi.advanceTimersByTimeAsync(100)
+      pointer(el("b-trigger"), "pointermove")
+      expect(el("b-content").dataset.state).toBe("instant-open")
+
+      pointer(el("b-trigger"), "pointerleave")
+      await vi.advanceTimersByTimeAsync(0)
+
+      // 301ms after the LAST close: the warm window expired - cold again.
+      await vi.advanceTimersByTimeAsync(301)
+      pointer(el("a-trigger"), "pointermove")
+      expect(el("a-content").dataset.state).toBe("closed") // delay pending
+
+      await vi.advanceTimersByTimeAsync(700)
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+    })
+  })
+
+  describe("the keyboard path", () => {
+    it("focus opens instantly as instant-open; blur closes with reason blur", async () => {
+      await mount({ delay: 700 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      el("a-trigger").focus()
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("instant-open")
+      expect(el("a-trigger").getAttribute("aria-describedby")).toBe("a-content")
+
+      el("a-trigger").blur()
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(el("a-trigger").hasAttribute("aria-describedby")).toBe(false)
+      expect(closes).toEqual([{ reason: "blur" }])
+    })
+
+    it("focus caused by pointerdown does NOT open (the isPointerDown latch)", async () => {
+      await mount({ delay: 0 })
+
+      pointer(el("a-trigger"), "pointerdown")
+      el("a-trigger").focus()
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+
+      // After pointerup the latch clears - a later real focus opens.
+      pointer(document.body, "pointerup")
+      el("a-trigger").blur()
+      el("a-trigger").focus()
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("instant-open")
+    })
+  })
+
+  describe("close paths", () => {
+    it("activating the trigger closes (pointerdown -> reason activate)", async () => {
+      await mount({ delay: 0 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      pointer(el("a-trigger"), "pointermove")
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+
+      pointer(el("a-trigger"), "pointerdown")
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(closes).toEqual([{ reason: "activate" }])
+    })
+
+    it("Esc closes via the token-activated dismissable layer (reason escape) and removes the token", async () => {
+      await mount({ delay: 0 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      pointer(el("a-trigger"), "pointermove")
+      await nextFrame() // the layer controller connects
+
+      pressEscape()
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(el("a-content").hidden).toBe(true)
+      expect(controllersOf("a-content")).toEqual([])
+      expect(closes).toEqual([{ reason: "escape" }])
+    })
+
+    it("scrolling an ancestor of the trigger closes (reason scroll), and the listener is dropped after close", async () => {
+      await mount({ delay: 0 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      pointer(el("a-trigger"), "pointermove")
+      await nextFrame()
+
+      document.dispatchEvent(new Event("scroll", { bubbles: true }))
+      await nextFrame()
+
+      expect(closes).toEqual([{ reason: "scroll" }])
+
+      document.dispatchEvent(new Event("scroll", { bubbles: true }))
+      await nextFrame()
+
+      expect(closes.length).toBe(1) // dropped listener: no double close
+    })
+  })
+
+  describe("hoverable content (the close-intent grace)", () => {
+    it("leaving the trigger arms a grace timer; entering the content cancels it; leaving the content closes", async () => {
+      await mount({ delay: 0 })
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      pointer(el("a-trigger"), "pointermove")
+
+      vi.useFakeTimers()
+      pointer(el("a-trigger"), "pointerleave")
+      await vi.advanceTimersByTimeAsync(299)
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+
+      pointer(el("a-content"), "pointerenter") // travel INTO the content: cancel
+      await vi.advanceTimersByTimeAsync(1000)
+      expect(el("a-content").dataset.state).toBe("delayed-open")
+
+      pointer(el("a-content"), "pointerleave")
+      await vi.advanceTimersByTimeAsync(300)
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(closes).toEqual([{ reason: "leave" }])
+    })
+
+    it("disable-hoverable-content on the provider closes on trigger-leave immediately", async () => {
+      await mount({ delay: 0, disableHoverable: true })
+
+      pointer(el("a-trigger"), "pointermove")
+      pointer(el("a-trigger"), "pointerleave")
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+    })
+  })
+
+  describe("controllable state + reconcile-on-connect", () => {
+    it("a server-rendered pinned tooltip activates describedby + the layer + the warm scope on connect", async () => {
+      await mount({ delay: 700, tooltips: { a: { open: true } } })
+
+      expect(controllersOf("a-content")).toContain(DISMISS_TOKEN)
+      expect(el("a-trigger").getAttribute("aria-describedby")).toBe("a-content")
+
+      // The pinned tooltip counts toward the scope: a sibling opens warm.
+      pointer(el("b-trigger"), "pointermove")
+      expect(el("b-content").dataset.state).toBe("instant-open")
+    })
+
+    it("flipping the open value drives the machine (pinned open/close, reason programmatic)", async () => {
+      await mount()
+      const closes = record("poetry:tooltip:closed", el("root-a"))
+
+      el("root-a").setAttribute("data-poetry--core--tooltip-open-value", "true")
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("instant-open")
+
+      el("root-a").setAttribute("data-poetry--core--tooltip-open-value", "false")
+      await nextFrame()
+
+      expect(el("a-content").dataset.state).toBe("closed")
+      expect(closes).toEqual([{ reason: "programmatic" }])
+    })
+  })
+})

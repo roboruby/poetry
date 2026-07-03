@@ -14,6 +14,11 @@ import PopperController from "@poetry/controllers/popper_controller"
 import MenuController from "@poetry/controllers/menu_controller"
 import ContextMenuController from "@poetry/controllers/context_menu_controller"
 import MenubarController from "@poetry/controllers/menubar_controller"
+import PopoverController from "@poetry/controllers/popover_controller"
+import TooltipController from "@poetry/controllers/tooltip_controller"
+import HoverCardController from "@poetry/controllers/hover_card_controller"
+import ToastController from "@poetry/controllers/toast_controller"
+import ToasterController from "@poetry/controllers/toaster_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -26,6 +31,11 @@ export { default as PopperController } from "@poetry/controllers/popper_controll
 export { default as MenuController } from "@poetry/controllers/menu_controller"
 export { default as ContextMenuController } from "@poetry/controllers/context_menu_controller"
 export { default as MenubarController } from "@poetry/controllers/menubar_controller"
+export { default as PopoverController } from "@poetry/controllers/popover_controller"
+export { default as TooltipController } from "@poetry/controllers/tooltip_controller"
+export { default as HoverCardController } from "@poetry/controllers/hover_card_controller"
+export { default as ToastController } from "@poetry/controllers/toast_controller"
+export { default as ToasterController } from "@poetry/controllers/toaster_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -34,6 +44,7 @@ export * from "@poetry/controllers/helpers/escape"
 export * from "@poetry/controllers/helpers/focus_guards"
 export * from "@poetry/controllers/helpers/presence"
 export * from "@poetry/controllers/helpers/scroller_geometry"
+export * from "@poetry/controllers/helpers/announce"
 
 // identifier -> controller class, for every sidecar controller poetry ships.
 export const controllers = {
@@ -47,7 +58,12 @@ export const controllers = {
   "poetry--core--popper": PopperController,
   "poetry--core--menu": MenuController,
   "poetry--core--context-menu": ContextMenuController,
-  "poetry--core--menubar": MenubarController
+  "poetry--core--menubar": MenubarController,
+  "poetry--core--popover": PopoverController,
+  "poetry--core--tooltip": TooltipController,
+  "poetry--core--hover-card": HoverCardController,
+  "poetry--core--toast": ToastController,
+  "poetry--core--toaster": ToasterController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

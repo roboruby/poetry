@@ -21,3 +21,19 @@
   --radix-menubar-content-available-height: var(--radix-popper-available-height);
   --radix-menubar-content-transform-origin: var(--radix-popper-transform-origin);
 }
+
+/* The popper-consumer trio (Popover / Tooltip /
+   HoverCard install_actions) - the same alias pattern, one per consumer,
+   so the source-exact origin-(--radix-*-content-transform-origin) classes
+   bind to popper's generic var. */
+[data-slot="popover-content"] {
+  --radix-popover-content-transform-origin: var(--radix-popper-transform-origin);
+}
+
+[data-slot="tooltip-content"] {
+  --radix-tooltip-content-transform-origin: var(--radix-popper-transform-origin);
+}
+
+[data-slot="hover-card-content"] {
+  --radix-hover-card-content-transform-origin: var(--radix-popper-transform-origin);
+}
