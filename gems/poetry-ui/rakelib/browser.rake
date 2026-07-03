@@ -279,7 +279,7 @@ def poetry_ui_visual_diff(baseline_path, candidate_path)
     new_row = new_png.row(y)
     old_row.each_index { |x| diff += 1 unless old_row[x] == new_row[x] }
   end
-  tolerance = POETRY_VISUAL_TOLERANCES.fetch(File.basename(baseline.to_s), POETRY_VISUAL_PIXEL_TOLERANCE)
+  tolerance = POETRY_VISUAL_TOLERANCES.fetch(File.basename(baseline_path.to_s), POETRY_VISUAL_PIXEL_TOLERANCE)
   return nil if diff <= total * tolerance
 
   "#{diff}/#{total} pixels differ (#{(diff * 100.0 / total).round(2)}%)"
