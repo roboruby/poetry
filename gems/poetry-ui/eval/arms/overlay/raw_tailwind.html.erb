@@ -1,0 +1,30 @@
+<%# The raw-Tailwind arm: a FROZEN, representative agent generation for
+    the same overlay task - deliberately realistic, not a strawman: both
+    surfaces get role=dialog and plausible styling, with the typical raw
+    tells (no alertdialog semantics, unlabelled/undescribed surfaces so
+    backdrop clicks silently discard the confirmation, inline onclick
+    wiring, no focus-visible treatment, no focus trap). %>
+<button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700" onclick="document.getElementById('delete-key-modal').classList.remove('hidden')">
+  Delete API key
+</button>
+<div id="delete-key-modal" role="dialog" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('delete-key-modal').classList.add('hidden')"></div>
+  <div class="relative mx-auto mt-32 w-full max-w-md rounded-lg bg-white p-6 shadow-lg">
+    <h2 class="text-lg font-semibold">Delete API key?</h2>
+    <p class="mt-1 text-sm text-gray-500">This immediately revokes access for anything still using it.</p>
+    <div class="mt-4 flex justify-end gap-2">
+      <button class="rounded-md border px-4 py-2 text-sm" onclick="document.getElementById('delete-key-modal').classList.add('hidden')">Cancel</button>
+      <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700">Delete API key</button>
+    </div>
+  </div>
+</div>
+<button class="rounded-md border px-4 py-2 text-sm font-medium hover:bg-gray-50" onclick="document.getElementById('filter-panel').classList.remove('hidden')">
+  Filter results
+</button>
+<div id="filter-panel" role="dialog" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" onclick="document.getElementById('filter-panel').classList.add('hidden')"></div>
+  <div class="absolute inset-y-0 right-0 w-3/4 max-w-sm border-l bg-white p-4 shadow-lg">
+    <h2 class="font-semibold">Filter results</h2>
+    <p class="mt-1 text-sm text-gray-500">Narrow the list by status and owner.</p>
+  </div>
+</div>

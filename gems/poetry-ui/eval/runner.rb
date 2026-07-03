@@ -161,6 +161,36 @@ module Poetry
             })
           ]
         },
+        "overlay" => {
+          "description" => "A destructive 'Delete API key' confirmation that must be answered " \
+                           "(alert dialog), plus a 'Filter results' panel sliding in from the " \
+                           "right edge (sheet)",
+          "gates" => [
+            Gate.new(:two_modal_surfaces, :cross_arm, lambda { |doc, _html|
+              doc.css("dialog, [role=dialog], [role=alertdialog]").size >= 2
+            }),
+            Gate.new(:confirm_has_alertdialog_semantics, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=alertdialog]").any?
+            }),
+            Gate.new(:surfaces_labelled, :cross_arm, lambda { |doc, _html|
+              surfaces = doc.css("dialog, [role=dialog], [role=alertdialog]")
+              surfaces.any? && surfaces.all? { |surface| surface["aria-labelledby"] || surface["aria-label"] }
+            }),
+            Gate.new(:confirmation_described, :cross_arm, lambda { |doc, _html|
+              confirm = doc.css("[role=alertdialog]").first
+              ids = confirm ? confirm["aria-describedby"].to_s.split : []
+              ids.any? && ids.all? { |id| doc.css(%([id="#{id}"])).any? }
+            }),
+            Gate.new(:explicit_choice_controls, :cross_arm, lambda { |doc, _html|
+              labels = doc.css("button, [role=button]").map { |control| control.text.strip }
+              labels.include?("Cancel") && labels.any? { |label| label.include?("Delete API key") }
+            }),
+            Gate.new(:triggers_are_real_buttons, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("button").size >= 2
+            }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [

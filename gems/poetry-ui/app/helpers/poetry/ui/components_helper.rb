@@ -40,6 +40,14 @@ module Poetry
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end
 
+      def poetry_sheet(**, &)
+        render(Poetry::Ui::Sheet::Component.new(**), &)
+      end
+
+      def poetry_alert_dialog(**, &)
+        render(Poetry::Ui::AlertDialog::Component.new(**), &)
+      end
+
       def poetry_input(**)
         render(Poetry::Ui::Input::Component.new(**))
       end

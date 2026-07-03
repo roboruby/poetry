@@ -19,6 +19,8 @@ module Poetry
     DEPENDENCIES = {
       "button" => %w[icon],
       "dialog" => %w[button icon],
+      "sheet" => %w[dialog button icon], # subclasses Dialog::Component (shared dialog controller)
+      "alert_dialog" => %w[dialog button], # shares the dialog controller + posture
       "field" => %w[label input],
       "alert" => %w[icon]
     }.freeze

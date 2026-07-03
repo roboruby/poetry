@@ -1,0 +1,17 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:dialog, **Poetry::Core::HTML::Attributes.new(dialog_attributes).to_attributes) do %>
+    <div data-slot="alert-dialog-header" class="<%= header_classes %>">
+      <% if media? %>
+        <div data-slot="alert-dialog-media" class="<%= media_classes %>"><%= media %></div>
+      <% end %>
+      <h2 id="<%= title_id %>" data-slot="alert-dialog-title" class="<%= title_classes %>"><%= title %></h2>
+      <p id="<%= description_id %>" data-slot="alert-dialog-description" class="<%= css(:description) %>"><%= description %></p>
+    </div>
+    <%= content %>
+    <div data-slot="alert-dialog-footer" class="<%= footer_classes %>">
+      <%= cancel %>
+      <%= action %>
+    </div>
+  <% end %>
+<% end %>

@@ -68,6 +68,54 @@ components:
       div.
     - destructive announces assertively (role=alert) - reserve it for errors, not
       emphasis.
+  poetry/ui/alert_dialog:
+    class_name: Poetry::Ui::AlertDialog::Component
+    identifier: poetry--ui--alert_dialog
+    bem_block: poetry-ui-alert_dialog
+    styles:
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      default: default
+      required: true
+    options: []
+    slots:
+    - name: trigger
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: media
+      many: false
+    - name: action
+      many: false
+    - name: cancel
+      many: false
+    elements:
+    - content
+    - header
+    - header_with_media
+    - header_size_default
+    - header_size_default_with_media
+    - media
+    - media_size_default
+    - title
+    - title_beside_media
+    - description
+    - footer
+    - footer_size_sm
+    capsule: 9fcc1ea30513
+    agent_rules:
+    - 'Destructive confirmations use AlertDialog with with_action(variant: :destructive)
+      - never a bare Dialog, never data-turbo-confirm.'
+    - with_title AND with_description are REQUIRED (both raise).
+    - The action must be an explicit user activation - agents NEVER auto-submit the
+      action.
+    - No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
+    - 'Cancel keeps variant: :outline; do not make cancel visually primary.'
   poetry/ui/attachment:
     class_name: Poetry::Ui::Attachment::Component
     identifier: poetry--ui--attachment
@@ -742,3 +790,47 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+  poetry/ui/sheet:
+    class_name: Poetry::Ui::Sheet::Component
+    identifier: poetry--ui--sheet
+    bem_block: poetry-ui-sheet
+    styles:
+    - name: side
+      type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
+      default: right
+      required: true
+    options:
+    - name: dismissible
+      type: boolean
+      default: true
+    - name: show_close_button
+      type: boolean
+      default: true
+    slots:
+    - name: trigger
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - content
+    - header
+    - title
+    - description
+    - footer
+    - close
+    capsule: 2a8fd1c6854a
+    agent_rules:
+    - Open sheets with with_trigger(...) - never a hand-wired button.
+    - with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
+    - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
+    - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
+    - Do not rebuild a centered Dialog with a Sheet; use Dialog.

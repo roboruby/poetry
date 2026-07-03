@@ -10,11 +10,13 @@ module Poetry
       end
 
       def test_discovers_poetry_ui_components
-        expected = %w[poetry/ui/accordion poetry/ui/alert poetry/ui/attachment poetry/ui/badge poetry/ui/bubble
+        expected = %w[poetry/ui/accordion poetry/ui/alert poetry/ui/alert_dialog poetry/ui/attachment
+                      poetry/ui/badge poetry/ui/bubble
                       poetry/ui/button poetry/ui/card poetry/ui/collapsible poetry/ui/context_menu
                       poetry/ui/dialog poetry/ui/dropdown_menu poetry/ui/field
                       poetry/ui/icon poetry/ui/input poetry/ui/label poetry/ui/link
-                      poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller]
+                      poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
+                      poetry/ui/sheet]
 
         assert_equal expected, registry.entries.keys.sort
       end
