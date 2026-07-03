@@ -186,10 +186,13 @@ module Poetry
           assert_includes heading["class"], "text-muted-foreground"
         end
 
-        def test_separator_is_a_visible_role_separator
+        def test_separator_is_visible_but_decorative
           separator = doc(render_command).css('[data-slot="command-separator"]').first
 
-          assert_equal "separator", separator["role"]
+          # Inside role=listbox only option/group children are valid (axe
+          # aria-required-children) - decorative separator, no role.
+          assert_equal "true", separator["aria-hidden"]
+          assert_nil separator["role"]
           refute separator.key?("hidden"), "server renders separators visible; the controller hides on query"
           assert_includes separator["class"], "-mx-1"
           assert_includes separator["class"], "bg-border"

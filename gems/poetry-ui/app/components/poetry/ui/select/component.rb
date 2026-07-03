@@ -68,8 +68,7 @@ module Poetry
 
         def separator_part(**options)
           attrs = {
-            "data-slot" => "select-separator", "role" => "separator",
-            "aria-orientation" => "horizontal",
+            "data-slot" => "select-separator", "aria-hidden" => "true",
             "class" => Style.css(:separator, class: options.delete(:class))
           }
           content_tag(:div, nil, attrs.merge(options))
@@ -310,9 +309,12 @@ module Poetry
         end
 
         def content_attributes
+          # No widget role here: the popup shell holds scroll buttons too,
+          # and role=listbox permits only option/group children (axe
+          # aria-required-children, 2026-07-03) - the role lives on the
+          # viewport, the options' actual parent.
           attrs = {
-            "id" => content_id, "role" => "listbox",
-            "aria-labelledby" => @trigger_aria["labelledby"].presence || trigger_id,
+            "id" => content_id,
             "tabindex" => "-1", "data-slot" => "select-content", "data-state" => state,
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
@@ -324,7 +326,8 @@ module Poetry
 
         def viewport_attributes
           {
-            "data-slot" => "select-viewport",
+            "data-slot" => "select-viewport", "role" => "listbox",
+            "aria-labelledby" => @trigger_aria["labelledby"].presence || trigger_id,
             "class" => css(:viewport)
           }.merge(select_stimulus { |select| select.with_action(:sync_scroll_buttons, on: :scroll) })
         end

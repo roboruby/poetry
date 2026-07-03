@@ -30,6 +30,8 @@ en:
         uploading: "Uploading attachment"
         processing: "Processing attachment"
         error: "Attachment failed"
+    input_otp:
+      label: "One-time code"
     message_scroller:
       region: "Conversation"
       scroll_to_end: "Scroll to latest messages"

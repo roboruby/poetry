@@ -160,9 +160,13 @@ module Poetry
           end
           attrs.merge!(stimulus_attributes(GROUP) { |group| group.with_action(:check, on: :click) })
 
-          content_tag(:button, attrs.merge(options)) do
-            safe_join([indicator(checked), hidden_radio(item_value, item_id, checked, item_disabled)])
-          end
+          # The native input is the button's SIBLING - a focusable native
+          # control inside a role=radio button is axe nested-interactive
+          # (caught by the a11y rig, 2026-07-03).
+          safe_join([
+                      content_tag(:button, attrs.merge(options)) { indicator(checked) },
+                      hidden_radio(item_value, item_id, checked, item_disabled)
+                    ])
         end
 
         def indicator(checked)

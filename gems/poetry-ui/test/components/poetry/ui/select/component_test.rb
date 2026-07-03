@@ -105,8 +105,14 @@ module Poetry
           content = doc(html).css('[data-slot="select-content"]').first
           trigger = doc(html).css('[data-slot="select-trigger"]').first
 
-          assert_equal "listbox", content["role"]
-          assert_equal trigger["id"], content["aria-labelledby"]
+          # role=listbox lives on the VIEWPORT (options' parent) - the popup
+          # shell holds scroll buttons too (axe aria-required-children,
+          # 2026-07-03).
+          viewport = doc(html).css('[data-slot="select-viewport"]').first
+
+          assert_nil content["role"]
+          assert_equal "listbox", viewport["role"]
+          assert_equal trigger["id"], viewport["aria-labelledby"]
           assert_equal "-1", content["tabindex"]
           assert_equal "closed", content["data-state"]
           assert_equal "bottom", content["data-side"]
@@ -203,8 +209,10 @@ module Poetry
           assert_equal label["id"], group["aria-labelledby"]
           assert_equal "Fruits", label.text
           assert_nil label["role"], "label is a styled heading, no ARIA role (Radix-exact)"
-          assert_equal "separator", separator["role"]
-          assert_equal "horizontal", separator["aria-orientation"]
+          # Decorative inside a listbox: aria-hidden, no separator role
+          # (only option/group children are valid; axe 2026-07-03).
+          assert_equal "true", separator["aria-hidden"]
+          assert_nil separator["role"]
           # Grouped options still land in the shared native select.
           assert_equal(%w[apple other],
                        fragment.css('[data-slot="select-native"] option:not([value=""])').map { |o| o["value"] })

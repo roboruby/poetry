@@ -73,7 +73,9 @@ module Poetry
         # filtered list has no stable sections).
         def separator_part(**options)
           attrs = {
-            "data-slot" => "command-separator", "role" => "separator",
+            # Decorative inside role=listbox (only option/group children
+            # are valid - axe aria-required-children, the Select precedent).
+            "data-slot" => "command-separator", "aria-hidden" => "true",
             "class" => Style.css(:separator, class: options.delete(:class))
           }
           content_tag(:div, nil, attrs.merge(options))

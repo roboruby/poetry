@@ -146,7 +146,9 @@ module Poetry
 
           assert disabled.key?("disabled")
           assert disabled.key?("data-disabled")
-          assert disabled.css("input").first.key?("disabled")
+          # The input is the button's SIBLING (nested-interactive fix) -
+          # find it by the shared item id.
+          assert fragment.css(%(input[id="#{disabled["id"]}-input"])).first.key?("disabled")
           # The tab-stop fallback skips the disabled item.
           assert_equal "-1", disabled["tabindex"]
           assert_equal "0", fragment.css('[data-slot="radio-group-item"]').last["tabindex"]

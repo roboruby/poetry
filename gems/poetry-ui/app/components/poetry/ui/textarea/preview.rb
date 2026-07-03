@@ -25,8 +25,8 @@ module Poetry
         # field-sizing-content auto-grows with the content (Chromium);
         # elsewhere: min-h-16 + the native resize handle.
         def auto_grown
-          render_component(value: "Paragraph one.\n\nParagraph two keeps pushing the height - " \
-                                  "no JS autosizer, the CSS does it.\n\nParagraph three.")
+          render_component("aria-label": "Notes", value: "Paragraph one.\n\nParagraph two keeps pushing the height - " \
+                                                         "no JS autosizer, the CSS does it.\n\nParagraph three.")
         end
 
         def taller_start

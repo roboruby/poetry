@@ -253,6 +253,14 @@ end
 # most this fraction of differing pixels still passes (sub-pixel AA jitter).
 POETRY_VISUAL_PIXEL_TOLERANCE = 0.001
 
+# Per-file overrides for KNOWN nondeterministic renders - each entry
+# carries its reason; anything else rides the global tolerance.
+POETRY_VISUAL_TOLERANCES = {
+  # The open-animation frame: consecutive runs alternate by a stable
+  # ~0.24% (2026-07-03) - timing, not drift.
+  "dialog--default.png" => 0.005
+}.freeze
+
 def poetry_ui_visual_diff(baseline_path, candidate_path)
   baseline = baseline_path.binread
   candidate = candidate_path.binread
@@ -271,7 +279,8 @@ def poetry_ui_visual_diff(baseline_path, candidate_path)
     new_row = new_png.row(y)
     old_row.each_index { |x| diff += 1 unless old_row[x] == new_row[x] }
   end
-  return nil if diff <= total * POETRY_VISUAL_PIXEL_TOLERANCE
+  tolerance = POETRY_VISUAL_TOLERANCES.fetch(File.basename(baseline.to_s), POETRY_VISUAL_PIXEL_TOLERANCE)
+  return nil if diff <= total * tolerance
 
   "#{diff}/#{total} pixels differ (#{(diff * 100.0 / total).round(2)}%)"
 end

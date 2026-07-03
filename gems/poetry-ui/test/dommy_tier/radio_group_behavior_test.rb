@@ -28,7 +28,7 @@ module DommyTier
         (() => Array.from(document.querySelectorAll('[data-slot="radio-group-item"]')).map((item) => [
           item.dataset.value, item.getAttribute("aria-checked"), item.dataset.state,
           item.querySelector('[data-slot="radio-group-indicator"]').hidden,
-          item.querySelector('input[type="radio"]').checked,
+          document.getElementById(item.id + "-input").checked,
           item.getAttribute("tabindex")
         ]))()
       JS
@@ -103,7 +103,10 @@ module DommyTier
       assert_equal [%w[yearly true], %w[monthly false]],
                    items_state(harness).values_at(1, 0).map { |item| item[0, 2] },
                    "...AND checked (selection follows focus - the APG radio contract)"
-      assert harness.evaluate('document.querySelector(\'[data-value="yearly"] input\').checked')
+      yearly_input = %q{document.getElementById(
+        document.querySelector('[data-slot="radio-group-item"][data-value="yearly"]').id + "-input")}
+
+      assert harness.evaluate("#{yearly_input}.checked")
 
       # ArrowRight also navigates (orientation both: all four arrows).
       harness.execute(<<~JS)

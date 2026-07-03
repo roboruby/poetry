@@ -29,7 +29,7 @@ module Poetry
         }.freeze
         # Field control_attributes land on the INPUT (the real control);
         # everything else the caller passes styles the container.
-        INPUT_FACING = %w[id aria-describedby aria-invalid aria-required].freeze
+        INPUT_FACING = %w[id aria-label aria-describedby aria-invalid aria-required].freeze
 
         AGENT_RULES = [
           "Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops, broken " \
@@ -114,6 +114,10 @@ module Poetry
             "autocapitalize" => "off", "autocorrect" => "off",
             "data-slot" => "input-otp", "class" => css(:input)
           }
+          # The invisible input is the ONLY AT surface - it must always
+          # carry a name (axe label, 2026-07-03); callers override via
+          # aria-label / Field labelling.
+          attrs["aria-label"] = t("poetry.input_otp.label")
           attrs["value"] = display_value if display_value.present?
           attrs["disabled"] = true if disabled
           attrs["aria-required"] = true if required
