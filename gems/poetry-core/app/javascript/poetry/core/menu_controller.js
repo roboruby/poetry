@@ -33,16 +33,20 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // the trigger. Each open sub level adds its own dismissable layer (the
 // close-one-level-at-a-time Esc chain for free) + its own roving group; subs
 // join the ROOT focus scope (no nested traps - Radix-exact).
+// Both family spellings resolve: dropdown-menu-* / context-menu-* share the
+// "menu-" suffix; menubar-* is its own word (menubar-item does NOT end with
+// "menu-item"), so every part selector carries the pair.
+const menuSlot = (suffix) => `[data-slot$="menu-${suffix}"], [data-slot$="menubar-${suffix}"]`
 const MENU_SELECTOR = '[role="menu"]'
-const TRIGGER_SELECTOR = '[data-slot$="menu-trigger"]'
-const SUB_SELECTOR = '[data-slot$="menu-sub"]'
-const SUB_TRIGGER_SELECTOR = '[data-slot$="menu-sub-trigger"]'
-const SUB_CONTENT_SELECTOR = '[data-slot$="menu-sub-content"]'
-const CHECKBOX_ITEM_SELECTOR = '[data-slot$="menu-checkbox-item"]'
-const RADIO_ITEM_SELECTOR = '[data-slot$="menu-radio-item"]'
-const RADIO_GROUP_SELECTOR = '[data-slot$="menu-radio-group"]'
+const TRIGGER_SELECTOR = menuSlot("trigger")
+const SUB_SELECTOR = menuSlot("sub")
+const SUB_TRIGGER_SELECTOR = menuSlot("sub-trigger")
+const SUB_CONTENT_SELECTOR = menuSlot("sub-content")
+const CHECKBOX_ITEM_SELECTOR = menuSlot("checkbox-item")
+const RADIO_ITEM_SELECTOR = menuSlot("radio-item")
+const RADIO_GROUP_SELECTOR = menuSlot("radio-group")
 const ITEM_SELECTOR = [
-  '[data-slot$="menu-item"]',
+  menuSlot("item"),
   CHECKBOX_ITEM_SELECTOR,
   RADIO_ITEM_SELECTOR,
   SUB_TRIGGER_SELECTOR
@@ -149,12 +153,18 @@ export default class MenuController extends Controller {
 
   // --- programmatic API (the family surface Menubar's coordinator calls) ---
 
-  open(reason = "pointer") {
-    this.#show(reason instanceof Event ? "pointer" : reason)
+  // focus: false is the coordinator's pointer-toggle contract (a menubar
+  // pointer-open leaves focus on the trigger; keyboard-open focuses an item).
+  open(reason = "pointer", { focus = true } = {}) {
+    if (reason instanceof Event) this.#show("pointer")
+    else this.#show(reason, { focus })
   }
 
-  close(reason = "programmatic") {
-    this.#hide(reason instanceof Event ? "programmatic" : reason)
+  // restoreFocus: false is the hover-slide/edge-navigate contract (the
+  // outgoing menu must not yank focus back mid-swap).
+  close(reason = "programmatic", { restoreFocus = true } = {}) {
+    if (reason instanceof Event) this.#hide("programmatic")
+    else this.#hide(reason, { restoreFocus })
   }
 
   // --- item activation ---
@@ -264,7 +274,10 @@ export default class MenuController extends Controller {
 
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
-    trigger?.setAttribute("aria-expanded", "true")
+    // ContextMenu's trigger SURFACE is not a widget: aria-expanded is only
+    // flipped where the server declared it (DropdownMenu button, Menubar
+    // menuitem) - never introduced onto a role-less span.
+    if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "true")
     if (trigger) setState(trigger, "open")
     enterPresence(content)
     this.#activateLayers(content)
@@ -299,7 +312,7 @@ export default class MenuController extends Controller {
 
     const trigger = this.#trigger()
 
-    trigger?.setAttribute("aria-expanded", "false")
+    if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "false")
     if (trigger) setState(trigger, "closed")
     content.removeAttribute("data-open-reason")
     this.openValue = false

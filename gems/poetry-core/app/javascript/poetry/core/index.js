@@ -12,6 +12,8 @@ import FocusScopeController from "@poetry/controllers/focus_scope_controller"
 import DismissableController from "@poetry/controllers/dismissable_controller"
 import PopperController from "@poetry/controllers/popper_controller"
 import MenuController from "@poetry/controllers/menu_controller"
+import ContextMenuController from "@poetry/controllers/context_menu_controller"
+import MenubarController from "@poetry/controllers/menubar_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -22,6 +24,8 @@ export { default as FocusScopeController } from "@poetry/controllers/focus_scope
 export { default as DismissableController } from "@poetry/controllers/dismissable_controller"
 export { default as PopperController } from "@poetry/controllers/popper_controller"
 export { default as MenuController } from "@poetry/controllers/menu_controller"
+export { default as ContextMenuController } from "@poetry/controllers/context_menu_controller"
+export { default as MenubarController } from "@poetry/controllers/menubar_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -41,7 +45,9 @@ export const controllers = {
   "poetry--core--focus-scope": FocusScopeController,
   "poetry--core--dismissable": DismissableController,
   "poetry--core--popper": PopperController,
-  "poetry--core--menu": MenuController
+  "poetry--core--menu": MenuController,
+  "poetry--core--context-menu": ContextMenuController,
+  "poetry--core--menubar": MenubarController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

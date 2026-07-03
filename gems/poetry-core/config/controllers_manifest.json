@@ -17,6 +17,27 @@
       "toggle"
     ]
   },
+  "poetry--core--context-menu": {
+    "targets": [],
+    "values": {
+      "longPressDelay": {
+        "type": "Number",
+        "default": 700
+      },
+      "disabled": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "disabledValueChanged",
+      "disconnect",
+      "open",
+      "pressCancel",
+      "pressStart"
+    ]
+  },
   "poetry--core--dialog": {
     "targets": [
       "dialog"
@@ -108,6 +129,30 @@
       "subLeave",
       "toggle",
       "triggerKeydown"
+    ]
+  },
+  "poetry--core--menubar": {
+    "targets": [],
+    "values": {
+      "value": {
+        "type": "String",
+        "default": ""
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "hoverSlide",
+      "onMenuClosed",
+      "slideAdjacent",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
     ]
   },
   "poetry--core--message-scroller": {
