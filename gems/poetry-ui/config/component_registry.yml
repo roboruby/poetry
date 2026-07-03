@@ -544,6 +544,58 @@ components:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
       <p>.'
+  poetry/ui/hover_card:
+    class_name: Poetry::Ui::HoverCard::Component
+    identifier: poetry--ui--hover_card
+    bem_block: poetry-ui-hover_card
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: center
+    - name: align_offset
+      type: integer
+      default: 0
+    - name: avoid_collisions
+      type: boolean
+      default: true
+    - name: close_delay
+      type: integer
+      default: 300
+    - name: content_class
+      type: string
+    - name: open
+      type: boolean
+      default: false
+    - name: open_delay
+      type: integer
+      default: 700
+    - name: side
+      type: symbol
+      default: bottom
+    - name: side_offset
+      type: integer
+      default: 4
+    slots:
+    - name: trigger
+      many: false
+    elements:
+    - content
+    capsule: eab2a48763fe
+    agent_rules:
+    - Use poetry_hover_card - never hand-roll hover-div previews.
+    - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
+      a hover card MUST exist at the trigger link''s destination (or another keyboard/touch-reachable
+      surface). The card is pointer-only enrichment - keyboard and touch users never
+      see inside it.'
+    - The trigger must be a REAL link with a real href - it is the fallback, the touch
+      path, and the keyboard path all at once.
+    - NO interactive elements inside the card - they get tabindex=-1 stripped and
+      become pointer-only traps. Actions belong in a Popover or at the destination.
+    - Don't add aria-expanded/haspopup to the trigger - advertising an unreachable
+      surface is worse than silence (Radix-aligned).
+    - Never use HoverCard for hints (Tooltip) or for content users act on (Popover).
+    - Prefer a lazy turbo_frame inside the content for expensive previews.
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -790,6 +842,67 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+  poetry/ui/popover:
+    class_name: Poetry::Ui::Popover::Component
+    identifier: poetry--ui--popover
+    bem_block: poetry-ui-popover
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: center
+    - name: align_offset
+      type: integer
+      default: 0
+    - name: avoid_collisions
+      type: boolean
+      default: true
+    - name: content_class
+      type: string
+    - name: label
+      type: string
+    - name: modal
+      type: boolean
+      default: false
+    - name: open
+      type: boolean
+      default: false
+    - name: side
+      type: symbol
+      default: bottom
+    - name: side_offset
+      type: integer
+      default: 4
+    slots:
+    - name: trigger
+      many: false
+    - name: anchor
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    elements:
+    - content
+    - header
+    - title
+    - description
+    capsule: 763e98d4134d
+    agent_rules:
+    - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
+    - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
+      pointer-only previews use HoverCard.
+    - 'Give the panel a name: use with_title (preferred) or label: - a role=dialog
+      without a name fails the audit.'
+    - 'Icon-only triggers MUST have an accessible name (the composed Button''s label:
+      rule).'
+    - 'Default is NON-modal (modal: false) - reach for modal: true only when stray
+      outside interaction would corrupt the task; reach for Dialog when the task deserves
+      full modality.'
+    - 'Critical-path panels must also be reachable without JS (full page or server-rendered
+      open: true) - popovers are JS-required interaction.'
+    - Do not nest a Popover inside a Popover - restructure (the layer stack allows
+      it; comprehension does not).
   poetry/ui/sheet:
     class_name: Poetry::Ui::Sheet::Component
     identifier: poetry--ui--sheet
@@ -834,3 +947,129 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+  poetry/ui/toast:
+    class_name: Poetry::Ui::Toast::Component
+    identifier: poetry--ui--toast
+    bem_block: poetry-ui-toast
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - success
+      - info
+      - warning
+      - destructive
+      default: default
+      required: true
+    options:
+    - name: closable
+      type: boolean
+      default: true
+    - name: duration
+      type: integer
+    - name: politeness
+      type: symbol
+      default: dynamic
+    slots:
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: action
+      many: false
+    elements:
+    - icon
+    - body
+    - title
+    - description
+    - action
+    - close
+    capsule: 2b0d3dea69ec
+    agent_rules:
+    - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
+      - never hand-append into #poetry-toaster.'
+    - Undo/consequence toasts MUST carry an action slot - action-bearing toasts default
+      to persistent (duration nil); give an explicit duration only when missing the
+      action is safe.
+    - 'variant: :destructive is for failures the user must hear about (it announces
+      ASSERTIVELY); do not use it for styling.'
+    - Never put required interactions in a toast (toasts are missable) - that is AlertDialog.
+    - 'Toasts are supplementary: never the only place an outcome is recorded.'
+  poetry/ui/toaster:
+    class_name: Poetry::Ui::Toaster::Component
+    identifier: poetry--ui--toaster
+    bem_block: poetry-ui-toaster
+    styles:
+    - name: position
+      type: symbol
+      variants:
+      - top-left
+      - top-center
+      - top-right
+      - bottom-left
+      - bottom-center
+      - bottom-right
+      default: bottom-right
+      required: true
+    options:
+    - name: hotkey
+      type: string
+      default: F8
+    - name: limit
+      type: integer
+      default: 3
+    slots: []
+    elements: []
+    capsule: 8f9b118c3055
+    agent_rules:
+    - Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.
+    - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
+      - never hand-append into #poetry-toaster.'
+    - Do not announce() toast content yourself - the toast controller already does;
+      double-announcing is a regression.
+  poetry/ui/tooltip:
+    class_name: Poetry::Ui::Tooltip::Component
+    identifier: poetry--ui--tooltip
+    bem_block: poetry-ui-tooltip
+    styles: []
+    options:
+    - name: align
+      type: symbol
+      default: center
+    - name: content_class
+      type: string
+    - name: delay_duration
+      type: integer
+    - name: disable_hoverable_content
+      type: boolean
+    - name: label
+      type: string
+    - name: open
+      type: boolean
+      default: false
+    - name: side
+      type: symbol
+      default: top
+    - name: side_offset
+      type: integer
+      default: 0
+    slots:
+    - name: trigger
+      many: false
+    elements:
+    - content
+    - arrow
+    capsule: bd9826b97f21
+    agent_rules:
+    - Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
+    - Tooltip content is TEXT and never interactive/focusable - links, buttons, or
+      inputs inside are a contract violation (use Popover).
+    - Never put essential information only in a tooltip - touch users NEVER see it
+      (no long-press path, by design).
+    - 'The tooltip DESCRIBES; it never names. Icon-only triggers still require label:
+      on the composed Button.'
+    - Wrap toolbar/button rows in ONE poetry_tooltip_provider so the warm grace makes
+      the row feel continuous.
+    - 'Rich visual content needs label: (the plain-text announcement).'
+    - Do not pin tooltips open as onboarding callouts - that is a Popover.

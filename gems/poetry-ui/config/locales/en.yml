@@ -6,6 +6,9 @@ en:
       close: "Close"
     sheet:
       close: "Close"
+    toast:
+      region_label: "Notifications (%{hotkey})"
+      close: "Close"
     context_menu:
       menu_label_fallback: "Context menu"
     attachment:

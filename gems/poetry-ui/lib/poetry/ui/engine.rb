@@ -16,6 +16,15 @@ module Poetry
         end
       end
 
+      # turbo_stream.poetry_toast(...) - the canonical server-side toast.
+      # poetry-ui does not depend on turbo-rails; hosts that load it get
+      # the action through turbo's own load hook (a no-op otherwise).
+      initializer "poetry_ui.turbo_stream_actions" do
+        ActiveSupport.on_load(:turbo_streams_tag_builder) do
+          include Poetry::Ui::ToastStreamActions
+        end
+      end
+
       initializer "poetry_ui.previews" do |app|
         app.config.view_component.previews.paths << "#{Poetry::Ui.root}/app/components"
       end

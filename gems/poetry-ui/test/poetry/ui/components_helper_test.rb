@@ -43,6 +43,22 @@ module Poetry
         assert_includes html, ">Settings</h2>"
       end
 
+      def test_tooltip_provider_renders_the_config_carrying_scope
+        html = render_erb(<<~ERB)
+          <%= poetry_tooltip_provider(delay_duration: 700) do %>
+            row
+          <% end %>
+        ERB
+
+        # A config div, NOT a controller - the tooltip controller reads the
+        # closest provider ancestor and keys the warm registry by it.
+        assert_includes html, 'data-slot="tooltip-provider"'
+        assert_includes html, 'data-delay-duration="700"'
+        assert_includes html, 'data-skip-delay-duration="300"'
+        assert_includes html, 'data-disable-hoverable-content="false"'
+        refute_includes html, "data-controller"
+      end
+
       def test_void_component_helpers_render
         html = render_erb(%(<%= poetry_input(type: "email", name: "q") %>))
 

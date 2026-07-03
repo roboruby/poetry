@@ -191,6 +191,84 @@ module Poetry
             Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
           ]
         },
+        "floating" => {
+          "description" => "The popper-consumer trio end-to-end: a 'Dimensions' popover behind an " \
+                           "'Open popover' button hosting a small form, an icon-only 'Add to library' " \
+                           "control with a tooltip, and an '@nextjs' link enriched with a profile " \
+                           "hover-card whose content lives at the link's destination",
+          "gates" => [
+            Gate.new(:popover_dialog_semantics, :cross_arm, ->(doc, _html) { doc.css("[role=dialog]").any? }),
+            Gate.new(:tooltip_semantics, :cross_arm, ->(doc, _html) { doc.css("[role=tooltip]").any? }),
+            Gate.new(:tooltip_never_interactive, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=tooltip]").all? { |tip| tip.css("a, button, input, select, textarea").empty? }
+            }),
+            Gate.new(:icon_controls_named, :cross_arm, lambda { |doc, _html|
+              doc.css("button").all? do |control|
+                control.text.strip.length.positive? || control["aria-label"].to_s.strip.length.positive?
+              end
+            }),
+            Gate.new(:hover_trigger_is_a_real_link, :cross_arm, lambda { |doc, _html|
+              mention = doc.xpath(".//*[normalize-space(text())='@nextjs']")
+                           .find { |node| node.name == "a" || node.ancestors.any? { |a| a.name == "a" } }
+              link = mention && (mention.name == "a" ? mention : mention.ancestors.find { |a| a.name == "a" })
+              # The reachable-elsewhere rule's precondition: a REAL
+              # destination, not an href="#" placeholder.
+              !link.nil? && !link["href"].to_s.strip.empty? && link["href"] != "#"
+            }),
+            Gate.new(:hover_preview_not_interactive, :cross_arm, lambda { |doc, _html|
+              # Locate the preview body by its content: pointer-only
+              # surfaces must not hide interactive controls (a Follow
+              # button some users can never press).
+              joined = doc.xpath(".//*[contains(text(), 'Joined December 2021')]").first
+              container = joined&.ancestors&.find { |node| node.css("h4, .font-semibold").any? } || joined&.parent
+              !container.nil? && container.css("button, input, select, textarea").empty?
+            }),
+            Gate.new(:trigger_advertises_the_popup, :cross_arm, lambda { |doc, _html|
+              controls = doc.css(%([aria-haspopup="dialog"])).filter_map { |node| node["aria-controls"] }
+              controls.any? && controls.all? { |id| doc.css(%([id="#{id}"][role=dialog])).any? }
+            }),
+            Gate.new(:expansion_state_exposed, :cross_arm, lambda { |doc, _html|
+              doc.css(%([aria-haspopup="dialog"][aria-expanded])).any?
+            }),
+            Gate.new(:dialog_named, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=dialog]").all? do |dialog|
+                dialog["aria-label"] || (dialog["aria-labelledby"] &&
+                  doc.css(%([id="#{dialog["aria-labelledby"]}"])).any?)
+              end
+            }),
+            Gate.new(:triggers_are_real_buttons, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("button").any?
+            }),
+            Gate.new(:form_labels_wired, :cross_arm, lambda { |doc, _html|
+              inputs = doc.css("input")
+              inputs.any? && inputs.all? { |input| doc.css(%(label[for="#{input["id"]}"])).any? }
+            }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
+        "toast" => {
+          "description" => "A notifications region hosting a 'Saved' success toast and a destructive " \
+                           "'Payment failed' toast with a 'Retry' action",
+          "gates" => [
+            Gate.new(:region_labelled, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=region][aria-label]").any?
+            }),
+            Gate.new(:announced_to_at, :cross_arm, lambda { |doc, _html|
+              doc.css("[role=status], [role=alert], [aria-live]").any?
+            }),
+            Gate.new(:retry_is_a_real_button, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//button[contains(normalize-space(.), 'Retry')]").any?
+            }),
+            Gate.new(:no_focus_steal, :cross_arm, ->(doc, _html) { doc.css("[autofocus]").empty? }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Saved") && doc.text.include?("Payment failed")
+            }),
+            Gate.new(:dismissal_is_real_wiring, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("button").any?
+            }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [

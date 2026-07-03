@@ -1,0 +1,17 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+    <% if label.present? %>
+      <%# label: substitutes the ANNOUNCED body - rich children stay visual
+          (one content node: visual wrapper hidden from AT, sr-only text
+          carries the announcement). %>
+      <span aria-hidden="true"><%= content %></span>
+      <span class="sr-only"><%= label %></span>
+    <% else %>
+      <%= content %>
+    <% end %>
+    <span data-slot="tooltip-arrow" data-poetry--core--popper-target="arrow" aria-hidden="true">
+      <span class="<%= css(:arrow) %>"></span>
+    </span>
+  <% end %>
+<% end %>

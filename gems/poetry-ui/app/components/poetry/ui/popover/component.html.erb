@@ -1,0 +1,17 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= anchor %>
+  <%= trigger %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+    <% if title? || description? %>
+      <div data-slot="popover-header" class="<%= css(:header) %>">
+        <% if title? %>
+          <div data-slot="popover-title" id="<%= title_id %>" class="<%= css(:title) %>"><%= title %></div>
+        <% end %>
+        <% if description? %>
+          <p data-slot="popover-description" id="<%= description_id %>" class="<%= css(:description) %>"><%= description %></p>
+        <% end %>
+      </div>
+    <% end %>
+    <%= content %>
+  <% end %>
+<% end %>

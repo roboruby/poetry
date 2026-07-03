@@ -1,0 +1,23 @@
+<%= content_tag(:li, **root_attributes.to_attributes) do %>
+  <% if variant_icon %>
+    <span data-slot="toast-icon" aria-hidden="true" class="<%= css(:icon) %>">
+      <%= render Poetry::Ui::Icon::Component.new(name: variant_icon) %>
+    </span>
+  <% end %>
+  <div class="<%= css(:body) %>">
+    <div data-slot="toast-title" class="<%= css(:title) %>"><%= title %></div>
+    <% if description? %>
+      <div data-slot="toast-description" class="<%= css(:description) %>"><%= description %></div>
+    <% end %>
+    <%= content %>
+  </div>
+  <% if action? %><span class="<%= css(:action) %>"><%= action %></span><% end %>
+  <% if closable %>
+    <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                 label: t("poetry.toast.close"),
+                                                 class: css(:close),
+                                                 **close_button_attributes) do %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+    <% end %>
+  <% end %>
+<% end %>

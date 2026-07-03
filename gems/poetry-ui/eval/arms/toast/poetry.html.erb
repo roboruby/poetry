@@ -1,0 +1,16 @@
+<%# The poetry arm: what an agent WITH poetry writes for the toast task
+    "a notifications region hosting a 'Saved' success toast and a
+    destructive 'Payment failed' toast with a 'Retry' action". In a real
+    app the toaster renders once in the layout and the server appends
+    with turbo_stream.poetry_toast; the eval renders the settled DOM. %>
+<%= poetry_toaster do %>
+  <%= poetry_toast(variant: :success) do |toast| %>
+    <% toast.with_title { "Saved" } %>
+    <% toast.with_description { "Your changes are live." } %>
+  <% end %>
+  <%= poetry_toast(variant: :destructive) do |toast| %>
+    <% toast.with_title { "Payment failed" } %>
+    <% toast.with_description { "Your card was declined." } %>
+    <% toast.with_action { "Retry" } %>
+  <% end %>
+<% end %>

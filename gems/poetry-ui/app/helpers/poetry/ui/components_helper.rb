@@ -104,12 +104,50 @@ module Poetry
         tag.div(**attrs.merge(class: classes, data: data), &)
       end
 
+      def poetry_toast(**, &)
+        render(Poetry::Ui::Toast::Component.new(**), &)
+      end
+
+      # The toast viewport - render ONCE in the application layout (it is
+      # data-turbo-permanent; turbo_stream.poetry_toast appends into it).
+      def poetry_toaster(**, &)
+        render(Poetry::Ui::Toaster::Component.new(**), &)
+      end
+
       def poetry_collapsible(**, &)
         render(Poetry::Ui::Collapsible::Component.new(**), &)
       end
 
       def poetry_accordion(**, &)
         render(Poetry::Ui::Accordion::Component.new(**), &)
+      end
+
+      def poetry_popover(**, &)
+        render(Poetry::Ui::Popover::Component.new(**), &)
+      end
+
+      def poetry_tooltip(**, &)
+        render(Poetry::Ui::Tooltip::Component.new(**), &)
+      end
+
+      # The tooltip delay/warm SCOPE - a config-carrying div, NOT a
+      # controller (the DOM ancestor IS Radix's React context; the tooltip
+      # controller reads closest('[data-slot=tooltip-provider]') and keys
+      # the module-level warm registry by it). Wrap control rows in ONE
+      # provider so the warm grace makes the row feel continuous.
+      def poetry_tooltip_provider(delay_duration: 0, skip_delay_duration: 300,
+                                  disable_hoverable_content: false, **attrs, &)
+        data = (attrs.delete(:data) || {}).merge(
+          slot: "tooltip-provider",
+          delay_duration: delay_duration,
+          skip_delay_duration: skip_delay_duration,
+          disable_hoverable_content: disable_hoverable_content
+        )
+        tag.div(**attrs, data: data, &)
+      end
+
+      def poetry_hover_card(**, &)
+        render(Poetry::Ui::HoverCard::Component.new(**), &)
       end
 
       def poetry_dropdown_menu(**, &)
