@@ -34,7 +34,7 @@ const markup = ({ length = 6, groups = null, pattern = "\\d", value = "", disabl
         <input id="otp" data-slot="input-otp" data-poetry--core--otp-target="input"
                type="text" name="code" value="${value}" maxlength="${length}"
                autocomplete="one-time-code" ${disabled ? "disabled" : ""}
-               data-action="input->poetry--core--otp#sync focus->poetry--core--otp#sync blur->poetry--core--otp#sync">
+               data-action="input->poetry--core--otp#sync focus->poetry--core--otp#sync blur->poetry--core--otp#sync paste->poetry--core--otp#paste">
         ${cells.join("")}
       </div>
     </form>`
@@ -121,6 +121,57 @@ describe("poetry--core--otp", () => {
 
     expect(el("otp").value).toBe("123456")
     expect(painted()).toBe("123456")
+  })
+
+  // The REAL paste path: maxlength truncates the raw clipboard text BEFORE
+  // the input event ("123-456" loses its 6 to the dash), so the controller
+  // intercepts the paste event and filters FIRST (2026-07-03 browser pass;
+  // jsdom doesn't enforce maxlength, so write() alone can't cover this).
+  describe("the paste event", () => {
+    const paste = (text) => {
+      const event = new Event("paste", { bubbles: true, cancelable: true })
+      event.clipboardData = { getData: () => text }
+      el("otp").dispatchEvent(event)
+      return event
+    }
+
+    it("filters the clipboard text before insertion - the full code survives its separators", () => {
+      focus()
+      const event = paste("123-456")
+
+      expect(event.defaultPrevented).toBe(true)
+      expect(el("otp").value).toBe("123456")
+      expect(painted()).toBe("123456")
+    })
+
+    it("splices at the selection and truncates to length", () => {
+      focus()
+      write("12")
+      paste("999 999 999")
+
+      expect(el("otp").value).toBe("129999")
+      expect(painted()).toBe("129999")
+    })
+
+    it("a paste over a full selection replaces the value", () => {
+      focus()
+      write("111111")
+      el("otp").setSelectionRange(0, 6)
+      paste("22-33 44")
+
+      expect(el("otp").value).toBe("223344")
+    })
+
+    it("an all-junk paste is a no-op mutation (no change event)", () => {
+      focus()
+      write("12")
+      const events = []
+      el("container").addEventListener("poetry:otp:change", (event) => events.push(event.detail.value))
+      paste("---")
+
+      expect(el("otp").value).toBe("12")
+      expect(events).toEqual([])
+    })
   })
 
   it("pattern-rejected characters never paint", () => {

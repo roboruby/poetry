@@ -148,7 +148,10 @@ export default class SliderController extends Controller {
     this.thumbTargets[index].focus() // drags announce on the focused thumb
 
     if (typeof this.element.setPointerCapture === "function" && event.pointerId !== undefined) {
-      this.element.setPointerCapture(event.pointerId)
+      // NotFoundError when the pointer is already gone (fast-tap touch race:
+      // pointerup can beat the pointerdown action) - capture is an
+      // enhancement, the window listeners below carry the drag without it.
+      try { this.element.setPointerCapture(event.pointerId) } catch { /* stale pointerId */ }
     }
 
     window.addEventListener("pointermove", this.#onPointermove)

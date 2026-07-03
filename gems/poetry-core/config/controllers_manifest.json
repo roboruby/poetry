@@ -337,6 +337,7 @@
       "connect",
       "disconnect",
       "focusInput",
+      "paste",
       "sync"
     ]
   },

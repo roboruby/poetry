@@ -55,6 +55,31 @@ export default class OtpController extends Controller {
     this.#sync()
   }
 
+  // Paste is the one native path maxlength breaks: the browser truncates
+  // the RAW clipboard text to maxlength before any input event, so
+  // "123-456" loses its tail before #sync can filter the dashes (real
+  // Chrome; jsdom doesn't enforce maxlength, which is why the unit tier
+  // never saw it). Intercept, filter FIRST, splice at the selection.
+  paste(event) {
+    const text = event.clipboardData?.getData("text") ?? ""
+
+    event.preventDefault()
+
+    const input = this.inputTarget
+    const accepted = Array.from(text).filter((char) => this.#regex.test(char)).join("")
+    const start = input.selectionStart ?? input.value.length
+    const end = input.selectionEnd ?? start
+    const next = (input.value.slice(0, start) + accepted + input.value.slice(end))
+      .slice(0, this.lengthValue)
+
+    input.value = next
+
+    const caret = Math.min(start + accepted.length, this.lengthValue)
+
+    input.setSelectionRange?.(caret, caret)
+    this.#sync()
+  }
+
   // Click anywhere on the container (gaps, separators - the input already
   // covers the cells at z-20): focus the real control.
   focusInput() {
