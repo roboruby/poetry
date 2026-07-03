@@ -21,7 +21,12 @@ module PoetryTestHelpers
   # HoverCard's missing href) asserts through this.
   def capture_rails_warnings
     sink = []
-    logger = Object.new
+    # A REAL logger (to the null device), not a bare Object stub: anything
+    # instrumented inside the block (LogSubscribers call debug?/info?)
+    # must keep working, or a seed-order where the first ActionView event
+    # lands inside a capture poisons every later render (NoMethodError
+    # on the memoized stub - an order-dependent flake caught 2026-07-03).
+    logger = ActiveSupport::Logger.new(File::NULL)
     logger.define_singleton_method(:warn) { |message = nil| sink << message }
     previous = Rails.logger
     Rails.logger = logger

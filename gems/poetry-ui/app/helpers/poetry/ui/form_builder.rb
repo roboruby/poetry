@@ -15,22 +15,25 @@ module Poetry
     #
     # Usage: form_with(model:, builder: Poetry::Ui::FormBuilder).
     class FormBuilder < ActionView::Helpers::FormBuilder
-      def field(method, type: "text", hint: nil, placeholder: nil, **input_options)
-        field_component = Field::Component.new(
-          id: field_id(method),
-          label_text: object.class.human_attribute_name(method),
-          hint: hint,
-          error: error_for(method),
-          required: required?(method)
-        )
+      # One field entrypoint for field-shaped controls: as: :input (the
+      # default, with type:) or as: :textarea (rows: passes through) -
+      # Own-line controls slot in as as: values; group-shaped
+      # controls get dedicated methods (radio_group, slider, otp_field).
+      def field(method, as: :input, hint: nil, **input_options)
+        field_component = field_for(method, hint: hint)
+        control_options = {
+          name: field_name(method),
+          value: object.public_send(method).presence&.to_s,
+          **input_options,
+          **field_component.control_attributes.transform_keys(&:to_sym)
+        }
         @template.render(field_component) do
-          @template.render Input::Component.new(
-            type: type,
-            name: field_name(method),
-            value: object.public_send(method).presence&.to_s,
-            placeholder: placeholder,
-            **input_options,
-            **field_component.control_attributes.transform_keys(&:to_sym)
+          @template.render(
+            if as == :textarea
+              Textarea::Component.new(**control_options)
+            else
+              Input::Component.new(**control_options)
+            end
           )
         end
       end
@@ -52,7 +55,100 @@ module Poetry
         @template.render Switch::Component.new(**toggle_options(method, options, checked_value, unchecked_value))
       end
 
+      # The collection_radio_buttons-equivalent (the exclusive-choice
+      # story): a Field wrapping a RadioGroup, items from the collection
+      # ([[value, label], ...] pairs or bare values), value/label/error/
+      # required derived from the object. Serialization is byte-identical
+      # to collection_radio_buttons (one hidden native radio per item,
+      # shared name; nothing submits when none is checked).
+      def radio_group(method, collection, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        @template.render(field_component) do
+          @template.render RadioGroup::Component.new(
+            name: field_name(method),
+            value: object.public_send(method).presence&.to_s,
+            required: required?(method),
+            invalid: field_component.invalid?,
+            # The group name doubles the visible Field label (aria-label -
+            # the Field's label element carries no id to point
+            # aria-labelledby at).
+            label: field_component.label_text,
+            **group_control_attributes(field_component),
+            **options.transform_keys(&:to_sym)
+          ) do |group|
+            collection.each do |item|
+              value, label = item.is_a?(Array) ? item : [item, item.to_s.humanize]
+              group.with_item(value: value, label: label)
+            end
+          end
+        end
+      end
+
+      # The bounded-numeric story: form.slider(:volume) single (label from
+      # human_attribute_name), form.slider(:price_range, range: true,
+      # label: [...]) reads an Array[2] and submits name[] (params:
+      # ["200", "800"] - Rails' own array convention). Field wraps for
+      # hint/error; the describedby lands on each THUMB.
+      def slider(method, range: false, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        value = object.public_send(method)
+        slider_options = {
+          name: field_name(method),
+          label: options.delete(:label) || (range ? nil : field_component.label_text),
+          **group_control_attributes(field_component),
+          **options.transform_keys(&:to_sym)
+        }
+        describedby = slider_options.delete(:"aria-describedby")
+        slider_options[:described_by] = describedby if describedby
+        if range
+          slider_options[:values] = Array(value).presence ||
+                                    [slider_options.fetch(:min, 0), slider_options.fetch(:max, 100)]
+        else
+          slider_options[:value] = value
+        end
+        @template.render(field_component) do
+          @template.render Slider::Component.new(**slider_options)
+        end
+      end
+
+      # The verification-code story: form.otp_field(:code, length: 6) - a
+      # Field wrapping an InputOTP, label/error/required from the object.
+      # The value is deliberately NEVER round-tripped (a rejected code is
+      # dead; re-rendering it invites resubmit-the-same-wrong-code loops)
+      # - pass value: explicitly to override.
+      def otp_field(method, length: 6, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        @template.render(field_component) do
+          @template.render InputOtp::Component.new(
+            name: field_name(method),
+            length: length,
+            required: required?(method),
+            invalid: field_component.invalid?,
+            **field_component.control_attributes.slice("id", "aria-describedby").transform_keys(&:to_sym),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
       private
+
+      # Group-shaped controls take the id (item ids derive from it) and
+      # the describedby wiring from the Field; invalid/required ride the
+      # component's own options (aria-invalid belongs on the ITEMS, not
+      # the root).
+      def group_control_attributes(field_component)
+        field_component.control_attributes.slice("id", "aria-describedby").transform_keys(&:to_sym)
+      end
+
+      def field_for(method, hint: nil)
+        Field::Component.new(
+          id: field_id(method),
+          label_text: object.class.human_attribute_name(method),
+          hint: hint,
+          error: error_for(method),
+          required: required?(method)
+        )
+      end
 
       # Shared derivation for the toggle-family builder methods: everything
       # from the object, never hand-wired. required maps to aria-required

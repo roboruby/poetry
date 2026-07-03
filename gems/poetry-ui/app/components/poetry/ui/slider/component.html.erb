@@ -1,0 +1,13 @@
+<%# Track + range ride the geometry vars; each thumb sits in an
+    absolutely positioned anchor (Radix's thumb-wrapper span, poetry
+    edition) with its hidden input alongside - thumbs and inputs stay
+    index-aligned with the value array. %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, content_tag(:div, nil, **range_attributes), **track_attributes) %>
+  <% thumb_values.each_index do |index| %>
+    <%= content_tag(:span, **anchor_attributes(index)) do %>
+      <%= content_tag(:div, nil, **thumb_attributes(index)) %>
+      <%= tag.input(**input_attributes(index)) %>
+    <% end %>
+  <% end %>
+<% end %>

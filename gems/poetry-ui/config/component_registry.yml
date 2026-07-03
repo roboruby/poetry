@@ -689,6 +689,56 @@ components:
       wires ids, errors, and aria).
     - Error styling comes from aria-invalid, set from model errors - never hand-toggle
       error classes.
+  poetry/ui/input_otp:
+    class_name: Poetry::Ui::InputOtp::Component
+    identifier: poetry--ui--input_otp
+    bem_block: poetry-ui-input_otp
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: groups
+      type:
+    - name: invalid
+      type: boolean
+      default: false
+    - name: length
+      type: integer
+      required: true
+    - name: name
+      type: string
+      required: true
+    - name: pattern
+      type:
+      default: digits
+    - name: required
+      type: boolean
+      default: false
+    - name: separator
+      type: boolean
+      default: true
+    - name: value
+      type: string
+    slots: []
+    elements:
+    - input
+    - group
+    - slot
+    - caret
+    - caret_bar
+    capsule: 2dbf5afbe2b5
+    agent_rules:
+    - Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops,
+      broken paste, broken SMS autofill, unnameable cells).
+    - Label via Field always ('Verification code'); put the length in the hint.
+    - groups must sum to length (ArgumentError).
+    - Do NOT auto-submit on poetry:otp:complete without a visible confirm affordance
+      - silent submit on the 6th keystroke strands users who mistyped char 3.
+    - 'Never pre-fill value: with a real code in previews/test fixtures beyond dummies;
+      never log the value (it is a live credential).'
+    - InputOTP is for CODES - passwords use Input type=password, longer identifiers
+      use Input.
   poetry/ui/label:
     class_name: Poetry::Ui::Label::Component
     identifier: poetry--ui--label
@@ -949,6 +999,58 @@ components:
       open: true) - popovers are JS-required interaction.'
     - Do not nest a Popover inside a Popover - restructure (the layer stack allows
       it; comprehension does not).
+  poetry/ui/radio_group:
+    class_name: Poetry::Ui::RadioGroup::Component
+    identifier: poetry--ui--radio_group
+    bem_block: poetry-ui-radio_group
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: loop
+      type: boolean
+      default: true
+    - name: name
+      type: string
+      required: true
+    - name: orientation
+      type: symbol
+      default: both
+    - name: required
+      type: boolean
+      default: false
+    - name: value
+      type: string
+    slots:
+    - name: items
+      many: true
+    elements:
+    - item
+    - indicator
+    - dot
+    - input
+    - row
+    capsule: 5d535e15c68c
+    agent_rules:
+    - Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
+    - 'Every item MUST have a unique value: (ArgumentError on duplicates).'
+    - 'The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup
+      is an APG violation (ArgumentError).'
+    - 'Pair every item with a visible label (item label: renders the Label for= pairing)
+      - a bare dot is not an option.'
+    - NEVER write data-state without aria-checked (the controller writes both; agents
+      patching DOM must too).
+    - Do not use RadioGroup for navigation or immediate actions; checking must not
+      submit or navigate by itself.
+    - '7+ options: use Select instead.'
+    - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
+      - never a bare red ring.'
   poetry/ui/sheet:
     class_name: Poetry::Ui::Sheet::Component
     identifier: poetry--ui--sheet
@@ -993,6 +1095,71 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+  poetry/ui/slider:
+    class_name: Poetry::Ui::Slider::Component
+    identifier: poetry--ui--slider
+    bem_block: poetry-ui-slider
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: inverted
+      type: boolean
+      default: false
+    - name: label
+      type:
+    - name: labelled_by
+      type: string
+    - name: max
+      type: float
+      default: 100.0
+    - name: min
+      type: float
+      default: 0.0
+    - name: min_steps_between_thumbs
+      type: integer
+      default: 0
+    - name: name
+      type: string
+      required: true
+    - name: orientation
+      type: symbol
+      default: horizontal
+    - name: step
+      type: float
+      default: 1.0
+    - name: value
+      type:
+    - name: value_text
+      type:
+    - name: values
+      type:
+    slots: []
+    elements:
+    - track
+    - range
+    - thumb
+    - anchor
+    - anchor_start
+    - anchor_end
+    capsule: 4854958c1f17
+    agent_rules:
+    - Use poetry_slider / form.slider - never hand-roll a draggable div.
+    - 'Every thumb MUST have a distinct accessible name (label: - array of two for
+      ranges). ArgumentError otherwise.'
+    - 'Give value_text: whenever the number alone is meaningless (''$200'', ''80%'')
+      - SR users hear aria-valuetext.'
+    - 'Range mode: values must be sorted [low, high]; use min_steps_between_thumbs
+      to keep a meaningful gap.'
+    - Do not use Slider for precise known-number entry (use Input type=number) or
+      in no-JS-required forms (native input type=range).
+    - Debounce on poetry:slider:commit, never on :change (change fires every drag
+      frame).
+    - Never transition the thumb/range position with CSS - geometry must track the
+      pointer.
   poetry/ui/switch:
     class_name: Poetry::Ui::Switch::Component
     identifier: poetry--ui--switch
@@ -1042,6 +1209,36 @@ components:
       - never flip UI-only for a setting the user believes is saved.
     - NEVER write data-state without aria-checked and the input sync (the controller
       writes all three).
+  poetry/ui/textarea:
+    class_name: Poetry::Ui::Textarea::Component
+    identifier: poetry--ui--textarea
+    bem_block: poetry-ui-textarea
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: invalid
+      type: boolean
+      default: false
+    - name: name
+      type: string
+    - name: placeholder
+      type: string
+    - name: rows
+      type: integer
+    - name: value
+      type: string
+    slots: []
+    elements: []
+    capsule: a252d80bec23
+    agent_rules:
+    - Wire through Field/FormBuilder (control_attributes) - never hand-write the aria
+      plumbing.
+    - Placeholder is NOT a label - pair with Label/Field always.
+    - Use Textarea for free text; Input for single-line; do not bolt a JS autosizer
+      on (auto-grow is CSS).
+    - Do not set native required - required flows as aria-required via Field.
   poetry/ui/toast:
     class_name: Poetry::Ui::Toast::Component
     identifier: poetry--ui--toast

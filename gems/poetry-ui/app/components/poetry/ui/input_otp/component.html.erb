@@ -1,0 +1,25 @@
+<%# ONE real input over aria-hidden mirror cells. The char renders as the
+    slot's LEADING text node (the controller repaints the same node); the
+    caret element hides server-side - it exists only for the active EMPTY
+    cell under JS. Cells count from 0 across groups (slot order == string
+    index order; the row is dir=ltr). %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= tag.input(**input_attributes.to_attributes) %>
+  <% cell = -1 %>
+  <% group_sizes.each_with_index do |group_size, group_index| %>
+    <div data-slot="input-otp-group" aria-hidden="true" class="<%= css(:group) %>">
+      <% group_size.times do %>
+        <% cell += 1 %>
+        <%= content_tag(:div, **slot_attributes(cell)) do %><%= char_at(cell) %><div data-otp-caret hidden class="<%= css(:caret) %>"><div class="<%= css(:caret_bar) %>"></div></div><% end %>
+      <% end %>
+    </div>
+    <% if separator && group_index < group_sizes.size - 1 %>
+      <%# aria-hidden DESPITE the source's bare role=separator - between
+          chunks of ONE field a semantic separator is AT noise (recorded
+          divergence; the role stays for styling/self-id parity). %>
+      <div data-slot="input-otp-separator" role="separator" aria-hidden="true">
+        <%= render Poetry::Ui::Icon::Component.new(name: :minus) %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

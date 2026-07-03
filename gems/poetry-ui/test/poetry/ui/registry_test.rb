@@ -16,9 +16,10 @@ module Poetry
                       poetry/ui/context_menu
                       poetry/ui/dialog poetry/ui/dropdown_menu poetry/ui/field
                       poetry/ui/hover_card
-                      poetry/ui/icon poetry/ui/input poetry/ui/label poetry/ui/link
+                      poetry/ui/icon poetry/ui/input poetry/ui/input_otp poetry/ui/label poetry/ui/link
                       poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
-                      poetry/ui/popover poetry/ui/sheet poetry/ui/switch poetry/ui/toast poetry/ui/toaster
+                      poetry/ui/popover poetry/ui/radio_group poetry/ui/sheet poetry/ui/slider
+                      poetry/ui/switch poetry/ui/textarea poetry/ui/toast poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/tooltip]
 
         assert_equal expected, registry.entries.keys.sort

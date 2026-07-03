@@ -1,0 +1,4 @@
+<%# Items render as direct children of the radiogroup root (grid gap-3) -
+    the roving collection queries [data-poetry-collection-item] in DOM
+    order; the label-pairing rows are transparent to it. %>
+<%= content_tag(:div, safe_join(items.map(&:to_s)), **root_attributes.to_attributes) %>

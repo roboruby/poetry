@@ -126,6 +126,212 @@ module Poetry
         refute control["aria-required"]
       end
 
+      # -- The radio_group builder method (N5 exclusive choice) --------------
+
+      class Subscription
+        include ActiveModel::Model
+
+        attr_accessor :plan
+
+        validates :plan, presence: true
+      end
+
+      PLAN_ERB = <<~ERB
+        <%= form_with(model: model, url: "/subscriptions", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.radio_group(:plan, [%w[monthly Monthly], %w[yearly Yearly]], hint: "Change anytime.") %>
+        <% end %>
+      ERB
+
+      def render_plan(model)
+        html = ApplicationController.renderer.render(inline: PLAN_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_radio_group_derives_the_field_quartet_and_the_hidden_radios_from_the_object
+        fragment = render_plan(Subscription.new(plan: "yearly"))
+        root = fragment.css('[data-slot="radio-group"]').first
+        inputs = fragment.css('input[type="radio"]')
+
+        assert_equal "poetry_ui_forms_test_subscription_plan", root["id"], "the Field id lands on the root"
+        assert_equal "Plan", root["aria-label"]
+        assert_equal "true", root["aria-required"], "presence validator -> aria-required (root, never native)"
+        assert_includes root["aria-describedby"], "-hint"
+        # collection_radio_buttons-identical serialization: shared derived
+        # name, the object's value checked.
+        assert_equal(%w[poetry_ui_forms_test_subscription[plan] poetry_ui_forms_test_subscription[plan]],
+                     inputs.map { |input| input["name"] })
+        assert inputs.find { |input| input["value"] == "yearly" }.key?("checked")
+        refute inputs.find { |input| input["value"] == "monthly" }.key?("checked")
+        assert(fragment.css("input").none? { |input| input.key?("required") })
+        # Item labels pair via for= the button ids (derived from the root id).
+        assert_equal(2, fragment.css("label").count { |label| label["for"]&.start_with?("#{root["id"]}-") })
+      end
+
+      def test_radio_group_model_errors_flow_into_aria_invalid_items_and_the_root_describedby
+        model = Subscription.new
+        model.validate
+
+        fragment = render_plan(model)
+        root = fragment.css('[data-slot="radio-group"]').first
+        items = fragment.css('[data-slot="radio-group-item"]')
+
+        assert_equal "#{root["id"]}-error #{root["id"]}-hint", root["aria-describedby"],
+                     "error before hint, on the ROOT (group-level)"
+        assert(items.all? { |item| item["aria-invalid"] == "true" }, "the destructive ring on every item")
+        assert_includes fragment.css("[data-slot='field-error']").first.text, "blank"
+        # Nothing checked, nothing submits: no radio checked, no hidden
+        # blank input inside the group.
+        assert(fragment.css("input").none? { |input| input.key?("checked") })
+        assert_empty root.css('input[type="hidden"]')
+      end
+
+      # -- The slider builder method (N5 bounded numeric) ---------------------
+
+      class Mixer
+        include ActiveModel::Model
+
+        attr_accessor :volume, :price_range
+      end
+
+      MIXER_ERB = <<~ERB
+        <%= form_with(model: model, url: "/mixers", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.slider(:volume, hint: "Applies immediately.") %>
+          <%= form.slider(:price_range, range: true, min: 0, max: 1000, step: 10,
+                          label: ["Minimum price", "Maximum price"]) %>
+        <% end %>
+      ERB
+
+      def render_mixer(model)
+        html = ApplicationController.renderer.render(inline: MIXER_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_slider_derives_the_single_thumb_from_the_object_with_the_field_wiring
+        fragment = render_mixer(Mixer.new(volume: 40, price_range: [200, 800]))
+        single = fragment.css('[data-slot="slider"]').first
+        thumb = single.css('[data-slot="slider-thumb"]').first
+
+        assert_equal "poetry_ui_forms_test_mixer_volume", single["id"]
+        assert_equal "40", thumb["aria-valuenow"]
+        assert_equal "Volume", thumb["aria-label"], "single mode derives the thumb name from the field label"
+        assert_includes thumb["aria-describedby"], "-hint", "Field hint wires to the THUMB"
+        assert_equal "poetry_ui_forms_test_mixer[volume]", single.css("input").first["name"]
+      end
+
+      def test_slider_range_reads_the_array_and_submits_rails_array_params
+        fragment = render_mixer(Mixer.new(price_range: [200, 800]))
+        range = fragment.css('[data-slot="slider"]').last
+        inputs = range.css("input")
+
+        assert_equal 2, range.css('[data-slot="slider-thumb"]').size
+        assert_equal(%w[poetry_ui_forms_test_mixer[price_range][] poetry_ui_forms_test_mixer[price_range][]],
+                     inputs.map { |input| input["name"] }, "name[] - params: ['200', '800']")
+        assert_equal(%w[200 800], inputs.map { |input| input["value"] })
+        assert_equal(["Minimum price", "Maximum price"],
+                     range.css('[data-slot="slider-thumb"]').map { |thumb| thumb["aria-label"] })
+      end
+
+      def test_slider_range_without_a_value_defaults_to_the_full_span
+        fragment = render_mixer(Mixer.new(volume: 10))
+        range = fragment.css('[data-slot="slider"]').last
+
+        assert_equal(%w[0 1000],
+                     range.css('[data-slot="slider-thumb"]').map { |thumb| thumb["aria-valuenow"] })
+      end
+
+      # -- The as: :textarea switch on #field (N5 field-shaped controls) ------
+
+      class Profile
+        include ActiveModel::Model
+
+        attr_accessor :bio
+
+        validates :bio, presence: true
+      end
+
+      BIO_ERB = <<~ERB
+        <%= form_with(model: model, url: "/profiles", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.field(:bio, as: :textarea, rows: 4, hint: "Markdown is supported.") %>
+        <% end %>
+      ERB
+
+      def render_bio(model)
+        html = ApplicationController.renderer.render(inline: BIO_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_field_as_textarea_renders_the_wired_quartet
+        fragment = render_bio(Profile.new(bio: "Hello.\nWorld."))
+        textarea = fragment.css("textarea").first
+
+        assert_equal "poetry_ui_forms_test_profile_bio", textarea["id"]
+        assert_equal "poetry_ui_forms_test_profile[bio]", textarea["name"]
+        assert_equal "4", textarea["rows"]
+        assert_equal "Hello.\nWorld.", textarea.text, "the value is the element content"
+        assert_equal "true", textarea["aria-required"]
+        refute textarea.key?("required")
+        assert_includes textarea["aria-describedby"], "-hint"
+        assert_equal 1, fragment.css(%(label[for="#{textarea["id"]}"])).size
+      end
+
+      def test_field_as_textarea_model_errors_flow
+        model = Profile.new
+        model.validate
+
+        textarea = render_bio(model).css("textarea").first
+
+        assert_equal "true", textarea["aria-invalid"]
+        assert_equal "#{textarea["id"]}-error #{textarea["id"]}-hint", textarea["aria-describedby"]
+      end
+
+      # -- The otp_field builder method (N5 verification codes) ---------------
+
+      class Verification
+        include ActiveModel::Model
+
+        attr_accessor :code
+
+        validates :code, presence: true
+      end
+
+      CODE_ERB = <<~ERB
+        <%= form_with(model: model, url: "/verifications", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.otp_field(:code, groups: [3, 3], hint: "Enter the 6-digit code we sent you.") %>
+        <% end %>
+      ERB
+
+      def render_code(model)
+        html = ApplicationController.renderer.render(inline: CODE_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_otp_field_wires_the_one_real_input_through_the_field
+        fragment = render_code(Verification.new)
+        input = fragment.css('[data-slot="input-otp"]').first
+
+        assert_equal "poetry_ui_forms_test_verification_code", input["id"], "the label-for target is the input"
+        assert_equal "poetry_ui_forms_test_verification[code]", input["name"]
+        assert_equal "one-time-code", input["autocomplete"]
+        assert_equal "true", input["aria-required"]
+        refute input.key?("required")
+        assert_includes input["aria-describedby"], "-hint"
+        assert_equal 1, fragment.css(%(label[for="#{input["id"]}"])).size
+        assert_equal 6, fragment.css('[data-slot="input-otp-slot"]').size
+      end
+
+      def test_otp_field_never_round_trips_the_rejected_code
+        model = Verification.new(code: "123456")
+        model.errors.add(:code, "is invalid")
+
+        fragment = render_code(model)
+        input = fragment.css('[data-slot="input-otp"]').first
+
+        assert_nil input["value"], "a rejected code is dead - blanked on the error re-render"
+        assert_equal "true", input["aria-invalid"]
+        assert_equal "#{input["id"]}-error #{input["id"]}-hint", input["aria-describedby"]
+        assert(fragment.css('[data-slot="input-otp-slot"]').all? { |slot| slot["aria-invalid"] == "true" })
+      end
+
       def test_labels_come_from_i18n
         I18n.backend.store_translations(:en, activemodel: {
                                           attributes: { "poetry/ui/forms_test/contact": { email: "Work email" } }

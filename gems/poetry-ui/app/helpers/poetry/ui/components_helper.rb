@@ -52,6 +52,19 @@ module Poetry
         render(Poetry::Ui::Input::Component.new(**))
       end
 
+      # Input's multiline sibling - the value is the CONTENT (value:), not
+      # a block; auto-grow is CSS (field-sizing-content), never a JS
+      # autosizer.
+      def poetry_textarea(**)
+        render(Poetry::Ui::Textarea::Component.new(**))
+      end
+
+      # Fixed-length code entry: ONE native input over aria-hidden cells
+      # (paste/SMS-autofill/IME all native) - never per-cell inputs.
+      def poetry_input_otp(**)
+        render(Poetry::Ui::InputOtp::Component.new(**))
+      end
+
       def poetry_label(**, &)
         render(Poetry::Ui::Label::Component.new(**), &)
       end
@@ -70,6 +83,21 @@ module Poetry
       # values staged for submit belong to poetry_checkbox.
       def poetry_switch(**)
         render(Poetry::Ui::Switch::Component.new(**))
+      end
+
+      # The exclusive-choice control: group.with_item(value:, label:) -
+      # one hidden native radio per item (collection_radio_buttons-exact
+      # serialization). The group MUST be labelled (label: or
+      # aria-labelledby).
+      def poetry_radio_group(**, &)
+        render(Poetry::Ui::RadioGroup::Component.new(**), &)
+      end
+
+      # Void control - numeric value (value:) or [low, high] range
+      # (values:) on a continuous track; every thumb needs a distinct
+      # accessible name (label:).
+      def poetry_slider(**)
+        render(Poetry::Ui::Slider::Component.new(**))
       end
 
       def poetry_bubble(**, &)

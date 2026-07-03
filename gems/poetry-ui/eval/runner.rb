@@ -82,8 +82,10 @@ module Poetry
         },
         "form_controls" => {
           "description" => "A notification settings panel: an 'Accept terms' checkbox staged for " \
-                           "submit, an instant-effect 'Email alerts' switch, a bookmark toggle, and " \
-                           "an exclusive list/grid view switcher",
+                           "submit, an instant-effect 'Email alerts' switch, a bookmark toggle, " \
+                           "an exclusive list/grid view switcher, a submitting digest-frequency " \
+                           "choice, an 'Alert volume' slider, an 'Unsubscribe note' textarea, and " \
+                           "a 6-digit 'Confirmation code' entry",
           "gates" => [
             Gate.new(:checkbox_participates_in_the_form, :cross_arm, lambda { |doc, _html|
               # The family boundary: a checkbox STAGES a value - checkbox
@@ -104,6 +106,29 @@ module Poetry
               # buttons whose exclusivity lives only in JS promise nothing.
               doc.css(%([role="radiogroup"] [role="radio"][aria-checked])).any? ||
                 doc.css("input[type=radio]").any?
+            }),
+            Gate.new(:slider_wears_the_apg_surface, :cross_arm, lambda { |doc, _html|
+              # A slider is operable/announceable only as role=slider with
+              # the aria-value trio (or a native input type=range) - a
+              # styled div tracks the pointer and nothing else.
+              doc.css(%([role="slider"][aria-valuenow][aria-valuemin][aria-valuemax])).any? ||
+                doc.css("input[type=range]").any?
+            }),
+            Gate.new(:code_entry_is_one_autofillable_input, :cross_arm, lambda { |doc, _html|
+              # The OTP contract: ONE native input carrying
+              # autocomplete=one-time-code (paste + SMS autofill + a
+              # single Tab stop) - the per-cell six-input build fails all
+              # three ways.
+              doc.css(%(input[autocomplete="one-time-code"])).size == 1 &&
+                doc.css(%(input[maxlength="1"])).empty?
+            }),
+            Gate.new(:textarea_labelled_not_placeholdered, :cross_arm, lambda { |doc, _html|
+              # Placeholder is NOT a label (the Input rule at textarea
+              # scale): every textarea needs a real label pairing.
+              textareas = doc.css("textarea")
+              textareas.any? && textareas.all? do |control|
+                control["aria-label"] || doc.css(%(label[for="#{control["id"]}"])).any?
+              end
             }),
             Gate.new(:controls_named, :cross_arm, lambda { |doc, _html|
               doc.css("button, [role=button], [role=checkbox], [role=switch], [role=radio]").all? do |control|
