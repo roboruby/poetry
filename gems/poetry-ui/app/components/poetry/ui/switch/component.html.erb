@@ -1,0 +1,15 @@
+<%# Fragment - button + input(s) as SIBLINGS, no wrapper (the peer
+    contract; Checkbox-identical). The thumb slide is pure CSS off
+    data-state; the controller reflects it on every part. %>
+<%= content_tag(:button, **root_attributes.to_attributes) do %>
+  <span data-slot="switch-thumb" data-state="<%= state %>" aria-hidden="true" class="<%= css(:thumb) %>"></span>
+<% end %>
+<% if form_participant? %>
+  <%# Rails parity hidden FIRST (unchecked_value submits when off). %>
+  <% if unchecked_value %>
+    <%= tag.input(type: "hidden", name: name, value: unchecked_value, disabled: disabled) %>
+  <% end %>
+  <%= tag.input(type: "checkbox", id: input_id, name: name, value: value, checked: checked,
+                disabled: disabled, "data-slot": "switch-input", "aria-hidden": true,
+                tabindex: "-1", class: css(:input)) %>
+<% end %>

@@ -60,6 +60,18 @@ module Poetry
         render(Poetry::Ui::Field::Component.new(**), &)
       end
 
+      # Void control (no content block) - the label is EXTERNAL (Label/Field
+      # for= the button id) or label: (the aria-label fallback).
+      def poetry_checkbox(**)
+        render(Poetry::Ui::Checkbox::Component.new(**))
+      end
+
+      # Void control - instant-effect on/off (role=switch announces on/off);
+      # values staged for submit belong to poetry_checkbox.
+      def poetry_switch(**)
+        render(Poetry::Ui::Switch::Component.new(**))
+      end
+
       def poetry_bubble(**, &)
         render(Poetry::Ui::Bubble::Component.new(**), &)
       end
@@ -68,6 +80,18 @@ module Poetry
       # dictionary element, not a component (see Bubble).
       def poetry_bubble_group(**attrs, &)
         poetry_chat_group(Poetry::Ui::Bubble::Style, "bubble-group", **attrs, &)
+      end
+
+      # Pressed-state button (aria-pressed) - UI state, NOT form data; the
+      # content block is the icon/text (icon-only requires label:).
+      def poetry_toggle(**, &)
+        render(Poetry::Ui::Toggle::Component.new(**), &)
+      end
+
+      # A set of Toggle-styled items under one value machine + one roving
+      # tab stop: group.with_item(value:, label:) { icon/text }.
+      def poetry_toggle_group(**, &)
+        render(Poetry::Ui::ToggleGroup::Component.new(**), &)
       end
 
       def poetry_message(**, &)

@@ -1,0 +1,4 @@
+<%# Items render as DIRECT children - the segmented data-[spacing=0]
+    first:/last:/border-l-0 chain depends on DOM order with no stray
+    wrappers between items (stream-appends must land inside this root). %>
+<%= content_tag(:div, safe_join(items.map(&:to_s)), **root_attributes.to_attributes) %>

@@ -330,6 +330,52 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+  poetry/ui/checkbox:
+    class_name: Poetry::Ui::Checkbox::Component
+    identifier: poetry--ui--checkbox
+    bem_block: poetry-ui-checkbox
+    styles: []
+    options:
+    - name: checked
+      type: checked_state
+      default: false
+    - name: disabled
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: name
+      type: string
+    - name: required
+      type: boolean
+      default: false
+    - name: unchecked_value
+      type: string
+      default: '0'
+    - name: value
+      type: string
+      default: '1'
+    slots: []
+    elements:
+    - indicator
+    - icon
+    - input
+    capsule: f7daf6e42cdf
+    agent_rules:
+    - Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with
+      hand-written Tailwind, and never a hand-rolled button[role=checkbox].
+    - 'Always give it a name: in forms - a checkbox without one submits nothing (visual-only
+      mode is for controlled UI like DataTable row selection ONLY).'
+    - 'Every checkbox needs an accessible name: a Label/Field for= association (preferred)
+      or label:.'
+    - Indeterminate is set programmatically/server-side only - no user gesture produces
+      it; use it for select-all parents.
+    - Instant-effect settings use Switch; pressed UI tools use Toggle; one-of-N uses
+      RadioGroup.
+    - NEVER write data-state without aria-checked and the input's checked property
+      (the controller writes all three; agents patching DOM must too).
+    - Don't suppress unchecked_value unless using the array idiom - an unchecked box
+      that submits nothing silently keeps the old server value.
   poetry/ui/collapsible:
     class_name: Poetry::Ui::Collapsible::Component
     identifier: poetry--ui--collapsible
@@ -947,6 +993,55 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+  poetry/ui/switch:
+    class_name: Poetry::Ui::Switch::Component
+    identifier: poetry--ui--switch
+    bem_block: poetry-ui-switch
+    styles:
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      default: default
+      required: true
+    options:
+    - name: checked
+      type: boolean
+      default: false
+    - name: disabled
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: name
+      type: string
+    - name: required
+      type: boolean
+      default: false
+    - name: unchecked_value
+      type: string
+      default: '0'
+    - name: value
+      type: string
+      default: '1'
+    slots: []
+    elements:
+    - thumb
+    - input
+    capsule: 571561d4338b
+    agent_rules:
+    - Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch
+      announces on/off; that's the point).
+    - Switch = instant effect; Checkbox = staged for submit. If nothing happens until
+      a Save button, use Checkbox.
+    - Every switch needs an accessible name (Label/Field for= or label:).
+    - Switches are BINARY - no indeterminate, ever (ArgumentError). A third state
+      means a different component.
+    - The instant-effect recipe pairs the flip with server persistence (Turbo auto-submit)
+      - never flip UI-only for a setting the user believes is saved.
+    - NEVER write data-state without aria-checked and the input sync (the controller
+      writes all three).
   poetry/ui/toast:
     class_name: Poetry::Ui::Toast::Component
     identifier: poetry--ui--toast
@@ -1028,6 +1123,110 @@ components:
       - never hand-append into #poetry-toaster.'
     - Do not announce() toast content yourself - the toast controller already does;
       double-announcing is a regression.
+  poetry/ui/toggle:
+    class_name: Poetry::Ui::Toggle::Component
+    identifier: poetry--ui--toggle
+    bem_block: poetry-ui-toggle
+    styles:
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      - lg
+      default: default
+      required: true
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - outline
+      default: default
+      required: true
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: pressed
+      type: boolean
+      default: false
+    slots: []
+    elements: []
+    capsule: c64c999dc02a
+    agent_rules:
+    - Use poetry_toggle - never a Button with hand-managed aria-pressed.
+    - 'Toggle is UI state, NOT form data: never try to submit it. Form value -> Checkbox;
+      instant setting -> Switch; exclusive/grouped -> ToggleGroup.'
+    - Icon-only toggles MUST pass label:, and the label must NOT change with state
+      ('Bookmark', never 'Remove bookmark').
+    - aria-pressed is the vocabulary - never aria-checked or aria-expanded on a Toggle.
+    - Wire the EFFECT to poetry:toggle:change (or click) and revert via set(false)
+      on failure - a pressed toggle whose effect failed is a lie.
+    - Pressed visual is accent - don't override data-[state=on] colors per-instance
+      (theme-level only).
+  poetry/ui/toggle_group:
+    class_name: Poetry::Ui::ToggleGroup::Component
+    identifier: poetry--ui--toggle_group
+    bem_block: poetry-ui-toggle_group
+    styles:
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      - lg
+      default: default
+      required: true
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - outline
+      default: default
+      required: true
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: orientation
+      type: symbol
+      default: horizontal
+    - name: spacing
+      type: integer
+      default: 0
+    - name: type
+      type: symbol
+      default: single
+    - name: value
+      type: string
+    - name: values
+      type: list
+      default: dynamic
+    slots:
+    - name: items
+      many: true
+    elements:
+    - item
+    capsule: 2d7e0714a9b8
+    agent_rules:
+    - Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity
+      logic.
+    - 'ToggleGroup is UI state, NOT form data: submitting single-select -> RadioGroup;
+      submitting multi-select -> Checkbox group. No name: exists; don''t route around
+      it.'
+    - 'Every item MUST have a unique value: (ArgumentError on duplicates); icon-only
+      items MUST pass label: (state-invariant).'
+    - 'Name the group via label: - a nameless radiogroup/toolbar fails the audit.'
+    - Exclusive view/mode switching that shows PANELS is Tabs (aria-selected + tabpanels),
+      not a single ToggleGroup.
+    - 'Never mix vocabularies: single items carry aria-checked, multiple carry aria-pressed
+      - the controller enforces it; agents patching DOM must too.'
+    - single deselects to empty by re-press (Radix-exact) - if your UI needs always-one-selected,
+      handle the empty change in the host.
   poetry/ui/tooltip:
     class_name: Poetry::Ui::Tooltip::Component
     identifier: poetry--ui--tooltip

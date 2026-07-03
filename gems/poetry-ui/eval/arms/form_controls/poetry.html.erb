@@ -1,0 +1,24 @@
+<%# The poetry arm: "a notification settings panel - an 'Accept terms'
+    checkbox staged for submit, an instant-effect 'Email alerts' switch, a
+    bookmark toggle, and an exclusive list/grid view switcher". The family
+    decision tree on one panel: Checkbox stages a form value (the hidden
+    native input IS the store), Switch flips an effect now (role=switch
+    announces on/off), Toggle is pressed UI state (no form machinery), and
+    the single ToggleGroup wears radiogroup semantics. %>
+<div class="flex w-fit flex-col gap-6">
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "settings[terms]", id: "settings-terms") %>
+    <%= poetry_label(for_id: "settings-terms") { "Accept terms and conditions" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "settings[email_alerts]", checked: true, id: "settings-email-alerts") %>
+    <%= poetry_label(for_id: "settings-email-alerts") { "Email alerts" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_toggle(variant: :outline, pressed: true, label: "Bookmark") { poetry_icon(name: :bookmark) } %>
+    <%= poetry_toggle_group(type: :single, variant: :outline, value: "list", label: "View") do |group| %>
+      <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list) } %>
+      <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
+    <% end %>
+  </div>
+</div>

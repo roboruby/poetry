@@ -80,6 +80,45 @@ module Poetry
             })
           ]
         },
+        "form_controls" => {
+          "description" => "A notification settings panel: an 'Accept terms' checkbox staged for " \
+                           "submit, an instant-effect 'Email alerts' switch, a bookmark toggle, and " \
+                           "an exclusive list/grid view switcher",
+          "gates" => [
+            Gate.new(:checkbox_participates_in_the_form, :cross_arm, lambda { |doc, _html|
+              # The family boundary: a checkbox STAGES a value - checkbox
+              # semantics must be wired to a real form field (a native
+              # input or poetry's hidden store), never a button that
+              # submits nothing.
+              doc.css("input[type=checkbox][name]").any?
+            }),
+            Gate.new(:switch_semantics, :cross_arm, lambda { |doc, _html|
+              # role=switch + aria-checked - announces on/off; a styled
+              # checkbox (or a bare div) does not.
+              doc.css(%([role="switch"][aria-checked])).any?
+            }),
+            Gate.new(:pressed_state_exposed, :cross_arm, ->(doc, _html) { doc.css("[aria-pressed]").any? }),
+            Gate.new(:exclusive_choice_wears_radio_semantics, :cross_arm, lambda { |doc, _html|
+              # An exclusive single-select is a radio group (radiogroup +
+              # radio/aria-checked, or native radios) - aria-pressed
+              # buttons whose exclusivity lives only in JS promise nothing.
+              doc.css(%([role="radiogroup"] [role="radio"][aria-checked])).any? ||
+                doc.css("input[type=radio]").any?
+            }),
+            Gate.new(:controls_named, :cross_arm, lambda { |doc, _html|
+              doc.css("button, [role=button], [role=checkbox], [role=switch], [role=radio]").all? do |control|
+                control.text.strip.length.positive? ||
+                  control["aria-label"].to_s.strip.length.positive? ||
+                  (control["id"].to_s.strip.length.positive? &&
+                    doc.css(%(label[for="#{control["id"]}"])).any?)
+              end
+            }),
+            Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
+              doc.text.include?("Accept terms") && doc.text.include?("Email alerts")
+            }),
+            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+          ]
+        },
         "alert" => {
           "description" => "A destructive alert 'Payment failed' with a description and a warning icon",
           "gates" => [

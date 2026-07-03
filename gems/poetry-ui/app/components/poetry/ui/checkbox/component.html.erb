@@ -1,0 +1,22 @@
+<%# Fragment - button + input(s) as SIBLINGS, no wrapper: the source's
+    `peer` class contract (labels style via peer-*) breaks if poetry wraps.
+    The controller lives on the button; the input resolves by stable id. %>
+<%= content_tag(:button, **root_attributes.to_attributes) do %>
+  <span data-slot="checkbox-indicator" data-state="<%= state %>" aria-hidden="true" class="<%= css(:indicator) %>">
+    <%# MinusIcon on indeterminate is a POETRY ADDITION (shadcn renders a
+        check for mixed state - a real gap). %>
+    <%= render Poetry::Ui::Icon::Component.new(name: indeterminate? ? :minus : :check, class: css(:icon)) %>
+  </span>
+<% end %>
+<% if form_participant? %>
+  <%# Rails parity hidden FIRST (last-wins ordering, Tags::CheckBox-exact)
+      so unchecked SUBMITS unchecked_value; disabled fields submit nothing. %>
+  <% if unchecked_value %>
+    <%= tag.input(type: "hidden", name: name, value: unchecked_value, disabled: disabled) %>
+  <% end %>
+  <%# THE form participant + the store: input.indeterminate is a JS-only
+      property - the controller derives it from data-state on connect. %>
+  <%= tag.input(type: "checkbox", id: input_id, name: name, value: value, checked: checked?,
+                disabled: disabled, "data-slot": "checkbox-input", "aria-hidden": true,
+                tabindex: "-1", class: css(:input)) %>
+<% end %>

@@ -35,7 +35,39 @@ module Poetry
         end
       end
 
+      # The f.check_box-equivalent (the toggle family's form story): name/id
+      # derived, checked: from the object's attribute truthiness, "1"/"0"
+      # plus the unchecked-hidden pair (ActionView::Helpers::Tags::CheckBox
+      # parity incl. hidden-input-first ordering - the Checkbox component
+      # renders the pair). A BARE control mapping: compose with a Field
+      # (control_attributes) for the label/hint/error quartet.
+      def check_box(method, options = {}, checked_value = "1", unchecked_value = "0")
+        @template.render Checkbox::Component.new(**toggle_options(method, options, checked_value, unchecked_value))
+      end
+
+      # The same mapping wearing switch semantics (Rails has NO native
+      # switch builder): role=switch announces on/off; use it for
+      # instant-effect settings, check_box for values staged for submit.
+      def switch(method, options = {}, checked_value = "1", unchecked_value = "0")
+        @template.render Switch::Component.new(**toggle_options(method, options, checked_value, unchecked_value))
+      end
+
       private
+
+      # Shared derivation for the toggle-family builder methods: everything
+      # from the object, never hand-wired. required maps to aria-required
+      # only (the lock - the components never render native required).
+      def toggle_options(method, options, checked_value, unchecked_value)
+        {
+          name: field_name(method),
+          id: field_id(method),
+          checked: ActiveModel::Type::Boolean.new.cast(object.public_send(method)) || false,
+          value: checked_value,
+          unchecked_value: unchecked_value,
+          required: required?(method),
+          **options.transform_keys(&:to_sym)
+        }
+      end
 
       def error_for(method)
         object.errors.full_messages_for(method).first if object.respond_to?(:errors)

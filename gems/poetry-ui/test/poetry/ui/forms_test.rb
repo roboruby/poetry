@@ -63,6 +63,69 @@ module Poetry
         assert_includes html, 'data-invalid="true"'
       end
 
+      # -- The toggle-family builder methods (check_box / switch) ------------
+
+      class Settings
+        include ActiveModel::Model
+
+        attr_accessor :terms, :notifications
+
+        validates :terms, presence: true
+      end
+
+      TOGGLES_ERB = <<~ERB
+        <%= form_with(model: model, url: "/settings", builder: Poetry::Ui::FormBuilder) do |form| %>
+          <%= form.check_box(:terms) %>
+          <%= form.switch(:notifications) %>
+        <% end %>
+      ERB
+
+      def render_toggles(model)
+        html = ApplicationController.renderer.render(inline: TOGGLES_ERB, locals: { model: model }, layout: false)
+        Nokogiri::HTML5.fragment(html)
+      end
+
+      def test_check_box_derives_name_id_and_the_hidden_pair_from_the_object
+        fragment = render_toggles(Settings.new(terms: "1"))
+        control = fragment.css('[data-slot="checkbox"]').first
+        inputs = fragment.css('input[name="poetry_ui_forms_test_settings[terms]"]')
+
+        assert_equal "poetry_ui_forms_test_settings_terms", control["id"]
+        assert_equal "true", control["aria-checked"], "checked from the object's attribute truthiness"
+        # Tags::CheckBox parity: the "0" hidden FIRST, then the checked "1".
+        assert_equal(%w[hidden checkbox], inputs.map { |input| input["type"] })
+        assert_equal "0", inputs.first["value"]
+        assert_equal "1", inputs.last["value"]
+        assert inputs.last.key?("checked")
+      end
+
+      def test_check_box_truthiness_follows_rails_boolean_casting
+        control = render_toggles(Settings.new(terms: "0")).css('[data-slot="checkbox"]').first
+
+        assert_equal "false", control["aria-checked"], '"0" casts false - Rails semantics, not Ruby truthiness'
+      end
+
+      def test_check_box_presence_validation_becomes_aria_required_only
+        fragment = render_toggles(Settings.new)
+        control = fragment.css('[data-slot="checkbox"]').first
+
+        assert_equal "true", control["aria-required"]
+        assert(fragment.css("input").none? { |input| input.key?("required") },
+               "never the native attribute (the aria-required-only rule)")
+      end
+
+      def test_switch_is_the_check_box_mapping_wearing_switch_semantics
+        fragment = render_toggles(Settings.new(notifications: true))
+        control = fragment.css('[data-slot="switch"]').first
+        inputs = fragment.css('input[name="poetry_ui_forms_test_settings[notifications]"]')
+
+        assert_equal "switch", control["role"], "role=switch announces on/off - the reason it is not a styled checkbox"
+        assert_equal "poetry_ui_forms_test_settings_notifications", control["id"]
+        assert_equal "true", control["aria-checked"]
+        assert_equal(%w[hidden checkbox], inputs.map { |input| input["type"] })
+        refute control["aria-required"]
+      end
+
       def test_labels_come_from_i18n
         I18n.backend.store_translations(:en, activemodel: {
                                           attributes: { "poetry/ui/forms_test/contact": { email: "Work email" } }
