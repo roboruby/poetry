@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest"
+import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
@@ -102,5 +102,78 @@ describe("poetry--core--dialog", () => {
     const dlg = document.getElementById("dlg")
     expect(dlg.open).toBe(false)
     expect(dlg.dataset.state).toBe("closed")
+  })
+
+  // The CommandDialog affordance (Command): an OPT-IN
+  // hotkey value toggles the dialog from a window keydown; "meta" matches
+  // metaKey OR ctrlKey (⌘K / ^K, the cmdk convention).
+  describe("the opt-in hotkey", () => {
+    // application.stop() does not DISCONNECT live controllers - remove the
+    // root while the application still observes, so the window listener's
+    // disconnect cleanup actually runs between tests.
+    afterEach(async () => {
+      document.getElementById("root")?.remove()
+      await nextFrame()
+    })
+
+    const press = (key, options = {}) => {
+      const event = new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true, ...options })
+      window.dispatchEvent(event)
+      return event
+    }
+
+    async function mountWithHotkey(hotkey = "meta+k") {
+      document.body.style.overflow = ""
+      document.body.innerHTML = `
+        <div id="root" data-controller="poetry--core--dialog"
+             data-poetry--core--dialog-hotkey-value="${hotkey}">
+          <dialog id="dlg" data-poetry--core--dialog-target="dialog"></dialog>
+        </div>`
+      const hotkeyApplication = Application.start()
+      registerPoetryControllers(hotkeyApplication)
+      await nextFrame()
+      return hotkeyApplication
+    }
+
+    it("meta+k toggles the dialog (metaKey OR ctrlKey) and prevents default", async () => {
+      application.stop()
+      application = await mountWithHotkey()
+
+      const dlg = document.getElementById("dlg")
+
+      expect(press("k", { metaKey: true }).defaultPrevented).toBe(true)
+      expect(dlg.open).toBe(true)
+
+      press("k", { ctrlKey: true }) // ^K parity
+      expect(dlg.open).toBe(false)
+    })
+
+    it("a bare key or a wrong modifier never triggers", async () => {
+      application.stop()
+      application = await mountWithHotkey()
+
+      const dlg = document.getElementById("dlg")
+
+      expect(press("k").defaultPrevented).toBe(false)
+      press("k", { shiftKey: true, metaKey: true })
+      press("j", { metaKey: true })
+
+      expect(dlg.open).toBe(false)
+    })
+
+    it("no hotkey value -> no window listener (plain typing untouched)", () => {
+      expect(press("k", { metaKey: true }).defaultPrevented).toBe(false)
+      expect(document.getElementById("dlg").open).toBe(false)
+    })
+
+    it("the listener is removed on disconnect", async () => {
+      application.stop()
+      application = await mountWithHotkey()
+
+      document.getElementById("root").remove()
+      await nextFrame()
+
+      expect(press("k", { metaKey: true }).defaultPrevented).toBe(false)
+    })
   })
 })

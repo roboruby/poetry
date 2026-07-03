@@ -35,6 +35,64 @@
       "uncheck"
     ]
   },
+  "poetry--core--combobox": {
+    "targets": [],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false
+      },
+      "value": {
+        "type": "String",
+        "default": ""
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "connect",
+      "disconnect",
+      "nativeChanged",
+      "open",
+      "openValueChanged",
+      "setValue",
+      "toggle",
+      "triggerKeydown",
+      "valueValueChanged"
+    ]
+  },
+  "poetry--core--command": {
+    "targets": [],
+    "values": {
+      "filter": {
+        "type": "Boolean",
+        "default": true
+      },
+      "loop": {
+        "type": "Boolean",
+        "default": false
+      },
+      "debounce": {
+        "type": "Number",
+        "default": 0
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "connect",
+      "disconnect",
+      "filterInput",
+      "highlightItem",
+      "keydown",
+      "pointerHighlight",
+      "reset"
+    ]
+  },
   "poetry--core--context-menu": {
     "targets": [],
     "values": {
@@ -64,15 +122,21 @@
       "dismissible": {
         "type": "Boolean",
         "default": true
+      },
+      "hotkey": {
+        "type": "String",
+        "default": ""
       }
     },
     "classes": [],
     "methods": [
       "backdropClose",
       "close",
+      "connect",
       "disconnect",
       "lockScroll",
       "open",
+      "toggle",
       "unlockScroll"
     ]
   },

@@ -26,6 +26,8 @@ import RadioGroupController from "@poetry/controllers/radio_group_controller"
 import SliderController from "@poetry/controllers/slider_controller"
 import OtpController from "@poetry/controllers/otp_controller"
 import SelectController from "@poetry/controllers/select_controller"
+import CommandController from "@poetry/controllers/command_controller"
+import ComboboxController from "@poetry/controllers/combobox_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -50,6 +52,8 @@ export { default as RadioGroupController } from "@poetry/controllers/radio_group
 export { default as SliderController } from "@poetry/controllers/slider_controller"
 export { default as OtpController } from "@poetry/controllers/otp_controller"
 export { default as SelectController } from "@poetry/controllers/select_controller"
+export { default as CommandController } from "@poetry/controllers/command_controller"
+export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -60,6 +64,7 @@ export * from "@poetry/controllers/helpers/presence"
 export * from "@poetry/controllers/helpers/scroller_geometry"
 export * from "@poetry/controllers/helpers/announce"
 export * from "@poetry/controllers/helpers/typeahead"
+export * from "@poetry/controllers/helpers/filter_rank"
 
 // identifier -> controller class, for every sidecar controller poetry ships.
 export const controllers = {
@@ -85,7 +90,9 @@ export const controllers = {
   "poetry--core--radio-group": RadioGroupController,
   "poetry--core--slider": SliderController,
   "poetry--core--otp": OtpController,
-  "poetry--core--select": SelectController
+  "poetry--core--select": SelectController,
+  "poetry--core--command": CommandController,
+  "poetry--core--combobox": ComboboxController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

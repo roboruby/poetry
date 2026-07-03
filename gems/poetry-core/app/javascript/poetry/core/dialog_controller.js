@@ -10,11 +10,41 @@ export default class extends Controller {
   static targets = ["dialog"]
   static values = {
     // Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing.
-    dismissible: { type: Boolean, default: true }
+    dismissible: { type: Boolean, default: true },
+    // OPT-IN global shortcut ("meta+k") toggling the dialog - the
+    // CommandDialog ⌘K affordance (Command); shadcn
+    // leaves it to a caller useEffect, poetry ships it because every
+    // consumer writes the same ten lines. "meta" matches metaKey OR
+    // ctrlKey (⌘K on mac, ^K elsewhere - the cmdk convention).
+    hotkey: { type: String, default: "" }
+  }
+
+  #onHotkey = null
+
+  connect() {
+    if (this.hotkeyValue === "") return
+
+    this.#onHotkey = (event) => {
+      if (!this.#matchesHotkey(event)) return
+
+      event.preventDefault()
+      this.toggle()
+    }
+    window.addEventListener("keydown", this.#onHotkey)
   }
 
   disconnect() {
     this.unlockScroll()
+
+    if (this.#onHotkey) {
+      window.removeEventListener("keydown", this.#onHotkey)
+      this.#onHotkey = null
+    }
+  }
+
+  toggle() {
+    if (this.dialogTarget.open) this.close()
+    else this.open()
   }
 
   open() {
@@ -43,6 +73,25 @@ export default class extends Controller {
     const inside = rect.top <= event.clientY && event.clientY <= rect.bottom &&
       rect.left <= event.clientX && event.clientX <= rect.right
     if (!inside) this.close()
+  }
+
+  // "meta+k" / "ctrl+shift+p" style descriptors: '+'-separated modifiers
+  // plus one final key token, matched exactly (unlisted modifiers must be
+  // up, so plain typing never triggers).
+  #matchesHotkey(event) {
+    const tokens = this.hotkeyValue.toLowerCase().split("+").map((token) => token.trim())
+    const key = tokens.pop()
+
+    if ((event.key ?? "").toLowerCase() !== key) return false
+
+    const meta = tokens.includes("meta") ? (event.metaKey || event.ctrlKey) : true
+    const ctrl = tokens.includes("ctrl") ? event.ctrlKey : true
+    const shift = tokens.includes("shift") === event.shiftKey
+    const alt = tokens.includes("alt") === event.altKey
+    const noStray = tokens.includes("meta") || tokens.includes("ctrl") ||
+      (!event.metaKey && !event.ctrlKey)
+
+    return meta && ctrl && shift && alt && noStray
   }
 
   lockScroll() {
