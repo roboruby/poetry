@@ -135,8 +135,10 @@ module Poetry
           ]
         },
         "menu" => {
-          "description" => "A row-actions dropdown menu behind an 'Options' button: account items, " \
-                           "a checkbox preference, and a destructive delete",
+          "description" => "The menus family end-to-end: an app menubar (File/View), a row-actions " \
+                           "dropdown menu behind an 'Options' button (account items, a checkbox " \
+                           "preference, a destructive delete), and a right-click context menu on " \
+                           "the row itself",
           "gates" => [
             Gate.new(:trigger_is_a_real_button, :cross_arm, lambda { |doc, _html|
               doc.xpath(".//*[@onclick]").empty? && doc.css("button").any?

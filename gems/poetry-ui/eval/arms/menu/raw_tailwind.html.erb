@@ -1,7 +1,21 @@
 <%# The raw-Tailwind arm for the same task - realistic: a plausible
-    dropdown with the classic tells (an onclick div toggle, no
-    aria-haspopup/expanded, styled divs instead of role=menu/menuitem,
-    the checkbox state is a bare glyph). %>
+    menubar + dropdown + right-click handler with the classic tells
+    (onclick/oncontextmenu inline handlers, no aria-haspopup/expanded, no
+    role=menubar/menu/menuitem, every trigger tabbable instead of one
+    roving tab stop, the checkbox state is a bare glyph). %>
+<div class="mb-4 flex h-9 items-center gap-1 rounded-md border bg-white p-1 shadow-sm">
+  <div class="cursor-pointer rounded px-2 py-1 text-sm font-medium hover:bg-gray-100"
+       onclick="document.getElementById('file-panel').classList.toggle('hidden')">File</div>
+  <div class="cursor-pointer rounded px-2 py-1 text-sm font-medium hover:bg-gray-100"
+       onclick="document.getElementById('view-panel').classList.toggle('hidden')">View</div>
+  <div id="file-panel" class="hidden absolute z-10 mt-32 w-44 rounded-md border bg-white p-1 shadow-lg">
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100">New project</div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100">Import…</div>
+  </div>
+  <div id="view-panel" class="hidden absolute z-10 mt-32 w-44 rounded-md border bg-white p-1 shadow-lg">
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100"><span>✓</span> Show archived</div>
+  </div>
+</div>
 <div class="relative inline-block text-left">
   <div class="inline-flex cursor-pointer items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium shadow-sm hover:bg-gray-50"
        onclick="document.getElementById('menu-panel').classList.toggle('hidden')">
@@ -18,6 +32,16 @@
          onclick="this.querySelector('span').textContent = this.querySelector('span').textContent ? '' : '✓'">
       <span>✓</span> Email notifications
     </div>
+    <div class="my-1 h-px bg-gray-200"></div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm text-red-600 hover:bg-red-50">Delete project</div>
+  </div>
+</div>
+<div class="mt-4 rounded-md border px-4 py-3 text-sm select-none"
+     oncontextmenu="event.preventDefault(); document.getElementById('row-menu').classList.toggle('hidden')">
+  acme-website row
+  <div id="row-menu" class="hidden absolute z-10 w-40 rounded-md border bg-white p-1 shadow-lg">
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100">Rename</div>
+    <div class="cursor-pointer rounded px-2 py-1.5 text-sm hover:bg-gray-100">Duplicate</div>
     <div class="my-1 h-px bg-gray-200"></div>
     <div class="cursor-pointer rounded px-2 py-1.5 text-sm text-red-600 hover:bg-red-50">Delete project</div>
   </div>

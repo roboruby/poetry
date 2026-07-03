@@ -1,5 +1,18 @@
-<%# The poetry arm: "a row-actions dropdown menu behind an 'Options'
-    button - account items, a checkbox preference, a destructive tail". %>
+<%# The poetry arm: "the menus family end-to-end - an app menubar above
+    the table, a row-actions dropdown menu behind an 'Options' button
+    (account items, a checkbox preference, a destructive tail), and a
+    right-click context menu on the row itself". %>
+<%= poetry_menubar(label: "Project menu") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_item(shortcut: "⌘N") { "New project" } %>
+    <% menu.with_item { "Import…" } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "View" } %>
+    <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Show archived" } %>
+  <% end %>
+<% end %>
 <%= poetry_dropdown_menu(align: :start) do |menu| %>
   <% menu.with_trigger(variant: :outline) { "Options" } %>
   <% menu.with_label { "My Account" } %>
@@ -7,6 +20,13 @@
   <% menu.with_item { "Billing" } %>
   <% menu.with_separator %>
   <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Email notifications" } %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive) { "Delete project" } %>
+<% end %>
+<%= poetry_context_menu(label: "Row actions") do |menu| %>
+  <% menu.with_trigger(tag: :div) { "acme-website row" } %>
+  <% menu.with_item { "Rename" } %>
+  <% menu.with_item { "Duplicate" } %>
   <% menu.with_separator %>
   <% menu.with_item(variant: :destructive) { "Delete project" } %>
 <% end %>

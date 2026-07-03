@@ -4,6 +4,8 @@ en:
       loading: "Loading…"
     dialog:
       close: "Close"
+    context_menu:
+      menu_label_fallback: "Context menu"
     attachment:
       state:
         uploading: "Uploading attachment"

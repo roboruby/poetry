@@ -301,6 +301,68 @@ components:
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
       markup serves both.'
+  poetry/ui/context_menu:
+    class_name: Poetry::Ui::ContextMenu::Component
+    identifier: poetry--ui--context_menu
+    bem_block: poetry-ui-context_menu
+    styles: []
+    options:
+    - name: dir
+      type: symbol
+    - name: disabled
+      type: boolean
+      default: false
+    - name: focusable_surface
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: long_press_delay
+      type: integer
+      default: 700
+    - name: modal
+      type: boolean
+      default: true
+    - name: open
+      type: boolean
+      default: false
+    slots:
+    - name: items
+      many: true
+    - name: trigger
+      many: false
+    elements:
+    - content
+    - item
+    - checkbox_item
+    - radio_item
+    - label
+    - separator
+    - shortcut
+    - sub_trigger
+    - sub_content
+    - item_indicator
+    - item_indicator_state
+    - indicator_check
+    - indicator_circle
+    - sub_indicator
+    capsule: 3a223480a60f
+    agent_rules:
+    - NEVER make a context menu the only path to an action - it is an invisible affordance;
+      every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar,
+      a detail page).
+    - Choose ContextMenu only for right-click-on-an-object semantics; a visible button
+      opening a menu is DropdownMenu.
+    - 'Do not add aria-haspopup or a role to the trigger surface; do not make it focusable
+      except via focusable_surface: true.'
+    - Do not try to set side/align/side_offset - context menus anchor at the pointer,
+      always.
+    - Wrap the whole logical object (row/card) as the trigger surface, not a fragment.
+    - 'Destructive items use variant: :destructive AND still confirm irreversible
+      actions via a dialog.'
+    - 'shortcut: is a visual hint only - it does NOT bind the key.'
+    - Do not nest a ContextMenu trigger surface inside another ContextMenu trigger
+      surface.
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog
@@ -560,6 +622,54 @@ components:
       dividers never announce.'
     - Icons in markers ride the typed icon slot (decorative always).
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
+  poetry/ui/menubar:
+    class_name: Poetry::Ui::Menubar::Component
+    identifier: poetry--ui--menubar
+    bem_block: poetry-ui-menubar
+    styles: []
+    options:
+    - name: dir
+      type: symbol
+    - name: label
+      type: string
+    - name: loop
+      type: boolean
+      default: false
+    - name: value
+      type: string
+    slots:
+    - name: menus
+      many: true
+    elements:
+    - menu
+    - trigger
+    - content
+    - item
+    - checkbox_item
+    - radio_item
+    - label
+    - separator
+    - shortcut
+    - sub_trigger
+    - sub_content
+    - item_indicator
+    - item_indicator_state
+    - indicator_check
+    - indicator_circle
+    - sub_indicator
+    capsule: ec4018c1316c
+    agent_rules:
+    - Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu
+      (untrapped), a single actions menu is DropdownMenu.
+    - 'label: is REQUIRED (the bar''s accessible name).'
+    - Never put non-menuitem interactive elements directly in the bar (breaks roving
+      focus + APG roles) - a Toolbar is the component for mixed controls.
+    - 'shortcut: is a visual hint ONLY - it does not register a keybinding; wire real
+      shortcuts separately.'
+    - Do not hand-wire hover-open-from-cold; hover only slides between menus once
+      one is open (the gated-hover rule).
+    - In-menu item rules (destructive variant, inset, checkbox/radio) follow the DropdownMenu
+      family contract.
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
