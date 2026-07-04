@@ -85,4 +85,39 @@ namespace :css do
 
     puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build"
   end
+
+  # The data-selected bridge probe (N6 W1 regression lock): upstream's
+  # vendored variant matches only [data-selected="true"], poetry emits BARE
+  # presence, and tokens/aliases.css redefines the variant to cover both
+  # (Tailwind @custom-variant redefinition is last-wins). If an import
+  # reorder or a Tailwind change ever flips which definition wins, consumer
+  # data-selected:* classes would silently stop matching poetry's emission
+  # - this compiles a probe class and asserts poetry's selector form won.
+  desc "Verify the extended data-selected bridge variant survives the compile"
+  task :verify_selected_bridge do
+    poetry_ui_boot!
+    require "tailwindcss/ruby"
+    require "tmpdir"
+
+    compiled = Dir.mktmpdir("poetry-bridge-probe") do |dir|
+      File.write(File.join(dir, "probe.txt"), "data-selected:underline\n")
+      File.write(File.join(dir, "entry.css"), <<~CSS)
+        @import "tailwindcss";
+        @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
+        @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
+        @source "#{File.join(dir, "probe.txt")}";
+      CSS
+      out = File.join(dir, "out.css")
+      system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,
+             exception: true, out: File::NULL, err: File::NULL)
+      File.read(out)
+    end
+
+    unless compiled.include?('[data-selected]:not([data-selected="false"])')
+      abort "data-selected bridge probe FAILED: poetry's extended variant (bare presence + " \
+            "=\"true\") did not win the compile - check tokens/aliases.css import order"
+    end
+
+    puts "data-selected bridge variant verified (poetry's last-wins extension holds)"
+  end
 end

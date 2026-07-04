@@ -53,5 +53,30 @@ module DommyTier
       assert_equal ["open", "true", false], item_state(harness, "two"),
                    "the clicked item must open"
     end
+
+    # The N6 W2 regression: the chevron selector must target an attribute
+    # the runtime actually maintains. The old [&[data-state=open]>svg]
+    # selector silently lost its writer when the state layer migrated -
+    # this pins the chevron's COMPUTED rotation through the real cascade,
+    # so a future selector/emitter drift fails here instead of in a
+    # browser pass.
+    def test_the_chevron_rotation_computes_from_the_live_trigger_attribute
+      harness = render_accordion
+
+      rotations = harness.evaluate(<<~JS)
+        (() => ["one", "two"].map((value) => {
+          const svg = document.querySelector(
+            '[data-slot="accordion-item"][data-value="' + value + '"] [data-slot="accordion-trigger"] svg');
+          return getComputedStyle(svg).rotate || getComputedStyle(svg).transform;
+        }))()
+      JS
+
+      open_rotation, closed_rotation = rotations
+
+      refute_equal closed_rotation, open_rotation,
+                   "the open trigger's chevron must compute a different transform than the closed one"
+      assert_match(/deg|matrix/, open_rotation.to_s,
+                   "the open chevron carries a real computed rotation (selector matched a live attribute)")
+    end
   end
 end
