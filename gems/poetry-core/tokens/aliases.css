@@ -48,3 +48,18 @@
 [data-slot="hover-card-content"] {
   --radix-hover-card-content-transform-origin: var(--radix-popper-transform-origin);
 }
+
+/* data-selected bridge extension (Base UI Vocabulary §3):
+   the vendored shadcn/tailwind.css @custom-variant data-selected matches
+   [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare
+   Base UI presence attribute (data-selected="") on committed select/combobox
+   items. Tailwind v4 @custom-variant redefinition is last-wins (verified
+   v4.3.1: a later definition fully REPLACES the earlier one, including
+   across @import files - this file imports after the vendored layer), so
+   this single definition must carry the whole match: bare presence AND
+   ="true", excluding ="false". */
+@custom-variant data-selected {
+  &:where([data-selected]:not([data-selected="false"])) {
+    @slot;
+  }
+}
