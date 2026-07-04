@@ -5,7 +5,8 @@ require_relative "dommy_helper"
 module DommyTier
   # The REAL Popover markup driven by the REAL poetry--core--popover
   # controller: a trigger click must unhide the role=dialog content, flip
-  # aria-expanded/data-state on BOTH trigger and content, and token-activate
+  # aria-expanded + the state attributes on BOTH trigger (data-popup-open)
+  # and content (data-open/data-closed), and token-activate
   # the layer stack (focus-scope + dismissable appended to the content's
   # data-controller with trapped/scrim values = modal); focus must move to
   # the first tabbable (the dialog pattern - focus-scope's mount default,
@@ -26,8 +27,10 @@ module DommyTier
         (() => {
           const trigger = document.querySelector('[data-slot="popover-trigger"]');
           const content = document.querySelector('[data-slot="popover-content"]');
-          return [trigger.getAttribute("aria-expanded"), trigger.dataset.state,
-                  content.dataset.state, content.hidden];
+          const contentState = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.getAttribute("aria-expanded"), trigger.hasAttribute("data-popup-open"),
+                  contentState, content.hidden];
         })()
       JS
     end
@@ -44,12 +47,12 @@ module DommyTier
       harness = render_popover
 
       assert_no_js_errors harness
-      assert_equal ["false", "closed", "closed", true], popover_state(harness), "server-rendered closed"
+      assert_equal ["false", false, "closed", true], popover_state(harness), "server-rendered closed"
 
       open_via_click(harness)
 
       assert_no_js_errors harness
-      assert_equal ["true", "open", "open", false], popover_state(harness)
+      assert_equal ["true", true, "open", false], popover_state(harness)
 
       content_attrs = harness.evaluate(<<~JS)
         (() => {
@@ -96,7 +99,7 @@ module DommyTier
       harness.pump(rounds: 80)
 
       assert_no_js_errors harness
-      assert_equal ["false", "closed", "closed", true], popover_state(harness), "Esc closes"
+      assert_equal ["false", false, "closed", true], popover_state(harness), "Esc closes"
 
       controllers = harness.evaluate(
         %(document.querySelector('[data-slot="popover-content"]').getAttribute("data-controller"))

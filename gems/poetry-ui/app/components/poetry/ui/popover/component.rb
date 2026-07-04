@@ -68,9 +68,12 @@ module Poetry
         # server id is the controller's structural-resolution seam.
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
-            "id" => trigger_id, "data-slot" => "popover-trigger", "data-state" => state,
+            "id" => trigger_id, "data-slot" => "popover-trigger",
             "aria-haspopup" => "dialog", "aria-expanded" => open.to_s, "aria-controls" => content_id
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          wiring["data-popup-open"] = "" if open
           Button::Component.new(**wiring, **options, &block)
         }
 
@@ -104,10 +107,6 @@ module Poetry
           )
         end
 
-        def state
-          open ? "open" : "closed"
-        end
-
         def trigger_id
           "#{instance_id}-trigger"
         end
@@ -135,7 +134,7 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id, "role" => "dialog", "tabindex" => "-1",
-            "data-slot" => "popover-content", "data-state" => state,
+            "data-slot" => "popover-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)

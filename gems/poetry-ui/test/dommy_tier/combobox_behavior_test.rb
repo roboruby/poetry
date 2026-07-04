@@ -12,7 +12,7 @@ module DommyTier
   # trigger must open AND seed the filter without committing (Select's
   # typeahead-commit must not leak); Enter must run the native-first
   # commit pipeline (native <select> value + real bubbling change +
-  # aria-selected/data-state twins + the display) and close with focus
+  # aria-selected/data-selected twins + the display) and close with focus
   # returned; Esc and Tab must close WITHOUT commit (Popover semantics)
   # and reset the query so reopen starts clean. Geometry (popper
   # placement, anchor-width sizing, scrollIntoView positioning) stays
@@ -36,7 +36,9 @@ module DommyTier
           const content = document.querySelector('[data-slot="combobox-content"]');
           const native = document.querySelector('[data-slot="combobox-native"]');
           const value = document.querySelector('[data-slot="combobox-value"]');
-          return [trigger.getAttribute("aria-expanded"), content.dataset.state, content.hidden,
+          const state = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.getAttribute("aria-expanded"), state, content.hidden,
                   native.value, value.textContent.trim()];
         })()
       JS
@@ -179,12 +181,14 @@ module DommyTier
 
       twins = harness.evaluate(<<~JS)
         Array.from(document.querySelectorAll('[data-slot="command-item"]'))
-          .map((item) => [item.dataset.value, item.getAttribute("aria-selected"), item.dataset.state])
+          .map((item) => [item.dataset.value, item.getAttribute("aria-selected"),
+                          item.hasAttribute("data-selected")])
       JS
 
-      assert_equal [["next.js", "false", "unchecked"], %w[sveltekit false unchecked],
-                    ["nuxt.js", "true", "checked"]], twins,
-                   "aria-selected and data-state flip TOGETHER on every option (the indicator rides data-state)"
+      assert_equal [["next.js", "false", false], ["sveltekit", "false", false],
+                    ["nuxt.js", "true", true]], twins,
+                   "aria-selected and data-selected flip TOGETHER on every option " \
+                   "(the indicator rides data-selected; unselected = attribute absence)"
       assert_equal "combobox-trigger",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')"),
                    "focus returns to the trigger after commit"

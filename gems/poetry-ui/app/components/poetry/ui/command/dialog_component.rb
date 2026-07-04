@@ -104,7 +104,7 @@ module Poetry
           {
             "class" => Poetry::Ui::Dialog::Style.css(:content, class: Style.css(:dialog_content)),
             "data-slot" => "dialog-content",
-            "data-state" => "closed",
+            "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
           }.merge(stimulus_attributes do |dialog|

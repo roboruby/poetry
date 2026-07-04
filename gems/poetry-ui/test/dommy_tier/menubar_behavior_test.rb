@@ -33,10 +33,12 @@ module DommyTier
           const triggers = Array.from(document.querySelectorAll('[data-slot="menubar-trigger"]'));
           const contents = Array.from(document.querySelectorAll('[data-slot="menubar-content"]'));
           const active = document.activeElement;
+          const stateOf = (el) => el.hasAttribute("data-open") ? "open"
+            : el.hasAttribute("data-closed") ? "closed" : "none";
           return [
-            triggers.map((t) => [t.dataset.value, t.dataset.state, t.getAttribute("aria-expanded"),
-                                 t.getAttribute("tabindex")]),
-            contents.map((c) => [c.dataset.state, c.hidden]),
+            triggers.map((t) => [t.dataset.value, t.hasAttribute("data-popup-open"),
+                                 t.getAttribute("aria-expanded"), t.getAttribute("tabindex")]),
+            contents.map((c) => [stateOf(c), c.hidden]),
             document.querySelector('[data-slot="menubar"]')
               .getAttribute("data-poetry--core--menubar-value-value"),
             active ? [active.getAttribute("role"), (active.textContent ?? "").trim()] : null
@@ -61,7 +63,7 @@ module DommyTier
 
       triggers, contents, value, = bar_state(harness)
 
-      assert_equal [["file", "closed", "false", "0"], ["edit", "closed", "false", "-1"]], triggers,
+      assert_equal [["file", false, "false", "0"], ["edit", false, "false", "-1"]], triggers,
                    "server render: closed bar, ONE tab stop on the first trigger"
       assert_equal [%w[closed] << true, %w[closed] << true], contents
       assert_equal "", value
@@ -77,7 +79,7 @@ module DommyTier
       assert_no_js_errors harness
       triggers, contents, value, active = bar_state(harness)
 
-      assert_equal [["file", "open", "true", "0"], ["edit", "closed", "false", "-1"]], triggers
+      assert_equal [["file", true, "true", "0"], ["edit", false, "false", "-1"]], triggers
       assert_equal [%w[open] << false, %w[closed] << true], contents
       assert_equal "file", value
       assert_equal ["menuitem", "New Tab"], active, "keyboard open focuses the FIRST item"
@@ -89,7 +91,7 @@ module DommyTier
       assert_no_js_errors harness
       triggers, contents, value, active = bar_state(harness)
 
-      assert_equal [["file", "closed", "false", "-1"], ["edit", "open", "true", "0"]], triggers
+      assert_equal [["file", false, "false", "-1"], ["edit", true, "true", "0"]], triggers
       assert_equal [%w[closed] << true, %w[open] << false], contents
       assert_equal "edit", value
       assert_equal %w[menuitem Undo], active, "edge-navigate focuses the destination's FIRST item"
@@ -99,7 +101,7 @@ module DommyTier
 
       triggers, _contents, value, active = bar_state(harness)
 
-      assert_equal [["file", "open", "true", "0"], ["edit", "closed", "false", "-1"]], triggers
+      assert_equal [["file", true, "true", "0"], ["edit", false, "false", "-1"]], triggers
       assert_equal "file", value
       assert_equal ["menuitem", "New Tab"], active
 
@@ -109,7 +111,7 @@ module DommyTier
       assert_no_js_errors harness
       triggers, contents, value, active = bar_state(harness)
 
-      assert_equal [["file", "closed", "false", "0"], ["edit", "closed", "false", "-1"]], triggers
+      assert_equal [["file", false, "false", "0"], ["edit", false, "false", "-1"]], triggers
       assert_equal [%w[closed] << true, %w[closed] << true], contents
       assert_equal "", value
       assert_equal %w[menuitem File], active, "Escape returns focus to the trigger (bar keeps its tab stop)"

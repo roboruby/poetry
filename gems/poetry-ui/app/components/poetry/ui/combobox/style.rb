@@ -43,9 +43,9 @@ module Poetry
                           "rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-hidden " \
                           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 " \
                           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 " \
-                          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 " \
-                          "data-[state=closed]:zoom-out-95 data-[state=open]:animate-in " \
-                          "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+                          "data-closed:animate-out data-closed:fade-out-0 " \
+                          "data-closed:zoom-out-95 data-open:animate-in " \
+                          "data-open:fade-in-0 data-open:zoom-in-95"
 
         # The demo's CommandInput className="h-9" retune, merged over
         # Command's own :input string (h-10 -> h-9 via the class merger).
@@ -58,10 +58,11 @@ module Poetry
 
         # POETRY ADDITION (Select's precedent): the demo toggles the check
         # by opacity-per-value-equality in JSX; poetry server-renders it
-        # always and the parent item's data-state drives visibility, so
-        # the controller's aria-selected/data-state twin-flip is the whole
-        # toggle.
-        element :item_indicator_state, "[[data-state=unchecked]>&]:hidden"
+        # always and the parent item's bare data-selected drives visibility
+        # (unselected = attribute ABSENCE - no data-unselected exists), so
+        # the controller's aria-selected/data-selected twin-flip is the
+        # whole toggle.
+        element :item_indicator_state, "[:not([data-selected])>&]:hidden"
 
         # The form bubble: visually hidden but PAINTED (sr-only clips,
         # never display:none - autofill heuristics skip unpainted controls).

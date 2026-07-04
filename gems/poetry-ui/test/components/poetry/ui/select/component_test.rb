@@ -49,7 +49,7 @@ module Poetry
           assert_equal "false", trigger["aria-expanded"]
           assert_equal content["id"], trigger["aria-controls"]
           assert_equal "none", trigger["aria-autocomplete"]
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "default", trigger["data-size"]
           assert_equal "Fruit", trigger["aria-label"]
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
@@ -114,7 +114,8 @@ module Poetry
           assert_equal "listbox", viewport["role"]
           assert_equal trigger["id"], viewport["aria-labelledby"]
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert_equal "bottom", content["data-side"]
           assert_equal "start", content["data-align"]
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
@@ -155,9 +156,12 @@ module Poetry
           assert apple.key?("data-poetry-collection-item")
           assert_equal "apple", apple["data-value"]
           assert_equal "click->poetry--core--select#commit", apple["data-action"]
-          # aria-selected and data-state flip TOGETHER, never separately.
-          assert_equal(%w[false unchecked], [apple["aria-selected"], apple["data-state"]])
-          assert_equal(%w[true checked], [banana["aria-selected"], banana["data-state"]])
+          # aria-selected and data-selected flip TOGETHER, never separately
+          # (unselected = data-selected ABSENT - no data-unselected exists).
+          assert_equal "false", apple["aria-selected"]
+          refute apple.key?("data-selected")
+          assert_equal "true", banana["aria-selected"]
+          assert banana.key?("data-selected")
           assert_equal 1, doc(html).css('[data-slot="select-item"][aria-selected="true"]').size,
                        "exactly one option selected per non-nil value"
 
@@ -234,10 +238,11 @@ module Poetry
           content = doc(html).css('[data-slot="select-content"]').first
           trigger = doc(html).css('[data-slot="select-trigger"]').first
 
-          assert_equal "open", content["data-state"]
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
           assert_equal "true", trigger["aria-expanded"]
-          assert_equal "open", trigger["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
         end
 
         def test_size_variant_is_a_data_attribute

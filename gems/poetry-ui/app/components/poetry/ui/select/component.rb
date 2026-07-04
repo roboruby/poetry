@@ -75,7 +75,7 @@ module Poetry
         end
 
         # Server-rendered always (Radix ItemIndicator unmounts; poetry lets
-        # the item's data-state hide it) - the check stays decorative.
+        # the item's data-selected absence hide it) - the check stays decorative.
         def item_indicator
           content_tag(:span, "data-slot" => "select-item-indicator",
                              "class" => Style.css(:item_indicator, class: Style.css(:item_indicator_state))) do
@@ -89,9 +89,10 @@ module Poetry
       # in DOM order inside the viewport, so the shared OptionSet registers
       # options in exactly the order the native <select> must mirror -
       # whether the item sits at the top level or inside a group.
-      # aria-selected and data-state are written TOGETHER, never separately
-      # (the family twin-write rule, aria-selected flavored); disabled divs
-      # carry aria-disabled + data-disabled together.
+      # aria-selected and data-selected are written TOGETHER, never separately
+      # (the family twin-write rule, aria-selected flavored; unselected =
+      # data-selected ABSENT); disabled divs carry aria-disabled +
+      # data-disabled together.
       class Item < ViewComponent::Base
         include Helpers
 
@@ -116,9 +117,12 @@ module Poetry
           attrs = {
             "data-slot" => "select-item", "role" => "option", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-value" => @value,
-            "aria-selected" => selected.to_s, "data-state" => selected ? "checked" : "unchecked",
+            "aria-selected" => selected.to_s,
             "class" => Style.css(:item, class: @extra_attributes.delete(:class))
           }.merge(select_stimulus { |select| select.with_action(:commit, on: :click) })
+          # Base UI selected state: bare data-selected on the committed
+          # option, NOTHING while unselected (absence IS the state).
+          attrs["data-selected"] = "" if selected
           if @disabled
             attrs["aria-disabled"] = "true"
             attrs["data-disabled"] = ""
@@ -161,7 +165,7 @@ module Poetry
           "poetry_select in a form is a smell.",
           "Every Select MUST be named: a Field label (id: + label[for]) or aria-label. A bare unnamed " \
           "select fails at render - do not suppress it.",
-          "NEVER write aria-selected without its data-state twin, and NEVER write the display text without " \
+          "NEVER write aria-selected without its data-selected twin, and NEVER write the display text without " \
           "writing the native select's value first - the controller does all three; agents patching DOM must too.",
           "Do not put interactive elements inside options (an option IS the interactive unit).",
           "Long/filterable/async lists or multi-select -> Combobox, not a 50-option Select; 2-4 options -> " \
@@ -237,10 +241,6 @@ module Poetry
                                "(id: + label[for: id]) or pass 'aria-label'"
         end
 
-        def state
-          open ? "open" : "closed"
-        end
-
         # The Field-targetable id lands on the TRIGGER (label[for=id]
         # click-focuses the combobox); content/native derive from it -
         # server-generated, portal-safe, stream-safe.
@@ -296,9 +296,12 @@ module Poetry
           attrs = {
             "id" => trigger_id, "data-slot" => "select-trigger", "type" => "button",
             "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => content_id,
-            "aria-autocomplete" => "none", "data-state" => state, "data-size" => size.to_s,
+            "aria-autocomplete" => "none", "data-size" => size.to_s,
             "class" => css(:trigger)
           }
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
           attrs["data-placeholder"] = "" unless selected_label
           attrs["disabled"] = true if disabled
           attrs.merge!(trigger_stimulus_attributes)
@@ -315,7 +318,7 @@ module Poetry
           # viewport, the options' actual parent.
           attrs = {
             "id" => content_id,
-            "tabindex" => "-1", "data-slot" => "select-content", "data-state" => state,
+            "tabindex" => "-1", "data-slot" => "select-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)

@@ -67,8 +67,11 @@ module Poetry
         renders_one :trigger, lambda { |href: nil, tag: :a, **options|
           @trigger_href = href
           attrs = {
-            "id" => trigger_id, "data-slot" => "hover-card-trigger", "data-state" => state
+            "id" => trigger_id, "data-slot" => "hover-card-trigger"
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
           attrs["href"] = href if href.present?
           Trigger.new(tag_name: tag, attributes: attrs.merge(options))
         }
@@ -85,10 +88,6 @@ module Poetry
             "poetry HoverCard: trigger has no href - the link IS the keyboard/touch/no-JS path " \
             "(the reachable-elsewhere rule)"
           )
-        end
-
-        def state
-          open ? "open" : "closed"
         end
 
         def trigger_id
@@ -113,7 +112,7 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id,
-            "data-slot" => "hover-card-content", "data-state" => state,
+            "data-slot" => "hover-card-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)

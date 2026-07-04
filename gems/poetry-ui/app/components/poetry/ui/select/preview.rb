@@ -49,7 +49,7 @@ module Poetry
         end
 
         # The server-rendered value: display label + native option selected
-        # + aria-selected/data-state on the option, all in one pass.
+        # + aria-selected/data-selected on the option, all in one pass.
         def valued
           render_component(value: "banana", placeholder: "Select a fruit", "aria-label": "Fruit") do |select|
             select.with_item(value: "apple") { "Apple" }

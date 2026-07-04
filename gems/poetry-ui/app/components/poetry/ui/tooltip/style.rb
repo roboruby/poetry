@@ -8,7 +8,7 @@ module Poetry
       # inverse scheme (bg-foreground/text-background) IS the treatment -
       # the only trio member not on popover tokens. Note animate-in is
       # UNGATED (source-exact): the open animation classes are
-      # unconditional, only the exit chain is data-state-gated. The origin
+      # unconditional, only the exit chain is data-closed-gated. The origin
       # class binds through the tokens/aliases.css alias to popper's
       # generic var.
       class Style < Poetry::Core::Style
@@ -16,8 +16,8 @@ module Poetry
                           "rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background " \
                           "fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 " \
                           "data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 " \
-                          "data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out " \
-                          "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95"
+                          "data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out " \
+                          "data-closed:fade-out-0 data-closed:zoom-out-95"
 
         # The built-in arrow's visual classes (source-exact, riding an
         # inner span; the outer data-slot=tooltip-arrow box is popper's

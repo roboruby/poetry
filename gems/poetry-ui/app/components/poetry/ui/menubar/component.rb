@@ -117,8 +117,9 @@ module Poetry
           attrs = {
             "data-slot" => "menubar-checkbox-item", "role" => "menuitemcheckbox", "tabindex" => "-1",
             "data-poetry-collection-item" => "",
-            # aria-checked and data-state written TOGETHER, never separately.
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            # aria-checked and the data-checked/data-unchecked pair written
+            # TOGETHER, never separately.
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:checkbox_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
@@ -188,7 +189,9 @@ module Poetry
         def root_attributes
           root = {
             "data-slot" => "menubar", "role" => "menubar", "aria-label" => label,
-            "data-state" => value.present? ? "open" : "closed"
+            # The bar ROOT keeps the open/closed pair (W1 resolution: Base UI
+            # has no bar-root state attr - poetry keeps the mounted pair).
+            (value.present? ? "data-open" : "data-closed") => ""
           }
           root["dir"] = dir.to_s if dir
           html_attributes.merge_if_not_set(
@@ -280,9 +283,12 @@ module Poetry
             "role" => "menuitem", "tabindex" => @bar.tab_stop?(self) ? "0" : "-1",
             "data-poetry-collection-item" => "",
             "aria-haspopup" => "menu", "aria-expanded" => open?.to_s, "aria-controls" => content_id,
-            "data-state" => state, "data-value" => value,
+            "data-value" => value,
             "class" => Style.css(:trigger, class: options.delete(:class))
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open?
           if disabled
             attrs["disabled"] = true
             attrs["data-disabled"] = ""
@@ -301,10 +307,6 @@ module Poetry
 
         def open?
           @bar.open_menu?(value)
-        end
-
-        def state
-          open? ? "open" : "closed"
         end
 
         def trigger_id
@@ -364,7 +366,7 @@ module Poetry
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
-            "data-slot" => "menubar-content", "data-state" => state,
+            "data-slot" => "menubar-content", (open? ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => "bottom", "data-align" => "start",
             "class" => Style.css(:content)
@@ -428,7 +430,7 @@ module Poetry
           attrs = {
             "data-slot" => "menubar-radio-item", "role" => "menuitemradio", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-value" => key,
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:radio_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
@@ -466,7 +468,6 @@ module Poetry
             "id" => trigger_id, "data-slot" => "menubar-sub-trigger", "role" => "menuitem",
             "tabindex" => "-1", "data-poetry-collection-item" => "",
             "aria-haspopup" => "menu", "aria-expanded" => "false", "aria-controls" => content_id,
-            "data-state" => "closed",
             "class" => Style.css(:sub_trigger, class: options.delete(:class))
           }.merge(sub_trigger_stimulus_attributes)
           apply_item_flags(attrs, inset:, disabled:, text_value:)
@@ -519,7 +520,7 @@ module Poetry
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
-            "data-slot" => "menubar-sub-content", "data-state" => "closed", "hidden" => true,
+            "data-slot" => "menubar-sub-content", "data-closed" => "", "hidden" => true,
             "class" => Style.css(:sub_content)
           }.merge(popper_stimulus { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }

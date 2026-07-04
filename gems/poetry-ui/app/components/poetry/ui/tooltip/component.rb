@@ -63,27 +63,23 @@ module Poetry
 
         # The described control - commonly a poetry Button (demo parity:
         # with_trigger(variant: :outline) { "Hover" }). The slot owns the
-        # data-state + timing wiring regardless of the composed content.
+        # state + timing wiring regardless of the composed content.
         # NO aria-haspopup/expanded/controls - the tooltip is invisible as
         # a popup; aria-describedby is written by the controller on open
         # (and server-rendered only when open: true).
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
-            "id" => trigger_id, "data-slot" => "tooltip-trigger", "data-state" => state
+            "id" => trigger_id, "data-slot" => "tooltip-trigger"
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          wiring["data-popup-open"] = "" if open
           wiring["aria-describedby"] = content_id if open
           Button::Component.new(**wiring, **options, &block)
         }
 
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?
-        end
-
-        # The Radix stateAttribute triple is closed | delayed-open |
-        # instant-open; a server-pinned tooltip renders instant-open
-        # (truthful DOM - the controller reconciles on connect).
-        def state
-          open ? "instant-open" : "closed"
         end
 
         def trigger_id
@@ -105,9 +101,13 @@ module Poetry
         end
 
         def content_attributes
+          # The Radix triple (closed | delayed-open | instant-open) is now
+          # the Base UI pair: a server-pinned open tooltip renders bare
+          # data-open (the controller adds data-instant on ITS opens - the
+          # reason attribute is runtime-only).
           attrs = {
             "id" => content_id, "role" => "tooltip",
-            "data-slot" => "tooltip-content", "data-state" => state,
+            "data-slot" => "tooltip-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)

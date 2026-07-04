@@ -11,7 +11,7 @@ module Poetry
       # nudges on :content and the trigger-size viewport binding on
       # :viewport) are baked in unconditionally. Poetry additions:
       # :item_indicator_state (React unmounts the indicator; poetry
-      # server-renders it and the item's data-state hides it), :native
+      # server-renders it and the item's data-selected absence hides it), :native
       # (the visually-hidden form bubble - sr-only, never display:none,
       # autofill needs a painted control), and the named icon sizes the
       # source inlined on its lucide elements.
@@ -33,9 +33,9 @@ module Poetry
                           "rounded-md border bg-popover text-popover-foreground shadow-md " \
                           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 " \
                           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 " \
-                          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 " \
-                          "data-[state=closed]:zoom-out-95 data-[state=open]:animate-in " \
-                          "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 " \
+                          "data-closed:animate-out data-closed:fade-out-0 " \
+                          "data-closed:zoom-out-95 data-open:animate-in " \
+                          "data-open:fade-in-0 data-open:zoom-in-95 " \
                           "data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 " \
                           "data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1"
 
@@ -62,9 +62,10 @@ module Poetry
 
         # POETRY ADDITION: the source renders the check only while selected
         # (Radix ItemIndicator unmounts); poetry keeps it in the DOM and the
-        # parent item's data-state drives visibility, so the controller's
-        # aria-selected/data-state twin-flip is the whole toggle.
-        element :item_indicator_state, "[[data-state=unchecked]>&]:hidden"
+        # parent item's bare data-selected drives visibility (unselected =
+        # attribute ABSENCE - no data-unselected exists), so the controller's
+        # aria-selected/data-selected twin-flip is the whole toggle.
+        element :item_indicator_state, "[:not([data-selected])>&]:hidden"
 
         # The form bubble: visually hidden but PAINTED (sr-only clips, never
         # display:none - browser autofill heuristics skip unpainted controls).

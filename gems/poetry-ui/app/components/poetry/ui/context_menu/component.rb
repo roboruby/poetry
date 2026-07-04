@@ -116,8 +116,9 @@ module Poetry
           attrs = {
             "data-slot" => "context-menu-checkbox-item", "role" => "menuitemcheckbox", "tabindex" => "-1",
             "data-poetry-collection-item" => "",
-            # aria-checked and data-state written TOGETHER, never separately.
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            # aria-checked and the data-checked/data-unchecked pair written
+            # TOGETHER, never separately.
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:checkbox_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
@@ -192,10 +193,13 @@ module Poetry
         renders_one :trigger, lambda { |**options, &block|
           tag_name = options.delete(:tag) || :span
           attrs = {
-            "id" => trigger_id, "data-slot" => "context-menu-trigger", "data-state" => state,
+            "id" => trigger_id, "data-slot" => "context-menu-trigger",
             "aria-controls" => content_id,
             "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
           attrs["data-disabled"] = "" if disabled
           if focusable_surface
             attrs["tabindex"] = "0"
@@ -207,10 +211,6 @@ module Poetry
         def before_render
           raise ArgumentError, "ContextMenu requires with_trigger (the right-click surface)" unless trigger?
           raise ArgumentError, "ContextMenu requires at least one item" unless items?
-        end
-
-        def state
-          open ? "open" : "closed"
         end
 
         def trigger_id
@@ -236,7 +236,7 @@ module Poetry
             # delta): the menu's name is label: -> the i18n fallback.
             "aria-label" => label.presence || t("poetry.context_menu.menu_label_fallback"),
             "tabindex" => "-1",
-            "data-slot" => "context-menu-content", "data-state" => state,
+            "data-slot" => "context-menu-content", (open ? "data-open" : "data-closed") => "",
             # The FORCED initial placement (re-resolved live by popper).
             "data-side" => "right", "data-align" => "start",
             "class" => css(:content)
@@ -352,7 +352,7 @@ module Poetry
           attrs = {
             "data-slot" => "context-menu-radio-item", "role" => "menuitemradio", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-value" => key,
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:radio_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
@@ -390,7 +390,6 @@ module Poetry
             "id" => trigger_id, "data-slot" => "context-menu-sub-trigger", "role" => "menuitem",
             "tabindex" => "-1", "data-poetry-collection-item" => "",
             "aria-haspopup" => "menu", "aria-expanded" => "false", "aria-controls" => content_id,
-            "data-state" => "closed",
             "class" => Style.css(:sub_trigger, class: options.delete(:class))
           }.merge(sub_trigger_stimulus_attributes)
           apply_item_flags(attrs, inset:, disabled:, text_value:)
@@ -443,7 +442,7 @@ module Poetry
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
-            "data-slot" => "context-menu-sub-content", "data-state" => "closed", "hidden" => true,
+            "data-slot" => "context-menu-sub-content", "data-closed" => "", "hidden" => true,
             "class" => Style.css(:sub_content)
           }.merge(popper_stimulus { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }

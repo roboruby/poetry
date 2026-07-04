@@ -5,11 +5,12 @@ require_relative "dommy_helper"
 module DommyTier
   # The REAL Select markup driven by the REAL poetry--core--select
   # controller: a trigger click must unhide the listbox, flip
-  # aria-expanded/data-state, token-activate the layer stack, and land
+  # aria-expanded + the data-open/data-closed pair, token-activate the
+  # layer stack, and land
   # real focus on the SELECTED option (every open reason - the Radix
   # parity delta vs the menu family); committing an option must run the
   # native-first sync pipeline (native <select> value + real bubbling
-  # change + aria-selected/data-state twins + the value display) and
+  # change + aria-selected/data-selected twins + the value display) and
   # close with focus returned to the trigger; typeahead on the CLOSED
   # trigger must commit without opening (native <select> parity).
   # Geometry (popper placement, scroll-button extremes) stays with the
@@ -33,7 +34,9 @@ module DommyTier
           const content = document.querySelector('[data-slot="select-content"]');
           const native = document.querySelector('[data-slot="select-native"]');
           const value = document.querySelector('[data-slot="select-value"]');
-          return [trigger.getAttribute("aria-expanded"), content.dataset.state, content.hidden,
+          const state = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.getAttribute("aria-expanded"), state, content.hidden,
                   native.value, value.textContent.trim()];
         })()
       JS
@@ -131,11 +134,13 @@ module DommyTier
 
       twins = harness.evaluate(<<~JS)
         Array.from(document.querySelectorAll('[data-slot="select-item"]'))
-          .map((item) => [item.dataset.value, item.getAttribute("aria-selected"), item.dataset.state])
+          .map((item) => [item.dataset.value, item.getAttribute("aria-selected"),
+                          item.hasAttribute("data-selected")])
       JS
 
-      assert_equal [%w[apple false unchecked], %w[banana false unchecked], %w[cherry true checked]], twins,
-                   "aria-selected and data-state flip TOGETHER on every option"
+      assert_equal [["apple", "false", false], ["banana", "false", false], ["cherry", "true", true]], twins,
+                   "aria-selected and data-selected flip TOGETHER on every option " \
+                   "(unselected = attribute absence)"
       assert_equal "select-trigger",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')"),
                    "focus returns to the trigger after commit"

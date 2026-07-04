@@ -50,7 +50,7 @@ module Poetry
           # aria-controls always rendered (Radix: open-only) - the static
           # server id is the controller's structural-resolution seam.
           assert_equal content["id"], trigger["aria-controls"]
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "click->poetry--core--popover#toggle", trigger["data-action"]
           # No custom keydown map: native button Enter/Space arrive as click
           # (the deliberate contrast with the menu trigger).
@@ -66,7 +66,8 @@ module Poetry
 
           assert_equal "dialog", content["role"]
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
           assert_equal "content", content["data-poetry--core--popper-target"]
           assert_equal "bottom", content["data-side"]
@@ -135,10 +136,11 @@ module Poetry
           content = doc(html).css('[data-slot="popover-content"]').first
           trigger = doc(html).css('[data-slot="popover-trigger"]').first
 
-          assert_equal "open", content["data-state"]
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
           assert_equal "true", trigger["aria-expanded"]
-          assert_equal "open", trigger["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
         end
 
         def test_anchor_part_takes_the_popper_anchor_target
@@ -175,7 +177,7 @@ module Poetry
 
           assert_includes html, "origin-(--radix-popover-content-transform-origin)"
           assert_includes html, "w-72"
-          assert_includes html, "data-[state=open]:zoom-in-95"
+          assert_includes html, "data-open:zoom-in-95"
           assert_includes html, "data-[side=bottom]:slide-in-from-top-2"
           assert_includes html, "outline-hidden"
         end

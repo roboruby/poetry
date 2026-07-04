@@ -5,7 +5,8 @@ require_relative "dommy_helper"
 module DommyTier
   # The REAL DropdownMenu markup driven by the REAL poetry--core--menu
   # controller: a trigger click must unhide the content, flip
-  # aria-expanded/data-state, write data-open-reason, and token-activate
+  # aria-expanded + the data-open/data-closed pair, write data-open-reason,
+  # and token-activate
   # the layer stack (focus-scope + dismissable + roving-focus appended to
   # the content's data-controller); keyboard open (ArrowDown) must land
   # real focus on the first menuitem; activating an item closes the menu
@@ -25,7 +26,9 @@ module DommyTier
         (() => {
           const trigger = document.querySelector('[data-slot="dropdown-menu-trigger"]');
           const content = document.querySelector('[data-slot="dropdown-menu-content"]');
-          return [trigger.getAttribute("aria-expanded"), content.dataset.state, content.hidden,
+          const state = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.getAttribute("aria-expanded"), state, content.hidden,
                   content.getAttribute("data-open-reason")];
         })()
       JS

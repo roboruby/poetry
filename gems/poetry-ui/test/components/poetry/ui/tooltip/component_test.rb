@@ -55,7 +55,7 @@ module Poetry
           html = render_tooltip
           trigger = doc(html).css('button[data-slot="tooltip-trigger"]').first
 
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
           %w[
             pointermove->poetry--core--tooltip#pointerMove
@@ -81,7 +81,8 @@ module Poetry
           content = doc(html).css('[data-slot="tooltip-content"]').first
 
           assert_equal "tooltip", content["role"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden")
           assert_equal "content", content["data-poetry--core--popper-target"]
           # The id pair IS the controller's structural resolution seam
@@ -107,15 +108,17 @@ module Poetry
           assert_includes inner["class"], "bg-foreground"
         end
 
-        def test_pinned_open_renders_instant_open_and_describedby
+        def test_pinned_open_renders_data_open_and_describedby
           html = render_tooltip(open: true)
           trigger = doc(html).css('[data-slot="tooltip-trigger"]').first
           content = doc(html).css('[data-slot="tooltip-content"]').first
 
-          # The Radix stateAttribute triple: a pinned tooltip is
-          # instant-open (presence keys on "closed"; everything else IS open).
-          assert_equal "instant-open", trigger["data-state"]
-          assert_equal "instant-open", content["data-state"]
+          # The Radix triple collapsed to the Base UI pair: a pinned tooltip
+          # is bare data-open on the content + data-popup-open on the
+          # trigger (data-instant is a runtime-only reason attribute).
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
           assert_equal content["id"], trigger["aria-describedby"]
         end
@@ -140,14 +143,14 @@ module Poetry
           classes = content["class"].split
 
           # The open animation is UNCONDITIONAL (source-exact) - only the
-          # exit chain is data-state-gated.
+          # exit chain is data-closed-gated.
           assert_includes classes, "animate-in"
           assert_includes classes, "fade-in-0"
           assert_includes classes, "zoom-in-95"
           assert_includes classes, "bg-foreground"
           assert_includes classes, "text-background"
           assert_includes classes, "origin-(--radix-tooltip-content-transform-origin)"
-          assert_includes classes, "data-[state=closed]:animate-out"
+          assert_includes classes, "data-closed:animate-out"
         end
 
         def test_content_class_merges_over_the_source_classes

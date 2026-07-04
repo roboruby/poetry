@@ -8,7 +8,7 @@ module Poetry
       # source-exact per part; the only poetry additions are the indicator
       # visibility switch (:item_indicator_state - React conditionally
       # renders the indicator, poetry server-renders it and lets the item's
-      # data-state hide it) and the named icon sizes the source inlined on
+      # data-unchecked hide it) and the named icon sizes the source inlined on
       # its lucide elements.
       class Style < Poetry::Core::Style
         element :content, "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] " \
@@ -16,9 +16,9 @@ module Poetry
                           "overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md " \
                           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 " \
                           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 " \
-                          "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 " \
-                          "data-[state=closed]:zoom-out-95 data-[state=open]:animate-in " \
-                          "data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95"
+                          "data-closed:animate-out data-closed:fade-out-0 " \
+                          "data-closed:zoom-out-95 data-open:animate-in " \
+                          "data-open:fade-in-0 data-open:zoom-in-95"
 
         element :item, "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm " \
                        "outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
@@ -51,8 +51,8 @@ module Poetry
 
         element :sub_trigger, "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm " \
                               "outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
-                              "data-[inset]:pl-8 data-[state=open]:bg-accent " \
-                              "data-[state=open]:text-accent-foreground [&_svg]:pointer-events-none " \
+                              "data-[inset]:pl-8 data-popup-open:bg-accent " \
+                              "data-popup-open:text-accent-foreground [&_svg]:pointer-events-none " \
                               "[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 " \
                               "[&_svg:not([class*='text-'])]:text-muted-foreground"
 
@@ -60,10 +60,10 @@ module Poetry
                               "overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground " \
                               "shadow-lg data-[side=bottom]:slide-in-from-top-2 " \
                               "data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 " \
-                              "data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out " \
-                              "data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 " \
-                              "data-[state=open]:animate-in data-[state=open]:fade-in-0 " \
-                              "data-[state=open]:zoom-in-95"
+                              "data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out " \
+                              "data-closed:fade-out-0 data-closed:zoom-out-95 " \
+                              "data-open:animate-in data-open:fade-in-0 " \
+                              "data-open:zoom-in-95"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it dropdown-menu-item-indicator - the self-identification rule).
@@ -71,9 +71,10 @@ module Poetry
 
         # POETRY ADDITION: the source renders the indicator only while
         # checked (Radix ItemIndicator unmounts); poetry keeps it in the
-        # DOM and the parent item's data-state drives visibility, so the
-        # controller's aria-checked/data-state flip is the whole toggle.
-        element :item_indicator_state, "[[data-state=unchecked]>&]:hidden"
+        # DOM and the parent item's data-checked/data-unchecked pair drives
+        # visibility, so the controller's aria-checked/data-checked flip is
+        # the whole toggle.
+        element :item_indicator_state, "[[data-unchecked]>&]:hidden"
 
         # The source's inline lucide icon classes, named per part.
         element :indicator_check, "size-4"

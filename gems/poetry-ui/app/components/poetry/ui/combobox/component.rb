@@ -107,8 +107,8 @@ module Poetry
         # COMBOBOX-OWNED addition onto each command-item: the
         # committed-value check - TRAILING ms-auto per the demo, not
         # Select's absolute gutter. Server-rendered always; the item's
-        # data-state hides it while unchecked (attribute-driven, replacing
-        # the demo's opacity-by-value-equality JSX).
+        # data-selected absence hides it while unselected (attribute-driven,
+        # replacing the demo's opacity-by-value-equality JSX).
         def item_indicator
           content_tag(:span, "data-slot" => "combobox-item-indicator",
                              "class" => Style.css(:item_indicator, class: Style.css(:item_indicator_state))) do
@@ -123,7 +123,7 @@ module Poetry
       # activate/pointerHighlight actions + keywords/filter_value/
       # always_render, NO tabindex - activedescendant, never DOM focus)
       # AND wears Select's committed-value surface (aria-selected +
-      # data-state twin-written together, never separately, plus the
+      # data-selected twin-written together, never separately, plus the
       # trailing indicator). A part component ON PURPOSE: rendering
       # happens in DOM order, so the shared OptionSet assigns server-
       # stable ids and registers native <option>s in exactly the order
@@ -155,12 +155,15 @@ module Poetry
           attrs = {
             "id" => item_id, "data-slot" => "command-item", "role" => "option",
             "data-poetry-collection-item" => "", "data-value" => @value,
-            "aria-selected" => selected.to_s, "data-state" => selected ? "checked" : "unchecked",
+            "aria-selected" => selected.to_s,
             "class" => Command::Style.css(:item, class: @extra_attributes.delete(:class))
           }.merge(command_stimulus do |command|
             command.with_action(:activate, on: :click)
             command.with_action(:pointer_highlight, on: :pointermove)
           end)
+          # Base UI selected state: bare data-selected on the committed
+          # option, NOTHING while unselected (absence IS the state).
+          attrs["data-selected"] = "" if selected
           attrs["data-highlighted"] = "" if highlighted
           if @disabled
             attrs["aria-disabled"] = "true"
@@ -357,10 +360,6 @@ module Poetry
                                "(id: + label[for: id]) or pass 'aria-label'"
         end
 
-        def state
-          open ? "open" : "closed"
-        end
-
         # The Field-targetable id lands on the TRIGGER (label[for=id]
         # click-focuses the combobox); every other part derives from it -
         # server-generated, portal-safe, stream-safe. Stable ids:
@@ -434,9 +433,12 @@ module Poetry
           attrs = {
             "id" => trigger_id, "data-slot" => "combobox-trigger", "type" => "button",
             "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => list_id,
-            "aria-haspopup" => "listbox", "data-state" => state,
+            "aria-haspopup" => "listbox",
             "class" => classnames(css(:trigger), width)
           }
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
           attrs["data-placeholder"] = "" unless selected_label
           attrs["disabled"] = true if disabled
           attrs.merge!(trigger_stimulus_attributes)
@@ -453,7 +455,7 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id, "data-slot" => "combobox-content", "tabindex" => "-1",
-            "data-state" => state,
+            (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)

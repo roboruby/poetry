@@ -28,7 +28,9 @@ module DommyTier
           const root = document.querySelector('[data-slot="context-menu"]');
           const trigger = document.querySelector('[data-slot="context-menu-trigger"]');
           const content = document.querySelector('[data-slot="context-menu-content"]');
-          return [content.dataset.state, content.hidden, root.getAttribute("#{ANCHOR}"),
+          const state = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [state, content.hidden, root.getAttribute("#{ANCHOR}"),
                   trigger.hasAttribute("aria-expanded"), trigger.hasAttribute("aria-haspopup")];
         })()
       JS

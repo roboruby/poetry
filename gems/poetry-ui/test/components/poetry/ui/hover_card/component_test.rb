@@ -44,7 +44,7 @@ module Poetry
 
           assert trigger, "the trigger IS an <a> - the no-JS fallback, touch path, and keyboard path at once"
           assert_equal "https://github.com/nextjs", trigger["href"]
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
           %w[
             pointerenter->poetry--core--hover-card#pointerEnter
@@ -68,7 +68,8 @@ module Poetry
 
           # Role-less div (Radix-exact): the card is not an AT surface.
           assert_nil content["role"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden")
           assert_equal "content", content["data-poetry--core--popper-target"]
           # The id pair is STRUCTURAL resolution only - never aria-wired.
@@ -84,8 +85,9 @@ module Poetry
           trigger = doc(html).css('[data-slot="hover-card-trigger"]').first
           content = doc(html).css('[data-slot="hover-card-content"]').first
 
-          assert_equal "open", trigger["data-state"]
-          assert_equal "open", content["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
         end
 
@@ -124,7 +126,7 @@ module Poetry
           assert_includes classes, "w-64"
           assert_includes classes, "origin-(--radix-hover-card-content-transform-origin)"
           assert_includes classes, "bg-popover"
-          assert_includes classes, "data-[state=open]:zoom-in-95"
+          assert_includes classes, "data-open:zoom-in-95"
           assert_includes classes, "outline-hidden"
         end
 

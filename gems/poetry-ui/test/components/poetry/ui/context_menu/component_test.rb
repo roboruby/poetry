@@ -52,7 +52,7 @@ module Poetry
           assert_nil trigger["aria-expanded"]
           assert_nil trigger["role"]
           assert_nil trigger["tabindex"]
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_includes trigger["style"], "-webkit-touch-callout: none"
           assert_equal content["id"], trigger["aria-controls"]
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
@@ -86,7 +86,8 @@ module Poetry
           assert_nil content["aria-labelledby"]
           assert_equal "Context menu", content["aria-label"]
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
           assert_equal "right", content["data-side"]
           assert_equal "start", content["data-align"]
@@ -107,9 +108,10 @@ module Poetry
           content = doc(html).css('[data-slot="context-menu-content"]').first
           trigger = doc(html).css('[data-slot="context-menu-trigger"]').first
 
-          assert_equal "open", content["data-state"]
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
-          assert_equal "open", trigger["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
           assert_nil trigger["aria-expanded"], "open state never introduces ARIA onto the surface"
         end
 
@@ -181,7 +183,7 @@ module Poetry
           end
         end
 
-        def test_checkbox_and_radio_items_write_aria_checked_and_data_state_together
+        def test_checkbox_and_radio_items_write_aria_checked_and_data_checked_together
           html = render_menu do |menu|
             menu.with_trigger { "Surface" }
             menu.with_checkbox_item(checked: true, close_on_select: false) { "Show Bookmarks" }
@@ -195,12 +197,18 @@ module Poetry
           pedro, colm = group.css('[data-slot="context-menu-radio-item"]').to_a
 
           assert_equal "menuitemcheckbox", checkbox["role"]
-          assert_equal(%w[true checked], [checkbox["aria-checked"], checkbox["data-state"]])
+          assert_equal "true", checkbox["aria-checked"]
+          assert checkbox.key?("data-checked")
+          refute checkbox.key?("data-unchecked")
           assert_equal "false", checkbox["data-close-on-select"]
           assert_equal "group", group["role"]
           assert_equal "pedro", group["data-value"]
-          assert_equal(%w[true checked], [pedro["aria-checked"], pedro["data-state"]])
-          assert_equal(%w[false unchecked], [colm["aria-checked"], colm["data-state"]])
+          assert_equal "true", pedro["aria-checked"]
+          assert pedro.key?("data-checked")
+          refute pedro.key?("data-unchecked")
+          assert_equal "false", colm["aria-checked"]
+          assert colm.key?("data-unchecked")
+          refute colm.key?("data-checked")
           assert_predicate group.css('[data-slot="context-menu-item-indicator"]'), :any?
         end
 

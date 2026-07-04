@@ -28,7 +28,9 @@ module DommyTier
         (() => {
           const trigger = document.querySelector('[data-slot="hover-card-trigger"]');
           const content = document.querySelector('[data-slot="hover-card-content"]');
-          return [trigger.dataset.state, content.dataset.state, content.hidden];
+          const contentState = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.hasAttribute("data-popup-open"), contentState, content.hidden];
         })()
       JS
     end
@@ -37,7 +39,7 @@ module DommyTier
       harness = render_card
 
       assert_no_js_errors harness
-      assert_equal ["closed", "closed", true], card_state(harness), "server-rendered closed"
+      assert_equal [false, "closed", true], card_state(harness), "server-rendered closed"
 
       harness.execute(<<~JS)
         document.querySelector('[data-slot="hover-card-trigger"]')
@@ -46,7 +48,7 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal ["open", "open", false], card_state(harness), "focus opens with no delay (the focus mirror)"
+      assert_equal [true, "open", false], card_state(harness), "focus opens with no delay (the focus mirror)"
 
       stripped = harness.evaluate(<<~JS)
         (() => {
@@ -99,7 +101,7 @@ module DommyTier
       harness.pump(rounds: 80)
 
       assert_no_js_errors harness
-      assert_equal ["closed", "closed", true], card_state(harness), "blur closes immediately"
+      assert_equal [false, "closed", true], card_state(harness), "blur closes immediately"
 
       controllers = harness.evaluate(
         %(document.querySelector('[data-slot="hover-card-content"]').getAttribute("data-controller"))

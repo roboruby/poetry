@@ -5,7 +5,8 @@ require_relative "dommy_helper"
 module DommyTier
   # The REAL Tooltip markup driven by the REAL poetry--core--tooltip
   # controller: keyboard focus must open INSTANTLY (no delay - the Radix
-  # focus path) with data-state=instant-open on both trigger and content,
+  # focus path) with data-open + data-instant="focus" on the content and
+  # data-popup-open on the trigger (the Base UI pair + reason),
   # write the open-only aria-describedby to the content id, and
   # token-activate the dismissable layer; blur must close and REMOVE the
   # describedby (a describedby to hidden content mis-announces); a second
@@ -25,7 +26,10 @@ module DommyTier
         (() => {
           const trigger = document.querySelectorAll('[data-slot="tooltip-trigger"]')[#{index}];
           const content = document.querySelectorAll('[data-slot="tooltip-content"]')[#{index}];
-          return [trigger.dataset.state, content.dataset.state, content.hidden,
+          const contentState = content.hasAttribute("data-open") ? "open"
+            : content.hasAttribute("data-closed") ? "closed" : "none";
+          return [trigger.hasAttribute("data-popup-open"), contentState,
+                  content.getAttribute("data-instant"), content.hidden,
                   trigger.getAttribute("aria-describedby")];
         })()
       JS
@@ -43,15 +47,16 @@ module DommyTier
       harness = render_in_dommy(tooltip_html("Add"))
 
       assert_no_js_errors harness
-      assert_equal ["closed", "closed", true, nil], tooltip_state(harness), "server-rendered closed, NO describedby"
+      assert_equal [false, "closed", nil, true, nil], tooltip_state(harness),
+                   "server-rendered closed, NO describedby"
 
       focus_trigger(harness)
 
       assert_no_js_errors harness
       content_id = harness.evaluate(%(document.querySelector('[data-slot="tooltip-content"]').id))
 
-      assert_equal ["instant-open", "instant-open", false, content_id], tooltip_state(harness),
-                   "focus opens instantly (the keyboard path skips all delays)"
+      assert_equal [true, "open", "focus", false, content_id], tooltip_state(harness),
+                   "focus opens instantly (the keyboard path skips all delays - data-instant=focus)"
 
       controllers = harness.evaluate(
         %(document.querySelector('[data-slot="tooltip-content"]').getAttribute("data-controller"))
@@ -75,7 +80,7 @@ module DommyTier
       harness.pump(rounds: 80)
 
       assert_no_js_errors harness
-      assert_equal ["closed", "closed", true, nil], tooltip_state(harness),
+      assert_equal [false, "closed", nil, true, nil], tooltip_state(harness),
                    "blur closes; describedby is REMOVED (never references hidden content)"
 
       controllers = harness.evaluate(
@@ -90,7 +95,7 @@ module DommyTier
 
       focus_trigger(harness, 0)
 
-      assert_equal "instant-open", tooltip_state(harness, 0).first
+      assert_equal "open", tooltip_state(harness, 0)[1]
 
       # Focus the second WITHOUT blurring the first: the document-level
       # will-open event must close tooltip A (one open page-wide).
@@ -98,8 +103,8 @@ module DommyTier
       harness.pump(rounds: 80)
 
       assert_no_js_errors harness
-      assert_equal "closed", tooltip_state(harness, 0).first, "the first tooltip is superseded"
-      assert_equal "instant-open", tooltip_state(harness, 1).first
+      assert_equal "closed", tooltip_state(harness, 0)[1], "the first tooltip is superseded"
+      assert_equal "open", tooltip_state(harness, 1)[1]
     end
   end
 end

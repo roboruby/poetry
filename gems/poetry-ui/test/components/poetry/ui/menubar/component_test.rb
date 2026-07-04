@@ -36,7 +36,9 @@ module Poetry
           assert_equal "menubar", bar["data-component"]
           assert_equal "menubar", bar["role"]
           assert_equal "Application menu", bar["aria-label"]
-          assert_equal "closed", bar["data-state"]
+          # The bar ROOT keeps the mounted open/closed pair (W1 resolution).
+          assert bar.key?("data-closed")
+          refute bar.key?("data-open")
           # ONE shared Attributes instance: token-concatenated, not overwritten.
           assert_equal "poetry--core--menubar poetry--core--roving-focus", bar["data-controller"]
           assert_equal "", bar["data-poetry--core--menubar-value-value"]
@@ -91,7 +93,7 @@ module Poetry
             assert_equal "menuitem", trigger["role"]
             assert_equal "menu", trigger["aria-haspopup"]
             assert_equal "false", trigger["aria-expanded"]
-            assert_equal "closed", trigger["data-state"]
+            refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
             assert trigger.key?("data-poetry-collection-item")
             assert_equal "anchor", trigger["data-poetry--core--popper-target"]
             assert_includes trigger["data-action"], "pointerdown->poetry--core--menubar#toggle"
@@ -122,7 +124,8 @@ module Poetry
           assert_equal "menu", content["role"]
           assert_equal "vertical", content["aria-orientation"]
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
           assert_equal "bottom", content["data-side"]
           assert_equal "start", content["data-align"]
@@ -146,12 +149,15 @@ module Poetry
           file, edit = doc(html).css('[data-slot="menubar-trigger"]').to_a
           file_content = doc(html).css('[data-slot="menubar-content"]').first
 
-          assert_equal "open", bar["data-state"]
+          assert bar.key?("data-open")
+          refute bar.key?("data-closed")
           assert_equal "file", bar["data-poetry--core--menubar-value-value"]
-          assert_equal(%w[open true 0 file],
-                       [file["data-state"], file["aria-expanded"], file["tabindex"], file["data-value"]])
-          assert_equal(%w[closed false -1], [edit["data-state"], edit["aria-expanded"], edit["tabindex"]])
-          assert_equal "open", file_content["data-state"]
+          assert file.key?("data-popup-open"), "open trigger carries bare data-popup-open"
+          assert_equal(%w[true 0 file], [file["aria-expanded"], file["tabindex"], file["data-value"]])
+          refute edit.key?("data-popup-open"), "closed trigger carries NO state attribute"
+          assert_equal(%w[false -1], [edit["aria-expanded"], edit["tabindex"]])
+          assert file_content.key?("data-open"), "open popup carries bare data-open"
+          refute file_content.key?("data-closed")
           refute file_content.key?("hidden")
         end
 
@@ -216,11 +222,17 @@ module Poetry
 
           assert_equal "true", label["data-inset"]
           assert_equal "menuitemcheckbox", checkbox["role"]
-          assert_equal(%w[true checked], [checkbox["aria-checked"], checkbox["data-state"]])
+          assert_equal "true", checkbox["aria-checked"]
+          assert checkbox.key?("data-checked")
+          refute checkbox.key?("data-unchecked")
           assert_equal "separator", separator["role"]
           assert_equal "benoit", radio_group["data-value"]
-          assert_equal(%w[false unchecked], [andy["aria-checked"], andy["data-state"]])
-          assert_equal(%w[true checked], [benoit["aria-checked"], benoit["data-state"]])
+          assert_equal "false", andy["aria-checked"]
+          assert andy.key?("data-unchecked")
+          refute andy.key?("data-checked")
+          assert_equal "true", benoit["aria-checked"]
+          assert benoit.key?("data-checked")
+          refute benoit.key?("data-unchecked")
           assert_equal "group", group["role"]
           assert_equal "destructive", group.css('[data-slot="menubar-item"]').first["data-variant"]
           assert_equal "⌘B", shortcut.text
@@ -310,7 +322,7 @@ module Poetry
           assert_includes content["class"], "min-w-[12rem]"
           assert_includes content["class"], "origin-(--radix-menubar-content-transform-origin)"
           # The source's own quirks, kept verbatim:
-          refute_includes content["class"], "data-[state=closed]:animate-out"
+          refute_includes content["class"], "data-closed:animate-out"
           assert_includes checkbox["class"], "rounded-xs"
           assert_includes sub_trigger["class"].split, "outline-none"
         end

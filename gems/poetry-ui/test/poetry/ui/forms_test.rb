@@ -485,7 +485,7 @@ module Poetry
         selected_values = selected.map { |item| item["data-value"] }
 
         assert_equal ["design"], selected_values
-        assert_equal "checked", selected.first["data-state"]
+        assert selected.first.key?("data-selected"), "the committed option carries bare data-selected"
       end
 
       def test_poetry_combobox_without_a_value_rests_on_the_blank_option

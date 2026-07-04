@@ -46,7 +46,7 @@ module Poetry
           assert_equal "menu", trigger["aria-haspopup"]
           assert_equal "false", trigger["aria-expanded"]
           assert_equal content["id"], trigger["aria-controls"]
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
           assert_includes trigger["data-action"], "click->poetry--core--menu#toggle"
           assert_includes trigger["data-action"], "keydown->poetry--core--menu#triggerKeydown"
@@ -63,7 +63,8 @@ module Poetry
           assert_equal "vertical", content["aria-orientation"]
           assert_equal trigger["id"], content["aria-labelledby"]
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
           assert_equal "content", content["data-poetry--core--popper-target"]
           # The layer controllers (focus-scope/dismissable/roving-focus) are
@@ -77,10 +78,11 @@ module Poetry
           content = doc(html).css('[data-slot="dropdown-menu-content"]').first
           trigger = doc(html).css('[data-slot="dropdown-menu-trigger"]').first
 
-          assert_equal "open", content["data-state"]
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
           assert_equal "true", trigger["aria-expanded"]
-          assert_equal "open", trigger["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
         end
 
         def test_items_are_role_menuitem_divs_in_the_collection
@@ -122,7 +124,7 @@ module Poetry
           end
         end
 
-        def test_checkbox_item_writes_aria_checked_and_data_state_together
+        def test_checkbox_item_writes_aria_checked_and_data_checked_together
           html = render_menu do |menu|
             menu.with_trigger { "Open" }
             menu.with_checkbox_item(checked: true, close_on_select: false) { "Status Bar" }
@@ -132,10 +134,12 @@ module Poetry
 
           assert_equal "menuitemcheckbox", checked["role"]
           assert_equal "true", checked["aria-checked"]
-          assert_equal "checked", checked["data-state"]
+          assert checked.key?("data-checked")
+          refute checked.key?("data-unchecked")
           assert_equal "false", checked["data-close-on-select"]
           assert_equal "false", unchecked["aria-checked"]
-          assert_equal "unchecked", unchecked["data-state"]
+          assert unchecked.key?("data-unchecked")
+          refute unchecked.key?("data-checked")
 
           indicator = checked.css('[data-slot="dropdown-menu-item-indicator"]').first
 
@@ -157,8 +161,12 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal "top", group["data-value"]
           assert_equal "menuitemradio", top["role"]
-          assert_equal(%w[true checked top], [top["aria-checked"], top["data-state"], top["data-value"]])
-          assert_equal(%w[false unchecked], [bottom["aria-checked"], bottom["data-state"]])
+          assert_equal(%w[true top], [top["aria-checked"], top["data-value"]])
+          assert top.key?("data-checked")
+          refute top.key?("data-unchecked")
+          assert_equal "false", bottom["aria-checked"]
+          assert bottom.key?("data-unchecked")
+          refute bottom.key?("data-checked")
           assert_predicate group.css('[data-slot="dropdown-menu-item-indicator"]'), :any?
         end
 
@@ -238,7 +246,7 @@ module Poetry
           assert_equal "menu", sub_trigger["aria-haspopup"]
           assert_equal "false", sub_trigger["aria-expanded"]
           assert_equal sub_content["id"], sub_trigger["aria-controls"]
-          assert_equal "closed", sub_trigger["data-state"]
+          refute sub_trigger.key?("data-popup-open"), "closed sub-trigger carries NO state attribute"
           assert_equal "true", sub_trigger["data-inset"]
           assert sub_trigger.key?("data-poetry-collection-item"), "sub-trigger sits in the PARENT's collection"
           assert_equal "anchor", sub_trigger["data-poetry--core--popper-target"]
@@ -249,7 +257,7 @@ module Poetry
 
           assert_equal "menu", sub_content["role"]
           assert_equal sub_trigger["id"], sub_content["aria-labelledby"]
-          assert_equal "closed", sub_content["data-state"]
+          assert sub_content.key?("data-closed"), "mounted-closed sub popup carries bare data-closed"
           assert sub_content.key?("hidden")
           assert_equal "content", sub_content["data-poetry--core--popper-target"]
           assert_nil sub_content["data-controller"], "sub layer controllers are runtime-activated"

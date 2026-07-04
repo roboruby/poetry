@@ -67,7 +67,7 @@ module Poetry
           assert_equal list["id"], input["aria-controls"],
                        "the double-combobox: both roles control the SAME listbox"
           assert_nil trigger["aria-autocomplete"], "the typing session belongs to the popup input"
-          assert_equal "closed", trigger["data-state"]
+          refute trigger.key?("data-popup-open"), "closed trigger carries NO state attribute (absence IS the state)"
           assert_equal "Framework", trigger["aria-label"]
           assert_equal "anchor", trigger["data-poetry--core--popper-target"]
           assert_includes trigger["data-action"], "click->poetry--core--combobox#toggle"
@@ -149,7 +149,8 @@ module Poetry
 
           assert_nil content["role"], "the popup container has no role - the listbox lives inside"
           assert_equal "-1", content["tabindex"]
-          assert_equal "closed", content["data-state"]
+          assert content.key?("data-closed"), "mounted-closed popup carries bare data-closed"
+          refute content.key?("data-open")
           assert_equal "bottom", content["data-side"]
           assert_equal "start", content["data-align"]
           assert content.key?("hidden"), "closed content is hidden (truthful server render)"
@@ -207,19 +208,22 @@ module Poetry
           assert_equal "next.js", nextjs["data-value"]
           assert_includes nextjs["data-action"], "click->poetry--core--command#activate"
           assert_includes nextjs["data-action"], "pointermove->poetry--core--command#pointerHighlight"
-          # aria-selected and data-state flip TOGETHER, never separately.
-          assert_equal(%w[false unchecked], [nextjs["aria-selected"], nextjs["data-state"]])
-          assert_equal(%w[true checked], [sveltekit["aria-selected"], sveltekit["data-state"]])
+          # aria-selected and data-selected flip TOGETHER, never separately
+          # (unselected = data-selected ABSENT - no data-unselected exists).
+          assert_equal "false", nextjs["aria-selected"]
+          refute nextjs.key?("data-selected")
+          assert_equal "true", sveltekit["aria-selected"]
+          assert sveltekit.key?("data-selected")
           assert_equal 1, doc(html).css('[data-slot="command-item"][aria-selected="true"]').size,
                        "exactly one option selected per non-nil value"
 
           doc(html).css('[data-slot="command-item"]').each do |item|
             indicator = item.css('[data-slot="combobox-item-indicator"]').first
 
-            assert indicator, "every item ships the indicator (data-state drives visibility)"
+            assert indicator, "every item ships the indicator (data-selected drives visibility)"
             assert_includes indicator["class"], "ms-auto", "trailing per the demo (logical for RTL)"
-            assert_includes indicator["class"], "[[data-state=unchecked]>&]:hidden",
-                            "visible iff data-state=checked - the attribute-driven check"
+            assert_includes indicator["class"], "[:not([data-selected])>&]:hidden",
+                            "visible iff data-selected present - the attribute-driven check"
             assert_equal "true", indicator.css("svg").first["aria-hidden"]
           end
           assert_equal "SvelteKit", sveltekit.css('[data-slot="command-item-text"]').first.text,
@@ -349,10 +353,11 @@ module Poetry
           content = doc(html).css('[data-slot="combobox-content"]').first
           trigger = doc(html).css('[data-slot="combobox-trigger"]').first
 
-          assert_equal "open", content["data-state"]
+          assert content.key?("data-open"), "open popup carries bare data-open"
+          refute content.key?("data-closed")
           refute content.key?("hidden")
           assert_equal "true", trigger["aria-expanded"]
-          assert_equal "open", trigger["data-state"]
+          assert trigger.key?("data-popup-open"), "open trigger carries bare data-popup-open"
         end
 
         def test_disabled_disables_trigger_native_and_input_together
@@ -439,7 +444,7 @@ module Poetry
           assert_includes html, "w-(--radix-popper-anchor-width)"
           assert_includes html, "origin-(--radix-popper-transform-origin)"
           assert_includes html, "data-[placeholder]:text-muted-foreground"
-          assert_includes html, "data-[state=open]:zoom-in-95"
+          assert_includes html, "data-open:zoom-in-95"
         end
       end
     end

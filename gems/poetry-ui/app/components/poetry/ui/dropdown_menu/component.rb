@@ -51,7 +51,7 @@ module Poetry
 
         # data-slot="dropdown-menu-item-indicator" is a POETRY ADDITION
         # (new-york-v4's span is anonymous) - the self-identification rule.
-        # State is carried by the parent item's aria-checked/data-state;
+        # State is carried by the parent item's aria-checked/data-checked pair;
         # the glyph itself stays decorative (Icon defaults to aria-hidden).
         def item_indicator(icon, icon_class)
           content_tag(:span, "data-slot" => "dropdown-menu-item-indicator",
@@ -120,8 +120,9 @@ module Poetry
           attrs = {
             "data-slot" => "dropdown-menu-checkbox-item", "role" => "menuitemcheckbox", "tabindex" => "-1",
             "data-poetry-collection-item" => "",
-            # aria-checked and data-state written TOGETHER, never separately.
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            # aria-checked and the data-checked/data-unchecked pair written
+            # TOGETHER, never separately.
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:checkbox_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
@@ -166,8 +167,9 @@ module Poetry
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
           "Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.",
           "Icon-only triggers MUST have an accessible name (the composed Button's label: rule).",
-          "Never write data-state without its aria twin (aria-expanded / aria-checked) - the controller " \
-          "writes both; agents patching DOM must too.",
+          "Never write the state attributes (data-popup-open / data-checked / data-unchecked) without " \
+          "their aria twin (aria-expanded / aria-checked) - the controller writes both; agents patching " \
+          "DOM must too.",
           "Destructive items use variant: :destructive AND still confirm irreversible actions via a dialog.",
           "shortcut: is a visual hint only - it does NOT bind the key; wire a real hotkey separately or omit it.",
           "Do not nest interactive elements inside items (a menuitem IS the interactive unit).",
@@ -196,9 +198,12 @@ module Poetry
         # the composed content, so composition cannot drop the aria.
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
-            "id" => trigger_id, "data-slot" => "dropdown-menu-trigger", "data-state" => state,
+            "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
             "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
           }.merge(trigger_stimulus_attributes)
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          wiring["data-popup-open"] = "" if open
           options[:disabled] = true if disabled && !options.key?(:disabled)
           Button::Component.new(**wiring, **options, &block)
         }
@@ -206,10 +211,6 @@ module Poetry
         def before_render
           raise ArgumentError, "DropdownMenu requires with_trigger (the menu button)" unless trigger?
           raise ArgumentError, "DropdownMenu requires at least one item" unless items?
-        end
-
-        def state
-          open ? "open" : "closed"
         end
 
         def trigger_id
@@ -232,7 +233,7 @@ module Poetry
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
-            "data-slot" => "dropdown-menu-content", "data-state" => state,
+            "data-slot" => "dropdown-menu-content", (open ? "data-open" : "data-closed") => "",
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
@@ -341,7 +342,7 @@ module Poetry
           attrs = {
             "data-slot" => "dropdown-menu-radio-item", "role" => "menuitemradio", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-value" => key,
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "class" => Style.css(:radio_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
@@ -383,7 +384,6 @@ module Poetry
             "id" => trigger_id, "data-slot" => "dropdown-menu-sub-trigger", "role" => "menuitem",
             "tabindex" => "-1", "data-poetry-collection-item" => "",
             "aria-haspopup" => "menu", "aria-expanded" => "false", "aria-controls" => content_id,
-            "data-state" => "closed",
             "class" => Style.css(:sub_trigger, class: options.delete(:class))
           }.merge(sub_trigger_stimulus_attributes)
           apply_item_flags(attrs, inset:, disabled:, text_value:)
@@ -436,7 +436,7 @@ module Poetry
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
-            "data-slot" => "dropdown-menu-sub-content", "data-state" => "closed", "hidden" => true,
+            "data-slot" => "dropdown-menu-sub-content", "data-closed" => "", "hidden" => true,
             "class" => Style.css(:sub_content)
           }.merge(popper_stimulus { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }

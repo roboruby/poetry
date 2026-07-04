@@ -22,7 +22,7 @@ module Poetry
         end
 
         # The server-rendered value: display label + native option selected
-        # + the aria-selected/data-state twin + the visible check indicator,
+        # + the aria-selected/data-selected twin + the visible check indicator,
         # all in one pass.
         def valued
           render_component(name: "framework", value: "sveltekit", placeholder: "Select framework...",
