@@ -62,8 +62,9 @@ module Poetry
                   Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css").read, force: true
       # shadcn's first-party utility layer (shimmer / scroll-fade families +
       # the chat-set keyframes), vendored verbatim at a pinned SHA (N1).
+      # N6: vendored source moved to shadcn/tailwind.css @ d0fae528 (host filename stays utilities.css).
       create_file "app/assets/tailwind/poetry/utilities.css",
-                  Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css").read, force: true
+                  Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css").read, force: true
       create_file "app/assets/tailwind/poetry/aliases.css",
                   Poetry::Core.root.join("tokens/aliases.css").read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true

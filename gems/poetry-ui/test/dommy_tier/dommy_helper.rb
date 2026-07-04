@@ -78,7 +78,7 @@ module DommyTier
 
   def css_inputs
     %w[tokens/tokens.css tokens/tailwind-theme.css
-       vendor/tw-animate-css/tw-animate.css vendor/shadcn-utilities/utilities.css
+       vendor/tw-animate-css/tw-animate.css vendor/shadcn-tailwind/tailwind.css
        tokens/aliases.css]
       .map { |path| Poetry::Core.root.join(path) }
   end

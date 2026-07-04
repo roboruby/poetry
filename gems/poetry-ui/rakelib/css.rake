@@ -34,7 +34,7 @@ def poetry_ui_compile_tailwind
       @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
       @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
-      @import "#{Poetry::Core.root.join("vendor/shadcn-utilities/utilities.css")}";
+      @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
       @source "#{File.join(dir, "safelist.txt")}";
     CSS
