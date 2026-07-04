@@ -236,19 +236,19 @@ describe("poetry--core--popper", () => {
   it("writes the radix-compat sizing vars from the size middleware", async () => {
     const { content } = await mount()
 
-    expect(content.style.getPropertyValue("--radix-popper-available-width")).toBe("111px")
-    expect(content.style.getPropertyValue("--radix-popper-available-height")).toBe("222px")
-    expect(content.style.getPropertyValue("--radix-popper-anchor-width")).toBe("42px")
-    expect(content.style.getPropertyValue("--radix-popper-anchor-height")).toBe("24px")
+    expect(content.style.getPropertyValue("--available-width")).toBe("111px")
+    expect(content.style.getPropertyValue("--available-height")).toBe("222px")
+    expect(content.style.getPropertyValue("--anchor-width")).toBe("42px")
+    expect(content.style.getPropertyValue("--anchor-height")).toBe("24px")
   })
 
-  it("writes --radix-popper-transform-origin from the resolved side/align", async () => {
+  it("writes --transform-origin from the resolved side/align", async () => {
     result.placement = "bottom-start"
     const { content } = await mount()
 
     // Anchor-facing edge: bottom placement puts the origin on the top edge,
     // at the align fraction (no arrow, so no arrow-centering).
-    expect(content.style.getPropertyValue("--radix-popper-transform-origin")).toBe("0% 0px")
+    expect(content.style.getPropertyValue("--transform-origin")).toBe("0% 0px")
 
     result.placement = "top"
     const controller = application.getControllerForElementAndIdentifier(
@@ -257,7 +257,7 @@ describe("poetry--core--popper", () => {
     await controller.reposition()
 
     // jsdom rects are all-zero; the browser sees "50% <height>px".
-    expect(content.style.getPropertyValue("--radix-popper-transform-origin")).toBe("50% 0px")
+    expect(content.style.getPropertyValue("--transform-origin")).toBe("50% 0px")
   })
 
   it("toggles visibility from the hide middleware's referenceHidden", async () => {

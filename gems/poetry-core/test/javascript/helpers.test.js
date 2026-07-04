@@ -294,4 +294,81 @@ describe("presence", () => {
 
     spy.mockRestore()
   })
+
+  // The Base UI transition hooks. No poetry class consumes
+  // them yet - these pin the choreography for the theme-layer milestone.
+  describe("starting/ending style hooks", () => {
+    const twoFrames = () => new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 0)))
+    })
+
+    it("enterPresence wears data-starting-style for one painted frame, then removes it", async () => {
+      const panel = mount()
+
+      enterPresence(panel)
+      expect(panel.hasAttribute("data-starting-style")).toBe(true) // the first paint sees it
+
+      await twoFrames()
+      expect(panel.hasAttribute("data-starting-style")).toBe(false)
+      expect(panel.hasAttribute("data-open")).toBe(true)
+    })
+
+    it("exitPresence wears data-ending-style until the exit settles", () => {
+      const panel = mount()
+      const spy = stubStyle({ animationName: "poetry-exit", animationDuration: "0.2s" })
+      const onRemove = vi.fn()
+
+      exitPresence(panel, { onRemove })
+      expect(panel.hasAttribute("data-ending-style")).toBe(true)
+
+      panel.dispatchEvent(new Event("animationend", { bubbles: true }))
+      expect(onRemove).toHaveBeenCalledTimes(1)
+      expect(panel.hasAttribute("data-ending-style")).toBe(false)
+
+      spy.mockRestore()
+    })
+
+    it("a no-animation exit never leaves the attribute behind", () => {
+      const panel = mount()
+
+      exitPresence(panel, { onRemove: vi.fn() })
+      expect(panel.hasAttribute("data-ending-style")).toBe(false)
+    })
+
+    it("cancel() (a re-open interrupt) strips data-ending-style; the next enter strips any leftover", () => {
+      const panel = mount()
+      const spy = stubStyle({ animationName: "poetry-exit", animationDuration: "0.2s" })
+
+      const cancel = exitPresence(panel, { onRemove: vi.fn() })
+      expect(panel.hasAttribute("data-ending-style")).toBe(true)
+      cancel()
+      expect(panel.hasAttribute("data-ending-style")).toBe(false)
+
+      // Belt and braces: even a lingering attribute is cleared on entry.
+      panel.setAttribute("data-ending-style", "")
+      enterPresence(panel)
+      expect(panel.hasAttribute("data-ending-style")).toBe(false)
+
+      spy.mockRestore()
+    })
+
+    it("getAnimations().finished settles the exit (the Base UI end-detection)", async () => {
+      const panel = mount()
+      const spy = stubStyle({ animationName: "poetry-exit", animationDuration: "0.2s" })
+      const onRemove = vi.fn()
+      let resolveFinished
+      panel.getAnimations = () => [{ finished: new Promise((resolve) => { resolveFinished = resolve }) }]
+
+      exitPresence(panel, { onRemove })
+      expect(onRemove).not.toHaveBeenCalled()
+
+      resolveFinished()
+      await Promise.resolve() // allSettled tick
+      await Promise.resolve()
+      expect(onRemove).toHaveBeenCalledTimes(1)
+      expect(panel.hasAttribute("data-ending-style")).toBe(false)
+
+      spy.mockRestore()
+    })
+  })
 })

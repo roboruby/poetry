@@ -41,10 +41,30 @@ export function measurePresence(element, { property = "--poetry-presence-height"
 
 // measure: true measures BEFORE the pair flips to data-open, so the entry
 // keyframe can consume the var from its first frame.
+//
+// Base UI transition hooks: the element enters wearing
+// data-starting-style for exactly one painted frame after the pair flips
+// (the Base UI two-frame trick), so CSS transitions can animate FROM the
+// starting declarations. No poetry class consumes it yet - the attribute
+// ships so the theme-layer milestone can adopt the transition idiom
+// without touching JS.
 export function enterPresence(element, { measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
 
+  element.removeAttribute("data-ending-style") // an interrupted exit must not linger
+  element.setAttribute("data-starting-style", "")
   setState(element, "open")
+
+  if (typeof requestAnimationFrame === "function") {
+    // Two frames: the first paints WITH the attribute, the removal lands
+    // on the next - the transition sees both endpoints.
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => element.removeAttribute("data-starting-style"))
+    })
+  } else {
+    element.removeAttribute("data-starting-style") // no rAF (bare interpreter): inert either way
+  }
+
   return element
 }
 
@@ -57,9 +77,13 @@ export function enterPresence(element, { measure = false, property } = {}) {
 export function exitPresence(element, { onRemove, measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
 
+  // The Base UI exit hook: data-ending-style rides the whole exit
+  // and leaves with the node's removal (or an interrupting re-open).
+  element.setAttribute("data-ending-style", "")
   setState(element, "closed")
 
   if (!hasExitAnimation(element)) {
+    element.removeAttribute("data-ending-style")
     onRemove?.()
     return () => {}
   }
@@ -79,6 +103,7 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
 
     settled = true
     cleanup()
+    element.removeAttribute("data-ending-style")
     onRemove?.()
   }
 
@@ -86,9 +111,22 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
   element.addEventListener("transitionend", settle)
   timeout = window.setTimeout(settle, exitTimeoutFor(element))
 
+  // getAnimations().finished is the Base UI end-detection: it resolves for
+  // transitions AND keyframes symmetrically and needs no duration math.
+  // Kept ALONGSIDE the listener+timeout paths - jsdom and the dommy tier
+  // don't implement getAnimations, and settle() is idempotent.
+  if (typeof element.getAnimations === "function") {
+    const animations = element.getAnimations()
+    if (animations.length > 0) {
+      Promise.allSettled(animations.map((animation) => animation.finished))
+        .then(() => settle())
+    }
+  }
+
   return () => {
     settled = true
     cleanup()
+    element.removeAttribute("data-ending-style")
   }
 }
 

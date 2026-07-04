@@ -16,11 +16,11 @@ import {
 // Radix's order - offset -> shift -> flip (both gated on avoidCollisions, as
 // in Radix) -> size -> arrow (when an arrow target exists) -> hide - and the
 // same output contract: data-side / data-align mirror the RESOLVED placement
-// (after flip), and the content gets the radix-named CSS vars
-// (--radix-popper-transform-origin / -available-width / -available-height /
+// (after flip), and the content gets the Base UI CSS vars
+// (--transform-origin / -available-width / -available-height /
 // -anchor-width / -anchor-height) so ported Tailwind classes like
 // data-[side=top]:slide-in-from-bottom-2 and
-// max-h-[var(--radix-popper-available-height)] work unchanged.
+// max-h-[var(--available-height)] work unchanged.
 //
 // The Arrow stays a markup primitive (Tier 4): any [data-slot=popper-arrow]
 // marked as the arrow target is positioned + given data-side here; the SVG
@@ -165,7 +165,7 @@ export default class PopperController extends Controller {
     content.setAttribute("data-align", align)
 
     content.style.setProperty(
-      "--radix-popper-transform-origin",
+      "--transform-origin",
       this.#transformOrigin({ side, align, content, arrowElement, middlewareData })
     )
 
@@ -196,14 +196,14 @@ export default class PopperController extends Controller {
     middleware.push(
       size({
         apply: ({ elements, rects, availableWidth, availableHeight }) => {
-          // The radix-compat sizing vars, written from inside the pipeline so
+          // The Base UI sizing vars, written from inside the pipeline so
           // they reflect post-flip geometry (as in Radix's size.apply).
           const style = elements.floating.style
 
-          style.setProperty("--radix-popper-available-width", `${availableWidth}px`)
-          style.setProperty("--radix-popper-available-height", `${availableHeight}px`)
-          style.setProperty("--radix-popper-anchor-width", `${rects.reference.width}px`)
-          style.setProperty("--radix-popper-anchor-height", `${rects.reference.height}px`)
+          style.setProperty("--available-width", `${availableWidth}px`)
+          style.setProperty("--available-height", `${availableHeight}px`)
+          style.setProperty("--anchor-width", `${rects.reference.width}px`)
+          style.setProperty("--anchor-height", `${rects.reference.height}px`)
         }
       })
     )
