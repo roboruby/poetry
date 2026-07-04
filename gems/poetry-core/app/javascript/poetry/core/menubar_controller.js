@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
-import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { setState } from "@poetry/controllers/helpers/state"
 
 // The Menubar cross-menu COORDINATOR (Menubar) - kept
 // deliberately anorexic: ONE piece of state (`value`, which menu is open)
@@ -88,7 +88,7 @@ export default class MenubarController extends Controller {
     if (event.button !== undefined && event.button !== 0) return // left button only (Radix)
     if (event.ctrlKey) return // macOS ctrl-click is a context menu, not a toggle
 
-    if (stateOf(trigger) === "open") this.#menuFor(trigger)?.close("trigger")
+    if (trigger.hasAttribute("data-popup-open")) this.#menuFor(trigger)?.close("trigger")
     else this.#activate(trigger, "pointer", { openReason: "pointer", focus: false })
   }
 
@@ -96,7 +96,7 @@ export default class MenubarController extends Controller {
     const trigger = event.currentTarget
 
     if (!this.valueValue) return // gated hover: never opens from cold
-    if (this.#isDisabled(trigger) || stateOf(trigger) === "open") return
+    if (this.#isDisabled(trigger) || trigger.hasAttribute("data-popup-open")) return
 
     this.#activate(trigger, "hover-slide", { openReason: "pointer", focus: false })
   }
@@ -104,7 +104,7 @@ export default class MenubarController extends Controller {
   triggerKeydown(event) {
     const trigger = event.currentTarget
 
-    if (this.#isDisabled(trigger) || stateOf(trigger) === "open") return
+    if (this.#isDisabled(trigger) || trigger.hasAttribute("data-popup-open")) return
 
     if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
       event.preventDefault() // also suppresses the button's synthetic click
@@ -220,7 +220,7 @@ export default class MenubarController extends Controller {
   }
 
   #openTrigger() {
-    return this.#triggers().find((trigger) => stateOf(trigger) === "open") ?? null
+    return this.#triggers().find((trigger) => trigger.hasAttribute("data-popup-open")) ?? null
   }
 
   #adjacentTrigger(trigger, delta) {

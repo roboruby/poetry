@@ -29,7 +29,7 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 //
 // TWO MEANINGS, TWO ATTRIBUTES, ONE LIST: data-highlighted +
 // aria-activedescendant = position (Command's, never aria-selected);
-// aria-selected + data-state=checked + the indicator = the COMMITTED value
+// aria-selected + data-selected + the indicator = the COMMITTED value
 // (Select's twin-write, written only here, in the pipeline).
 //
 // THE SYNC INVARIANT (Select's, inherited): native_select.value, the value
@@ -189,7 +189,7 @@ export default class ComboboxController extends Controller {
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
     trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "open")
+    if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
     this.#activateLayers(content)
     this.openValue = true
@@ -235,7 +235,7 @@ export default class ComboboxController extends Controller {
     const trigger = this.#trigger()
 
     trigger?.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
     this.openValue = false
 
@@ -278,7 +278,7 @@ export default class ComboboxController extends Controller {
 
   // THE single sync path, NATIVE FIRST (Select's 5 steps re-instantiated):
   // 1. native_select.value + real bubbling change/input; 2. aria-selected
-  // + data-state twin-flipped on every option; 3+4. display synced from
+  // + data-selected twin-flipped on every option; 3+4. display synced from
   // the option's item-text (data-text-value override) + the trigger's
   // data-placeholder; 5. poetry:combobox:change.
   #apply(value, { silent = false, fromNative = false, force = false } = {}) {
@@ -306,7 +306,7 @@ export default class ComboboxController extends Controller {
       const match = value !== "" && (item.dataset.value ?? "") === value
 
       item.setAttribute("aria-selected", String(match))
-      setState(item, match ? "checked" : "unchecked")
+      setState(item, match ? "selected" : "unselected")
 
       if (match) selected = item
     }

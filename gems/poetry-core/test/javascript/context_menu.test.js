@@ -39,7 +39,7 @@ const markup = ({ disabled = false, delay = 700 } = {}) => `
        data-poetry--core--context-menu-disabled-value="${disabled}"
        data-poetry--core--context-menu-long-press-delay-value="${delay}"
        data-poetry--core--menu-modal-value="true">
-    <span id="trigger" data-slot="context-menu-trigger" data-state="closed"
+    <span id="trigger" data-slot="context-menu-trigger"
           aria-controls="content" style="-webkit-touch-callout: none"
           data-action="contextmenu->poetry--core--context-menu#open
                        pointerdown->poetry--core--context-menu#pressStart
@@ -49,7 +49,7 @@ const markup = ({ disabled = false, delay = 700 } = {}) => `
       Right-click surface
     </span>
     <div id="content" data-slot="context-menu-content" role="menu" aria-orientation="vertical"
-         aria-label="Context menu" tabindex="-1" data-state="closed" hidden>
+         aria-label="Context menu" tabindex="-1" data-closed hidden>
       <div id="item-rename" data-slot="context-menu-item" role="menuitem" tabindex="-1"
            data-poetry-collection-item>Rename</div>
       <div id="item-delete" data-slot="context-menu-item" role="menuitem" tabindex="-1"
@@ -88,10 +88,10 @@ describe("poetry--core--context-menu", () => {
 
       expect(consumed).toBe(true) // preventDefault: the custom menu replaces the native one
       expect(el("root").getAttribute(ANCHOR)).toBe("512,384")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
       expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
-      expect(el("trigger").dataset.state).toBe("open")
+      expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(opens).toEqual([{ x: 512, y: 384, input: "pointer" }])
     })
 
@@ -111,7 +111,7 @@ describe("poetry--core--context-menu", () => {
       await nextFrame()
 
       expect(consumed).toBe(false)
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("root").hasAttribute(ANCHOR)).toBe(false)
     })
 
@@ -123,7 +123,7 @@ describe("poetry--core--context-menu", () => {
       await nextFrame()
 
       expect(el("root").getAttribute(ANCHOR)).toBe("")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-first")
       expect(document.activeElement).toBe(el("item-rename"))
       expect(opens).toEqual([{ x: null, y: null, input: "keyboard" }])
@@ -138,7 +138,7 @@ describe("poetry--core--context-menu", () => {
       await nextFrame()
 
       expect(el("root").getAttribute(ANCHOR)).toBe("300,200")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
   })
 
@@ -153,10 +153,10 @@ describe("poetry--core--context-menu", () => {
       expect(el("trigger").hasAttribute("data-pressing")).toBe(true)
 
       await vi.advanceTimersByTimeAsync(699)
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("trigger").hasAttribute("data-pressing")).toBe(false)
       expect(el("root").getAttribute(ANCHOR)).toBe("40,60")
       expect(opens).toEqual([{ x: 40, y: 60, input: "long-press" }])
@@ -169,7 +169,7 @@ describe("poetry--core--context-menu", () => {
       pointer(el("trigger"), "pointerdown", { x: 1, y: 2 })
       await vi.advanceTimersByTimeAsync(300)
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("ANY pointermove cancels (no slop radius); pointerup and pointercancel cancel too", async () => {
@@ -183,7 +183,7 @@ describe("poetry--core--context-menu", () => {
         expect(el("trigger").hasAttribute("data-pressing")).toBe(false)
 
         await vi.advanceTimersByTimeAsync(1000)
-        expect(el("content").dataset.state).toBe("closed")
+        expect(el("content").hasAttribute("data-closed")).toBe(true)
         vi.useRealTimers()
       }
     })
@@ -198,10 +198,10 @@ describe("poetry--core--context-menu", () => {
       pointer(el("trigger"), "pointerdown", { x: 90, y: 90 })
       await vi.advanceTimersByTimeAsync(699)
 
-      expect(el("content").dataset.state).toBe("closed") // the first press's schedule is gone
+      expect(el("content").hasAttribute("data-closed")).toBe(true) // the first press's schedule is gone
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("root").getAttribute(ANCHOR)).toBe("90,90")
       expect(opens.length).toBe(1)
     })
@@ -215,7 +215,7 @@ describe("poetry--core--context-menu", () => {
       expect(el("trigger").hasAttribute("data-pressing")).toBe(false)
 
       await vi.advanceTimersByTimeAsync(1500)
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("a touch press on the surface while open closes first (press-again-to-dismiss)", async () => {
@@ -223,12 +223,12 @@ describe("poetry--core--context-menu", () => {
 
       contextmenu(el("trigger"), { x: 100, y: 100 })
       await nextFrame()
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       pointer(el("trigger"), "pointerdown", { x: 100, y: 100 })
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("the contextmenu handler clears a running long-press timer (Android synthesizes contextmenu from long-press - no double open)", async () => {
@@ -242,7 +242,7 @@ describe("poetry--core--context-menu", () => {
       await vi.advanceTimersByTimeAsync(1000)
 
       expect(opens.length).toBe(1)
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("flipping disabled on cancels a pending press", async () => {
@@ -253,7 +253,7 @@ describe("poetry--core--context-menu", () => {
       el("root").setAttribute("data-poetry--core--context-menu-disabled-value", "true")
       await vi.advanceTimersByTimeAsync(1000)
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("trigger").hasAttribute("data-pressing")).toBe(false)
     })
   })

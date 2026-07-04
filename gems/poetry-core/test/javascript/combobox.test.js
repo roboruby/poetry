@@ -51,11 +51,11 @@ const markup = ({ value = "", open = false, modal = false } = {}) => {
       </select>
       <button type="button" id="trigger" data-slot="combobox-trigger" role="combobox"
               aria-controls="list" aria-expanded="false" aria-haspopup="listbox"
-              data-state="closed" ${value ? "" : "data-placeholder"}
+              ${value ? "" : "data-placeholder"}
               data-action="poetry--core--combobox#toggle keydown->poetry--core--combobox#triggerKeydown">
         <span id="display" data-slot="combobox-value" data-placeholder="Select framework…">${selectedLabel ?? "Select framework…"}</span>
       </button>
-      <div id="content" data-slot="combobox-content" tabindex="-1" data-state="closed" ${open ? "" : "hidden"}>
+      <div id="content" data-slot="combobox-content" tabindex="-1" data-closed ${open ? "" : "hidden"}>
         <div id="command" data-slot="command" data-controller="poetry--core--command">
           <div data-slot="command-input-wrapper">
             <input id="input" data-slot="command-input" type="text" role="combobox"
@@ -68,7 +68,7 @@ const markup = ({ value = "", open = false, modal = false } = {}) => {
             ${FRAMEWORKS.map(([v, label]) => `
               <div id="item-${v}" data-slot="command-item" role="option"
                    data-poetry-collection-item data-value="${v}"
-                   aria-selected="${v === value}" data-state="${v === value ? "checked" : "unchecked"}"
+                   aria-selected="${v === value}" ${v === value ? "data-selected" : ""}
                    data-action="click->poetry--core--command#activate pointermove->poetry--core--command#pointerHighlight">
                 <span data-slot="command-item-text">${label}</span>
                 <span data-slot="combobox-item-indicator" aria-hidden="true"></span>
@@ -84,7 +84,7 @@ const controller = (application) =>
   application.getControllerForElementAndIdentifier(el("root"), "poetry--core--combobox")
 
 const ariaSelected = () => FRAMEWORKS.map(([v]) => el(`item-${v}`).getAttribute("aria-selected"))
-const dataStates = () => FRAMEWORKS.map(([v]) => el(`item-${v}`).dataset.state)
+const dataSelected = () => FRAMEWORKS.map(([v]) => el(`item-${v}`).hasAttribute("data-selected"))
 
 async function mount(options = {}) {
   document.body.innerHTML = markup(options)
@@ -118,7 +118,7 @@ describe("poetry--core--combobox", () => {
       await open()
 
       expect(el("trigger").getAttribute("aria-expanded")).toBe("true")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
       expect(document.activeElement).toBe(el("input"))
       expect(el("item-sveltekit").hasAttribute("data-highlighted")).toBe(true)
@@ -145,7 +145,7 @@ describe("poetry--core--combobox", () => {
       await flushMicrotasks()
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").getAttribute("data-open-reason")).toBe("typed")
       expect(document.activeElement).toBe(el("input"))
       expect(el("input").value).toBe("n")
@@ -192,7 +192,7 @@ describe("poetry--core--combobox", () => {
       expect(sequence[0]).toEqual(["native-change", "nuxt.js"]) // native BEFORE the poetry event
       expect(sequence[1][1]).toEqual({ value: "nuxt.js", label: "Nuxt.js", previous: "sveltekit" })
       expect(ariaSelected()).toEqual(["false", "false", "true", "false", "false"])
-      expect(dataStates()).toEqual(["unchecked", "unchecked", "checked", "unchecked", "unchecked"])
+      expect(dataSelected()).toEqual([false, false, true, false, false])
       expect(el("display").textContent).toBe("Nuxt.js")
       expect(el("trigger").hasAttribute("data-placeholder")).toBe(false)
       expect(el("content").hidden).toBe(true)
@@ -340,7 +340,7 @@ describe("poetry--core--combobox", () => {
 
       expect(el("native").value).toBe("remix")
       expect(el("display").textContent).toBe("Remix")
-      expect(dataStates()).toEqual(["unchecked", "unchecked", "unchecked", "checked", "unchecked"])
+      expect(dataSelected()).toEqual([false, false, false, true, false])
     })
   })
 

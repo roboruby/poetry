@@ -13,12 +13,12 @@ import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typ
 // dead weight for menus.
 //
 // THE SYNC INVARIANT (the component): native_select.value, the value Value,
-// aria-selected/data-state on options, and the display text never diverge -
+// aria-selected/data-selected on options, and the display text never diverge -
 // every write path (commit, closed-trigger typeahead, autofill adoption,
 // programmatic setValue) funnels through #apply, which writes the NATIVE
 // SELECT FIRST (serialization truth is never behind the facade), dispatches
 // real bubbling change/input on it (Turbo auto-submit and friends work
-// unmodified), flips aria-selected + data-state TOGETHER on every option,
+// unmodified), flips aria-selected + data-selected TOGETHER on every option,
 // syncs the value display from the option's item-text (data-text-value
 // override), toggles trigger[data-placeholder], then fires
 // poetry:select:change.
@@ -293,7 +293,7 @@ export default class SelectController extends Controller {
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
     trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "open")
+    if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
     this.#activateLayers(content)
     this.openValue = true
@@ -322,7 +322,7 @@ export default class SelectController extends Controller {
     const trigger = this.#trigger()
 
     trigger?.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
     this.openValue = false
 
@@ -395,14 +395,14 @@ export default class SelectController extends Controller {
       }
     }
 
-    // 2. aria-selected + data-state flipped TOGETHER on every option.
+    // 2. aria-selected + data-selected flipped TOGETHER on every option.
     let selected = null
 
     for (const item of this.#items()) {
       const match = value !== "" && (item.dataset.value ?? "") === value
 
       item.setAttribute("aria-selected", String(match))
-      setState(item, match ? "checked" : "unchecked")
+      setState(item, match ? "selected" : "unselected")
 
       if (match) selected = item
     }

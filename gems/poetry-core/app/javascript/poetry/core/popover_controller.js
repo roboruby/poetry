@@ -110,7 +110,7 @@ export default class PopoverController extends Controller {
 
     content.hidden = false
     trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "open")
+    if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
     this.#activateLayers(content)
     this.openValue = true
@@ -139,7 +139,7 @@ export default class PopoverController extends Controller {
     const trigger = this.#trigger()
 
     trigger?.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {

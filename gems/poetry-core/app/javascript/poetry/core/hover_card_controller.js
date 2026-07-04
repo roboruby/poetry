@@ -149,7 +149,7 @@ export default class HoverCardController extends Controller {
     const trigger = this.#trigger()
 
     content.hidden = false
-    if (trigger) setState(trigger, "open")
+    if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
     this.#activateLayer(content)
     this.#stripTabbables(content)
@@ -174,7 +174,7 @@ export default class HoverCardController extends Controller {
 
     const trigger = this.#trigger()
 
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {

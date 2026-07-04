@@ -42,12 +42,12 @@ const menuMarkup = ({ value, disabled = false, items }) => `
        data-poetry--core--menu-modal-value="false">
     <button type="button" id="${value}-trigger" data-slot="menubar-trigger" role="menuitem"
             tabindex="-1" data-poetry-collection-item aria-haspopup="menu" aria-expanded="false"
-            aria-controls="${value}-content" data-state="closed" data-value="${value}"
+            aria-controls="${value}-content" data-value="${value}"
             ${disabled ? "disabled data-disabled" : ""} data-action="${TRIGGER_ACTIONS}">
       ${value}
     </button>
     <div id="${value}-content" data-slot="menubar-content" role="menu" aria-orientation="vertical"
-         aria-labelledby="${value}-trigger" tabindex="-1" data-state="closed" hidden>
+         aria-labelledby="${value}-trigger" tabindex="-1" data-closed hidden>
       ${items.map((item) => `
         <div id="${value}-${item.toLowerCase().replaceAll(" ", "-")}" data-slot="menubar-item"
              role="menuitem" tabindex="-1" data-poetry-collection-item>${item}</div>`).join("")}
@@ -57,7 +57,7 @@ const menuMarkup = ({ value, disabled = false, items }) => `
 const barMarkup = ({ value = "", loop = false, dir = "ltr" } = {}) => `
   <div id="shell" dir="${dir}">
     <div id="bar" data-slot="menubar" data-component="menubar" role="menubar" aria-label="App menu"
-         data-state="closed"
+         data-closed
          data-controller="poetry--core--menubar poetry--core--roving-focus"
          data-poetry--core--menubar-value-value="${value}"
          data-poetry--core--menubar-loop-value="${loop}"
@@ -95,9 +95,10 @@ describe("poetry--core--menubar", () => {
   }
 
   const state = (value) => [
-    el(`${value}-trigger`).dataset.state,
+    el(`${value}-trigger`).hasAttribute("data-popup-open") ? "open" : "closed",
     el(`${value}-trigger`).getAttribute("aria-expanded"),
-    el(`${value}-content`).dataset.state,
+    el(`${value}-content`).hasAttribute("data-open") ? "open"
+      : el(`${value}-content`).hasAttribute("data-closed") ? "closed" : undefined,
     el(`${value}-content`).hidden
   ]
 
@@ -116,7 +117,7 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["open", "true", "open", false])
       expect(el("file-content").getAttribute("data-open-reason")).toBe("pointer")
       expect(document.activeElement).toBe(el("file-trigger")) // pointer-open leaves focus on the trigger
-      expect(el("bar").dataset.state).toBe("open")
+      expect(el("bar").hasAttribute("data-open")).toBe(true)
       expect(el("bar").getAttribute("data-poetry--core--menubar-value-value")).toBe("file")
       expect(changes).toEqual([{ value: "file", previous: null, reason: "pointer" }])
     })
@@ -131,7 +132,7 @@ describe("poetry--core--menubar", () => {
       await nextFrame()
 
       expect(state("file")).toEqual(["closed", "false", "closed", true])
-      expect(el("bar").dataset.state).toBe("closed")
+      expect(el("bar").hasAttribute("data-closed")).toBe(true)
       expect(changes.length).toBe(2)
       expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "pointer" })
     })
@@ -312,7 +313,7 @@ describe("poetry--core--menubar", () => {
 
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(document.activeElement).toBe(el("file-trigger"))
-      expect(el("bar").dataset.state).toBe("closed")
+      expect(el("bar").hasAttribute("data-closed")).toBe(true)
       expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "dismiss" })
     })
 
@@ -354,7 +355,7 @@ describe("poetry--core--menubar", () => {
       await mount({ value: "edit" })
 
       expect(state("edit")).toEqual(["open", "true", "open", false])
-      expect(el("bar").dataset.state).toBe("open")
+      expect(el("bar").hasAttribute("data-open")).toBe(true)
 
       el("bar").setAttribute("data-poetry--core--menubar-value-value", "view")
       await nextFrame()
@@ -366,7 +367,7 @@ describe("poetry--core--menubar", () => {
       await nextFrame()
 
       expect(state("view")).toEqual(["closed", "false", "closed", true])
-      expect(el("bar").dataset.state).toBe("closed")
+      expect(el("bar").hasAttribute("data-closed")).toBe(true)
     })
   })
 })

@@ -3,7 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
 // poetry--core--popover JS-unit: the thin owner over the token-activated
-// layer stack - toggle flips data-state + aria-expanded on both trigger and
+// layer stack - toggle flips the state attributes + aria-expanded on both trigger and
 // content; open appends focus-scope + dismissable with trapped/scrim values
 // = modal; close removes them after presence; dismiss -> close with reason
 // escape|outside; #suppressRestore on outside+non-modal; reconcile-on-connect
@@ -35,10 +35,10 @@ const markup = ({ open = false, modal = false } = {}) => `
        data-poetry--core--popover-modal-value="${modal}">
     <button id="trigger" type="button" data-slot="popover-trigger"
             aria-haspopup="dialog" aria-controls="content"
-            aria-expanded="${open}" data-state="${open ? "open" : "closed"}"
+            aria-expanded="${open}" ${open ? "data-popup-open" : ""}
             data-action="poetry--core--popover#toggle">Open popover</button>
     <div id="content" data-slot="popover-content" role="dialog" tabindex="-1"
-         data-state="${open ? "open" : "closed"}" ${open ? "" : "hidden"}>
+         ${open ? "data-open" : "data-closed"} ${open ? "" : "hidden"}>
       <input id="field" type="text">
       <button id="inner" type="button">Confirm</button>
     </div>
@@ -65,16 +65,16 @@ describe("poetry--core--popover", () => {
   }
 
   describe("toggle", () => {
-    it("opens: data-state + aria-expanded flip on trigger and content, content unhides, poetry:popover:open fires", async () => {
+    it("opens: data-popup-open/data-open + aria-expanded flip on trigger and content, content unhides, poetry:popover:open fires", async () => {
       await mount()
       const opens = record("poetry:popover:open", el("root"))
 
       el("trigger").click()
       await nextFrame()
 
-      expect(el("trigger").dataset.state).toBe("open")
+      expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("true")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
       expect(opens.length).toBe(1)
     })
@@ -88,9 +88,9 @@ describe("poetry--core--popover", () => {
       el("trigger").click()
       await nextFrame()
 
-      expect(el("trigger").dataset.state).toBe("closed")
+      expect(el("trigger").hasAttribute("data-popup-open")).toBe(false)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
       expect(closes).toEqual([{ reason: "trigger" }])
     })
@@ -195,12 +195,12 @@ describe("poetry--core--popover", () => {
       el("root").setAttribute("data-poetry--core--popover-open-value", "true")
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       el("root").setAttribute("data-poetry--core--popover-open-value", "false")
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "programmatic" }])
     })
 

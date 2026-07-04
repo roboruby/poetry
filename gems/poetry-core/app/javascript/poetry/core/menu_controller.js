@@ -16,7 +16,7 @@ import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
 // to the trigger), dismissable (topmost-only Esc + outside press, arriving
 // here as its "dismiss" event), roving-focus (arrows/Home/End per menu
 // level), popper (positioning - markup-owned, untouched here), presence
-// (data-state flip -> animationend -> hidden).
+// (data-open/data-closed flip -> animationend -> hidden).
 //
 // STRUCTURAL RESOLUTION, no targets: the content is found via the trigger's
 // aria-controls id (portal-safe - a Stimulus target cannot cross a portal
@@ -278,7 +278,7 @@ export default class MenuController extends Controller {
     // flipped where the server declared it (DropdownMenu button, Menubar
     // menuitem) - never introduced onto a role-less span.
     if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "open")
+    if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
     this.#activateLayers(content)
     this.openValue = true
@@ -313,7 +313,7 @@ export default class MenuController extends Controller {
     const trigger = this.#trigger()
 
     if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
     this.openValue = false
 
@@ -380,7 +380,7 @@ export default class MenuController extends Controller {
     this.#hide("select")
   }
 
-  // aria-checked and data-state are written TOGETHER, never separately.
+  // aria-checked and data-checked/data-unchecked are written TOGETHER, never separately.
   #writeChecked(item, checked) {
     item.setAttribute("aria-checked", String(checked))
     setState(item, checked ? "checked" : "unchecked")
@@ -467,7 +467,7 @@ export default class MenuController extends Controller {
 
     if (!subContent) return
 
-    if (stateOf(subTrigger) !== "open") {
+    if (!subTrigger.hasAttribute("data-popup-open")) {
       // Sibling exclusivity: at most ONE open sub per level - the open-sub
       // chain is a path.
       const menu = subTrigger.closest(MENU_SELECTOR)
@@ -478,7 +478,7 @@ export default class MenuController extends Controller {
 
       subContent.hidden = false
       subTrigger.setAttribute("aria-expanded", "true")
-      setState(subTrigger, "open")
+      setState(subTrigger, "popup-open")
       enterPresence(subContent)
 
       // Each sub level = its own dismissable layer (topmost-only Esc closes
@@ -496,7 +496,7 @@ export default class MenuController extends Controller {
     this.#cancelSubOpen(subTrigger)
     this.#cancelSubClose(subTrigger)
 
-    if (stateOf(subTrigger) !== "open") return
+    if (!subTrigger.hasAttribute("data-popup-open")) return
 
     const subContent = this.#subContentFor(subTrigger)
 
@@ -507,7 +507,7 @@ export default class MenuController extends Controller {
     }
 
     subTrigger.setAttribute("aria-expanded", "false")
-    setState(subTrigger, "closed")
+    setState(subTrigger, "popup-closed")
 
     if (subContent) {
       exitPresence(subContent, {
@@ -528,7 +528,7 @@ export default class MenuController extends Controller {
 
     for (const ancestor of this.#ancestorSubTriggers(subTrigger)) this.#cancelSubClose(ancestor)
 
-    if (this.#isDisabled(subTrigger) || stateOf(subTrigger) === "open") return
+    if (this.#isDisabled(subTrigger) || subTrigger.hasAttribute("data-popup-open")) return
     if (this.#subOpenTimers.has(subTrigger)) return
 
     this.#subOpenTimers.set(subTrigger, window.setTimeout(() => {
@@ -543,7 +543,7 @@ export default class MenuController extends Controller {
     const subContent = this.#subContentFor(subTrigger)
 
     if (related && (subTrigger.contains(related) || subContent?.contains(related))) return
-    if (stateOf(subTrigger) === "open") this.#scheduleSubClose(subTrigger)
+    if (subTrigger.hasAttribute("data-popup-open")) this.#scheduleSubClose(subTrigger)
   }
 
   #scheduleSubClose(subTrigger) {
@@ -676,7 +676,7 @@ export default class MenuController extends Controller {
     if (subContent && (!related || !subContent.contains(related))) {
       const owner = this.#subTriggerFor(subContent)
 
-      if (owner && !(related && owner.contains(related)) && stateOf(owner) === "open") {
+      if (owner && !(related && owner.contains(related)) && owner.hasAttribute("data-popup-open")) {
         this.#scheduleSubClose(owner)
       }
     }
@@ -777,7 +777,7 @@ export default class MenuController extends Controller {
     if (!scope) return []
 
     return Array.from(scope.querySelectorAll(SUB_TRIGGER_SELECTOR)).filter((subTrigger) =>
-      stateOf(subTrigger) === "open" && (!level || subTrigger.closest(MENU_SELECTOR) === level))
+      subTrigger.hasAttribute("data-popup-open") && (!level || subTrigger.closest(MENU_SELECTOR) === level))
   }
 
   #ancestorSubTriggers(node) {

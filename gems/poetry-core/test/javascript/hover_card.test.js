@@ -44,12 +44,12 @@ const markup = ({ open = false, openDelay = 700, closeDelay = 300 } = {}) => `
        data-poetry--core--hover-card-open-delay-value="${openDelay}"
        data-poetry--core--hover-card-close-delay-value="${closeDelay}">
     <a id="hc-trigger" data-slot="hover-card-trigger" href="/users/nextjs"
-       data-state="${open ? "open" : "closed"}"
+       ${open ? "data-popup-open" : ""}
        data-action="pointerenter->poetry--core--hover-card#pointerEnter pointerleave->poetry--core--hover-card#pointerLeave
                     focus->poetry--core--hover-card#focusOpen blur->poetry--core--hover-card#blurClose
                     touchstart->poetry--core--hover-card#touchGuard">@nextjs</a>
     <div id="hc-content" data-slot="hover-card-content"
-         data-state="${open ? "open" : "closed"}" ${open ? "" : "hidden"}>
+         ${open ? "data-open" : "data-closed"} ${open ? "" : "hidden"}>
       <a id="inside-link" href="/users/nextjs">full profile</a>
       <button id="inside-button" type="button">follow</button>
       The React framework.
@@ -81,7 +81,7 @@ describe("poetry--core--hover-card", () => {
   }
 
   describe("the pointer path (700/300 Radix defaults)", () => {
-    it("pointerenter opens after open_delay: data-state, the dismissable token, the strip, poetry:hover-card:open", async () => {
+    it("pointerenter opens after open_delay: data-open, the dismissable token, the strip, poetry:hover-card:open", async () => {
       await mount()
       const opens = record("poetry:hover-card:open", el("root"))
 
@@ -89,11 +89,11 @@ describe("poetry--core--hover-card", () => {
       pointer(el("hc-trigger"), "pointerenter")
 
       await vi.advanceTimersByTimeAsync(699)
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(el("hc-content").dataset.state).toBe("open")
-      expect(el("hc-trigger").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
+      expect(el("hc-trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("hc-content").hidden).toBe(false)
       expect(controllersOf("hc-content")).toContain(DISMISS_TOKEN)
       expect(el("inside-link").getAttribute("tabindex")).toBe("-1")
@@ -111,16 +111,16 @@ describe("poetry--core--hover-card", () => {
 
       pointer(el("hc-trigger"), "pointerleave")
       await vi.advanceTimersByTimeAsync(299)
-      expect(el("hc-content").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
 
       pointer(el("hc-content"), "pointerenter") // travel into the card: cancel
       await vi.advanceTimersByTimeAsync(1000)
-      expect(el("hc-content").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
 
       pointer(el("hc-content"), "pointerleave")
       await vi.advanceTimersByTimeAsync(300)
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
       expect(el("hc-content").hidden).toBe(true)
       expect(controllersOf("hc-content")).toEqual([])
       expect(closes).toEqual([{ reason: "leave" }])
@@ -135,7 +135,7 @@ describe("poetry--core--hover-card", () => {
       pointer(el("hc-trigger"), "pointerleave")
       await vi.advanceTimersByTimeAsync(2000)
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("open_delay / close_delay are Values", async () => {
@@ -144,11 +144,11 @@ describe("poetry--core--hover-card", () => {
       vi.useFakeTimers()
       pointer(el("hc-trigger"), "pointerenter")
       await vi.advanceTimersByTimeAsync(100)
-      expect(el("hc-content").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
 
       pointer(el("hc-trigger"), "pointerleave")
       await vi.advanceTimersByTimeAsync(50)
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
     })
   })
 
@@ -160,7 +160,7 @@ describe("poetry--core--hover-card", () => {
       pointer(el("hc-trigger"), "pointerenter", { pointerType: "touch" })
       await vi.advanceTimersByTimeAsync(2000)
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("touchstart is preventDefaulted (no synthetic focus-open; the tap navigates the link)", async () => {
@@ -182,12 +182,12 @@ describe("poetry--core--hover-card", () => {
       el("hc-trigger").focus()
       await nextFrame()
 
-      expect(el("hc-content").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
 
       el("hc-trigger").blur()
       await nextFrame()
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "blur" }])
     })
 
@@ -215,7 +215,7 @@ describe("poetry--core--hover-card", () => {
       pressEscape()
       await nextFrame()
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "escape" }])
     })
 
@@ -267,12 +267,12 @@ describe("poetry--core--hover-card", () => {
       pointer(el("hc-content"), "pointerleave")
       await vi.advanceTimersByTimeAsync(5000)
 
-      expect(el("hc-content").dataset.state).toBe("open") // held open for the copy
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true) // held open for the copy
 
       pressEscape()
       await vi.advanceTimersByTimeAsync(0)
 
-      expect(el("hc-content").dataset.state).toBe("closed") // the hold never blocks Esc
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true) // the hold never blocks Esc
     })
 
     it("disconnect restores a suppressed body user-select (teardown contract)", async () => {
@@ -326,12 +326,12 @@ describe("poetry--core--hover-card", () => {
       el("root").setAttribute("data-poetry--core--hover-card-open-value", "true")
       await nextFrame()
 
-      expect(el("hc-content").dataset.state).toBe("open")
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
 
       el("root").setAttribute("data-poetry--core--hover-card-open-value", "false")
       await nextFrame()
 
-      expect(el("hc-content").dataset.state).toBe("closed")
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "programmatic" }])
     })
   })

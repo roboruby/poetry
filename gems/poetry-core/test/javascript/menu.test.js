@@ -7,7 +7,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // hover grace-diagonal are the browser-verification suite's job - what this
 // file proves is the state machine: open reasons + initial focus, the
 // typeahead buffer, the cancelable select, checkbox/radio state, the
-// edge-navigate seam, submenu data-state coordination, and dismiss handling
+// edge-navigate seam, submenu state-attribute coordination, and dismiss handling
 // via the dismissable layer's event.
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
@@ -48,10 +48,10 @@ const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = 
          data-poetry--core--menu-loop-value="${loop}"
          data-poetry--core--menu-close-on-select-value="${closeOnSelect}">
       <button type="button" id="trigger" data-slot="dropdown-menu-trigger"
-              aria-haspopup="menu" aria-controls="content" aria-expanded="false" data-state="closed"
+              aria-haspopup="menu" aria-controls="content" aria-expanded="false"
               data-action="poetry--core--menu#toggle keydown->poetry--core--menu#triggerKeydown">Open</button>
       <div id="content" data-slot="dropdown-menu-content" role="menu" aria-orientation="vertical"
-           aria-labelledby="trigger" tabindex="-1" data-state="closed" hidden>
+           aria-labelledby="trigger" tabindex="-1" data-closed hidden>
         <div id="item-profile" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
              data-poetry-collection-item>Profile</div>
         <div id="item-archive" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
@@ -63,21 +63,21 @@ const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = 
         <div id="item-sync" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
              data-poetry-collection-item data-variant="destructive" data-value="sync">Sync</div>
         <div id="checkbox-status" data-slot="dropdown-menu-checkbox-item" role="menuitemcheckbox" tabindex="-1"
-             data-poetry-collection-item aria-checked="false" data-state="unchecked" data-value="status-bar">Status Bar</div>
+             data-poetry-collection-item aria-checked="false" data-unchecked data-value="status-bar">Status Bar</div>
         <div id="radio-group" data-slot="dropdown-menu-radio-group" role="group" data-value="">
           <div id="radio-top" data-slot="dropdown-menu-radio-item" role="menuitemradio" tabindex="-1"
-               data-poetry-collection-item data-value="top" aria-checked="false" data-state="unchecked"
+               data-poetry-collection-item data-value="top" aria-checked="false" data-unchecked
                data-close-on-select="false">Top</div>
           <div id="radio-bottom" data-slot="dropdown-menu-radio-item" role="menuitemradio" tabindex="-1"
-               data-poetry-collection-item data-value="bottom" aria-checked="false" data-state="unchecked"
+               data-poetry-collection-item data-value="bottom" aria-checked="false" data-unchecked
                data-close-on-select="false">Bottom</div>
         </div>
         <div id="sub-a" data-slot="dropdown-menu-sub">
           <div id="sub-a-trigger" data-slot="dropdown-menu-sub-trigger" role="menuitem" tabindex="-1"
                data-poetry-collection-item aria-haspopup="menu" aria-expanded="false"
-               aria-controls="sub-a-content" data-state="closed">Share</div>
+               aria-controls="sub-a-content">Share</div>
           <div id="sub-a-content" data-slot="dropdown-menu-sub-content" role="menu" aria-orientation="vertical"
-               aria-labelledby="sub-a-trigger" tabindex="-1" data-state="closed" hidden>
+               aria-labelledby="sub-a-trigger" tabindex="-1" data-closed hidden>
             <div id="sub-a-email" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
                  data-poetry-collection-item>Email</div>
             <div id="sub-a-message" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
@@ -87,9 +87,9 @@ const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = 
         <div id="sub-b" data-slot="dropdown-menu-sub">
           <div id="sub-b-trigger" data-slot="dropdown-menu-sub-trigger" role="menuitem" tabindex="-1"
                data-poetry-collection-item aria-haspopup="menu" aria-expanded="false"
-               aria-controls="sub-b-content" data-state="closed">Export</div>
+               aria-controls="sub-b-content">Export</div>
           <div id="sub-b-content" data-slot="dropdown-menu-sub-content" role="menu" aria-orientation="vertical"
-               aria-labelledby="sub-b-trigger" tabindex="-1" data-state="closed" hidden>
+               aria-labelledby="sub-b-trigger" tabindex="-1" data-closed hidden>
             <div id="sub-b-pdf" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
                  data-poetry-collection-item>PDF</div>
           </div>
@@ -136,16 +136,16 @@ describe("poetry--core--menu", () => {
   }
 
   describe("open / close reasons + focus targeting", () => {
-    it("pointer open: data-state + aria-expanded flip, data-open-reason=pointer, focus lands on the content (not an item)", async () => {
+    it("pointer open: data-open/data-popup-open + aria-expanded flip, data-open-reason=pointer, focus lands on the content (not an item)", async () => {
       await mount()
       const opens = record("poetry:menu:open", el("root"))
 
       await openWithPointer()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
       expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
-      expect(el("trigger").dataset.state).toBe("open")
+      expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("true")
       expect(document.activeElement).toBe(el("content"))
       expect(opens).toEqual([{ reason: "pointer" }])
@@ -177,7 +177,7 @@ describe("poetry--core--menu", () => {
       click(el("trigger"))
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
       expect(el("content").hasAttribute("data-open-reason")).toBe(false)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
@@ -192,7 +192,7 @@ describe("poetry--core--menu", () => {
       press(el("item-profile"), "Tab")
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
     })
 
@@ -201,11 +201,11 @@ describe("poetry--core--menu", () => {
 
       el("root").setAttribute("data-poetry--core--menu-open-value", "true")
       await nextFrame()
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       el("root").setAttribute("data-poetry--core--menu-open-value", "false")
       await nextFrame()
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
     })
   })
@@ -294,7 +294,7 @@ describe("poetry--core--menu", () => {
       expect(selects[0].value).toBe("sync")
       expect(selects[0].variant).toBe("destructive")
       expect(selects[0].kind).toBe("item")
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "select" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
@@ -309,7 +309,7 @@ describe("poetry--core--menu", () => {
 
       expect(selects.length).toBe(1)
       expect(selects[0].item).toBe(el("item-profile"))
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("preventDefault on select vetoes the close (Radix onSelect parity)", async () => {
@@ -320,7 +320,7 @@ describe("poetry--core--menu", () => {
       click(el("item-profile"))
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("closeOnSelect: false at the menu level keeps the menu open after select", async () => {
@@ -330,7 +330,7 @@ describe("poetry--core--menu", () => {
       click(el("item-profile"))
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("select from inside a sub closes the WHOLE chain", async () => {
@@ -342,14 +342,14 @@ describe("poetry--core--menu", () => {
       press(el("sub-a-email"), "Enter")
       await nextFrame()
 
-      expect(el("sub-a-content").dataset.state).toBe("closed")
-      expect(el("sub-a-trigger").dataset.state).toBe("closed")
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
+      expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(false)
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
     })
   })
 
   describe("checkbox / radio state", () => {
-    it("checkbox activation flips aria-checked + data-state TOGETHER and fires poetry:menu:change before select", async () => {
+    it("checkbox activation flips aria-checked + data-checked TOGETHER and fires poetry:menu:change before select", async () => {
       await mount({ closeOnSelect: false })
       const order = []
       el("root").addEventListener("poetry:menu:change", () => order.push("change"))
@@ -360,13 +360,13 @@ describe("poetry--core--menu", () => {
       click(el("checkbox-status"))
 
       expect(el("checkbox-status").getAttribute("aria-checked")).toBe("true")
-      expect(el("checkbox-status").dataset.state).toBe("checked")
+      expect(el("checkbox-status").hasAttribute("data-checked")).toBe(true)
       expect(changes).toEqual([{ kind: "checkbox", value: "status-bar", checked: true, group_value: null }])
       expect(order).toEqual(["change", "select"])
 
       click(el("checkbox-status")) // toggles back off
       expect(el("checkbox-status").getAttribute("aria-checked")).toBe("false")
-      expect(el("checkbox-status").dataset.state).toBe("unchecked")
+      expect(el("checkbox-status").hasAttribute("data-unchecked")).toBe(true)
       expect(changes.at(-1)).toEqual({ kind: "checkbox", value: "status-bar", checked: false, group_value: null })
     })
 
@@ -378,7 +378,7 @@ describe("poetry--core--menu", () => {
       click(el("checkbox-status"))
 
       expect(el("checkbox-status").getAttribute("aria-checked")).toBe("true")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("radio activation checks one item, unchecks its siblings, writes the group value, and (close_on_select: false) keeps the menu open", async () => {
@@ -389,15 +389,15 @@ describe("poetry--core--menu", () => {
       click(el("radio-top"))
 
       expect(el("radio-top").getAttribute("aria-checked")).toBe("true")
-      expect(el("radio-top").dataset.state).toBe("checked")
+      expect(el("radio-top").hasAttribute("data-checked")).toBe(true)
       expect(el("radio-group").getAttribute("data-value")).toBe("top")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       click(el("radio-bottom"))
 
       expect(el("radio-bottom").getAttribute("aria-checked")).toBe("true")
       expect(el("radio-top").getAttribute("aria-checked")).toBe("false")
-      expect(el("radio-top").dataset.state).toBe("unchecked")
+      expect(el("radio-top").hasAttribute("data-unchecked")).toBe(true)
       expect(el("radio-group").getAttribute("data-value")).toBe("bottom")
       expect(changes).toEqual([
         { kind: "radio", value: "top", checked: true, group_value: "top" },
@@ -415,7 +415,7 @@ describe("poetry--core--menu", () => {
       press(el("item-profile"), "ArrowRight")
 
       expect(edges).toEqual([{ direction: "right" }])
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(document.activeElement).toBe(el("item-profile"))
     })
 
@@ -466,7 +466,7 @@ describe("poetry--core--menu", () => {
       await nextFrame()
 
       expect(selects).toEqual([])
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
 
     it("typeahead skips disabled items", async () => {
@@ -479,16 +479,16 @@ describe("poetry--core--menu", () => {
   })
 
   describe("submenus", () => {
-    it("ArrowRight on a sub-trigger opens the sub (data-state + aria-expanded on both halves) and focuses its first item", async () => {
+    it("ArrowRight on a sub-trigger opens the sub (data-popup-open/data-open + aria-expanded on both halves) and focuses its first item", async () => {
       await mount()
       await openWithKey("ArrowDown")
 
       el("sub-a-trigger").focus()
       press(el("sub-a-trigger"), "ArrowRight")
 
-      expect(el("sub-a-trigger").dataset.state).toBe("open")
+      expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("sub-a-trigger").getAttribute("aria-expanded")).toBe("true")
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
       expect(el("sub-a-content").hidden).toBe(false)
       expect(document.activeElement).toBe(el("sub-a-email"))
     })
@@ -501,9 +501,9 @@ describe("poetry--core--menu", () => {
 
       press(el("sub-a-email"), "ArrowLeft")
 
-      expect(el("sub-a-content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
       expect(el("sub-a-content").hidden).toBe(true)
-      expect(el("sub-a-trigger").dataset.state).toBe("closed")
+      expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(false)
       expect(el("sub-a-trigger").getAttribute("aria-expanded")).toBe("false")
       expect(document.activeElement).toBe(el("sub-a-trigger"))
     })
@@ -514,10 +514,10 @@ describe("poetry--core--menu", () => {
 
       el("sub-a-trigger").focus()
       press(el("sub-a-trigger"), "ArrowLeft") // rtl: Left opens
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
 
       press(el("sub-a-email"), "ArrowRight") // rtl: Right closes
-      expect(el("sub-a-content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
       expect(document.activeElement).toBe(el("sub-a-trigger"))
     })
 
@@ -527,14 +527,14 @@ describe("poetry--core--menu", () => {
 
       el("sub-a-trigger").focus()
       press(el("sub-a-trigger"), "ArrowRight")
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
 
       el("sub-b-trigger").focus()
       press(el("sub-b-trigger"), "ArrowRight")
 
-      expect(el("sub-b-content").dataset.state).toBe("open")
-      expect(el("sub-a-content").dataset.state).toBe("closed")
-      expect(el("sub-a-trigger").dataset.state).toBe("closed")
+      expect(el("sub-b-content").hasAttribute("data-open")).toBe(true)
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
+      expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(false)
     })
 
     it("hover opens after the 100ms intent delay WITHOUT moving focus; leaving closes after 300ms", async () => {
@@ -545,19 +545,19 @@ describe("poetry--core--menu", () => {
       vi.useFakeTimers()
 
       pointerover(el("sub-a-trigger"), el("item-profile"))
-      expect(el("sub-a-content").dataset.state).toBe("closed") // not yet - intent delay
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true) // not yet - intent delay
 
       await vi.advanceTimersByTimeAsync(100)
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
       expect(document.activeElement).toBe(focusedBefore)
 
       pointerout(el("sub-a-trigger"), el("item-profile"))
       pointerover(el("item-profile"), el("sub-a-trigger"))
       await vi.advanceTimersByTimeAsync(299)
-      expect(el("sub-a-content").dataset.state).toBe("open") // still within the close window
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true) // still within the close window
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(el("sub-a-content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
     })
 
     it("entering the sub-content within the close window keeps the sub open (the grace path)", async () => {
@@ -568,13 +568,13 @@ describe("poetry--core--menu", () => {
 
       pointerover(el("sub-a-trigger"), el("item-profile"))
       await vi.advanceTimersByTimeAsync(100)
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
 
       pointerout(el("sub-a-trigger"), document.body) // diagonal travel: briefly off both halves
       pointerover(el("sub-a-email")) // lands in the sub-content before the delay elapses
       await vi.advanceTimersByTimeAsync(500)
 
-      expect(el("sub-a-content").dataset.state).toBe("open")
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
     })
   })
 
@@ -587,7 +587,7 @@ describe("poetry--core--menu", () => {
       pressEscape()
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
       expect(closes).toEqual([{ reason: "escape" }])
       expect(document.activeElement).toBe(el("trigger"))
@@ -603,14 +603,14 @@ describe("poetry--core--menu", () => {
       pressEscape()
       await nextFrame()
 
-      expect(el("sub-a-content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
       expect(document.activeElement).toBe(el("sub-a-trigger"))
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       pressEscape()
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(document.activeElement).toBe(el("trigger"))
     })
 
@@ -626,8 +626,8 @@ describe("poetry--core--menu", () => {
       pointerdown(el("outside"))
       await nextFrame()
 
-      expect(el("sub-a-content").dataset.state).toBe("closed")
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(closes).toEqual([{ reason: "outside" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
@@ -640,7 +640,7 @@ describe("poetry--core--menu", () => {
       await nextFrame()
       await flushMicrotasks()
 
-      expect(el("content").dataset.state).toBe("closed")
+      expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(document.activeElement).not.toBe(el("trigger"))
     })
 

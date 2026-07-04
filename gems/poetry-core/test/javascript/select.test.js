@@ -46,19 +46,19 @@ const markup = ({ value = "", open = false, disabledValues = [], loop = false } 
       </select>
       <button type="button" id="trigger" data-slot="select-trigger" role="combobox"
               aria-controls="content" aria-expanded="false" aria-autocomplete="none"
-              data-state="closed" ${value ? "" : "data-placeholder"}
+              ${value ? "" : "data-placeholder"}
               data-action="poetry--core--select#toggle keydown->poetry--core--select#triggerKeydown">
         <span id="display" data-slot="select-value" data-placeholder="Pick a fruit">${selectedLabel ?? "Pick a fruit"}</span>
       </button>
       <div id="content" data-slot="select-content" role="listbox" tabindex="-1"
-           data-state="closed" ${open ? "" : "hidden"}>
+           data-closed ${open ? "" : "hidden"}>
         <div id="scroll-up" data-slot="select-scroll-up-button" aria-hidden="true" hidden
              data-action="pointerenter->poetry--core--select#scrollHoldStart pointerleave->poetry--core--select#scrollHoldStop"></div>
         <div id="viewport" data-slot="select-viewport">
           ${FRUITS.map(([v, label]) => `
             <div id="item-${v}" data-slot="select-item" role="option" tabindex="-1"
                  data-poetry-collection-item data-value="${v}"
-                 aria-selected="${v === value}" data-state="${v === value ? "checked" : "unchecked"}"
+                 aria-selected="${v === value}" ${v === value ? "data-selected" : ""}
                  ${disabledValues.includes(v) ? "data-disabled aria-disabled=\"true\"" : ""}
                  data-action="click->poetry--core--select#commit">
               <span data-slot="select-item-indicator" aria-hidden="true"></span>
@@ -107,8 +107,8 @@ describe("poetry--core--select", () => {
       await open()
 
       expect(el("trigger").getAttribute("aria-expanded")).toBe("true")
-      expect(el("trigger").dataset.state).toBe("open")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
       expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
       expect(document.activeElement).toBe(el("item-banana"))
@@ -156,12 +156,12 @@ describe("poetry--core--select", () => {
       const handled = press(el("item-banana"), "Tab")
 
       expect(handled).toBe(false) // preventDefault'ed
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
   })
 
   describe("the commit pipeline", () => {
-    it("click commits: native FIRST with real change/input, aria-selected + data-state together, display sync, close + focus return", async () => {
+    it("click commits: native FIRST with real change/input, aria-selected + data-selected together, display sync, close + focus return", async () => {
       await open()
 
       const order = []
@@ -181,8 +181,8 @@ describe("poetry--core--select", () => {
 
       expect(el("native").value).toBe("cherry")
       expect(ariaSelected()).toEqual(["false", "false", "false", "true"])
-      expect(el("item-cherry").dataset.state).toBe("checked")
-      expect(el("item-banana").dataset.state).toBe("unchecked")
+      expect(el("item-cherry").hasAttribute("data-selected")).toBe(true)
+      expect(el("item-banana").hasAttribute("data-selected")).toBe(false)
       expect(el("display").textContent).toBe("Cherry")
       expect(el("trigger").hasAttribute("data-placeholder")).toBe(false)
 
@@ -220,7 +220,7 @@ describe("poetry--core--select", () => {
       click(el("item-cherry"))
       await nextFrame()
 
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("native").value).toBe("banana")
 
       click(el("item-cherry")) // un-vetoed: commits
@@ -248,7 +248,7 @@ describe("poetry--core--select", () => {
 
       click(el("item-blueberry"))
       expect(el("native").value).toBe("banana")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
 
       press(el("item-banana"), "ArrowDown")
       expect(document.activeElement).toBe(el("item-cherry")) // blueberry filtered
@@ -288,7 +288,7 @@ describe("poetry--core--select", () => {
 
       expect(document.activeElement).toBe(el("item-banana"))
       expect(el("native").value).toBe("banana")
-      expect(el("content").dataset.state).toBe("open")
+      expect(el("content").hasAttribute("data-open")).toBe(true)
     })
   })
 

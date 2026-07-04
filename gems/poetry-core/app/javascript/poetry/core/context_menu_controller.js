@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus"
-import { stateOf } from "@poetry/controllers/helpers/state"
 
 // The ContextMenu DELTA layer (ContextMenu): trigger
 // acquisition + pointer-point capture ONLY. Everything menu-shaped (open
@@ -139,6 +138,6 @@ export default class ContextMenuController extends Controller {
   #isOpen() {
     const trigger = this.#trigger()
 
-    return Boolean(trigger) && stateOf(trigger) === "open"
+    return Boolean(trigger) && trigger.hasAttribute("data-popup-open")
   }
 }
