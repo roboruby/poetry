@@ -8,7 +8,7 @@ module DommyTier
   # toaster acquires the lazily-created sr-only live regions on body; the
   # item (role=status aria-live=OFF - it never self-announces) speaks
   # exactly ONCE through the polite/assertive region at its politeness;
-  # the close button dismisses through data-state=closed -> presence ->
+  # the close button dismisses through data-closed -> presence ->
   # REMOVAL; the toaster writes the stack reflow index. Live-region
   # ANNOUNCEMENT fidelity (what a screen reader actually says), timer
   # feel, and the F8 focus journey stay with the real-browser pass - the

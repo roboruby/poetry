@@ -18,7 +18,7 @@ module Poetry
         AGENT_RULES = [
           "Items via with_item(value:, title:) { panel content } - value is the open-state key.",
           "type: :single (default) opens one at a time; pass collapsible: true to allow closing it.",
-          "Server-render the open item(s) via open: %w[value] - never toggle data-state by hand.",
+          "Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.",
           "heading_level: fits the page outline (h3 default) - the trigger button lives inside it.",
           "The chevron is built in - never add another indicator icon to the trigger."
         ].freeze
@@ -35,7 +35,7 @@ module Poetry
           open_item = open_values.include?(value.to_s)
           item_id = "#{instance_id}-#{value}"
           content_tag(:div, class: css(:item), "data-slot" => "accordion-item",
-                            "data-value" => value, "data-state" => open_item ? "open" : "closed", **options) do
+                            "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options) do
             safe_join([accordion_header(item_id, title, open_item), accordion_panel(item_id, open_item, &block)])
           end
         }
@@ -65,7 +65,10 @@ module Poetry
         def accordion_header(item_id, title, open_item)
           trigger_attrs = {
             type: "button", id: "#{item_id}-trigger", class: css(:trigger),
-            "data-slot" => "accordion-trigger", "data-state" => open_item ? "open" : "closed",
+            # No state attribute on the trigger: the controller reflects only
+            # aria-expanded here (the open/closed pair lives on the item and
+            # panel) - aria-expanded IS the trigger's styling hook.
+            "data-slot" => "accordion-trigger",
             "data-poetry-collection-item" => "",
             "aria-expanded" => open_item.to_s, "aria-controls" => "#{item_id}-panel"
           }.merge(stimulus_attributes(ACCORDION) { |accordion| accordion.with_action(:toggle, on: :click) })
@@ -81,7 +84,7 @@ module Poetry
         def accordion_panel(item_id, open_item, &block)
           attrs = {
             id: "#{item_id}-panel", role: "region", class: css(:content),
-            "data-slot" => "accordion-content", "data-state" => open_item ? "open" : "closed",
+            "data-slot" => "accordion-content", (open_item ? "data-open" : "data-closed") => "",
             "aria-labelledby" => "#{item_id}-trigger"
           }
           attrs[:hidden] = true unless open_item

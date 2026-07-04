@@ -5,7 +5,8 @@ module Poetry
     module Collapsible
       # The first presence consumer (Collapsible): a
       # disclosure on the EXISTING poetry--core--state controller - no new
-      # machinery. The server renders open/closed as data-state; the
+      # machinery. The server renders open/closed as the data-open/
+      # data-closed pair; the
       # trigger mirrors aria-expanded; content stays in the DOM (hidden,
       # searchable by re-render) and rides the presence helper on exit.
       class Component < Poetry::Core::Component
@@ -13,7 +14,7 @@ module Poetry
 
         AGENT_RULES = [
           "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
-          "Server-render the initial state via open: - never toggle data-state by hand.",
+          "Server-render the initial state via open: - never toggle data-open/data-closed by hand.",
           "Content stays in the DOM when closed (hidden) - do not conditionally render it.",
           "For URL-controlled disclosure without JS, render open: from params - the same markup serves both."
         ].freeze
@@ -45,7 +46,7 @@ module Poetry
 
         def root_attributes
           html_attributes.merge_if_not_set(
-            { "data-slot" => "collapsible", "data-state" => state }
+            { "data-slot" => "collapsible", "data-#{state}" => "" }
               .merge(stimulus_attributes(&:register_controller))
               .merge(component_data_attributes)
           )
@@ -53,7 +54,7 @@ module Poetry
 
         def content_attributes
           attrs = {
-            "id" => content_id, "data-slot" => "collapsible-content", "data-state" => state
+            "id" => content_id, "data-slot" => "collapsible-content", "data-#{state}" => ""
           }.merge(stimulus_attributes { |state_builder| state_builder.with_target(:content) })
           attrs["hidden"] = true unless open
           attrs

@@ -42,7 +42,8 @@ module Poetry
           assert_equal "dialog", dialog["data-poetry--core--dialog-target"]
           assert_equal "cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose",
                        dialog["data-action"]
-          assert_equal "closed", dialog["data-state"]
+          assert_equal "", dialog["data-closed"]
+          assert_nil dialog["data-open"]
           assert_includes dialog["class"], "backdrop:bg-black/50"
           assert_match(/<button[^>]*data-action="poetry--core--dialog#open"/, html)
         end

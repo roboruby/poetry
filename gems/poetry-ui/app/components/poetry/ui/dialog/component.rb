@@ -6,7 +6,8 @@ module Poetry
       # The Dialog - the depth-moat overlay, on the PLATFORM trap:
       # a native <dialog> + showModal() owns focus trapping, Esc, top-layer
       # stacking, and focus return; the poetry--core--dialog controller adds
-      # data-state, backdrop dismissal, and the scroll lock. The title is
+      # the data-open/data-closed pair, backdrop dismissal, and the scroll
+      # lock. The title is
       # REQUIRED (the accessible name - aria-labelledby is always wired).
       class Component < Poetry::Core::Component
         AGENT_RULES = [
@@ -60,7 +61,7 @@ module Poetry
           attrs = {
             "class" => css(:content),
             "data-slot" => "dialog-content",
-            "data-state" => "closed",
+            "data-closed" => "",
             "aria-labelledby" => title_id
           }.merge(stimulus_attributes do |dialog|
             dialog.with_target(:dialog)

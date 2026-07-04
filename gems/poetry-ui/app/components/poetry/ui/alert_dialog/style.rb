@@ -17,8 +17,8 @@ module Poetry
         element :content, "relative m-auto open:grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border " \
                           "bg-background p-6 text-foreground shadow-lg " \
                           "data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-lg " \
-                          "backdrop:bg-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 " \
-                          "data-[state=open]:zoom-in-95"
+                          "backdrop:bg-black/50 data-open:animate-in data-open:fade-in-0 " \
+                          "data-open:zoom-in-95"
 
         element :header, "grid grid-rows-[auto_1fr] place-items-center gap-1.5 text-center"
         element :header_with_media, "grid-rows-[auto_auto_1fr] gap-x-6"

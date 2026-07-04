@@ -82,7 +82,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             {
-              "data-slot" => "toast", "data-variant" => variant, "data-state" => "open",
+              "data-slot" => "toast", "data-variant" => variant, "data-open" => "",
               # aria-live=off ON PURPOSE: the announce singleton does the
               # talking, exactly once (items are duplicated-announcement
               # sources otherwise - the Radix insight).

@@ -36,7 +36,8 @@ module Poetry
           dialog = alert(html)
 
           assert_equal "alertdialog", dialog["role"]
-          assert_equal "closed", dialog["data-state"]
+          assert_equal "", dialog["data-closed"]
+          assert_nil dialog["data-open"]
           assert_equal "dialog", dialog["data-poetry--core--dialog-target"]
           assert_includes dialog["class"], "backdrop:bg-black/50"
           assert_includes dialog["class"], "open:grid"

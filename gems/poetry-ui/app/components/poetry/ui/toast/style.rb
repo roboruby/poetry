@@ -16,12 +16,12 @@ module Poetry
       class Style < Poetry::Core::Style
         base "pointer-events-auto relative flex w-full items-start gap-3 rounded-md " \
              "border bg-popover p-4 text-popover-foreground shadow-lg outline-hidden " \
-             "data-[state=open]:animate-in data-[state=open]:fade-in-0 " \
-             "data-[state=open]:slide-in-from-bottom-2 " \
-             "group-data-[position^=top]/toaster:data-[state=open]:slide-in-from-top-2 " \
-             "data-[state=closed]:animate-out data-[state=closed]:fade-out-80 " \
-             "data-[state=closed]:slide-out-to-bottom-2 " \
-             "group-data-[position^=top]/toaster:data-[state=closed]:slide-out-to-top-2"
+             "data-open:animate-in data-open:fade-in-0 " \
+             "data-open:slide-in-from-bottom-2 " \
+             "group-data-[position^=top]/toaster:data-open:slide-in-from-top-2 " \
+             "data-closed:animate-out data-closed:fade-out-80 " \
+             "data-closed:slide-out-to-bottom-2 " \
+             "group-data-[position^=top]/toaster:data-closed:slide-out-to-top-2"
 
         variant :variant, {
           default: "",

@@ -30,7 +30,7 @@ module Poetry
           controls = html[/aria-controls="([^"]+)"/, 1]
 
           assert_includes html, 'aria-expanded="false"'
-          assert_includes html, 'data-state="closed"'
+          assert_includes html, 'data-closed=""'
           assert_includes html, %(id="#{controls}")
           assert_match(/<div[^>]*id="#{controls}"[^>]*hidden/, html)
         end

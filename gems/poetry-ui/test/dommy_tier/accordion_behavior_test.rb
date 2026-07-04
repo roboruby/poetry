@@ -21,7 +21,9 @@ module DommyTier
       harness.evaluate(<<~JS)
         (() => {
           const item = document.querySelector('[data-slot="accordion-item"][data-value="#{value}"]');
-          return [item.dataset.state,
+          const state = item.hasAttribute("data-open") ? "open"
+            : (item.hasAttribute("data-closed") ? "closed" : null);
+          return [state,
                   item.querySelector('[data-slot="accordion-trigger"]').getAttribute("aria-expanded"),
                   item.querySelector('[data-slot="accordion-content"]').hidden];
         })()

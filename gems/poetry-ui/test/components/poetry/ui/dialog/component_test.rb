@@ -19,7 +19,7 @@ module Poetry
 
           assert_includes html, "<dialog"
           assert_includes html, 'data-controller="poetry--core--dialog"'
-          assert_includes html, 'data-state="closed"'
+          assert_includes html, 'data-closed=""'
           assert_includes html, "backdrop:bg-black/50"
           assert_includes html,
                           'data-action="cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose"'

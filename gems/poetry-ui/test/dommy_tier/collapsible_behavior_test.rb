@@ -29,9 +29,14 @@ module DommyTier
 
     def disclosure_state(harness)
       harness.evaluate(<<~JS)
-        [document.querySelector('[data-slot="collapsible-trigger"]').getAttribute("aria-expanded"),
-         document.querySelector('[data-slot="collapsible-content"]').hidden,
-         document.querySelector('[data-slot="collapsible"]').dataset.state]
+        (() => {
+          const root = document.querySelector('[data-slot="collapsible"]');
+          const state = root.hasAttribute("data-open") ? "open"
+            : (root.hasAttribute("data-closed") ? "closed" : null);
+          return [document.querySelector('[data-slot="collapsible-trigger"]').getAttribute("aria-expanded"),
+                  document.querySelector('[data-slot="collapsible-content"]').hidden,
+                  state];
+        })()
       JS
     end
 

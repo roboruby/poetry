@@ -28,8 +28,8 @@ module Poetry
           panel_a = html[/<div[^c]*?id="[^"]+-a-panel".*?>/m]
           panel_b = html[/<div[^c]*?id="[^"]+-b-panel".*?>/m]
 
-          assert_match(/data-value="a"[^>]*data-state="open"/, html)
-          assert_match(/data-value="b"[^>]*data-state="closed"/, html)
+          assert_match(/data-value="a"[^>]*data-open=""/, html)
+          assert_match(/data-value="b"[^>]*data-closed=""/, html)
           assert_includes panel_b, %( hidden="hidden")
           refute_includes panel_a, %( hidden="hidden")
         end

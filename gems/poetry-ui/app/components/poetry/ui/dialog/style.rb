@@ -13,8 +13,8 @@ module Poetry
         # to jsdom, which has no UA stylesheet).
         element :content, "relative m-auto open:grid w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border " \
                           "bg-background p-6 text-foreground shadow-lg sm:max-w-lg " \
-                          "backdrop:bg-black/50 data-[state=open]:animate-in data-[state=open]:fade-in-0 " \
-                          "data-[state=open]:zoom-in-95"
+                          "backdrop:bg-black/50 data-open:animate-in data-open:fade-in-0 " \
+                          "data-open:zoom-in-95"
 
         element :header, "flex flex-col gap-2 text-center sm:text-left"
         element :title, "text-lg font-semibold leading-none"

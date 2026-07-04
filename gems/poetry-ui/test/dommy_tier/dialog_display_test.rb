@@ -29,9 +29,10 @@ module DommyTier
 
       assert_no_js_errors harness
 
-      assert_equal "open",
-                   harness.evaluate(%(document.querySelector("dialog").dataset.state)),
-                   "the dialog controller should stamp data-state=open"
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-open"))),
+             "the dialog controller should stamp data-open"
+      refute harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-closed"))),
+             "opening must clear data-closed (the pair flips together)"
       refute_equal "none",
                    harness.evaluate(%(getComputedStyle(document.querySelector("dialog")).display)),
                    "after open() the dialog must no longer compute display:none"

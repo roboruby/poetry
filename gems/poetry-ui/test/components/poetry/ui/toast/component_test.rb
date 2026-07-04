@@ -32,7 +32,8 @@ module Poetry
           assert_equal "off", toast["aria-live"]
           assert_equal "true", toast["aria-atomic"]
           assert_equal "0", toast["tabindex"]
-          assert_equal "open", toast["data-state"]
+          assert_equal "", toast["data-open"]
+          assert_nil toast["data-closed"]
           assert_equal "default", toast["data-variant"]
         end
 
@@ -138,8 +139,8 @@ module Poetry
           assert_includes toast["class"], "text-destructive"
           # The slide direction keys on the TOASTER's corner at runtime
           # (a streamed toast cannot know the position server-side).
-          assert_includes toast["class"], "group-data-[position^=top]/toaster:data-[state=open]:slide-in-from-top-2"
-          assert_includes toast["class"], "data-[state=closed]:fade-out-80"
+          assert_includes toast["class"], "group-data-[position^=top]/toaster:data-open:slide-in-from-top-2"
+          assert_includes toast["class"], "data-closed:fade-out-80"
         end
       end
     end

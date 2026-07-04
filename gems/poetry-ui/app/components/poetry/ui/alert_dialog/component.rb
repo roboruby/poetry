@@ -94,7 +94,7 @@ module Poetry
             "role" => "alertdialog",
             "data-slot" => "alert-dialog-content",
             "data-size" => size,
-            "data-state" => "closed",
+            "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
           }.merge(stimulus_attributes do |dialog|

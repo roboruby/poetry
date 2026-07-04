@@ -7,7 +7,8 @@ module Poetry
       # edge, exactly the move shadcn makes one layer up (its sheet.tsx is
       # Radix Dialog re-exported). Everything hard is INHERITED: the native
       # <dialog> + showModal() platform trap (focus trap, Esc, top layer,
-      # focus return), the poetry--core--dialog controller (data-state,
+      # focus return), the poetry--core--dialog controller (the data-open/
+      # data-closed pair,
       # coordinate-discriminated backdrop dismissal, scroll lock,
       # dismissible:), and the required title. The deltas: the side style
       # (edge-anchored margins replace the parent's m-auto centering), the
@@ -55,7 +56,7 @@ module Poetry
             "class" => css(:content, class: Style.side(side)),
             "data-slot" => "sheet-content",
             "data-side" => side,
-            "data-state" => "closed",
+            "data-closed" => "",
             "aria-labelledby" => title_id
           }.merge(stimulus_attributes do |dialog|
             dialog.with_target(:dialog)

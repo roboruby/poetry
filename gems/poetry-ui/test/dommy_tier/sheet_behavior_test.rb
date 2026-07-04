@@ -27,7 +27,8 @@ module DommyTier
       harness.pump
 
       assert_no_js_errors harness
-      assert_equal "open", harness.evaluate(%(document.querySelector("dialog").dataset.state))
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-open"))),
+             "the shared controller should stamp data-open"
       refute_equal "none",
                    harness.evaluate(%(getComputedStyle(document.querySelector("dialog")).display)),
                    "after open() the sheet must no longer compute display:none"
@@ -39,7 +40,8 @@ module DommyTier
       harness.pump
 
       assert_no_js_errors harness
-      assert_equal "closed", harness.evaluate(%(document.querySelector("dialog").dataset.state))
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-closed"))),
+             "closing must flip the pair back to data-closed"
       assert_equal "none",
                    harness.evaluate(%(getComputedStyle(document.querySelector("dialog")).display)),
                    "the built-in close button must close through the shared controller"

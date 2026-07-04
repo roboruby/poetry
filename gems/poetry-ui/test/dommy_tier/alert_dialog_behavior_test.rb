@@ -28,7 +28,8 @@ module DommyTier
       harness.pump
 
       assert_no_js_errors harness
-      assert_equal "open", harness.evaluate(%(document.querySelector("dialog").dataset.state))
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-open"))),
+             "the shared controller should stamp data-open"
 
       # A backdrop click targets the <dialog> element itself at coordinates
       # outside its rect - the exact path backdropClose dismisses a Dialog
@@ -40,8 +41,8 @@ module DommyTier
       harness.pump
 
       assert_no_js_errors harness
-      assert_equal "open", harness.evaluate(%(document.querySelector("dialog").dataset.state)),
-                   "backdrop clicks must never dismiss an AlertDialog"
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-open"))),
+             "backdrop clicks must never dismiss an AlertDialog"
       refute_equal "none",
                    harness.evaluate(%(getComputedStyle(document.querySelector("dialog")).display))
 
@@ -54,8 +55,8 @@ module DommyTier
       harness.pump
 
       assert_no_js_errors harness
-      assert_equal "closed", harness.evaluate(%(document.querySelector("dialog").dataset.state)),
-                   "Esc (cancel) must still close - only pointer dismissal is suppressed"
+      assert harness.evaluate(%(document.querySelector("dialog").hasAttribute("data-closed"))),
+             "Esc (cancel) must still close - only pointer dismissal is suppressed"
       assert_equal "none",
                    harness.evaluate(%(getComputedStyle(document.querySelector("dialog")).display))
     end
