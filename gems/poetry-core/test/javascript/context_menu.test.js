@@ -90,7 +90,7 @@ describe("poetry--core--context-menu", () => {
       expect(el("root").getAttribute(ANCHOR)).toBe("512,384")
       expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
-      expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
+      expect(el("content").getAttribute("data-open-reason")).toBe("trigger-press")
       expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(opens).toEqual([{ x: 512, y: 384, input: "pointer" }])
     })
@@ -124,7 +124,8 @@ describe("poetry--core--context-menu", () => {
 
       expect(el("root").getAttribute(ANCHOR)).toBe("")
       expect(el("content").hasAttribute("data-open")).toBe(true)
-      expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-first")
+      expect(el("content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("content").getAttribute("data-open-seed")).toBe("first")
       expect(document.activeElement).toBe(el("item-rename"))
       expect(opens).toEqual([{ x: null, y: null, input: "keyboard" }])
     })

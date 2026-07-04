@@ -146,7 +146,8 @@ describe("poetry--core--combobox", () => {
       await nextFrame()
 
       expect(el("content").hasAttribute("data-open")).toBe(true)
-      expect(el("content").getAttribute("data-open-reason")).toBe("typed")
+      expect(el("content").getAttribute("data-open-reason")).toBe("keyboard")
+      expect(el("content").getAttribute("data-open-seed")).toBe("n")
       expect(document.activeElement).toBe(el("input"))
       expect(el("input").value).toBe("n")
       // The seeded char ran the engine's filter pass: Next.js + Nuxt.js only.
@@ -162,7 +163,7 @@ describe("poetry--core--combobox", () => {
 
       await open()
 
-      expect(reason).toBe("pointer")
+      expect(reason).toBe("trigger-press")
     })
 
     it("appends focus-scope + dismissable but NEVER roving-focus (the activedescendant popup)", async () => {
@@ -300,7 +301,7 @@ describe("poetry--core--combobox", () => {
       pressEscape()
       await nextFrame()
 
-      expect(reason).toBe("escape")
+      expect(reason).toBe("escape-key")
     })
   })
 

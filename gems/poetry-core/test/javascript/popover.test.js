@@ -79,7 +79,7 @@ describe("poetry--core--popover", () => {
       expect(opens.length).toBe(1)
     })
 
-    it("closes: reverses the attributes, hides after presence, and reports reason trigger", async () => {
+    it("closes: reverses the attributes, hides after presence, and reports reason trigger-press", async () => {
       await mount()
       const closes = record("poetry:popover:closed", el("root"))
 
@@ -92,7 +92,7 @@ describe("poetry--core--popover", () => {
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
       expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
-      expect(closes).toEqual([{ reason: "trigger" }])
+      expect(closes).toEqual([{ reason: "trigger-press" }])
     })
   })
 
@@ -142,7 +142,7 @@ describe("poetry--core--popover", () => {
       expect(document.activeElement).toBe(el("field"))
     })
 
-    it("Esc closes with reason escape and focus returns to the trigger", async () => {
+    it("Esc closes with reason escape-key and focus returns to the trigger", async () => {
       await mount()
       const closes = record("poetry:popover:closed", el("root"))
 
@@ -152,12 +152,12 @@ describe("poetry--core--popover", () => {
       pressEscape()
       await nextFrame()
 
-      expect(closes).toEqual([{ reason: "escape" }])
+      expect(closes).toEqual([{ reason: "escape-key" }])
       expect(el("content").hidden).toBe(true)
       expect(document.activeElement).toBe(el("trigger"))
     })
 
-    it("outside press on a NON-modal popover closes with reason outside and does NOT yank focus back", async () => {
+    it("outside press on a NON-modal popover closes with reason outside-press and does NOT yank focus back", async () => {
       await mount()
       const closes = record("poetry:popover:closed", el("root"))
 
@@ -168,7 +168,7 @@ describe("poetry--core--popover", () => {
       el("outside").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
       await nextFrame()
 
-      expect(closes).toEqual([{ reason: "outside" }])
+      expect(closes).toEqual([{ reason: "outside-press" }])
       expect(document.activeElement).not.toBe(el("trigger"))
     })
 
@@ -188,7 +188,7 @@ describe("poetry--core--popover", () => {
   })
 
   describe("controllable state", () => {
-    it("flipping the open value opens and closes the same machine (reason programmatic)", async () => {
+    it("flipping the open value opens and closes the same machine (reason none)", async () => {
       await mount()
       const closes = record("poetry:popover:closed", el("root"))
 
@@ -201,7 +201,7 @@ describe("poetry--core--popover", () => {
       await nextFrame()
 
       expect(el("content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "programmatic" }])
+      expect(closes).toEqual([{ reason: "none" }])
     })
 
     it("reconcile-on-connect: server-rendered open: true activates the layer stack (Turbo Stream safe)", async () => {

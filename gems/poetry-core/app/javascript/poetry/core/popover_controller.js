@@ -74,14 +74,14 @@ export default class PopoverController extends Controller {
     if (!this.#connected) return
 
     if (value && !this.#isOpen()) this.#show()
-    else if (!value && this.#isOpen()) this.#hide("programmatic")
+    else if (!value && this.#isOpen()) this.#hide("none")
   }
 
   // --- trigger action (native button Enter/Space arrive as click - no
   //     custom keydown map, the deliberate contrast with the menu trigger) ---
 
   toggle() {
-    if (this.#isOpen()) this.#hide("trigger")
+    if (this.#isOpen()) this.#hide("trigger-press")
     else this.#show()
   }
 
@@ -91,8 +91,8 @@ export default class PopoverController extends Controller {
     this.#show()
   }
 
-  close(reason = "programmatic") {
-    this.#hide(reason instanceof Event ? "programmatic" : reason)
+  close(reason = "none") {
+    this.#hide(reason instanceof Event ? "none" : reason)
   }
 
   // --- open / close ---
@@ -134,7 +134,7 @@ export default class PopoverController extends Controller {
     // Focus return to the trigger is focus-scope's disconnect job - vetoed
     // for outside interaction on a non-modal popover (Radix's non-modal
     // semantics: focus follows the click).
-    this.#suppressRestore = reason === "outside" && !this.modalValue
+    this.#suppressRestore = reason === "outside-press" && !this.modalValue
 
     const trigger = this.#trigger()
 
@@ -171,7 +171,7 @@ export default class PopoverController extends Controller {
 
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
-    this.#hide(escaped ? "escape" : "outside")
+    this.#hide(escaped ? "escape-key" : "outside-press")
   }
 
   #onUnmountAutoFocus = (event) => {

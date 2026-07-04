@@ -136,7 +136,7 @@ describe("poetry--core--menu", () => {
   }
 
   describe("open / close reasons + focus targeting", () => {
-    it("pointer open: data-open/data-popup-open + aria-expanded flip, data-open-reason=pointer, focus lands on the content (not an item)", async () => {
+    it("pointer open: data-open/data-popup-open + aria-expanded flip, data-open-reason=trigger-press, focus lands on the content (not an item)", async () => {
       await mount()
       const opens = record("poetry:menu:open", el("root"))
 
@@ -144,32 +144,34 @@ describe("poetry--core--menu", () => {
 
       expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
-      expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
+      expect(el("content").getAttribute("data-open-reason")).toBe("trigger-press")
       expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("true")
       expect(document.activeElement).toBe(el("content"))
-      expect(opens).toEqual([{ reason: "pointer" }])
+      expect(opens).toEqual([{ reason: "trigger-press" }])
     })
 
-    it("ArrowDown opens with reason keyboard-first and focuses the FIRST enabled item", async () => {
+    it("ArrowDown opens with reason list-navigation + seed first and focuses the FIRST enabled item", async () => {
       await mount()
 
       await openWithKey("ArrowDown")
 
-      expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-first")
+      expect(el("content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("content").getAttribute("data-open-seed")).toBe("first")
       expect(document.activeElement).toBe(el("item-profile"))
     })
 
-    it("ArrowUp opens with reason keyboard-last and focuses the LAST enabled item", async () => {
+    it("ArrowUp opens with reason list-navigation + seed last and focuses the LAST enabled item", async () => {
       await mount()
 
       await openWithKey("ArrowUp")
 
-      expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-last")
+      expect(el("content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("content").getAttribute("data-open-seed")).toBe("last")
       expect(document.activeElement).toBe(el("sub-b-trigger"))
     })
 
-    it("toggle on an open menu closes it (reason: trigger) and restores focus to the trigger", async () => {
+    it("toggle on an open menu closes it (reason: trigger-press) and restores focus to the trigger", async () => {
       await mount()
       const closes = record("poetry:menu:closed", el("root"))
 
@@ -181,7 +183,7 @@ describe("poetry--core--menu", () => {
       expect(el("content").hidden).toBe(true)
       expect(el("content").hasAttribute("data-open-reason")).toBe(false)
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
-      expect(closes).toEqual([{ reason: "trigger" }])
+      expect(closes).toEqual([{ reason: "trigger-press" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
 
@@ -194,6 +196,7 @@ describe("poetry--core--menu", () => {
 
       expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
+      expect(el("content").hasAttribute("data-open-seed")).toBe(false)
     })
 
     it("the open value is controllable: flipping the attribute drives the machine (server-owned state)", async () => {
@@ -280,7 +283,7 @@ describe("poetry--core--menu", () => {
   })
 
   describe("select + activation", () => {
-    it("click activation dispatches cancelable poetry:menu:select and closes (reason: select) with focus back on the trigger", async () => {
+    it("click activation dispatches cancelable poetry:menu:select and closes (reason: item-press) with focus back on the trigger", async () => {
       await mount()
       const selects = record("poetry:menu:select", el("root"))
       const closes = record("poetry:menu:closed", el("root"))
@@ -295,7 +298,7 @@ describe("poetry--core--menu", () => {
       expect(selects[0].variant).toBe("destructive")
       expect(selects[0].kind).toBe("item")
       expect(el("content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "select" }])
+      expect(closes).toEqual([{ reason: "item-press" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
 
@@ -447,7 +450,7 @@ describe("poetry--core--menu", () => {
   })
 
   describe("disabled items", () => {
-    it("keyboard-first skips a disabled leading item", async () => {
+    it("list-navigation seed first skips a disabled leading item", async () => {
       await mount()
       el("item-profile").setAttribute("data-disabled", "")
       el("item-profile").setAttribute("aria-disabled", "true")
@@ -579,7 +582,7 @@ describe("poetry--core--menu", () => {
   })
 
   describe("dismiss handling (via the dismissable layer)", () => {
-    it("Escape closes the menu (reason: escape) and focus returns to the trigger", async () => {
+    it("Escape closes the menu (reason: escape-key) and focus returns to the trigger", async () => {
       await mount()
       const closes = record("poetry:menu:closed", el("root"))
 
@@ -589,7 +592,7 @@ describe("poetry--core--menu", () => {
 
       expect(el("content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hidden).toBe(true)
-      expect(closes).toEqual([{ reason: "escape" }])
+      expect(closes).toEqual([{ reason: "escape-key" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
 
@@ -614,7 +617,7 @@ describe("poetry--core--menu", () => {
       expect(document.activeElement).toBe(el("trigger"))
     })
 
-    it("an outside press closes the whole chain (reason: outside); modal restores focus to the trigger", async () => {
+    it("an outside press closes the whole chain (reason: outside-press); modal restores focus to the trigger", async () => {
       await mount()
       const closes = record("poetry:menu:closed", el("root"))
 
@@ -628,7 +631,7 @@ describe("poetry--core--menu", () => {
 
       expect(el("sub-a-content").hasAttribute("data-closed")).toBe(true)
       expect(el("content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "outside" }])
+      expect(closes).toEqual([{ reason: "outside-press" }])
       expect(document.activeElement).toBe(el("trigger"))
     })
 

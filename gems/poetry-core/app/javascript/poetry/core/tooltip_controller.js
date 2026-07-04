@@ -116,7 +116,7 @@ export default class TooltipController extends Controller {
     if (!this.#connected) return
 
     if (value && !this.#isOpen()) this.#open({ instant: "delay" })
-    else if (!value && this.#isOpen()) this.#close("programmatic")
+    else if (!value && this.#isOpen()) this.#close("none")
   }
 
   // --- trigger actions: the pointer path (Radix's handlers, ported) ---
@@ -162,7 +162,7 @@ export default class TooltipController extends Controller {
 
     // Traveling into hoverable content gets the close-intent grace; with
     // hoverable content disabled the tooltip closes with the trigger leave.
-    if (this.#hoverableContentDisabled()) this.#close("leave")
+    if (this.#hoverableContentDisabled()) this.#close("trigger-hover")
     else this.#scheduleClose()
   }
 
@@ -174,13 +174,13 @@ export default class TooltipController extends Controller {
     document.addEventListener("pointerup", this.#onPointerup, { once: true })
     this.#clearOpenTimer()
 
-    if (this.#isOpen()) this.#close("activate")
+    if (this.#isOpen()) this.#close("trigger-press")
   }
 
   clickClose() {
     this.#clearOpenTimer()
 
-    if (this.#isOpen()) this.#close("activate")
+    if (this.#isOpen()) this.#close("trigger-press")
   }
 
   // --- trigger actions: the keyboard path ---
@@ -197,7 +197,8 @@ export default class TooltipController extends Controller {
   blurClose() {
     this.#clearOpenTimer()
 
-    if (this.#isOpen()) this.#close("blur")
+    // Base UI's blur-close reason: trigger-focus (the focus interaction).
+    if (this.#isOpen()) this.#close("trigger-focus")
   }
 
   // --- open / close ---
@@ -304,7 +305,7 @@ export default class TooltipController extends Controller {
     this.#clearCloseTimer()
     this.#closeTimer = window.setTimeout(() => {
       this.#closeTimer = null
-      this.#close("leave")
+      this.#close("trigger-hover")
     }, HOVERABLE_CLOSE_DELAY)
   }
 
@@ -343,8 +344,8 @@ export default class TooltipController extends Controller {
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
     // The outside-press close the dismissable brings along matches tooltip
-    // UX anyway (contract note); it reports as "outside".
-    this.#close(escaped ? "escape" : "outside")
+    // UX anyway (contract note); it reports as "outside-press".
+    this.#close(escaped ? "escape-key" : "outside-press")
   }
 
   // Another tooltip is about to open: one open page-wide.
@@ -354,7 +355,8 @@ export default class TooltipController extends Controller {
 
     this.#clearOpenTimer()
 
-    if (this.#isOpen()) this.#close("superseded")
+    // A sibling tooltip opening closes this one (Base UI: sibling-open).
+    if (this.#isOpen()) this.#close("sibling-open")
   }
 
   // --- close-on-scroll (capture-phase, armed only while open - Radix-exact) ---

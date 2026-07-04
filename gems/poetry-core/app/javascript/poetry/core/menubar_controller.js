@@ -36,7 +36,6 @@ const TRIGGER_SELECTOR = '[data-slot="menubar-trigger"]'
 const MENU = "poetry--core--menu"
 const MENU_SCOPE_SELECTOR = `[data-controller~="${MENU}"]`
 const EVENT_PREFIX = "poetry:menubar"
-const CLOSE_REASONS = { escape: "dismiss", outside: "dismiss", select: "select" }
 
 export default class MenubarController extends Controller {
   static values = {
@@ -88,8 +87,8 @@ export default class MenubarController extends Controller {
     if (event.button !== undefined && event.button !== 0) return // left button only (Radix)
     if (event.ctrlKey) return // macOS ctrl-click is a context menu, not a toggle
 
-    if (trigger.hasAttribute("data-popup-open")) this.#menuFor(trigger)?.close("trigger")
-    else this.#activate(trigger, "pointer", { openReason: "pointer", focus: false })
+    if (trigger.hasAttribute("data-popup-open")) this.#menuFor(trigger)?.close("trigger-press")
+    else this.#activate(trigger, "trigger-press", { openReason: "trigger-press", focus: false })
   }
 
   hoverSlide(event) {
@@ -98,7 +97,7 @@ export default class MenubarController extends Controller {
     if (!this.valueValue) return // gated hover: never opens from cold
     if (this.#isDisabled(trigger) || trigger.hasAttribute("data-popup-open")) return
 
-    this.#activate(trigger, "hover-slide", { openReason: "pointer", focus: false })
+    this.#activate(trigger, "trigger-hover", { openReason: "trigger-press", focus: false })
   }
 
   triggerKeydown(event) {
@@ -108,10 +107,10 @@ export default class MenubarController extends Controller {
 
     if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
       event.preventDefault() // also suppresses the button's synthetic click
-      this.#activate(trigger, "keyboard", { openReason: "keyboard-first", focus: true })
+      this.#activate(trigger, "list-navigation", { openReason: "list-navigation", openSeed: "first", focus: true })
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      this.#activate(trigger, "keyboard", { openReason: "keyboard-last", focus: true })
+      this.#activate(trigger, "list-navigation", { openReason: "list-navigation", openSeed: "last", focus: true })
     }
   }
 
@@ -134,7 +133,7 @@ export default class MenubarController extends Controller {
 
     if (!destination || destination === trigger) return
 
-    this.#activate(destination, "keyboard", { openReason: "keyboard-first", focus: true })
+    this.#activate(destination, "list-navigation", { openReason: "list-navigation", openSeed: "first", focus: true })
   }
 
   // poetry:menu:closed from any of the bar's menus: null the value unless
@@ -151,9 +150,11 @@ export default class MenubarController extends Controller {
 
     this.valueValue = ""
     setState(this.element, "closed")
+    // The menu's close reason passes through verbatim (Base UI vocabulary:
+    // escape-key / outside-press / item-press / trigger-press / none).
     this.dispatch("value-changed", {
       prefix: EVENT_PREFIX,
-      detail: { value: null, previous, reason: CLOSE_REASONS[event.detail?.reason] ?? "pointer" }
+      detail: { value: null, previous, reason: event.detail?.reason ?? "trigger-press" }
     })
   }
 
@@ -162,19 +163,19 @@ export default class MenubarController extends Controller {
   // Close whatever is open (no focus restore, no value-changed spam), put
   // focus + the bar tab stop on the destination trigger BEFORE opening (so
   // the family focus-scope snapshots IT as the Esc return target), open.
-  #activate(trigger, reason, { openReason, focus }) {
+  #activate(trigger, reason, { openReason, openSeed = null, focus }) {
     const previous = this.valueValue || null
     const current = this.#openTrigger()
 
     if (current && current !== trigger) {
       this.#swapping = true
-      this.#menuFor(current)?.close("programmatic", { restoreFocus: false })
+      this.#menuFor(current)?.close("sibling-open", { restoreFocus: false })
       this.#swapping = false
     }
 
     this.#stampTabStop(trigger)
     trigger.focus()
-    this.#menuFor(trigger)?.open(openReason, { focus })
+    this.#menuFor(trigger)?.open(openReason, { focus, seed: openSeed })
 
     this.valueValue = this.#valueOf(trigger)
     setState(this.element, "open")
@@ -188,7 +189,7 @@ export default class MenubarController extends Controller {
     const open = this.#openTrigger()
 
     if (!value) {
-      if (open) this.#menuFor(open)?.close("programmatic")
+      if (open) this.#menuFor(open)?.close("none")
 
       setState(this.element, "closed")
       return
@@ -200,12 +201,12 @@ export default class MenubarController extends Controller {
 
     if (open) {
       this.#swapping = true
-      this.#menuFor(open)?.close("programmatic", { restoreFocus: false })
+      this.#menuFor(open)?.close("sibling-open", { restoreFocus: false })
       this.#swapping = false
     }
 
     this.#stampTabStop(trigger)
-    this.#menuFor(trigger)?.open("pointer", { focus: false })
+    this.#menuFor(trigger)?.open("trigger-press", { focus: false })
     setState(this.element, "open")
   }
 

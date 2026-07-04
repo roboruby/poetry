@@ -180,7 +180,7 @@ describe("poetry--core--tooltip", () => {
 
       expectOpen("b-content", "delay")
       expectClosed("a-content")
-      expect(closes).toEqual([{ reason: "superseded" }])
+      expect(closes).toEqual([{ reason: "sibling-open" }])
     })
 
     it("the warm window survives a close for skip_delay ms, then the scope is cold again", async () => {
@@ -212,7 +212,7 @@ describe("poetry--core--tooltip", () => {
   })
 
   describe("the keyboard path", () => {
-    it("focus opens instantly with data-instant=focus; blur closes with reason blur", async () => {
+    it("focus opens instantly with data-instant=focus; blur closes with reason trigger-focus", async () => {
       await mount({ delay: 700 })
       const closes = record("poetry:tooltip:closed", el("root-a"))
 
@@ -227,7 +227,7 @@ describe("poetry--core--tooltip", () => {
 
       expectClosed("a-content")
       expect(el("a-trigger").hasAttribute("aria-describedby")).toBe(false)
-      expect(closes).toEqual([{ reason: "blur" }])
+      expect(closes).toEqual([{ reason: "trigger-focus" }])
     })
 
     it("focus caused by pointerdown does NOT open (the isPointerDown latch)", async () => {
@@ -250,7 +250,7 @@ describe("poetry--core--tooltip", () => {
   })
 
   describe("close paths", () => {
-    it("activating the trigger closes (pointerdown -> reason activate)", async () => {
+    it("activating the trigger closes (pointerdown -> reason trigger-press)", async () => {
       await mount({ delay: 0 })
       const closes = record("poetry:tooltip:closed", el("root-a"))
 
@@ -261,10 +261,10 @@ describe("poetry--core--tooltip", () => {
       await nextFrame()
 
       expectClosed("a-content")
-      expect(closes).toEqual([{ reason: "activate" }])
+      expect(closes).toEqual([{ reason: "trigger-press" }])
     })
 
-    it("Esc closes via the token-activated dismissable layer (reason escape) and removes the token", async () => {
+    it("Esc closes via the token-activated dismissable layer (reason escape-key) and removes the token", async () => {
       await mount({ delay: 0 })
       const closes = record("poetry:tooltip:closed", el("root-a"))
 
@@ -277,7 +277,7 @@ describe("poetry--core--tooltip", () => {
       expectClosed("a-content")
       expect(el("a-content").hidden).toBe(true)
       expect(controllersOf("a-content")).toEqual([])
-      expect(closes).toEqual([{ reason: "escape" }])
+      expect(closes).toEqual([{ reason: "escape-key" }])
     })
 
     it("scrolling an ancestor of the trigger closes (reason scroll), and the listener is dropped after close", async () => {
@@ -319,7 +319,7 @@ describe("poetry--core--tooltip", () => {
       await vi.advanceTimersByTimeAsync(300)
 
       expectClosed("a-content")
-      expect(closes).toEqual([{ reason: "leave" }])
+      expect(closes).toEqual([{ reason: "trigger-hover" }])
     })
 
     it("disable-hoverable-content on the provider closes on trigger-leave immediately", async () => {
@@ -345,7 +345,7 @@ describe("poetry--core--tooltip", () => {
       expectOpen("b-content", "delay")
     })
 
-    it("flipping the open value drives the machine (pinned open/close, reason programmatic)", async () => {
+    it("flipping the open value drives the machine (pinned open/close, reason none)", async () => {
       await mount()
       const closes = record("poetry:tooltip:closed", el("root-a"))
 
@@ -358,7 +358,7 @@ describe("poetry--core--tooltip", () => {
       await nextFrame()
 
       expectClosed("a-content")
-      expect(closes).toEqual([{ reason: "programmatic" }])
+      expect(closes).toEqual([{ reason: "none" }])
     })
   })
 })

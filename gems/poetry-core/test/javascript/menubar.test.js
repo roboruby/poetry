@@ -115,11 +115,11 @@ describe("poetry--core--menubar", () => {
       await nextFrame()
 
       expect(state("file")).toEqual(["open", "true", "open", false])
-      expect(el("file-content").getAttribute("data-open-reason")).toBe("pointer")
+      expect(el("file-content").getAttribute("data-open-reason")).toBe("trigger-press")
       expect(document.activeElement).toBe(el("file-trigger")) // pointer-open leaves focus on the trigger
       expect(el("bar").hasAttribute("data-open")).toBe(true)
       expect(el("bar").getAttribute("data-poetry--core--menubar-value-value")).toBe("file")
-      expect(changes).toEqual([{ value: "file", previous: null, reason: "pointer" }])
+      expect(changes).toEqual([{ value: "file", previous: null, reason: "trigger-press" }])
     })
 
     it("pointerdown on the OPEN trigger closes (the interact-outside veto stops dismiss-then-reopen)", async () => {
@@ -134,7 +134,7 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(el("bar").hasAttribute("data-closed")).toBe(true)
       expect(changes.length).toBe(2)
-      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "pointer" })
+      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "trigger-press" })
     })
 
     it("pointerdown on a SIBLING trigger swaps menus in one gesture (no close-reopen flicker events)", async () => {
@@ -149,8 +149,8 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(state("edit")).toEqual(["open", "true", "open", false])
       expect(changes).toEqual([
-        { value: "file", previous: null, reason: "pointer" },
-        { value: "edit", previous: "file", reason: "pointer" }
+        { value: "file", previous: null, reason: "trigger-press" },
+        { value: "edit", previous: "file", reason: "trigger-press" }
       ])
     })
 
@@ -186,7 +186,7 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(state("edit")).toEqual(["open", "true", "open", false])
       expect(document.activeElement).toBe(el("edit-trigger"))
-      expect(changes.at(-1)).toEqual({ value: "edit", previous: "file", reason: "hover-slide" })
+      expect(changes.at(-1)).toEqual({ value: "edit", previous: "file", reason: "trigger-hover" })
       expect(tabStops()).toEqual(["-1", "0", "-1", "-1"])
     })
   })
@@ -199,7 +199,8 @@ describe("poetry--core--menubar", () => {
       press(el("file-trigger"), "ArrowDown")
       await nextFrame()
 
-      expect(el("file-content").getAttribute("data-open-reason")).toBe("keyboard-first")
+      expect(el("file-content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("file-content").getAttribute("data-open-seed")).toBe("first")
       expect(document.activeElement).toBe(el("file-new-tab"))
 
       pressEscape()
@@ -208,7 +209,8 @@ describe("poetry--core--menubar", () => {
       press(el("file-trigger"), "ArrowUp")
       await nextFrame()
 
-      expect(el("file-content").getAttribute("data-open-reason")).toBe("keyboard-last")
+      expect(el("file-content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("file-content").getAttribute("data-open-seed")).toBe("last")
       expect(document.activeElement).toBe(el("file-open"))
     })
   })
@@ -231,7 +233,7 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(state("edit")).toEqual(["open", "true", "open", false])
       expect(document.activeElement).toBe(el("edit-undo"))
-      expect(changes.at(-1)).toEqual({ value: "edit", previous: "file", reason: "keyboard" })
+      expect(changes.at(-1)).toEqual({ value: "edit", previous: "file", reason: "list-navigation" })
 
       press(el("edit-undo"), "ArrowRight") // edit -> view SKIPS the disabled help
       await nextFrame()
@@ -301,7 +303,7 @@ describe("poetry--core--menubar", () => {
   })
 
   describe("dismiss + select", () => {
-    it("Escape closes the menu, returns focus to ITS trigger, nulls the value (reason: dismiss)", async () => {
+    it("Escape closes the menu, returns focus to ITS trigger, nulls the value (reason: escape-key)", async () => {
       await mount()
       const changes = record("poetry:menubar:value-changed", el("bar"))
 
@@ -314,10 +316,10 @@ describe("poetry--core--menubar", () => {
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(document.activeElement).toBe(el("file-trigger"))
       expect(el("bar").hasAttribute("data-closed")).toBe(true)
-      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "dismiss" })
+      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "escape-key" })
     })
 
-    it("an outside press closes (reason: dismiss) WITHOUT restoring focus to the trigger (non-modal: focus follows the click)", async () => {
+    it("an outside press closes (reason: outside-press) WITHOUT restoring focus to the trigger (non-modal: focus follows the click)", async () => {
       await mount()
       const changes = record("poetry:menubar:value-changed", el("bar"))
 
@@ -328,13 +330,13 @@ describe("poetry--core--menubar", () => {
       await nextFrame()
 
       expect(state("file")).toEqual(["closed", "false", "closed", true])
-      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "dismiss" })
+      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "outside-press" })
       // The focus-scope restore is VETOED (interacted-outside + non-modal);
       // where focus lands is the browser's business, never the trigger's.
       expect(document.activeElement).not.toBe(el("file-trigger"))
     })
 
-    it("item select closes everything and returns focus to the owning trigger (reason: select)", async () => {
+    it("item select closes everything and returns focus to the owning trigger (reason: item-press)", async () => {
       await mount()
       const changes = record("poetry:menubar:value-changed", el("bar"))
 
@@ -346,7 +348,7 @@ describe("poetry--core--menubar", () => {
 
       expect(state("file")).toEqual(["closed", "false", "closed", true])
       expect(document.activeElement).toBe(el("file-trigger"))
-      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "select" })
+      expect(changes.at(-1)).toEqual({ value: null, previous: "file", reason: "item-press" })
     })
   })
 

@@ -92,7 +92,7 @@ export default class SelectController extends Controller {
       if (content) this.#activateLayers(content)
       this.openValue = true
     } else if (this.openValue) {
-      this.#show("pointer")
+      this.#show("trigger-press")
     }
   }
 
@@ -113,8 +113,8 @@ export default class SelectController extends Controller {
   openValueChanged(value) {
     if (!this.#connected) return
 
-    if (value && !this.#isOpen()) this.#show("pointer")
-    else if (!value && this.#isOpen()) this.#hide("programmatic")
+    if (value && !this.#isOpen()) this.#show("trigger-press")
+    else if (!value && this.#isOpen()) this.#hide("none")
   }
 
   valueValueChanged(value) {
@@ -126,8 +126,8 @@ export default class SelectController extends Controller {
   // --- trigger actions ---
 
   toggle() {
-    if (this.#isOpen()) this.#hide("trigger")
-    else this.#show("pointer")
+    if (this.#isOpen()) this.#hide("trigger-press")
+    else this.#show("trigger-press")
   }
 
   // Enter / Space / ArrowDown / ArrowUp open and focus the SELECTED option
@@ -139,7 +139,7 @@ export default class SelectController extends Controller {
 
     if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown" || event.key === "ArrowUp") {
       event.preventDefault()
-      this.#show(this.#applied === "" ? "keyboard-first" : "keyboard-selected")
+      this.#show("list-navigation", { seed: this.#applied === "" ? "first" : "selected" })
       return
     }
 
@@ -154,12 +154,13 @@ export default class SelectController extends Controller {
 
   // --- programmatic API ---
 
-  open(reason = "pointer") {
-    this.#show(reason instanceof Event ? "pointer" : reason)
+  open(reason = "trigger-press", { seed = null } = {}) {
+    if (reason instanceof Event) this.#show("trigger-press")
+    else this.#show(reason, { seed })
   }
 
-  close(reason = "programmatic") {
-    this.#hide(reason instanceof Event ? "programmatic" : reason)
+  close(reason = "none") {
+    this.#hide(reason instanceof Event ? "none" : reason)
   }
 
   setValue(value) {
@@ -279,7 +280,7 @@ export default class SelectController extends Controller {
 
   // --- open / close ---
 
-  #show(reason) {
+  #show(reason, { seed = null } = {}) {
     const content = this.#content()
 
     if (!content || this.#isOpen()) return
@@ -292,6 +293,8 @@ export default class SelectController extends Controller {
 
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
+    if (seed) content.setAttribute("data-open-seed", seed)
+    else content.removeAttribute("data-open-seed")
     trigger?.setAttribute("aria-expanded", "true")
     if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
@@ -306,7 +309,7 @@ export default class SelectController extends Controller {
 
       this.#focusSelected(content)
       this.syncScrollButtons()
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: { reason } })
+      this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
     })
   }
 
@@ -317,13 +320,14 @@ export default class SelectController extends Controller {
 
     this.#typeahead.reset()
     this.scrollHoldStop()
-    this.#suppressRestore = !restoreFocus || (reason === "outside" && !this.modalValue)
+    this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
 
     const trigger = this.#trigger()
 
     trigger?.setAttribute("aria-expanded", "false")
     if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
+    content.removeAttribute("data-open-seed")
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {
@@ -369,7 +373,7 @@ export default class SelectController extends Controller {
     if (select.defaultPrevented) return
 
     if (value !== this.#applied) this.#apply(value)
-    if (close) this.#hide("commit")
+    if (close) this.#hide("item-press")
   }
 
   // THE single sync path, native-first. silent skips events (reconcile);
@@ -479,7 +483,7 @@ export default class SelectController extends Controller {
 
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
-    this.#hide(escaped ? "escape" : "outside")
+    this.#hide(escaped ? "escape-key" : "outside-press")
   }
 
   // The select owns initial focus (the selected option), not focus-scope.

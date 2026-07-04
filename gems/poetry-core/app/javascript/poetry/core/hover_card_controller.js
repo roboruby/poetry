@@ -81,7 +81,7 @@ export default class HoverCardController extends Controller {
     if (!this.#connected) return
 
     if (value && !this.#isOpen()) this.#show()
-    else if (!value && this.#isOpen()) this.#hide("programmatic")
+    else if (!value && this.#isOpen()) this.#hide("none")
   }
 
   // --- trigger actions ---
@@ -124,8 +124,8 @@ export default class HoverCardController extends Controller {
     this.#clearOpenTimer()
 
     // Blur closes immediately - the selection hold defers only the
-    // pointer-leave path.
-    if (this.#isOpen()) this.#hide("blur")
+    // pointer-leave path. Base UI's blur-close reason: trigger-focus.
+    if (this.#isOpen()) this.#hide("trigger-focus")
   }
 
   // The touch guard: preventDefault on touchstart so a tap can never
@@ -219,7 +219,7 @@ export default class HoverCardController extends Controller {
       // pointer-leave does NOT close (the user is reading/copying).
       if (this.#hasSelection) return
 
-      this.#hide("leave")
+      this.#hide("trigger-hover")
     }, this.closeDelayValue)
   }
 
@@ -271,7 +271,7 @@ export default class HoverCardController extends Controller {
 
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
-    this.#hide(escaped ? "escape" : "outside")
+    this.#hide(escaped ? "escape-key" : "outside-press")
   }
 
   // --- the selection hold (Radix's containSelection/hasSelection, ported) ---

@@ -66,7 +66,7 @@ export default class ContextMenuController extends Controller {
 
     this.#clearLongPress()
 
-    if (this.#isOpen()) this.#menu()?.close("outside")
+    if (this.#isOpen()) this.#menu()?.close("outside-press")
 
     const point = { x: event.clientX, y: event.clientY }
 
@@ -91,7 +91,8 @@ export default class ContextMenuController extends Controller {
     // surface rect (the positionless-open / keyboard fallback).
     this.element.setAttribute(ANCHOR_POINT_ATTRIBUTE, point ? `${point.x},${point.y}` : "")
 
-    this.#menu()?.open(input === "keyboard" ? "keyboard-first" : "pointer")
+    if (input === "keyboard") this.#menu()?.open("list-navigation", { seed: "first" })
+    else this.#menu()?.open("trigger-press")
     this.dispatch("open", {
       prefix: EVENT_PREFIX,
       detail: { x: point?.x ?? null, y: point?.y ?? null, input }

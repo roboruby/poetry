@@ -99,7 +99,7 @@ export default class MenuController extends Controller {
       if (content) this.#activateLayers(content)
       this.openValue = true
     } else if (this.openValue) {
-      this.#show("pointer", { focus: false })
+      this.#show("trigger-press", { focus: false })
     }
   }
 
@@ -125,15 +125,15 @@ export default class MenuController extends Controller {
   openValueChanged(value) {
     if (!this.#connected) return
 
-    if (value && !this.#isOpen()) this.#show("pointer")
-    else if (!value && this.#isOpen()) this.#hide("programmatic")
+    if (value && !this.#isOpen()) this.#show("trigger-press")
+    else if (!value && this.#isOpen()) this.#hide("none")
   }
 
   // --- trigger actions ---
 
   toggle() {
-    if (this.#isOpen()) this.#hide("trigger")
-    else this.#show("pointer")
+    if (this.#isOpen()) this.#hide("trigger-press")
+    else this.#show("trigger-press")
   }
 
   // Enter / Space / ArrowDown: open + focus FIRST enabled item; ArrowUp:
@@ -144,10 +144,10 @@ export default class MenuController extends Controller {
 
     if (event.key === "Enter" || event.key === " " || event.key === "ArrowDown") {
       event.preventDefault()
-      this.#show("keyboard-first")
+      this.#show("list-navigation", { seed: "first" })
     } else if (event.key === "ArrowUp") {
       event.preventDefault()
-      this.#show("keyboard-last")
+      this.#show("list-navigation", { seed: "last" })
     }
   }
 
@@ -155,15 +155,15 @@ export default class MenuController extends Controller {
 
   // focus: false is the coordinator's pointer-toggle contract (a menubar
   // pointer-open leaves focus on the trigger; keyboard-open focuses an item).
-  open(reason = "pointer", { focus = true } = {}) {
-    if (reason instanceof Event) this.#show("pointer")
-    else this.#show(reason, { focus })
+  open(reason = "trigger-press", { focus = true, seed = null } = {}) {
+    if (reason instanceof Event) this.#show("trigger-press")
+    else this.#show(reason, { focus, seed })
   }
 
   // restoreFocus: false is the hover-slide/edge-navigate contract (the
   // outgoing menu must not yank focus back mid-swap).
-  close(reason = "programmatic", { restoreFocus = true } = {}) {
-    if (reason instanceof Event) this.#hide("programmatic")
+  close(reason = "none", { restoreFocus = true } = {}) {
+    if (reason instanceof Event) this.#hide("none")
     else this.#hide(reason, { restoreFocus })
   }
 
@@ -203,7 +203,7 @@ export default class MenuController extends Controller {
         // Menus are at most ONE Tab stop: close and let focus move on
         // naturally. The still-attached focus trap must not see this Tab.
         event.stopImmediatePropagation()
-        this.#hide("programmatic", { restoreFocus: false })
+        this.#hide("none", { restoreFocus: false })
         return
       case "Enter":
       case " ":
@@ -261,7 +261,7 @@ export default class MenuController extends Controller {
 
   // --- open / close ---
 
-  #show(reason, { focus = true } = {}) {
+  #show(reason, { focus = true, seed = null } = {}) {
     const content = this.#content()
 
     if (!content || this.#isOpen()) return
@@ -274,6 +274,8 @@ export default class MenuController extends Controller {
 
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
+    if (seed) content.setAttribute("data-open-seed", seed)
+    else content.removeAttribute("data-open-seed")
     // ContextMenu's trigger SURFACE is not a widget: aria-expanded is only
     // flipped where the server declared it (DropdownMenu button, Menubar
     // menuitem) - never introduced onto a role-less span.
@@ -288,9 +290,9 @@ export default class MenuController extends Controller {
     // focus-return target), so it rides one microtask behind.
     queueMicrotask(() => {
       if (!this.#isOpen()) return
-      if (focus) this.#applyInitialFocus(content, reason)
+      if (focus) this.#applyInitialFocus(content, seed)
 
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: { reason } })
+      this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
     })
   }
 
@@ -308,13 +310,14 @@ export default class MenuController extends Controller {
     // Focus return to the trigger is focus-scope's disconnect job - vetoed
     // for Tab-out and for outside interaction on a non-modal menu (Radix's
     // non-modal semantics: focus follows the click).
-    this.#suppressRestore = !restoreFocus || (reason === "outside" && !this.modalValue)
+    this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
 
     const trigger = this.#trigger()
 
     if (trigger?.hasAttribute("aria-expanded")) trigger.setAttribute("aria-expanded", "false")
     if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
+    content.removeAttribute("data-open-seed")
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {
@@ -327,12 +330,13 @@ export default class MenuController extends Controller {
     })
   }
 
-  // Initial focus per the family data-open-reason contract: pointer -> the
-  // content itself (roving arms on the first arrow - Radix parity);
-  // keyboard-first / keyboard-last -> first / last enabled item.
-  #applyInitialFocus(content, reason) {
-    if (reason === "keyboard-first") this.#enabledItems(content)[0]?.focus()
-    else if (reason === "keyboard-last") this.#enabledItems(content).at(-1)?.focus()
+  // Initial focus per the family data-open-reason contract: trigger-press ->
+  // the content itself (roving arms on the first arrow - Radix parity);
+  // list-navigation seeds via data-open-seed: "first" / "last" -> first /
+  // last enabled item.
+  #applyInitialFocus(content, seed) {
+    if (seed === "first") this.#enabledItems(content)[0]?.focus()
+    else if (seed === "last") this.#enabledItems(content).at(-1)?.focus()
     else content.focus()
   }
 
@@ -377,7 +381,7 @@ export default class MenuController extends Controller {
     if (select.defaultPrevented) return
     if (!this.#closeOnSelectFor(item)) return
 
-    this.#hide("select")
+    this.#hide("item-press")
   }
 
   // aria-checked and data-checked/data-unchecked are written TOGETHER, never separately.
@@ -611,7 +615,7 @@ export default class MenuController extends Controller {
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
     if (target === this.#content()) {
-      this.#hide(escaped ? "escape" : "outside")
+      this.#hide(escaped ? "escape-key" : "outside-press")
       return
     }
 

@@ -6,7 +6,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // ONCE through the singleton at its politeness (destructive -> assertive)
 // and never self-announces (aria-live=off); the APG timer pauses on hover,
 // focus, window blur and tab-hidden with refcounted reasons; dismiss
-// reasons (timeout/close/action) ride poetry:toast:dismiss before presence
+// reasons (timeout/close-press/action) ride poetry:toast:dismiss before presence
 // removal; the toaster acquires/releases the announce singleton, owns the
 // hotkey + focus return, enforces the visible limit (overflow queues with
 // timers held), and writes the stack reflow index. Swipe is a
@@ -205,7 +205,7 @@ describe("poetry--core--toast / poetry--core--toaster", () => {
   })
 
   describe("dismissal reasons", () => {
-    it("the close button reports close; the action slot reports action", async () => {
+    it("the close button reports close-press; the action slot reports action", async () => {
       await mountToaster()
       const dismissals = record("poetry:toast:dismiss", el("poetry-toaster"))
 
@@ -218,7 +218,7 @@ describe("poetry--core--toast / poetry--core--toaster", () => {
 
       expect(dismissals).toEqual([
         { id: "t1", reason: "action" },
-        { id: "t2", reason: "close" }
+        { id: "t2", reason: "close-press" }
       ])
     })
 

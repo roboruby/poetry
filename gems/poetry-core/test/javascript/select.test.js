@@ -110,7 +110,8 @@ describe("poetry--core--select", () => {
       expect(el("trigger").hasAttribute("data-popup-open")).toBe(true)
       expect(el("content").hasAttribute("data-open")).toBe(true)
       expect(el("content").hidden).toBe(false)
-      expect(el("content").getAttribute("data-open-reason")).toBe("pointer")
+      expect(el("content").getAttribute("data-open-reason")).toBe("trigger-press")
+      expect(el("content").hasAttribute("data-open-seed")).toBe(false)
       expect(document.activeElement).toBe(el("item-banana"))
     })
 
@@ -121,7 +122,8 @@ describe("poetry--core--select", () => {
         await nextFrame()
 
         expect(document.activeElement).toBe(el("item-banana"))
-        expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-selected")
+        expect(el("content").getAttribute("data-open-reason")).toBe("list-navigation")
+        expect(el("content").getAttribute("data-open-seed")).toBe("selected")
 
         controller(application).close()
         await nextFrame()
@@ -134,7 +136,8 @@ describe("poetry--core--select", () => {
       await nextFrame()
 
       expect(document.activeElement).toBe(el("item-apple"))
-      expect(el("content").getAttribute("data-open-reason")).toBe("keyboard-first")
+      expect(el("content").getAttribute("data-open-reason")).toBe("list-navigation")
+      expect(el("content").getAttribute("data-open-seed")).toBe("first")
     })
 
     it("Esc closes WITHOUT committing and returns focus to the trigger", async () => {

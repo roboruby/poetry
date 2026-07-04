@@ -123,7 +123,7 @@ describe("poetry--core--hover-card", () => {
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
       expect(el("hc-content").hidden).toBe(true)
       expect(controllersOf("hc-content")).toEqual([])
-      expect(closes).toEqual([{ reason: "leave" }])
+      expect(closes).toEqual([{ reason: "trigger-hover" }])
     })
 
     it("pointerleave before open_delay elapses cancels the pending open", async () => {
@@ -175,7 +175,7 @@ describe("poetry--core--hover-card", () => {
   })
 
   describe("the focus mirror", () => {
-    it("trigger focus opens IMMEDIATELY (no delay); blur closes immediately (reason blur)", async () => {
+    it("trigger focus opens IMMEDIATELY (no delay); blur closes immediately (reason trigger-focus)", async () => {
       await mount()
       const closes = record("poetry:hover-card:closed", el("root"))
 
@@ -188,7 +188,7 @@ describe("poetry--core--hover-card", () => {
       await nextFrame()
 
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "blur" }])
+      expect(closes).toEqual([{ reason: "trigger-focus" }])
     })
 
     it("no aria surface appears at runtime: no aria-haspopup/expanded/controls/describedby anywhere", async () => {
@@ -205,7 +205,7 @@ describe("poetry--core--hover-card", () => {
   })
 
   describe("dismissal", () => {
-    it("Esc closes via the token-activated layer (reason escape)", async () => {
+    it("Esc closes via the token-activated layer (reason escape-key)", async () => {
       await mount()
       const closes = record("poetry:hover-card:closed", el("root"))
 
@@ -216,10 +216,10 @@ describe("poetry--core--hover-card", () => {
       await nextFrame()
 
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "escape" }])
+      expect(closes).toEqual([{ reason: "escape-key" }])
     })
 
-    it("outside press closes (reason outside)", async () => {
+    it("outside press closes (reason outside-press)", async () => {
       await mount()
       const closes = record("poetry:hover-card:closed", el("root"))
 
@@ -229,7 +229,7 @@ describe("poetry--core--hover-card", () => {
       el("outside").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
       await nextFrame()
 
-      expect(closes).toEqual([{ reason: "outside" }])
+      expect(closes).toEqual([{ reason: "outside-press" }])
     })
   })
 
@@ -319,7 +319,7 @@ describe("poetry--core--hover-card", () => {
       expect(el("inside-button").getAttribute("tabindex")).toBe("-1")
     })
 
-    it("flipping the open value drives the machine (reason programmatic)", async () => {
+    it("flipping the open value drives the machine (reason none)", async () => {
       await mount()
       const closes = record("poetry:hover-card:closed", el("root"))
 
@@ -332,7 +332,7 @@ describe("poetry--core--hover-card", () => {
       await nextFrame()
 
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
-      expect(closes).toEqual([{ reason: "programmatic" }])
+      expect(closes).toEqual([{ reason: "none" }])
     })
   })
 })

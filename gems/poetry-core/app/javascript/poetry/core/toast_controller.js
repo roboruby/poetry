@@ -66,12 +66,13 @@ export default class ToastController extends Controller {
     this.#listen(document, "visibilitychange", this.#onVisibilityChange)
     this.#listen(window, "blur", this.#onWindowBlur)
     this.#listen(window, "focus", this.#onWindowFocus)
-    // Esc while focus is inside dismisses this toast.
+    // Esc while focus is inside dismisses this toast (it reports as the
+    // close affordance: close-press).
     this.#listen(this.element, "keydown", (event) => {
       if (event.key !== "Escape") return
 
       event.stopPropagation()
-      this.dismiss("close")
+      this.dismiss("close-press")
     })
 
     this.#remaining = this.durationValue
@@ -114,8 +115,10 @@ export default class ToastController extends Controller {
 
   // --- dismissal ---
 
-  // Reasons: timeout | close | action | swipe(reserved) | programmatic.
-  // A click on the action slot reports "action"; the close button "close".
+  // Reasons: timeout | close-press | action | swipe(reserved) | manual.
+  // close-press is Base UI vocabulary; timeout/action/queued/manual are
+  // poetry extensions (Base UI has no equivalents). A click on the action
+  // slot reports "action"; the close button "close-press".
   dismiss(eventOrReason) {
     if (this.#dismissed) return
 
@@ -173,7 +176,7 @@ export default class ToastController extends Controller {
 
     if (origin instanceof Element && origin.closest(ACTION_SELECTOR)) return "action"
 
-    return "close"
+    return "close-press"
   }
 
   // Title + description text, the announced payload (textContent only -
