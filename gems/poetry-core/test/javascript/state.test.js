@@ -26,6 +26,7 @@ describe("reflection targets (the Collapsible contract)", () => {
 
     trigger.click()
     expect(trigger.getAttribute("aria-expanded")).toBe("true")
+    expect(trigger.hasAttribute("data-panel-open")).toBe(true) // Base UI disclosure-trigger parity
     expect(content.hidden).toBe(false)
     expect(content.hasAttribute("data-open")).toBe(true)
     expect(content.hasAttribute("data-closed")).toBe(false)

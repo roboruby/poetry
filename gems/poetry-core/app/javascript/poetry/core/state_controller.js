@@ -56,7 +56,13 @@ export default class extends Controller {
 
   #reflect(state) {
     const open = state === "open"
-    if (this.hasTriggerTarget) this.triggerTarget.setAttribute("aria-expanded", String(open))
+    if (this.hasTriggerTarget) {
+      this.triggerTarget.setAttribute("aria-expanded", String(open))
+      // Base UI disclosure-trigger parity: the trigger wears bare
+      // data-panel-open while its panel is open (no CSS consumes it yet -
+      // the aria-expanded selector styles the chevron).
+      setState(this.triggerTarget, open ? "panel-open" : "panel-closed")
+    }
     if (this.hasContentTarget && !open && !this.#cancelExit) this.contentTarget.hidden = true
   }
 }

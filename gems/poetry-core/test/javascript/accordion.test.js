@@ -42,6 +42,8 @@ describe("poetry--core--accordion", () => {
     expect(panel("a").hidden).toBe(true)
     expect(panel("b").hidden).toBe(false)
     expect(trigger("b").getAttribute("aria-expanded")).toBe("true")
+    expect(trigger("b").hasAttribute("data-panel-open")).toBe(true) // Base UI trigger parity
+    expect(trigger("a").hasAttribute("data-panel-open")).toBe(false)
   })
 
   it("single non-collapsible: the open trigger is aria-disabled and a no-op", async () => {

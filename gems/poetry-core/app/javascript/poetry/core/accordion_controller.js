@@ -35,8 +35,10 @@ export default class extends Controller {
 
   #open(item) {
     const panel = this.#panelOf(item)
+    const trigger = this.#triggerOf(item)
     setState(item, "open")
-    this.#triggerOf(item)?.setAttribute("aria-expanded", "true")
+    trigger?.setAttribute("aria-expanded", "true")
+    if (trigger) setState(trigger, "panel-open") // Base UI trigger parity (data-panel-open)
     if (!panel) return
     panel.hidden = false
     measurePresence(panel, { property: "--accordion-panel-height" })
@@ -45,8 +47,10 @@ export default class extends Controller {
 
   #close(item) {
     const panel = this.#panelOf(item)
+    const trigger = this.#triggerOf(item)
     setState(item, "closed")
-    this.#triggerOf(item)?.setAttribute("aria-expanded", "false")
+    trigger?.setAttribute("aria-expanded", "false")
+    if (trigger) setState(trigger, "panel-closed")
     if (!panel) return
     measurePresence(panel, { property: "--accordion-panel-height" })
     exitPresence(panel, { onRemove: () => { panel.hidden = true } })
