@@ -97,7 +97,7 @@ module Poetry
           refute_includes trigger["class"].split, "w-[200px]", "the merger resolves the width conflict"
           content = doc(render_combobox(width: "w-80")).css('[data-slot="combobox-content"]').first
 
-          assert_includes content["class"], "w-(--radix-popper-anchor-width)",
+          assert_includes content["class"], "w-(--anchor-width)",
                           "the popup ALWAYS tracks the trigger (one knob, two surfaces)"
         end
 
@@ -441,8 +441,8 @@ module Poetry
         def test_source_exact_classes_land_on_the_parts
           html = render_combobox
 
-          assert_includes html, "w-(--radix-popper-anchor-width)"
-          assert_includes html, "origin-(--radix-popper-transform-origin)"
+          assert_includes html, "w-(--anchor-width)"
+          assert_includes html, "origin-(--transform-origin)"
           assert_includes html, "data-[placeholder]:text-muted-foreground"
           assert_includes html, "data-open:zoom-in-95"
         end

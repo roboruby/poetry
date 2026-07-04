@@ -39,7 +39,7 @@ module Poetry
         # binding (the demo's w-[200px] PopoverContent becomes "track the
         # trigger" - one width knob, two surfaces; popper measures the
         # anchor and sets the generic var).
-        element :content, "z-50 w-(--radix-popper-anchor-width) origin-(--radix-popper-transform-origin) " \
+        element :content, "z-50 w-(--anchor-width) origin-(--transform-origin) " \
                           "rounded-md border bg-popover p-0 text-popover-foreground shadow-md outline-hidden " \
                           "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 " \
                           "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 " \

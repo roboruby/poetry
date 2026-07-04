@@ -465,7 +465,7 @@ components:
     - native
     - trigger_icon
     - indicator_check
-    capsule: '04982dc25f29'
+    capsule: f96a911bf996
     agent_rules:
     - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
       this component IS that wiring, with the form story done right.
