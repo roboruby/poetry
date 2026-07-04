@@ -33,7 +33,8 @@ module Poetry
             assert_nil item["aria-pressed"], "single strips aria-pressed (the Radix {aria-pressed: undefined} strip)"
           end
           assert_equal(%w[false true false], items.map { |item| item["aria-checked"] })
-          assert_equal(%w[off on off], items.map { |item| item["data-state"] })
+          # Base UI presence boolean: pressed = bare data-pressed, unpressed = absent.
+          assert_equal([false, true, false], items.map { |item| item.key?("data-pressed") })
         end
 
         def test_multiple_renders_toolbar_semantics_with_aria_checked_absent
@@ -47,7 +48,7 @@ module Poetry
             assert_nil item["aria-checked"], "multiple wears the toggle-button vocabulary only"
           end
           assert_equal(%w[true false true], items.map { |item| item["aria-pressed"] })
-          assert_equal(%w[on off on], items.map { |item| item["data-state"] })
+          assert_equal([true, false, true], items.map { |item| item.key?("data-pressed") })
         end
 
         def test_both_machines_ride_one_attributes_instance_on_the_root
@@ -96,7 +97,7 @@ module Poetry
           item = doc(render_group(variant: :outline)).css('[data-slot="toggle-group-item"]').first
 
           # Toggle's base + outline variant (via Toggle::Style)...
-          %w[data-[state=on]:bg-accent border-input focus-visible:ring-[3px]].each do |token|
+          %w[data-pressed:bg-accent border-input focus-visible:ring-[3px]].each do |token|
             assert_includes item["class"], token
           end
           # ...plus the group's item overrides (min-w-0/px-3 win over
@@ -109,7 +110,7 @@ module Poetry
           refute_includes item["class"], "px-2 "
           # ...and the group dictionary never duplicates Toggle's strings
           # (shared, not copied - the CI skew guard).
-          refute_includes Style.resolver.all_classes, "data-[state=on]:bg-accent"
+          refute_includes Style.resolver.all_classes, "data-pressed:bg-accent"
         end
 
         def test_the_group_root_carries_the_source_classes_and_gap_var

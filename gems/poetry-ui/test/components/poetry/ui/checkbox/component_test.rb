@@ -26,8 +26,11 @@ module Poetry
           assert_equal "checkbox", control["role"]
           assert_equal "button", control["type"]
           assert_equal "false", control["aria-checked"]
-          assert_equal "unchecked", control["data-state"]
-          assert_equal "unchecked", indicator["data-state"]
+          # Base UI checked pair: bare data-unchecked, never data-checked.
+          assert control.key?("data-unchecked")
+          refute control.key?("data-checked")
+          assert indicator.key?("data-unchecked")
+          refute indicator.key?("data-checked")
           assert_equal "true", indicator["aria-hidden"]
           # THE form participant + the store: server-rendered, sr-only, out
           # of the accessibility tree (the button is the accessible control).
@@ -70,7 +73,8 @@ module Poetry
           control = fragment.css('[data-slot="checkbox"]').first
 
           assert_equal "true", control["aria-checked"]
-          assert_equal "checked", control["data-state"]
+          assert control.key?("data-checked")
+          refute control.key?("data-unchecked")
           assert fragment.css('input[type="checkbox"]').first.key?("checked")
         end
 
@@ -79,7 +83,9 @@ module Poetry
           control = fragment.css('[data-slot="checkbox"]').first
 
           assert_equal "mixed", control["aria-checked"]
-          assert_equal "indeterminate", control["data-state"]
+          assert control.key?("data-indeterminate")
+          refute control.key?("data-checked")
+          refute control.key?("data-unchecked")
           # POETRY ADDITION: the MinusIcon (shadcn shows a check for mixed);
           # input.checked stays false (unchecked_value submits).
           assert_includes fragment.css('[data-slot="checkbox-indicator"] svg').first.inner_html, "M5 12h14"
@@ -101,7 +107,7 @@ module Poetry
 
           assert_empty fragment.css("input")
           assert_nil control["data-poetry--core--checked-input-id-value"]
-          assert_equal "checked", control["data-state"]
+          assert control.key?("data-checked")
         end
 
         def test_required_is_aria_only_and_label_is_the_aria_label_fallback
@@ -135,11 +141,11 @@ module Poetry
           control = doc(html).css('[data-slot="checkbox"]').first
           indicator = doc(html).css('[data-slot="checkbox-indicator"]').first
 
-          %w[peer size-4 rounded-[4px] transition-shadow data-[state=checked]:bg-primary
+          %w[peer size-4 rounded-[4px] transition-shadow data-checked:bg-primary
              dark:bg-input/30 focus-visible:ring-[3px] aria-invalid:border-destructive].each do |token|
             assert_includes control["class"], token
           end
-          %w[place-content-center transition-none data-[state=unchecked]:invisible].each do |token|
+          %w[place-content-center transition-none data-unchecked:invisible].each do |token|
             assert_includes indicator["class"], token
           end
         end

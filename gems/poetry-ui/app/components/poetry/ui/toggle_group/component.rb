@@ -96,9 +96,12 @@ module Poetry
           attrs = {
             type: "button", class: item_classes(options.delete(:class)),
             "data-slot" => "toggle-group-item", "data-poetry-collection-item" => "",
-            "data-value" => item_value, "data-state" => on ? "on" : "off",
+            "data-value" => item_value,
             "data-variant" => variant, "data-size" => size, "data-spacing" => spacing
           }
+          # Base UI presence boolean: pressed -> bare data-pressed,
+          # unpressed -> attribute absent (never data-pressed=false).
+          attrs["data-pressed"] = "" if on
           # The role/vocabulary split (Radix-exact: single strips
           # aria-pressed and wears the radio vocabulary).
           if single?

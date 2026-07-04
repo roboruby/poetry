@@ -5,7 +5,8 @@ module Poetry
     module Toggle
       # Third of the toggle family (Toggle) - and the
       # family member that is NOT a form control. A Toggle is a styled
-      # pressed-state button: aria-pressed + data-state=on|off on a plain
+      # pressed-state button: aria-pressed + the bare data-pressed presence
+      # boolean (Base UI vocabulary; unpressed = attribute absent) on a plain
       # <button> (no ARIA role - that IS the APG toggle-button pattern),
       # and NO hidden input, NO name:/value:, NO FormBuilder mapping -
       # explicit, Radix-exact (its Toggle carries zero form machinery).
@@ -32,7 +33,7 @@ module Poetry
           "aria-pressed is the vocabulary - never aria-checked or aria-expanded on a Toggle.",
           "Wire the EFFECT to poetry:toggle:change (or click) and revert via set(false) on failure - " \
           "a pressed toggle whose effect failed is a lie.",
-          "Pressed visual is accent - don't override data-[state=on] colors per-instance (theme-level only)."
+          "Pressed visual is accent - don't override data-pressed colors per-instance (theme-level only)."
         ].freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS
@@ -54,10 +55,6 @@ module Poetry
                 "'Bookmark', never 'Remove bookmark')"
         end
 
-        def state
-          pressed ? "on" : "off"
-        end
-
         def call
           content_tag(:button, content, **root_attributes.to_attributes)
         end
@@ -65,10 +62,13 @@ module Poetry
         def root_attributes
           attrs = {
             "type" => "button", "data-slot" => "toggle",
-            "aria-pressed" => pressed.to_s, "data-state" => state,
+            "aria-pressed" => pressed.to_s,
             "data-variant" => variant, "data-size" => size,
             "disabled" => disabled
           }
+          # Base UI presence boolean: pressed -> bare data-pressed,
+          # unpressed -> attribute absent (never data-pressed=false).
+          attrs["data-pressed"] = "" if pressed
           # Radix emits data-disabled alongside native disabled - kept for
           # styling-hook parity (and the group-context roving filter).
           attrs["data-disabled"] = "" if disabled
@@ -84,7 +84,7 @@ module Poetry
           content? && content.to_s.gsub(/<[^>]+>/, " ").strip.present?
         end
 
-        # The aria-pressed vocabulary owner: flip + mirror data-state,
+        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
         # written together; the DOM is the store (no Values). No keydown
         # code - Space AND Enter activate a native button (Radix-exact).
         def root_stimulus_attributes

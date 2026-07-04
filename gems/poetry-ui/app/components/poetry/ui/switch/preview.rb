@@ -53,7 +53,7 @@ module Poetry
         end
 
         # The RTL travel fix: the knob still moves toward the "on" end
-        # (rtl:data-[state=checked]:-translate-x-... - a poetry addition;
+        # (rtl:data-checked:-translate-x-... - a poetry addition;
         # shadcn's translate is physical/LTR-only).
         def rtl
           render_component(name: "rtl_demo", checked: true, label: "وضع الطيران", dir: "rtl")

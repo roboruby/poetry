@@ -34,7 +34,8 @@ module Poetry
           "different component.",
           "The instant-effect recipe pairs the flip with server persistence (Turbo auto-submit) - " \
           "never flip UI-only for a setting the user believes is saved.",
-          "NEVER write data-state without aria-checked and the input sync (the controller writes all three)."
+          "NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked and " \
+          "the input sync (the controller writes all three)."
         ].freeze
 
         # data-size on the control; the thumb reads it via
@@ -81,7 +82,7 @@ module Poetry
         def root_attributes
           attrs = {
             "type" => "button", "role" => "switch", "id" => control_id,
-            "aria-checked" => checked.to_s, "data-state" => state,
+            "aria-checked" => checked.to_s, "data-#{state}" => "",
             "data-slot" => "switch", "data-size" => size, "disabled" => disabled
           }
           attrs["aria-required"] = true if required

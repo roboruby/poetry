@@ -21,7 +21,7 @@ module Poetry
           assert_equal "button", control["type"]
           assert_nil control["role"], "aria-pressed on a plain button IS the pattern - no role"
           assert_equal "false", control["aria-pressed"]
-          assert_equal "off", control["data-state"]
+          refute control.key?("data-pressed"), "unpressed = attribute ABSENT (Base UI presence boolean)"
           # Vocabulary discipline: never the siblings' attributes.
           assert_nil control["aria-checked"]
           assert_nil control["aria-expanded"]
@@ -38,7 +38,7 @@ module Poetry
           control = doc(render_toggle(pressed: true)).css('[data-slot="toggle"]').first
 
           assert_equal "true", control["aria-pressed"]
-          assert_equal "on", control["data-state"]
+          assert control.key?("data-pressed"), "pressed = bare data-pressed (Base UI presence boolean)"
         end
 
         def test_no_form_machinery_ever_renders
@@ -64,7 +64,7 @@ module Poetry
 
           # The base string on the default variant: MUTED hover (pressed
           # owns accent), the svg auto-size convention, the suite ring.
-          %w[hover:bg-muted data-[state=on]:bg-accent data-[state=on]:text-accent-foreground
+          %w[hover:bg-muted data-pressed:bg-accent data-pressed:text-accent-foreground
              focus-visible:ring-[3px] transition-[color,box-shadow]].each do |token|
             assert_includes base["class"], token
           end

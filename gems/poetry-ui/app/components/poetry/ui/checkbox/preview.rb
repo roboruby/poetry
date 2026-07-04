@@ -56,7 +56,7 @@ module Poetry
         end
 
         # Visual-only mode (no name:) - controlled UI like DataTable row
-        # selection; state lives on data-state alone (discouraged in forms).
+        # selection; state lives on the checked attributes alone (discouraged in forms).
         def visual_only
           render_component(checked: true, label: "Row selected")
         end

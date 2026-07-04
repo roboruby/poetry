@@ -24,8 +24,11 @@ module Poetry
           assert_equal "switch", control["role"]
           assert_equal "button", control["type"]
           assert_equal "false", control["aria-checked"]
-          assert_equal "unchecked", control["data-state"]
-          assert_equal "unchecked", thumb["data-state"]
+          # Base UI checked pair: bare data-unchecked, never data-checked.
+          assert control.key?("data-unchecked")
+          refute control.key?("data-checked")
+          assert thumb.key?("data-unchecked")
+          refute thumb.key?("data-checked")
           assert_equal "true", thumb["aria-hidden"]
           # The Checkbox architecture verbatim: the sr-only native input is
           # the store, out of the accessibility tree.
@@ -100,16 +103,16 @@ module Poetry
           thumb = fragment.css('[data-slot="switch-thumb"]').first
 
           %w[peer group/switch rounded-full transition-all data-[size=default]:h-[1.15rem]
-             data-[state=checked]:bg-primary data-[state=unchecked]:bg-input
-             dark:data-[state=unchecked]:bg-input/80 focus-visible:ring-[3px]].each do |token|
+             data-checked:bg-primary data-unchecked:bg-input
+             dark:data-unchecked:bg-input/80 focus-visible:ring-[3px]].each do |token|
             assert_includes control["class"], token
           end
-          %w[pointer-events-none transition-transform data-[state=checked]:translate-x-[calc(100%-2px)]
-             dark:data-[state=checked]:bg-primary-foreground].each do |token|
+          %w[pointer-events-none transition-transform data-checked:translate-x-[calc(100%-2px)]
+             dark:data-checked:bg-primary-foreground].each do |token|
             assert_includes thumb["class"], token
           end
           # The poetry RTL fix (shadcn is LTR-only here).
-          assert_includes thumb["class"], "rtl:data-[state=checked]:-translate-x-[calc(100%-2px)]"
+          assert_includes thumb["class"], "rtl:data-checked:-translate-x-[calc(100%-2px)]"
         end
 
         def test_label_is_the_aria_label_fallback

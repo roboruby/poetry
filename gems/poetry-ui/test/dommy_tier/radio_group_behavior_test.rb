@@ -21,16 +21,23 @@ module DommyTier
       render_in_dommy(%(<form id="form">#{html}</form>))
     end
 
-    # [aria-checked, data-state, indicator hidden, input.checked, tabindex]
-    # per item value.
+    # [aria-checked, checked-pair presence, indicator hidden, input.checked,
+    # tabindex] per item value. The checked state is a PRESENCE pair (bare
+    # data-checked / data-unchecked, Base UI vocabulary) - derive the key
+    # from which attribute is present.
     def items_state(harness)
       harness.evaluate(<<~JS)
-        (() => Array.from(document.querySelectorAll('[data-slot="radio-group-item"]')).map((item) => [
-          item.dataset.value, item.getAttribute("aria-checked"), item.dataset.state,
-          item.querySelector('[data-slot="radio-group-indicator"]').hidden,
-          document.getElementById(item.id + "-input").checked,
-          item.getAttribute("tabindex")
-        ]))()
+        (() => {
+          const state = (el) =>
+            el.hasAttribute("data-checked") ? "checked" :
+            el.hasAttribute("data-unchecked") ? "unchecked" : null;
+          return Array.from(document.querySelectorAll('[data-slot="radio-group-item"]')).map((item) => [
+            item.dataset.value, item.getAttribute("aria-checked"), state(item),
+            item.querySelector('[data-slot="radio-group-indicator"]').hidden,
+            document.getElementById(item.id + "-input").checked,
+            item.getAttribute("tabindex")
+          ]);
+        })()
       JS
     end
 

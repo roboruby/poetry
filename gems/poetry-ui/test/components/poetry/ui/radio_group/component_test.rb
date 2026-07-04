@@ -54,13 +54,16 @@ module Poetry
           checked = items.find { |item| item["data-value"] == "yearly" }
 
           assert_equal "true", checked["aria-checked"]
-          assert_equal "checked", checked["data-state"]
+          # Base UI checked pair: bare data-checked / data-unchecked.
+          assert checked.key?("data-checked")
+          refute checked.key?("data-unchecked")
           refute checked.css('[data-slot="radio-group-indicator"]').first.key?("hidden"),
                  "the checked indicator is visible"
           unchecked = items.find { |item| item["data-value"] == "monthly" }
 
           assert_equal "false", unchecked["aria-checked"]
-          assert_equal "unchecked", unchecked["data-state"]
+          assert unchecked.key?("data-unchecked")
+          refute unchecked.key?("data-checked")
           assert unchecked.css('[data-slot="radio-group-indicator"]').first.key?("hidden")
         end
 

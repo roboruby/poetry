@@ -33,8 +33,8 @@ module Poetry
           "APG violation (ArgumentError).",
           "Pair every item with a visible label (item label: renders the Label for= pairing) - a bare " \
           "dot is not an option.",
-          "NEVER write data-state without aria-checked (the controller writes both; agents patching " \
-          "DOM must too).",
+          "NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked (the " \
+          "controller writes both; agents patching DOM must too).",
           "Do not use RadioGroup for navigation or immediate actions; checking must not submit or " \
           "navigate by itself.",
           "7+ options: use Select instead.",
@@ -150,7 +150,7 @@ module Poetry
             type: "button", role: "radio", id: item_id, class: item_classes(options.delete(:class)),
             "data-slot" => "radio-group-item", "data-poetry-collection-item" => "",
             "data-value" => item_value,
-            "aria-checked" => checked.to_s, "data-state" => checked ? "checked" : "unchecked",
+            "aria-checked" => checked.to_s, (checked ? "data-checked" : "data-unchecked") => "",
             "tabindex" => tab_stop?(item_value, item_disabled) ? "0" : "-1"
           }
           attrs["aria-invalid"] = "true" if invalid

@@ -19,11 +19,13 @@ module DommyTier
       end
     end
 
-    # [data-state, aria-checked, aria-pressed, tabindex] per item value.
+    # [data-pressed PRESENCE, aria-checked, aria-pressed, tabindex] per item
+    # value - pressed is the bare data-pressed attribute, unpressed is its
+    # ABSENCE (Base UI presence boolean), so the check is hasAttribute.
     def items_state(harness)
       harness.evaluate(<<~JS)
         (() => Array.from(document.querySelectorAll('[data-slot="toggle-group-item"]')).map((item) => [
-          item.dataset.value, item.dataset.state,
+          item.dataset.value, item.hasAttribute("data-pressed"),
           item.getAttribute("aria-checked"), item.getAttribute("aria-pressed"),
           item.getAttribute("tabindex")
         ]))()
@@ -44,9 +46,9 @@ module DommyTier
       assert_no_js_errors harness
       # Server truth reconciled on connect; roving stamps ONE tab stop and
       # the group controller prefers the pressed item (active=pressed).
-      assert_equal [["bold", "on", "true", nil, "0"],
-                    ["italic", "off", "false", nil, "-1"],
-                    ["underline", "off", "false", nil, "-1"]], items_state(harness)
+      assert_equal [["bold", true, "true", nil, "0"],
+                    ["italic", false, "false", nil, "-1"],
+                    ["underline", false, "false", nil, "-1"]], items_state(harness)
 
       harness.execute(<<~JS)
         window.__changes = [];
@@ -58,18 +60,18 @@ module DommyTier
       assert_no_js_errors harness
       # Exclusivity: pressing italic unpresses bold; the vocabulary stays
       # radio-only (aria-pressed never appears) and the tab stop follows.
-      assert_equal [["bold", "off", "false", nil, "-1"],
-                    ["italic", "on", "true", nil, "0"],
-                    ["underline", "off", "false", nil, "-1"]], items_state(harness)
+      assert_equal [["bold", false, "false", nil, "-1"],
+                    ["italic", true, "true", nil, "0"],
+                    ["underline", false, "false", nil, "-1"]], items_state(harness)
 
       click_item(harness, "italic")
 
       # Deselect-to-empty (Radix setValue('')): |S| = 0 is legal for
       # single; exactly ONE tab stop survives (falls back to the first
       # enabled item).
-      assert_equal [["bold", "off", "false", nil, "0"],
-                    ["italic", "off", "false", nil, "-1"],
-                    ["underline", "off", "false", nil, "-1"]], items_state(harness)
+      assert_equal [["bold", false, "false", nil, "0"],
+                    ["italic", false, "false", nil, "-1"],
+                    ["underline", false, "false", nil, "-1"]], items_state(harness)
       assert_equal [["italic", ["italic"], ["bold"]], [nil, [], ["italic"]]],
                    harness.evaluate("window.__changes")
     end
@@ -78,22 +80,22 @@ module DommyTier
       harness = render_group(type: :multiple, values: %w[bold])
 
       assert_no_js_errors harness
-      assert_equal [["bold", "on", nil, "true", "0"],
-                    ["italic", "off", nil, "false", "-1"],
-                    ["underline", "off", nil, "false", "-1"]], items_state(harness)
+      assert_equal [["bold", true, nil, "true", "0"],
+                    ["italic", false, nil, "false", "-1"],
+                    ["underline", false, nil, "false", "-1"]], items_state(harness)
 
       click_item(harness, "underline")
 
       assert_no_js_errors harness
       # XOR: bold stays pressed - no exclusivity in toolbar mode; the
       # vocabulary stays toggle-button-only (aria-checked never appears).
-      assert_equal(%w[on off on], items_state(harness).map { |item| item[1] })
+      assert_equal([true, false, true], items_state(harness).map { |item| item[1] })
       assert_equal(%w[true false true], items_state(harness).map { |item| item[3] })
       assert_equal([nil, nil, nil], items_state(harness).map { |item| item[2] })
 
       click_item(harness, "bold")
 
-      assert_equal(%w[off off on], items_state(harness).map { |item| item[1] })
+      assert_equal([false, false, true], items_state(harness).map { |item| item[1] })
     end
 
     def test_arrow_keys_move_the_single_tab_stop_without_selecting
@@ -113,7 +115,7 @@ module DommyTier
       assert_equal "italic", focused, "arrows move focus (roving)"
       # ...WITHOUT selecting (the deliberate Radix deviation from APG
       # radio's move-selects: browsing options never fires effects).
-      assert_equal(%w[on off off], items_state(harness).map { |item| item[1] })
+      assert_equal([true, false, false], items_state(harness).map { |item| item[1] })
     end
   end
 end

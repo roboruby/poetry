@@ -329,8 +329,8 @@ module Poetry
             Gate.new(:twin_write_pair_present, :poetry_only, lambda { |doc, _html|
               options = doc.css("[role=option]")
               options.any? && options.all? do |option|
-                (option["aria-selected"] == "true") == (option["data-state"] == "checked")
-              end && doc.css(%([role=option][aria-selected="true"][data-state="checked"])).size == 1
+                (option["aria-selected"] == "true") == option.key?("data-selected")
+              end && doc.css(%([role=option][aria-selected="true"][data-selected])).size == 1
             })
           ]
         },

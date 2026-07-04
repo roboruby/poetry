@@ -7,10 +7,11 @@ module DommyTier
   # controller: the store inversion end-to-end. A click on the visual
   # button must flip the hidden native input (the store), dispatch a REAL
   # bubbling change event the form can hear (no synthetic prototype-setter
-  # dance), and reflect aria-checked + data-state on the control AND the
-  # indicator. Indeterminate connects via input.indeterminate (a JS-only
-  # property derived from data-state) and resolves to CHECKED on the first
-  # toggle (Radix-exact).
+  # dance), and reflect aria-checked + the checked pair (bare data-checked /
+  # data-unchecked / data-indeterminate, Base UI vocabulary) on the control
+  # AND the indicator. Indeterminate connects via input.indeterminate (a
+  # JS-only property derived from the checked attributes) and resolves to
+  # CHECKED on the first toggle (Radix-exact).
   class CheckboxBehaviorTest < TestCase
     def render_checkbox(**)
       html = render_inline(Poetry::Ui::Checkbox::Component.new(name: "terms", **)).to_html
@@ -18,13 +19,20 @@ module DommyTier
     end
 
     def checkbox_state(harness)
+      # The checked state is a PRESENCE pair (bare data-checked /
+      # data-unchecked / data-indeterminate) - derive the key from which
+      # attribute is present, asserting exclusivity implicitly.
       harness.evaluate(<<~JS)
         (() => {
+          const state = (el) =>
+            el.hasAttribute("data-indeterminate") ? "indeterminate" :
+            el.hasAttribute("data-checked") ? "checked" :
+            el.hasAttribute("data-unchecked") ? "unchecked" : null;
           const control = document.querySelector('[data-slot="checkbox"]');
           const indicator = document.querySelector('[data-slot="checkbox-indicator"]');
           const input = document.querySelector('[data-slot="checkbox-input"]');
-          return [control.getAttribute("aria-checked"), control.dataset.state,
-                  indicator.dataset.state, input.checked, input.indeterminate];
+          return [control.getAttribute("aria-checked"), state(control),
+                  state(indicator), input.checked, input.indeterminate];
         })()
       JS
     end
@@ -59,7 +67,7 @@ module DommyTier
 
       assert_no_js_errors harness
       assert_equal ["true", "checked", "checked", true, false], checkbox_state(harness),
-                   "input first (the store), then aria-checked + data-state on control AND indicator"
+                   "input first (the store), then aria-checked + the checked pair on control AND indicator"
       # The REAL change event bubbled from the input to the form, plus the
       # component-flavored observe surface.
       assert_equal [%w[change checkbox-input], ["poetry", true, false]],
@@ -74,8 +82,8 @@ module DommyTier
       harness = render_checkbox(checked: :indeterminate)
 
       assert_no_js_errors harness
-      # connect() derives input.indeterminate from data-state (the property
-      # has no attribute); input.checked stays false.
+      # connect() derives input.indeterminate from data-indeterminate (the
+      # property has no attribute of its own); input.checked stays false.
       assert_equal ["mixed", "indeterminate", "indeterminate", false, true], checkbox_state(harness)
 
       listen(harness)

@@ -6,9 +6,10 @@ module DommyTier
   # The REAL Switch markup driven by the SAME poetry--core--checked
   # controller Checkbox ships (zero fork - the reuse is the point): a click
   # flips the store input, bubbles a REAL change event (the Turbo
-  # auto-submit recipe hangs off it), and reflects aria-checked +
-  # data-state on the control AND the thumb. role=switch has no Enter
-  # suppression (the controller's guard keys off role=checkbox).
+  # auto-submit recipe hangs off it), and reflects aria-checked + the bare
+  # data-checked/data-unchecked pair (Base UI vocabulary) on the control
+  # AND the thumb. role=switch has no Enter suppression (the controller's
+  # guard keys off role=checkbox).
   class SwitchBehaviorTest < TestCase
     def render_switch(**)
       html = render_inline(Poetry::Ui::Switch::Component.new(name: "notifications", **)).to_html
@@ -16,13 +17,18 @@ module DommyTier
     end
 
     def switch_state(harness)
+      # The checked state is a PRESENCE pair (bare data-checked /
+      # data-unchecked) - derive the key from which attribute is present.
       harness.evaluate(<<~JS)
         (() => {
+          const state = (el) =>
+            el.hasAttribute("data-checked") ? "checked" :
+            el.hasAttribute("data-unchecked") ? "unchecked" : null;
           const control = document.querySelector('[data-slot="switch"]');
           const thumb = document.querySelector('[data-slot="switch-thumb"]');
           const input = document.querySelector('[data-slot="switch-input"]');
-          return [control.getAttribute("aria-checked"), control.dataset.state,
-                  thumb.dataset.state, input.checked];
+          return [control.getAttribute("aria-checked"), state(control),
+                  state(thumb), input.checked];
         })()
       JS
     end
@@ -52,7 +58,7 @@ module DommyTier
 
       assert_no_js_errors harness
       assert_equal ["true", "checked", "checked", true], switch_state(harness),
-                   "input first (the store), then aria + data-state on control AND thumb"
+                   "input first (the store), then aria + the checked pair on control AND thumb"
       # The REAL change event reaches the form (the auto-submit hook) and
       # the prefix derives from data-component - poetry:switch:change, not
       # poetry:checkbox:change, from the UNFORKED shared controller.
@@ -68,7 +74,7 @@ module DommyTier
 
       assert_no_js_errors harness
       assert_equal ["true", "checked", "checked", true], switch_state(harness),
-                   "reconcile-on-connect: data-state (server truth) -> input properties"
+                   "reconcile-on-connect: the checked pair (server truth) -> input properties"
 
       click_control(harness)
 

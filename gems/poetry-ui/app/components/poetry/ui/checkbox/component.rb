@@ -9,7 +9,8 @@ module Poetry
       # native <input type=checkbox> IS the form participant and the store
       # (server-rendered name/value/checked, Rails "1"/"0" plus the
       # unchecked-hidden pair), while the visual button[role=checkbox] only
-      # REFLECTS it via aria-checked + data-state. The shared
+      # REFLECTS it via aria-checked + the checked pair (data-checked /
+      # data-unchecked / data-indeterminate, Base UI vocabulary). The shared
       # poetry--core--checked controller (reused verbatim by Switch) flips
       # the input, lets the REAL change event bubble, and re-syncs from the
       # input on native form reset.
@@ -30,8 +31,9 @@ module Poetry
           "Indeterminate is set programmatically/server-side only - no user gesture produces it; use it " \
           "for select-all parents.",
           "Instant-effect settings use Switch; pressed UI tools use Toggle; one-of-N uses RadioGroup.",
-          "NEVER write data-state without aria-checked and the input's checked property (the controller " \
-          "writes all three; agents patching DOM must too).",
+          "NEVER write the checked attributes (data-checked/data-unchecked/data-indeterminate) without " \
+          "aria-checked and the input's checked property (the controller writes all three; agents " \
+          "patching DOM must too).",
           "Don't suppress unchecked_value unless using the array idiom - an unchecked box that submits " \
           "nothing silently keeps the old server value."
         ].freeze
@@ -103,7 +105,7 @@ module Poetry
         def root_attributes
           attrs = {
             "type" => "button", "role" => "checkbox", "id" => control_id,
-            "aria-checked" => aria_checked, "data-state" => state,
+            "aria-checked" => aria_checked, "data-#{state}" => "",
             "data-slot" => "checkbox", "disabled" => disabled
           }
           attrs["aria-required"] = true if required
@@ -120,7 +122,7 @@ module Poetry
           builder = Poetry::Core::Stimulus::Builder.new(CHECKED, attrs)
           builder.register_controller
           # No input-id value -> pure visual mode: state lives on the
-          # button's data-state alone (discouraged; see AGENT_RULES).
+          # button's checked attributes alone (discouraged; see AGENT_RULES).
           builder.with_value(:input_id, input_id) if form_participant?
           builder.with_action(:toggle, on: :click)
           attrs.to_attributes
