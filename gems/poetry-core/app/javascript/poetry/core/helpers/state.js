@@ -8,7 +8,7 @@
 // Keys are PAIRS (or triples): setting one member writes its attribute and
 // removes its counterparts. The negative popup/panel/pressed/selected keys
 // only remove - Base UI has no data-popup-closed; absence IS the state.
-const VOCABULARY = {
+export const VOCABULARY = {
   open: { add: "data-open", remove: ["data-closed"] },
   closed: { add: "data-closed", remove: ["data-open"] },
   "popup-open": { add: "data-popup-open", remove: [] },

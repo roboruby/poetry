@@ -22,6 +22,6 @@
   },
   "scripts": {
     "test": "vitest run",
-    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js test/javascript/state_vocabulary_manifest.test.js"
   }
 }

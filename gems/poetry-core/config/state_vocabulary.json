@@ -1,0 +1,28 @@
+{
+  "keys": [
+    "checked",
+    "closed",
+    "indeterminate",
+    "open",
+    "panel-closed",
+    "panel-open",
+    "popup-closed",
+    "popup-open",
+    "pressed",
+    "selected",
+    "unchecked",
+    "unpressed",
+    "unselected"
+  ],
+  "attributes": [
+    "data-checked",
+    "data-closed",
+    "data-indeterminate",
+    "data-open",
+    "data-panel-open",
+    "data-popup-open",
+    "data-pressed",
+    "data-selected",
+    "data-unchecked"
+  ]
+}
