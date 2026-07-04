@@ -30,13 +30,13 @@ components:
     - indicator
     - content
     - inner
-    capsule: 8957749480d6
+    capsule: 84cb5db4eb88
     agent_rules:
     - Items via with_item(value:, title:) { panel content } - value is the open-state
       key.
     - 'type: :single (default) opens one at a time; pass collapsible: true to allow
       closing it.'
-    - 'Server-render the open item(s) via open: %w[value] - never toggle data-state
+    - 'Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed
       by hand.'
     - 'heading_level: fits the page outline (h3 default) - the trigger button lives
       inside it.'
@@ -107,7 +107,7 @@ components:
     - description
     - footer
     - footer_size_sm
-    capsule: 9fcc1ea30513
+    capsule: 31a265e8ae32
     agent_rules:
     - 'Destructive confirmations use AlertDialog with with_action(variant: :destructive)
       - never a bare Dialog, never data-turbo-confirm.'
@@ -159,10 +159,10 @@ components:
     - actions
     - trigger
     - group
-    capsule: edad85abbad6
+    capsule: e9f3a3096e2f
     agent_rules:
-    - 'State is server-owned: render data-state and flip it by Turbo Stream replace
-      - never toggle it in JS.'
+    - 'State is server-owned: render data-upload-state and flip it by Turbo Stream
+      replace - never toggle it in JS.'
     - 'with_media(variant: :image) wraps the caller''s <img>; file names and URLs
       are user content - never render them html_safe.'
     - 'Actions are with_action(...) poetry Buttons (ghost/icon-xs defaults) - each
@@ -360,7 +360,7 @@ components:
     - indicator
     - icon
     - input
-    capsule: f7daf6e42cdf
+    capsule: 91bce7b2ac6d
     agent_rules:
     - Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with
       hand-written Tailwind, and never a hand-rolled button[role=checkbox].
@@ -372,8 +372,9 @@ components:
       it; use it for select-all parents.
     - Instant-effect settings use Switch; pressed UI tools use Toggle; one-of-N uses
       RadioGroup.
-    - NEVER write data-state without aria-checked and the input's checked property
-      (the controller writes all three; agents patching DOM must too).
+    - NEVER write the checked attributes (data-checked/data-unchecked/data-indeterminate)
+      without aria-checked and the input's checked property (the controller writes
+      all three; agents patching DOM must too).
     - Don't suppress unchecked_value unless using the array idiom - an unchecked box
       that submits nothing silently keeps the old server value.
   poetry/ui/collapsible:
@@ -390,7 +391,8 @@ components:
       many: false
     agent_rules:
     - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
-    - 'Server-render the initial state via open: - never toggle data-state by hand.'
+    - 'Server-render the initial state via open: - never toggle data-open/data-closed
+      by hand.'
     - Content stays in the DOM when closed (hidden) - do not conditionally render
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
@@ -463,7 +465,7 @@ components:
     - native
     - trigger_icon
     - indicator_check
-    capsule: c20180479cd0
+    capsule: '04982dc25f29'
     agent_rules:
     - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
       this component IS that wiring, with the form story done right.
@@ -639,7 +641,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 3a223480a60f
+    capsule: 4921eb8e1d45
     agent_rules:
     - NEVER make a context menu the only path to an action - it is an invisible affordance;
       every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar,
@@ -681,7 +683,7 @@ components:
     - description
     - footer
     - close
-    capsule: 371e0022a6fe
+    capsule: 077466ffc70d
     agent_rules:
     - Open dialogs with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name); with_description when the purpose
@@ -744,15 +746,16 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 50291ddc0945
+    capsule: 9c3e77768352
     agent_rules:
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
       it with radio items.
     - 'Icon-only triggers MUST have an accessible name (the composed Button''s label:
       rule).'
-    - Never write data-state without its aria twin (aria-expanded / aria-checked)
-      - the controller writes both; agents patching DOM must too.
+    - Never write the state attributes (data-popup-open / data-checked / data-unchecked)
+      without their aria twin (aria-expanded / aria-checked) - the controller writes
+      both; agents patching DOM must too.
     - 'Destructive items use variant: :destructive AND still confirm irreversible
       actions via a dialog.'
     - 'shortcut: is a visual hint only - it does NOT bind the key; wire a real hotkey
@@ -829,7 +832,7 @@ components:
       many: false
     elements:
     - content
-    capsule: eab2a48763fe
+    capsule: 9b2f5005a3d2
     agent_rules:
     - Use poetry_hover_card - never hand-roll hover-div previews.
     - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
@@ -1054,7 +1057,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: ec4018c1316c
+    capsule: 2493fc892cb6
     agent_rules:
     - Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu
       (untrapped), a single actions menu is DropdownMenu.
@@ -1184,7 +1187,7 @@ components:
     - header
     - title
     - description
-    capsule: 763e98d4134d
+    capsule: efbbaf85d201
     agent_rules:
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
     - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
@@ -1245,8 +1248,8 @@ components:
       is an APG violation (ArgumentError).'
     - 'Pair every item with a visible label (item label: renders the Label for= pairing)
       - a bare dot is not an option.'
-    - NEVER write data-state without aria-checked (the controller writes both; agents
-      patching DOM must too).
+    - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
+      (the controller writes both; agents patching DOM must too).
     - Do not use RadioGroup for navigation or immediate actions; checking must not
       submit or navigate by itself.
     - '7+ options: use Select instead.'
@@ -1317,7 +1320,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 00ef27226e61
+    capsule: d4329f24de1d
     agent_rules:
     - Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox
       popups, and never fake a select with DropdownMenu radio items bound to a hidden
@@ -1328,9 +1331,9 @@ components:
       bare poetry_select in a form is a smell.
     - 'Every Select MUST be named: a Field label (id: + label[for]) or aria-label.
       A bare unnamed select fails at render - do not suppress it.'
-    - NEVER write aria-selected without its data-state twin, and NEVER write the display
-      text without writing the native select's value first - the controller does all
-      three; agents patching DOM must too.
+    - NEVER write aria-selected without its data-selected twin, and NEVER write the
+      display text without writing the native select's value first - the controller
+      does all three; agents patching DOM must too.
     - Do not put interactive elements inside options (an option IS the interactive
       unit).
     - Long/filterable/async lists or multi-select -> Combobox, not a 50-option Select;
@@ -1376,7 +1379,7 @@ components:
     - description
     - footer
     - close
-    capsule: 2a8fd1c6854a
+    capsule: 742c8649e9de
     agent_rules:
     - Open sheets with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -1484,7 +1487,7 @@ components:
     elements:
     - thumb
     - input
-    capsule: 571561d4338b
+    capsule: 238d7b288d46
     agent_rules:
     - Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch
       announces on/off; that's the point).
@@ -1495,8 +1498,8 @@ components:
       means a different component.
     - The instant-effect recipe pairs the flip with server persistence (Turbo auto-submit)
       - never flip UI-only for a setting the user believes is saved.
-    - NEVER write data-state without aria-checked and the input sync (the controller
-      writes all three).
+    - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
+      and the input sync (the controller writes all three).
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -1565,7 +1568,7 @@ components:
     - description
     - action
     - close
-    capsule: 2b0d3dea69ec
+    capsule: fcfede5a93b4
     agent_rules:
     - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
       - never hand-append into #poetry-toaster.'
@@ -1639,7 +1642,7 @@ components:
       default: false
     slots: []
     elements: []
-    capsule: c64c999dc02a
+    capsule: b8c926f12ccf
     agent_rules:
     - Use poetry_toggle - never a Button with hand-managed aria-pressed.
     - 'Toggle is UI state, NOT form data: never try to submit it. Form value -> Checkbox;
@@ -1649,8 +1652,8 @@ components:
     - aria-pressed is the vocabulary - never aria-checked or aria-expanded on a Toggle.
     - Wire the EFFECT to poetry:toggle:change (or click) and revert via set(false)
       on failure - a pressed toggle whose effect failed is a lie.
-    - Pressed visual is accent - don't override data-[state=on] colors per-instance
-      (theme-level only).
+    - Pressed visual is accent - don't override data-pressed colors per-instance (theme-level
+      only).
   poetry/ui/toggle_group:
     class_name: Poetry::Ui::ToggleGroup::Component
     identifier: poetry--ui--toggle_group
@@ -1744,7 +1747,7 @@ components:
     elements:
     - content
     - arrow
-    capsule: bd9826b97f21
+    capsule: d98fbc26591d
     agent_rules:
     - Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
     - Tooltip content is TEXT and never interactive/focusable - links, buttons, or

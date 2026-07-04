@@ -14,7 +14,7 @@ module Poetry
           end.to_html
 
           assert_includes html, 'data-component="attachment"'
-          assert_includes html, 'data-state="done"'
+          assert_includes html, 'data-upload-state="done"'
           assert_includes html, 'data-size="default"'
           assert_includes html, 'data-orientation="horizontal"'
           %w[attachment-media attachment-content attachment-title attachment-description].each do |slot|
@@ -22,11 +22,11 @@ module Poetry
           end
         end
 
-        def test_every_lifecycle_state_stamps_data_state
+        def test_every_lifecycle_state_stamps_data_upload_state
           Component::STATES.each do |state|
             html = render_inline(Component.new(state: state)) { |a| a.with_title { "x" } }.to_html
 
-            assert_includes html, %(data-state="#{state}")
+            assert_includes html, %(data-upload-state="#{state}")
           end
         end
 
@@ -75,7 +75,7 @@ module Poetry
         end
 
         def test_shimmer_rides_the_dictionary
-          assert_includes Style.css(:title), "group-data-[state=uploading]/attachment:shimmer"
+          assert_includes Style.css(:title), "group-data-[upload-state=uploading]/attachment:shimmer"
         end
       end
     end

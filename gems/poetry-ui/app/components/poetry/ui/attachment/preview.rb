@@ -4,7 +4,7 @@ module Poetry
   module Ui
     module Attachment
       # The Attachment preview matrix - every lifecycle state + both
-      # orientations (the visual states are pure CSS on data-state).
+      # orientations (the visual states are pure CSS on data-upload-state).
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component do |attachment|

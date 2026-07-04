@@ -4,7 +4,7 @@ module Poetry
   module Ui
     module Attachment
       # File/image chip for the AI-chat set (Attachment).
-      # poetry ships the ATTRIBUTE CONTRACT: the server renders data-state
+      # poetry ships the ATTRIBUTE CONTRACT: the server renders data-upload-state
       # (idle|uploading|processing|error|done) and flips it by re-render /
       # Turbo Stream replace - upload orchestration is explicitly the
       # host's. In-flight and error states carry an sr-only role=status
@@ -17,7 +17,8 @@ module Poetry
         ANNOUNCED_STATES = %i[uploading processing error].freeze
 
         AGENT_RULES = [
-          "State is server-owned: render data-state and flip it by Turbo Stream replace - never toggle it in JS.",
+          "State is server-owned: render data-upload-state and flip it by Turbo Stream replace - " \
+          "never toggle it in JS.",
           "with_media(variant: :image) wraps the caller's <img>; file names and URLs are " \
           "user content - never render them html_safe.",
           "Actions are with_action(...) poetry Buttons (ghost/icon-xs defaults) - each needs label: (icon-only).",
@@ -60,7 +61,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             {
-              "data-slot" => "attachment", "data-state" => state,
+              "data-slot" => "attachment", "data-upload-state" => state,
               "data-size" => size, "data-orientation" => orientation
             }.merge(component_data_attributes)
           )
