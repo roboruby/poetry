@@ -16,25 +16,28 @@ describe("registerPoetryControllers", () => {
     await nextFrame()
 
     const subject = document.getElementById("subject")
-    expect(subject.dataset.state).toBe("closed") // seeded by the Value default on connect
+    expect(subject.hasAttribute("data-closed")).toBe(true) // seeded by the Value default on connect
 
     subject.dispatchEvent(new CustomEvent("noop")) // sanity: element is live
     application
       .getControllerForElementAndIdentifier(subject, "poetry--core--state")
       .toggle()
-    expect(subject.dataset.state).toBe("open")
+    expect(subject.hasAttribute("data-open")).toBe(true)
+    expect(subject.hasAttribute("data-closed")).toBe(false)
 
     application.stop()
   })
 
-  it("does not seed data-state when another layer already owns it", async () => {
-    document.body.innerHTML = `<div id="owned" data-controller="poetry--core--state" data-state="open"></div>`
+  it("does not seed state when another layer already owns it", async () => {
+    document.body.innerHTML = `<div id="owned" data-controller="poetry--core--state" data-open></div>`
 
     const application = Application.start()
     registerPoetryControllers(application)
     await nextFrame()
 
-    expect(document.getElementById("owned").dataset.state).toBe("open")
+    const owned = document.getElementById("owned")
+    expect(owned.hasAttribute("data-open")).toBe(true)
+    expect(owned.hasAttribute("data-closed")).toBe(false) // the seed respected the owner
     application.stop()
   })
 

@@ -14,7 +14,7 @@ import { setState } from "@poetry/controllers/helpers/state"
 // The form story is the hidden-native-input rule: one <input type=radio>
 // per item, shared name (aria-hidden, tabindex=-1) - native radio
 // serialization, byte-identical to collection_radio_buttons. check() writes
-// every item's aria-checked/data-state/indicator, sets the hidden input's
+// every item's aria-checked/checked pair/indicator, sets the hidden input's
 // .checked (the native group unchecks siblings; written explicitly anyway -
 // belt and braces), moves the roving tab stop to the checked item, and
 // dispatches poetry:radio-group:change + native input/change on the newly
@@ -33,7 +33,7 @@ export default class RadioGroupController extends Controller {
 
   connect() {
     // Reconcile-on-connect: the server renders the checked state (aria +
-    // data-state + input checked + the tab stop); adopt it into the Value
+    // the checked pair + input checked + the tab stop); adopt it into the Value
     // when the Value was not given, else normalize the DOM to the Value.
     if (this.valueValue === "") {
       const checked = this.#items().find((item) => item.getAttribute("aria-checked") === "true")
@@ -109,7 +109,7 @@ export default class RadioGroupController extends Controller {
     input?.dispatchEvent(new Event("change", { bubbles: true }))
   }
 
-  // The one write path: aria-checked + data-state written together on every
+  // The one write path: aria-checked + the checked pair written together on every
   // item, indicator visibility, hidden input .checked, and the roving tab
   // stop moved to the checked item.
   #write(value) {

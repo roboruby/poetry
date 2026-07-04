@@ -5,15 +5,15 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // reuses it VERBATIM - zero fork, CI-asserted). The architecture is the
 // STORE INVERSION: the hidden native <input type=checkbox> is the form
 // participant AND the store - the visual button[role=checkbox|switch] only
-// REFLECTS it (aria-checked incl. "mixed" + data-state on the control and
-// every data-state-carrying part: the checkbox indicator, the switch
-// thumb). Every transition writes the input FIRST, dispatches a REAL
+// REFLECTS it (aria-checked incl. "mixed" + the data-checked/data-unchecked/
+// data-indeterminate attributes on the control and every part that carries
+// them: the checkbox indicator, the switch thumb). Every transition writes the input FIRST, dispatches a REAL
 // bubbling change event (no synthetic prototype-setter dance - Radix's
 // BubbleInput direction inverted), then reflects attributes.
 //
 // The three states: checked / unchecked / indeterminate. Indeterminate is
 // server/programmatic only (aria-checked=mixed, input.indeterminate - a
-// JS-only property re-derived from data-state on connect); the first user
+// JS-only property re-derived from the checked attributes on connect); the first user
 // toggle resolves it to CHECKED (Radix-exact). A Switch never renders it
 // (ArgumentError upstream), so that branch is simply dormant there.
 //
@@ -23,7 +23,7 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // asymmetry, keyed off the role - no controller fork).
 //
 // No inputId value -> pure visual mode: state lives on the button's
-// data-state alone (controlled-UI cases like DataTable row selection).
+// checked attributes alone (controlled-UI cases like DataTable row selection).
 export default class CheckedController extends Controller {
   static values = {
     inputId: { type: String, default: "" }
@@ -37,8 +37,9 @@ export default class CheckedController extends Controller {
   connect() {
     const input = this.#input()
 
-    // Reconcile-on-connect: data-state is the server truth (Turbo Stream
-    // re-render safe); input.indeterminate has no attribute - derive it.
+    // Reconcile-on-connect: the checked attributes are the server truth
+    // (Turbo Stream re-render safe); input.indeterminate has no attribute -
+    // derive it.
     if (input) {
       const state = this.#state()
 
@@ -148,13 +149,17 @@ export default class CheckedController extends Controller {
     })
   }
 
-  // aria-checked (mixed mapping) and data-state are written TOGETHER, on
-  // the control AND every part that mirrors data-state (indicator / thumb).
+  // aria-checked (mixed mapping) and the checked attributes are written
+  // TOGETHER, on the control AND every part that mirrors the checked state
+  // (indicator / thumb) - recognized by wearing any of the family's pair
+  // attributes (data-checked / data-unchecked / data-indeterminate).
   #reflect(state) {
     this.element.setAttribute("aria-checked", state === "indeterminate" ? "mixed" : String(state === "checked"))
     setState(this.element, state)
 
-    for (const part of this.element.querySelectorAll("[data-state]")) setState(part, state)
+    const parts = this.element.querySelectorAll("[data-checked], [data-unchecked], [data-indeterminate]")
+
+    for (const part of parts) setState(part, state)
   }
 
   #state() {

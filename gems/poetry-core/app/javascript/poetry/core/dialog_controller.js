@@ -4,8 +4,8 @@ import { setState } from "@poetry/controllers/helpers/state"
 // The native-dialog primitive: borrow the PLATFORM overlay -
 // showModal() gives the focus trap, Esc handling, top-layer stacking, and
 // focus return for free; this controller adds what the platform doesn't:
-// data-state for CSS variants, backdrop-click dismissal, and a body
-// scroll-lock. Consumed by Dialog (and later AlertDialog / Sheet).
+// the data-open/data-closed pair for CSS variants, backdrop-click
+// dismissal, and a body scroll-lock. Consumed by Dialog (and later AlertDialog / Sheet).
 export default class extends Controller {
   static targets = ["dialog"]
   static values = {

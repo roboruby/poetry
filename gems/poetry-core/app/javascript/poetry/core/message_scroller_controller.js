@@ -47,7 +47,9 @@ const USER_SCROLL_KEYS = new Set([
 // content children (Turbo Streams append them; the observer never knows the
 // difference). Geometry lives in helpers/scroller_geometry - pure, tested.
 //
-// Modes (mirrored to data-state on the root, a poetry addition):
+// Modes (mirrored to data-mode on the root, a poetry addition - a
+// value-carrying attribute like Base UI's data-swipe-direction; the mode
+// set is not part of the presence-pair vocabulary):
 //   following-bottom    autoScroll pinned to the latest message
 //   free-scrolling      reader scrolled away; position left alone
 //   anchored-to-message a turn held at the reading line while a reply streams
@@ -93,7 +95,7 @@ export default class extends Controller {
     this.visibilityState = EMPTY_MESSAGE_SCROLLER_VISIBILITY_STATE
 
     // Initial mirror, no transition - events fire on transitions only.
-    this.element.dataset.state = this.mode
+    this.element.dataset.mode = this.mode
 
     const viewport = this.#viewport()
     this.onScroll = () => this.syncAfterScroll()
@@ -281,14 +283,14 @@ export default class extends Controller {
   // --- mode machine ---
 
   // Mode transitions were internal-ref writes in source; poetry mirrors them
-  // to data-state and dispatches mode / pinned / unpinned.
+  // to data-mode and dispatches mode / pinned / unpinned.
   #setMode(next, { reason = "scroll-away" } = {}) {
     const previous = this.mode
 
     if (previous === next) return
 
     this.mode = next
-    this.element.dataset.state = next
+    this.element.dataset.mode = next
     this.dispatch("mode", { detail: { from: previous, to: next, mode: next } })
 
     if (next === "following-bottom") this.dispatch("pinned")

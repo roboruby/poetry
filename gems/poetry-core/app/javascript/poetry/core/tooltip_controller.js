@@ -78,13 +78,13 @@ export default class TooltipController extends Controller {
 
     this.#connected = true
 
-    // Reconcile-on-connect: a server-rendered pinned tooltip (any non-closed
-    // data-state) activates describedby + the layer + the scope count.
+    // Reconcile-on-connect: a server-rendered pinned tooltip (data-open on
+    // the content) activates describedby + the layer + the scope count.
     if (this.#isOpen()) {
       this.#activate(content)
       this.openValue = true
     } else if (this.openValue) {
-      this.#open("instant-open")
+      this.#open({ instant: "delay" })
     }
   }
 
@@ -115,7 +115,7 @@ export default class TooltipController extends Controller {
   openValueChanged(value) {
     if (!this.#connected) return
 
-    if (value && !this.#isOpen()) this.#open("instant-open")
+    if (value && !this.#isOpen()) this.#open({ instant: "delay" })
     else if (!value && this.#isOpen()) this.#close("programmatic")
   }
 
@@ -133,7 +133,7 @@ export default class TooltipController extends Controller {
 
     if (this.#isWarm()) {
       this.#hasPointerMoveOpened = true
-      this.#open("instant-open")
+      this.#open({ instant: "delay" })
       return
     }
 
@@ -141,14 +141,14 @@ export default class TooltipController extends Controller {
 
     if (delay <= 0) {
       this.#hasPointerMoveOpened = true
-      this.#open("delayed-open")
+      this.#open()
       return
     }
 
     this.#openTimer = window.setTimeout(() => {
       this.#openTimer = null
       this.#hasPointerMoveOpened = true
-      this.#open("delayed-open")
+      this.#open()
     }, delay)
   }
 
@@ -191,7 +191,7 @@ export default class TooltipController extends Controller {
     if (this.#isPointerDown) return
     if (this.#isOpen()) return
 
-    this.#open("instant-open")
+    this.#open({ instant: "focus" })
   }
 
   blurClose() {
@@ -202,7 +202,10 @@ export default class TooltipController extends Controller {
 
   // --- open / close ---
 
-  #open(state) {
+  // instant: null (a delayed pointer open) | "delay" (warm registry /
+  // programmatic - the provider delay was skipped) | "focus" (keyboard) -
+  // the Base UI data-instant reason vocabulary (contract §2).
+  #open({ instant = null } = {}) {
     const content = this.#content()
 
     if (!content || this.#isOpen()) return
@@ -223,13 +226,15 @@ export default class TooltipController extends Controller {
 
     content.hidden = false
     if (trigger) {
-      setState(trigger, state)
+      setState(trigger, "popup-open")
       trigger.setAttribute("aria-describedby", content.id)
     }
-    // The data-state triple rides through setState directly (presence's
-    // enter helper only knows "open"; everything non-closed IS open here
-    // and the enter animation classes are ungated anyway - source-exact).
-    setState(content, state)
+    // The Radix triple becomes the pair + a reason: data-open via setState,
+    // plus data-instant="delay|focus" on the content when the open skipped
+    // the delay (absent on a delayed open) - Base UI vocabulary/N6.
+    setState(content, "open")
+    if (instant) content.setAttribute("data-instant", instant)
+    else content.removeAttribute("data-instant")
 
     // Token-activated dismissable only - NO focus-scope, focus never enters
     // a tooltip. Esc anywhere peels the tooltip first (topmost layer).
@@ -241,7 +246,7 @@ export default class TooltipController extends Controller {
     queueMicrotask(() => {
       if (!this.#isOpen()) return
 
-      this.dispatch("open", { prefix: EVENT_PREFIX, detail: { state } })
+      this.dispatch("open", { prefix: EVENT_PREFIX, detail: { state: "open", instant } })
     })
   }
 
@@ -261,7 +266,8 @@ export default class TooltipController extends Controller {
 
     const trigger = this.#trigger()
 
-    if (trigger) setState(trigger, "closed")
+    if (trigger) setState(trigger, "popup-closed")
+    content.removeAttribute("data-instant")
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {

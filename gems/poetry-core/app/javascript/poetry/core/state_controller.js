@@ -2,15 +2,15 @@ import { Controller } from "@hotwired/stimulus"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The controllable-state controller (Tier 0): seeds data-state from a Value
-// default when no other layer owns it, and exposes toggle/open/close
-// actions. "Controlled vs uncontrolled" is just which layer wrote the
+// The controllable-state controller (Tier 0): seeds the data-open/
+// data-closed pair from a Value default when no other layer owns it, and
+// exposes toggle/open/close actions. "Controlled vs uncontrolled" is just which layer wrote the
 // attribute - a server re-render, the URL, an Outlet, or this default -
 // the controller code is identical either way.
 //
 // Optional reflection targets (the Collapsible contract, N2): a trigger
 // target mirrors aria-expanded; a content target rides the presence
-// helper (data-state flip deferred through animationend, hidden applied
+// helper (the pair flip deferred through animationend, hidden applied
 // only after the exit animation finishes).
 export default class extends Controller {
   static targets = ["trigger", "content"]

@@ -8,7 +8,7 @@ import { FOCUS_GUARD_SELECTOR, ensureFocusGuards, removeFocusGuards } from "@poe
 import { enterPresence, exitPresence, measurePresence } from "@poetry/controllers/helpers/presence"
 
 describe("state", () => {
-  it("writes data-state and dispatches a bubbling poetry:state-change", () => {
+  it("writes the vocabulary pair and dispatches a bubbling poetry:state-change", () => {
     const parent = document.createElement("div")
     const el = document.createElement("div")
     parent.appendChild(el)
@@ -17,7 +17,8 @@ describe("state", () => {
 
     setState(el, "open")
 
-    expect(el.dataset.state).toBe("open")
+    expect(el.hasAttribute("data-open")).toBe(true)
+    expect(el.hasAttribute("data-closed")).toBe(false)
     expect(stateOf(el)).toBe("open")
     expect(seen).toEqual(["open"])
   })
@@ -155,12 +156,12 @@ describe("presence", () => {
     return seenAtRead
   }
 
-  it("enterPresence flips data-state to open", () => {
+  it("enterPresence flips the pair to data-open", () => {
     const panel = mount()
 
     enterPresence(panel)
 
-    expect(panel.dataset.state).toBe("open")
+    expect(panel.hasAttribute("data-open")).toBe(true)
   })
 
   it("measurePresence writes scrollHeight as a px var, measuring unhidden with animations suppressed, then restores", () => {
@@ -189,7 +190,7 @@ describe("presence", () => {
     expect(panel.style.getPropertyValue("--poetry-presence-height")).toBe("")
   })
 
-  it("enterPresence measure:true sets the var BEFORE data-state flips open", () => {
+  it("enterPresence measure:true sets the var BEFORE the pair flips to data-open", () => {
     const panel = mount()
     stubScrollHeight(panel, 80)
     let varAtFlip = null
@@ -199,7 +200,7 @@ describe("presence", () => {
 
     enterPresence(panel, { measure: true })
 
-    expect(panel.dataset.state).toBe("open")
+    expect(panel.hasAttribute("data-open")).toBe(true)
     expect(varAtFlip).toBe("80px") // the open keyframe can consume it from frame one
   })
 
@@ -216,7 +217,7 @@ describe("presence", () => {
 
     expect(varAtFlip).toBe("48px")
     expect(seen.hidden).toBe(false)
-    expect(panel.dataset.state).toBe("closed")
+    expect(panel.hasAttribute("data-closed")).toBe(true)
     expect(onRemove).toHaveBeenCalledTimes(1) // no animation in jsdom: still instant
   })
 
@@ -226,7 +227,7 @@ describe("presence", () => {
 
     exitPresence(panel, { onRemove })
 
-    expect(panel.dataset.state).toBe("closed")
+    expect(panel.hasAttribute("data-closed")).toBe(true)
     expect(onRemove).toHaveBeenCalledTimes(1)
   })
 
@@ -236,7 +237,7 @@ describe("presence", () => {
     const onRemove = vi.fn()
 
     exitPresence(panel, { onRemove })
-    expect(panel.dataset.state).toBe("closed")
+    expect(panel.hasAttribute("data-closed")).toBe(true)
     expect(onRemove).not.toHaveBeenCalled()
 
     // A child's animation ending is not the panel's exit finishing.

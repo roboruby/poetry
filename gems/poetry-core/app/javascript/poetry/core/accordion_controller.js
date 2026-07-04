@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { enterPresence, exitPresence, measurePresence } from "@poetry/controllers/helpers/presence"
+import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
 // The accordion open-set machine (N2): single (optionally collapsible)
 // or multiple. Composes with poetry--core--roving-focus (manageTabindex:
@@ -17,7 +18,7 @@ export default class extends Controller {
     const item = event.currentTarget.closest('[data-slot="accordion-item"]')
     if (!item) return
 
-    if (item.dataset.state === "open") {
+    if (stateOf(item) === "open") {
       if (this.typeValue === "single" && !this.collapsibleValue) return
       this.#close(item)
     } else {
@@ -34,7 +35,7 @@ export default class extends Controller {
 
   #open(item) {
     const panel = this.#panelOf(item)
-    item.dataset.state = "open"
+    setState(item, "open")
     this.#triggerOf(item)?.setAttribute("aria-expanded", "true")
     if (!panel) return
     panel.hidden = false
@@ -44,7 +45,7 @@ export default class extends Controller {
 
   #close(item) {
     const panel = this.#panelOf(item)
-    item.dataset.state = "closed"
+    setState(item, "closed")
     this.#triggerOf(item)?.setAttribute("aria-expanded", "false")
     if (!panel) return
     measurePresence(panel, { property: "--accordion-panel-height" })
@@ -58,7 +59,7 @@ export default class extends Controller {
     this.#items().forEach((item) => {
       const trigger = this.#triggerOf(item)
       if (!trigger) return
-      if (lockOpen && item.dataset.state === "open") {
+      if (lockOpen && stateOf(item) === "open") {
         trigger.setAttribute("aria-disabled", "true")
       } else {
         trigger.removeAttribute("aria-disabled")
@@ -71,7 +72,7 @@ export default class extends Controller {
   }
 
   #openItems() {
-    return this.#items().filter((item) => item.dataset.state === "open")
+    return this.#items().filter((item) => stateOf(item) === "open")
   }
 
   #triggerOf(item) {

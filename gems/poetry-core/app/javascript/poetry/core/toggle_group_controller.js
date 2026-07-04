@@ -12,8 +12,9 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // RADIO semantics - items carry aria-checked (aria-pressed stripped) and
 // re-pressing the sole pressed item deselects to EMPTY (Radix setValue(''));
 // type=multiple is toolbar semantics - independent aria-pressed items. The
-// controller reads type once and never mixes vocabularies; data-state=on|off
-// styles both types identically (Toggle's classes just work).
+// controller reads type once and never mixes vocabularies; the bare
+// data-pressed presence boolean styles both types identically (Toggle's
+// classes just work).
 //
 // After every transition the PRESSED item becomes the roving tab stop
 // (Radix active=pressed: re-entering the group lands on the selection) -
@@ -26,10 +27,10 @@ export default class ToggleGroupController extends Controller {
   }
 
   connect() {
-    // Reconcile-on-connect: server-rendered data-state is the truth; the
+    // Reconcile-on-connect: server-rendered data-pressed is the truth; the
     // type-correct aria attribute is (re)derived from it, so a Turbo Stream
     // re-render (or a hand-patched item) can never mix vocabularies.
-    for (const item of this.#items()) this.#write(item, stateOf(item) === "on")
+    for (const item of this.#items()) this.#write(item, stateOf(item) === "pressed")
 
     this.#preferPressedTabStop()
   }
@@ -98,7 +99,7 @@ export default class ToggleGroupController extends Controller {
 
     for (const item of this.#items()) {
       const on = next.has(item.dataset.value)
-      const was = stateOf(item) === "on"
+      const was = stateOf(item) === "pressed"
 
       this.#write(item, on)
 
@@ -123,11 +124,11 @@ export default class ToggleGroupController extends Controller {
     })
   }
 
-  // data-state and the TYPE-CORRECT aria attribute, written together: single
-  // items are radios (aria-checked, aria-pressed stripped - the Radix
+  // data-pressed and the TYPE-CORRECT aria attribute, written together:
+  // single items are radios (aria-checked, aria-pressed stripped - the Radix
   // {'aria-pressed': undefined} strip); multiple items are toggle buttons.
   #write(item, on) {
-    setState(item, on ? "on" : "off")
+    setState(item, on ? "pressed" : "unpressed")
 
     if (this.#single()) {
       item.setAttribute("aria-checked", String(on))
@@ -148,7 +149,7 @@ export default class ToggleGroupController extends Controller {
 
     if (!items.some((item) => item.hasAttribute("tabindex"))) return
 
-    const target = items.find((item) => stateOf(item) === "on" && !this.#disabled(item)) ??
+    const target = items.find((item) => stateOf(item) === "pressed" && !this.#disabled(item)) ??
       items.find((item) => !this.#disabled(item))
 
     if (!target) return
@@ -157,7 +158,7 @@ export default class ToggleGroupController extends Controller {
   }
 
   #pressedValues() {
-    return new Set(this.#items().filter((item) => stateOf(item) === "on").map((item) => item.dataset.value))
+    return new Set(this.#items().filter((item) => stateOf(item) === "pressed").map((item) => item.dataset.value))
   }
 
   #known(values) {

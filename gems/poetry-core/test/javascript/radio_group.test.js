@@ -3,7 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
 // poetry--core--radio-group JS-unit: the checked-value machine - check()
-// writes aria-checked/data-state/indicator/input.checked together + moves
+// writes aria-checked/the checked pair/indicator/input.checked together + moves
 // the tab stop + dispatches poetry:radio-group:change AND native
 // input/change on the hidden input; re-check no-ops; selection follows
 // focus via roving-focus's entry event (arrows check, Tab never does);
@@ -26,7 +26,7 @@ const markup = ({ value = "", disabledItems = [] } = {}) => {
     return `
       <button type="button" role="radio" id="item-${v}" data-slot="radio-group-item"
               data-poetry-collection-item data-value="${v}"
-              aria-checked="${checked}" data-state="${checked ? "checked" : "unchecked"}"
+              aria-checked="${checked}" ${checked ? "data-checked" : "data-unchecked"}
               tabindex="${checked || (value === "" && v === VALUES[0]) ? 0 : -1}"
               ${disabledItems.includes(v) ? "disabled data-disabled" : ""}
               data-action="poetry--core--radio-group#check">
@@ -78,11 +78,12 @@ describe("poetry--core--radio-group", () => {
     }
   })
 
-  it("check writes aria-checked + data-state + indicator + input.checked together and moves the tab stop", () => {
+  it("check writes aria-checked + the checked pair + indicator + input.checked together and moves the tab stop", () => {
     click(el("item-compact"))
 
     expect(ariaChecked()).toEqual(["false", "true", "false"])
-    expect(el("item-compact").dataset.state).toBe("checked")
+    expect(el("item-compact").hasAttribute("data-checked")).toBe(true)
+    expect(el("item-compact").hasAttribute("data-unchecked")).toBe(false)
     expect(el("item-compact").querySelector("[data-slot=radio-group-indicator]").hidden).toBe(false)
     expect(el("item-comfortable").querySelector("[data-slot=radio-group-indicator]").hidden).toBe(true)
     expect(inputChecked()).toEqual([false, true, false])

@@ -3,7 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
 // poetry--core--pressed JS-unit: the Toggle micro-machine - aria-pressed
-// and data-state=on|off flipped TOGETHER, the cancelable change event, the
+// and the bare data-pressed presence flipped TOGETHER, the cancelable change event, the
 // disabled guard, and the programmatic press/unpress/set surface. No other
 // attributes are touched (the vocabulary-discipline assertion).
 
@@ -16,7 +16,7 @@ const click = (element) =>
 async function mount({ pressed = false, disabled = false } = {}) {
   document.body.innerHTML = `
     <button type="button" id="toggle" data-slot="toggle" data-component="toggle"
-            aria-pressed="${pressed}" data-state="${pressed ? "on" : "off"}"
+            aria-pressed="${pressed}" ${pressed ? "data-pressed" : ""}
             ${disabled ? "disabled" : ""}
             data-controller="poetry--core--pressed"
             data-action="poetry--core--pressed#toggle">Bookmark</button>`
@@ -41,14 +41,14 @@ describe("poetry--core--pressed", () => {
     }
   })
 
-  it("toggle flips aria-pressed AND data-state together", () => {
+  it("toggle flips aria-pressed AND data-pressed together", () => {
     click(el("toggle"))
     expect(el("toggle").getAttribute("aria-pressed")).toBe("true")
-    expect(el("toggle").dataset.state).toBe("on")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(true)
 
     click(el("toggle"))
     expect(el("toggle").getAttribute("aria-pressed")).toBe("false")
-    expect(el("toggle").dataset.state).toBe("off")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(false)
   })
 
   it("dispatches poetry:toggle:change with the entering pressed state", () => {
@@ -67,15 +67,15 @@ describe("poetry--core--pressed", () => {
     click(el("toggle"))
 
     expect(el("toggle").getAttribute("aria-pressed")).toBe("false")
-    expect(el("toggle").dataset.state).toBe("off")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(false)
   })
 
   it("press/unpress/set are the programmatic surface (the rollback recipe)", () => {
     controller(application).press()
-    expect(el("toggle").dataset.state).toBe("on")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(true)
 
     controller(application).unpress()
-    expect(el("toggle").dataset.state).toBe("off")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(false)
 
     controller(application).set(true)
     expect(el("toggle").getAttribute("aria-pressed")).toBe("true")
@@ -89,7 +89,7 @@ describe("poetry--core--pressed", () => {
     controller(application).set(true)
 
     expect(el("toggle").getAttribute("aria-pressed")).toBe("false")
-    expect(el("toggle").dataset.state).toBe("off")
+    expect(el("toggle").hasAttribute("data-pressed")).toBe(false)
   })
 
   it("touches no other attributes (no aria-checked / aria-expanded leak)", () => {

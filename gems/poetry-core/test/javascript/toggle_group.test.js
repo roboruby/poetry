@@ -26,7 +26,7 @@ const markup = ({ type = "single", pressed = [], disabledItems = [] } = {}) => {
     return `
       <button type="button" id="item-${value}" data-slot="toggle-group-item"
               data-poetry-collection-item data-value="${value}" ${aria}
-              data-state="${on ? "on" : "off"}"
+              ${on ? "data-pressed" : ""}
               ${disabledItems.includes(value) ? "disabled data-disabled" : ""}
               tabindex="${pressed.includes(value) ? 0 : -1}"
               data-action="poetry--core--toggle-group#toggle">${value}</button>`
@@ -47,7 +47,7 @@ const markup = ({ type = "single", pressed = [], disabledItems = [] } = {}) => {
 const controller = (application) =>
   application.getControllerForElementAndIdentifier(el("group"), "poetry--core--toggle-group")
 
-const states = () => ["bold", "italic", "underline"].map((v) => el(`item-${v}`).dataset.state)
+const states = () => ["bold", "italic", "underline"].map((v) => el(`item-${v}`).hasAttribute("data-pressed"))
 const tabindexes = () => ["bold", "italic", "underline"].map((v) => el(`item-${v}`).getAttribute("tabindex"))
 
 async function mount(options = {}) {
@@ -74,13 +74,13 @@ describe("poetry--core--toggle-group", () => {
     it("pressing an item unpresses the previous one and writes aria-checked (never aria-pressed)", () => {
       click(el("item-bold"))
 
-      expect(states()).toEqual(["on", "off", "off"])
+      expect(states()).toEqual([true, false, false])
       expect(el("item-bold").getAttribute("aria-checked")).toBe("true")
       expect(el("item-bold").hasAttribute("aria-pressed")).toBe(false)
 
       click(el("item-italic"))
 
-      expect(states()).toEqual(["off", "on", "off"])
+      expect(states()).toEqual([false, true, false])
       expect(el("item-bold").getAttribute("aria-checked")).toBe("false")
       expect(el("item-italic").getAttribute("aria-checked")).toBe("true")
     })
@@ -89,7 +89,7 @@ describe("poetry--core--toggle-group", () => {
       click(el("item-bold"))
       click(el("item-bold"))
 
-      expect(states()).toEqual(["off", "off", "off"])
+      expect(states()).toEqual([false, false, false])
       expect(el("item-bold").getAttribute("aria-checked")).toBe("false")
     })
 
@@ -119,7 +119,7 @@ describe("poetry--core--toggle-group", () => {
       press(el("item-bold"), "ArrowRight")
 
       expect(document.activeElement).toBe(el("item-italic"))
-      expect(states()).toEqual(["on", "off", "off"]) // focus moved, selection did not
+      expect(states()).toEqual([true, false, false]) // focus moved, selection did not
     })
   })
 
@@ -133,12 +133,12 @@ describe("poetry--core--toggle-group", () => {
       click(el("item-bold"))
       click(el("item-underline"))
 
-      expect(states()).toEqual(["on", "off", "on"])
+      expect(states()).toEqual([true, false, true])
       expect(el("item-bold").getAttribute("aria-pressed")).toBe("true")
       expect(el("item-bold").hasAttribute("aria-checked")).toBe(false)
 
       click(el("item-bold"))
-      expect(states()).toEqual(["off", "off", "on"])
+      expect(states()).toEqual([false, false, true])
     })
 
     it("the change payload carries the values array", () => {
@@ -154,23 +154,23 @@ describe("poetry--core--toggle-group", () => {
 
     it("setValue applies an array; a bare string is rejected", () => {
       controller(application).setValue(["bold", "underline"])
-      expect(states()).toEqual(["on", "off", "on"])
+      expect(states()).toEqual([true, false, true])
 
       controller(application).setValue("italic")
-      expect(states()).toEqual(["on", "off", "on"]) // rejected - type mismatch
+      expect(states()).toEqual([true, false, true]) // rejected - type mismatch
     })
   })
 
   it("setValue in single mode applies one value, clears with null, ignores unknown values", () => {
     controller(application).setValue("italic")
-    expect(states()).toEqual(["off", "on", "off"])
+    expect(states()).toEqual([false, true, false])
 
     controller(application).setValue("nope")
-    expect(states()).toEqual(["off", "off", "off"]) // unknown filtered -> empty set
+    expect(states()).toEqual([false, false, false]) // unknown filtered -> empty set
 
     controller(application).setValue("bold")
     controller(application).setValue(null)
-    expect(states()).toEqual(["off", "off", "off"])
+    expect(states()).toEqual([false, false, false])
   })
 
   it("disabled items cannot be toggled and are skipped by the roving arrows", async () => {
@@ -178,14 +178,14 @@ describe("poetry--core--toggle-group", () => {
     application = await mount({ disabledItems: ["italic"] })
 
     click(el("item-italic"))
-    expect(states()).toEqual(["off", "off", "off"])
+    expect(states()).toEqual([false, false, false])
 
     el("item-bold").focus()
     press(el("item-bold"), "ArrowRight")
     expect(document.activeElement).toBe(el("item-underline")) // italic filtered out
   })
 
-  it("reconcile-on-connect derives the type-correct aria from server-rendered data-state", async () => {
+  it("reconcile-on-connect derives the type-correct aria from server-rendered data-pressed", async () => {
     application.stop()
     document.body.innerHTML = markup({ type: "single", pressed: ["italic"] })
     // simulate a mixed-vocabulary server render: single item wearing aria-pressed

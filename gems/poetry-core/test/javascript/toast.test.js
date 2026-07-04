@@ -40,7 +40,7 @@ const toastMarkup = (id, {
   variant = "default", duration = 5000, politeness = "polite",
   title = "Saved", description = "", action = false
 } = {}) => `
-  <li id="${id}" data-slot="toast" data-state="open" data-variant="${variant}"
+  <li id="${id}" data-slot="toast" data-open data-variant="${variant}"
       role="status" aria-live="off" aria-atomic="true" tabindex="0"
       data-controller="poetry--core--toast"
       data-poetry--core--toast-duration-value="${duration}"

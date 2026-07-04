@@ -32,12 +32,13 @@ describe("poetry--core--dialog", () => {
     return () => application.stop()
   })
 
-  it("open() shows the modal, sets data-state, and locks scroll", () => {
+  it("open() shows the modal, sets data-open, and locks scroll", () => {
     const dlg = document.getElementById("dlg")
     document.getElementById("trigger").click()
 
     expect(dlg.open).toBe(true)
-    expect(dlg.dataset.state).toBe("open")
+    expect(dlg.hasAttribute("data-open")).toBe(true)
+    expect(dlg.hasAttribute("data-closed")).toBe(false)
     expect(document.body.style.overflow).toBe("hidden")
   })
 
@@ -47,7 +48,8 @@ describe("poetry--core--dialog", () => {
 
     const dlg = document.getElementById("dlg")
     expect(dlg.open).toBe(false)
-    expect(dlg.dataset.state).toBe("closed")
+    expect(dlg.hasAttribute("data-closed")).toBe(true)
+    expect(dlg.hasAttribute("data-open")).toBe(false)
     expect(document.body.style.overflow).toBe("")
   })
 
@@ -101,7 +103,8 @@ describe("poetry--core--dialog", () => {
 
     const dlg = document.getElementById("dlg")
     expect(dlg.open).toBe(false)
-    expect(dlg.dataset.state).toBe("closed")
+    expect(dlg.hasAttribute("data-closed")).toBe(true)
+    expect(dlg.hasAttribute("data-open")).toBe(false)
   })
 
   // The CommandDialog affordance (Command): an OPT-IN

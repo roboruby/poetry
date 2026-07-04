@@ -11,7 +11,7 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // it PAUSES on hover, focus-within, window blur and tab-hidden (reasons are
 // refcounted so overlapping pauses cannot resume early), and duration <= 0
 // means persistent (required for undo/action toasts). Dismiss flips
-// data-state=closed, dispatches poetry:toast:dismiss {id, reason} (the
+// data-open -> data-closed, dispatches poetry:toast:dismiss {id, reason} (the
 // toaster's reflow + focus-return seam), then presence holds the node until
 // its exit animation finishes before removal.
 //

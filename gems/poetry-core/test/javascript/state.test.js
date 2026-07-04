@@ -27,7 +27,8 @@ describe("reflection targets (the Collapsible contract)", () => {
     trigger.click()
     expect(trigger.getAttribute("aria-expanded")).toBe("true")
     expect(content.hidden).toBe(false)
-    expect(content.dataset.state).toBe("open")
+    expect(content.hasAttribute("data-open")).toBe(true)
+    expect(content.hasAttribute("data-closed")).toBe(false)
 
     trigger.click()
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
@@ -43,7 +44,7 @@ describe("reflection targets (the Collapsible contract)", () => {
     application.register("poetry--core--state", StateController)
     await Promise.resolve()
 
-    expect(document.querySelector("div").dataset.state).toBe("closed")
+    expect(document.querySelector("div").hasAttribute("data-closed")).toBe(true)
     application.stop()
   })
 })

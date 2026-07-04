@@ -7,7 +7,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // pinning/anchoring behavior (native scroll anchoring, smooth-scroll
 // settling, IntersectionObserver firing) is the browser-verification
 // suite's job, never faked here. What this file CAN prove: transitions,
-// data-state/data-scrollable mirroring, event dispatch, value defaults,
+// data-mode/data-scrollable mirroring, event dispatch, value defaults,
 // user-intent release, the 180ms autoscrolling suppression, branch order,
 // and disconnect teardown.
 
@@ -194,14 +194,14 @@ describe("poetry--core--message-scroller", () => {
       expect(IntersectionObserverStub.instances).toHaveLength(0)
     })
 
-    it("mirrors the initial mode to data-state (following-bottom under autoScroll)", async () => {
+    it("mirrors the initial mode to data-mode (following-bottom under autoScroll)", async () => {
       const { root } = await mount()
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
     })
 
     it("starts free-scrolling when autoScroll is off", async () => {
       const { root } = await mount({ values: { "auto-scroll": false } })
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
 
     it("applies defaultScrollPosition end once on first content", async () => {
@@ -221,7 +221,7 @@ describe("poetry--core--message-scroller", () => {
       })
 
       expect(metrics.scrollTop).toBe(0)
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
   })
 
@@ -236,7 +236,7 @@ describe("poetry--core--message-scroller", () => {
       setRect(rowElements[1], { top: 100, height: 400 })
       viewport.dispatchEvent(new Event("scroll"))
 
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
       expect(events).toContainEqual({
         name: "mode",
         detail: { from: "following-bottom", to: "free-scrolling", mode: "free-scrolling" }
@@ -251,13 +251,13 @@ describe("poetry--core--message-scroller", () => {
 
       setRect(rowElements[1], { top: 100, height: 400 })
       viewport.dispatchEvent(new Event("scroll"))
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
 
       const events = recordEvents(root, "pinned")
       setRect(rowElements[1], { top: 100, height: 100 })
       viewport.dispatchEvent(new Event("scroll"))
 
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
       expect(events).toHaveLength(1)
     })
 
@@ -276,12 +276,12 @@ describe("poetry--core--message-scroller", () => {
 
       // Mid-animation the geometry still reads scrolled-away: no release.
       viewport.dispatchEvent(new Event("scroll"))
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
       expect(events).toHaveLength(0)
 
       // 180ms after the move the flag clears; the clear's own commit releases.
       await new Promise((resolve) => setTimeout(resolve, 250))
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
       expect(root.hasAttribute("data-autoscrolling")).toBe(false)
       expect(events).toEqual([{ name: "unpinned", detail: { reason: "scroll-away" } }])
     })
@@ -296,7 +296,7 @@ describe("poetry--core--message-scroller", () => {
 
       viewport.dispatchEvent(new Event("wheel"))
 
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
       expect(events).toEqual([{ name: "unpinned", detail: { reason: "user-intent" } }])
     })
 
@@ -305,17 +305,17 @@ describe("poetry--core--message-scroller", () => {
 
       viewport.dispatchEvent(new Event("touchmove"))
 
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
 
     it("only USER_SCROLL_KEYS count as keyboard intent", async () => {
       const { root, viewport } = await mount({ rows: [{ id: "m1", top: 0, height: 100 }] })
 
       viewport.dispatchEvent(new KeyboardEvent("keydown", { key: "a" }))
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
 
       viewport.dispatchEvent(new KeyboardEvent("keydown", { key: "PageDown" }))
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
   })
 
@@ -332,7 +332,7 @@ describe("poetry--core--message-scroller", () => {
 
       // elementTop 100 - (scrollMargin 0 + peek 64) = 36.
       expect(metrics.scrollTop).toBe(36)
-      expect(root.dataset.state).toBe("anchored-to-message")
+      expect(root.dataset.mode).toBe("anchored-to-message")
       // Tail spacer fakes the room below: 36 + 200 - contentBottom 150 = 86.
       expect(spacer.style.height).toBe("86px")
       expect(spacer.hidden).toBe(false)
@@ -349,7 +349,7 @@ describe("poetry--core--message-scroller", () => {
       content.insertBefore(makeRow({ id: "m3", anchor: true, top: 150, height: 50 }), spacer)
       await flushMutations()
 
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
       expect(metrics.scrollTop).toBe(700) // maxScrollTop, not the first anchor's line
     })
 
@@ -362,7 +362,7 @@ describe("poetry--core--message-scroller", () => {
       content.insertBefore(makeRow({ id: "m2", top: 100, height: 100 }), spacer)
       await flushMutations()
 
-      expect(root.dataset.state).toBe("following-bottom")
+      expect(root.dataset.mode).toBe("following-bottom")
       expect(metrics.scrollTop).toBe(400)
     })
 
@@ -382,7 +382,7 @@ describe("poetry--core--message-scroller", () => {
       await flushMutations()
 
       expect(metrics.scrollTop).toBe(120)
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
 
     it("prepend restore is skipped when preserveScrollOnPrepend is false", async () => {
@@ -417,15 +417,15 @@ describe("poetry--core--message-scroller", () => {
       })
 
       expect(controller.scrollToMessage("m2")).toBe(true)
-      expect(root.dataset.state).toBe("settling-jump")
+      expect(root.dataset.mode).toBe("settling-jump")
 
       // At-bottom geometry would normally ARM following-bottom - not while a
       // jump is settling (intent detection and re-pinning suppressed).
       viewport.dispatchEvent(new Event("scroll"))
-      expect(root.dataset.state).toBe("settling-jump")
+      expect(root.dataset.mode).toBe("settling-jump")
 
       viewport.dispatchEvent(new Event("wheel"))
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
     })
 
     it("queues scrollToMessage to an unmounted row on an empty transcript and flushes on arrival", async () => {
@@ -441,7 +441,7 @@ describe("poetry--core--message-scroller", () => {
 
       // Flushed jump (align start, no peek), NOT defaultScrollPosition end.
       expect(metrics.scrollTop).toBe(300)
-      expect(root.dataset.state).toBe("settling-jump")
+      expect(root.dataset.mode).toBe("settling-jump")
     })
 
     it("returns false for an unknown id once rows exist", async () => {
@@ -461,7 +461,7 @@ describe("poetry--core--message-scroller", () => {
       controller.scrollToStart()
 
       expect(metrics.scrollTop).toBe(0)
-      expect(root.dataset.state).toBe("free-scrolling")
+      expect(root.dataset.mode).toBe("free-scrolling")
       expect(spacer.hidden).toBe(true)
       expect(events).toEqual([{ name: "unpinned", detail: { reason: "user-intent" } }])
     })
@@ -490,7 +490,7 @@ describe("poetry--core--message-scroller", () => {
       const anchor = makeRow({ id: "m2", anchor: true, top: 100, height: 50 })
       content.insertBefore(anchor, spacer)
       await flushMutations()
-      expect(root.dataset.state).toBe("anchored-to-message")
+      expect(root.dataset.mode).toBe("anchored-to-message")
       expect(metrics.scrollTop).toBe(36)
 
       // The reply streams in below the turn: an in-place growth (no
@@ -501,7 +501,7 @@ describe("poetry--core--message-scroller", () => {
       contentResizeObserver.callback()
 
       // Re-placed: elementTop (64 + 36) - peek 64 = 36 -> holds the line.
-      expect(root.dataset.state).toBe("anchored-to-message")
+      expect(root.dataset.mode).toBe("anchored-to-message")
       expect(metrics.scrollTop).toBe(36)
     })
   })
@@ -647,13 +647,13 @@ describe("poetry--core--message-scroller", () => {
 
       // The mutation observer is gone: appended rows change nothing.
       const events = recordEvents(root, "mode", "scrollable", "pinned", "unpinned")
-      const stateBefore = root.dataset.state
+      const stateBefore = root.dataset.mode
       content.insertBefore(makeRow({ id: "m2", top: 100, height: 400 }), spacer)
       await flushMutations()
       viewport.dispatchEvent(new Event("scroll")) // listener removed too
       await new Promise((resolve) => setTimeout(resolve, 250)) // timeout cleared: no late commit
 
-      expect(root.dataset.state).toBe(stateBefore)
+      expect(root.dataset.mode).toBe(stateBefore)
       expect(events).toHaveLength(0)
     })
   })

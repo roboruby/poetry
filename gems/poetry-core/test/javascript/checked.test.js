@@ -5,7 +5,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // poetry--core--checked JS-unit: the toggle family's shared checked machine
 // (Checkbox tri-state + Switch binary, one controller, zero fork). What
 // this file proves: the store inversion (input written FIRST, a REAL
-// bubbling change event), aria-checked/data-state written together across
+// bubbling change event), aria-checked/the checked pair written together across
 // control + parts, indeterminate resolution + re-entry via set(), the
 // Enter guard keyed off role=checkbox, form-reset re-sync, and the
 // visual-only (no input id) mode.
@@ -14,6 +14,11 @@ const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const nextAnimationFrame = () => new Promise((resolve) => requestAnimationFrame(() => resolve()))
 const el = (id) => document.getElementById(id)
 
+// The checked-family pair discipline: exactly ONE of the three attributes
+// present at any time (setState removes the counterparts).
+const checkedAttrs = (element) =>
+  ["data-checked", "data-unchecked", "data-indeterminate"].filter((name) => element.hasAttribute(name))
+
 const click = (element) =>
   element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }))
 
@@ -21,11 +26,11 @@ const markup = ({ state = "unchecked", role = "checkbox", inputId = "box-input",
   <form id="form">
     <button type="button" id="box" role="${role}" data-slot="${component}" data-component="${component}"
             aria-checked="${state === "indeterminate" ? "mixed" : state === "checked"}"
-            data-state="${state}" ${disabled ? "disabled" : ""}
+            data-${state} ${disabled ? "disabled" : ""}
             data-controller="poetry--core--checked"
             ${inputId ? `data-poetry--core--checked-input-id-value="${inputId}"` : ""}
             data-action="poetry--core--checked#toggle">
-      <span id="indicator" data-slot="${component}-indicator" aria-hidden="true" data-state="${state}"></span>
+      <span id="indicator" data-slot="${component}-indicator" aria-hidden="true" data-${state}></span>
     </button>
     ${inputId ? `
       <input type="hidden" name="pref" value="0">
@@ -57,7 +62,7 @@ describe("poetry--core--checked", () => {
     }
   })
 
-  it("toggle flips the input FIRST, dispatches a real bubbling change, then reflects aria + data-state on control and parts", async () => {
+  it("toggle flips the input FIRST, dispatches a real bubbling change, then reflects aria + the checked pair on control and parts", async () => {
     const seen = []
     el("form").addEventListener("change", (event) => {
       // The store inversion: by the time the change event bubbles, the
@@ -70,15 +75,15 @@ describe("poetry--core--checked", () => {
     expect(seen).toEqual([{ target: "box-input", checked: true }])
     expect(el("box-input").checked).toBe(true)
     expect(el("box").getAttribute("aria-checked")).toBe("true")
-    expect(el("box").dataset.state).toBe("checked")
-    expect(el("indicator").dataset.state).toBe("checked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-checked"])
+    expect(checkedAttrs(el("indicator"))).toEqual(["data-checked"])
 
     click(el("box"))
 
     expect(el("box-input").checked).toBe(false)
     expect(el("box").getAttribute("aria-checked")).toBe("false")
-    expect(el("box").dataset.state).toBe("unchecked")
-    expect(el("indicator").dataset.state).toBe("unchecked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-unchecked"])
+    expect(checkedAttrs(el("indicator"))).toEqual(["data-unchecked"])
   })
 
   it("dispatches the component-flavored observe event (poetry:checkbox:change)", async () => {
@@ -94,7 +99,7 @@ describe("poetry--core--checked", () => {
     application.stop()
     application = await mount({ state: "indeterminate" })
 
-    // connect derived the JS-only property from data-state
+    // connect derived the JS-only property from the checked attributes
     expect(el("box-input").indeterminate).toBe(true)
     expect(el("box-input").checked).toBe(false)
 
@@ -103,25 +108,25 @@ describe("poetry--core--checked", () => {
     expect(el("box-input").indeterminate).toBe(false)
     expect(el("box-input").checked).toBe(true)
     expect(el("box").getAttribute("aria-checked")).toBe("true")
-    expect(el("box").dataset.state).toBe("checked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-checked"])
   })
 
   it("set() reaches all three states incl. back to indeterminate (the select-all recipe)", async () => {
     const controller = controllerFor(application, el("box"))
 
     controller.check()
-    expect(el("box").dataset.state).toBe("checked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-checked"])
     expect(el("box-input").checked).toBe(true)
 
     controller.set("indeterminate")
     expect(el("box").getAttribute("aria-checked")).toBe("mixed")
-    expect(el("box").dataset.state).toBe("indeterminate")
-    expect(el("indicator").dataset.state).toBe("indeterminate")
+    expect(checkedAttrs(el("box"))).toEqual(["data-indeterminate"])
+    expect(checkedAttrs(el("indicator"))).toEqual(["data-indeterminate"])
     expect(el("box-input").indeterminate).toBe(true)
     expect(el("box-input").checked).toBe(false)
 
     controller.uncheck()
-    expect(el("box").dataset.state).toBe("unchecked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-unchecked"])
     expect(el("box-input").indeterminate).toBe(false)
   })
 
@@ -146,20 +151,20 @@ describe("poetry--core--checked", () => {
     el("box").addEventListener("poetry:switch:change", (event) => seen.push(event.detail))
     click(el("box"))
     expect(seen).toEqual([{ checked: true, was_indeterminate: false }])
-    expect(el("indicator").dataset.state).toBe("checked") // the thumb mirrors
+    expect(checkedAttrs(el("indicator"))).toEqual(["data-checked"]) // the thumb mirrors
   })
 
   it("form reset re-syncs the visuals from the input (rAF-deferred)", async () => {
     click(el("box"))
-    expect(el("box").dataset.state).toBe("checked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-checked"])
 
     el("form").reset()
     await nextAnimationFrame() // reset restore + the controller's rAF
 
     expect(el("box-input").checked).toBe(false)
     expect(el("box").getAttribute("aria-checked")).toBe("false")
-    expect(el("box").dataset.state).toBe("unchecked")
-    expect(el("indicator").dataset.state).toBe("unchecked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-unchecked"])
+    expect(checkedAttrs(el("indicator"))).toEqual(["data-unchecked"])
   })
 
   it("form reset restores a server-rendered indeterminate initial state", async () => {
@@ -172,7 +177,7 @@ describe("poetry--core--checked", () => {
 
     expect(el("box-input").indeterminate).toBe(true)
     expect(el("box").getAttribute("aria-checked")).toBe("mixed")
-    expect(el("box").dataset.state).toBe("indeterminate")
+    expect(checkedAttrs(el("box"))).toEqual(["data-indeterminate"])
   })
 
   it("disabled guard: toggle is a no-op", async () => {
@@ -181,17 +186,17 @@ describe("poetry--core--checked", () => {
 
     click(el("box"))
 
-    expect(el("box").dataset.state).toBe("unchecked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-unchecked"])
     expect(el("box-input").checked).toBe(false)
   })
 
-  it("visual-only mode (no input id): state lives on the button's data-state alone", async () => {
+  it("visual-only mode (no input id): state lives on the button checked attributes alone", async () => {
     application.stop()
     application = await mount({ inputId: null })
 
     click(el("box"))
 
-    expect(el("box").dataset.state).toBe("checked")
+    expect(checkedAttrs(el("box"))).toEqual(["data-checked"])
     expect(el("box").getAttribute("aria-checked")).toBe("true")
     expect(document.querySelector("input[type=checkbox]")).toBe(null)
   })
@@ -206,6 +211,6 @@ describe("poetry--core--checked", () => {
     registerPoetryControllers(application)
     await nextFrame()
 
-    expect(el("box-input").checked).toBe(true) // data-state (server truth) won
+    expect(el("box-input").checked).toBe(true) // the checked attribute pair (server truth) won
   })
 })

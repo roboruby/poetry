@@ -7,7 +7,7 @@ let application
 
 function item(value, state = "closed") {
   return `
-    <div data-slot="accordion-item" data-value="${value}" data-state="${state}">
+    <div data-slot="accordion-item" data-value="${value}" ${state === "open" ? "data-open" : "data-closed"}>
       <h3><button data-slot="accordion-trigger" aria-expanded="${state === "open"}"
                   data-action="${ID}#toggle">${value}</button></h3>
       <div data-slot="accordion-content" ${state === "open" ? "" : "hidden"}>panel ${value}</div>
@@ -37,8 +37,8 @@ describe("poetry--core--accordion", () => {
     await mount({ open: ["a"] })
     trigger("b").click()
 
-    expect(itemEl("b").dataset.state).toBe("open")
-    expect(itemEl("a").dataset.state).toBe("closed")
+    expect(itemEl("b").hasAttribute("data-open")).toBe(true)
+    expect(itemEl("a").hasAttribute("data-closed")).toBe(true)
     expect(panel("a").hidden).toBe(true)
     expect(panel("b").hidden).toBe(false)
     expect(trigger("b").getAttribute("aria-expanded")).toBe("true")
@@ -49,7 +49,7 @@ describe("poetry--core--accordion", () => {
 
     expect(trigger("a").getAttribute("aria-disabled")).toBe("true")
     trigger("a").click()
-    expect(itemEl("a").dataset.state).toBe("open")
+    expect(itemEl("a").hasAttribute("data-open")).toBe(true)
   })
 
   it("single collapsible: the open item can close", async () => {
@@ -57,17 +57,17 @@ describe("poetry--core--accordion", () => {
 
     expect(trigger("a").getAttribute("aria-disabled")).toBeNull()
     trigger("a").click()
-    expect(itemEl("a").dataset.state).toBe("closed")
+    expect(itemEl("a").hasAttribute("data-closed")).toBe(true)
   })
 
   it("multiple: items open independently", async () => {
     await mount({ type: "multiple", open: ["a"] })
     trigger("b").click()
 
-    expect(itemEl("a").dataset.state).toBe("open")
-    expect(itemEl("b").dataset.state).toBe("open")
+    expect(itemEl("a").hasAttribute("data-open")).toBe(true)
+    expect(itemEl("b").hasAttribute("data-open")).toBe(true)
     trigger("a").click()
-    expect(itemEl("a").dataset.state).toBe("closed")
+    expect(itemEl("a").hasAttribute("data-closed")).toBe(true)
   })
 
   it("measures the panel height var for the keyframes", async () => {

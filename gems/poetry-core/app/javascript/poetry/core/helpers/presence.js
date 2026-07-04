@@ -1,12 +1,12 @@
 import { setState } from "@poetry/controllers/helpers/state"
 
 // Presence (P3): the mount/unmount animation convention - a helper, not a
-// controller (per the primitive catalogue). Exit flips data-state to
-// "closed" and HOLDS the node in the DOM until its CSS exit animation /
+// controller (per the primitive catalogue). Exit flips the pair to
+// data-closed and HOLDS the node in the DOM until its CSS exit animation /
 // transition finishes, then hands removal back to the caller via onRemove
-// (this module never removes DOM); enter just flips data-state to "open"
-// so the data-[state=open] animation runs. State writes go through
-// setState so poetry:state-change fires like every other state flip.
+// (this module never removes DOM); enter just flips the pair to data-open
+// so the data-open: animation runs. State writes go through setState so
+// poetry:state-change fires like every other state flip.
 
 // Grace (ms) added to the computed animation/transition time before the
 // safety timeout fires - animationend can lag the declared duration.
@@ -39,7 +39,7 @@ export function measurePresence(element, { property = "--poetry-presence-height"
   return height
 }
 
-// measure: true measures BEFORE data-state flips to "open", so the entry
+// measure: true measures BEFORE the pair flips to data-open, so the entry
 // keyframe can consume the var from its first frame.
 export function enterPresence(element, { measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })
