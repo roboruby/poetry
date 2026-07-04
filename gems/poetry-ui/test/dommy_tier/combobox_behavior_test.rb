@@ -107,7 +107,7 @@ module DommyTier
       end
       refute_includes controllers, "poetry--core--roving-focus",
                       "the family's first popup without roving focus"
-      assert_equal "pointer", reason
+      assert_equal "trigger-press", reason
 
       assert_equal "command-input",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')"),
@@ -140,9 +140,13 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal "typed",
+      assert_equal "keyboard",
                    harness.evaluate(%(document.querySelector('[data-slot="combobox-content"]')
                      .getAttribute("data-open-reason")))
+      assert_equal "v",
+                   harness.evaluate(%(document.querySelector('[data-slot="combobox-content"]')
+                     .getAttribute("data-open-seed"))),
+                   "the typed char rides data-open-seed (poetry extension on the keyboard reason)"
       assert_equal "v", input_value(harness), "the typed char lands in the input - never lost"
       assert_equal "command-input",
                    harness.evaluate("document.activeElement.getAttribute('data-slot')")

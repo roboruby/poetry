@@ -29,7 +29,7 @@ module DommyTier
           const state = content.hasAttribute("data-open") ? "open"
             : content.hasAttribute("data-closed") ? "closed" : "none";
           return [trigger.getAttribute("aria-expanded"), state, content.hidden,
-                  content.getAttribute("data-open-reason")];
+                  content.getAttribute("data-open-reason"), content.getAttribute("data-open-seed")];
         })()
       JS
     end
@@ -38,7 +38,7 @@ module DommyTier
       harness = render_menu
 
       assert_no_js_errors harness
-      assert_equal ["false", "closed", true, nil], menu_state(harness), "server-rendered closed"
+      assert_equal ["false", "closed", true, nil, nil], menu_state(harness), "server-rendered closed"
 
       harness.execute(<<~JS)
         document.querySelector('[data-slot="dropdown-menu-trigger"]')
@@ -47,8 +47,8 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal ["true", "open", false, "pointer"], menu_state(harness),
-                   "click must open with reason: pointer (focus stays off the items)"
+      assert_equal ["true", "open", false, "trigger-press", nil], menu_state(harness),
+                   "click must open with reason: trigger-press (focus stays off the items)"
 
       controllers = harness.evaluate(
         %(document.querySelector('[data-slot="dropdown-menu-content"]').getAttribute("data-controller"))
@@ -70,7 +70,7 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal ["true", "open", false, "keyboard-first"], menu_state(harness)
+      assert_equal ["true", "open", false, "list-navigation", "first"], menu_state(harness)
 
       focused = harness.evaluate(<<~JS)
         (() => {
@@ -79,7 +79,8 @@ module DommyTier
         })()
       JS
 
-      assert_equal %w[menuitem Profile], focused, "keyboard-first must land real focus on the first item"
+      assert_equal %w[menuitem Profile], focused,
+                   "list-navigation seed first must land real focus on the first item"
     end
 
     def test_item_activation_selects_and_closes
@@ -104,7 +105,7 @@ module DommyTier
 
       assert_no_js_errors harness
       assert_equal ["Profile"], harness.evaluate("window.__selects"), "activation dispatches poetry:menu:select"
-      assert_equal ["false", "closed", true, nil], menu_state(harness), "select closes the menu"
+      assert_equal ["false", "closed", true, nil, nil], menu_state(harness), "select closes the menu"
     end
   end
 end

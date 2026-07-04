@@ -62,10 +62,11 @@ module DommyTier
       assert_no_js_errors harness
       assert_equal ["true", "open", false, "banana", "Banana"], select_state(harness)
 
-      controllers, reason = harness.evaluate(<<~JS)
+      controllers, reason, seed = harness.evaluate(<<~JS)
         (() => {
           const content = document.querySelector('[data-slot="select-content"]');
-          return [content.getAttribute("data-controller"), content.getAttribute("data-open-reason")];
+          return [content.getAttribute("data-controller"), content.getAttribute("data-open-reason"),
+                  content.getAttribute("data-open-seed")];
         })()
       JS
 
@@ -73,7 +74,8 @@ module DommyTier
       %w[poetry--core--focus-scope poetry--core--dismissable poetry--core--roving-focus].each do |identifier|
         assert_includes controllers, identifier
       end
-      assert_equal "pointer", reason
+      assert_equal "trigger-press", reason
+      assert_nil seed
 
       focused = harness.evaluate(<<~JS)
         (() => {
@@ -109,9 +111,12 @@ module DommyTier
       harness.pump(rounds: 10)
 
       assert_no_js_errors harness
-      assert_equal "keyboard-selected",
+      assert_equal "list-navigation",
                    harness.evaluate(%(document.querySelector('[data-slot="select-content"]')
                      .getAttribute("data-open-reason")))
+      assert_equal "selected",
+                   harness.evaluate(%(document.querySelector('[data-slot="select-content"]')
+                     .getAttribute("data-open-seed")))
 
       # Arrow to Cherry (roving focus), then Enter commits it.
       %w[ArrowDown Enter].each do |key|
