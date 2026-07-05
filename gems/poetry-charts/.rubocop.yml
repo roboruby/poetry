@@ -51,6 +51,8 @@ Naming/MethodParameterName:
 Metrics/ParameterLists:
   Exclude:
     - "lib/poetry/charts/geometry/**/*"
+    # The cartesian pipeline's signature IS the layout config.
+    - "lib/poetry/charts/cartesian.rb"
 Style/IdenticalConditionalBranches:
   Exclude:
     # slope3's `h1.negative? ? -0.0 : 0.0` is NOT an identical branch -

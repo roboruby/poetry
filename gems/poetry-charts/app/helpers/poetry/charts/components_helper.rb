@@ -6,6 +6,23 @@ module Poetry
     # The chart-root helpers (poetry_chart :area, ...) arrive with the
     # engine (N10 W3+); W1 ships the frame.
     module ComponentsHelper
+      # The chart-root dispatcher: poetry_chart :area, data:, config: do |c| ... end
+      # Families arrive wave by wave (N10 plan); unknown types raise with
+      # the known list (agent-teachable).
+      CHART_TYPES = {
+        area: "Poetry::Charts::AreaChart::Component"
+      }.freeze
+
+      def poetry_chart(type, **, &)
+        component = CHART_TYPES[type.to_sym] or
+          raise ArgumentError, "unknown chart type #{type.inspect} (one of #{CHART_TYPES.keys.join(", ")})"
+        render(component.constantize.new(**), &)
+      end
+
+      def poetry_area_chart(**, &)
+        render(Poetry::Charts::AreaChart::Component.new(**), &)
+      end
+
       def poetry_chart_container(**, &)
         render(Poetry::Charts::Container::Component.new(**), &)
       end
