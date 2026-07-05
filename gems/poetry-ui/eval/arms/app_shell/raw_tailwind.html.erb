@@ -1,0 +1,18 @@
+<%# The raw arm: plausible LLM output - a fixed aside with an onclick
+    collapse toggle: no main landmark, no coordinated state, no persistence,
+    nav is clickable divs. %>
+<div class="flex min-h-96">
+  <aside class="w-64 shrink-0 border-r bg-gray-50">
+    <div class="p-2">
+      <div class="px-2 text-xs font-medium text-gray-500">Platform</div>
+      <div class="cursor-pointer rounded-md bg-gray-200 p-2 text-sm" onclick="go('/dashboard')">Dashboard</div>
+      <div class="cursor-pointer rounded-md p-2 text-sm hover:bg-gray-100" onclick="go('/inbox')">Inbox</div>
+    </div>
+  </aside>
+  <div class="flex-1">
+    <div class="flex items-center gap-2 border-b p-3">
+      <button class="rounded-md p-1 hover:bg-gray-100" onclick="toggleSidebar()">☰</button>
+      <span class="text-sm font-medium">Dashboard</span>
+    </div>
+  </div>
+</div>

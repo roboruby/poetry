@@ -1,0 +1,26 @@
+<%# The poetry arm: a real app shell - the sidebar collapse is coordinated
+    (data-state peer + a wired trigger), the inset is a main landmark, nav
+    is real links. %>
+<%= poetry_sidebar(collapsible: :icon) do |shell| %>
+  <% shell.with_nav do %>
+    <%= poetry_sidebar_content do %>
+      <%= poetry_sidebar_group do %>
+        <%= poetry_sidebar_group_label { "Platform" } %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/dashboard", active: true) { "Dashboard" } %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/inbox") { "Inbox" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% shell.with_inset do %>
+    <div class="flex items-center gap-2 border-b p-3">
+      <%= poetry_sidebar_trigger %>
+      <span class="text-sm font-medium">Dashboard</span>
+    </div>
+  <% end %>
+<% end %>

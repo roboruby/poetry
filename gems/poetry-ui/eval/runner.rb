@@ -478,6 +478,22 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "app_shell" => {
+          "description" => "An application shell: a collapsible sidebar with a Platform nav group " \
+                           "(Dashboard active) and a main content area with a collapse toggle",
+          "gates" => [
+            Gate.new(:content_is_a_main_landmark, :cross_arm, ->(doc, _html) { doc.css("main").any? }),
+            Gate.new(:nav_items_are_real_links, :cross_arm, lambda { |doc, _html|
+              links = doc.css('[data-slot="sidebar-menu-button"], aside a, nav a')
+              links.any? && doc.xpath(".//*[@onclick]").empty?
+            }),
+            Gate.new(:collapse_is_coordinated_state, :cross_arm, lambda { |doc, _html|
+              # The tell: a real collapse flips a data-state the CSS reads;
+              # the raw arm toggles via an onclick with no shared state.
+              doc.css("[data-state]").any? && doc.xpath(".//*[@onclick]").empty?
+            })
+          ]
+        },
         "site_nav" => {
           "description" => "A site navigation bar: a Products dropdown of links, plus Pricing and " \
                            "Docs destinations",

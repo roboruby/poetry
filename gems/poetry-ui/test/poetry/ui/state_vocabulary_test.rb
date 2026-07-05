@@ -31,6 +31,10 @@ module Poetry
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
         "inset" => "menu item inset marker (server-rendered)",
+        "state" => "sidebar expanded/collapsed marker (poetry--core--sidebar reflects it via " \
+                   "setAttribute; the CSS collapse hook, N9 W5)",
+        "collapsible" => "sidebar collapse-mode marker (server + poetry--core--sidebar; " \
+                         "the mode while collapsed, N9 W5)",
         "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups, N9 W4c)",
         "motion" => "navigation-menu direction slides (reserved - inert until the morphing viewport lands)",
         "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup, N9 W2)",

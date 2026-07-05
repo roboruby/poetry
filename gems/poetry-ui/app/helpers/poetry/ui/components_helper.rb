@@ -138,6 +138,91 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The Sidebar (N9 W5): the app-shell frame - with_nav is the column,
+      # with_inset the page area; poetry--core--sidebar owns the collapse.
+      def poetry_sidebar(**, &)
+        render(Poetry::Ui::Sidebar::Component.new(**), &)
+      end
+
+      # The collapse toggle (lives in the inset): a ghost icon Button wired
+      # to the sidebar controller on the wrapper.
+      def poetry_sidebar_trigger(**attrs)
+        action = "click->poetry--core--sidebar#toggle"
+        render(Poetry::Ui::Button::Component.new(
+                 variant: :ghost, size: :"icon-sm", label: "Toggle Sidebar",
+                 data: { slot: "sidebar-trigger", action: action }, **attrs
+               )) { poetry_icon(name: :"panel-left") }
+      end
+
+      # The rail: an edge strip that toggles the sidebar (tabindex -1 - the
+      # trigger is the keyboard affordance).
+      def poetry_sidebar_rail(**attrs)
+        classes = [Poetry::Ui::Sidebar::Style.css(:rail), attrs.delete(:class)].compact.join(" ")
+        content_tag(:button, nil, type: "button", "aria-label": "Toggle Sidebar", tabindex: "-1",
+                                  title: "Toggle Sidebar", class: classes,
+                                  data: { slot: "sidebar-rail", action: "click->poetry--core--sidebar#toggle" },
+                                  **attrs)
+      end
+
+      # The simple content-part stamps (div/ul/li wrappers with the slot +
+      # dictionary classes).
+      {
+        sidebar_header: [:div, "sidebar-header", :header],
+        sidebar_footer: [:div, "sidebar-footer", :footer],
+        sidebar_content: [:div, "sidebar-content", :content],
+        sidebar_group: [:div, "sidebar-group", :group],
+        sidebar_group_content: [:div, "sidebar-group-content", :group_content],
+        sidebar_menu: [:ul, "sidebar-menu", :menu],
+        sidebar_menu_item: [:li, "sidebar-menu-item", :menu_item],
+        sidebar_menu_sub: [:ul, "sidebar-menu-sub", :menu_sub],
+        sidebar_menu_sub_item: [:li, "sidebar-menu-sub-item", :menu_sub_item]
+      }.each do |name, (tag_name, slot, element)|
+        define_method("poetry_#{name}") do |**attrs, &block|
+          classes = [Poetry::Ui::Sidebar::Style.css(element), attrs.delete(:class)].compact.join(" ")
+          data = { slot: slot }.merge(attrs.delete(:data) || {})
+          content_tag(tag_name, (capture(&block) if block), **attrs, class: classes, data: data)
+        end
+      end
+
+      def poetry_sidebar_group_label(**attrs, &block)
+        classes = [Poetry::Ui::Sidebar::Style.css(:group_label), attrs.delete(:class)].compact.join(" ")
+        content_tag(:div, (capture(&block) if block), **attrs, class: classes,
+                                                               data: { slot: "sidebar-group-label" })
+      end
+
+      def poetry_sidebar_separator(**attrs)
+        classes = [Poetry::Ui::Sidebar::Style.css(:separator), attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "sidebar-separator"))
+      end
+
+      # A menu button: an anchor (href:) or a button, with the active state
+      # + size variant. active: is the current route (data-active styles it).
+      def poetry_sidebar_menu_button(href: nil, active: false, size: :default, **attrs, &block)
+        style = Poetry::Ui::Sidebar::Style
+        classes = [style.css(:menu_button), style.menu_button_size(size), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-button", active: active ? "" : nil }.compact.merge(attrs.delete(:data) || {})
+        if href
+          content_tag(:a, (capture(&block) if block), href: href, class: classes, data: data,
+                                                      "aria-current": active ? "page" : nil, **attrs)
+        else
+          content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data, **attrs)
+        end
+      end
+
+      def poetry_sidebar_menu_sub_button(href: nil, active: false, **attrs, &block)
+        style = Poetry::Ui::Sidebar::Style
+        classes = [style.css(:menu_sub_button), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-sub-button",
+                 active: active ? "" : nil }.compact.merge(attrs.delete(:data) || {})
+        tag_name = href ? :a : :button
+        extra = if href
+                  { href: href, "aria-current": active ? "page" : nil }
+                else
+                  { type: "button" }
+                end
+        content_tag(tag_name, (capture(&block) if block), class: classes, data: data, **extra, **attrs)
+      end
+
       # The NavigationMenu (N9 W4c): a disclosure bar - with_item for
       # trigger+panel, with_link for destinations; label: names the nav.
       def poetry_navigation_menu(**, &)

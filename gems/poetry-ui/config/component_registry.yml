@@ -2473,6 +2473,79 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+  poetry/ui/sidebar:
+    class_name: Poetry::Ui::Sidebar::Component
+    identifier: poetry--ui--sidebar
+    bem_block: poetry-ui-sidebar
+    styles: []
+    options:
+    - name: collapsible
+      type: symbol
+      default: offcanvas
+    - name: open
+      type: boolean
+      default: true
+    - name: side
+      type: symbol
+      default: left
+    - name: variant
+      type: symbol
+      default: sidebar
+    slots:
+    - name: nav
+      many: false
+    - name: inset
+      many: false
+    elements:
+    - wrapper
+    - peer
+    - gap
+    - gap_inset
+    - container
+    - container_inset
+    - inner
+    - inset
+    - rail
+    - header
+    - footer
+    - separator
+    - content
+    - group
+    - group_label
+    - group_content
+    - menu
+    - menu_item
+    - menu_button
+    - menu_button_default
+    - menu_button_sm
+    - menu_button_lg
+    - menu_sub
+    - menu_sub_item
+    - menu_sub_button
+    capsule: 2c2bf877daf6
+    controllers:
+    - identifier: poetry--core--sidebar
+      targets:
+      - sidebar
+      values:
+      - collapsible
+      - cookieMaxAge
+      - cookieName
+      - open
+      - shortcut
+      actions:
+      - close
+      - open
+      - toggle
+    agent_rules:
+    - 'Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page
+      area (the trigger lives in the inset).'
+    - 'Read the persisted state server-side - open: cookies[:sidebar_state] != "false"
+      - so the first paint has no collapse flash.'
+    - 'collapsible: :icon keeps icon rails visible when collapsed; :offcanvas slides
+      it fully away; :none is a static column.'
+    - 'Menu entries are poetry_sidebar_menu_button(href:) links (active: marks the
+      current route) - navigation navigates.'
   poetry/ui/skeleton:
     class_name: Poetry::Ui::Skeleton::Component
     identifier: poetry--ui--skeleton

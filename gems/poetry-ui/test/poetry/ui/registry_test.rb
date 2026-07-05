@@ -27,7 +27,8 @@ module Poetry
                       poetry/ui/resizable
                       poetry/ui/scroll_area
                       poetry/ui/select
-                      poetry/ui/separator poetry/ui/sheet poetry/ui/skeleton poetry/ui/slider poetry/ui/spinner
+                      poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
+                      poetry/ui/spinner
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea poetry/ui/toast
                       poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/tooltip]

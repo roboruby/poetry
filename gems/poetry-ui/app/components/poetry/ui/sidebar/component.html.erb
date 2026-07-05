@@ -1,0 +1,11 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, peer_attributes) do %>
+    <div data-slot="sidebar-gap" class="<%= gap_classes %>"></div>
+    <div data-slot="sidebar-container" data-side="<%= side %>" class="<%= container_classes %>">
+      <div data-slot="sidebar-inner" class="<%= css(:inner) %>"><%= nav %></div>
+    </div>
+  <% end %>
+  <% if inset? %>
+    <main data-slot="sidebar-inset" class="<%= css(:inset) %>"><%= inset %></main>
+  <% end %>
+<% end %>
