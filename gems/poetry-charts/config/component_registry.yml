@@ -196,6 +196,79 @@ components:
       block look).'
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+  poetry/charts/composed_chart:
+    class_name: Poetry::Charts::ComposedChart::Component
+    identifier: poetry--charts--composed_chart
+    bem_block: poetry-charts-composed_chart
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+    - name: animation_begin
+      type: integer
+      default: 0
+    - name: animation_duration
+      type: integer
+      default: 1500
+    - name: animation_easing
+      type: symbol
+      default: ease
+    - name: bar_category_gap
+      type: string
+      default: 10%
+    - name: bar_gap
+      type: integer
+      default: 4
+    - name: config
+      type:
+      required: true
+    - name: data
+      type:
+      required: true
+    - name: height
+      type: integer
+      default: 360
+    - name: id
+      type: string
+    - name: label
+      type: string
+    - name: margin
+      type:
+    - name: width
+      type: integer
+      default: 640
+    slots:
+    - name: areas
+      many: true
+    - name: bars
+      many: true
+    - name: lines
+      many: true
+    - name: x_axis
+      many: false
+    - name: y_axis
+      many: false
+    - name: grid
+      many: false
+    - name: legend
+      many: false
+    - name: tooltip
+      many: false
+    elements:
+    - frame
+    - svg
+    - grid_line
+    - tick
+    capsule: 462ffd421dc7
+    agent_rules:
+    - 'Mix marks freely: with_area / with_bar / with_line - declaration order is paint
+      order.'
+    - All marks share the x band and ONE y domain; lines and areas ride the band centers.
+    - 'stack: ids only combine within the same mark type (a bar stack never joins
+      an area stack).'
+    - Colors come from the config - never set fill/stroke on a mark directly.
+    - Entrance animation is on by default; each mark uses its own recharts mechanism.
   poetry/charts/container:
     class_name: Poetry::Charts::Container::Component
     identifier: poetry--charts--container

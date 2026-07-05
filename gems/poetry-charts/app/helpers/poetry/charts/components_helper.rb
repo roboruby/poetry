@@ -16,7 +16,8 @@ module Poetry
         pie: "Poetry::Charts::PieChart::Component",
         radial: "Poetry::Charts::RadialBarChart::Component",
         radar: "Poetry::Charts::RadarChart::Component",
-        scatter: "Poetry::Charts::ScatterChart::Component"
+        scatter: "Poetry::Charts::ScatterChart::Component",
+        composed: "Poetry::Charts::ComposedChart::Component"
       }.freeze
 
       def poetry_chart(type, engine: nil, **, &block)
