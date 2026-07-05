@@ -18,10 +18,20 @@ module Poetry
         radar: "Poetry::Charts::RadarChart::Component"
       }.freeze
 
-      def poetry_chart(type, **, &)
+      def poetry_chart(type, engine: nil, **, &block)
+        # The one-word swap (Door 2): engine: routes the same call to
+        # the adapter mount, which consumes the closed spec instead of slots.
+        if engine
+          if block
+            raise ArgumentError,
+                  "the adapter path takes series:/axes: arguments (the closed spec), not slots"
+          end
+          return render(Poetry::Charts::AdapterChart::Component.new(type: type, engine: engine, **))
+        end
+
         component = CHART_TYPES[type.to_sym] or
           raise ArgumentError, "unknown chart type #{type.inspect} (one of #{CHART_TYPES.keys.join(", ")})"
-        render(component.constantize.new(**), &)
+        render(component.constantize.new(**), &block)
       end
 
       def poetry_area_chart(**, &)

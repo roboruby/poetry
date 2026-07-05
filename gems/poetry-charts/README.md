@@ -10,7 +10,7 @@ print, PDF, and email; themed by CSS variables (`--chart-1..5` + per-chart
 adds tooltip/legend/active interactivity by reading **server-embedded
 coordinates** — no chart math in the browser.
 
-Engines are swappable (three doors):
+Engines are swappable (three doors — full recipes in `docs/adapters.md`):
 
 1. **The frame** (container/config/style + tooltip/legend chrome) is
    engine-agnostic — the contract all three official shadcn ports share.

@@ -17,5 +17,18 @@
       "move",
       "show"
     ]
+  },
+  "poetry--charts--adapter": {
+    "targets": [
+      "mount",
+      "spec"
+    ],
+    "values": [
+      "engine"
+    ],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
   }
 }
