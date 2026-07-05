@@ -11,6 +11,7 @@ import { describe, it, expect } from "vitest"
 import fs from "node:fs"
 import path from "node:path"
 import { fileURLToPath } from "node:url"
+import { Controller } from "@hotwired/stimulus"
 import { controllers } from "@poetry/controllers"
 
 const MANIFEST_PATH = path.join(
@@ -26,18 +27,50 @@ const serializeValues = (values = {}) =>
     }]
   }))
 
-const methodNames = (controller) =>
-  Object.getOwnPropertyNames(controller.prototype)
-    .filter((name) => name !== "constructor" && typeof controller.prototype[name] === "function")
-    .sort()
+// A controller may EXTEND another (Drawer extends Dialog, N9 W3b) -
+// Stimulus merges statics up the chain at registration, so the manifest
+// must too, or the subclass's inherited surface (values, targets, action
+// methods) validates as unknown on the Ruby side. Child-first; stops at
+// the Stimulus Controller base so framework internals stay out.
+const classChain = (controller) => {
+  const chain = []
+  for (let klass = controller; klass && klass !== Controller; klass = Object.getPrototypeOf(klass)) {
+    chain.push(klass)
+  }
+  return chain
+}
+
+const mergedValues = (controller) =>
+  classChain(controller).reverse().reduce(
+    (merged, klass) => (Object.hasOwn(klass, "values") ? { ...merged, ...klass.values } : merged),
+    {}
+  )
+
+const mergedList = (controller, key) => {
+  const items = new Set()
+  for (const klass of classChain(controller)) {
+    if (Object.hasOwn(klass, key)) for (const item of klass[key]) items.add(item)
+  }
+  return [...items].sort()
+}
+
+const methodNames = (controller) => {
+  const names = new Set()
+  for (const klass of classChain(controller)) {
+    for (const name of Object.getOwnPropertyNames(klass.prototype)) {
+      if (name !== "constructor" && typeof klass.prototype[name] === "function") names.add(name)
+    }
+  }
+  return [...names].sort()
+}
 
 const buildManifest = () =>
   Object.fromEntries(Object.entries(controllers).sort().map(([identifier, controller]) => [
     identifier,
     {
-      targets: [...(controller.targets ?? [])].sort(),
-      values: serializeValues(controller.values),
-      classes: [...(controller.classes ?? [])].sort(),
+      targets: mergedList(controller, "targets"),
+      values: serializeValues(mergedValues(controller)),
+      classes: mergedList(controller, "classes"),
       methods: methodNames(controller)
     }
   ]))
