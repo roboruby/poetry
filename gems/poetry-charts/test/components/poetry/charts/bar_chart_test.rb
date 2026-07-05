@@ -142,6 +142,66 @@ module Poetry
 
         assert_includes html, "chart-bar"
       end
+
+      # -- the horizontal orientation (W4b) --------------------------------------
+
+      def render_horizontal(data: DATA, **options)
+        render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "h",
+                                              orientation: :horizontal, **options)) do |chart|
+          chart.with_y_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }, tick_margin: 10)
+          yield chart
+        end
+      end
+
+      def test_horizontal_bars_grow_rightward_from_the_left_baseline
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop, radius: 5) }
+
+        bars = html.css('[data-slot="chart-bar"]')
+
+        assert_equal DATA.length, bars.length
+        # Category strip on the left: plot_left = margin 5 + YAxis width 60.
+        first_x = Float(bars.first["d"][/M([\d.-]+),/, 1])
+
+        assert_in_delta 65.0, first_x, 0.02, "bars start AT the zero baseline on the left"
+        # Bigger value = wider bar: February (305) wider than April (73).
+        widths = bars.map { |bar| bar["d"].scan(/L([\d.]+),/).flatten.map(&:to_f).max }
+
+        assert_operator widths[1], :>, widths[3]
+      end
+
+      def test_horizontal_category_labels_sit_in_the_left_strip
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop) }
+
+        texts = html.css('[data-slot="chart-y-axis"] text')
+
+        assert_equal %w[Jan Feb Mar Apr May Jun], texts.map(&:text)
+        assert_equal "end", texts.first["text-anchor"]
+        assert_in_delta 55.0, Float(texts.first["x"]), 0.02, "labels end tick_margin left of the plot"
+      end
+
+      def test_horizontal_coordinates_embed_the_y_layout_for_the_tooltip
+        html = render_horizontal { |chart| chart.with_bar(data_key: :desktop) }
+
+        coordinates = JSON.parse(html.css('[data-slot="chart-coordinates"]').first.text)
+
+        assert_equal "horizontal", coordinates["layout"]
+        assert coordinates["y"], "horizontal charts bisect along y"
+        assert_operator coordinates["series"]["desktop"][1], :>, coordinates["series"]["desktop"][3],
+                        "series values embed as x-extents (Feb reaches further right than Apr)"
+      end
+
+      def test_the_mixed_shape_takes_per_row_fills_horizontally
+        data = [{ browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+                { browser: "safari", visitors: 200, fill: "var(--color-safari)" }]
+        html = render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "mixed",
+                                                     orientation: :horizontal, margin: { left: 0 })) do |chart|
+          chart.with_y_axis(data_key: :browser)
+          chart.with_bar(data_key: :visitors, radius: 5, color_key: :fill)
+        end
+
+        assert_equal(%w[var(--color-chrome) var(--color-safari)],
+                     html.css('[data-slot="chart-bar"]').map { |bar| bar["fill"] })
+      end
     end
   end
 end

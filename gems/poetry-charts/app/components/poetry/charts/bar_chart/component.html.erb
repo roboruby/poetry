@@ -2,14 +2,28 @@
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" role="img" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet">
     <% if grid? %>
       <g data-slot="chart-grid" aria-hidden="true">
-        <% if grid_config.horizontal %>
-          <% cartesian.y_ticks.each do |tick| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+        <% if horizontal? %>
+          <%# Value ticks run along X in the horizontal layout. %>
+          <% if grid_config.vertical %>
+            <% cartesian.y_ticks.each do |tick| %>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.y_scale.call(tick)) %>" x2="<%= fnum(cartesian.y_scale.call(tick)) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+            <% end %>
           <% end %>
-        <% end %>
-        <% if grid_config.vertical %>
-          <% cartesian.x_centers.each do |x| %>
-            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+          <% if grid_config.horizontal %>
+            <% cartesian.x_centers.each do |y| %>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(y) %>" y2="<%= fnum(y) %>"/>
+            <% end %>
+          <% end %>
+        <% else %>
+          <% if grid_config.horizontal %>
+            <% cartesian.y_ticks.each do |tick| %>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+            <% end %>
+          <% end %>
+          <% if grid_config.vertical %>
+            <% cartesian.x_centers.each do |x| %>
+              <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+            <% end %>
           <% end %>
         <% end %>
       </g>
@@ -30,19 +44,30 @@
         <% end %>
       <% end %>
     </g>
-    <% if x_axis? %>
-      <g data-slot="chart-x-axis">
-        <% cartesian.categories.each_with_index do |category, i| %>
-          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_centers[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
-        <% end %>
-      </g>
-    <% end %>
-    <% if y_axis? %>
-      <g data-slot="chart-y-axis">
-        <% cartesian.y_ticks.each do |tick| %>
-          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.plot_left - y_axis_config.tick_margin) %>" y="<%= fnum(cartesian.y_scale.call(tick)) %>" dy="0.355em" text-anchor="end"><%= y_tick_label(tick) %></text>
-        <% end %>
-      </g>
+    <% if horizontal? %>
+      <% if y_axis? %>
+        <%# The category labels down the left strip (the horizontal/mixed blocks). %>
+        <g data-slot="chart-y-axis">
+          <% cartesian.categories.each_with_index do |category, i| %>
+            <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.plot_left - y_axis_config.tick_margin) %>" y="<%= fnum(cartesian.x_centers[i]) %>" dy="0.355em" text-anchor="end"><%= category_tick_label(category) %></text>
+          <% end %>
+        </g>
+      <% end %>
+    <% else %>
+      <% if x_axis? %>
+        <g data-slot="chart-x-axis">
+          <% cartesian.categories.each_with_index do |category, i| %>
+            <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_centers[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
+          <% end %>
+        </g>
+      <% end %>
+      <% if y_axis? %>
+        <g data-slot="chart-y-axis">
+          <% cartesian.y_ticks.each do |tick| %>
+            <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.plot_left - y_axis_config.tick_margin) %>" y="<%= fnum(cartesian.y_scale.call(tick)) %>" dy="0.355em" text-anchor="end"><%= y_tick_label(tick) %></text>
+          <% end %>
+        </g>
+      <% end %>
     <% end %>
   </svg>
   <% if legend? %>

@@ -41,8 +41,14 @@ module Poetry
         option :label, :string
         option :bar_gap, :integer, default: 4
         option :bar_category_gap, :string, default: "10%"
+        # :vertical = columns (the default); :horizontal = bars growing
+        # rightward (recharts' confusingly-named layout="vertical") - the
+        # category axis moves to the Y side (with_y_axis data_key:) and the
+        # numeric axis hides, exactly the horizontal/mixed block shape.
+        option :orientation, :symbol, default: :vertical
 
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
+        validates :orientation, inclusion: { in: Cartesian::LAYOUTS }
 
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
                                       color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2|
@@ -58,8 +64,10 @@ module Poetry
           nil
         }
 
-        renders_one :y_axis, lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
-          @y_axis_config = AreaChart::Component::AxisConfig.new(data_key: nil, tick_formatter:,
+        # In the horizontal orientation the Y axis IS the category axis -
+        # give it the data_key (the horizontal/mixed block shape).
+        renders_one :y_axis, lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
+          @y_axis_config = AreaChart::Component::AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
                                                                 tick_margin:, tick_count:)
           nil
         }
@@ -104,18 +112,25 @@ module Poetry
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
+        def horizontal?
+          orientation == :horizontal
+        end
+
         def cartesian
           @cartesian ||= Cartesian.new(
             data: data,
             series: series_entries,
             width: width,
             height: height,
-            x_key: x_axis_config&.data_key,
+            x_key: horizontal? ? y_axis_config&.data_key : x_axis_config&.data_key,
             margin: margin || {},
-            x_axis: x_axis?,
-            y_tick_count: y_axis_config&.tick_count || 5,
+            category_axis: horizontal? ? y_axis? : x_axis?,
+            # Horizontal charts hide the numeric axis (implicit tickCount 5);
+            # vertical ones take the visible Y axis's count when present.
+            y_tick_count: horizontal? ? 5 : (y_axis_config&.tick_count || 5),
             offset: offset,
-            x_scale_type: :band
+            x_scale_type: :band,
+            layout: orientation
           )
         end
 
@@ -138,8 +153,9 @@ module Poetry
           end
         end
 
-        # One rect per category for a series: band position + slot offset,
-        # normalized so height is positive (negatives keep the zero edge).
+        # One rect per category for a series: band position + slot offset
+        # along the category side, the value span on the other, normalized
+        # so width/height stay positive (negatives keep the zero edge).
         def cells(entry)
           slot = bar_slots.fetch(entry.stack_or_self)
           points = cartesian.points(entry)
@@ -147,17 +163,18 @@ module Poetry
           points.each_with_index.filter_map do |point, i|
             next if point[:value].nan?
 
-            top = [point[:y0], point[:y1]].min
-            bottom = [point[:y0], point[:y1]].max
-            {
-              index: i,
-              x: cartesian.x_positions[i] + slot[:offset],
-              y: top,
-              width: slot[:size],
-              height: bottom - top,
-              value: point[:value],
-              row: data[i]
-            }
+            base = { index: i, value: point[:value], row: data[i] }
+            if horizontal?
+              left = [point[:x0], point[:x1]].min
+              right = [point[:x0], point[:x1]].max
+              base.merge(x: left, y: cartesian.x_positions[i] + slot[:offset],
+                         width: right - left, height: slot[:size])
+            else
+              top = [point[:y0], point[:y1]].min
+              bottom = [point[:y0], point[:y1]].max
+              base.merge(x: cartesian.x_positions[i] + slot[:offset], y: top,
+                         width: slot[:size], height: bottom - top)
+            end
           end
         end
 
@@ -213,6 +230,12 @@ module Poetry
 
         def x_tick_label(category)
           formatter = x_axis_config&.tick_formatter
+          formatter ? formatter.call(category).to_s : category.to_s
+        end
+
+        # The horizontal layout's category labels (the Y side).
+        def category_tick_label(category)
+          formatter = y_axis_config&.tick_formatter
           formatter ? formatter.call(category).to_s : category.to_s
         end
 

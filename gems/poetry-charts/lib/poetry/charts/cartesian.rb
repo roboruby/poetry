@@ -17,35 +17,51 @@ module Poetry
     class Cartesian
       DEFAULT_MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
       X_AXIS_HEIGHT = 30
+      # recharts implicit YAxis width - the left strip the horizontal
+      # layout's category labels live in.
+      Y_AXIS_WIDTH = 60
 
       OFFSETS = %i[none expand].freeze
+      LAYOUTS = %i[vertical horizontal].freeze
 
-      attr_reader :width, :height, :margin, :y_tick_count, :offset
+      attr_reader :width, :height, :margin, :y_tick_count, :offset, :layout
 
       def initialize(data:, series:, width:, height:, x_key: nil, margin: {},
-                     x_axis: true, y_tick_count: 5, offset: :none, x_scale_type: :point)
+                     category_axis: true, y_tick_count: 5, offset: :none,
+                     x_scale_type: :point, layout: :vertical)
         @data = data.map { |row| row.to_h.transform_keys(&:to_s) }
         @series = series
         @width = width.to_f
         @height = height.to_f
         @x_key = x_key&.to_s
         @margin = DEFAULT_MARGIN.merge(margin.to_h.symbolize_keys)
-        @x_axis = x_axis
+        @category_axis = category_axis
         @y_tick_count = y_tick_count
         @x_scale_type = x_scale_type.to_sym
+        @layout = layout.to_sym
+        raise ArgumentError, "unknown layout #{layout.inspect}" unless LAYOUTS.include?(@layout)
         raise ArgumentError, "unknown offset #{offset.inspect}" unless OFFSETS.include?(offset.to_sym)
 
         @offset = offset.to_sym
       end
 
-      # -- the plot rectangle ---------------------------------------------------
+      def horizontal?
+        layout == :horizontal
+      end
 
-      def plot_left = margin[:left].to_f
+      # -- the plot rectangle ---------------------------------------------------
+      # The category-axis strip sits at the bottom (vertical layout, height
+      # 30) or the left (horizontal layout, the implicit YAxis width 60).
+
+      def plot_left
+        margin[:left].to_f + (horizontal? && @category_axis ? Y_AXIS_WIDTH : 0)
+      end
+
       def plot_right = width - margin[:right]
       def plot_top = margin[:top].to_f
 
       def plot_bottom
-        height - margin[:bottom] - (@x_axis ? X_AXIS_HEIGHT : 0)
+        height - margin[:bottom] - (!horizontal? && @category_axis ? X_AXIS_HEIGHT : 0)
       end
 
       # -- x: categories on a point scale ---------------------------------------
@@ -57,11 +73,16 @@ module Poetry
       # Point for line/area (categories AT the edges); band for bars
       # (recharts' zero-padding band - the bar gaps come from
       # barCategoryGap/barGap math inside the band, not scale padding).
+      # Horizontal layout runs the category scale down the Y side.
+      def category_range
+        horizontal? ? [plot_top, plot_bottom] : [plot_left, plot_right]
+      end
+
       def x_scale
         @x_scale ||= if @x_scale_type == :band
-                       Geometry::Scale::Band.new(domain: categories, range: [plot_left, plot_right])
+                       Geometry::Scale::Band.new(domain: categories, range: category_range)
                      else
-                       Geometry::Scale::Point.new(domain: categories, range: [plot_left, plot_right])
+                       Geometry::Scale::Point.new(domain: categories, range: category_range)
                      end
       end
 
@@ -98,8 +119,13 @@ module Poetry
         [y_ticks.first, y_ticks.last]
       end
 
+      # The value scale: y in the vertical layout (inverted - SVG y grows
+      # down), x in the horizontal one.
       def y_scale
-        @y_scale ||= Geometry::Scale::Linear.new(domain: y_domain, range: [plot_bottom, plot_top])
+        @y_scale ||= Geometry::Scale::Linear.new(
+          domain: y_domain,
+          range: horizontal? ? [plot_left, plot_right] : [plot_bottom, plot_top]
+        )
       end
 
       # The area baseline: the y pixel of 0, clamped into the domain
@@ -119,12 +145,11 @@ module Poetry
         if entry.stack
           bands = stacked_bands(entry.stack)[key]
           bands.each_with_index.map do |(lo, hi), i|
-            { x: x_centers[i], y0: y_scale.call(lo), y1: y_scale.call(hi), value: value_at(i, key) }
+            point_for(i, key, y_scale.call(lo), y_scale.call(hi))
           end
         else
           @data.each_with_index.map do |_row, i|
-            value = value_at(i, key)
-            { x: x_centers[i], y0: baseline, y1: y_scale.call(value), value: value }
+            point_for(i, key, baseline, y_scale.call(value_at(i, key)))
           end
         end
       end
@@ -134,17 +159,32 @@ module Poetry
       # Compact per-series pixel coordinates the tooltip controller reads -
       # no chart math in the browser.
       def coordinates
+        top_key = horizontal? ? :x1 : :y1
         {
+          "layout" => layout.to_s,
           "categories" => categories,
-          "x" => x_centers.map { |x| x.round(2) },
+          # The category-center axis the tooltip bisects along: x in the
+          # vertical layout, y in the horizontal one.
+          (horizontal? ? "y" : "x") => x_centers.map { |c| c.round(2) },
           "series" => @series.to_h do |entry|
-            tops = points(entry).map { |p| p[:y1].nan? ? nil : p[:y1].round(2) }
+            tops = points(entry).map { |p| p[top_key].nan? ? nil : p[top_key].round(2) }
             [entry.key, tops]
           end
         }
       end
 
       private
+
+      # Orientation-aware point: vertical = {x, y0, y1}; horizontal =
+      # {y, x0, x1} (values run along x, categories down y).
+      def point_for(index, key, base_px, top_px)
+        value = value_at(index, key)
+        if horizontal?
+          { y: x_centers[index], x0: base_px, x1: top_px, value: value }
+        else
+          { x: x_centers[index], y0: base_px, y1: top_px, value: value }
+        end
+      end
 
       def value_at(index, key)
         value = @data[index][key]

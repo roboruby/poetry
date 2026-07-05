@@ -76,6 +76,23 @@ module Poetry
             chart.with_bar(data_key: :visitors, radius: 8, color_key: :fill, active_index: 2)
           end
         end
+
+        def horizontal
+          render_component(data: DATA, config: ONE, id: "bar-horizontal",
+                           orientation: :horizontal, margin: { left: -20 }) do |chart|
+            chart.with_y_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }, tick_margin: 10)
+            chart.with_bar(data_key: :desktop, radius: 5)
+          end
+        end
+
+        def mixed
+          render_component(data: BROWSER_DATA, config: BROWSER_CONFIG, id: "bar-mixed",
+                           orientation: :horizontal, margin: { left: 0 }) do |chart|
+            chart.with_y_axis(data_key: :browser, tick_margin: 10,
+                              tick_formatter: ->(v) { BROWSER_CONFIG[v.to_sym][:label] })
+            chart.with_bar(data_key: :visitors, radius: 5, color_key: :fill)
+          end
+        end
       end
     end
   end
