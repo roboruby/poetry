@@ -107,7 +107,8 @@ module Poetry
           @rows[entry.data_key] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
-        Slice = Data.define(:index, :name, :value, :fill, :path, :mid_angle, :middle_radius, :label_point)
+        Slice = Data.define(:index, :name, :value, :fill, :path, :mid_angle, :middle_radius, :label_point,
+                            :inner, :outer, :start_angle, :end_angle)
 
         def slices(entry)
           @slices ||= {}
@@ -132,7 +133,11 @@ module Poetry
                                         start_angle: sector[:start_angle], end_angle: sector[:end_angle]),
                 mid_angle: sector[:mid_angle],
                 middle_radius: middle_radius,
-                label_point: Polar.polar_to_cartesian(cx, cy, middle_radius, sector[:mid_angle])
+                label_point: Polar.polar_to_cartesian(cx, cy, middle_radius, sector[:mid_angle]),
+                inner: inner,
+                outer: grown,
+                start_angle: sector[:start_angle],
+                end_angle: sector[:end_angle]
               )
             end
           end

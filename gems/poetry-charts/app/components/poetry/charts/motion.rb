@@ -12,6 +12,7 @@ module Poetry
     # between server-computed states.
     module Motion
       EASINGS = %i[ease linear ease_in ease_out ease_in_out].freeze
+      CONTROLLER = "poetry--charts--motion"
 
       def self.included(base)
         base.extend(ClassMethods)
@@ -56,6 +57,15 @@ module Poetry
       # polar center so CSS can scale from it).
       def motion_style_extras
         nil
+      end
+
+      # data-motion-sector: the server-computed sector params the A-W2
+      # fan-out sweep reads (4-decimal formatting, matching sector_path's
+      # own fmt so mid-sweep client paths stay byte-compatible).
+      def motion_sector_value(cx, cy, inner, outer, start_angle, end_angle)
+        [cx, cy, inner, outer, start_angle, end_angle]
+          .map { |v| Geometry.js_number((v.to_f * 10_000).round / 10_000.0) }
+          .join(" ")
       end
     end
   end

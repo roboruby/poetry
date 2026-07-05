@@ -30,5 +30,13 @@
       "connect",
       "disconnect"
     ]
+  },
+  "poetry--charts--motion": {
+    "targets": [],
+    "values": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ]
   }
 }

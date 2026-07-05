@@ -50,12 +50,15 @@ Naming/MethodParameterName:
     - "lib/poetry/charts/geometry/**/*"
     # cx/cy are THE polar names (recharts/SVG vocabulary).
     - "lib/poetry/charts/polar.rb"
+    - "app/components/poetry/charts/motion.rb"
 Metrics/ParameterLists:
   Exclude:
     - "lib/poetry/charts/geometry/**/*"
     # The cartesian/polar signatures ARE the layout config.
     - "lib/poetry/charts/cartesian.rb"
     - "lib/poetry/charts/polar.rb"
+    # motion_sector_value mirrors sector_path's six-value signature.
+    - "app/components/poetry/charts/motion.rb"
 Style/IdenticalConditionalBranches:
   Exclude:
     # slope3's `h1.negative? ? -0.0 : 0.0` is NOT an identical branch -

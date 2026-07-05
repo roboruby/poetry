@@ -16,7 +16,7 @@
           <% end %>
         <% end %>
         <% segments(entry).each do |segment| %>
-          <path data-slot="chart-radial-bar" data-key="<%= entry.data_key %>"<% if series_index.zero? %> data-index="<%= segment.index %>"<% end %> d="<%= segment.path %>" fill="<%= segment.fill %>"/>
+          <path data-slot="chart-radial-bar" data-key="<%= entry.data_key %>"<% if series_index.zero? %> data-index="<%= segment.index %>"<% end %><% if animate? %> data-motion-sector="<%= motion_sector_value(cx, cy, segment.ring_inner, segment.ring_outer, segment.seg_start, segment.seg_end) %>" data-motion-group="ring-<%= segment.index %>"<% end %> d="<%= segment.path %>" fill="<%= segment.fill %>"/>
         <% end %>
         <% if entry.labels == :inside_start %>
           <g data-slot="chart-labels" data-key="<%= entry.data_key %>" aria-hidden="true">

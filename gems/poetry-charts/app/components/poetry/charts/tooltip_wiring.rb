@@ -24,9 +24,13 @@ module Poetry
       end
 
       # data attributes for the frame div (display: contents) wrapping
-      # svg + chrome + coordinates.
+      # svg + chrome + coordinates. The motion controller (Phase A) rides
+      # the same element whenever animation is on.
       def frame_data
-        tooltip? ? { controller: CONTROLLER } : {}
+        controllers = []
+        controllers << CONTROLLER if tooltip?
+        controllers << Motion::CONTROLLER if respond_to?(:animate?) && animate?
+        controllers.empty? ? {} : { controller: controllers.join(" ") }
       end
 
       # role=img for static charts; the accessibilityLayer contract when

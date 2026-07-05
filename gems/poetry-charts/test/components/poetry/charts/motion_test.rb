@@ -139,6 +139,77 @@ module Poetry
 
         assert_match(/--poetry-motion-center: [\d.]+px [\d.]+px/, svg(html)["style"])
       end
+
+      # -- A-W2: the motion controller wiring ------------------------------
+
+      PIE_DATA = [
+        { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+        { browser: "safari", visitors: 200, fill: "var(--color-safari)" }
+      ].freeze
+
+      PIE_CONFIG = {
+        chrome: { label: "Chrome", color: "var(--chart-1)" },
+        safari: { label: "Safari", color: "var(--chart-2)" }
+      }.freeze
+
+      def test_the_motion_controller_rides_the_frame_whenever_animation_is_on
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "m")) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_tooltip
+        end
+
+        assert_equal "poetry--charts--tooltip poetry--charts--motion",
+                     html.css('[data-slot="chart-svg"]').first.parent["data-controller"]
+
+        static = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "m",
+                                                        animate: false)) do |chart|
+          chart.with_area(data_key: :desktop)
+        end
+
+        assert_nil static.css('[data-slot="chart-svg"]').first.parent["data-controller"]
+      end
+
+      def test_pie_sectors_embed_their_sweep_params
+        html = render_inline(PieChart::Component.new(data: PIE_DATA, config: PIE_CONFIG, id: "m")) do |chart|
+          chart.with_pie(data_key: :visitors, name_key: :browser)
+        end
+
+        sectors = html.css('[data-slot="chart-pie-sector"]')
+
+        assert_equal(["pie-0"], sectors.map { |s| s["data-motion-group"] }.uniq)
+        params = sectors.map { |s| s["data-motion-sector"].split.map(&:to_f) }
+
+        # cx cy inner outer start end; two slices accumulate 0 -> 360.
+        assert_equal [320, 180, 0], params.first[0, 3]
+        assert_in_delta 0, params.first[4]
+        assert_in_delta 208.4210, params.first[5], 0.001
+        assert_in_delta 208.4210, params.last[4], 0.001
+        assert_in_delta 360, params.last[5], 0.001
+      end
+
+      def test_radial_segments_embed_their_sweep_params_grouped_by_ring
+        html = render_inline(RadialBarChart::Component.new(
+                               data: PIE_DATA, config: PIE_CONFIG, id: "m", name_key: :browser
+                             )) do |chart|
+          chart.with_radial_bar(data_key: :visitors)
+        end
+
+        bars = html.css('[data-slot="chart-radial-bar"]')
+
+        assert_equal(%w[ring-0 ring-1], bars.map { |s| s["data-motion-group"] })
+        bars.each do |bar|
+          assert_equal 6, bar["data-motion-sector"].split.length
+        end
+
+        static = render_inline(RadialBarChart::Component.new(
+                                 data: PIE_DATA, config: PIE_CONFIG, id: "m", name_key: :browser,
+                                 animate: false
+                               )) do |chart|
+          chart.with_radial_bar(data_key: :visitors)
+        end
+
+        assert_nil static.css('[data-slot="chart-radial-bar"]').first["data-motion-sector"]
+      end
     end
   end
 end

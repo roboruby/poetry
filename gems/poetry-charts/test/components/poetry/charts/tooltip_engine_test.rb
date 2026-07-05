@@ -34,7 +34,7 @@ module Poetry
       def test_the_frame_carries_the_controller_and_the_svg_the_accessibility_layer
         html = render_area
 
-        frame = html.css("[data-controller='poetry--charts--tooltip']").first
+        frame = html.css("[data-controller~='poetry--charts--tooltip']").first
 
         assert frame, "the frame div carries the controller"
         svg = html.css('[data-slot="chart-svg"]').first
@@ -46,10 +46,12 @@ module Poetry
         assert_includes svg["data-action"], "keydown->poetry--charts--tooltip#keydown"
       end
 
-      def test_without_the_slot_nothing_attaches
+      def test_without_the_slot_no_tooltip_attaches
         html = render_area(tooltip: false)
 
-        assert_empty html.css("[data-controller]")
+        # The motion controller (Phase A) still rides the frame by default;
+        # the tooltip engine must not.
+        assert_empty html.css("[data-controller~='poetry--charts--tooltip']")
         assert_equal "img", html.css('[data-slot="chart-svg"]').first["role"]
         assert_empty html.css('[data-slot="chart-tooltip"]')
         assert_empty html.css('[data-slot="chart-active-dot"]')
@@ -102,7 +104,7 @@ module Poetry
           chart.with_tooltip(hide_label: true)
         end
 
-        assert_predicate html.css("[data-controller='poetry--charts--tooltip']"), :any?
+        assert_predicate html.css("[data-controller~='poetry--charts--tooltip']"), :any?
         assert_empty html.css('[data-slot="chart-active-dot"]'), "bars reflect via data-index, not dots"
         assert_empty html.css('[data-slot="chart-tooltip-label"]'), "hide_label drops the label row"
       end
