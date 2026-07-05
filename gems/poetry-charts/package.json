@@ -18,11 +18,22 @@
   "devDependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo": "^8.0.23",
+    "d3-array": "^3.2.4",
+    "d3-format": "^3.1.2",
+    "d3-interpolate": "^3.0.1",
+    "d3-scale": "^4.0.2",
+    "d3-shape": "^3.2.0",
+    "d3-time": "^3.1.0",
+    "d3-time-format": "^4.1.0",
+    "decimal.js-light": "^2.5.1",
+    "esbuild": "^0.28.1",
     "jsdom": "^26.0.0",
     "vitest": "^3.0.0"
   },
   "scripts": {
-    "test": "vitest run",
-    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
+    "test": "npm run vendor:d3:verify && vitest run",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js",
+    "vendor:d3": "node vendor/d3-kernel/build.mjs",
+    "vendor:d3:verify": "node vendor/d3-kernel/build.mjs --verify"
   }
 }
