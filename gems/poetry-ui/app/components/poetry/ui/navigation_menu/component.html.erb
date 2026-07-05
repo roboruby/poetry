@@ -1,0 +1,18 @@
+<%= content_tag(:nav, **root_attributes.to_attributes) do %>
+  <div data-slot="navigation-menu-list" class="<%= css(:list) %>">
+    <% entries.each do |entry| %>
+      <%= content_tag(:div, item_attributes(entry)) do %>
+        <% if entry.panel %>
+          <%= content_tag(:button, trigger_attributes(entry)) do %>
+            <%= entry.title %>
+            <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-down",
+                                                       class: css(:chevron), "aria-hidden": "true") %>
+          <% end %>
+          <%= content_tag(:div, capture(&entry.panel), panel_attributes(entry)) %>
+        <% else %>
+          <a href="<%= entry.href %>" data-slot="navigation-menu-link" class="<%= css(:trigger) %>"><%= entry.title %></a>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>

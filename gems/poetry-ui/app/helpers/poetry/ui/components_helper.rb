@@ -138,6 +138,20 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The NavigationMenu (N9 W4c): a disclosure bar - with_item for
+      # trigger+panel, with_link for destinations; label: names the nav.
+      def poetry_navigation_menu(**, &)
+        render(Poetry::Ui::NavigationMenu::Component.new(**), &)
+      end
+
+      # A panel entry: a REAL link (active: marks the current page).
+      def poetry_navigation_menu_link(href:, active: false, **attrs, &block)
+        classes = [Poetry::Ui::NavigationMenu::Style.css(:link), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "navigation-menu-link", active: active ? "true" : nil }.compact
+                                                                              .merge(attrs.delete(:data) || {})
+        content_tag(:a, (capture(&block) if block), **attrs, href: href, class: classes, data: data)
+      end
+
       # The Carousel (N9 W4): native scroll-snap slides - with_item per
       # slide; label: names the region.
       def poetry_carousel(**, &)

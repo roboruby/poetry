@@ -1946,6 +1946,46 @@ components:
       name.'
     - 'The fast path is options: [[label, value], ...] + selected:; a content block
       overrides it.'
+  poetry/ui/navigation_menu:
+    class_name: Poetry::Ui::NavigationMenu::Component
+    identifier: poetry--ui--navigation_menu
+    bem_block: poetry-ui-navigation_menu
+    styles: []
+    options:
+    - name: label
+      type: string
+    slots:
+    - name: items
+      many: true
+    elements:
+    - list
+    - item
+    - trigger
+    - chevron
+    - content
+    - content_position
+    - link
+    capsule: 8c60a7070257
+    controllers:
+    - identifier: poetry--core--navigation-menu
+      targets: []
+      values:
+      - closeDelay
+      - openDelay
+      actions:
+      - focusLeft
+      - keydown
+      - scheduleClose
+      - scheduleOpen
+      - toggle
+    agent_rules:
+    - 'label: is REQUIRED (the nav landmark''s accessible name).'
+    - with_item(title, value:) declares a trigger + panel; with_link(title, href:)
+      is a top-level destination - use links for pages, panels for groups of links.
+    - 'Panel content is poetry_navigation_menu_link entries (active: marks the current
+      page) - never buttons; navigation navigates.'
+    - 'This is a DISCLOSURE bar: Tab moves through it normally and nothing traps -
+      do not wire menu/menuitem roles.'
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination

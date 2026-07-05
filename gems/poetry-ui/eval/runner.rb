@@ -478,6 +478,20 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "site_nav" => {
+          "description" => "A site navigation bar: a Products dropdown of links, plus Pricing and " \
+                           "Docs destinations",
+          "gates" => [
+            Gate.new(:nav_landmark, :cross_arm, ->(doc, _html) { doc.css("nav[aria-label]").any? }),
+            Gate.new(:disclosure_announces, :cross_arm, lambda { |doc, _html|
+              doc.css("button[aria-expanded][aria-controls]").any?
+            }),
+            Gate.new(:reachable_without_hover, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onmouseover or @onmouseout or @onclick]").empty?
+            }),
+            Gate.new(:no_menu_role_abuse, :cross_arm, ->(doc, _html) { doc.css("[role=menu], [role=menuitem]").empty? })
+          ]
+        },
         "artwork_carousel" => {
           "description" => "A three-slide artwork carousel with previous/next controls",
           "gates" => [

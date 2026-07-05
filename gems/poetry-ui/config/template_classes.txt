@@ -2,7 +2,12 @@
 animate-spin
 flex
 flex-col
+gap-1
 gap-2
+grid
+justify-center
+min-h-64
 p-4
 sr-only
+w-64
 w-80

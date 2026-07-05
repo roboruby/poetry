@@ -22,7 +22,7 @@ module Poetry
                       poetry/ui/kbd
                       poetry/ui/label
                       poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
-                      poetry/ui/native_select
+                      poetry/ui/native_select poetry/ui/navigation_menu
                       poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group
                       poetry/ui/resizable
                       poetry/ui/scroll_area
