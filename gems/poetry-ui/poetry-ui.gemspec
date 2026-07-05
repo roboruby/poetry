@@ -27,6 +27,8 @@ Gem::Specification.new do |spec|
     end
   end
   spec.require_paths = ["lib"]
+  spec.bindir = "exe"
+  spec.executables = ["poetry-agent"]
 
   spec.add_dependency "poetry-core"
 end

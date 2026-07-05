@@ -23,6 +23,15 @@ module Poetry
         root.join(TEMPLATE_CLASSES_PATH).read.lines
             .map(&:strip).reject { |line| line.empty? || line.start_with?("#") }
       end
+
+      # The public poetry_* helper names, scanned from the ComponentsHelper
+      # source so poetry check / poetry-agent know the full set (group /
+      # provider helpers included) WITHOUT booting Rails - the module isn't
+      # loaded when the MCP server starts.
+      def helper_names
+        source = root.join("app/helpers/poetry/ui/components_helper.rb").read
+        source.scan(/def (poetry_[a-z_]+)/).flatten.uniq
+      end
     end
   end
 end

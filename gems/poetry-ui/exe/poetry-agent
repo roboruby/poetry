@@ -1,0 +1,17 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# poetry-agent: the MCP server. An MCP host (Claude Code / Cursor)
+# runs this over stdio; it projects the live poetry component contract -
+# list_components, describe_component (brief|detailed|full), and check
+# (verdict-returning lint) - all read-only. Boot-free: it reads the committed
+# registry, so it starts instantly (no Rails).
+#
+# Wire it up (Claude Code), from an app that has poetry installed:
+#   claude mcp add poetry -- bundle exec poetry-agent
+
+require "poetry/ui"
+
+Poetry::Core::Agent::Server.from_registry(
+  Poetry::Ui.root, helpers: Poetry::Ui.helper_names
+).serve
