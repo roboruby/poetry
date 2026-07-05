@@ -1,0 +1,40 @@
+# frozen_string_literal: true
+
+# poetry check: lint consumer/agent-written ERB against the committed
+# registry + controllers manifest. The mechanical, self-correctable gate an
+# agent runs before its work is reviewed.
+#
+#   bundle exec rake poetry:check[app/views/**/*.html.erb]
+#   POETRY_CHECK_JSON=1 bundle exec rake poetry:check[path]   # editor/CI output
+
+def poetry_check_catalog
+  Poetry::Core::Check::Catalog.from_registry(
+    Poetry::Ui.root,
+    helpers: Poetry::Ui::ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/)
+  )
+end
+
+namespace :poetry do
+  desc "Lint consumer ERB against the poetry registry (glob arg; POETRY_CHECK_JSON=1 for JSON)"
+  task :check, [:glob] do |_task, args|
+    poetry_ui_boot!
+
+    glob = args[:glob] || "app/**/*.html.erb"
+    paths = Dir.glob(glob)
+    if paths.empty?
+      warn "poetry check: no files matched #{glob.inspect}"
+      exit 0
+    end
+
+    findings = Poetry::Core::Check::Runner.new(poetry_check_catalog).run(paths)
+
+    if ENV["POETRY_CHECK_JSON"] == "1"
+      puts Poetry::Core::Check.to_json(findings)
+    else
+      puts Poetry::Core::Check.to_text(findings)
+    end
+
+    # Non-zero exit on any error-severity finding (CI-friendly).
+    exit 1 if findings.any? { |finding| finding.severity == :error }
+  end
+end

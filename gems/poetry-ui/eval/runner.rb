@@ -514,9 +514,24 @@ module Poetry
         if arm.include?("poetry")
           diagnostics = POETRY_ONLY + TASKS.fetch(task).fetch("poetry_gates", [])
           result["poetry_only_diagnostics"] = diagnostics.to_h { |gate| gate.run(doc, html) }
+          # poetry check: the mechanical gate on the SOURCE - the
+          # poetry arm's ERB must lint clean (no error-severity findings)
+          # before the LLM judge ever scores it. An agent self-corrects here.
+          result["poetry_only_diagnostics"]["poetry_check"] = poetry_check_clean?(erb)
           exercised.concat(doc.css("[data-component]").map { |node| node["data-component"] })
         end
         result
+      end
+
+      def poetry_check_clean?(erb)
+        Poetry::Core::Check.lint(erb, catalog: check_catalog).none? { |finding| finding.severity == :error }
+      end
+
+      def check_catalog
+        @check_catalog ||= Poetry::Core::Check::Catalog.from_registry(
+          Poetry::Ui.root,
+          helpers: Poetry::Ui::ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/)
+        )
       end
 
       def render(erb)
