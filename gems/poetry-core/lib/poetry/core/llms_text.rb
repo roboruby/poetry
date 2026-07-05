@@ -17,6 +17,10 @@ module Poetry
         Preference hierarchy: tokens > utilities; components > raw markup;
         variants > one-off classes; slots > custom HTML. Render components
         with their `poetry_<name>` helpers.
+
+        Verify your markup with `poetry check` (rake poetry:check) before it
+        renders - it validates components, options, variants, and Stimulus
+        wiring against these contracts. Testing doctrine: docs/testing.md.
       TEXT
 
       def initialize(registry:)
@@ -26,8 +30,7 @@ module Poetry
       # The lean index: one line per component.
       def index
         lines = @registry.entries.map do |path, entry|
-          title = path.split("/").last
-          "- #{title}: `poetry_#{title}` - #{surface_summary(entry)}"
+          "- #{title(path)}: `#{helper(path)}` - #{surface_summary(entry)}"
         end
         "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n"
       end
@@ -40,6 +43,12 @@ module Poetry
 
       private
 
+      # The helper is poetry_ + the path under the ui/ namespace, so
+      # command/dialog -> poetry_command_dialog (not the last-segment
+      # poetry_dialog, which collides with the top-level dialog).
+      def title(path) = path.split("/").drop(2).join("_")
+      def helper(path) = "poetry_#{title(path)}"
+
       def surface_summary(entry)
         parts = entry["styles"].map do |style|
           values = style["variants"] ? style["variants"].join("|") : style["type"]
@@ -49,14 +58,27 @@ module Poetry
       end
 
       def component_section(path, entry)
-        title = path.split("/").last
-        lines = ["## #{title} (`poetry_#{title}`)", ""]
+        lines = ["## #{title(path)} (`#{helper(path)}`)", ""]
         lines << "Class: #{entry["class_name"]} - BEM block `#{entry["bem_block"]}`."
         lines.concat(prop_lines(entry))
         slots = entry["slots"].map { |slot| "#{slot["name"]}#{" (many)" if slot["many"]}" }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
+        lines.concat(wiring_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
+      end
+
+      # The Stimulus wiring surface (N7 W3): the controllers a component
+      # renders, each with the targets / values / actions an agent may wire
+      # by hand. Base UI vocabulary. Absent for static components.
+      def wiring_lines(entry)
+        (entry["controllers"] || []).map do |controller|
+          facets = []
+          facets << "targets #{controller["targets"].join(", ")}" if controller["targets"].any?
+          facets << "values #{controller["values"].join(", ")}" if controller["values"].any?
+          facets << "actions #{controller["actions"].join(", ")}" if controller["actions"].any?
+          "- WIRING `#{controller["identifier"]}`#{": #{facets.join("; ")}" unless facets.empty?}"
+        end
       end
 
       def prop_lines(entry)
