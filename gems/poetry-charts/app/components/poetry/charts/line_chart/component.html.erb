@@ -1,0 +1,57 @@
+<%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" role="img" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet">
+    <% if grid? %>
+      <g data-slot="chart-grid" aria-hidden="true">
+        <% if grid_config.horizontal %>
+          <% cartesian.y_ticks.each do |tick| %>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cartesian.plot_left) %>" x2="<%= fnum(cartesian.plot_right) %>" y1="<%= fnum(cartesian.y_scale.call(tick)) %>" y2="<%= fnum(cartesian.y_scale.call(tick)) %>"/>
+          <% end %>
+        <% end %>
+        <% if grid_config.vertical %>
+          <% cartesian.x_positions.each do |x| %>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
+          <% end %>
+        <% end %>
+      </g>
+    <% end %>
+    <g data-slot="chart-lines">
+      <% series_entries.each do |entry| %>
+        <% if (d = series_path(entry)) %>
+          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"/>
+        <% end %>
+        <% if entry.dots %>
+          <g data-slot="chart-dots" data-key="<%= entry.key %>">
+            <% markers(entry).each do |marker| %>
+              <circle data-slot="chart-dot" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="<%= entry.dot_radius %>" fill="<%= dot_fill(entry, marker) %>"/>
+            <% end %>
+          </g>
+        <% end %>
+        <% if entry.labels %>
+          <g data-slot="chart-labels" data-key="<%= entry.key %>">
+            <% markers(entry).each do |marker| %>
+              <text class="<%= css(:label) %>" x="<%= fnum(marker[:x]) %>" y="<%= fnum(marker[:y] - 12) %>" text-anchor="middle"><%= marker_label(marker) %></text>
+            <% end %>
+          </g>
+        <% end %>
+      <% end %>
+    </g>
+    <% if x_axis? %>
+      <g data-slot="chart-x-axis">
+        <% cartesian.categories.each_with_index do |category, i| %>
+          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_positions[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
+        <% end %>
+      </g>
+    <% end %>
+    <% if y_axis? %>
+      <g data-slot="chart-y-axis">
+        <% cartesian.y_ticks.each do |tick| %>
+          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.plot_left - y_axis_config.tick_margin) %>" y="<%= fnum(cartesian.y_scale.call(tick)) %>" dy="0.355em" text-anchor="end"><%= y_tick_label(tick) %></text>
+        <% end %>
+      </g>
+    <% end %>
+  </svg>
+  <% if legend? %>
+    <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
+  <% end %>
+  <script type="application/json" data-slot="chart-coordinates"><%= coordinates_json.html_safe %></script>
+<% end %>

@@ -10,7 +10,8 @@ module Poetry
       # Families arrive wave by wave (N10 plan); unknown types raise with
       # the known list (agent-teachable).
       CHART_TYPES = {
-        area: "Poetry::Charts::AreaChart::Component"
+        area: "Poetry::Charts::AreaChart::Component",
+        line: "Poetry::Charts::LineChart::Component"
       }.freeze
 
       def poetry_chart(type, **, &)
@@ -21,6 +22,10 @@ module Poetry
 
       def poetry_area_chart(**, &)
         render(Poetry::Charts::AreaChart::Component.new(**), &)
+      end
+
+      def poetry_line_chart(**, &)
+        render(Poetry::Charts::LineChart::Component.new(**), &)
       end
 
       def poetry_chart_container(**, &)
