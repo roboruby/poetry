@@ -1,0 +1,16 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= trigger %>
+  <%= content_tag(:dialog, **Poetry::Core::HTML::Attributes.new(dialog_attributes).to_attributes) do %>
+    <% if show_swipe_handle %>
+      <div data-slot="drawer-swipe-handle" aria-hidden="true" class="<%= css(:handle) %>"></div>
+    <% end %>
+    <div data-slot="drawer-header" class="<%= css(:header) %>">
+      <h2 id="<%= title_id %>" data-slot="drawer-title" class="<%= css(:title) %>"><%= title %></h2>
+      <% if description? %>
+        <p id="<%= description_id %>" data-slot="drawer-description" class="<%= css(:description) %>"><%= description %></p>
+      <% end %>
+    </div>
+    <div data-slot="drawer-body" class="<%= css(:body) %>"><%= content %></div>
+    <% if footer? %><div data-slot="drawer-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
+  <% end %>
+<% end %>

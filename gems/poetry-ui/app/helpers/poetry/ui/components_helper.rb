@@ -138,6 +138,12 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The Drawer (N9 W3b): the swipeable edge dialog - trigger/title/
+      # description/footer slots, direction: down/up/left/right.
+      def poetry_drawer(**, &)
+        render(Poetry::Ui::Drawer::Component.new(**), &)
+      end
+
       # The native scroll region (N9 W3a): size it with classes; label: names it.
       def poetry_scroll_area(**, &)
         render(Poetry::Ui::ScrollArea::Component.new(**), &)

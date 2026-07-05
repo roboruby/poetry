@@ -478,6 +478,18 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "mobile_sheet" => {
+          "description" => "A bottom drawer for setting a daily activity goal: trigger, title, " \
+                           "description, a Submit action, and a swipe handle",
+          "gates" => [
+            Gate.new(:modal_semantics, :cross_arm, ->(doc, _html) { doc.css("dialog, [role=dialog]").any? }),
+            Gate.new(:labelled_overlay, :cross_arm, lambda { |doc, _html|
+              overlay = doc.css("dialog, [role=dialog]").first
+              !overlay.nil? && !(overlay["aria-labelledby"] || overlay["aria-label"]).nil?
+            }),
+            Gate.new(:dismissal_is_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
+          ]
+        },
         "scrollable_tags" => {
           "description" => "A bounded, scrollable list of 20 version tags in a 12rem box",
           "gates" => [

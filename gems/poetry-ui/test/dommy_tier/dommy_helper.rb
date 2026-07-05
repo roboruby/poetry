@@ -186,6 +186,16 @@ module DommyTier
   def flattened_controller(path)
     source = strip_imports(path.read)
              .sub("export default class", %(globalThis.__poetryControllers["#{stimulus_identifier(path)}"] = class))
+             # A controller may EXTEND another (Drawer extends Dialog, N9
+             # W3b): its import was stripped, so point the superclass at the
+             # already-registered flattened class. `extends Controller` (the
+             # Stimulus base) never matches - the capture needs a name.
+             # Parents sort before their children alphabetically today;
+             # revisit the ordering if that ever breaks.
+             .gsub(/extends ([A-Z]\w*)Controller\b/) do
+               identifier = "poetry--core--#{Regexp.last_match(1).gsub(/([a-z0-9])([A-Z])/, '\1-\2').downcase}"
+               %(extends globalThis.__poetryControllers["#{identifier}"])
+             end
     "(() => {\n#{source}\n})();"
   end
 

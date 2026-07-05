@@ -1,0 +1,14 @@
+<%# The raw arm: plausible LLM output - a fixed-bottom div "sheet" toggled
+    by onclick: no dialog semantics, no focus trap, no accessible name. %>
+<div>
+  <button type="button" class="rounded-md bg-gray-900 px-4 py-2 text-sm text-white focus-visible:ring-2"
+          onclick="document.getElementById('sheet').classList.remove('hidden')">Set goal</button>
+  <div id="sheet" class="fixed inset-x-0 bottom-0 z-50 hidden rounded-t-xl border-t bg-white p-4 shadow-lg">
+    <div class="mx-auto mb-2 h-1.5 w-[100px] rounded-full bg-gray-200"></div>
+    <div class="text-center font-medium">Move goal</div>
+    <div class="text-center text-sm text-gray-500">Set your daily activity goal.</div>
+    <p class="mt-4 text-sm">350 calories/day</p>
+    <button type="button" class="mt-4 w-full rounded-md bg-gray-900 px-4 py-2 text-sm text-white focus-visible:ring-2"
+            onclick="document.getElementById('sheet').classList.add('hidden')">Submit</button>
+  </div>
+</div>

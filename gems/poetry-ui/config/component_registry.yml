@@ -1031,6 +1031,73 @@ components:
     - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
       stop closing).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
+  poetry/ui/drawer:
+    class_name: Poetry::Ui::Drawer::Component
+    identifier: poetry--ui--drawer
+    bem_block: poetry-ui-drawer
+    styles:
+    - name: direction
+      type: symbol
+      variants:
+      - down
+      - up
+      - left
+      - right
+      default: down
+      required: true
+    options:
+    - name: dismissible
+      type: boolean
+      default: true
+    - name: show_swipe_handle
+      type: boolean
+      default: false
+    slots:
+    - name: trigger
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - content
+    - handle
+    - header
+    - footer
+    - title
+    - description
+    - body
+    capsule: e3bdca3ae5f6
+    controllers:
+    - identifier: poetry--core--drawer
+      targets:
+      - dialog
+      values:
+      - direction
+      - dismissible
+      - hotkey
+      actions:
+      - backdropClose
+      - close
+      - lockScroll
+      - open
+      - swipeCancel
+      - swipeEnd
+      - swipeMove
+      - swipeStart
+      - toggle
+      - unlockScroll
+    agent_rules:
+    - Open drawers with with_trigger(...) - never a hand-wired button.
+    - with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
+    - 'direction: is the DISMISS direction: :down is the mobile bottom sheet (the
+      default); left/right make an edge panel - prefer Sheet on desktop.'
+    - 'show_swipe_handle: true renders the grab pill - use it on bottom sheets so
+      the gesture is discoverable.'
+    - Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition,
+      never the only way out.
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
     identifier: poetry--ui--dropdown_menu

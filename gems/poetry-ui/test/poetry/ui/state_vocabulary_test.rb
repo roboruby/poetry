@@ -43,7 +43,10 @@ module Poetry
         "queued" => "toast overflow queue marker (JS)",
         "dragging" => "slider drag marker (JS)",
         "complete" => "OTP complete marker (JS)",
-        "swiping" => "toast swipe (reserved - contract-named for the future swipe pass)",
+        "swiping" => "drawer swipe drag marker (poetry--core--drawer writes it; toast swipe reserved)",
+        "starting-style" => "presence enter hook (presence.js enterPresence - one painted frame, " \
+                            "the Base UI transition idiom; Drawer is the first consumer)",
+        "ending-style" => "presence exit hook (presence.js exitPresence - rides the whole exit)",
         "swipe-direction" => "toast swipe (reserved)"
       }.freeze
 
