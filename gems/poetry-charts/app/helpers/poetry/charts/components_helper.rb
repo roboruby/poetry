@@ -14,7 +14,8 @@ module Poetry
         line: "Poetry::Charts::LineChart::Component",
         bar: "Poetry::Charts::BarChart::Component",
         pie: "Poetry::Charts::PieChart::Component",
-        radial: "Poetry::Charts::RadialBarChart::Component"
+        radial: "Poetry::Charts::RadialBarChart::Component",
+        radar: "Poetry::Charts::RadarChart::Component"
       }.freeze
 
       def poetry_chart(type, **, &)

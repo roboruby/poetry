@@ -1,0 +1,56 @@
+<%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
+  <%= content_tag(:div, class: css(:frame), data: frame_data) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
+    <% if grid? %>
+      <g data-slot="chart-polar-grid" aria-hidden="true">
+        <% grid_radii.each_with_index do |radius, i| %>
+          <% if grid_config.type == :circle %>
+            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"<% if grid_fill_attribute && i == grid_radii.length - 1 %> fill="<%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"<% end %>/>
+          <% else %>
+            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"<% if grid_fill_attribute && i == grid_radii.length - 1 %> fill="<%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"<% end %>/>
+          <% end %>
+        <% end %>
+        <% if grid_config.radial_lines %>
+          <% rows.each_index do |i| %>
+            <% x, y = spoke_end(i) %>
+            <line class="<%= css(:grid_line) %>" x1="<%= fnum(cx) %>" y1="<%= fnum(cy) %>" x2="<%= fnum(x) %>" y2="<%= fnum(y) %>"/>
+          <% end %>
+        <% end %>
+      </g>
+    <% end %>
+    <g data-slot="chart-radars">
+      <% series_entries.each do |entry| %>
+        <path data-slot="chart-radar" data-key="<%= entry.data_key %>" d="<%= series_path(entry) %>" fill="var(--color-<%= entry.data_key %>)" fill-opacity="<%= entry.fill_opacity %>"<% if entry.stroke_width.positive? %> stroke="var(--color-<%= entry.data_key %>)" stroke-width="<%= entry.stroke_width %>"<% end %>/>
+        <% if entry.dots %>
+          <g data-slot="chart-dots" data-key="<%= entry.data_key %>">
+            <% rows.each_index do |i| %>
+              <% x, y = vertex(entry, i) %>
+              <circle data-slot="chart-dot" cx="<%= fnum(x) %>" cy="<%= fnum(y) %>" r="<%= entry.dot_radius %>" fill="var(--color-<%= entry.data_key %>)"/>
+            <% end %>
+          </g>
+        <% end %>
+      <% end %>
+    </g>
+    <% if angle_axis? %>
+      <g data-slot="chart-angle-axis">
+        <% rows.each_index do |i| %>
+          <% placement = angle_label(i) %>
+          <text class="<%= css(:tick) %>" x="<%= fnum(placement[:x]) %>" y="<%= fnum(placement[:y]) %>" dy="0.355em" text-anchor="<%= placement[:anchor] %>"><%= placement[:text] %></text>
+        <% end %>
+      </g>
+    <% end %>
+    <% if tooltip? %>
+      <g data-slot="chart-hit-wedges">
+        <% rows.each_index do |i| %>
+          <path data-index="<%= i %>" d="<%= hit_wedge(i) %>" fill="transparent"/>
+        <% end %>
+      </g>
+    <% end %>
+  </svg>
+  <% if legend? %>
+    <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
+  <% end %>
+  <% if tooltip? %><%= render tooltip_layer_component %><% end %>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
+  <% end %>
+<% end %>
