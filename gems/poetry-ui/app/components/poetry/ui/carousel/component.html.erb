@@ -1,0 +1,17 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, viewport_attributes) do %>
+    <div class="<%= css(:track) %> <%= css(vertical? ? :track_vertical : :track_horizontal) %>">
+      <% slides.each do |slide| %>
+        <%= content_tag(:div, capture(&slide.block), item_attributes(slide)) %>
+      <% end %>
+    </div>
+  <% end %>
+  <% if show_controls %>
+    <%= render Poetry::Ui::Button::Component.new(**control_options(:previous)) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-left") } %>
+    <% end %>
+    <%= render Poetry::Ui::Button::Component.new(**control_options(:next)) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
+    <% end %>
+  <% end %>
+<% end %>

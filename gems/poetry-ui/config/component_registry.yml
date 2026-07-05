@@ -455,6 +455,60 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+  poetry/ui/carousel:
+    class_name: Poetry::Ui::Carousel::Component
+    identifier: poetry--ui--carousel
+    bem_block: poetry-ui-carousel
+    styles: []
+    options:
+    - name: label
+      type: string
+    - name: orientation
+      type: symbol
+      default: horizontal
+    - name: show_controls
+      type: boolean
+      default: true
+    slots:
+    - name: items
+      many: true
+    elements:
+    - content
+    - content_horizontal
+    - content_vertical
+    - track
+    - track_horizontal
+    - track_vertical
+    - item
+    - item_horizontal
+    - item_vertical
+    - control
+    - control_previous_horizontal
+    - control_previous_vertical
+    - control_next_horizontal
+    - control_next_vertical
+    capsule: beb112a14afe
+    controllers:
+    - identifier: poetry--core--carousel
+      targets:
+      - next
+      - previous
+      - viewport
+      values:
+      - orientation
+      actions:
+      - keydown
+      - next
+      - previous
+      - scrollTo
+      - scrolled
+    agent_rules:
+    - 'label: is REQUIRED - the carousel region''s accessible name.'
+    - Declare slides with with_item - the component stamps the slide roles (role=group
+      + aria-roledescription=slide).
+    - 'Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard
+      even before JS - never gate content behind the buttons alone.'
+    - Size slides with item classes (basis-full default; basis-1/3 for a strip).
   poetry/ui/checkbox:
     class_name: Poetry::Ui::Checkbox::Component
     identifier: poetry--ui--checkbox
@@ -2119,6 +2173,43 @@ components:
     - '7+ options: use Select instead.'
     - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
       - never a bare red ring.'
+  poetry/ui/resizable:
+    class_name: Poetry::Ui::Resizable::Component
+    identifier: poetry--ui--resizable
+    bem_block: poetry-ui-resizable
+    styles: []
+    options:
+    - name: direction
+      type: symbol
+      default: horizontal
+    - name: grip
+      type: boolean
+      default: false
+    slots:
+    - name: panels
+      many: true
+    elements:
+    - panel
+    - handle
+    - grip
+    capsule: 14aed447a3ce
+    controllers:
+    - identifier: poetry--core--resizable
+      targets: []
+      values:
+      - orientation
+      actions:
+      - dragEnd
+      - dragMove
+      - dragStart
+      - keydown
+    agent_rules:
+    - Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes
+      are PERCENTAGES and the component interleaves the separator handles.
+    - 'direction: :horizontal is side-by-side (the default); :vertical stacks.'
+    - Handles are keyboard splitters (arrows step, Home/End jump) - never replace
+      them with styled divs.
+    - Nest a group inside a panel for two-axis layouts - groups self-scope.
   poetry/ui/scroll_area:
     class_name: Poetry::Ui::ScrollArea::Component
     identifier: poetry--ui--scroll_area

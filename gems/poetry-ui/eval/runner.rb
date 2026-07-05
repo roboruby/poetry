@@ -478,6 +478,31 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "artwork_carousel" => {
+          "description" => "A three-slide artwork carousel with previous/next controls",
+          "gates" => [
+            Gate.new(:carousel_region_semantics, :cross_arm, lambda { |doc, _html|
+              doc.css('[aria-roledescription="carousel"][aria-label]').any? &&
+                doc.css('[aria-roledescription="slide"]').length >= 3
+            }),
+            Gate.new(:slides_reachable_without_js, :cross_arm, lambda { |doc, _html|
+              # The tell: a transform track strands content behind the
+              # buttons; a real scroll container keeps it reachable.
+              doc.xpath('.//*[contains(@style, "translateX")]').empty? && doc.xpath(".//*[@onclick]").empty?
+            })
+          ]
+        },
+        "split_editor" => {
+          "description" => "A two-pane resizable split (Files | Editor) with a draggable divider",
+          "gates" => [
+            Gate.new(:splitter_wears_the_apg_surface, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="separator"][tabindex="0"][aria-valuenow]').any?
+            }),
+            Gate.new(:resize_is_real_wiring, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onmousedown or @onclick]").empty?
+            })
+          ]
+        },
         "mobile_sheet" => {
           "description" => "A bottom drawer for setting a daily activity goal: trigger, title, " \
                            "description, a Submit action, and a swipe handle",

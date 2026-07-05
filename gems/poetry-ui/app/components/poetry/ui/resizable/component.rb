@@ -1,0 +1,130 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Resizable
+      # The Resizable panel group - the APG window splitter on flex (the W4
+      # decision: no react-resizable-panels): panels are flex children whose
+      # flex-grow IS the percentage, handles are role=separator splitters,
+      # and poetry--core--resizable owns the drag + keyboard redistribution.
+      # Declare panels with with_panel; the component interleaves the
+      # handles and wires the ARIA.
+      #
+      # Deferred with the library's machinery: persistence, collapsible
+      # panels, the imperative API.
+      class Component < Poetry::Core::Component
+        DIRECTIONS = %i[horizontal vertical].freeze
+
+        AGENT_RULES = [
+          "Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes are " \
+          "PERCENTAGES and the component interleaves the separator handles.",
+          "direction: :horizontal is side-by-side (the default); :vertical stacks.",
+          "Handles are keyboard splitters (arrows step, Home/End jump) - never replace them " \
+          "with styled divs.",
+          "Nest a group inside a panel for two-axis layouts - groups self-scope."
+        ].freeze
+
+        CONTROLLER = %i[poetry core resizable].freeze
+
+        option :direction, :symbol, default: :horizontal
+        option :grip, :boolean, default: false
+
+        validates :direction, inclusion: { in: DIRECTIONS }
+
+        Panel = Data.define(:default_size, :min_size, :max_size, :classes, :block)
+
+        renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
+          raise ArgumentError, "Resizable with_panel requires a content block" unless block
+
+          panel_defs << Panel.new(default_size: default_size, min_size: min_size,
+                                  max_size: max_size, classes: classes, block: block)
+          nil
+        }
+
+        def panel_defs
+          @panel_defs ||= []
+        end
+
+        def before_render
+          # panels? forces the render block (the slot-predicate rule -
+          # panel_defs is empty until it runs).
+          raise ArgumentError, "Resizable requires at least two with_panel declarations" unless
+            panels? && panel_defs.size >= 2
+        end
+
+        # Even shares when default_size: is omitted.
+        def size_of(panel)
+          panel.default_size || (100.0 / panel_defs.size).round(2)
+        end
+
+        def root_attributes
+          html_attributes.merge_if_not_set(
+            {
+              "data-slot" => "resizable-panel-group", "data-orientation" => direction
+            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+          )
+        end
+
+        def panel_attributes(panel, index)
+          attrs = {
+            "id" => panel_id(index), "data-slot" => "resizable-panel",
+            "class" => [css(:panel), panel.classes].compact.join(" "),
+            "style" => "flex: #{size_of(panel)} 1 0px"
+          }
+          attrs["data-min-size"] = panel.min_size if panel.min_size
+          attrs["data-max-size"] = panel.max_size if panel.max_size
+          attrs
+        end
+
+        # The splitter: a separator whose value tracks the PRECEDING panel
+        # (the upstream convention); its visual orientation is
+        # PERPENDICULAR to the group axis (a side-by-side group has a
+        # vertical bar), which is also what the dictionary's
+        # aria-[orientation] selectors key on.
+        def handle_attributes(index)
+          before = panel_defs[index]
+          {
+            "role" => "separator", "tabindex" => "0",
+            "data-slot" => "resizable-handle",
+            "aria-orientation" => direction == :horizontal ? "vertical" : "horizontal",
+            "aria-controls" => panel_id(index),
+            # Server-rendered initial value (the controller reconciles on
+            # connect) - the splitter announces even before JS.
+            "aria-valuenow" => size_of(before).round,
+            "aria-valuemin" => before.min_size || 10,
+            "aria-valuemax" => before.max_size || 90,
+            "class" => css(:handle)
+          }.merge(handle_stimulus_attributes)
+        end
+
+        def panel_id(index)
+          "#{instance_id}-panel-#{index}"
+        end
+
+        private
+
+        def instance_id
+          @instance_id ||= "poetry-resizable-#{SecureRandom.hex(4)}"
+        end
+
+        def root_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          resizable = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          resizable.register_controller
+          resizable.with_value(:orientation, direction)
+          attrs.to_attributes
+        end
+
+        def handle_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          resizable = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          resizable.with_action(:drag_start, on: :pointerdown)
+          resizable.with_action(:drag_move, on: :pointermove)
+          resizable.with_action(:drag_end, on: :pointerup)
+          resizable.with_action(:keydown, on: :keydown)
+          attrs.to_attributes
+        end
+      end
+    end
+  end
+end

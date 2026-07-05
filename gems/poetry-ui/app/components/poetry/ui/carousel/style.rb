@@ -1,0 +1,35 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module Carousel
+      # shadcn Carousel (base-vega) adapted to native scroll-snap (the W4
+      # decision): the content wrapper becomes the REAL scroll container
+      # (overflow + snap + hidden scrollbar) instead of embla's
+      # overflow-hidden + transform track; the gutter idiom (-ml-4 track,
+      # pl-4 items) and the control positions stay source-exact (the
+      # controls' cn-rtl-flip drops as always).
+      class Style < Poetry::Core::Style
+        base "relative"
+
+        element :content, "overflow-auto [scrollbar-width:none] snap-mandatory"
+        element :content_horizontal, "snap-x"
+        element :content_vertical, "snap-y"
+
+        element :track, "flex"
+        element :track_horizontal, "-ml-4"
+        element :track_vertical, "-mt-4 flex-col"
+
+        element :item, "min-w-0 shrink-0 grow-0 basis-full snap-start"
+        element :item_horizontal, "pl-4"
+        element :item_vertical, "pt-4"
+
+        element :control, "absolute touch-manipulation rounded-full"
+        element :control_previous_horizontal, "inset-y-0 -left-12 my-auto"
+        element :control_previous_vertical, "-top-12 left-1/2 -translate-x-1/2 rotate-90"
+        element :control_next_horizontal, "inset-y-0 -right-12 my-auto"
+        element :control_next_vertical, "-bottom-12 left-1/2 -translate-x-1/2 rotate-90"
+      end
+    end
+  end
+end

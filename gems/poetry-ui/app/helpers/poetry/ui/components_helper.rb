@@ -138,6 +138,18 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The Carousel (N9 W4): native scroll-snap slides - with_item per
+      # slide; label: names the region.
+      def poetry_carousel(**, &)
+        render(Poetry::Ui::Carousel::Component.new(**), &)
+      end
+
+      # The Resizable panel group (N9 W4): with_panel x N; handles are
+      # interleaved automatically (APG window splitters).
+      def poetry_resizable(**, &)
+        render(Poetry::Ui::Resizable::Component.new(**), &)
+      end
+
       # The Drawer (N9 W3b): the swipeable edge dialog - trigger/title/
       # description/footer slots, direction: down/up/left/right.
       def poetry_drawer(**, &)

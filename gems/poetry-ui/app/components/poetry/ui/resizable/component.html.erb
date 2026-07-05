@@ -1,0 +1,10 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% panel_defs.each_with_index do |panel, index| %>
+    <% unless index.zero? %>
+      <%= content_tag(:div, handle_attributes(index - 1)) do %>
+        <% if grip %><div class="<%= css(:grip) %>"></div><% end %>
+      <% end %>
+    <% end %>
+    <%= content_tag(:div, capture(&panel.block), panel_attributes(panel, index)) %>
+  <% end %>
+<% end %>
