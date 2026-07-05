@@ -13,7 +13,8 @@ module Poetry
         area: "Poetry::Charts::AreaChart::Component",
         line: "Poetry::Charts::LineChart::Component",
         bar: "Poetry::Charts::BarChart::Component",
-        pie: "Poetry::Charts::PieChart::Component"
+        pie: "Poetry::Charts::PieChart::Component",
+        radial: "Poetry::Charts::RadialBarChart::Component"
       }.freeze
 
       def poetry_chart(type, **, &)

@@ -76,6 +76,67 @@ module Poetry
         end
       end
 
+      # getTangentCircle (Sector.tsx): the corner circle tangent to an arc
+      # (at `radius`) and a radial edge (at `angle`) - the rounded-corner
+      # primitive for RadialBar's cornerRadius.
+      def tangent_circle(cx:, cy:, radius:, angle:, sign:, corner_radius:, external: false)
+        center_radius = (corner_radius * (external ? 1 : -1)) + radius
+        theta = Math.asin(corner_radius / center_radius) / RADIAN
+        center_angle = angle + (sign * theta)
+        {
+          circle_tangency: polar_to_cartesian(cx, cy, radius, center_angle),
+          line_tangency: polar_to_cartesian(cx, cy, center_radius * Math.cos(theta * RADIAN), angle),
+          theta: theta
+        }
+      end
+
+      # getSectorWithCorner (Sector.tsx): the ring segment with all four
+      # corners rounded by tangent circles. Falls back to the plain path
+      # when the sweep is too small to fit the corners (recharts' guard).
+      def sector_path_with_corners(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:,
+                                   corner_radius:, fmt: nil)
+        fmt ||= ->(v) { Geometry.js_number((v * 10_000).round / 10_000.0) }
+        corner = [corner_radius.to_f, (outer_radius - inner_radius).abs / 2.0].min
+        if corner <= 0 || (end_angle - start_angle).abs >= 360
+          return sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt:)
+        end
+
+        s = sign(end_angle - start_angle)
+        so = tangent_circle(cx:, cy:, radius: outer_radius, angle: start_angle, sign: s, corner_radius: corner)
+        eo = tangent_circle(cx:, cy:, radius: outer_radius, angle: end_angle, sign: -s, corner_radius: corner)
+        outer_arc = (start_angle - end_angle).abs - so[:theta] - eo[:theta]
+        if outer_arc.negative?
+          return sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt:)
+        end
+
+        ccw = s.negative? ? 1 : 0
+        p = ->(point) { "#{fmt.call(point[0])},#{fmt.call(point[1])}" }
+        path = "M#{p.call(so[:line_tangency])}" \
+               "A#{fmt.call(corner)},#{fmt.call(corner)},0,0,#{ccw},#{p.call(so[:circle_tangency])}" \
+               "A#{fmt.call(outer_radius)},#{fmt.call(outer_radius)},0,#{outer_arc > 180 ? 1 : 0},#{ccw}," \
+               "#{p.call(eo[:circle_tangency])}" \
+               "A#{fmt.call(corner)},#{fmt.call(corner)},0,0,#{ccw},#{p.call(eo[:line_tangency])}"
+
+        if inner_radius.positive?
+          si = tangent_circle(cx:, cy:, radius: inner_radius, angle: start_angle, sign: s,
+                              corner_radius: corner, external: true)
+          ei = tangent_circle(cx:, cy:, radius: inner_radius, angle: end_angle, sign: -s,
+                              corner_radius: corner, external: true)
+          inner_arc = (start_angle - end_angle).abs - si[:theta] - ei[:theta]
+          return "#{path}L#{fmt.call(cx)},#{fmt.call(cy)}Z" if inner_arc.negative? && corner.zero?
+
+          path << "L#{p.call(ei[:line_tangency])}" \
+                  "A#{fmt.call(corner)},#{fmt.call(corner)},0,0,#{ccw},#{p.call(ei[:circle_tangency])}" \
+                  "A#{fmt.call(inner_radius)},#{fmt.call(inner_radius)},0,#{inner_arc > 180 ? 1 : 0}," \
+                  "#{s.positive? ? 1 : 0},#{p.call(si[:circle_tangency])}" \
+                  "A#{fmt.call(corner)},#{fmt.call(corner)},0,0,#{ccw},#{p.call(si[:line_tangency])}Z"
+        else
+          path << "L#{fmt.call(cx)},#{fmt.call(cy)}Z"
+        end
+
+        path
+      end
+
       # getSectorPath (Sector.tsx): the wedge/ring path. The delta clamps at
       # 359.999 so a full circle's endpoints never coincide.
       def sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt: nil)

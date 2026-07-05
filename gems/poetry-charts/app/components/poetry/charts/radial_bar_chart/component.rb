@@ -1,0 +1,285 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Charts
+    module RadialBarChart
+      # The RadialBar family (shadcn RadialBarChart, 6 blocks): one angular
+      # bar per data row on concentric rings between inner_radius and
+      # outer_radius, sweep proportional to value over the angle span.
+      # Rings divide the radial band with the SAME math as vertical bars
+      # (10% trim, 4px gaps); stacked radial bars share the ring and stack
+      # along the ANGLE; corner_radius rounds arc ends with recharts'
+      # tangent-circle construction; `background: true` draws the muted
+      # track ring; polar-grid discs (the shape/text blocks' gauge look)
+      # and the donut-style center label round out the family.
+      #
+      #   <%= poetry_chart :radial, data: browsers, config: config,
+      #                    inner_radius: 30, outer_radius: 110 do |c| %>
+      #     <% c.with_radial_bar data_key: :visitors, background: true %>
+      #     <% c.with_tooltip %>
+      #   <% end %>
+      class Component < Poetry::Core::Component
+        include Poetry::Charts::TooltipWiring
+
+        AGENT_RULES = [
+          "One ring per data row; rows carry their color in a fill key (var(--color-<name>)).",
+          "background: true draws the muted track ring behind each bar (the gauge look).",
+          "Stack two radial bars with the same stack: id - they share the ring and stack by ANGLE.",
+          "corner_radius rounds the arc ends (10 on a 10px ring = full pill caps).",
+          "with_polar_grid(radii:, fills:) draws the shape/text blocks' disc track; with_center_label fills the middle."
+        ].freeze
+
+        Series = Data.define(:data_key, :stack, :background, :corner_radius, :color_key,
+                             :labels, :label_key)
+
+        option :data, ActiveModel::Type::Value.new, required: true
+        option :config, ActiveModel::Type::Value.new, required: true
+        option :id, :string
+        option :width, :integer, default: 640
+        option :height, :integer, default: 360
+        option :margin, ActiveModel::Type::Value.new
+        option :label, :string
+        option :name_key, :string, default: "name"
+        option :start_angle, :integer, default: 0
+        option :end_angle, :integer, default: 360
+        option :inner_radius, ActiveModel::Type::Value.new, default: "20%"
+        option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
+        # The angle-axis maximum: nil = recharts' nice [0, auto] domain for
+        # ring charts; stacked gauges pass the stack total so the segments
+        # fill the span exactly (the stacked block's full half-ring).
+        option :max_value, ActiveModel::Type::Value.new
+
+        renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
+                                            color_key: :fill, labels: nil, label_key: nil|
+          (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,
+                                                 corner_radius:, color_key: color_key&.to_s,
+                                                 labels: labels&.to_sym, label_key: label_key&.to_s)
+          nil
+        }
+
+        renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: false|
+          @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
+          nil
+        }
+
+        renders_one :center_label, lambda { |title:, subtitle: nil|
+          @center_label_config = { title: title, subtitle: subtitle }
+          nil
+        }
+
+        renders_one :legend, lambda { |**options|
+          @legend_config = options
+          nil
+        }
+
+        renders_one :tooltip, lambda { |**options|
+          @tooltip_config = { hide_label: true }.merge(options)
+          nil
+        }
+
+        def series_entries
+          radial_bars? # force slot evaluation (the N8 lazy-slot lesson)
+          @series_entries ||= []
+        end
+
+        def polar_grid_config
+          polar_grid?
+          @polar_grid_config
+        end
+
+        def center_label_config
+          center_label?
+          @center_label_config
+        end
+
+        def chart_config
+          @chart_config ||= Poetry::Charts::Config.wrap(config)
+        end
+
+        # -- geometry ---------------------------------------------------------
+
+        MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
+        TRIM = 0.1
+        GAP = 4.0
+
+        def plot
+          @plot ||= begin
+            m = MARGIN.merge((margin || {}).to_h.symbolize_keys)
+            { left: m[:left].to_f, top: m[:top].to_f,
+              width: width - m[:left] - m[:right], height: height - m[:top] - m[:bottom] }
+          end
+        end
+
+        def cx = plot[:left] + (plot[:width] / 2.0)
+        def cy = plot[:top] + (plot[:height] / 2.0)
+
+        def rows
+          @rows ||= data.map { |row| row.to_h.transform_keys(&:to_s) }
+        end
+
+        def radii
+          @radii ||= begin
+            max = Polar.max_radius(plot[:width], plot[:height])
+            [Polar.percent_value(inner_radius, max, max * 0.2),
+             Polar.percent_value(outer_radius, max, max * 0.8)]
+          end
+        end
+
+        # The radial band: one ring per ROW, the vertical-bar math rotated
+        # onto the radius axis (10% trim each side, 4px between rings).
+        def ring(index)
+          inner, outer = radii
+          band = (outer - inner) / rows.length
+          trim = band * TRIM
+          thickness = band - (2 * trim)
+          ring_inner = inner + (band * index) + trim
+          [ring_inner, ring_inner + thickness]
+        end
+
+        def stacked?
+          series_entries.any?(&:stack)
+        end
+
+        def angle_max
+          @angle_max ||= if max_value
+                           max_value.to_f
+                         elsif stacked?
+                           rows.map { |row| series_entries.sum { |e| row[e.data_key].to_f } }.max
+                         else
+                           key = series_entries.first&.data_key
+                           Geometry::NiceTicks.nice_ticks([0, rows.map { |row| row[key].to_f }.max || 1], 5).last
+                         end
+        end
+
+        def sweep(value)
+          (value.to_f / angle_max) * (end_angle - start_angle)
+        end
+
+        Segment = Data.define(:index, :name, :value, :fill, :path, :ring_inner, :ring_outer,
+                              :seg_start, :seg_end)
+
+        # Per-series segments: unstacked series sweep from start_angle;
+        # stacked series continue from the previous series' end.
+        def segments(entry)
+          @segments ||= {}
+          @segments[entry.data_key] ||= rows.each_with_index.map do |row, i|
+            ring_inner, ring_outer = ring(i)
+            base = @segment_cursor&.dig(entry.stack, i) || start_angle.to_f
+            seg_start = entry.stack ? base : start_angle.to_f
+            seg_end = seg_start + sweep(row[entry.data_key])
+            if entry.stack
+              @segment_cursor ||= {}
+              (@segment_cursor[entry.stack] ||= {})[i] = seg_end
+            end
+
+            Segment.new(
+              index: i,
+              name: row[name_key].to_s,
+              value: row[entry.data_key],
+              fill: segment_fill(entry, row),
+              path: Polar.sector_path_with_corners(cx: cx, cy: cy, inner_radius: ring_inner,
+                                                   outer_radius: ring_outer, start_angle: seg_start,
+                                                   end_angle: seg_end, corner_radius: entry.corner_radius),
+              ring_inner: ring_inner,
+              ring_outer: ring_outer,
+              seg_start: seg_start,
+              seg_end: seg_end
+            )
+          end
+        end
+
+        def background_path(segment)
+          Polar.sector_path(cx: cx, cy: cy, inner_radius: segment.ring_inner,
+                            outer_radius: segment.ring_outer,
+                            start_angle: start_angle, end_angle: end_angle)
+        end
+
+        def segment_fill(entry, row)
+          color = row[entry.color_key].to_s if entry.color_key
+          if color.present?
+            raise ArgumentError, "radial fill #{color.inspect} is not CSS-safe" unless color.match?(Config::COLOR)
+
+            color
+          else
+            chart_config[entry.data_key]&.color || "var(--color-#{entry.data_key})"
+          end
+        end
+
+        # insideStart labels: at the ring middle, a few degrees into the
+        # sweep, rotated to read along the arc.
+        def label_placement(segment)
+          direction = Polar.sign(end_angle - start_angle)
+          angle = segment.seg_start + (direction * 5)
+          radius = (segment.ring_inner + segment.ring_outer) / 2.0
+          x, y = Polar.polar_to_cartesian(cx, cy, radius, angle)
+          { x: x, y: y, rotate: 90 - angle }
+        end
+
+        def grid_radii
+          config_radii = polar_grid_config[:radii]
+          return config_radii if config_radii
+
+          # Auto: circles at every ring boundary.
+          inner, outer = radii
+          band = (outer - inner) / rows.length
+          (0..rows.length).map { |i| inner + (band * i) }
+        end
+
+        def grid_fill_class(index)
+          token = polar_grid_config[:fills][index]
+          token ? css(:"grid_fill_#{token}") : css(:grid_circle)
+        end
+
+        # -- the tooltip payload (polar shape, ring anchors) -------------------
+
+        def coordinates_json
+          entry = series_entries.first
+          return "{}" unless entry
+
+          primary = segments(entry)
+          {
+            "layout" => "polar",
+            "categories" => primary.map { |s| chart_config.label_for(s.name, s.name) },
+            "names" => primary.map { |s| chart_config.label_for(s.name, s.name) },
+            "colors" => primary.map(&:fill),
+            "anchors" => primary.map do |s|
+              Polar.polar_to_cartesian(cx, cy, (s.ring_inner + s.ring_outer) / 2.0,
+                                       (s.seg_start + s.seg_end) / 2.0).map { |v| v.round(2) }
+            end,
+            "values" => { entry.data_key => rows.map { |row| Poetry::Charts.display_value(row[entry.data_key]) } }
+          }.to_json
+        end
+
+        def chart_id
+          @chart_id ||= "chart-#{id.presence || SecureRandom.hex(4)}"
+        end
+
+        def svg_label
+          label.presence || "Radial bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
+        end
+
+        def svg_interaction_attributes
+          attributes = super
+          if tooltip?
+            attributes["data-action"] = "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
+          end
+          attributes
+        end
+
+        def tooltip_layer_component
+          TooltipLayer::Component.new(
+            config: chart_config,
+            series_keys: [series_entries.first&.data_key].compact,
+            indicator: tooltip_config.fetch(:indicator, :dot),
+            hide_label: tooltip_config.fetch(:hide_label, true),
+            hide_indicator: tooltip_config.fetch(:hide_indicator, false)
+          )
+        end
+
+        def fnum(value)
+          Geometry.js_number((value * 100).round / 100.0)
+        end
+      end
+    end
+  end
+end

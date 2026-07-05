@@ -1,0 +1,46 @@
+<%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
+  <%= content_tag(:div, class: css(:frame), data: frame_data) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
+    <% if polar_grid? %>
+      <g data-slot="chart-polar-grid" aria-hidden="true">
+        <% grid_radii.each_with_index do |radius, i| %>
+          <circle class="<%= grid_fill_class(i) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"/>
+        <% end %>
+      </g>
+    <% end %>
+    <% series_entries.each_with_index do |entry, series_index| %>
+      <g data-slot="chart-radial-series" data-key="<%= entry.data_key %>">
+        <% segments(entry).each do |segment| %>
+          <% if entry.background %>
+            <path data-slot="chart-radial-background" class="<%= css(:background_ring) %>" d="<%= background_path(segment) %>"/>
+          <% end %>
+        <% end %>
+        <% segments(entry).each do |segment| %>
+          <path data-slot="chart-radial-bar" data-key="<%= entry.data_key %>"<% if series_index.zero? %> data-index="<%= segment.index %>"<% end %> d="<%= segment.path %>" fill="<%= segment.fill %>"/>
+        <% end %>
+        <% if entry.labels == :inside_start %>
+          <g data-slot="chart-labels" data-key="<%= entry.data_key %>" aria-hidden="true">
+            <% segments(entry).each do |segment| %>
+              <% placement = label_placement(segment) %>
+              <text class="<%= css(:inside_label) %>" x="<%= fnum(placement[:x]) %>" y="<%= fnum(placement[:y]) %>" dy="0.355em" transform="rotate(<%= fnum(placement[:rotate]) %>, <%= fnum(placement[:x]) %>, <%= fnum(placement[:y]) %>)"><%= entry.label_key ? rows[segment.index][entry.label_key] : segment.value %></text>
+            <% end %>
+          </g>
+        <% end %>
+      </g>
+    <% end %>
+    <% if center_label? %>
+      <text data-slot="chart-center-label" x="<%= fnum(cx) %>" y="<%= fnum(cy) %>" text-anchor="middle">
+        <tspan class="<%= css(:center_title) %>" x="<%= fnum(cx) %>" dy="0"><%= center_label_config[:title] %></tspan>
+        <% if center_label_config[:subtitle] %>
+          <tspan class="<%= css(:center_subtitle) %>" x="<%= fnum(cx) %>" dy="24"><%= center_label_config[:subtitle] %></tspan>
+        <% end %>
+      </text>
+    <% end %>
+  </svg>
+  <% if legend? %>
+    <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
+  <% end %>
+  <% if tooltip? %><%= render tooltip_layer_component %><% end %>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
+  <% end %>
+<% end %>
