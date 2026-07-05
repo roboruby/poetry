@@ -1,0 +1,7 @@
+<%# The labelled pair - a bare select has no accessible name. %>
+<div class="flex flex-col gap-2 p-4">
+  <%= poetry_label(for_id: "native-select-sort") { "Sort by" } %>
+  <%= poetry_native_select(name: "sort", id: "native-select-sort",
+                           options: [["Newest first", "newest"], ["Oldest first", "oldest"], ["Title", "title"]],
+                           selected: "newest") %>
+</div>

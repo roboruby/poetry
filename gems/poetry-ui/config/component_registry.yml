@@ -398,6 +398,31 @@ components:
     - 'Loading via loading: - never a manual disabled + spinner.'
     - Never nest an interactive element inside a Button.
     - Pick the variant by intent; one primary (default) action per view.
+  poetry/ui/button_group:
+    class_name: Poetry::Ui::ButtonGroup::Component
+    identifier: poetry--ui--button_group
+    bem_block: poetry-ui-button_group
+    styles:
+    - name: orientation
+      type: symbol
+      variants:
+      - horizontal
+      - vertical
+      default: horizontal
+      required: true
+    options: []
+    slots: []
+    elements:
+    - text
+    - separator
+    capsule: 27f89cdeb63b
+    agent_rules:
+    - Members go in the content block - the group's selectors join ANY data-slot children
+      (buttons, inputs, select triggers); never hand-round the inner corners.
+    - Give the group an aria-label when the page has more than one (role=group is
+      unnamed by default).
+    - A visual divider between members is poetry_button_group_separator, not a styled
+      border.
   poetry/ui/card:
     class_name: Poetry::Ui::Card::Component
     identifier: poetry--ui--card
@@ -1317,6 +1342,35 @@ components:
       wires ids, errors, and aria).
     - Error styling comes from aria-invalid, set from model errors - never hand-toggle
       error classes.
+  poetry/ui/input_group:
+    class_name: Poetry::Ui::InputGroup::Component
+    identifier: poetry--ui--input_group
+    bem_block: poetry-ui-input_group
+    styles: []
+    options: []
+    slots: []
+    elements:
+    - addon
+    - addon_inline_start
+    - addon_inline_end
+    - addon_block_start
+    - addon_block_end
+    - text
+    - control_input
+    - control_textarea
+    - button
+    - button_xs
+    - button_icon_xs
+    - button_icon_sm
+    capsule: 1a690cdd9c92
+    agent_rules:
+    - The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input
+      keeps its own border+ring and double-chromes the group.
+    - Addons are poetry_input_group_addon(align:) wrapping icons/text/buttons; use
+      poetry_input_group_text for muted captions and poetry_input_group_button for
+      tiny actions.
+    - The group is a surface, not a label - the control still needs its Label/Field
+      pairing.
   poetry/ui/input_otp:
     class_name: Poetry::Ui::InputOtp::Component
     identifier: poetry--ui--input_otp
@@ -1736,6 +1790,41 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+  poetry/ui/native_select:
+    class_name: Poetry::Ui::NativeSelect::Component
+    identifier: poetry--ui--native_select
+    bem_block: poetry-ui-native_select
+    styles: []
+    options:
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: name
+      type: string
+    - name: size
+      type: symbol
+      default: default
+    slots: []
+    elements:
+    - select
+    - icon
+    - option
+    - optgroup
+    capsule: 8f263b0e5f60
+    agent_rules:
+    - This is a REAL <select> - use it for plain picking; the JS Select is for styled
+      options.
+    - 'Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible
+      name.'
+    - 'The fast path is options: [[label, value], ...] + selected:; a content block
+      overrides it.'
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination

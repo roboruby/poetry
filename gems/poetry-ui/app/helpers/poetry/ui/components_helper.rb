@@ -138,6 +138,96 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # N9 W1b form statics.
+      def poetry_button_group(**, &)
+        render(Poetry::Ui::ButtonGroup::Component.new(**), &)
+      end
+
+      def poetry_button_group_text(**attrs, &block)
+        classes = [Poetry::Ui::ButtonGroup::Style.css(:text), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "button-group-text" }.merge(attrs.delete(:data) || {})
+        content_tag(:div, (capture(&block) if block), **attrs, class: classes, data: data)
+      end
+
+      def poetry_button_group_separator(**attrs)
+        classes = [Poetry::Ui::ButtonGroup::Style.css(:separator), attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Separator::Component.new(orientation: :vertical, **attrs, class: classes,
+                                                    "data-slot": "button-group-separator"))
+      end
+
+      def poetry_native_select(**, &)
+        render(Poetry::Ui::NativeSelect::Component.new(**), &)
+      end
+
+      def poetry_native_select_option(**attrs, &block)
+        classes = [Poetry::Ui::NativeSelect::Style.css(:option), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "native-select-option" }.merge(attrs.delete(:data) || {})
+        content_tag(:option, (capture(&block) if block), **attrs, class: classes, data: data)
+      end
+
+      def poetry_native_select_optgroup(**attrs, &block)
+        classes = [Poetry::Ui::NativeSelect::Style.css(:optgroup), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "native-select-optgroup" }.merge(attrs.delete(:data) || {})
+        content_tag(:optgroup, (capture(&block) if block), **attrs, class: classes, data: data)
+      end
+
+      def poetry_input_group(**, &)
+        render(Poetry::Ui::InputGroup::Component.new(**), &)
+      end
+
+      INPUT_GROUP_ALIGNS = %i[inline-start inline-end block-start block-end].freeze
+
+      def poetry_input_group_addon(align: :"inline-start", **attrs, &block)
+        unless INPUT_GROUP_ALIGNS.include?(align.to_sym)
+          raise ArgumentError, "InputGroup addon align: must be one of #{INPUT_GROUP_ALIGNS.inspect}"
+        end
+
+        style = Poetry::Ui::InputGroup::Style
+        classes = [style.css(:addon), style.css(:"addon_#{align.to_s.tr("-", "_")}"),
+                   attrs.delete(:class)].compact.join(" ")
+        data = { slot: "input-group-addon", align: align }.merge(attrs.delete(:data) || {})
+        content_tag(:div, (capture(&block) if block), **attrs, role: "group", class: classes, data: data)
+      end
+
+      def poetry_input_group_text(**attrs, &block)
+        classes = [Poetry::Ui::InputGroup::Style.css(:text), attrs.delete(:class)].compact.join(" ")
+        content_tag(:span, (capture(&block) if block), **attrs, class: classes)
+      end
+
+      # The borderless in-group control: the group wears the chrome; the
+      # data-slot=input-group-control is what its focus/invalid selectors
+      # key on.
+      def poetry_input_group_input(**attrs)
+        classes = [Poetry::Ui::InputGroup::Style.css(:control_input), attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Input::Component.new(**attrs, class: classes, "data-slot": "input-group-control"))
+      end
+
+      def poetry_input_group_textarea(**attrs)
+        classes = [Poetry::Ui::InputGroup::Style.css(:control_textarea), attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Textarea::Component.new(**attrs, class: classes, "data-slot": "input-group-control"))
+      end
+
+      INPUT_GROUP_BUTTON_SIZES = %i[xs sm icon-xs icon-sm].freeze
+
+      # The tiny in-group action: a ghost Button re-sized by the group's
+      # dictionary (tailwind_merge lets h-6 beat the Button's own h-9).
+      def poetry_input_group_button(size: :xs, **attrs, &)
+        unless INPUT_GROUP_BUTTON_SIZES.include?(size.to_sym)
+          raise ArgumentError, "InputGroup button size: must be one of #{INPUT_GROUP_BUTTON_SIZES.inspect}"
+        end
+        # Button's own icon-only guard keys off ITS size:, which this helper
+        # bypasses - re-enforce the accessible-name rule here.
+        if size.to_s.start_with?("icon") && attrs[:label].blank?
+          raise ArgumentError, "icon-sized InputGroup button requires label: (the accessible name)"
+        end
+
+        style = Poetry::Ui::InputGroup::Style
+        size_css = size.to_sym == :sm ? nil : style.css(:"button_#{size.to_s.tr("-", "_")}")
+        classes = [style.css(:button), size_css, attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Button::Component.new(variant: :ghost, **attrs, class: classes,
+                                                 "data-size": size), &)
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

@@ -1,0 +1,87 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module NativeSelect
+      # The NativeSelect - a styled REAL <select> (platform picker, form
+      # submission, mobile UX for free) with the shadcn chrome and a
+      # decorative chevron. The fast path is options: pairs; compose
+      # <option>/<optgroup> in the content block for anything richer
+      # (poetry_native_select_option / _optgroup stamp the classes).
+      class Component < Poetry::Core::Component
+        SIZES = %i[default sm].freeze
+
+        AGENT_RULES = [
+          "This is a REAL <select> - use it for plain picking; the JS Select is for styled options.",
+          "Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.",
+          "The fast path is options: [[label, value], ...] + selected:; a content block overrides it."
+        ].freeze
+
+        option :name, :string
+        option :id, :string
+        # The accessible name for label-less placements (a visible Label
+        # paired via id:/for_id: is still the default pattern).
+        option :label, :string
+        option :size, :symbol, default: :default
+        option :disabled, :boolean, default: false
+        option :invalid, :boolean, default: false
+
+        validates :size, inclusion: { in: SIZES }
+
+        def call
+          content_tag(:div, wrapper_attributes.to_attributes) do
+            safe_join([select_element, chevron])
+          end
+        end
+
+        def wrapper_attributes
+          html_attributes.merge_if_not_set(
+            {
+              "data-slot" => "native-select-wrapper", "data-size" => size
+            }.merge(component_data_attributes)
+          )
+        end
+
+        def select_attributes
+          attrs = { "data-slot" => "native-select", "data-size" => size, "class" => css(:select) }
+          attrs["name"] = name if name.present?
+          attrs["id"] = id if id.present?
+          attrs["aria-label"] = label if label.present?
+          attrs["disabled"] = true if disabled
+          attrs["aria-invalid"] = true if invalid
+          attrs
+        end
+
+        private
+
+        # options: pairs are structural data, not a typed option.
+        def initialize(options: nil, selected: nil, **)
+          super(**)
+          @options = options
+          @selected = selected
+        end
+
+        def select_element
+          content_tag(:select, select_content, select_attributes)
+        end
+
+        def select_content
+          return content if content.present?
+
+          safe_join(Array(@options).map do |entry|
+            label, value = entry.is_a?(Array) ? entry : [entry, entry]
+            tag.option(label, value: value, selected: value.to_s == @selected.to_s || nil,
+                              "data-slot": "native-select-option", class: css(:option))
+          end)
+        end
+
+        def chevron
+          content_tag(:span, "data-slot" => "native-select-icon", "aria-hidden" => "true",
+                             class: css(:icon)) do
+            render(Poetry::Ui::Icon::Component.new(name: :"chevron-down"))
+          end
+        end
+      end
+    end
+  end
+end

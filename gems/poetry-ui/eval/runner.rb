@@ -478,6 +478,23 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "filter_toolbar" => {
+          "description" => "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort " \
+                           "dropdown, and a List/Grid view switch",
+          "gates" => [
+            Gate.new(:controls_are_labelled, :cross_arm, lambda { |doc, _html|
+              %w[input select].all? do |kind|
+                doc.css(kind).all? do |el|
+                  doc.css(%(label[for="#{el["id"]}"])).any? || el["aria-label"].to_s.strip.length.positive?
+                end
+              end
+            }),
+            Gate.new(:composites_are_groups, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="group"]').length >= 2
+            }),
+            Gate.new(:sort_is_a_real_select, :cross_arm, ->(doc, _html) { doc.css("select option").length >= 2 })
+          ]
+        },
         "user_directory" => {
           "description" => "A team directory: a breadcrumb trail (Home / Team / Directory), then a " \
                            "list of member rows - avatar, name, description, and a Message action",
