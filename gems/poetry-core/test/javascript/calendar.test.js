@@ -21,11 +21,14 @@ const isoOf = (index) => new Date(START + index * 86400000).toISOString().slice(
 const dayButton = (index) => {
   const iso = isoOf(index)
   const outside = !iso.startsWith("2026-06")
-  return `<button type="button" data-slot="calendar-day" data-poetry--core--calendar-target="day"
-                  data-date="${iso}" ${outside ? "data-outside" : ""} tabindex="-1" aria-selected="false"
-                  data-action="click->poetry--core--calendar#select">
-            <span data-slot="calendar-day-label">${new Date(iso + "T00:00:00Z").getUTCDate()}</span>
-          </button>`
+  // The role=gridcell wrapper carries aria-selected (the real markup shape).
+  return `<div role="gridcell" aria-selected="false">
+            <button type="button" data-slot="calendar-day" data-poetry--core--calendar-target="day"
+                    data-date="${iso}" ${outside ? "data-outside" : ""} tabindex="-1"
+                    data-action="click->poetry--core--calendar#select">
+              <span data-slot="calendar-day-label">${new Date(iso + "T00:00:00Z").getUTCDate()}</span>
+            </button>
+          </div>`
 }
 
 const markup = ({ selected = "", min = "", max = "" } = {}) => `
@@ -76,7 +79,7 @@ describe("poetry--core--calendar", () => {
 
     expect(el("input").value).toBe("2026-06-20")
     expect(dayFor("2026-06-20").hasAttribute("data-selected")).toBe(true)
-    expect(dayFor("2026-06-20").getAttribute("aria-selected")).toBe("true")
+    expect(dayFor("2026-06-20").closest('[role="gridcell"]').getAttribute("aria-selected")).toBe("true")
     expect(detail).toEqual({ value: "2026-06-20" })
   })
 

@@ -129,7 +129,9 @@ export default class CalendarController extends Controller {
       const selected = button.dataset.date === this.selectedValue && this.selectedValue !== ""
 
       this.#toggle(button, "data-selected", selected)
-      button.setAttribute("aria-selected", selected ? "true" : "false")
+      // aria-selected belongs on the role=gridcell parent, not the button
+      // (the ARIA grid contract; a plain button can't carry aria-selected).
+      button.closest('[role="gridcell"]')?.setAttribute("aria-selected", selected ? "true" : "false")
       if (button.dataset.date === this.#todayIso()) button.setAttribute("aria-current", "date")
       else button.removeAttribute("aria-current")
     }
