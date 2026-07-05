@@ -21,9 +21,12 @@ module Poetry
         end
       end
 
-      # Make the client chrome servable by Propshaft.
+      # Make the client chrome + the motion stylesheet servable by Propshaft.
       initializer "poetry_charts.assets" do |app|
-        app.config.assets.paths << Poetry::Charts.root.join("app/javascript").to_s if app.config.respond_to?(:assets)
+        if app.config.respond_to?(:assets)
+          app.config.assets.paths << Poetry::Charts.root.join("app/javascript").to_s
+          app.config.assets.paths << Poetry::Charts.root.join("app/assets/stylesheets").to_s
+        end
       end
 
       # The importmap-first JS channel (the poetry-core shape).

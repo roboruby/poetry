@@ -16,13 +16,16 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
           "Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.",
           "dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors block).",
           "labels: true stamps each value above its point; give the chart margin top when using it.",
-          "Colors come from the config - never set stroke on a line directly."
+          "Colors come from the config - never set stroke on a line directly.",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         CURVES = AreaChart::Component::CURVES
@@ -39,6 +42,8 @@ module Poetry
         option :height, :integer, default: 360
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
+
+        motion_options
 
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false|

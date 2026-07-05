@@ -31,17 +31,20 @@ module Poetry
 
       # role=img for static charts; the accessibilityLayer contract when
       # the tooltip attaches (recharts: role=application + focusable).
+      # Motion (Phase A) rides the same tag: data-animate + the
+      # --poetry-motion-* knobs.
       def svg_interaction_attributes
-        if tooltip?
-          {
-            "role" => "application",
-            "tabindex" => "0",
-            "data-poetry--charts--tooltip-target" => "svg",
-            "data-action" => SVG_ACTIONS
-          }
-        else
-          { "role" => "img" }
-        end
+        base = if tooltip?
+                 {
+                   "role" => "application",
+                   "tabindex" => "0",
+                   "data-poetry--charts--tooltip-target" => "svg",
+                   "data-action" => SVG_ACTIONS
+                 }
+               else
+                 { "role" => "img" }
+               end
+        respond_to?(:motion_svg_attributes) ? base.merge(motion_svg_attributes) : base
       end
 
       def tooltip_layer_component

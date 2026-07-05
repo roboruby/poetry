@@ -18,13 +18,16 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "Rows carry their slice color in a fill key (var(--color-<name>)); the config maps names to labels.",
           "inner_radius: 60 makes the donut; with_center_label(title:, subtitle:) fills the hole.",
           "Stacked pies: two with_pie slots with their own data: and non-overlapping radii.",
           "active_index: pops one slice out by 10px (the donut-active look).",
-          "The tooltip walks slices by hover AND arrow keys (role=application when attached)."
+          "The tooltip walks slices by hover AND arrow keys (role=application when attached).",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         Series = Data.define(:data, :data_key, :name_key, :inner_radius, :outer_radius,
@@ -38,6 +41,8 @@ module Poetry
         option :height, :integer, default: 360
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
+
+        motion_options(delay: 400)
 
         renders_many :pies, lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
                                       outer_radius: "80%", padding_angle: 0, stroke_width: 1,

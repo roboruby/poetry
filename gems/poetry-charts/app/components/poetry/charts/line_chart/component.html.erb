@@ -18,7 +18,8 @@
     <g data-slot="chart-lines">
       <% series_entries.each do |entry| %>
         <% if (d = series_path(entry)) %>
-          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"/>
+          <%# pathLength="1" normalizes the path to unit length - the motion stylesheet's dash draw-in needs no measurement. %>
+          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"<% if animate? %> pathLength="1"<% end %>/>
         <% end %>
         <% if entry.dots %>
           <g data-slot="chart-dots" data-key="<%= entry.key %>">

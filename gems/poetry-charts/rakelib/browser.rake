@@ -33,7 +33,7 @@ def poetry_charts_preview_pages
   end
 end
 
-def poetry_charts_browser_session
+def poetry_charts_browser_session(reduced_motion: false)
   require "capybara/cuprite"
 
   Capybara.register_driver(:poetry_cuprite) do |app|
@@ -41,7 +41,20 @@ def poetry_charts_browser_session
                                        headless: true, timeout: 30, process_timeout: 30)
   end
   Capybara.server = :puma, { Silent: true }
-  Capybara::Session.new(:poetry_cuprite, Rails.application)
+  session = Capybara::Session.new(:poetry_cuprite, Rails.application)
+
+  # The visual + axe passes emulate prefers-reduced-motion: reduce (CDP,
+  # persists across navigations): deterministic screenshots regardless of
+  # entrance animation, AND a standing proof that reduced-motion users get
+  # the untouched chart - the Phase A baselines must match the pre-motion
+  # recordings. The interaction task keeps real motion.
+  if reduced_motion
+    session.driver.browser.page.command(
+      "Emulation.setEmulatedMedia",
+      features: [{ "name" => "prefers-reduced-motion", "value" => "reduce" }]
+    )
+  end
+  session
 end
 
 # Visit a preview page and wait for readiness (stamped inline while the
@@ -125,7 +138,7 @@ namespace :test do
   desc "Run axe (#{POETRY_AXE_RULESETS.join(", ")}) against every charts preview example " \
        "in headless Chrome (not in the default gate - needs Chrome)"
   task accessibility: :"browser:assets" do
-    session = poetry_charts_browser_session
+    session = poetry_charts_browser_session(reduced_motion: true)
 
     failures = []
     skipped = []
@@ -174,7 +187,7 @@ namespace :test do
   task visual: :"browser:assets" do
     require "fileutils"
 
-    session = poetry_charts_browser_session
+    session = poetry_charts_browser_session(reduced_motion: true)
     baseline_dir = Poetry::Charts.root.join("test/visual_baselines")
     diffs_dir = Poetry::Charts.root.join("tmp/visual_diffs")
     rebaseline = ENV["VISUAL_REBASELINE"] == "1"

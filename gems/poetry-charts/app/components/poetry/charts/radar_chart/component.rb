@@ -21,13 +21,16 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:) / with_legend.",
           "Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width: 2.",
           "with_grid type: :circle swaps polygons for circles; fill: :desktop tints the disc (opacity 0.2).",
           "dots: true marks every vertex (r 4, solid).",
-          "Colors come from the config - never set fill/stroke on a radar directly."
+          "Colors come from the config - never set fill/stroke on a radar directly.",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         Series = Data.define(:data_key, :fill_opacity, :stroke_width, :dots, :dot_radius) do
@@ -43,6 +46,8 @@ module Poetry
         option :height, :integer, default: 360
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
+
+        motion_options
         option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
 
         renders_many :radars, lambda { |data_key:, fill_opacity: 0.6, stroke_width: 0, dots: false, dot_radius: 4|
@@ -220,6 +225,13 @@ module Poetry
             attributes["data-action"] = "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
           end
           attributes
+        end
+
+        # The polar center, so the motion stylesheet can scale the entrance
+        # from it (recharts lerps every vertex from (cx, cy) - a uniform
+        # scale is the identical per-frame geometry).
+        def motion_style_extras
+          "--poetry-motion-center: #{fnum(cx)}px #{fnum(cy)}px"
         end
 
         def fnum(value)

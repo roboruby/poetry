@@ -33,7 +33,7 @@
       <% series_entries.each do |entry| %>
         <g data-slot="chart-bar-series" data-key="<%= entry.key %>">
           <% cells(entry).each do |cell| %>
-            <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %>/>
+            <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if animate? %> data-motion-origin="<%= motion_origin(cell) %>"<% end %><% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %>/>
           <% end %>
         </g>
         <% if entry.labels %>

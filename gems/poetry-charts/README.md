@@ -10,6 +10,13 @@ print, PDF, and email; themed by CSS variables (`--chart-1..5` + per-chart
 adds tooltip/legend/active interactivity by reading **server-embedded
 coordinates** — no chart math in the browser.
 
+Entrance animation is on by default (recharts' defaults per family: bars
+400ms, everything else 1500ms ease) and stays doctrine-pure: the CSS motion
+tier animates between server-computed states (line dash draw-in, area clip
+reveal, bars growing from the value baseline, radar rising from the polar
+center). `animate: false` opts a chart out; `prefers-reduced-motion` users
+always get the finished chart in the initial paint.
+
 Engines are swappable (three doors — full recipes in `docs/adapters.md`):
 
 1. **The frame** (container/config/style + tooltip/legend chrome) is
@@ -38,6 +45,13 @@ Stimulus entrypoint:
 ```js
 import { registerPoetryChartsControllers } from "@poetry/charts"
 registerPoetryChartsControllers(application)
+```
+
+The motion tier is one `@import` in your CSS build (the engine also exposes
+it to Propshaft as `poetry-charts.css`); skip it and charts render static:
+
+```css
+@import "poetry-charts/app/assets/stylesheets/poetry-charts.css";
 ```
 
 Interactive charts are **real forms**: submit a filter, the chart

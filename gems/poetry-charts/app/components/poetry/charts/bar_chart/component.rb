@@ -19,13 +19,16 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.",
           "radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.",
           "Stack bars with the same stack: id; negatives automatically drop below the zero line.",
           "cell_fill: ->(row, value) { ... } colors bars per datum (validated CSS-safe); color_key: reads a row key.",
-          "active_index: highlights one bar (fill-opacity 0.8 + dashed stroke - the active block look)."
+          "active_index: highlights one bar (fill-opacity 0.8 + dashed stroke - the active block look).",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         Series = Data.define(:key, :stack, :radius, :labels, :label_key, :color_key,
@@ -41,6 +44,8 @@ module Poetry
         option :margin, ActiveModel::Type::Value.new
         option :offset, :symbol, default: :none
         option :label, :string
+
+        motion_options(duration: 400)
         option :bar_gap, :integer, default: 4
         option :bar_category_gap, :string, default: "10%"
         # :vertical = columns (the default); :horizontal = bars growing
@@ -177,6 +182,17 @@ module Poetry
               base.merge(x: cartesian.x_positions[i] + slot[:offset], y: top,
                          width: slot[:size], height: bottom - top)
             end
+          end
+        end
+
+        # The zero edge the entrance animation grows from: sign x
+        # orientation (stacked segments grow from their own zero-side edge,
+        # matching recharts' per-rect baseline interpolation).
+        def motion_origin(cell)
+          if horizontal?
+            cell[:value].negative? ? "right" : "left"
+          else
+            cell[:value].negative? ? "top" : "bottom"
           end
         end
 

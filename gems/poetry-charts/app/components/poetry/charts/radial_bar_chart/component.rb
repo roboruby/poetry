@@ -20,13 +20,17 @@ module Poetry
       #   <% end %>
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "One ring per data row; rows carry their color in a fill key (var(--color-<name>)).",
           "background: true draws the muted track ring behind each bar (the gauge look).",
           "Stack two radial bars with the same stack: id - they share the ring and stack by ANGLE.",
           "corner_radius rounds the arc ends (10 on a 10px ring = full pill caps).",
-          "with_polar_grid(radii:, fills:) draws the shape/text blocks' disc track; with_center_label fills the middle."
+          "with_polar_grid(radii:, fills:) draws the shape/text blocks' disc track; " \
+          "with_center_label fills the middle.",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         Series = Data.define(:data_key, :stack, :background, :corner_radius, :color_key,
@@ -39,6 +43,8 @@ module Poetry
         option :height, :integer, default: 360
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
+
+        motion_options
         option :name_key, :string, default: "name"
         option :start_angle, :integer, default: 0
         option :end_angle, :integer, default: 360

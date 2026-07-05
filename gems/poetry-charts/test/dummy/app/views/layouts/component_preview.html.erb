@@ -9,11 +9,19 @@
         (the W5 upgrade from the W1 inline readiness stamp). %>
     <link rel="stylesheet" href="/assets/poetry.css">
     <style>
-      /* Deterministic screenshots (rake test:visual): no motion in the
-         preview host - transitions and carets freeze. */
+      /* Deterministic screenshots (rake test:visual): the visual/axe
+         sessions emulate prefers-reduced-motion: reduce over CDP, and THAT
+         is the one switch that freezes the host - the gem's own motion
+         stylesheet honors it, and this belt-and-suspenders rule catches
+         transitions too. Real motion runs when a human (or the interaction
+         task) opens a preview. */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+        }
+      }
       *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
         caret-color: transparent !important;
       }
     </style>

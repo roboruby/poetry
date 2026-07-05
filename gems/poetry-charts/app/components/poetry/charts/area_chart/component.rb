@@ -20,13 +20,16 @@ module Poetry
       # per-x pixel coordinates are embedded for the W5 tooltip controller.
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
+        include Poetry::Charts::Motion
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.",
           "Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.",
           "Colors come from the config - never set fill/stroke on an area directly.",
           "gradient: true on an area gets the shadcn 5%/95% fade fill.",
-          "Charts render complete on the server; the tooltip layer attaches separately."
+          "Charts render complete on the server; the tooltip layer attaches separately.",
+          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Reduced-motion users always get the finished chart."
         ].freeze
 
         CURVES = %i[natural linear step step_before step_after monotone_x].freeze
@@ -43,6 +46,8 @@ module Poetry
         option :margin, ActiveModel::Type::Value.new
         option :offset, :symbol, default: :none
         option :label, :string
+
+        motion_options
 
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
 
