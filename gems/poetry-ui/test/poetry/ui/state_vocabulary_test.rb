@@ -31,6 +31,7 @@ module Poetry
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
         "inset" => "menu item inset marker (server-rendered)",
+        "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup, N9 W2)",
         "size" => "server-rendered size marker",
         "spacing" => "server-rendered spacing marker",
         "position" => "toaster stack position (server-rendered)",

@@ -1,0 +1,10 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, list_attributes) do %>
+    <% tab_defs.each do |tab| %>
+      <%= content_tag(:button, tab.title, trigger_attributes(tab)) %>
+    <% end %>
+  <% end %>
+  <% tab_defs.each do |tab| %>
+    <%= content_tag(:div, capture(&tab.panel), panel_attributes(tab)) %>
+  <% end %>
+<% end %>

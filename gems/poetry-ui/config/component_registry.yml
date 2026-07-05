@@ -2454,6 +2454,58 @@ components:
       (a <td>).
     - Mark a selected row with data-selected on poetry_table_row - never a bespoke
       highlight class.
+  poetry/ui/tabs:
+    class_name: Poetry::Ui::Tabs::Component
+    identifier: poetry--ui--tabs
+    bem_block: poetry-ui-tabs
+    styles: []
+    options:
+    - name: default
+      type: string
+    - name: label
+      type: string
+    - name: orientation
+      type: symbol
+      default: horizontal
+    - name: variant
+      type: symbol
+      default: default
+    slots:
+    - name: tabs
+      many: true
+    elements:
+    - list
+    - list_default
+    - list_line
+    - trigger
+    - content
+    capsule: dd942b50e8a6
+    controllers:
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
+    - identifier: poetry--core--tabs
+      targets: []
+      values:
+      - activateOnFocus
+      actions:
+      - activate
+      - focusActivate
+      - setValue
+    agent_rules:
+    - Declare tabs with with_tab(title, value:) + the panel block - never hand-wire
+      role=tab/tabpanel ids.
+    - 'default: picks the server-rendered active tab (the first enabled tab otherwise)
+      - the panel is visible without JS.'
+    - 'label: names the tablist (aria-label) - recommended whenever the page has several
+      tab sets.'
+    - Tabs switch VIEWS of one context; use navigation (links) when the URL should
+      change.
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea

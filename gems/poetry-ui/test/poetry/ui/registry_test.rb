@@ -23,7 +23,8 @@ module Poetry
                       poetry/ui/native_select
                       poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group poetry/ui/select
                       poetry/ui/separator poetry/ui/sheet poetry/ui/skeleton poetry/ui/slider poetry/ui/spinner
-                      poetry/ui/switch poetry/ui/table poetry/ui/textarea poetry/ui/toast poetry/ui/toaster
+                      poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea poetry/ui/toast
+                      poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/tooltip]
 
         assert_equal expected, registry.entries.keys.sort

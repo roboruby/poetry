@@ -1,0 +1,13 @@
+<%# The poetry arm: real tabs - tablist/tab/tabpanel roles, wired ids,
+    a server-rendered active panel, keyboard via roving focus. %>
+<%= poetry_tabs(label: "Account settings") do |tabs| %>
+  <% tabs.with_tab("Account", value: "account") do %>
+    <p>Make changes to your account here.</p>
+  <% end %>
+  <% tabs.with_tab("Password", value: "password") do %>
+    <p>Change your password here.</p>
+  <% end %>
+  <% tabs.with_tab("Notifications", value: "notifications") do %>
+    <p>Choose what you hear about.</p>
+  <% end %>
+<% end %>

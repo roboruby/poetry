@@ -138,6 +138,12 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # Tabs (N9 W2): declare with with_tab(title, value:) + panel blocks;
+      # the component owns the ARIA wiring and the two-controller split.
+      def poetry_tabs(**, &)
+        render(Poetry::Ui::Tabs::Component.new(**), &)
+      end
+
       # N9 W1b form statics.
       def poetry_button_group(**, &)
         render(Poetry::Ui::ButtonGroup::Component.new(**), &)

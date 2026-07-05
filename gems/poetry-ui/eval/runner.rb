@@ -478,6 +478,20 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "settings_tabs" => {
+          "description" => "Account settings tabs (Account / Password / Notifications) with the " \
+                           "first tab active and its panel visible",
+          "gates" => [
+            Gate.new(:tablist_semantics, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="tablist"] [role="tab"]').length >= 3 && doc.css('[role="tabpanel"]').any?
+            }),
+            Gate.new(:selection_announced_and_wired, :cross_arm, lambda { |doc, _html|
+              active = doc.css('[role="tab"][aria-selected="true"]')
+              active.length == 1 && active.first["aria-controls"].to_s.strip.length.positive?
+            }),
+            Gate.new(:switching_is_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
+          ]
+        },
         "filter_toolbar" => {
           "description" => "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort " \
                            "dropdown, and a List/Grid view switch",
