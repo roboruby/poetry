@@ -41,9 +41,22 @@
       "max": {
         "type": "String"
       },
-      "locale": {
-        "type": "String",
-        "default": "en-US"
+      "monthNames": {
+        "type": "Array",
+        "default": [
+          "January",
+          "February",
+          "March",
+          "April",
+          "May",
+          "June",
+          "July",
+          "August",
+          "September",
+          "October",
+          "November",
+          "December"
+        ]
       }
     },
     "classes": [],
@@ -173,6 +186,25 @@
       "open",
       "pressCancel",
       "pressStart"
+    ]
+  },
+  "poetry--core--date-picker": {
+    "targets": [
+      "label"
+    ],
+    "values": {
+      "placeholder": {
+        "type": "String",
+        "default": "Pick a date"
+      },
+      "locale": {
+        "type": "String",
+        "default": "en-US"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "picked"
     ]
   },
   "poetry--core--dialog": {

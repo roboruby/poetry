@@ -23,7 +23,14 @@ export default class CalendarController extends Controller {
     weekStart: { type: Number, default: 0 }, // 0 = Sunday
     min: String,
     max: String,
-    locale: { type: String, default: "en-US" }
+    // The localized month names, handed down by the SERVER (Ruby I18n) so
+    // the JS caption needs no Intl - correct under app locale AND in the
+    // Intl-less dommy engine. English is the fallback.
+    monthNames: {
+      type: Array,
+      default: ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"]
+    }
   }
 
   #today = null
@@ -156,8 +163,7 @@ export default class CalendarController extends Controller {
 
   #captionText() {
     const [year, month] = this.monthValue.split("-").map(Number)
-    return new Date(Date.UTC(year, month - 1, 1))
-      .toLocaleDateString(this.localeValue, { month: "long", year: "numeric", timeZone: "UTC" })
+    return `${this.monthNamesValue[month - 1]} ${year}`
   }
 
   #shiftMonth(by) {
