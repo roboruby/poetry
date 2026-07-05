@@ -17,6 +17,44 @@
       "toggle"
     ]
   },
+  "poetry--core--calendar": {
+    "targets": [
+      "caption",
+      "day",
+      "grid",
+      "input"
+    ],
+    "values": {
+      "month": {
+        "type": "String"
+      },
+      "selected": {
+        "type": "String"
+      },
+      "weekStart": {
+        "type": "Number",
+        "default": 0
+      },
+      "min": {
+        "type": "String"
+      },
+      "max": {
+        "type": "String"
+      },
+      "locale": {
+        "type": "String",
+        "default": "en-US"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "keydown",
+      "nextMonth",
+      "previousMonth",
+      "select"
+    ]
+  },
   "poetry--core--carousel": {
     "targets": [
       "next",

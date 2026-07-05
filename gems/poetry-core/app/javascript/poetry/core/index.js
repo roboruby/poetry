@@ -34,6 +34,7 @@ import CarouselController from "@poetry/controllers/carousel_controller"
 import ResizableController from "@poetry/controllers/resizable_controller"
 import NavigationMenuController from "@poetry/controllers/navigation_menu_controller"
 import SidebarController from "@poetry/controllers/sidebar_controller"
+import CalendarController from "@poetry/controllers/calendar_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -66,6 +67,7 @@ export { default as CarouselController } from "@poetry/controllers/carousel_cont
 export { default as ResizableController } from "@poetry/controllers/resizable_controller"
 export { default as NavigationMenuController } from "@poetry/controllers/navigation_menu_controller"
 export { default as SidebarController } from "@poetry/controllers/sidebar_controller"
+export { default as CalendarController } from "@poetry/controllers/calendar_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -110,7 +112,8 @@ export const controllers = {
   "poetry--core--carousel": CarouselController,
   "poetry--core--resizable": ResizableController,
   "poetry--core--navigation-menu": NavigationMenuController,
-  "poetry--core--sidebar": SidebarController
+  "poetry--core--sidebar": SidebarController,
+  "poetry--core--calendar": CalendarController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the
