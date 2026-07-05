@@ -66,6 +66,18 @@
     animation: poetry-chart-fade 200ms ease calc(var(--poetry-motion-delay, 0ms) + var(--poetry-motion-duration, 1500ms)) both;
   }
 
+  /* A cross-render morph (A-W3) replaces the entrance: the controller
+     stamps data-motion="morph" before the new render's first paint, and
+     this kill switch stops the fresh elements' entrance animations so the
+     FLIP tween owns the frame. It stays on at "settled" - otherwise the
+     morph's end would re-arm the entrance keyframes and replay them.
+     Killing a COMPLETED entrance is pixel-identical by the invariant
+     above: every keyframe ends at the natural attribute state. */
+  [data-animate][data-motion="morph"] :is(path, g, rect, circle, text),
+  [data-animate][data-motion="settled"] :is(path, g, rect, circle, text) {
+    animation: none !important;
+  }
+
   @keyframes poetry-chart-draw {
     from { stroke-dashoffset: 1; }
     to { stroke-dashoffset: 0; }

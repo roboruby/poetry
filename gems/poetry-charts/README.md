@@ -56,7 +56,11 @@ it to Propshaft as `poetry-charts.css`); skip it and charts render static:
 
 Interactive charts are **real forms**: submit a filter, the chart
 re-renders on the server (Turbo makes it smooth; the mechanics need no
-JS). See `docs/adapters.md` for BYO engines.
+JS). Give a chart a stable `id:` and it **morphs** between those server
+renders — under any same-context swap (Turbo Drive/Frames/Streams), the
+new render starts from the old geometry and tweens to its own; a shape
+change (points added/removed) replays the entrance instead, recharts'
+own update behavior. See `docs/adapters.md` for BYO engines.
 
 Part of the [poetry](../poetry) gem family. Status: N10 complete —
 six families, 52 gallery examples, the frozen spec-v1 adapter seam.

@@ -1,11 +1,19 @@
-<%# The area-interactive block, the Rails way: the period selector is a
-    real form; submitting re-renders the chart server-side. %>
+<%# The area-interactive block, the Rails way: the selectors are a real
+    form; submitting re-renders the chart server-side, and Turbo makes the
+    swap same-context. The dataset toggle keeps the chart's shape - the
+    stable id: lets the A-W3 engine MORPH between the two server renders;
+    the period toggle changes the shape and replays the entrance. %>
 <div style="width: 640px; margin: 2rem auto;">
   <form method="get" action="/interactive" data-slot="demo-period-form" style="margin-bottom: 1rem;">
     <label for="period">Period</label>
     <select id="period" name="period">
       <option value="6m" <%= "selected" if @period == "6m" %>>Last 6 months</option>
       <option value="3m" <%= "selected" if @period == "3m" %>>Last 3 months</option>
+    </select>
+    <label for="dataset">Traffic</label>
+    <select id="dataset" name="dataset">
+      <option value="current" <%= "selected" if @dataset == "current" %>>This year</option>
+      <option value="previous" <%= "selected" if @dataset == "previous" %>>Last year</option>
     </select>
     <button type="submit">Apply</button>
   </form>

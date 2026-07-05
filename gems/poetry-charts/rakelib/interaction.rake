@@ -41,12 +41,29 @@ namespace :test do
     # -- the interactive doctrine: a real form, a server re-render ------------
     session.visit("/interactive")
     raise "interactive demo missing" unless session.has_css?('[data-slot="demo-period-form"]')
+    raise "Turbo is not driving the demo" unless session.evaluate_script("!!window.Turbo")
 
     six_month_ticks = session.all('[data-slot="chart-x-axis"] text').length
     raise "expected 6 months, got #{six_month_ticks}" unless six_month_ticks == 6
 
+    # -- the A-W3 morph: same shape, new values -> FLIP between renders -------
+    before_d = session.find('path[data-slot="chart-area"]', match: :first)["d"]
+    session.select("Last year", from: "dataset")
+    session.click_button("Apply")
+    unless session.has_css?('[data-slot="chart-svg"][data-motion="morph"]', wait: 5)
+      raise "the dataset swap did not morph (data-motion never hit \"morph\")"
+    end
+    raise "the morph never settled" unless session.has_css?('[data-slot="chart-svg"][data-motion="settled"]', wait: 5)
+
+    after_d = session.find('path[data-slot="chart-area"]', match: :first)["d"]
+    raise "the morph landed on the old geometry" if after_d == before_d
+
+    # -- the shape change: 6 -> 3 months -> the entrance replays instead ------
     session.select("Last 3 months", from: "period")
     session.click_button("Apply")
+    unless session.has_css?('[data-slot="chart-svg"][data-motion="entrance"]', wait: 5)
+      raise "the shape change did not replay the entrance"
+    end
     raise "the form round-trip did not land" unless session.has_css?('[data-slot="chart-x-axis"]', wait: 5)
 
     three_month_ticks = session.all('[data-slot="chart-x-axis"] text').length
@@ -58,7 +75,8 @@ namespace :test do
     end
 
     puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses; " \
-         "the interactive form round-trips server-side (6 -> 3 months) with the tooltip live - " \
+         "the dataset swap MORPHS between server renders (data-motion morph -> settled, new geometry), " \
+         "the 6 -> 3 month shape change replays the entrance, and the tooltip survives every swap - " \
          "the engine works in Chrome"
   end
 end

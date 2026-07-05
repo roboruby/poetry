@@ -170,3 +170,78 @@ describe("poetry--charts--motion", () => {
     expect(document.querySelector("svg").getAttribute("data-motion")).toBe("settled")
   })
 })
+
+// -- the cross-render morph (A-W3) --------------------------------------
+
+const morphMarkup = (d, cx, cy) => `
+  <div data-chart="chart-morph">
+    <div data-controller="poetry--charts--motion">
+      <svg data-slot="chart-svg" data-animate=""
+           style="--poetry-motion-duration: 1000ms; --poetry-motion-easing: linear; --poetry-motion-delay: 0ms">
+        <path data-slot="chart-line" data-key="desktop" d="${d}"></path>
+        <circle data-slot="chart-dot" data-key="desktop" cx="${cx}" cy="${cy}" r="3"></circle>
+      </svg>
+    </div>
+  </div>`
+
+describe("poetry--charts--motion morph", () => {
+  let application
+
+  beforeEach(() => async () => {
+    application?.stop()
+    document.body.replaceChildren()
+    await nextFrame()
+  })
+
+  it("FLIPs a same-id re-render from the old geometry to the new", async () => {
+    application = await boot(morphMarkup("M0,100L50,50L100,80", 10, 20))
+    expect(document.querySelector("svg").getAttribute("data-motion")).toBe("settled")
+
+    // The server re-render: same chart id, same structure, new values.
+    document.body.innerHTML = morphMarkup("M0,60L50,90L100,20", 30, 40)
+    await nextFrame()
+
+    const svg = document.querySelector("svg")
+    const path = document.querySelector("path")
+    const dot = document.querySelector("circle")
+
+    // The FLIP applied synchronously: the new render shows the OLD geometry.
+    expect(svg.getAttribute("data-motion")).toBe("morph")
+    expect(path.getAttribute("d")).toBe("M0,100L50,50L100,80")
+    expect(dot.getAttribute("cx")).toBe("10")
+
+    pump(0)
+    pump(500) // linear 0.5: numbers halfway
+    expect(path.getAttribute("d")).toBe("M0,80L50,70L100,50")
+    expect(dot.getAttribute("cx")).toBe("20")
+    expect(dot.getAttribute("cy")).toBe("30")
+
+    pump(1000) // exact new server strings restored
+    expect(path.getAttribute("d")).toBe("M0,60L50,90L100,20")
+    expect(dot.getAttribute("cx")).toBe("30")
+    expect(svg.getAttribute("data-motion")).toBe("settled")
+  })
+
+  it("falls back to the entrance replay when the structure changes", async () => {
+    application = await boot(morphMarkup("M0,100L50,50L100,80", 10, 20))
+
+    // Fewer points -> different skeleton -> no morph; jsdom cartesian
+    // entrance settles immediately with the new server d untouched.
+    document.body.innerHTML = morphMarkup("M0,60L50,90", 30, 40)
+    await nextFrame()
+
+    expect(document.querySelector("svg").getAttribute("data-motion")).toBe("settled")
+    expect(document.querySelector("path").getAttribute("d")).toBe("M0,60L50,90")
+  })
+
+  it("never morphs under prefers-reduced-motion", async () => {
+    application = await boot(morphMarkup("M0,100L50,50L100,80", 10, 20))
+
+    globalThis.matchMedia = () => ({ matches: true })
+    document.body.innerHTML = morphMarkup("M0,60L50,90L100,20", 30, 40)
+    await nextFrame()
+
+    expect(document.querySelector("svg").getAttribute("data-motion")).toBe("settled")
+    expect(document.querySelector("path").getAttribute("d")).toBe("M0,60L50,90L100,20")
+  })
+})

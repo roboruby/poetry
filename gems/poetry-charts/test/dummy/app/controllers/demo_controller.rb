@@ -2,23 +2,37 @@
 
 # The interactive-chart doctrine demo (N10 W9): upstream's "interactive"
 # blocks are useState filters; in poetry the filter is a real form and the
-# chart re-renders ON THE SERVER - a plain GET round trip (Turbo makes it
-# smooth in real apps; the mechanics need no JS at all).
+# chart re-renders ON THE SERVER - a GET round trip Turbo turns into a
+# same-context body swap. The A-W3 morph rides that swap: the dataset
+# toggle keeps the shape (same months, same series) so the chart MORPHS
+# between renders; the period toggle changes the shape, so the entrance
+# replays instead.
 class DemoController < ApplicationController
-  DATA = [
-    { month: "January", desktop: 186, mobile: 80 },
-    { month: "February", desktop: 305, mobile: 200 },
-    { month: "March", desktop: 237, mobile: 120 },
-    { month: "April", desktop: 73, mobile: 190 },
-    { month: "May", desktop: 209, mobile: 130 },
-    { month: "June", desktop: 214, mobile: 140 }
-  ].freeze
+  DATASETS = {
+    "current" => [
+      { month: "January", desktop: 186, mobile: 80 },
+      { month: "February", desktop: 305, mobile: 200 },
+      { month: "March", desktop: 237, mobile: 120 },
+      { month: "April", desktop: 73, mobile: 190 },
+      { month: "May", desktop: 209, mobile: 130 },
+      { month: "June", desktop: 214, mobile: 140 }
+    ].freeze,
+    "previous" => [
+      { month: "January", desktop: 94, mobile: 170 },
+      { month: "February", desktop: 168, mobile: 60 },
+      { month: "March", desktop: 312, mobile: 220 },
+      { month: "April", desktop: 141, mobile: 90 },
+      { month: "May", desktop: 88, mobile: 210 },
+      { month: "June", desktop: 260, mobile: 100 }
+    ].freeze
+  }.freeze
 
   PERIODS = { "6m" => 6, "3m" => 3 }.freeze
 
   def interactive
     @period = PERIODS.key?(params[:period]) ? params[:period] : "6m"
-    @data = DATA.last(PERIODS[@period])
+    @dataset = DATASETS.key?(params[:dataset]) ? params[:dataset] : "current"
+    @data = DATASETS[@dataset].last(PERIODS[@period])
     render layout: "component_preview"
   end
 end

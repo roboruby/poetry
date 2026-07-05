@@ -91,9 +91,16 @@ namespace :browser do
     abort "missing #{stimulus} - run npm install in poetry-charts" unless stimulus.exist?
     FileUtils.cp(stimulus, dir.join("stimulus.js"))
 
+    # Turbo drives the /interactive morph demo (A-W3): the form submit
+    # becomes a same-context body swap, so the motion registry survives.
+    turbo = Poetry::Charts.root.join("node_modules/@hotwired/turbo/dist/turbo.es2017-esm.js")
+    abort "missing #{turbo} - run npm install in poetry-charts" unless turbo.exist?
+    FileUtils.cp(turbo, dir.join("turbo.js"))
+
     # (c) The importmap resolving the bare specifiers to the copied files.
     imports = {
       "@hotwired/stimulus" => "/assets/stimulus.js",
+      "@hotwired/turbo" => "/assets/turbo.js",
       "@poetry/charts" => "/assets/poetry/charts/index.js"
     }
     Dir.glob("**/*.js", base: js_dest).sort.each do |rel|
