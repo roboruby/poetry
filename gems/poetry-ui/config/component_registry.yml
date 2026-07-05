@@ -1511,6 +1511,42 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+  poetry/ui/pagination:
+    class_name: Poetry::Ui::Pagination::Component
+    identifier: poetry--ui--pagination
+    bem_block: poetry-ui-pagination
+    styles: []
+    options:
+    - name: current
+      type: integer
+      required: true
+    - name: label
+      type: string
+      default: pagination
+    - name: next_label
+      type: string
+      default: Next
+    - name: previous_label
+      type: string
+      default: Previous
+    - name: siblings
+      type: integer
+      default: 1
+    - name: total
+      type: integer
+      required: true
+    slots: []
+    elements:
+    - content
+    - ellipsis
+    - label
+    capsule: 273a0d39251c
+    agent_rules:
+    - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
+      list.
+    - 'path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).'
+    - The current page is aria-current=page + the outline variant; the rest are ghost
+      links.
   poetry/ui/popover:
     class_name: Poetry::Ui::Popover::Component
     identifier: poetry--ui--popover

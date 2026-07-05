@@ -59,6 +59,13 @@ module Poetry
         end
       end
 
+      # Data-driven pagination (N8): poetry_pagination(current:, total:,
+      # path:) - path: is a callable ->(page) { url }; the component owns the
+      # truncation math and the accessible nav.
+      def poetry_pagination(**)
+        render(Poetry::Ui::Pagination::Component.new(**))
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

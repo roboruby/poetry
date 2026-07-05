@@ -1,0 +1,28 @@
+<%= content_tag(:nav, **root_attributes.to_attributes) do %>
+  <ul data-slot="pagination-content" class="<%= css(:content) %>">
+    <li data-slot="pagination-item">
+      <%= render Poetry::Ui::Button::Component.new(**previous_options) do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-left") %>
+        <span class="<%= css(:label) %>"><%= previous_label %></span>
+      <% end %>
+    </li>
+    <% items.each do |item| %>
+      <li data-slot="pagination-item">
+        <% if item == :gap %>
+          <span aria-hidden="true" data-slot="pagination-ellipsis" class="<%= css(:ellipsis) %>">
+            <%= render Poetry::Ui::Icon::Component.new(name: :ellipsis) %>
+            <span class="sr-only">More pages</span>
+          </span>
+        <% else %>
+          <%= render(Poetry::Ui::Button::Component.new(**page_options(item))) { item.to_s } %>
+        <% end %>
+      </li>
+    <% end %>
+    <li data-slot="pagination-item">
+      <%= render Poetry::Ui::Button::Component.new(**next_options) do %>
+        <span class="<%= css(:label) %>"><%= next_label %></span>
+        <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
+      <% end %>
+    </li>
+  </ul>
+<% end %>

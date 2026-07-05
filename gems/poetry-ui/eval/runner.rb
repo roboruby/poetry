@@ -442,6 +442,19 @@ module Poetry
             Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
           ]
         },
+        "pagination" => {
+          "description" => "Pagination for page 4 of 10, with a current-page marker",
+          "gates" => [
+            Gate.new(:navigation_landmark, :cross_arm, lambda { |doc, _html|
+              nav = doc.css('nav, [role="navigation"]').first
+              nav && nav["aria-label"].to_s.strip.length.positive?
+            }),
+            Gate.new(:current_page_marked, :cross_arm, ->(doc, _html) { doc.css('[aria-current="page"]').any? }),
+            Gate.new(:pages_are_real_links, :cross_arm, lambda { |doc, _html|
+              doc.css("a").any? && doc.css("a").all? { |a| a["href"].to_s.strip.length.positive? }
+            })
+          ]
+        },
         "table" => {
           "description" => "An invoices table with a caption, column headers, and a footer total",
           "gates" => [
