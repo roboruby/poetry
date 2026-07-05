@@ -38,6 +38,27 @@ namespace :test do
     session.find('[data-slot="chart-svg"]').send_keys(:escape)
     raise "Escape did not dismiss" if session.has_css?(tooltip, visible: :visible, wait: 0)
 
-    puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses - the engine works in Chrome"
+    # -- the interactive doctrine: a real form, a server re-render ------------
+    session.visit("/interactive")
+    raise "interactive demo missing" unless session.has_css?('[data-slot="demo-period-form"]')
+
+    six_month_ticks = session.all('[data-slot="chart-x-axis"] text').length
+    raise "expected 6 months, got #{six_month_ticks}" unless six_month_ticks == 6
+
+    session.select("Last 3 months", from: "period")
+    session.click_button("Apply")
+    raise "the form round-trip did not land" unless session.has_css?('[data-slot="chart-x-axis"]', wait: 5)
+
+    three_month_ticks = session.all('[data-slot="chart-x-axis"] text').length
+    raise "expected 3 months after the round trip, got #{three_month_ticks}" unless three_month_ticks == 3
+
+    session.find('[data-slot="chart-svg"]').hover
+    unless session.has_css?(tooltip, visible: :visible, wait: 5)
+      raise "the tooltip engine did not survive the server round-trip"
+    end
+
+    puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses; " \
+         "the interactive form round-trips server-side (6 -> 3 months) with the tooltip live - " \
+         "the engine works in Chrome"
   end
 end

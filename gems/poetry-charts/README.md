@@ -24,4 +24,25 @@ Engines are swappable (three doors — full recipes in `docs/adapters.md`):
 Scope: the measured shadcn parity surface — 6 chart families, 70 blocks
 (area / bar / line / pie / radar / radial + tooltip variants).
 
-Part of the [poetry](../poetry) gem family. Status: N10 in progress.
+## Install
+
+```ruby
+# Gemfile
+gem "poetry-charts"
+```
+
+The engine merges its importmap pins automatically (`@poetry/charts`) —
+no build step. The tooltip chrome boots with one registration in your
+Stimulus entrypoint:
+
+```js
+import { registerPoetryChartsControllers } from "@poetry/charts"
+registerPoetryChartsControllers(application)
+```
+
+Interactive charts are **real forms**: submit a filter, the chart
+re-renders on the server (Turbo makes it smooth; the mechanics need no
+JS). See `docs/adapters.md` for BYO engines.
+
+Part of the [poetry](../poetry) gem family. Status: N10 complete —
+six families, 52 gallery examples, the frozen spec-v1 adapter seam.

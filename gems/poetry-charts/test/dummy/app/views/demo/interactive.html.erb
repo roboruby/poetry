@@ -1,0 +1,23 @@
+<%# The area-interactive block, the Rails way: the period selector is a
+    real form; submitting re-renders the chart server-side. %>
+<div style="width: 640px; margin: 2rem auto;">
+  <form method="get" action="/interactive" data-slot="demo-period-form" style="margin-bottom: 1rem;">
+    <label for="period">Period</label>
+    <select id="period" name="period">
+      <option value="6m" <%= "selected" if @period == "6m" %>>Last 6 months</option>
+      <option value="3m" <%= "selected" if @period == "3m" %>>Last 3 months</option>
+    </select>
+    <button type="submit">Apply</button>
+  </form>
+
+  <%= poetry_chart :area, data: @data, id: "interactive",
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" },
+                             mobile: { label: "Mobile", color: "var(--chart-2)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month, tick_formatter: ->(v) { v[0, 3] } %>
+    <% chart.with_area data_key: :mobile, stack: :a %>
+    <% chart.with_area data_key: :desktop, stack: :a %>
+    <% chart.with_tooltip indicator: :dot %>
+  <% end %>
+</div>
