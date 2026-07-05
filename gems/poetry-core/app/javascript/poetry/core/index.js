@@ -30,6 +30,8 @@ import CommandController from "@poetry/controllers/command_controller"
 import ComboboxController from "@poetry/controllers/combobox_controller"
 import TabsController from "@poetry/controllers/tabs_controller"
 import DrawerController from "@poetry/controllers/drawer_controller"
+import CarouselController from "@poetry/controllers/carousel_controller"
+import ResizableController from "@poetry/controllers/resizable_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -58,6 +60,8 @@ export { default as CommandController } from "@poetry/controllers/command_contro
 export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
 export { default as TabsController } from "@poetry/controllers/tabs_controller"
 export { default as DrawerController } from "@poetry/controllers/drawer_controller"
+export { default as CarouselController } from "@poetry/controllers/carousel_controller"
+export { default as ResizableController } from "@poetry/controllers/resizable_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -98,7 +102,9 @@ export const controllers = {
   "poetry--core--command": CommandController,
   "poetry--core--combobox": ComboboxController,
   "poetry--core--tabs": TabsController,
-  "poetry--core--drawer": DrawerController
+  "poetry--core--drawer": DrawerController,
+  "poetry--core--carousel": CarouselController,
+  "poetry--core--resizable": ResizableController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

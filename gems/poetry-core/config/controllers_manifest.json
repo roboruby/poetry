@@ -17,6 +17,29 @@
       "toggle"
     ]
   },
+  "poetry--core--carousel": {
+    "targets": [
+      "next",
+      "previous",
+      "viewport"
+    ],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "horizontal"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "next",
+      "previous",
+      "scrollTo",
+      "scrolled"
+    ]
+  },
   "poetry--core--checked": {
     "targets": [],
     "values": {
@@ -474,6 +497,23 @@
       "entryCheck",
       "setValue",
       "valueValueChanged"
+    ]
+  },
+  "poetry--core--resizable": {
+    "targets": [],
+    "values": {
+      "orientation": {
+        "type": "String",
+        "default": "horizontal"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "dragEnd",
+      "dragMove",
+      "dragStart",
+      "keydown"
     ]
   },
   "poetry--core--roving-focus": {
