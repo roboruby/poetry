@@ -1,0 +1,10 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% if header? %>
+    <div data-slot="empty-header" class="<%= css(:header) %>">
+      <% if media? %><div data-slot="empty-icon" data-variant="<%= media_variant %>" class="<%= media_classes %>"><%= media %></div><% end %>
+      <% if title? %><%= content_tag(title_tag, title, "data-slot" => "empty-title", class: css(:title)) %><% end %>
+      <% if description? %><div data-slot="empty-description" class="<%= css(:description) %>"><%= description %></div><% end %>
+    </div>
+  <% end %>
+  <% if content.present? %><div data-slot="empty-content" class="<%= css(:content) %>"><%= content %></div><% end %>
+<% end %>

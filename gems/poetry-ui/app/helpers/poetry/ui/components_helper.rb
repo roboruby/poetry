@@ -84,6 +84,15 @@ module Poetry
         render(Poetry::Ui::Kbd::Component.new(**), &)
       end
 
+      # ratio: is a string fraction ("16/9") - Ruby's 16/9 would truncate.
+      def poetry_aspect_ratio(**, &)
+        render(Poetry::Ui::AspectRatio::Component.new(**), &)
+      end
+
+      def poetry_empty(**, &)
+        render(Poetry::Ui::Empty::Component.new(**), &)
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

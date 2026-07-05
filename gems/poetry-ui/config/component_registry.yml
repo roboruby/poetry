@@ -146,6 +146,22 @@ components:
       action.
     - No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
     - 'Cancel keeps variant: :outline; do not make cancel visually primary.'
+  poetry/ui/aspect_ratio:
+    class_name: Poetry::Ui::AspectRatio::Component
+    identifier: poetry--ui--aspect_ratio
+    bem_block: poetry-ui-aspect_ratio
+    styles: []
+    options:
+    - name: ratio
+      type: string
+      required: true
+    slots: []
+    elements: []
+    capsule: e82cf8a38845
+    agent_rules:
+    - 'Pass ratio: as a string fraction (''16/9'', ''1/1'') - Ruby''s 16/9 is integer
+      division (1).'
+    - The child fills the box itself (size-full object-cover on an image).
   poetry/ui/attachment:
     class_name: Poetry::Ui::Attachment::Component
     identifier: poetry--ui--attachment
@@ -1006,6 +1022,43 @@ components:
     - Keep submenus <= 2 levels; prefer grouping + separators over deep nesting.
     - Critical actions must exist somewhere reachable without JS (menus are JS-required
       interaction).
+  poetry/ui/empty:
+    class_name: Poetry::Ui::Empty::Component
+    identifier: poetry--ui--empty
+    bem_block: poetry-ui-empty
+    styles: []
+    options:
+    - name: media_variant
+      type: symbol
+      default: default
+    - name: title_tag
+      type: symbol
+      default: h3
+    slots:
+    - name: media
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    elements:
+    - header
+    - media
+    - media_default
+    - media_icon
+    - title
+    - description
+    - content
+    capsule: 52ec7bbd9a59
+    agent_rules:
+    - An empty collection gets an Empty state with a next action - never a bare 'No
+      results' div.
+    - Compose with the slots (media/title/description); the actions are the content
+      block.
+    - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
+      page outline.'
+    - 'media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon
+      in with_media.'
   poetry/ui/field:
     class_name: Poetry::Ui::Field::Component
     identifier: poetry--ui--field

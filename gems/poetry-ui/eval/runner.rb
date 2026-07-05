@@ -465,6 +465,19 @@ module Poetry
             })
           ]
         },
+        "empty_state" => {
+          "description" => "A 'no projects yet' empty state: an icon tile, a title, a description, " \
+                           "and create/import actions",
+          "gates" => [
+            Gate.new(:title_is_a_real_heading, :cross_arm, lambda { |doc, _html|
+              doc.css("h1, h2, h3, h4, h5, h6").any?
+            }),
+            Gate.new(:actions_are_focusable, :cross_arm, lambda { |doc, _html|
+              doc.css("button, a[href]").length >= 2
+            }),
+            Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
+          ]
+        },
         "table" => {
           "description" => "An invoices table with a caption, column headers, and a footer total",
           "gates" => [

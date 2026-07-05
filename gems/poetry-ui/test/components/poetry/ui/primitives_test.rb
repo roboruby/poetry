@@ -66,6 +66,63 @@ module Poetry
       def test_kbd_requires_key_text
         assert_raises(ArgumentError) { render_inline(Kbd::Component.new) }
       end
+
+      # -- AspectRatio --------------------------------------------------------
+
+      def test_aspect_ratio_locks_the_ratio_via_the_custom_property
+        node = render_inline(AspectRatio::Component.new(ratio: "16/9", class: "w-64"))
+               .css('[data-slot="aspect-ratio"]').first
+
+        assert_includes node["style"], "--ratio: 16/9"
+        assert_includes node["class"], "aspect-(--ratio)"
+        assert_includes node["class"], "w-64" # the caller's sizing survives
+      end
+
+      def test_aspect_ratio_rejects_a_non_ratio
+        assert_raises(ArgumentError) do
+          render_inline(AspectRatio::Component.new(ratio: "16:9"))
+        end
+      end
+
+      # -- Empty --------------------------------------------------------------
+
+      def test_empty_composes_header_and_actions
+        html = render_inline(Empty::Component.new) do |empty|
+          empty.with_title { "No projects yet" }
+          empty.with_description { "Create your first project." }
+          "Create project"
+        end
+
+        title = html.css('[data-slot="empty-title"]').first
+
+        assert_equal "h3", title.name, "the title is a real heading, not a styled div"
+        assert_equal "No projects yet", title.text
+        assert_predicate html.css('[data-slot="empty-description"]'), :any?
+        content = html.css('[data-slot="empty-content"]').first
+
+        assert_includes content.text, "Create project"
+      end
+
+      def test_empty_media_icon_variant_wears_the_tile
+        html = render_inline(Empty::Component.new(media_variant: :icon)) do |empty|
+          empty.with_media { "◼" }
+          empty.with_title { "Nothing here" }
+        end
+
+        media = html.css('[data-slot="empty-icon"]').first
+
+        assert_equal "icon", media["data-variant"]
+        assert_includes media["class"], "bg-muted"
+        assert_includes media["class"], "rounded-lg"
+      end
+
+      def test_a_bare_empty_renders_no_hollow_wrappers
+        html = render_inline(Empty::Component.new) { |empty| empty.with_title { "Empty" } }
+
+        assert_predicate html.css('[data-slot="empty-header"]'), :any?
+        assert_empty html.css('[data-slot="empty-content"]'), "no content block, no empty-content div"
+        assert_empty html.css('[data-slot="empty-icon"]'), "no media slot, no icon wrapper"
+      end
     end
   end
 end
