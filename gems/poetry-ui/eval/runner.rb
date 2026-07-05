@@ -442,6 +442,16 @@ module Poetry
             Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
           ]
         },
+        "primitives" => {
+          "description" => "A loading state: a labelled spinner, a skeleton row, a separator, and a ⌘K hint",
+          "gates" => [
+            Gate.new(:spinner_announces_loading, :cross_arm, lambda { |doc, _html|
+              status = doc.css('[role="status"]').first
+              status && (status["aria-label"].to_s.strip.length.positive? || status.text.strip.length.positive?)
+            }),
+            Gate.new(:shortcut_keys_are_real_kbd, :cross_arm, ->(doc, _html) { doc.css("kbd").length >= 2 })
+          ]
+        },
         "pagination" => {
           "description" => "Pagination for page 4 of 10, with a current-page marker",
           "gates" => [

@@ -1,0 +1,11 @@
+<%# The poetry arm: a loading card - a spinner with a label, a skeleton
+    row, a separator, and a keyboard hint. Exercises the N8 primitives. %>
+<div class="space-y-3">
+  <div class="flex items-center gap-2 text-sm">
+    <%= poetry_spinner(label: "Loading your workspace") %>
+    <span>Loading…</span>
+  </div>
+  <%= poetry_skeleton(class: "h-4 w-48") %>
+  <%= poetry_separator %>
+  <p class="text-sm">Press <%= poetry_kbd { "⌘" } %> <%= poetry_kbd { "K" } %> to search.</p>
+</div>

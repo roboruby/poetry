@@ -1229,6 +1229,18 @@ components:
       never log the value (it is a live credential).'
     - InputOTP is for CODES - passwords use Input type=password, longer identifiers
       use Input.
+  poetry/ui/kbd:
+    class_name: Poetry::Ui::Kbd::Component
+    identifier: poetry--ui--kbd
+    bem_block: poetry-ui-kbd
+    styles: []
+    options: []
+    slots: []
+    elements: []
+    capsule: bfc6a2c0e05c
+    agent_rules:
+    - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
+    - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
   poetry/ui/label:
     class_name: Poetry::Ui::Label::Component
     identifier: poetry--ui--label
@@ -1836,6 +1848,24 @@ components:
       or Capybara selectors (drive the combobox like a user).
     - 'Positioning is popper-only: poetry Select drops below the trigger (shadcn''s
       item-aligned overlay mode is not ported - a documented parity delta).'
+  poetry/ui/separator:
+    class_name: Poetry::Ui::Separator::Component
+    identifier: poetry--ui--separator
+    bem_block: poetry-ui-separator
+    styles: []
+    options:
+    - name: decorative
+      type: boolean
+      default: true
+    - name: orientation
+      type: symbol
+      default: horizontal
+    slots: []
+    elements: []
+    capsule: 359c514388a3
+    agent_rules:
+    - 'A purely visual divider stays decorative (the default): aria-hidden, role absent.'
+    - 'Set decorative: false only when the divide is semantically meaningful (role=separator).'
   poetry/ui/sheet:
     class_name: Poetry::Ui::Sheet::Component
     identifier: poetry--ui--sheet
@@ -1894,6 +1924,20 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+  poetry/ui/skeleton:
+    class_name: Poetry::Ui::Skeleton::Component
+    identifier: poetry--ui--skeleton
+    bem_block: poetry-ui-skeleton
+    styles: []
+    options: []
+    slots: []
+    elements: []
+    capsule: 9844ed8fb553
+    agent_rules:
+    - Skeleton is a loading placeholder - size it with classes (h-4 w-32); it has
+      no content of its own.
+    - Mark the live region that will replace it (aria-busy on the container), not
+      the skeleton.
   poetry/ui/slider:
     class_name: Poetry::Ui::Slider::Component
     identifier: poetry--ui--slider
@@ -1979,6 +2023,22 @@ components:
       frame).
     - Never transition the thumb/range position with CSS - geometry must track the
       pointer.
+  poetry/ui/spinner:
+    class_name: Poetry::Ui::Spinner::Component
+    identifier: poetry--ui--spinner
+    bem_block: poetry-ui-spinner
+    styles: []
+    options:
+    - name: label
+      type: string
+      default: Loading
+    slots: []
+    elements: []
+    capsule: 547c232b9575
+    agent_rules:
+    - Spinner announces itself (role=status + aria-label) - never a bare spinning
+      div.
+    - 'Set label: for the loading context (''Saving…''); the default is ''Loading''.'
   poetry/ui/switch:
     class_name: Poetry::Ui::Switch::Component
     identifier: poetry--ui--switch

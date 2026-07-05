@@ -16,10 +16,10 @@ module Poetry
                       poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/context_menu
                       poetry/ui/dialog poetry/ui/dropdown_menu poetry/ui/field
                       poetry/ui/hover_card
-                      poetry/ui/icon poetry/ui/input poetry/ui/input_otp poetry/ui/label poetry/ui/link
-                      poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
+                      poetry/ui/icon poetry/ui/input poetry/ui/input_otp poetry/ui/kbd poetry/ui/label
+                      poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
                       poetry/ui/pagination poetry/ui/popover poetry/ui/radio_group poetry/ui/select
-                      poetry/ui/sheet poetry/ui/slider
+                      poetry/ui/separator poetry/ui/sheet poetry/ui/skeleton poetry/ui/slider poetry/ui/spinner
                       poetry/ui/switch poetry/ui/table poetry/ui/textarea poetry/ui/toast poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/tooltip]
 

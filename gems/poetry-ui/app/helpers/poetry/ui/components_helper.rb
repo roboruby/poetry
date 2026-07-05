@@ -66,6 +66,24 @@ module Poetry
         render(Poetry::Ui::Pagination::Component.new(**))
       end
 
+      # N8 static primitives.
+      def poetry_skeleton(**, &)
+        render(Poetry::Ui::Skeleton::Component.new(**), &)
+      end
+
+      def poetry_separator(**)
+        render(Poetry::Ui::Separator::Component.new(**))
+      end
+
+      def poetry_spinner(**)
+        render(Poetry::Ui::Spinner::Component.new(**))
+      end
+
+      # The key text is the content block: poetry_kbd { "⌘" }.
+      def poetry_kbd(**, &)
+        render(Poetry::Ui::Kbd::Component.new(**), &)
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

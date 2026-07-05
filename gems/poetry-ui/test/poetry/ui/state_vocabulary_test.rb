@@ -21,6 +21,10 @@ module Poetry
         "side" => "popper placement reflection (popper controller)",
         "align" => "popper placement reflection (popper controller)",
         "orientation" => "server-rendered layout axis (roving/slider/toggle-group/separator)",
+        # The bridge orientation VARIANTS (data-horizontal:/data-vertical:) -
+        # not attributes; they match [data-orientation=horizontal|vertical].
+        "horizontal" => "bridge variant for data-orientation=horizontal (shadcn/tailwind.css)",
+        "vertical" => "bridge variant for data-orientation=vertical (shadcn/tailwind.css)",
         "highlighted" => "menu/command/select active-option marker (JS)",
         "disabled" => "server-rendered + JS-reflected disabled marker",
         "placeholder" => "select trigger empty-value marker (server + JS)",
