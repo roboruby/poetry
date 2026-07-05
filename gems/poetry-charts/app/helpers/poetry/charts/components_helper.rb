@@ -11,7 +11,8 @@ module Poetry
       # the known list (agent-teachable).
       CHART_TYPES = {
         area: "Poetry::Charts::AreaChart::Component",
-        line: "Poetry::Charts::LineChart::Component"
+        line: "Poetry::Charts::LineChart::Component",
+        bar: "Poetry::Charts::BarChart::Component"
       }.freeze
 
       def poetry_chart(type, **, &)
@@ -26,6 +27,10 @@ module Poetry
 
       def poetry_line_chart(**, &)
         render(Poetry::Charts::LineChart::Component.new(**), &)
+      end
+
+      def poetry_bar_chart(**, &)
+        render(Poetry::Charts::BarChart::Component.new(**), &)
       end
 
       def poetry_chart_container(**, &)

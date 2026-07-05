@@ -23,7 +23,7 @@ module Poetry
       attr_reader :width, :height, :margin, :y_tick_count, :offset
 
       def initialize(data:, series:, width:, height:, x_key: nil, margin: {},
-                     x_axis: true, y_tick_count: 5, offset: :none)
+                     x_axis: true, y_tick_count: 5, offset: :none, x_scale_type: :point)
         @data = data.map { |row| row.to_h.transform_keys(&:to_s) }
         @series = series
         @width = width.to_f
@@ -32,6 +32,7 @@ module Poetry
         @margin = DEFAULT_MARGIN.merge(margin.to_h.symbolize_keys)
         @x_axis = x_axis
         @y_tick_count = y_tick_count
+        @x_scale_type = x_scale_type.to_sym
         raise ArgumentError, "unknown offset #{offset.inspect}" unless OFFSETS.include?(offset.to_sym)
 
         @offset = offset.to_sym
@@ -53,12 +54,34 @@ module Poetry
         @categories ||= @x_key ? @data.map { |row| row[@x_key] } : (0...@data.length).to_a
       end
 
+      # Point for line/area (categories AT the edges); band for bars
+      # (recharts' zero-padding band - the bar gaps come from
+      # barCategoryGap/barGap math inside the band, not scale padding).
       def x_scale
-        @x_scale ||= Geometry::Scale::Point.new(domain: categories, range: [plot_left, plot_right])
+        @x_scale ||= if @x_scale_type == :band
+                       Geometry::Scale::Band.new(domain: categories, range: [plot_left, plot_right])
+                     else
+                       Geometry::Scale::Point.new(domain: categories, range: [plot_left, plot_right])
+                     end
       end
 
       def x_positions
         x_scale.positions
+      end
+
+      def band_width
+        x_scale.bandwidth
+      end
+
+      # The per-category CENTER - where ticks, vertical grid lines, and the
+      # tooltip's hit columns sit (band centers; point positions verbatim).
+      def x_centers
+        @x_centers ||= if @x_scale_type == :band
+                         half = band_width / 2.0
+                         x_positions.map { |x| x + half }
+                       else
+                         x_positions
+                       end
       end
 
       # -- y: numeric domain, recharts-niced -------------------------------------
@@ -96,12 +119,12 @@ module Poetry
         if entry.stack
           bands = stacked_bands(entry.stack)[key]
           bands.each_with_index.map do |(lo, hi), i|
-            { x: x_positions[i], y0: y_scale.call(lo), y1: y_scale.call(hi), value: value_at(i, key) }
+            { x: x_centers[i], y0: y_scale.call(lo), y1: y_scale.call(hi), value: value_at(i, key) }
           end
         else
           @data.each_with_index.map do |_row, i|
             value = value_at(i, key)
-            { x: x_positions[i], y0: baseline, y1: y_scale.call(value), value: value }
+            { x: x_centers[i], y0: baseline, y1: y_scale.call(value), value: value }
           end
         end
       end
@@ -113,7 +136,7 @@ module Poetry
       def coordinates
         {
           "categories" => categories,
-          "x" => x_positions.map { |x| x.round(2) },
+          "x" => x_centers.map { |x| x.round(2) },
           "series" => @series.to_h do |entry|
             tops = points(entry).map { |p| p[:y1].nan? ? nil : p[:y1].round(2) }
             [entry.key, tops]

@@ -14,22 +14,17 @@
         <% end %>
       </g>
     <% end %>
-    <g data-slot="chart-lines">
+    <g data-slot="chart-bars">
       <% series_entries.each do |entry| %>
-        <% if (d = series_path(entry)) %>
-          <path data-slot="chart-line" data-key="<%= entry.key %>" d="<%= d %>" fill="none" stroke="var(--color-<%= entry.key %>)" stroke-width="<%= entry.stroke_width %>"/>
-        <% end %>
-        <% if entry.dots %>
-          <g data-slot="chart-dots" data-key="<%= entry.key %>">
-            <% markers(entry).each do |marker| %>
-              <circle data-slot="chart-dot" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="<%= entry.dot_radius %>" fill="<%= dot_fill(entry, marker) %>"/>
-            <% end %>
-          </g>
-        <% end %>
+        <g data-slot="chart-bar-series" data-key="<%= entry.key %>">
+          <% cells(entry).each do |cell| %>
+            <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %>/>
+          <% end %>
+        </g>
         <% if entry.labels %>
           <g data-slot="chart-labels" data-key="<%= entry.key %>">
-            <% markers(entry).each do |marker| %>
-              <text class="<%= css(:label) %>" x="<%= fnum(marker[:x]) %>" y="<%= fnum(marker[:y] - 12) %>" text-anchor="middle"><%= marker_label(marker) %></text>
+            <% cells(entry).each do |cell| %>
+              <text class="<%= css(:label) %>" x="<%= fnum(cell[:x] + (cell[:width] / 2.0)) %>" y="<%= fnum(cell[:y] - 12) %>" text-anchor="middle"><%= cell_label(entry, cell) %></text>
             <% end %>
           </g>
         <% end %>

@@ -18,7 +18,7 @@
           <% end %>
         <% end %>
         <% if grid_config.vertical %>
-          <% cartesian.x_positions.each do |x| %>
+          <% cartesian.x_centers.each do |x| %>
             <line class="<%= css(:grid_line) %>" x1="<%= fnum(x) %>" x2="<%= fnum(x) %>" y1="<%= fnum(cartesian.plot_top) %>" y2="<%= fnum(cartesian.plot_bottom) %>"/>
           <% end %>
         <% end %>
@@ -35,7 +35,7 @@
     <% if x_axis? %>
       <g data-slot="chart-x-axis">
         <% cartesian.categories.each_with_index do |category, i| %>
-          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_positions[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
+          <text class="<%= css(:tick) %>" x="<%= fnum(cartesian.x_centers[i]) %>" y="<%= fnum(cartesian.plot_bottom + x_axis_config.tick_margin) %>" dy="0.71em" text-anchor="middle"><%= x_tick_label(category) %></text>
         <% end %>
       </g>
     <% end %>

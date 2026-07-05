@@ -1,0 +1,250 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Charts
+    module BarChart
+      # The Bar chart family (shadcn BarChart), vertical columns (the
+      # horizontal layout is W4b): band-scale positioning with recharts'
+      # exact bar math - barCategoryGap 10% trims each side of the band,
+      # barGap 4 separates side-by-side groups, stacked bars share a slot.
+      # Rounded corners are per-corner (radius: 8 or [tl, tr, br, bl] - the
+      # stacked blocks round only their outer edge), negatives drop below
+      # the zero baseline, and per-cell fills come from a data key or a
+      # guarded proc (the negative block's sign coloring).
+      #
+      #   <%= poetry_chart :bar, data:, config: do |c| %>
+      #     <% c.with_grid %>
+      #     <% c.with_x_axis data_key: :month, tick_formatter: ->(v) { v[0, 3] } %>
+      #     <% c.with_bar data_key: :desktop, radius: 8 %>
+      #   <% end %>
+      class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.",
+          "radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.",
+          "Stack bars with the same stack: id; negatives automatically drop below the zero line.",
+          "cell_fill: ->(row, value) { ... } colors bars per datum (validated CSS-safe); color_key: reads a row key.",
+          "active_index: highlights one bar (fill-opacity 0.8 + dashed stroke - the active block look)."
+        ].freeze
+
+        Series = Data.define(:key, :stack, :radius, :labels, :label_key, :color_key,
+                             :cell_fill, :active_index, :stroke_width) do
+          def stack_or_self = stack || key
+        end
+
+        option :data, ActiveModel::Type::Value.new, required: true
+        option :config, ActiveModel::Type::Value.new, required: true
+        option :id, :string
+        option :width, :integer, default: 640
+        option :height, :integer, default: 360
+        option :margin, ActiveModel::Type::Value.new
+        option :offset, :symbol, default: :none
+        option :label, :string
+        option :bar_gap, :integer, default: 4
+        option :bar_category_gap, :string, default: "10%"
+
+        validates :offset, inclusion: { in: Cartesian::OFFSETS }
+
+        renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
+                                      color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2|
+          (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, radius:, labels:,
+                                                 label_key: label_key&.to_s, color_key: color_key&.to_s,
+                                                 cell_fill:, active_index:, stroke_width:)
+          nil
+        }
+
+        renders_one :x_axis, lambda { |data_key:, tick_formatter: nil, tick_margin: 8|
+          @x_axis_config = AreaChart::Component::AxisConfig.new(data_key: data_key.to_s, tick_formatter:,
+                                                                tick_margin:, tick_count: nil)
+          nil
+        }
+
+        renders_one :y_axis, lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
+          @y_axis_config = AreaChart::Component::AxisConfig.new(data_key: nil, tick_formatter:,
+                                                                tick_margin:, tick_count:)
+          nil
+        }
+
+        renders_one :grid, lambda { |vertical: false, horizontal: true|
+          @grid_config = AreaChart::Component::GridConfig.new(vertical:, horizontal:)
+          nil
+        }
+
+        renders_one :legend, lambda { |**options|
+          @legend_config = options
+          nil
+        }
+
+        # Accepted for grammar stability; the tooltip layer is N10 W5.
+        renders_one :tooltip, lambda { |**options|
+          @tooltip_config = options
+          nil
+        }
+
+        def series_entries
+          bars? # force slot evaluation (the N8 lazy-slot lesson)
+          @series_entries ||= []
+        end
+
+        def x_axis_config
+          x_axis?
+          @x_axis_config
+        end
+
+        def y_axis_config
+          y_axis?
+          @y_axis_config
+        end
+
+        def grid_config
+          grid?
+          @grid_config
+        end
+
+        def chart_config
+          @chart_config ||= Poetry::Charts::Config.wrap(config)
+        end
+
+        def cartesian
+          @cartesian ||= Cartesian.new(
+            data: data,
+            series: series_entries,
+            width: width,
+            height: height,
+            x_key: x_axis_config&.data_key,
+            margin: margin || {},
+            x_axis: x_axis?,
+            y_tick_count: y_axis_config&.tick_count || 5,
+            offset: offset,
+            x_scale_type: :band
+          )
+        end
+
+        # recharts combineAllBarPositions (no explicit barSize): stacked
+        # bars share a slot; groups sit side by side inside the band.
+        def bar_slots
+          @bar_slots ||= begin
+            groups = series_entries.map(&:stack_or_self).uniq
+            band = cartesian.band_width
+            gap = bar_gap.to_f
+            trim = percent_value(bar_category_gap, band)
+            gap = 0.0 if band - (2 * trim) - ((groups.length - 1) * gap) <= 0
+
+            size = (band - (2 * trim) - ((groups.length - 1) * gap)) / groups.length
+            size = Geometry.js_round(size).to_f if size > 1
+
+            groups.each_with_index.to_h do |group, i|
+              [group, { offset: trim + ((size + gap) * i), size: size }]
+            end
+          end
+        end
+
+        # One rect per category for a series: band position + slot offset,
+        # normalized so height is positive (negatives keep the zero edge).
+        def cells(entry)
+          slot = bar_slots.fetch(entry.stack_or_self)
+          points = cartesian.points(entry)
+
+          points.each_with_index.filter_map do |point, i|
+            next if point[:value].nan?
+
+            top = [point[:y0], point[:y1]].min
+            bottom = [point[:y0], point[:y1]].max
+            {
+              index: i,
+              x: cartesian.x_positions[i] + slot[:offset],
+              y: top,
+              width: slot[:size],
+              height: bottom - top,
+              value: point[:value],
+              row: data[i]
+            }
+          end
+        end
+
+        # radius: Integer (all corners) or [tl, tr, br, bl] (the stacked
+        # blocks). Clamped to half the rect like recharts' Rectangle.
+        def bar_path(entry, cell)
+          radii = entry.radius.is_a?(Array) ? entry.radius.map(&:to_f) : Array.new(4, entry.radius.to_f)
+          max = [cell[:width] / 2.0, cell[:height] / 2.0].min
+          tl, tr, br, bl = radii.map { |r| r.clamp(0.0, max) }
+          x = cell[:x]
+          y = cell[:y]
+          w = cell[:width]
+          h = cell[:height]
+          f = ->(v) { fnum(v) }
+
+          "M#{f.call(x)},#{f.call(y + tl)}" \
+            "#{"A#{f.call(tl)},#{f.call(tl)},0,0,1,#{f.call(x + tl)},#{f.call(y)}" if tl.positive?}" \
+            "L#{f.call(x + w - tr)},#{f.call(y)}" \
+            "#{"A#{f.call(tr)},#{f.call(tr)},0,0,1,#{f.call(x + w)},#{f.call(y + tr)}" if tr.positive?}" \
+            "L#{f.call(x + w)},#{f.call(y + h - br)}" \
+            "#{"A#{f.call(br)},#{f.call(br)},0,0,1,#{f.call(x + w - br)},#{f.call(y + h)}" if br.positive?}" \
+            "L#{f.call(x + bl)},#{f.call(y + h)}" \
+            "#{"A#{f.call(bl)},#{f.call(bl)},0,0,1,#{f.call(x)},#{f.call(y + h - bl)}" if bl.positive?}Z"
+        end
+
+        # Fill resolution: cell_fill proc, else color_key row value, else
+        # the series color - everything reaching the attribute is guarded.
+        def cell_fill(entry, cell)
+          color = if entry.cell_fill
+                    entry.cell_fill.call(cell[:row], cell[:value]).to_s
+                  elsif entry.color_key
+                    cell[:row].to_h.transform_keys(&:to_s)[entry.color_key].to_s
+                  else
+                    return "var(--color-#{entry.key})"
+                  end
+          raise ArgumentError, "bar fill #{color.inspect} is not CSS-safe" unless color.match?(Config::COLOR)
+
+          color
+        end
+
+        def active?(entry, cell)
+          entry.active_index == cell[:index]
+        end
+
+        def cell_label(entry, cell)
+          if entry.label_key
+            cell[:row].to_h.transform_keys(&:to_s)[entry.label_key].to_s
+          else
+            value = cell[:value]
+            value == value.to_i ? value.to_i.to_s : value.to_s
+          end
+        end
+
+        def x_tick_label(category)
+          formatter = x_axis_config&.tick_formatter
+          formatter ? formatter.call(category).to_s : category.to_s
+        end
+
+        def y_tick_label(tick)
+          formatter = y_axis_config&.tick_formatter
+          formatter ? formatter.call(tick).to_s : Geometry.js_number(tick.to_f)
+        end
+
+        def chart_id
+          @chart_id ||= "chart-#{id.presence || SecureRandom.hex(4)}"
+        end
+
+        def svg_label
+          label.presence || "Bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
+        end
+
+        def coordinates_json
+          cartesian.coordinates.to_json
+        end
+
+        def fnum(value)
+          Geometry.js_number((value * 100).round / 100.0)
+        end
+
+        private
+
+        # recharts getPercentValue: "10%" of the band, or a plain px number.
+        def percent_value(value, total)
+          text = value.to_s
+          text.end_with?("%") ? total * (text.to_f / 100.0) : text.to_f
+        end
+      end
+    end
+  end
+end
