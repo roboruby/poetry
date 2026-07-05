@@ -20,11 +20,12 @@ module Poetry
 
       module ClassMethods
         # Declares the animation options with the family's recharts
-        # defaults (Bar 400ms, Pie begin 400ms, everything else 0/1500/ease).
-        def motion_options(duration: 1500, delay: 0)
+        # defaults (Bar 400ms, Pie begin 400ms, Scatter 400ms linear,
+        # everything else 0/1500/ease).
+        def motion_options(duration: 1500, delay: 0, easing: :ease)
           option :animate, :boolean, default: true
           option :animation_duration, :integer, default: duration
-          option :animation_easing, :symbol, default: :ease
+          option :animation_easing, :symbol, default: easing
           option :animation_begin, :integer, default: delay
         end
       end

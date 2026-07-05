@@ -48,6 +48,14 @@
     transform-origin: right center;
   }
 
+  /* Scatter points pop from their own centers (recharts Scatter: 400ms
+     linear scale-in). */
+  [data-animate] circle[data-slot="chart-scatter-point"] {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: poetry-chart-rise var(--poetry-motion-duration, 400ms) var(--poetry-motion-easing, linear) var(--poetry-motion-delay, 0ms) both;
+  }
+
   /* Radar rises from the polar center (the component ships it in
      --poetry-motion-center). recharts lerps every vertex from (cx, cy) -
      linear interpolation toward one point IS a uniform scale, so this is

@@ -534,6 +534,72 @@ components:
       fills the middle.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+  poetry/charts/scatter_chart:
+    class_name: Poetry::Charts::ScatterChart::Component
+    identifier: poetry--charts--scatter_chart
+    bem_block: poetry-charts-scatter_chart
+    styles: []
+    options:
+    - name: animate
+      type: boolean
+      default: true
+    - name: animation_begin
+      type: integer
+      default: 0
+    - name: animation_duration
+      type: integer
+      default: 400
+    - name: animation_easing
+      type: symbol
+      default: linear
+    - name: config
+      type:
+      required: true
+    - name: data
+      type:
+    - name: height
+      type: integer
+      default: 360
+    - name: id
+      type: string
+    - name: label
+      type: string
+    - name: margin
+      type:
+    - name: width
+      type: integer
+      default: 640
+    slots:
+    - name: scatters
+      many: true
+    - name: x_axis
+      many: false
+    - name: y_axis
+      many: false
+    - name: z_axis
+      many: false
+    - name: grid
+      many: false
+    - name: legend
+      many: false
+    - name: tooltip
+      many: false
+    elements:
+    - frame
+    - svg
+    - grid_line
+    - tick
+    capsule: 462ffd421dc7
+    agent_rules:
+    - 'Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name
+      the row keys to plot.'
+    - 'with_scatter(key:) colors points var(--color-<key>); data: gives a series its
+      own rows.'
+    - 'with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension
+      - the range is marker AREA in px2 (recharts ZAxis).'
+    - The tooltip hits per point and shows the x/y(/z) values with the series color.
+    - 'Entrance animation is on by default (recharts Scatter: 400ms linear); animate:
+      false for a static chart.'
   poetry/charts/tooltip_content:
     class_name: Poetry::Charts::TooltipContent::Component
     identifier: poetry--charts--tooltip_content
