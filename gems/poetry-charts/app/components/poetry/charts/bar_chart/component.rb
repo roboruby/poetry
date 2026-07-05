@@ -20,6 +20,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
+        include Poetry::Charts::Live
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.",
@@ -46,6 +47,7 @@ module Poetry
         option :label, :string
 
         motion_options(duration: 400)
+        live_option
         option :bar_gap, :integer, default: 4
         option :bar_category_gap, :string, default: "10%"
         # :vertical = columns (the default); :horizontal = bars growing
@@ -276,6 +278,36 @@ module Poetry
 
         def fnum(value)
           Geometry.js_number((value * 100).round / 100.0)
+        end
+
+        # -- live mode (Phase B) -----------------------------------------
+
+        def live_type = :bar
+
+        def live_series
+          series_entries.map { |e| { data_key: e.key, stack: e.stack }.compact }
+        end
+
+        def live_axes
+          axes = {}
+          if horizontal?
+            axes[:y] = { data_key: y_axis_config.data_key } if y_axis_config&.data_key
+          else
+            axes[:x] = { data_key: x_axis_config.data_key } if x_axis_config&.data_key
+            axes[:y] = { tick_count: y_axis_config.tick_count } if y_axis_config
+          end
+          axes
+        end
+
+        def live_x_scale_type = :band
+        def live_category_axis? = horizontal? ? y_axis? : x_axis?
+
+        def live_frame_extras
+          {
+            "barGap" => bar_gap,
+            "barCategoryGap" => bar_category_gap,
+            "series" => series_entries.to_h { |e| [e.key, { "radius" => e.radius }] }
+          }
         end
 
         private

@@ -17,6 +17,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
+        include Poetry::Charts::Live
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
@@ -44,6 +45,7 @@ module Poetry
         option :label, :string
 
         motion_options
+        live_option
 
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false|
@@ -182,6 +184,24 @@ module Poetry
         def fnum(value)
           Geometry.js_number((value * 100).round / 100.0)
         end
+
+        # -- live mode (Phase B) -----------------------------------------
+
+        def live_type = :line
+
+        def live_series
+          series_entries.map { |e| { data_key: e.key, curve: e.curve } }
+        end
+
+        def live_axes
+          axes = {}
+          axes[:x] = { data_key: x_axis_config.data_key } if x_axis_config&.data_key
+          axes[:y] = { tick_count: y_axis_config.tick_count } if y_axis_config
+          axes
+        end
+
+        def live_x_scale_type = :point
+        def live_category_axis? = x_axis?
       end
     end
   end

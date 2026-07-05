@@ -72,6 +72,9 @@ components:
       type: string
     - name: label
       type: string
+    - name: live
+      type: boolean
+      default: false
     - name: margin
       type:
     - name: offset
@@ -146,6 +149,9 @@ components:
       type: string
     - name: label
       type: string
+    - name: live
+      type: boolean
+      default: false
     - name: margin
       type:
     - name: offset
@@ -275,6 +281,9 @@ components:
       type: string
     - name: label
       type: string
+    - name: live
+      type: boolean
+      default: false
     - name: margin
       type:
     - name: width

@@ -66,5 +66,6 @@
   <% end %>
   <% if tooltip? %><%= render tooltip_layer_component %><% end %>
   <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
-  <% end %>
+  <% if live? %><script type="application/json" data-slot="chart-live-payload"><%= live_payload_json.html_safe %></script>
+<% end %>  <% end %>
 <% end %>
