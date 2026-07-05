@@ -374,6 +374,28 @@
       "userScrollIntent"
     ]
   },
+  "poetry--core--navigation-menu": {
+    "targets": [],
+    "values": {
+      "openDelay": {
+        "type": "Number",
+        "default": 50
+      },
+      "closeDelay": {
+        "type": "Number",
+        "default": 150
+      }
+    },
+    "classes": [],
+    "methods": [
+      "disconnect",
+      "focusLeft",
+      "keydown",
+      "scheduleClose",
+      "scheduleOpen",
+      "toggle"
+    ]
+  },
   "poetry--core--otp": {
     "targets": [
       "input",
