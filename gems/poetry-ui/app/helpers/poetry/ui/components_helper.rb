@@ -138,6 +138,11 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The native scroll region (N9 W3a): size it with classes; label: names it.
+      def poetry_scroll_area(**, &)
+        render(Poetry::Ui::ScrollArea::Component.new(**), &)
+      end
+
       # Tabs (N9 W2): declare with with_tab(title, value:) + panel blocks;
       # the component owns the ARIA wiring and the two-controller split.
       def poetry_tabs(**, &)

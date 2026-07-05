@@ -2052,6 +2052,25 @@ components:
     - '7+ options: use Select instead.'
     - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
       - never a bare red ring.'
+  poetry/ui/scroll_area:
+    class_name: Poetry::Ui::ScrollArea::Component
+    identifier: poetry--ui--scroll_area
+    bem_block: poetry-ui-scroll_area
+    styles: []
+    options:
+    - name: label
+      type: string
+    slots: []
+    elements:
+    - viewport
+    capsule: b3212eb76f41
+    agent_rules:
+    - Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the
+      overflow.
+    - 'label: is REQUIRED - the viewport is focusable, and a focusable region needs
+      a name (role=region + aria-label).'
+    - This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller
+      for chat transcripts.
   poetry/ui/select:
     class_name: Poetry::Ui::Select::Component
     identifier: poetry--ui--select

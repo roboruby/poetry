@@ -21,7 +21,9 @@ module Poetry
                       poetry/ui/label
                       poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
                       poetry/ui/native_select
-                      poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group poetry/ui/select
+                      poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group
+                      poetry/ui/scroll_area
+                      poetry/ui/select
                       poetry/ui/separator poetry/ui/sheet poetry/ui/skeleton poetry/ui/slider poetry/ui/spinner
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea poetry/ui/toast
                       poetry/ui/toaster

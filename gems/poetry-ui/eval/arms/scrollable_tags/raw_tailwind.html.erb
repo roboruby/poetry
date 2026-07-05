@@ -1,0 +1,10 @@
+<%# The raw arm: plausible LLM output - an overflow div a keyboard can't
+    reach (no tabindex, no name): the axe scrollable-region-focusable
+    failure. %>
+<div class="h-48 w-48 overflow-y-auto rounded-md border">
+  <div class="p-4">
+    <% 20.times do |n| %>
+      <div class="border-b py-2 text-sm"><%= "v1.2.0-beta.#{n + 1}" %></div>
+    <% end %>
+  </div>
+</div>

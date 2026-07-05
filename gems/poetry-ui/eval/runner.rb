@@ -478,6 +478,17 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "scrollable_tags" => {
+          "description" => "A bounded, scrollable list of 20 version tags in a 12rem box",
+          "gates" => [
+            Gate.new(:scroll_region_is_keyboard_reachable, :cross_arm, lambda { |doc, _html|
+              doc.css('[tabindex="0"]').any?
+            }),
+            Gate.new(:scroll_region_is_named, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="region"][aria-label]').any?
+            })
+          ]
+        },
         "settings_tabs" => {
           "description" => "Account settings tabs (Account / Password / Notifications) with the " \
                            "first tab active and its panel visible",
