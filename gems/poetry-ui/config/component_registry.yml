@@ -423,6 +423,57 @@ components:
       unnamed by default).
     - A visual divider between members is poetry_button_group_separator, not a styled
       border.
+  poetry/ui/calendar:
+    class_name: Poetry::Ui::Calendar::Component
+    identifier: poetry--ui--calendar
+    bem_block: poetry-ui-calendar
+    styles: []
+    options:
+    - name: name
+      type: string
+    - name: week_start
+      type: integer
+      default: 0
+    slots: []
+    elements:
+    - nav
+    - nav_button
+    - caption
+    - grid
+    - weekdays
+    - weekday
+    - week
+    - day_cell
+    - day
+    capsule: d433c3b420e2
+    controllers:
+    - identifier: poetry--core--calendar
+      targets:
+      - caption
+      - day
+      - grid
+      - input
+      values:
+      - max
+      - min
+      - month
+      - monthNames
+      - selected
+      - weekStart
+      actions:
+      - keydown
+      - nextMonth
+      - previousMonth
+      - select
+    agent_rules:
+    - 'name: makes it a form control (the chosen date posts as an ISO string in a
+      hidden input).'
+    - 'month:/selected:/today accept a Date or an ISO string; min:/max: bound the
+      selectable range.'
+    - The grid is server-rendered - it shows a valid month with no JS; the controller
+      adds navigation + selection.
+    - For a text-field + popover, use DatePicker (it composes this) - a bare Calendar
+      is the always-visible grid.
   poetry/ui/card:
     class_name: Poetry::Ui::Card::Component
     identifier: poetry--ui--card
@@ -1038,6 +1089,41 @@ components:
       (inline edit, row actions) belong to poetry-reactive components rendered inside
       cells - never to this component.
     - 'Give the table a caption: - it is the table''s accessible purpose.'
+  poetry/ui/date_picker:
+    class_name: Poetry::Ui::DatePicker::Component
+    identifier: poetry--ui--date_picker
+    bem_block: poetry-ui-date_picker
+    styles: []
+    options:
+    - name: label
+      type: string
+    - name: name
+      type: string
+      required: true
+    - name: placeholder
+      type: string
+      default: Pick a date
+    slots: []
+    elements: []
+    capsule: e0f70e04b15c
+    controllers:
+    - identifier: poetry--core--date-picker
+      targets:
+      - label
+      values:
+      - locale
+      - placeholder
+      actions:
+      - picked
+    agent_rules:
+    - 'name: is REQUIRED - the chosen date posts as an ISO string (the Calendar''s
+      hidden input).'
+    - 'value: preselects a date (a Date or ISO string) - the trigger shows it formatted,
+      no JS needed.'
+    - 'min:/max: bound the selectable range; the label + placeholder are the trigger''s
+      text.'
+    - For an always-visible grid use Calendar directly - DatePicker is the field+popover
+      form.
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog

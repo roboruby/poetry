@@ -1,0 +1,34 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <div data-slot="calendar-nav" class="<%= css(:nav) %>">
+    <%= render Poetry::Ui::Button::Component.new(**previous_options) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-left") } %>
+    <% end %>
+    <div data-slot="calendar-caption" data-poetry--core--calendar-target="caption" class="<%= css(:caption) %>"><%= caption %></div>
+    <%= render Poetry::Ui::Button::Component.new(**next_options) do |button| %>
+      <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
+    <% end %>
+  </div>
+  <div role="grid" data-slot="calendar-grid" class="<%= css(:grid) %>"
+       <%= tag.attributes(**{ "data-action" => "keydown->poetry--core--calendar#keydown" }) %>>
+    <div role="row" data-slot="calendar-weekdays" class="<%= css(:weekdays) %>">
+      <% weekday_labels.each do |label| %>
+        <div role="columnheader" data-slot="calendar-weekday" class="<%= css(:weekday) %>"><%= label %></div>
+      <% end %>
+    </div>
+    <% cells.each_slice(7) do |week| %>
+      <div role="row" data-slot="calendar-week" class="<%= css(:week) %>">
+        <% week.each do |date| %>
+          <%= content_tag(:div, cell_attributes(date)) do %>
+            <%= content_tag(:button, day_attributes(date)) do %>
+              <span data-slot="calendar-day-label"><%= date.day %></span>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  <% if name.present? %>
+    <input type="hidden" name="<%= name %>" value="<%= selected&.iso8601 %>"
+           data-poetry--core--calendar-target="input">
+  <% end %>
+<% end %>

@@ -31,6 +31,11 @@ module Poetry
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
         "inset" => "menu item inset marker (server-rendered)",
+        "today" => "calendar today-cell marker (server + poetry--core--calendar via setAttribute, N9 W6)",
+        "outside" => "calendar outside-month day marker (server + poetry--core--calendar, N9 W6)",
+        "range-start" => "calendar range-start day (v2 range mode; server/controller, N9 W6)",
+        "range-middle" => "calendar range-middle day (v2 range mode, N9 W6)",
+        "range-end" => "calendar range-end day (v2 range mode, N9 W6)",
         "state" => "sidebar expanded/collapsed marker (poetry--core--sidebar reflects it via " \
                    "setAttribute; the CSS collapse hook, N9 W5)",
         "collapsible" => "sidebar collapse-mode marker (server + poetry--core--sidebar; " \

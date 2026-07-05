@@ -138,6 +138,18 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
+      # The Calendar (N9 W6): a server-rendered month grid; name: makes it
+      # a form control. poetry--core--calendar adds nav + selection.
+      def poetry_calendar(**, &)
+        render(Poetry::Ui::Calendar::Component.new(**), &)
+      end
+
+      # The DatePicker (N9 W6): a field-shaped trigger opening a Calendar in
+      # a Popover; name: is the form field.
+      def poetry_date_picker(**, &)
+        render(Poetry::Ui::DatePicker::Component.new(**), &)
+      end
+
       # The Sidebar (N9 W5): the app-shell frame - with_nav is the column,
       # with_inset the page area; poetry--core--sidebar owns the collapse.
       def poetry_sidebar(**, &)

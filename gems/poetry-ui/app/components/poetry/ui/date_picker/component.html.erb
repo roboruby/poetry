@@ -1,0 +1,9 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= helpers.poetry_popover(label: label.presence || "Choose date", content_class: "w-auto p-0") do |popover| %>
+    <% popover.with_trigger(**trigger_options) do %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :calendar) %>
+      <span <%= tag.attributes(**label_target_attributes) %>><%= formatted %></span>
+    <% end %>
+    <%= helpers.poetry_calendar(**calendar_options) %>
+  <% end %>
+<% end %>

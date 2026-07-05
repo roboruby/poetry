@@ -1,0 +1,12 @@
+<%# The raw arm: plausible LLM output - a text input with placeholder
+    formatting and a div "calendar" of onclick spans: no real form value,
+    no day semantics, no today/selected ARIA. %>
+<div class="relative w-56">
+  <input type="text" placeholder="Pick a date" value="June 12, 2026"
+         class="h-9 w-full rounded-md border px-3 text-sm" readonly onclick="openCal()">
+  <div id="cal" class="absolute mt-1 hidden grid-cols-7 gap-1 rounded-md border bg-white p-3">
+    <span class="cursor-pointer p-1 text-center text-sm" onclick="pick(12)">12</span>
+    <span class="cursor-pointer bg-gray-100 p-1 text-center text-sm" onclick="pick(15)">15</span>
+    <span class="cursor-pointer p-1 text-center text-sm" onclick="pick(20)">20</span>
+  </div>
+</div>

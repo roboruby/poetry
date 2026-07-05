@@ -494,6 +494,25 @@ module Poetry
             })
           ]
         },
+        "date_field" => {
+          "description" => "A due-date field: a button showing the selected date that opens a calendar " \
+                           "of selectable days",
+          "gates" => [
+            Gate.new(:date_posts_a_real_value, :cross_arm, lambda { |doc, _html|
+              # The tell: a real field posts an ISO date (hidden input); the
+              # raw arm holds a formatted string in a readonly text box.
+              doc.css('input[type="hidden"][name], input[value*="-"]').any? ||
+                doc.css("input[name][value]").any? { |i| i["value"].to_s.match?(/\A\d{4}-\d{2}-\d{2}\z/) }
+            }),
+            Gate.new(:days_are_real_buttons, :cross_arm, lambda { |doc, _html|
+              days = doc.css('[data-slot="calendar-day"], [role="gridcell"] button')
+              days.any? && doc.xpath(".//*[@onclick]").empty?
+            }),
+            Gate.new(:selection_announced, :cross_arm, lambda { |doc, _html|
+              doc.css('[aria-selected="true"], [aria-current="date"]').any?
+            })
+          ]
+        },
         "site_nav" => {
           "description" => "A site navigation bar: a Products dropdown of links, plus Pricing and " \
                            "Docs destinations",
