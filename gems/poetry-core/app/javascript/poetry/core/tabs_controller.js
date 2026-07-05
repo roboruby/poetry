@@ -47,13 +47,15 @@ export default class TabsController extends Controller {
     this.#apply(trigger.dataset.value)
   }
 
-  // Action: focusin->poetry--core--tabs#focusActivate on the tablist -
-  // automatic activation follows the roving focus. A guard, not a listener
-  // per trigger: focusin bubbles.
+  // Action: poetry--core--roving-focus:entry->poetry--core--tabs#focusActivate
+  // on the tablist - automatic activation follows the roving focus via the
+  // roving controller's entry event (deterministic: never depends on the
+  // platform firing focusin for a programmatic .focus()). A raw focusin
+  // routes here too, so hand-wired hosts get the same behavior.
   focusActivate(event) {
     if (!this.activateOnFocusValue) return
 
-    const trigger = this.#triggerFrom(event)
+    const trigger = (event.detail && event.detail.item) || this.#triggerFrom(event)
 
     if (!trigger || this.#disabled(trigger)) return
     if (trigger.hasAttribute("data-active")) return // already there - no re-fire

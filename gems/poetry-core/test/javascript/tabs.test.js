@@ -29,7 +29,7 @@ const panel = (value, { active = false } = {}) => `
 const markup = ({ inner = "" } = {}) => `
   <div id="root" data-controller="poetry--core--tabs" data-slot="tabs" data-orientation="horizontal">
     <div id="list" role="tablist" data-slot="tabs-list"
-         data-action="focusin->poetry--core--tabs#focusActivate">
+         data-action="poetry--core--roving-focus:entry->poetry--core--tabs#focusActivate focusin->poetry--core--tabs#focusActivate">
       ${trigger("account", { active: true })}
       ${trigger("password")}
       ${trigger("billing", { disabled: true })}
@@ -81,11 +81,19 @@ describe("poetry--core--tabs", () => {
     expect(el("panel-password").hasAttribute("data-hidden")).toBe(false)
   })
 
-  it("automatic activation follows focus into a trigger", () => {
-    el("tab-password").dispatchEvent(new FocusEvent("focusin", { bubbles: true }))
+  it("automatic activation follows the roving entry event", () => {
+    el("tab-password").dispatchEvent(
+      new CustomEvent("poetry--core--roving-focus:entry", { bubbles: true, detail: { item: el("tab-password") } }),
+    )
 
     expect(stateOfTab("password").active).toBe(true)
     expect(stateOfTab("account").active).toBe(false)
+  })
+
+  it("a raw focusin activates too (the hand-wired fallback)", () => {
+    el("tab-password").dispatchEvent(new FocusEvent("focusin", { bubbles: true }))
+
+    expect(stateOfTab("password").active).toBe(true)
   })
 
   it("a disabled trigger activates nothing", () => {

@@ -154,6 +154,26 @@
       "disconnect"
     ]
   },
+  "poetry--core--drawer": {
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "direction": {
+        "type": "String",
+        "default": "down"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "open",
+      "swipeCancel",
+      "swipeEnd",
+      "swipeMove",
+      "swipeStart"
+    ]
+  },
   "poetry--core--focus-scope": {
     "targets": [],
     "values": {
