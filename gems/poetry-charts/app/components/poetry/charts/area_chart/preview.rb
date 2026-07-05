@@ -25,7 +25,7 @@ module Poetry
         MARGIN = { left: 12, right: 12 }.freeze
 
         def default
-          simple_chart(id: "area-default")
+          simple_chart(id: "area-default", tooltip: true)
         end
 
         def linear
@@ -58,11 +58,12 @@ module Poetry
 
         private
 
-        def simple_chart(id:, curve: :natural)
+        def simple_chart(id:, curve: :natural, tooltip: false)
           render_component(data: DATA, config: ONE, id: id, margin: MARGIN) do |chart|
             chart.with_grid
             chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
             chart.with_area(data_key: :desktop, curve: curve)
+            chart.with_tooltip(indicator: :line) if tooltip
           end
         end
 

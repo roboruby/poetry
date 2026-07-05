@@ -30,7 +30,7 @@ module Poetry
         ].freeze
 
         def default
-          simple_chart(id: "line-default")
+          simple_chart(id: "line-default", tooltip: true)
         end
 
         def linear
@@ -73,11 +73,12 @@ module Poetry
 
         private
 
-        def simple_chart(id:, curve: :natural, dots: false)
+        def simple_chart(id:, curve: :natural, dots: false, tooltip: false)
           render_component(data: DATA, config: ONE, id: id, margin: MARGIN) do |chart|
             chart.with_grid
             chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
             chart.with_line(data_key: :desktop, curve: curve, dots: dots)
+            chart.with_tooltip(hide_label: true) if tooltip
           end
         end
       end

@@ -12,7 +12,8 @@ module Poetry
       # container-level. Adapter/island content brings its own inner styling
       # (a declared degradation).
       class Style < Poetry::Core::Style
-        base "flex aspect-video justify-center text-xs [&_svg]:outline-hidden"
+        # relative anchors the absolute tooltip layer (visual no-op).
+        base "relative flex aspect-video justify-center text-xs [&_svg]:outline-hidden"
       end
     end
   end

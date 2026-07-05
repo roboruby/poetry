@@ -18,6 +18,8 @@ module Poetry
       #     <% c.with_bar data_key: :desktop, radius: 8 %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::TooltipWiring
+
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.",
           "radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.",

@@ -53,15 +53,42 @@ def poetry_charts_visit_preview(session, url)
 end
 
 namespace :browser do
-  desc "Generate the static assets the component_preview layout serves (compiled Tailwind) " \
-       "into test/dummy/public/assets"
+  desc "Generate the static assets the component_preview layout serves (compiled Tailwind + " \
+       "the charts controllers + importmap) into test/dummy/public/assets"
   task :assets do
     poetry_charts_boot!
     require "fileutils"
+    require "json"
 
     dir = poetry_charts_dummy_assets_dir
     FileUtils.mkdir_p(dir)
+
+    # (a) The real stylesheet: the exact css:verify_compiled build.
     File.write(dir.join("poetry.css"), poetry_charts_compile_tailwind)
+
+    # (b) The controllers, verbatim, plus the Stimulus dist the gem
+    # develops against.
+    js_src = Poetry::Charts.root.join("app/javascript/poetry/charts")
+    js_dest = dir.join("poetry/charts")
+    FileUtils.rm_rf(js_dest)
+    FileUtils.mkdir_p(js_dest.dirname)
+    FileUtils.cp_r(js_src, js_dest)
+
+    stimulus = Poetry::Charts.root.join("node_modules/@hotwired/stimulus/dist/stimulus.js")
+    abort "missing #{stimulus} - run npm install in poetry-charts" unless stimulus.exist?
+    FileUtils.cp(stimulus, dir.join("stimulus.js"))
+
+    # (c) The importmap resolving the bare specifiers to the copied files.
+    imports = {
+      "@hotwired/stimulus" => "/assets/stimulus.js",
+      "@poetry/charts" => "/assets/poetry/charts/index.js"
+    }
+    Dir.glob("**/*.js", base: js_dest).sort.each do |rel|
+      next if rel == "index.js"
+
+      imports["@poetry/charts/#{rel.delete_suffix(".js")}"] = "/assets/poetry/charts/#{rel}"
+    end
+    File.write(dir.join("importmap.json"), JSON.pretty_generate({ "imports" => imports }))
 
     puts "browser assets generated in #{dir}"
   end

@@ -1,0 +1,19 @@
+{
+  "poetry--charts--tooltip": {
+    "targets": [
+      "data",
+      "svg",
+      "tooltip"
+    ],
+    "values": [],
+    "methods": [
+      "blur",
+      "connect",
+      "focus",
+      "keydown",
+      "leave",
+      "move",
+      "show"
+    ]
+  }
+}

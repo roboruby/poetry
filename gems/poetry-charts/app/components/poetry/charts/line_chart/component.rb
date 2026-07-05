@@ -15,6 +15,8 @@ module Poetry
       #     <% c.with_line data_key: :mobile %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::TooltipWiring
+
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
           "Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.",

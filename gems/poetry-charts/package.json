@@ -1,0 +1,27 @@
+{
+  "name": "@poetry/charts",
+  "version": "0.0.1",
+  "private": true,
+  "description": "poetry-charts' Stimulus chrome controllers. Importmap-first (the engine pins this tree); the same tree is the npm channel for bundler hosts.",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": "./app/javascript/poetry/charts/index.js",
+    "./*": "./app/javascript/poetry/charts/*.js"
+  },
+  "files": [
+    "app/javascript"
+  ],
+  "peerDependencies": {
+    "@hotwired/stimulus": ">= 3.2"
+  },
+  "devDependencies": {
+    "@hotwired/stimulus": "^3.2.2",
+    "jsdom": "^26.0.0",
+    "vitest": "^3.0.0"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "manifest": "MANIFEST_WRITE=1 vitest run test/javascript/controllers_manifest.test.js"
+  }
+}

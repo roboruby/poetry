@@ -175,13 +175,15 @@ module Poetry
         assert_nil coordinates["series"]["desktop"][2], "missing points embed as null for the tooltip layer"
       end
 
-      def test_the_tooltip_slot_is_accepted_and_inert_until_w5
+      def test_the_tooltip_slot_attaches_the_engine
         html = render_chart do |chart|
           chart.with_area(data_key: :desktop)
           chart.with_tooltip(indicator: :line)
         end
 
-        assert_empty html.css('[data-slot="chart-tooltip-content"]'), "the tooltip layer is the W5 wave"
+        assert_predicate html.css('[data-slot="chart-tooltip-content"]'), :any?,
+                         "the chrome pre-renders (full contracts in TooltipEngineTest)"
+        assert html.css('[data-slot="chart-tooltip"]').first["hidden"]
       end
 
       def test_the_helper_dispatcher_routes_area

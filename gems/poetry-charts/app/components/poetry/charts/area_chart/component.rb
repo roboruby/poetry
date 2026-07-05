@@ -19,6 +19,8 @@ module Poetry
       # Series colors ride var(--color-<key>) (the Container emission);
       # per-x pixel coordinates are embedded for the W5 tooltip controller.
       class Component < Poetry::Core::Component
+        include Poetry::Charts::TooltipWiring
+
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.",
           "Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.",

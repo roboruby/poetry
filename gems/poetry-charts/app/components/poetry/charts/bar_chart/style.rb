@@ -8,6 +8,7 @@ module Poetry
       class Style < Poetry::Core::Style
         base ""
 
+        element :frame, "contents"
         element :svg, "size-full"
         element :grid_line, "stroke-border/50"
         element :tick, "fill-muted-foreground"

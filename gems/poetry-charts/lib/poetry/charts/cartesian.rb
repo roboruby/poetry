@@ -169,6 +169,11 @@ module Poetry
           "series" => @series.to_h do |entry|
             tops = points(entry).map { |p| p[top_key].nan? ? nil : p[top_key].round(2) }
             [entry.key, tops]
+          end,
+          # PRE-FORMATTED display strings (from the RAW row values, so
+          # integers stay integers) - the controller never formats.
+          "values" => @series.to_h do |entry|
+            [entry.key, @data.map { |row| display_value(row[entry.key]) }]
           end
         }
       end
@@ -189,6 +194,15 @@ module Poetry
       def value_at(index, key)
         value = @data[index][key]
         value.nil? ? Float::NAN : value.to_f
+      end
+
+      # The tooltip's display string (matches TooltipContent's Row
+      # formatting: delimited numerics, verbatim strings, nil for missing).
+      def display_value(value)
+        return nil if value.nil?
+        return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)
+
+        value.to_s
       end
 
       # d3 stacks per stack id, memoized: { key => [[lo, hi], ...] }.

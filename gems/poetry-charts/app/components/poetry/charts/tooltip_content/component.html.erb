@@ -2,7 +2,7 @@
   <% if label_text && !nest_label? %><div data-slot="chart-tooltip-label" class="<%= css(:label) %>"><%= label_text %></div><% end %>
   <div class="<%= css(:inner) %>">
     <% rows.each do |row| %>
-      <div data-slot="chart-tooltip-item" class="<%= row_classes %>">
+      <div data-slot="chart-tooltip-item" data-key="<%= row.key %>" class="<%= row_classes %>">
         <% unless hide_indicator %>
           <div data-slot="chart-tooltip-indicator" class="<%= indicator_classes(nested: nest_label?) %>"<% if row.indicator_style %> style="<%= row.indicator_style %>"<% end %>></div>
         <% end %>

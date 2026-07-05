@@ -1,5 +1,6 @@
 <%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
-  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" role="img" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet">
+  <%= content_tag(:div, class: css(:frame), data: frame_data) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
     <% if series_entries.any?(&:gradient) %>
       <defs>
         <% series_entries.select(&:gradient).each do |entry| %>
@@ -32,6 +33,15 @@
         <% end %>
       <% end %>
     </g>
+<% if tooltip? %>
+  <g data-slot="chart-active-dots" aria-hidden="true">
+    <% series_entries.each do |entry| %>
+      <% active_dot_markers(entry).each do |marker| %>
+        <circle data-slot="chart-active-dot" data-key="<%= entry.key %>" data-index="<%= marker[:index] %>" cx="<%= fnum(marker[:x]) %>" cy="<%= fnum(marker[:y]) %>" r="4" fill="var(--color-<%= entry.key %>)" display="none"/>
+      <% end %>
+    <% end %>
+  </g>
+<% end %>
     <% if x_axis? %>
       <g data-slot="chart-x-axis">
         <% cartesian.categories.each_with_index do |category, i| %>
@@ -50,5 +60,7 @@
   <% if legend? %>
     <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
   <% end %>
-  <script type="application/json" data-slot="chart-coordinates"><%= coordinates_json.html_safe %></script>
+  <% if tooltip? %><%= render tooltip_layer_component %><% end %>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
+  <% end %>
 <% end %>

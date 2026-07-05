@@ -31,6 +31,7 @@ module Poetry
             chart.with_grid
             chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
             chart.with_bar(data_key: :desktop, radius: 8)
+            chart.with_tooltip(hide_label: true)
           end
         end
 

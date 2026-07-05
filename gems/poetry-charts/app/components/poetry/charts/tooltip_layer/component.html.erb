@@ -1,0 +1,6 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= render Poetry::Charts::TooltipContent::Component.new(
+        config: chart_config, items: items, label: hide_label ? nil : "…",
+        indicator: indicator, hide_label: hide_label, hide_indicator: hide_indicator
+      ) %>
+<% end %>
