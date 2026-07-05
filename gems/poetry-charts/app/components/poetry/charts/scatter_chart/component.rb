@@ -23,6 +23,8 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
+        include Poetry::Charts::ReferenceMarks
+        include Poetry::Charts::ErrorBars
 
         AGENT_RULES = [
           "Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.",
@@ -33,7 +35,7 @@ module Poetry
           "Entrance animation is on by default (recharts Scatter: 400ms linear); animate: false for a static chart."
         ].freeze
 
-        Series = Data.define(:key, :data)
+        Series = Data.define(:key, :data, :error_key, :error_width)
         AxisConfig = Data.define(:data_key, :tick_count, :tick_margin, :name)
         DEFAULT_Z_RANGE = [64, 64].freeze
 
@@ -47,8 +49,9 @@ module Poetry
 
         motion_options(duration: 400, easing: :linear)
 
-        renders_many :scatters, lambda { |key:, data: nil|
-          (@series_entries ||= []) << Series.new(key: key.to_s, data: data)
+        renders_many :scatters, lambda { |key:, data: nil, error_key: nil, error_width: 5|
+          (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
+                                                 error_key: error_key&.to_s, error_width:)
           nil
         }
 
@@ -257,6 +260,15 @@ module Poetry
         def svg_label
           label.presence ||
             "Scatter chart: #{series_entries.map { |e| chart_config[e.key]&.label || e.key }.join(", ")}"
+        end
+
+        # Reference marks speak numbers on BOTH axes here (the concern's
+        # defaults are categorical).
+        def ref_x_pixel(value) = x_scale.call(value.to_f)
+        def ref_y_pixel(value) = y_scale.call(value.to_f)
+
+        def ref_plot
+          { left: plot_left, right: plot_right, top: plot_top, bottom: plot_bottom }
         end
 
         def tick_label(tick)

@@ -76,6 +76,13 @@ module Poetry
           raise ArgumentError, "live: charts cannot serialize tick_formatter lambdas - " \
                                "pre-format the category strings in your data instead"
         end
+        if series_entries.any? { |entry| entry.respond_to?(:error_key) && entry.error_key }
+          raise ArgumentError, "live: charts do not support error bars yet (Phase C scope) - " \
+                               "drop error_key: or render without live:"
+        end
+        if respond_to?(:reference_marks) && reference_marks.any?
+          raise ArgumentError, "live: charts do not support reference marks yet (Phase C scope)"
+        end
         return unless live_labels_configured?
 
         raise ArgumentError, "live: charts do not support labels yet (Phase B scope) - " \

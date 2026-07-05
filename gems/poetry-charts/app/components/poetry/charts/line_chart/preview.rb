@@ -71,6 +71,21 @@ module Poetry
           end
         end
 
+        def references_and_errors
+          data = AreaChart::Preview::DATA.map.with_index do |row, i|
+            row.merge(err: [12 + (i * 3), 20 - i])
+          end
+          render_component(data: data, config: ONE, id: "line-refs",
+                           margin: { left: 12, right: 12 }) do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
+            chart.with_line(data_key: :desktop, error_key: :err)
+            chart.with_reference_line(y: 204, label: "avg")
+            chart.with_reference_area(y1: 280, y2: 320, label: "goal")
+            chart.with_tooltip
+          end
+        end
+
         private
 
         def simple_chart(id:, curve: :natural, dots: false, tooltip: false)

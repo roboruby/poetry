@@ -18,6 +18,8 @@ module Poetry
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::Live
+        include Poetry::Charts::ReferenceMarks
+        include Poetry::Charts::ErrorBars
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
@@ -31,7 +33,8 @@ module Poetry
 
         CURVES = AreaChart::Component::CURVES
 
-        Series = Data.define(:key, :curve, :stroke_width, :dots, :dot_radius, :dot_color_key, :labels) do
+        Series = Data.define(:key, :curve, :stroke_width, :dots, :dot_radius, :dot_color_key, :labels,
+                             :error_key, :error_width) do
           # The cartesian pipeline contract (lines never stack).
           def stack = nil
         end
@@ -48,11 +51,12 @@ module Poetry
         live_option
 
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
-                                       dot_radius: 3, dot_color_key: nil, labels: false|
+                                       dot_radius: 3, dot_color_key: nil, labels: false, error_key: nil, error_width: 5|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
 
           (@series_entries ||= []) << Series.new(key: data_key.to_s, curve: curve.to_sym, stroke_width:,
-                                                 dots:, dot_radius:, dot_color_key: dot_color_key&.to_s, labels:)
+                                                 dots:, dot_radius:, dot_color_key: dot_color_key&.to_s,
+                                                 labels:, error_key: error_key&.to_s, error_width:)
           nil
         }
 

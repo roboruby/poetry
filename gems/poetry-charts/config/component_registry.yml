@@ -84,6 +84,12 @@ components:
       type: integer
       default: 640
     slots:
+    - name: reference_lines
+      many: true
+    - name: reference_areas
+      many: true
+    - name: reference_dots
+      many: true
     - name: areas
       many: true
     - name: x_axis
@@ -101,7 +107,11 @@ components:
     - svg
     - grid_line
     - tick
-    capsule: 462ffd421dc7
+    - reference_line
+    - reference_area
+    - reference_dot
+    - error_bar
+    capsule: e362a23d5e5a
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:)
       / with_legend.'
@@ -164,6 +174,12 @@ components:
       type: integer
       default: 640
     slots:
+    - name: reference_lines
+      many: true
+    - name: reference_areas
+      many: true
+    - name: reference_dots
+      many: true
     - name: bars
       many: true
     - name: x_axis
@@ -181,8 +197,12 @@ components:
     - svg
     - grid_line
     - tick
+    - reference_line
+    - reference_area
+    - reference_dot
+    - error_bar
     - label
-    capsule: 458ede9459f7
+    capsule: 703c05039452
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:)
       / with_legend.'
@@ -239,6 +259,12 @@ components:
       type: integer
       default: 640
     slots:
+    - name: reference_lines
+      many: true
+    - name: reference_areas
+      many: true
+    - name: reference_dots
+      many: true
     - name: areas
       many: true
     - name: bars
@@ -260,7 +286,11 @@ components:
     - svg
     - grid_line
     - tick
-    capsule: 462ffd421dc7
+    - reference_line
+    - reference_area
+    - reference_dot
+    - error_bar
+    capsule: e362a23d5e5a
     agent_rules:
     - 'Mix marks freely: with_area / with_bar / with_line - declaration order is paint
       order.'
@@ -363,6 +393,12 @@ components:
       type: integer
       default: 640
     slots:
+    - name: reference_lines
+      many: true
+    - name: reference_areas
+      many: true
+    - name: reference_dots
+      many: true
     - name: lines
       many: true
     - name: x_axis
@@ -380,8 +416,12 @@ components:
     - svg
     - grid_line
     - tick
+    - reference_line
+    - reference_area
+    - reference_dot
+    - error_bar
     - label
-    capsule: 458ede9459f7
+    capsule: 703c05039452
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'
@@ -643,6 +683,12 @@ components:
       type: integer
       default: 640
     slots:
+    - name: reference_lines
+      many: true
+    - name: reference_areas
+      many: true
+    - name: reference_dots
+      many: true
     - name: scatters
       many: true
     - name: x_axis
@@ -662,7 +708,11 @@ components:
     - svg
     - grid_line
     - tick
-    capsule: 462ffd421dc7
+    - reference_line
+    - reference_area
+    - reference_dot
+    - error_bar
+    capsule: e362a23d5e5a
     agent_rules:
     - 'Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name
       the row keys to plot.'

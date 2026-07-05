@@ -20,6 +20,17 @@
         <circle data-slot="chart-scatter-point" data-key="<%= point.key %>" data-index="<%= point.index %>" cx="<%= fnum(point.cx) %>" cy="<%= fnum(point.cy) %>" r="<%= fnum(point.r) %>" fill="var(--color-<%= point.key %>)"/>
       <% end %>
     </g>
+    <% series_entries.select(&:error_key).each do |entry| %>
+      <g data-slot="chart-error-bars" data-key="<%= entry.key %>" aria-hidden="true">
+        <% points.select { |p| p.key == entry.key }.each do |point| %>
+          <% range = error_range(point.row, entry.error_key, point.row[y_axis_config.data_key].to_f) %>
+          <% if range %>
+            <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(point.cx, y_scale.call(range[0]), y_scale.call(range[1]), entry.error_width) %>" fill="none"/>
+          <% end %>
+        <% end %>
+      </g>
+    <% end %>
+    <%= reference_marks_svg %>
     <% if x_axis? %>
       <g data-slot="chart-x-axis">
         <% x_ticks.each do |tick| %>

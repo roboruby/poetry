@@ -12,6 +12,10 @@ module Poetry
         element :svg, "size-full"
         element :grid_line, "stroke-border/50"
         element :tick, "fill-muted-foreground"
+        element :reference_line, "stroke-muted-foreground"
+        element :reference_area, "fill-muted-foreground"
+        element :reference_dot, "fill-background stroke-muted-foreground"
+        element :error_bar, "stroke-foreground"
         element :label, "fill-foreground"
       end
     end

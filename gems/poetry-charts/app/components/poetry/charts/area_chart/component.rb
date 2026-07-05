@@ -22,6 +22,7 @@ module Poetry
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::Live
+        include Poetry::Charts::ReferenceMarks
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.",

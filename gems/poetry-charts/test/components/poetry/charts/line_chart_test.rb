@@ -51,7 +51,8 @@ module Poetry
         cartesian = Cartesian.new(
           data: DATA, width: 640, height: 360, x_key: "month", margin: MARGIN,
           series: [LineChart::Component::Series.new(key: "desktop", curve: :natural, stroke_width: 2,
-                                                    dots: false, dot_radius: 3, dot_color_key: nil, labels: false)]
+                                                    dots: false, dot_radius: 3, dot_color_key: nil,
+                                                    labels: false, error_key: nil, error_width: 5)]
         )
         entry = cartesian.instance_variable_get(:@series).first
         expected = Geometry::Line.new(

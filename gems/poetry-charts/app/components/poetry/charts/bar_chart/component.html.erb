@@ -36,6 +36,16 @@
             <path data-slot="chart-bar" data-key="<%= entry.key %>" data-index="<%= cell[:index] %>" d="<%= bar_path(entry, cell) %>" fill="<%= cell_fill(entry, cell) %>"<% if animate? %> data-motion-origin="<%= motion_origin(cell) %>"<% end %><% if active?(entry, cell) %> fill-opacity="0.8" stroke="<%= cell_fill(entry, cell) %>" stroke-width="<%= entry.stroke_width %>" stroke-dasharray="4" stroke-dashoffset="4" data-active=""<% end %>/>
           <% end %>
         </g>
+        <% if entry.error_key && !horizontal? %>
+          <g data-slot="chart-error-bars" data-key="<%= entry.key %>" aria-hidden="true">
+            <% cells(entry).each do |cell| %>
+              <% range = error_range(cell[:row], entry.error_key, cell[:value]) %>
+              <% if range %>
+                <path class="<%= css(:error_bar) %>" d="<%= error_bar_path(cell[:x] + (cell[:width] / 2.0), cartesian.y_scale.call(range[0]), cartesian.y_scale.call(range[1]), entry.error_width) %>" fill="none"/>
+              <% end %>
+            <% end %>
+          </g>
+        <% end %>
         <% if entry.labels %>
           <g data-slot="chart-labels" data-key="<%= entry.key %>">
             <% cells(entry).each do |cell| %>
@@ -45,6 +55,7 @@
         <% end %>
       <% end %>
     </g>
+    <%= reference_marks_svg %>
     <% if horizontal? %>
       <% if y_axis? %>
         <%# The category labels down the left strip (the horizontal/mixed blocks). %>

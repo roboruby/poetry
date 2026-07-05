@@ -62,6 +62,20 @@ module Poetry
             chart.with_tooltip
           end
         end
+
+        def reference_zones
+          render_component(data: SAMPLE, config: ONE, id: "scatter-refs",
+                           margin: { left: 12, right: 12 }) do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :height, name: "Height")
+            chart.with_y_axis(data_key: :weight, name: "Weight")
+            chart.with_scatter(key: :sample, error_key: :werr)
+            chart.with_reference_area(y1: 60, y2: 80, label: "target band")
+            chart.with_reference_line(x: 175)
+            chart.with_reference_dot(x: 172, y: 70, r: 10, label: "median")
+            chart.with_tooltip
+          end
+        end
       end
     end
   end

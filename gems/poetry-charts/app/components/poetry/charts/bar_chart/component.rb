@@ -22,6 +22,8 @@ module Poetry
         include Poetry::Charts::Motion
         include Poetry::Charts::Live
         include Poetry::Charts::BarMath
+        include Poetry::Charts::ReferenceMarks
+        include Poetry::Charts::ErrorBars
 
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.",
@@ -34,7 +36,7 @@ module Poetry
         ].freeze
 
         Series = Data.define(:key, :stack, :radius, :labels, :label_key, :color_key,
-                             :cell_fill, :active_index, :stroke_width) do
+                             :cell_fill, :active_index, :stroke_width, :error_key, :error_width) do
           def stack_or_self = stack || key
         end
 
@@ -61,10 +63,12 @@ module Poetry
         validates :orientation, inclusion: { in: Cartesian::LAYOUTS }
 
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
-                                      color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2|
+                                      color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2,
+                                      error_key: nil, error_width: 5|
           (@series_entries ||= []) << Series.new(key: data_key.to_s, stack:, radius:, labels:,
                                                  label_key: label_key&.to_s, color_key: color_key&.to_s,
-                                                 cell_fill:, active_index:, stroke_width:)
+                                                 cell_fill:, active_index:, stroke_width:,
+                                                 error_key: error_key&.to_s, error_width:)
           nil
         }
 

@@ -23,6 +23,7 @@ module Poetry
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::BarMath
+        include Poetry::Charts::ReferenceMarks
 
         AGENT_RULES = [
           "Mix marks freely: with_area / with_bar / with_line - declaration order is paint order.",
