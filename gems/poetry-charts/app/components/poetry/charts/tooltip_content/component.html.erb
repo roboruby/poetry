@@ -1,0 +1,19 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% if label_text && !nest_label? %><div data-slot="chart-tooltip-label" class="<%= css(:label) %>"><%= label_text %></div><% end %>
+  <div class="<%= css(:inner) %>">
+    <% rows.each do |row| %>
+      <div data-slot="chart-tooltip-item" class="<%= row_classes %>">
+        <% unless hide_indicator %>
+          <div data-slot="chart-tooltip-indicator" class="<%= indicator_classes(nested: nest_label?) %>"<% if row.indicator_style %> style="<%= row.indicator_style %>"<% end %>></div>
+        <% end %>
+        <div class="<%= value_wrap_classes %>">
+          <div class="<%= css(:inner) %>">
+            <% if label_text && nest_label? %><div data-slot="chart-tooltip-label" class="<%= css(:label) %>"><%= label_text %></div><% end %>
+            <span data-slot="chart-tooltip-name" class="<%= css(:name) %>"><%= row.name %></span>
+          </div>
+          <% if row.formatted_value %><span data-slot="chart-tooltip-value" class="<%= css(:value) %>"><%= row.formatted_value %></span><% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>

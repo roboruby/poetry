@@ -22,6 +22,24 @@ Metrics/BlockLength:
     - "test/**/*"
     - "*.gemspec"
 
+# Same posture as poetry-ui: density is reviewed, not counted.
+Metrics/AbcSize:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
+  Enabled: false
+Metrics/MethodLength:
+  Enabled: false
+Metrics/ClassLength:
+  Enabled: false
+Metrics/ModuleLength:
+  Enabled: false
+
+# Comprehensive, multi-assertion unit tests are intentional.
+Minitest/MultipleAssertions:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

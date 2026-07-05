@@ -1,0 +1,48 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Charts
+    module Container
+      # The chart frame (shadcn ChartContainer) - Door 1 of: the
+      # engine-agnostic outer layer every chart (poetry's own SVG engine,
+      # an adapter engine, or a island) sits inside. It scopes the
+      # chart id, emits the per-series --color-<key> custom properties from
+      # the config (ThemeStyle, both themes), and carries the aspect-ratio
+      # sizing chrome. The content block is the chart body.
+      class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Every chart lives inside poetry_chart_container(config:) - the config maps series keys to labels/colors.",
+          "Reference series colors as var(--color-<key>); never hard-code a color in chart markup.",
+          "Config colors point at theme tokens (var(--chart-1..5)) or use theme: { light:, dark: } maps.",
+          "Give charts an explicit id: when the page renders more than one of the same chart."
+        ].freeze
+
+        option :config, ActiveModel::Type::Value.new, required: true
+        option :id, :string
+
+        def chart_config
+          @chart_config ||= Poetry::Charts::Config.wrap(config)
+        end
+
+        # The data-chart scope: explicit id when given (stable for tests /
+        # multiple charts), else unique per render (shadcn's useId move).
+        def chart_id
+          @chart_id ||= "chart-#{id.presence || SecureRandom.hex(4)}"
+        end
+
+        def theme_css
+          Poetry::Charts::ThemeStyle.new(id: chart_id, config: chart_config).css
+        end
+
+        def root_attributes
+          html_attributes.merge_if_not_set(
+            {
+              "data-slot" => "chart",
+              "data-chart" => chart_id
+            }.merge(component_data_attributes)
+          )
+        end
+      end
+    end
+  end
+end

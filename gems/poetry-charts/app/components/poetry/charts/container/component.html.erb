@@ -1,0 +1,4 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% if (css_text = theme_css) %><style><%= css_text.html_safe %></style><% end %>
+  <%= content %>
+<% end %>

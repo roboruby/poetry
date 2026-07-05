@@ -9,6 +9,12 @@ module Poetry
       config.autoload_paths << "#{Poetry::Charts.root}/app/components"
       config.eager_load_paths << "#{Poetry::Charts.root}/app/components"
 
+      initializer "poetry_charts.helpers" do
+        ActiveSupport.on_load(:action_view) do
+          include Poetry::Charts::ComponentsHelper
+        end
+      end
+
       initializer "poetry_charts.previews" do |app|
         if app.config.respond_to?(:view_component)
           app.config.view_component.previews.paths << "#{Poetry::Charts.root}/app/components"

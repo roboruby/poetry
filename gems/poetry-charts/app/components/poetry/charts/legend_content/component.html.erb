@@ -1,0 +1,10 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% rows.each do |row| %>
+    <div data-slot="chart-legend-item" class="<%= css(:item) %>">
+      <% unless hide_icon || row[:color].nil? %>
+        <div data-slot="chart-legend-swatch" class="<%= css(:swatch) %>" style="<%= swatch_style(row[:color]) %>"></div>
+      <% end %>
+      <%= row[:name] %>
+    </div>
+  <% end %>
+<% end %>
