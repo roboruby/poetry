@@ -31,6 +31,22 @@ components:
     - content
     - inner
     capsule: 84cb5db4eb88
+    controllers:
+    - identifier: poetry--core--accordion
+      targets: []
+      values:
+      - collapsible
+      - type
+      actions:
+      - toggle
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
     agent_rules:
     - Items via with_item(value:, title:) { panel content } - value is the open-state
       key.
@@ -108,6 +124,20 @@ components:
     - footer
     - footer_size_sm
     capsule: 31a265e8ae32
+    controllers:
+    - identifier: poetry--core--dialog
+      targets:
+      - dialog
+      values:
+      - dismissible
+      - hotkey
+      actions:
+      - backdropClose
+      - close
+      - lockScroll
+      - open
+      - toggle
+      - unlockScroll
     agent_rules:
     - 'Destructive confirmations use AlertDialog with with_action(variant: :destructive)
       - never a bare Dialog, never data-turbo-confirm.'
@@ -361,6 +391,16 @@ components:
     - icon
     - input
     capsule: 91bce7b2ac6d
+    controllers:
+    - identifier: poetry--core--checked
+      targets: []
+      values:
+      - inputId
+      actions:
+      - check
+      - set
+      - toggle
+      - uncheck
     agent_rules:
     - Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with
       hand-written Tailwind, and never a hand-rolled button[role=checkbox].
@@ -389,6 +429,17 @@ components:
     slots:
     - name: trigger
       many: false
+    controllers:
+    - identifier: poetry--core--state
+      targets:
+      - content
+      - trigger
+      values:
+      - state
+      actions:
+      - close
+      - open
+      - toggle
     agent_rules:
     - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
     - 'Server-render the initial state via open: - never toggle data-open/data-closed
@@ -466,6 +517,53 @@ components:
     - trigger_icon
     - indicator_check
     capsule: f96a911bf996
+    controllers:
+    - identifier: poetry--core--combobox
+      targets: []
+      values:
+      - modal
+      - open
+      - value
+      actions:
+      - close
+      - nativeChanged
+      - open
+      - openValueChanged
+      - setValue
+      - toggle
+      - triggerKeydown
+      - valueValueChanged
+    - identifier: poetry--core--command
+      targets: []
+      values:
+      - debounce
+      - filter
+      - loop
+      actions:
+      - activate
+      - filterInput
+      - highlightItem
+      - keydown
+      - pointerHighlight
+      - reset
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
     agent_rules:
     - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
       this component IS that wiring, with the form story done right.
@@ -533,6 +631,20 @@ components:
     - dialog_content
     - dialog_overrides
     capsule: bdce293b6abf
+    controllers:
+    - identifier: poetry--core--command
+      targets: []
+      values:
+      - debounce
+      - filter
+      - loop
+      actions:
+      - activate
+      - filterInput
+      - highlightItem
+      - keydown
+      - pointerHighlight
+      - reset
     agent_rules:
     - Use poetry_command - never hand-roll a filterable listbox with an input + a
       list and ad-hoc JS.
@@ -587,6 +699,33 @@ components:
     slots:
     - name: trigger
       many: false
+    controllers:
+    - identifier: poetry--core--command
+      targets: []
+      values:
+      - debounce
+      - filter
+      - loop
+      actions:
+      - activate
+      - filterInput
+      - highlightItem
+      - keydown
+      - pointerHighlight
+      - reset
+    - identifier: poetry--core--dialog
+      targets:
+      - dialog
+      values:
+      - dismissible
+      - hotkey
+      actions:
+      - backdropClose
+      - close
+      - lockScroll
+      - open
+      - toggle
+      - unlockScroll
     agent_rules:
     - 'App-wide palettes use poetry_command_dialog with hotkey: (''meta+k'') - never
       a hand-wired window keydown listener around poetry_dialog.'
@@ -642,6 +781,55 @@ components:
     - indicator_circle
     - sub_indicator
     capsule: 4921eb8e1d45
+    controllers:
+    - identifier: poetry--core--context-menu
+      targets: []
+      values:
+      - disabled
+      - longPressDelay
+      actions:
+      - disabledValueChanged
+      - open
+      - pressCancel
+      - pressStart
+    - identifier: poetry--core--menu
+      targets: []
+      values:
+      - closeOnSelect
+      - loop
+      - modal
+      - open
+      - typeaheadTimeout
+      actions:
+      - activate
+      - close
+      - closeSub
+      - keydown
+      - open
+      - openSub
+      - openValueChanged
+      - subEnter
+      - subLeave
+      - toggle
+      - triggerKeydown
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
     agent_rules:
     - NEVER make a context menu the only path to an action - it is an invisible affordance;
       every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar,
@@ -684,6 +872,20 @@ components:
     - footer
     - close
     capsule: 077466ffc70d
+    controllers:
+    - identifier: poetry--core--dialog
+      targets:
+      - dialog
+      values:
+      - dismissible
+      - hotkey
+      actions:
+      - backdropClose
+      - close
+      - lockScroll
+      - open
+      - toggle
+      - unlockScroll
     agent_rules:
     - Open dialogs with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name); with_description when the purpose
@@ -747,6 +949,45 @@ components:
     - indicator_circle
     - sub_indicator
     capsule: 9c3e77768352
+    controllers:
+    - identifier: poetry--core--menu
+      targets: []
+      values:
+      - closeOnSelect
+      - loop
+      - modal
+      - open
+      - typeaheadTimeout
+      actions:
+      - activate
+      - close
+      - closeSub
+      - keydown
+      - open
+      - openSub
+      - openValueChanged
+      - subEnter
+      - subLeave
+      - toggle
+      - triggerKeydown
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
     agent_rules:
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
@@ -833,6 +1074,38 @@ components:
     elements:
     - content
     capsule: 9b2f5005a3d2
+    controllers:
+    - identifier: poetry--core--hover-card
+      targets: []
+      values:
+      - closeDelay
+      - open
+      - openDelay
+      actions:
+      - blurClose
+      - focusOpen
+      - openValueChanged
+      - pointerEnter
+      - pointerLeave
+      - touchGuard
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
     agent_rules:
     - Use poetry_hover_card - never hand-roll hover-div previews.
     - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
@@ -933,6 +1206,18 @@ components:
     - caret
     - caret_bar
     capsule: 2dbf5afbe2b5
+    controllers:
+    - identifier: poetry--core--otp
+      targets:
+      - input
+      - slot
+      values:
+      - length
+      - pattern
+      actions:
+      - focusInput
+      - paste
+      - sync
     agent_rules:
     - Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops,
       broken paste, broken SMS autofill, unnameable cells).
@@ -1058,6 +1343,65 @@ components:
     - indicator_circle
     - sub_indicator
     capsule: 2493fc892cb6
+    controllers:
+    - identifier: poetry--core--menu
+      targets: []
+      values:
+      - closeOnSelect
+      - loop
+      - modal
+      - open
+      - typeaheadTimeout
+      actions:
+      - activate
+      - close
+      - closeSub
+      - keydown
+      - open
+      - openSub
+      - openValueChanged
+      - subEnter
+      - subLeave
+      - toggle
+      - triggerKeydown
+    - identifier: poetry--core--menubar
+      targets: []
+      values:
+      - loop
+      - value
+      actions:
+      - hoverSlide
+      - onMenuClosed
+      - slideAdjacent
+      - toggle
+      - triggerKeydown
+      - valueValueChanged
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
     agent_rules:
     - Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu
       (untrapped), a single actions menu is DropdownMenu.
@@ -1133,6 +1477,31 @@ components:
     - item
     - button
     capsule: f625c06ba66b
+    controllers:
+    - identifier: poetry--core--message-scroller
+      targets:
+      - button
+      - content
+      - spacer
+      - viewport
+      values:
+      - autoScroll
+      - defaultScrollPosition
+      - preserveScrollOnPrepend
+      - scrollEdgeThreshold
+      - scrollMargin
+      - scrollPreviousItemPeek
+      - trackVisibility
+      actions:
+      - autoScrollValueChanged
+      - defaultScrollPositionValueChanged
+      - jump
+      - keydownIntent
+      - scrollToEnd
+      - scrollToMessage
+      - scrollToStart
+      - syncAfterScroll
+      - userScrollIntent
     agent_rules:
     - Stream by UPDATING a row's text (morph/replace) - appending nodes per token
       re-announces the row to AT.
@@ -1188,6 +1557,35 @@ components:
     - title
     - description
     capsule: efbbaf85d201
+    controllers:
+    - identifier: poetry--core--popover
+      targets: []
+      values:
+      - modal
+      - open
+      actions:
+      - close
+      - open
+      - openValueChanged
+      - toggle
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
     agent_rules:
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
     - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
@@ -1241,6 +1639,25 @@ components:
     - input
     - row
     capsule: 5d535e15c68c
+    controllers:
+    - identifier: poetry--core--radio-group
+      targets:
+      - input
+      values:
+      - value
+      actions:
+      - check
+      - entryCheck
+      - setValue
+      - valueValueChanged
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
     agent_rules:
     - Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
     - 'Every item MUST have a unique value: (ArgumentError on duplicates).'
@@ -1321,6 +1738,47 @@ components:
     - indicator_check
     - scroll_icon
     capsule: d4329f24de1d
+    controllers:
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
+    - identifier: poetry--core--select
+      targets: []
+      values:
+      - loop
+      - modal
+      - open
+      - typeaheadTimeout
+      - value
+      actions:
+      - close
+      - commit
+      - keydown
+      - nativeChanged
+      - open
+      - openValueChanged
+      - scrollHoldStart
+      - scrollHoldStop
+      - setValue
+      - syncScrollButtons
+      - toggle
+      - triggerKeydown
+      - valueValueChanged
     agent_rules:
     - Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox
       popups, and never fake a select with DropdownMenu radio items bound to a hidden
@@ -1380,6 +1838,20 @@ components:
     - footer
     - close
     capsule: 742c8649e9de
+    controllers:
+    - identifier: poetry--core--dialog
+      targets:
+      - dialog
+      values:
+      - dismissible
+      - hotkey
+      actions:
+      - backdropClose
+      - close
+      - lockScroll
+      - open
+      - toggle
+      - unlockScroll
     agent_rules:
     - Open sheets with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -1437,6 +1909,26 @@ components:
     - anchor_start
     - anchor_end
     capsule: 4854958c1f17
+    controllers:
+    - identifier: poetry--core--slider
+      targets:
+      - input
+      - range
+      - thumb
+      - track
+      values:
+      - inverted
+      - max
+      - min
+      - minStepsBetweenThumbs
+      - orientation
+      - step
+      - value
+      actions:
+      - keydown
+      - pointerdown
+      - setValue
+      - valueValueChanged
     agent_rules:
     - Use poetry_slider / form.slider - never hand-roll a draggable div.
     - 'Every thumb MUST have a distinct accessible name (label: - array of two for
@@ -1488,6 +1980,16 @@ components:
     - thumb
     - input
     capsule: 238d7b288d46
+    controllers:
+    - identifier: poetry--core--checked
+      targets: []
+      values:
+      - inputId
+      actions:
+      - check
+      - set
+      - toggle
+      - uncheck
     agent_rules:
     - Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch
       announces on/off; that's the point).
@@ -1569,6 +2071,18 @@ components:
     - action
     - close
     capsule: fcfede5a93b4
+    controllers:
+    - identifier: poetry--core--toast
+      targets:
+      - action
+      - close
+      values:
+      - duration
+      - politeness
+      actions:
+      - dismiss
+      - pause
+      - resume
     agent_rules:
     - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
       - never hand-append into #poetry-toaster.'
@@ -1605,6 +2119,17 @@ components:
     slots: []
     elements: []
     capsule: 8f9b118c3055
+    controllers:
+    - identifier: poetry--core--toaster
+      targets:
+      - item
+      values:
+      - hotkey
+      - limit
+      - position
+      actions:
+      - focusRegion
+      - reflow
     agent_rules:
     - Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.
     - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
@@ -1643,6 +2168,15 @@ components:
     slots: []
     elements: []
     capsule: b8c926f12ccf
+    controllers:
+    - identifier: poetry--core--pressed
+      targets: []
+      values: []
+      actions:
+      - press
+      - set
+      - toggle
+      - unpress
     agent_rules:
     - Use poetry_toggle - never a Button with hand-managed aria-pressed.
     - 'Toggle is UI state, NOT form data: never try to submit it. Form value -> Checkbox;
@@ -1700,6 +2234,22 @@ components:
     elements:
     - item
     capsule: 2d7e0714a9b8
+    controllers:
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
+    - identifier: poetry--core--toggle-group
+      targets: []
+      values:
+      - type
+      actions:
+      - setValue
+      - toggle
     agent_rules:
     - Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity
       logic.
@@ -1748,6 +2298,39 @@ components:
     - content
     - arrow
     capsule: d98fbc26591d
+    controllers:
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
+    - identifier: poetry--core--tooltip
+      targets: []
+      values:
+      - delayDuration
+      - disableHoverableContent
+      - open
+      actions:
+      - blurClose
+      - clickClose
+      - focusOpen
+      - openValueChanged
+      - pointerDown
+      - pointerLeave
+      - pointerMove
     agent_rules:
     - Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
     - Tooltip content is TEXT and never interactive/focusable - links, buttons, or

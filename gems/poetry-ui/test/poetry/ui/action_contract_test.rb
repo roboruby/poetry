@@ -56,6 +56,58 @@ module Poetry
         end
       end
 
+      # The registry's per-component controllers list (N7 W1) is derived
+      # from constants; this asserts it equals what the previews ACTUALLY
+      # render as data-controller - so the JS surface poetry check / llms.txt
+      # / the MCP server read can never drift from what ships.
+      def test_registry_controllers_match_the_rendered_controllers
+        registry = Poetry::Core::Registry.new(source_root: Poetry::Ui.root)
+        catalog = YAML.load_file(Poetry::Ui.root.join("config/component_registry.yml"), aliases: true)
+                      .fetch("components")
+        prefix = Poetry::Core::Stimulus::Manifest::POETRY_PREFIX
+
+        rendered = Hash.new { |hash, key| hash[key] = Set.new }
+        registry.components.each do |component|
+          path = component.component_path
+          # The component's OWN preview: Foo::DialogComponent -> Foo::DialogPreview
+          # (module_parent's :Preview would render the sibling Command previews).
+          preview = component.name.sub(/Component$/, "Preview").safe_constantize
+          next unless preview
+
+          preview.examples.each do |example|
+            render_preview(example, from: preview)
+            rendered_content.scan(/data-controller="([^"]*)"/).flatten.flat_map(&:split).each do |id|
+              rendered[path] << id if id.start_with?(prefix)
+            end
+          end
+        end
+
+        documented_by = ->(path) { (catalog.dig(path, "controllers") || []).to_set { |c| c["identifier"] } }
+        globally_documented = registry.components.flat_map { |c| documented_by.call(c.component_path).to_a }.to_set
+
+        registry.components.each do |component|
+          path = component.component_path
+          documented = documented_by.call(path)
+
+          # Every documented controller is actually rendered (no phantom /
+          # dead constant listed in the entry).
+          phantom = documented - rendered[path]
+
+          assert_empty phantom,
+                       "#{path}: registry lists controllers not rendered by its previews #{phantom.to_a} " \
+                       "(regenerate with `bin/rake registry:generate`)"
+
+          # Every rendered controller is documented somewhere - either on this
+          # entry or on an embedded component's (Toaster renders Toast children,
+          # which carry poetry--core--toast under their OWN entry).
+          undocumented = rendered[path] - globally_documented
+
+          assert_empty undocumented,
+                       "#{path}: renders undocumented controllers #{undocumented.to_a} - a component wires a " \
+                       "controller no registry entry declares (add the identifier constant, regenerate)"
+        end
+      end
+
       private
 
       def each_rendered_preview
