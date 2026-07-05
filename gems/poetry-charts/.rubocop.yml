@@ -21,6 +21,8 @@ Metrics/BlockLength:
   Exclude:
     - "test/**/*"
     - "*.gemspec"
+    # Rake task bodies are linear scripts (same posture as poetry-ui).
+    - "rakelib/**/*.rake"
 
 # Same posture as poetry-ui: density is reviewed, not counted.
 Metrics/AbcSize:
