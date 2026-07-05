@@ -27,7 +27,7 @@ export default class NavigationMenuController extends Controller {
 
   #openValue = null
   #timer = null
-  #cancelExit = null
+  #cancelExit = new Map() // value -> abandon-this-panel's-exit (per panel, not global)
   #onOutsidePress = null
 
   disconnect() {
@@ -120,8 +120,10 @@ export default class NavigationMenuController extends Controller {
       setState(trigger, "open")
     }
     if (panel) {
-      this.#cancelExit?.()
-      this.#cancelExit = null
+      // Re-opening THIS panel mid-close: abandon only its own exit (a
+      // sibling's pending exit must still run onRemove and hide it).
+      this.#cancelExit.get(value)?.()
+      this.#cancelExit.delete(value)
       panel.hidden = false
       enterPresence(panel)
     }
@@ -146,7 +148,12 @@ export default class NavigationMenuController extends Controller {
       setState(trigger, "closed")
     }
     if (panel) {
-      this.#cancelExit = exitPresence(panel, { onRemove: () => { panel.hidden = true } })
+      this.#cancelExit.set(value, exitPresence(panel, {
+        onRemove: () => {
+          panel.hidden = true
+          this.#cancelExit.delete(value)
+        }
+      }))
     }
   }
 

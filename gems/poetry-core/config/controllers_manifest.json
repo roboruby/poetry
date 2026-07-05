@@ -604,6 +604,41 @@
       "valueValueChanged"
     ]
   },
+  "poetry--core--sidebar": {
+    "targets": [
+      "sidebar"
+    ],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": true
+      },
+      "collapsible": {
+        "type": "String",
+        "default": "offcanvas"
+      },
+      "cookieName": {
+        "type": "String",
+        "default": "sidebar_state"
+      },
+      "cookieMaxAge": {
+        "type": "Number",
+        "default": 604800
+      },
+      "shortcut": {
+        "type": "String",
+        "default": "b"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "close",
+      "connect",
+      "disconnect",
+      "open",
+      "toggle"
+    ]
+  },
   "poetry--core--slider": {
     "targets": [
       "input",
