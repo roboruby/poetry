@@ -64,7 +64,7 @@ Metrics/ModuleLength:
 # The Tokens::Color API is keyed on the OKLCH color axes; `l`/`c`/`h` are the
 # domain-standard names (defaults for this cop kept, plus the three axes).
 Naming/MethodParameterName:
-  AllowedNames: ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to", "l", "c", "h"]
+  AllowedNames: ["as", "at", "by", "cc", "db", "id", "if", "in", "io", "ip", "of", "on", "os", "pp", "to", "l", "c", "h", "q"]
 
 # `has_attribute?` is part of the public HTML::Attributes contract; the
 # `has_*_attribute?` predicates are part of the public Styles/Options DSL contract.

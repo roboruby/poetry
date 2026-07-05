@@ -1,0 +1,67 @@
+<% surface = capture do %>
+  <%= content_tag(:div, **root_attributes.to_attributes) do %>
+    <% if filter %>
+      <div data-slot="data-table-toolbar" class="<%= css(:toolbar) %>">
+        <form method="get" action="<%= filter_form_action %>" role="search" aria-label="<%= filter_label %>" data-slot="data-table-filter">
+          <% state.filter_params.each do |name, value| %>
+            <input type="hidden" name="<%= name %>" value="<%= value %>">
+          <% end %>
+          <label for="<%= filter_id %>" class="sr-only"><%= filter_label %></label>
+          <%= render Poetry::Ui::Input::Component.new(id: filter_id, name: filter_name,
+                                                      value: state.q, placeholder: filter_placeholder,
+                                                      class: "max-w-sm") %>
+        </form>
+      </div>
+    <% end %>
+    <div class="<%= css(:container) %>">
+      <%= render Poetry::Ui::Table::Component.new do %>
+        <% if caption.present? %>
+          <caption data-slot="table-caption" class="<%= Poetry::Ui::Table::Style.css(:caption) %>"><%= caption %></caption>
+        <% end %>
+        <thead data-slot="table-header" class="<%= Poetry::Ui::Table::Style.css(:header) %>">
+          <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
+            <% column_defs.each do |column| %>
+              <%= content_tag(:th, head_attributes(column)) do %>
+                <% if column.sortable %>
+                  <%= render Poetry::Ui::Button::Component.new(**sort_link_options(column)) do |button| %>
+                    <% button.with_trailing { render Poetry::Ui::Icon::Component.new(name: sort_icon(column)) } %>
+                    <%= column.label %>
+                  <% end %>
+                <% else %>
+                  <%= column.label %>
+                <% end %>
+              <% end %>
+            <% end %>
+          </tr>
+        </thead>
+        <tbody data-slot="table-body" class="<%= Poetry::Ui::Table::Style.css(:body) %>">
+          <% if rows.any? %>
+            <% rows.each do |row| %>
+              <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
+                <% column_defs.each do |column| %>
+                  <%= content_tag(:td, column.cell.call(row), cell_attributes(column)) %>
+                <% end %>
+              </tr>
+            <% end %>
+          <% else %>
+            <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
+              <td data-slot="table-cell" colspan="<%= column_defs.size %>"
+                  class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:empty) %>"><%= empty_text %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    </div>
+    <% if pagination? %>
+      <div data-slot="data-table-footer" class="<%= css(:footer) %>">
+        <%= helpers.poetry_pagination(current: state.page, total: total,
+                                      path: ->(page) { path_for(state.page_params(page)) }) %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>
+<% if frame.present? %>
+  <turbo-frame id="<%= frame %>" data-turbo-action="advance"><%= surface %></turbo-frame>
+<% else %>
+  <%= surface %>
+<% end %>

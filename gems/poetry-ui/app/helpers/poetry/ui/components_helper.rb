@@ -93,6 +93,13 @@ module Poetry
         render(Poetry::Ui::Empty::Component.new(**), &)
       end
 
+      # The server-driven DataTable (N8 W3): rows/state/path come from the
+      # controller (State.from_params with a sortable: whitelist); columns
+      # are declared in the block. Sorting/filter/page are URL state.
+      def poetry_data_table(**, &)
+        render(Poetry::Ui::DataTable::Component.new(**), &)
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

@@ -478,6 +478,22 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "data_table" => {
+          "description" => "A sortable, filterable invoices table: sorted by invoice number ascending, " \
+                           "with a filter box and pagination",
+          "gates" => [
+            Gate.new(:sorted_column_announces, :cross_arm, ->(doc, _html) { doc.css("th[aria-sort]").any? }),
+            Gate.new(:sorting_is_real_navigation, :cross_arm, lambda { |doc, _html|
+              # The tell: sort affordances must be links (keyboard + shareable
+              # URL state), never onclick handlers.
+              doc.xpath(".//*[@onclick or @oninput]").empty? && doc.css("th a[href]").any?
+            }),
+            Gate.new(:filter_is_labelled, :cross_arm, lambda { |doc, _html|
+              input = doc.css("input[placeholder]").first
+              input && (doc.css(%(label[for="#{input["id"]}"])).any? || input["aria-label"].to_s.strip.length.positive?)
+            })
+          ]
+        },
         "table" => {
           "description" => "An invoices table with a caption, column headers, and a footer total",
           "gates" => [

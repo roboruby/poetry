@@ -1,0 +1,27 @@
+<%# The raw arm: plausible LLM output - sort "buttons" are onclick spans
+    (no keyboard, no URL), no aria-sort, and the filter input is unlabelled. %>
+<div class="w-full">
+  <div class="flex items-center py-4">
+    <input placeholder="Filter customers..." class="h-9 max-w-sm rounded-md border px-3 py-1 text-sm"
+           oninput="filterTable(this.value)">
+  </div>
+  <div class="overflow-hidden rounded-md border">
+    <table class="w-full text-sm">
+      <thead>
+        <tr class="border-b">
+          <th class="h-10 px-2 text-left font-medium">
+            <span class="cursor-pointer select-none" onclick="sortBy('number')">Invoice ↕</span>
+          </th>
+          <th class="h-10 px-2 text-left font-medium">
+            <span class="cursor-pointer select-none" onclick="sortBy('customer')">Customer ↕</span>
+          </th>
+          <th class="h-10 px-2 text-right font-medium">Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b"><td class="p-2">INV-001</td><td class="p-2">Acme</td><td class="p-2 text-right">$250.00</td></tr>
+        <tr class="border-b"><td class="p-2">INV-002</td><td class="p-2">Globex</td><td class="p-2 text-right">$1,150.00</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>

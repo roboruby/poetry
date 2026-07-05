@@ -1,8 +1,8 @@
 <%= content_tag(:nav, **root_attributes.to_attributes) do %>
   <ul data-slot="pagination-content" class="<%= css(:content) %>">
     <li data-slot="pagination-item">
-      <%= render Poetry::Ui::Button::Component.new(**previous_options) do %>
-        <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-left") %>
+      <%= render Poetry::Ui::Button::Component.new(**previous_options) do |button| %>
+        <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-left") } %>
         <span class="<%= css(:label) %>"><%= previous_label %></span>
       <% end %>
     </li>
@@ -19,9 +19,9 @@
       </li>
     <% end %>
     <li data-slot="pagination-item">
-      <%= render Poetry::Ui::Button::Component.new(**next_options) do %>
+      <%= render Poetry::Ui::Button::Component.new(**next_options) do |button| %>
+        <% button.with_trailing { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
         <span class="<%= css(:label) %>"><%= next_label %></span>
-        <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
       <% end %>
     </li>
   </ul>

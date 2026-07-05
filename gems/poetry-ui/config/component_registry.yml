@@ -862,6 +862,49 @@ components:
     - 'shortcut: is a visual hint only - it does NOT bind the key.'
     - Do not nest a ContextMenu trigger surface inside another ContextMenu trigger
       surface.
+  poetry/ui/data_table:
+    class_name: Poetry::Ui::DataTable::Component
+    identifier: poetry--ui--data_table
+    bem_block: poetry-ui-data_table
+    styles: []
+    options:
+    - name: caption
+      type: string
+    - name: empty_text
+      type: string
+      default: No results.
+    - name: filter
+      type: boolean
+      default: true
+    - name: filter_label
+      type: string
+      default: Filter
+    - name: filter_name
+      type: string
+      default: q
+    - name: filter_placeholder
+      type: string
+      default: Filter…
+    - name: frame
+      type: string
+    slots:
+    - name: columns
+      many: true
+    elements:
+    - toolbar
+    - container
+    - footer
+    - empty
+    capsule: 8fc5753705d9
+    agent_rules:
+    - 'Build State.from_params(params, sortable: [...]) in the controller - NEVER
+      order by raw params; the whitelist is what makes state.order_clause injection-safe.'
+    - Column cell blocks RETURN the cell content ({ |row| row.title }) - they must
+      not write to the template buffer.
+    - Sort/filter/page are URL state over GET links and a GET form. Row mutations
+      (inline edit, row actions) belong to poetry-reactive components rendered inside
+      cells - never to this component.
+    - 'Give the table a caption: - it is the table''s accessible purpose.'
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog

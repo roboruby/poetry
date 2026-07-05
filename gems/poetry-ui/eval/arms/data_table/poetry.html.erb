@@ -1,0 +1,11 @@
+<%# The poetry arm: the server-driven DataTable - whitelisted URL state,
+    aria-sort headers as real links, a labelled GET filter. %>
+<% row = Struct.new(:number, :customer, :amount) %>
+<% rows = [row.new("INV-001", "Acme", "$250.00"), row.new("INV-002", "Globex", "$1,150.00")] %>
+<% state = Poetry::Ui::DataTable::State.from_params({ sort: "number", dir: "asc" }, sortable: %w[number customer]) %>
+<%= poetry_data_table(rows: rows, state: state, total: 3, caption: "A list of recent invoices.",
+                      path: ->(params) { "/invoices?#{params.to_query}" }) do |table| %>
+  <% table.with_column("Invoice", key: :number, sortable: true) { |invoice| invoice.number } %>
+  <% table.with_column("Customer", key: :customer, sortable: true) { |invoice| invoice.customer } %>
+  <% table.with_column("Amount", classes: "text-right") { |invoice| invoice.amount } %>
+<% end %>
