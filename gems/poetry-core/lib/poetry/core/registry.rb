@@ -20,6 +20,9 @@ module Poetry
 
       RELATIVE_PATH = "config/component_registry.yml"
 
+      # Stimulus lifecycle callbacks are not consumer-callable actions.
+      LIFECYCLE_METHODS = %w[connect disconnect initialize].freeze
+
       # @param components [Enumerable<Class>, nil] component classes; defaults
       #   to every named Poetry::Core::Component descendant (eager-loaded)
       #   whose source lives under source_root.
@@ -88,10 +91,58 @@ module Poetry
           entry["elements"] = style.resolver.elements.keys.map(&:to_s)
           entry["capsule"] = style.capsule
         end
+        # The JS wiring surface (N7 W1): the poetry--core--* controller
+        # identifiers the component wires, each joined to its manifest
+        # (targets / values / actions) so the registry is the ONE contract
+        # poetry check / llms.txt / the MCP server read. Derived from the
+        # component's controller-identifier constants (%i[poetry core x]);
+        # the rendered-truth drift test guarantees this equals what the
+        # previews actually emit as data-controller.
+        # plain() rebuilds fresh objects - the manifest arrays are shared
+        # across components that wire the same controller (popper is in 8),
+        # which would otherwise make Psych emit YAML anchors/aliases.
+        controllers = wired_controllers(component)
+        entry["controllers"] = plain(controllers) unless controllers.empty?
         # Component-specific constraints agents must honor (the contract's
         # agent_rules section) - declared as an AGENT_RULES constant.
         entry["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
         entry
+      end
+
+      # The controller-identifier constants a component defines/inherits
+      # (Sheet reuses Dialog's), formatted to identifiers and joined to the
+      # manifest. A constant qualifies when its value is an array of symbols
+      # beginning [:poetry, :core, ...] - exactly the Builder identifier shape.
+      def wired_controllers(component)
+        # Constants live inconsistently: some components define them on the
+        # Component class (Checkbox::CHECKED), others on the enclosing module
+        # (Select::SELECT/POPPER), and subclasses inherit them (Sheet reuses
+        # Dialog's). Scan the class (+ ancestors) AND the component's module,
+        # then let the rendered-truth drift test arbitrate.
+        scopes = [component]
+        scopes << component.module_parent if component.respond_to?(:module_parent)
+
+        identifiers = scopes.flat_map do |scope|
+          own = scope.equal?(component) # inherited only matters for the class
+          scope.constants(own).filter_map do |name|
+            value = scope.const_get(name)
+            next unless value.is_a?(Array) && value.all?(Symbol) && value.first(2) == %i[poetry core]
+
+            Poetry::Core::Stimulus::Builder.format_identifier(value)
+          rescue StandardError
+            next
+          end
+        end
+
+        identifiers.uniq.sort.map do |identifier|
+          definition = Poetry::Core::Stimulus::Manifest.catalog[identifier] || {}
+          {
+            "identifier" => identifier,
+            "targets" => definition["targets"] || [],
+            "values" => (definition["values"] || {}).keys.sort,
+            "actions" => (definition["methods"] || []) - LIFECYCLE_METHODS
+          }
+        end
       end
 
       # Deep-converts symbols to strings so the YAML is plain data (no
