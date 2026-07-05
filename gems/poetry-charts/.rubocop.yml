@@ -42,6 +42,24 @@ Metrics/ModuleLength:
 Minitest/MultipleAssertions:
   Enabled: false
 
+# The geometry layer transcribes d3/recharts source line-for-line (the
+# oracle contract); fidelity to the original names, signatures, and
+# signed-zero ternaries beats Ruby style there.
+Naming/MethodParameterName:
+  Exclude:
+    - "lib/poetry/charts/geometry/**/*"
+Metrics/ParameterLists:
+  Exclude:
+    - "lib/poetry/charts/geometry/**/*"
+Style/IdenticalConditionalBranches:
+  Exclude:
+    # slope3's `h1.negative? ? -0.0 : 0.0` is NOT an identical branch -
+    # signed zero decides the sign of the infinite one-sided slope.
+    - "lib/poetry/charts/geometry/curve.rb"
+Lint/DuplicateBranch:
+  Exclude:
+    - "lib/poetry/charts/geometry/curve.rb"
+
 Style/Documentation:
   Enabled: false
 

@@ -5,6 +5,7 @@ require_relative "charts/version"
 require_relative "charts/config"
 require_relative "charts/theme_style"
 require_relative "charts/spec"
+require_relative "charts/geometry"
 
 module Poetry
   # poetry's chart tier: the shadcn chart surface as server-rendered
