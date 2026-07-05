@@ -28,6 +28,7 @@ import OtpController from "@poetry/controllers/otp_controller"
 import SelectController from "@poetry/controllers/select_controller"
 import CommandController from "@poetry/controllers/command_controller"
 import ComboboxController from "@poetry/controllers/combobox_controller"
+import TabsController from "@poetry/controllers/tabs_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -54,6 +55,7 @@ export { default as OtpController } from "@poetry/controllers/otp_controller"
 export { default as SelectController } from "@poetry/controllers/select_controller"
 export { default as CommandController } from "@poetry/controllers/command_controller"
 export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
+export { default as TabsController } from "@poetry/controllers/tabs_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -92,7 +94,8 @@ export const controllers = {
   "poetry--core--otp": OtpController,
   "poetry--core--select": SelectController,
   "poetry--core--command": CommandController,
-  "poetry--core--combobox": ComboboxController
+  "poetry--core--combobox": ComboboxController,
+  "poetry--core--tabs": TabsController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

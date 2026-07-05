@@ -1,7 +1,9 @@
 {
   "keys": [
+    "active",
     "checked",
     "closed",
+    "inactive",
     "indeterminate",
     "open",
     "panel-closed",
@@ -15,6 +17,7 @@
     "unselected"
   ],
   "attributes": [
+    "data-active",
     "data-checked",
     "data-closed",
     "data-indeterminate",

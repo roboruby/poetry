@@ -575,6 +575,22 @@
       "toggle"
     ]
   },
+  "poetry--core--tabs": {
+    "targets": [],
+    "values": {
+      "activateOnFocus": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "activate",
+      "connect",
+      "focusActivate",
+      "setValue"
+    ]
+  },
   "poetry--core--toast": {
     "targets": [
       "action",

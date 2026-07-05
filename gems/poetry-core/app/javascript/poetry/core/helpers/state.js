@@ -19,6 +19,8 @@ export const VOCABULARY = {
   unchecked: { add: "data-unchecked", remove: ["data-checked", "data-indeterminate"] },
   indeterminate: { add: "data-indeterminate", remove: ["data-checked", "data-unchecked"] },
   pressed: { add: "data-pressed", remove: [] },
+  active: { add: "data-active", remove: [] },
+  inactive: { add: null, remove: ["data-active"] },
   unpressed: { add: null, remove: ["data-pressed"] },
   selected: { add: "data-selected", remove: [] },
   unselected: { add: null, remove: ["data-selected"] }
@@ -33,7 +35,7 @@ const DERIVATION = [
   ["data-checked", "checked"], ["data-unchecked", "unchecked"],
   ["data-indeterminate", "indeterminate"],
   ["data-popup-open", "popup-open"], ["data-panel-open", "panel-open"],
-  ["data-pressed", "pressed"], ["data-selected", "selected"]
+  ["data-pressed", "pressed"], ["data-selected", "selected"], ["data-active", "active"]
 ]
 
 export function stateOf(element) {
