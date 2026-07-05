@@ -36,6 +36,29 @@ module Poetry
         render(Poetry::Ui::Card::Component.new(**), &)
       end
 
+      # The Table (N8): the component renders the overflow container + real
+      # `<table>`; the part helpers stamp the data-slot + source-exact classes
+      # onto the semantic table elements the consumer composes.
+      def poetry_table(**, &)
+        render(Poetry::Ui::Table::Component.new(**), &)
+      end
+
+      {
+        table_header: [:thead, "table-header", :header],
+        table_body: [:tbody, "table-body", :body],
+        table_footer: [:tfoot, "table-footer", :footer],
+        table_row: [:tr, "table-row", :row],
+        table_head: [:th, "table-head", :head],
+        table_cell: [:td, "table-cell", :cell],
+        table_caption: [:caption, "table-caption", :caption]
+      }.each do |name, (tag_name, slot, element)|
+        define_method("poetry_#{name}") do |**attrs, &block|
+          classes = [Poetry::Ui::Table::Style.css(element), attrs.delete(:class)].compact.join(" ")
+          data = { slot: slot }.merge(attrs.delete(:data) || {})
+          content_tag(tag_name, (capture(&block) if block), **attrs, class: classes, data: data)
+        end
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

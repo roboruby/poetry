@@ -24,13 +24,18 @@ module Poetry
             .map(&:strip).reject { |line| line.empty? || line.start_with?("#") }
       end
 
-      # The public poetry_* helper names, scanned from the ComponentsHelper
-      # source so poetry check / poetry-agent know the full set (group /
-      # provider helpers included) WITHOUT booting Rails - the module isn't
-      # loaded when the MCP server starts.
+      # The public poetry_* helper names, so poetry check / poetry-agent know
+      # the full set (group / provider helpers AND the define_method'd part
+      # helpers like poetry_table_cell) WITHOUT booting Rails. The module's
+      # method bodies reference component constants only at call time, so
+      # requiring the file standalone is safe.
       def helper_names
-        source = root.join("app/helpers/poetry/ui/components_helper.rb").read
-        source.scan(/def (poetry_[a-z_]+)/).flatten.uniq
+        require root.join("app/helpers/poetry/ui/components_helper.rb")
+        ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/).map(&:to_s)
+      rescue StandardError
+        # Fallback: the static-def helpers (misses define_method ones) if the
+        # module can't load standalone in some host.
+        root.join("app/helpers/poetry/ui/components_helper.rb").read.scan(/def (poetry_[a-z_]+)/).flatten.uniq
       end
     end
   end

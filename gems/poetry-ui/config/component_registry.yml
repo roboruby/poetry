@@ -2002,6 +2002,30 @@ components:
       - never flip UI-only for a setting the user believes is saved.
     - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
       and the input sync (the controller writes all three).
+  poetry/ui/table:
+    class_name: Poetry::Ui::Table::Component
+    identifier: poetry--ui--table
+    bem_block: poetry-ui-table
+    styles: []
+    options: []
+    slots: []
+    elements:
+    - container
+    - header
+    - body
+    - footer
+    - row
+    - head
+    - cell
+    - caption
+    capsule: 54e4cde8d751
+    agent_rules:
+    - Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell)
+      - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
+    - A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell
+      (a <td>).
+    - Mark a selected row with data-selected on poetry_table_row - never a bespoke
+      highlight class.
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea

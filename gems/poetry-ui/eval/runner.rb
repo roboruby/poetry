@@ -442,6 +442,17 @@ module Poetry
             Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
           ]
         },
+        "table" => {
+          "description" => "An invoices table with a caption, column headers, and a footer total",
+          "gates" => [
+            Gate.new(:real_table, :cross_arm, ->(doc, _html) { doc.css("table").any? }),
+            Gate.new(:column_headers_are_th, :cross_arm, lambda { |doc, _html|
+              # The tell: real column headers are <th>, not styled divs.
+              doc.css("th").length >= 3
+            }),
+            Gate.new(:caption_present, :cross_arm, ->(doc, _html) { doc.css("caption").any? })
+          ]
+        },
         "card" => {
           "description" => "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
           "gates" => [
