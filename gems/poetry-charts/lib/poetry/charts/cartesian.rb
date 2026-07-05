@@ -196,13 +196,8 @@ module Poetry
         value.nil? ? Float::NAN : value.to_f
       end
 
-      # The tooltip's display string (matches TooltipContent's Row
-      # formatting: delimited numerics, verbatim strings, nil for missing).
       def display_value(value)
-        return nil if value.nil?
-        return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)
-
-        value.to_s
+        Poetry::Charts.display_value(value)
       end
 
       # d3 stacks per stack id, memoized: { key => [[lo, hi], ...] }.

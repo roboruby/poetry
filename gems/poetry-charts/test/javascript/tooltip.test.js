@@ -121,3 +121,74 @@ describe("poetry--charts--tooltip", () => {
     expect(document.querySelector('[data-slot="chart-tooltip-label"]').textContent).toBe("January")
   })
 })
+
+// The polar shape (pie/radial): per-index anchors + names/colors retint
+// the single chrome row; slices are hit by pointerover on [data-index].
+const POLAR_PAYLOAD = {
+  layout: "polar",
+  categories: ["Chrome", "Safari"],
+  names: ["Chrome", "Safari"],
+  colors: ["var(--color-chrome)", "var(--color-safari)"],
+  anchors: [[400, 100], [200, 250]],
+  values: { visitors: ["275", "200"] },
+}
+
+const polarMarkup = () => `
+  <div data-chart="chart-p" style="position:relative">
+    <div data-controller="poetry--charts--tooltip">
+      <svg viewBox="0 0 640 360" role="application" tabindex="0"
+           data-poetry--charts--tooltip-target="svg"
+           data-action="pointerover->poetry--charts--tooltip#enter keydown->poetry--charts--tooltip#keydown">
+        <path data-slot="chart-pie-sector" data-index="0"></path>
+        <path data-slot="chart-pie-sector" data-index="1"></path>
+      </svg>
+      <div data-poetry--charts--tooltip-target="tooltip" hidden>
+        <div data-slot="chart-tooltip-item" data-key="visitors">
+          <div data-slot="chart-tooltip-indicator"></div>
+          <span data-slot="chart-tooltip-name"></span>
+          <span data-slot="chart-tooltip-value"></span>
+        </div>
+      </div>
+      <script type="application/json" data-poetry--charts--tooltip-target="data">${JSON.stringify(POLAR_PAYLOAD)}</script>
+    </div>
+  </div>`
+
+describe("poetry--charts--tooltip (polar)", () => {
+  let application
+
+  beforeEach(async () => {
+    document.body.innerHTML = polarMarkup()
+    application = Application.start()
+    registerPoetryChartsControllers(application)
+    await nextFrame()
+    return async () => {
+      application?.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("pointerover on a slice shows and RETINTS the single row", async () => {
+    const slice = document.querySelector('[data-index="1"]')
+    slice.dispatchEvent(new MouseEvent("pointerover", { bubbles: true }))
+    await nextFrame()
+
+    const tooltip = document.querySelector('[data-poetry--charts--tooltip-target="tooltip"]')
+    expect(tooltip.hidden).toBe(false)
+    expect(document.querySelector('[data-slot="chart-tooltip-name"]').textContent).toBe("Safari")
+    expect(document.querySelector('[data-slot="chart-tooltip-value"]').textContent).toBe("200")
+    const indicator = document.querySelector('[data-slot="chart-tooltip-indicator"]')
+    expect(indicator.style.getPropertyValue("--color-bg")).toBe("var(--color-safari)")
+    expect(slice.hasAttribute("data-active")).toBe(true)
+  })
+
+  it("keyboard walks slices through the anchors count", async () => {
+    const svg = document.querySelector("svg")
+    svg.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowRight", bubbles: true, cancelable: true }))
+    await nextFrame()
+
+    expect(document.querySelector('[data-slot="chart-tooltip-name"]').textContent).toBe("Chrome")
+    svg.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true, cancelable: true }))
+    expect(document.querySelector('[data-slot="chart-tooltip-name"]').textContent).toBe("Safari")
+  })
+})

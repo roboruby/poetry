@@ -48,11 +48,14 @@ Minitest/MultipleAssertions:
 Naming/MethodParameterName:
   Exclude:
     - "lib/poetry/charts/geometry/**/*"
+    # cx/cy are THE polar names (recharts/SVG vocabulary).
+    - "lib/poetry/charts/polar.rb"
 Metrics/ParameterLists:
   Exclude:
     - "lib/poetry/charts/geometry/**/*"
-    # The cartesian pipeline's signature IS the layout config.
+    # The cartesian/polar signatures ARE the layout config.
     - "lib/poetry/charts/cartesian.rb"
+    - "lib/poetry/charts/polar.rb"
 Style/IdenticalConditionalBranches:
   Exclude:
     # slope3's `h1.negative? ? -0.0 : 0.0` is NOT an identical branch -

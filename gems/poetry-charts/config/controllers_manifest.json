@@ -9,6 +9,8 @@
     "methods": [
       "blur",
       "connect",
+      "count",
+      "enter",
       "focus",
       "keydown",
       "leave",

@@ -1,0 +1,33 @@
+<%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
+  <%= content_tag(:div, class: css(:frame), data: frame_data) do %>
+  <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
+    <% series_entries.each_with_index do |entry, pie_index| %>
+      <g data-slot="chart-pie" data-key="<%= entry.data_key %>">
+        <% slices(entry).each do |slice| %>
+          <path data-slot="chart-pie-sector" data-key="<%= entry.data_key %>"<% if pie_index.zero? %> data-index="<%= slice.index %>"<% end %><% if entry.active_index == slice.index %> data-active=""<% end %> d="<%= slice.path %>" fill="<%= slice.fill %>"<% if entry.stroke_width.positive? %> stroke="var(--background)" stroke-width="<%= entry.stroke_width %>"<% end %>/>
+        <% end %>
+      </g>
+      <% if entry.labels == :list %>
+        <g data-slot="chart-labels" data-key="<%= entry.data_key %>" aria-hidden="true">
+          <% slices(entry).each do |slice| %>
+            <text class="<%= css(:inside_label) %>" x="<%= fnum(slice.label_point[0]) %>" y="<%= fnum(slice.label_point[1]) %>" text-anchor="middle" dy="0.355em"><%= slice_label(entry, slice) %></text>
+          <% end %>
+        </g>
+      <% end %>
+    <% end %>
+    <% if center_label? %>
+      <text data-slot="chart-center-label" x="<%= fnum(cx) %>" y="<%= fnum(cy) %>" text-anchor="middle">
+        <tspan class="<%= css(:center_title) %>" x="<%= fnum(cx) %>" dy="0"><%= center_label_config[:title] %></tspan>
+        <% if center_label_config[:subtitle] %>
+          <tspan class="<%= css(:center_subtitle) %>" x="<%= fnum(cx) %>" dy="24"><%= center_label_config[:subtitle] %></tspan>
+        <% end %>
+      </text>
+    <% end %>
+  </svg>
+  <% if legend? %>
+    <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
+  <% end %>
+  <% if tooltip? %><%= render tooltip_layer_component %><% end %>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
+  <% end %>
+<% end %>

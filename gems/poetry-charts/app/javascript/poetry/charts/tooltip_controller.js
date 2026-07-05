@@ -14,15 +14,26 @@ export default class ChartTooltipController extends Controller {
   connect() {
     const payload = JSON.parse(this.dataTarget.textContent)
     this.layout = payload.layout
-    this.centers = this.layout === "horizontal" ? payload.y : payload.x
+    this.centers = (this.layout === "horizontal" ? payload.y : payload.x) ?? []
     this.categories = payload.categories
     this.values = payload.values ?? {}
     this.series = payload.series ?? {}
+    // Polar charts (pie/radial): per-index anchors replace the bisect axis,
+    // and per-index names/colors retint the single chrome row.
+    this.anchors = payload.anchors ?? null
+    this.names = payload.names ?? null
+    this.colors = payload.colors ?? null
     this.activeIndex = null
   }
 
-  // Action: pointermove->...#move on the SVG.
+  get count() {
+    return this.anchors ? this.anchors.length : this.centers.length
+  }
+
+  // Action: pointermove->...#move on the SVG (cartesian bisect).
   move(event) {
+    if (this.layout === "polar") return
+
     const rect = this.svgTarget.getBoundingClientRect()
     if (!rect.width || !rect.height) return
 
@@ -32,9 +43,16 @@ export default class ChartTooltipController extends Controller {
     this.show(this.#nearest(this.layout === "horizontal" ? y : x))
   }
 
+  // Action: pointerover->...#enter on the SVG (polar: the hovered slice
+  // carries its index - no geometry at all).
+  enter(event) {
+    const marked = event.target.closest?.("[data-index]")
+    if (marked) this.show(Number(marked.dataset.index))
+  }
+
   // Action: keydown->...#keydown on the SVG - the accessibilityLayer floor.
   keydown(event) {
-    const max = this.centers.length - 1
+    const max = this.count - 1
     let index = this.activeIndex ?? -1
 
     switch (event.key) {
@@ -79,7 +97,7 @@ export default class ChartTooltipController extends Controller {
   }
 
   show(index) {
-    if (index == null || index < 0 || index >= this.centers.length) return
+    if (index == null || index < 0 || index >= this.count) return
 
     this.activeIndex = index
     const tooltip = this.tooltipTarget
@@ -93,6 +111,20 @@ export default class ChartTooltipController extends Controller {
       const valueElement = row.querySelector('[data-slot="chart-tooltip-value"]')
       if (valueElement) valueElement.textContent = value ?? ""
       row.style.display = value == null ? "none" : ""
+
+      // Per-index chrome (pie/radial): the single row takes the slice's
+      // name and indicator color.
+      if (this.names) {
+        const nameElement = row.querySelector('[data-slot="chart-tooltip-name"]')
+        if (nameElement) nameElement.textContent = this.names[index] ?? ""
+      }
+      if (this.colors) {
+        const indicator = row.querySelector('[data-slot="chart-tooltip-indicator"]')
+        if (indicator) {
+          indicator.style.setProperty("--color-bg", this.colors[index])
+          indicator.style.setProperty("--color-border", this.colors[index])
+        }
+      }
     }
 
     this.#position(index)
@@ -120,7 +152,12 @@ export default class ChartTooltipController extends Controller {
 
     let left
     let top
-    if (this.layout === "horizontal") {
+    if (this.anchors) {
+      // Polar: the server embedded the recharts tooltipPosition (the
+      // mid-angle point at the middle radius).
+      left = this.anchors[index][0] * scaleX + 12
+      top = this.anchors[index][1] * scaleY
+    } else if (this.layout === "horizontal") {
       left = (tops.length ? Math.max(...tops) : viewWidth / 2) * scaleX + 12
       top = this.centers[index] * scaleY
     } else {

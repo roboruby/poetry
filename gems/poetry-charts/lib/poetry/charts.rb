@@ -7,6 +7,7 @@ require_relative "charts/theme_style"
 require_relative "charts/spec"
 require_relative "charts/geometry"
 require_relative "charts/cartesian"
+require_relative "charts/polar"
 
 module Poetry
   # poetry's chart tier: the shadcn chart surface as server-rendered
@@ -28,6 +29,16 @@ module Poetry
       # Gem root (the directory containing lib/, app/, config/).
       def root
         @root ||= Pathname.new(File.expand_path("../..", __dir__))
+      end
+
+      # The tooltip display string shared by every chart family (matches
+      # TooltipContent's Row: delimited numerics from RAW values so
+      # integers stay integers, verbatim strings, nil for missing).
+      def display_value(value)
+        return nil if value.nil?
+        return ActiveSupport::NumberHelper.number_to_delimited(value) if value.is_a?(Numeric)
+
+        value.to_s
       end
     end
   end

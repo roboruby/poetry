@@ -13,8 +13,14 @@ module Poetry
     class ActionContractTest < ViewComponent::TestCase
       MANIFEST = JSON.parse(Poetry::Charts.root.join("config/controllers_manifest.json").read)
 
+      # Constantize every preview from the gem's own tree (zeitwerk-native,
+      # order-proof): ViewComponent's lazy preview loading both skips when
+      # any descendant is already loaded AND exposes no stable API for
+      # forcing it - the corpus must never silently shrink.
       def charts_previews
-        ViewComponent::Preview.all.select { |klass| klass.name&.start_with?("Poetry::Charts::") }
+        Dir[Poetry::Charts.root.join("app/components/poetry/charts/*/preview.rb")].map do |file|
+          "poetry/charts/#{File.basename(File.dirname(file))}/preview".camelize.constantize
+        end
       end
 
       def test_every_rendered_token_exists_in_the_manifest

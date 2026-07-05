@@ -12,7 +12,8 @@ module Poetry
       CHART_TYPES = {
         area: "Poetry::Charts::AreaChart::Component",
         line: "Poetry::Charts::LineChart::Component",
-        bar: "Poetry::Charts::BarChart::Component"
+        bar: "Poetry::Charts::BarChart::Component",
+        pie: "Poetry::Charts::PieChart::Component"
       }.freeze
 
       def poetry_chart(type, **, &)
