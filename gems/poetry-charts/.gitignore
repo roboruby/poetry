@@ -1,0 +1,20 @@
+/.bundle/
+/coverage/
+/doc/
+/log/
+/pkg/
+/tmp/
+
+.env
+.DS_Store
+
+# Dummy host app (generated; not committed)
+/test/dummy/.bundle/
+/test/dummy/tmp/
+/test/dummy/log/*.log
+/test/dummy/public/assets/
+
+# Ruby LSP
+/.ruby-lsp/
+
+/node_modules/

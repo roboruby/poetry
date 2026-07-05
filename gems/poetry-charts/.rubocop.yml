@@ -1,0 +1,32 @@
+plugins:
+  - rubocop-performance
+  - rubocop-minitest
+  - rubocop-rake
+
+AllCops:
+  TargetRubyVersion: 3.3
+  NewCops: enable
+  SuggestExtensions: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Layout/LineLength:
+  Max: 120
+
+Metrics/BlockLength:
+  Exclude:
+    - "test/**/*"
+    - "*.gemspec"
+
+Style/Documentation:
+  Enabled: false
+
+Naming/FileName:
+  # lib/poetry-charts.rb is the hyphenated Bundler auto-require entrypoint for
+  # the Poetry::Charts namespace; its name must match the gem, not snake_case.
+  Exclude:
+    - "lib/poetry-charts.rb"
