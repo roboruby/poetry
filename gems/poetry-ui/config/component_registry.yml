@@ -217,6 +217,37 @@ components:
       actions) - don't also wrap the chip in a link.
     - error state needs a with_description explaining the failure - the tint alone
       is not the message.
+  poetry/ui/avatar:
+    class_name: Poetry::Ui::Avatar::Component
+    identifier: poetry--ui--avatar
+    bem_block: poetry-ui-avatar
+    styles: []
+    options:
+    - name: label
+      type: string
+    - name: size
+      type: symbol
+      default: default
+    - name: src
+      type: string
+    slots:
+    - name: badge
+      many: false
+    elements:
+    - image
+    - fallback
+    - badge
+    - group
+    - group_count
+    capsule: 128002772ab0
+    agent_rules:
+    - 'label: (the person''s name) is REQUIRED - it is the avatar''s accessible name
+      (role=img).'
+    - The content block is the fallback (initials) and is also required - it is what
+      shows while the image loads or when it fails.
+    - The badge slot is decorative (a presence dot); put the status meaning in label:,
+      not in the badge.
+    - Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
   poetry/ui/badge:
     class_name: Poetry::Ui::Badge::Component
     identifier: poetry--ui--badge
@@ -241,6 +272,29 @@ components:
     - 'The visible text is the content block: render ... { "beta" } - there is no
       label: option.'
     - Pick the variant by intent (destructive = error states), never by color preference.
+  poetry/ui/breadcrumb:
+    class_name: Poetry::Ui::Breadcrumb::Component
+    identifier: poetry--ui--breadcrumb
+    bem_block: poetry-ui-breadcrumb
+    styles: []
+    options: []
+    slots:
+    - name: items
+      many: true
+    elements:
+    - list
+    - item
+    - link
+    - page
+    - separator
+    - ellipsis
+    capsule: 2b6ce64d7d25
+    agent_rules:
+    - Declare the trail with with_item(label, href:) - never hand-build the nav/ol/li
+      chain.
+    - 'The current page is the item WITHOUT href: (it renders aria-current=page, not
+      a link).'
+    - Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
   poetry/ui/bubble:
     class_name: Poetry::Ui::Bubble::Component
     identifier: poetry--ui--bubble
@@ -1325,6 +1379,69 @@ components:
       never log the value (it is a live credential).'
     - InputOTP is for CODES - passwords use Input type=password, longer identifiers
       use Input.
+  poetry/ui/item:
+    class_name: Poetry::Ui::Item::Component
+    identifier: poetry--ui--item
+    bem_block: poetry-ui-item
+    styles:
+    - name: size
+      type: symbol
+      variants:
+      - default
+      - sm
+      - xs
+      default: default
+      required: true
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - outline
+      - muted
+      default: default
+      required: true
+    options:
+    - name: media_variant
+      type: symbol
+      default: default
+    - name: tag
+      type: symbol
+      default: div
+    slots:
+    - name: media
+      many: false
+    - name: title
+      many: false
+    - name: description
+      many: false
+    - name: actions
+      many: false
+    - name: header
+      many: false
+    - name: footer
+      many: false
+    elements:
+    - media
+    - media_default
+    - media_icon
+    - media_image
+    - content
+    - title
+    - description
+    - actions
+    - header
+    - footer
+    - group
+    - separator
+    capsule: fa1f021bb507
+    agent_rules:
+    - 'Rows live inside poetry_item_group (role=list) and each row passes role: "listitem"
+      - a role=list parent with roleless children fails aria-required-children.'
+    - Separate grouped rows with poetry_item_separator.
+    - Compose with the slots (media/title/description/actions); loose content lands
+      in the content column after the description.
+    - 'media_variant: :icon for a glyph, :image for a thumbnail (sized/rounded automatically).'
+    - 'A clickable row is tag: :a with href: - never wrap an Item in a bare <a>.'
   poetry/ui/kbd:
     class_name: Poetry::Ui::Kbd::Component
     identifier: poetry--ui--kbd
@@ -1745,6 +1862,36 @@ components:
       open: true) - popovers are JS-required interaction.'
     - Do not nest a Popover inside a Popover - restructure (the layer stack allows
       it; comprehension does not).
+  poetry/ui/progress:
+    class_name: Poetry::Ui::Progress::Component
+    identifier: poetry--ui--progress
+    bem_block: poetry-ui-progress
+    styles: []
+    options:
+    - name: label
+      type: string
+    - name: max
+      type: integer
+      default: 100
+    - name: show_value
+      type: boolean
+      default: true
+    - name: value
+      type: integer
+      required: true
+    slots: []
+    elements:
+    - track
+    - indicator
+    - label
+    - value
+    capsule: 0d9c8f72da18
+    agent_rules:
+    - 'label: is REQUIRED - it is the progressbar''s accessible name and the visible
+      caption.'
+    - 'value: is the current progress (0..max:, default max 100); the component computes
+      the width.'
+    - For an UNKNOWN duration use Spinner, not Progress - this bar is determinate.
   poetry/ui/radio_group:
     class_name: Poetry::Ui::RadioGroup::Component
     identifier: poetry--ui--radio_group

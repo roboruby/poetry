@@ -1,0 +1,11 @@
+<%# The stacked group: overlapping avatars ringed by the background, with
+    the overflow count - the poetry_avatar_group / _group_count part
+    helpers. %>
+<div class="p-4">
+  <%= poetry_avatar_group do %>
+    <%= poetry_avatar(label: "Grace Hopper") { "GH" } %>
+    <%= poetry_avatar(label: "Ada Lovelace") { "AL" } %>
+    <%= poetry_avatar(label: "Annie Easley") { "AE" } %>
+    <%= poetry_avatar_group_count { "+3" } %>
+  <% end %>
+</div>

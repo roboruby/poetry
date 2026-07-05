@@ -478,6 +478,41 @@ module Poetry
             Gate.new(:actions_are_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "user_directory" => {
+          "description" => "A team directory: a breadcrumb trail (Home / Team / Directory), then a " \
+                           "list of member rows - avatar, name, description, and a Message action",
+          "gates" => [
+            Gate.new(:breadcrumb_is_a_landmark_with_current, :cross_arm, lambda { |doc, _html|
+              doc.css('nav[aria-label] [aria-current="page"]').any?
+            }),
+            Gate.new(:members_are_a_list, :cross_arm, lambda { |doc, _html|
+              doc.css('ul, ol, [role="list"]').any?
+            }),
+            Gate.new(:avatars_have_accessible_names, :cross_arm, lambda { |doc, _html|
+              # The tell: a naked <img> avatar carries no name and no fallback.
+              # Named = a role=img root with a label, or an img with real alt;
+              # an alt="" img is fine ONLY inside a labelled role=img root
+              # (poetry's layered-fallback contract).
+              named = doc.css('[role="img"][aria-label], img[alt]:not([alt=""])')
+              bare = doc.css("img").reject do |img|
+                img["alt"].to_s.strip.length.positive? ||
+                  img.xpath('ancestor::*[@role="img"][@aria-label]').any?
+              end
+              named.any? && bare.empty?
+            })
+          ]
+        },
+        "upload_progress" => {
+          "description" => "A determinate upload progress bar at 60%, with a visible label and value",
+          "gates" => [
+            Gate.new(:progressbar_announces, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="progressbar"][aria-valuenow]').any?
+            }),
+            Gate.new(:progressbar_named, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="progressbar"][aria-label], [role="progressbar"][aria-labelledby]').any?
+            })
+          ]
+        },
         "data_table" => {
           "description" => "A sortable, filterable invoices table: sorted by invoice number ascending, " \
                            "with a filter box and pagination",

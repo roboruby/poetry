@@ -1,0 +1,13 @@
+<%= content_tag(tag, **root_attributes.to_attributes) do %>
+  <% if header? %><div data-slot="item-header" class="<%= css(:header) %>"><%= header %></div><% end %>
+  <% if media? %><div data-slot="item-media" data-variant="<%= media_variant %>" class="<%= media_classes %>"><%= media %></div><% end %>
+  <% if content_column? %>
+    <div data-slot="item-content" class="<%= css(:content) %>">
+      <% if title? %><div data-slot="item-title" class="<%= css(:title) %>"><%= title %></div><% end %>
+      <% if description? %><p data-slot="item-description" class="<%= css(:description) %>"><%= description %></p><% end %>
+      <%= content %>
+    </div>
+  <% end %>
+  <% if actions? %><div data-slot="item-actions" class="<%= css(:actions) %>"><%= actions %></div><% end %>
+  <% if footer? %><div data-slot="item-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
+<% end %>

@@ -1,0 +1,28 @@
+<%= content_tag(:nav, **root_attributes.to_attributes) do %>
+  <ol data-slot="breadcrumb-list" class="<%= css(:list) %>">
+    <% entries.each_with_index do |entry, index| %>
+      <% if entry.ellipsis %>
+        <li data-slot="breadcrumb-item" class="<%= css(:item) %>">
+          <span data-slot="breadcrumb-ellipsis" role="presentation" aria-hidden="true" class="<%= css(:ellipsis) %>">
+            <%= render Poetry::Ui::Icon::Component.new(name: :ellipsis) %>
+          </span>
+          <span class="sr-only">More</span>
+        </li>
+      <% else %>
+        <li data-slot="breadcrumb-item" class="<%= css(:item) %>">
+          <% if entry.href.present? %>
+            <a data-slot="breadcrumb-link" href="<%= entry.href %>" class="<%= css(:link) %>"><%= entry.label %></a>
+          <% else %>
+            <span data-slot="breadcrumb-page" role="link" aria-disabled="true" aria-current="page"
+                  class="<%= css(:page) %>"><%= entry.label %></span>
+          <% end %>
+        </li>
+      <% end %>
+      <% unless index == entries.size - 1 %>
+        <li data-slot="breadcrumb-separator" role="presentation" aria-hidden="true" class="<%= css(:separator) %>">
+          <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
+        </li>
+      <% end %>
+    <% end %>
+  </ol>
+<% end %>

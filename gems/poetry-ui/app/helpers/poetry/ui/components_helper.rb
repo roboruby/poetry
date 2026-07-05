@@ -100,6 +100,44 @@ module Poetry
         render(Poetry::Ui::DataTable::Component.new(**), &)
       end
 
+      # N9 statics. The Avatar's content block is the initials fallback.
+      def poetry_avatar(**, &)
+        render(Poetry::Ui::Avatar::Component.new(**), &)
+      end
+
+      def poetry_breadcrumb(**, &)
+        render(Poetry::Ui::Breadcrumb::Component.new(**), &)
+      end
+
+      def poetry_progress(**)
+        render(Poetry::Ui::Progress::Component.new(**))
+      end
+
+      def poetry_item(**, &)
+        render(Poetry::Ui::Item::Component.new(**), &)
+      end
+
+      # Part helpers (the Table pattern): pure class/slot stamps around
+      # composed Avatars and Items.
+      {
+        avatar_group: [Poetry::Ui::Avatar, "avatar-group", :group, {}],
+        avatar_group_count: [Poetry::Ui::Avatar, "avatar-group-count", :group_count, {}],
+        item_group: [Poetry::Ui::Item, "item-group", :group, { "role" => "list" }]
+      }.each do |name, (namespace, slot, element, extra)|
+        define_method("poetry_#{name}") do |**attrs, &block|
+          classes = [namespace::Style.css(element), attrs.delete(:class)].compact.join(" ")
+          data = { slot: slot }.merge(attrs.delete(:data) || {})
+          content_tag(:div, (capture(&block) if block), **extra, **attrs, class: classes, data: data)
+        end
+      end
+
+      # The row divider inside an item group: the Separator with the
+      # item-separator slot + spacing.
+      def poetry_item_separator(**attrs)
+        classes = [Poetry::Ui::Item::Style.css(:separator), attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
+      end
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end
