@@ -31,6 +31,18 @@ export default class extends Controller {
 
   connect() {
     this.#reflectDisabled()
+    this.#reflectTriggers() // server-open items adopt data-panel-open on connect
+  }
+
+  // Base UI trigger parity for the server-rendered state (the #open/#close
+  // paths carry it during interaction; this seeds it at connect so an
+  // already-open item's trigger isn't missing data-panel-open until first
+  // toggled).
+  #reflectTriggers() {
+    this.#items().forEach((item) => {
+      const trigger = this.#triggerOf(item)
+      if (trigger) setState(trigger, stateOf(item) === "open" ? "panel-open" : "panel-closed")
+    })
   }
 
   #open(item) {
