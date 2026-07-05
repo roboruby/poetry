@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url"
 import ChartTooltipController from "../../app/javascript/poetry/charts/tooltip_controller.js"
 import ChartAdapterController from "../../app/javascript/poetry/charts/adapter_controller.js"
 import ChartMotionController from "../../app/javascript/poetry/charts/motion_controller.js"
+import ChartLiveController from "../../app/javascript/poetry/charts/live_controller.js"
 
 // The controllers manifest, self-drift-gating (the poetry-core
 // pattern, charts-sized): the JS surface (targets / values / public
@@ -20,6 +21,7 @@ const CONTROLLERS = {
   "poetry--charts--tooltip": ChartTooltipController,
   "poetry--charts--adapter": ChartAdapterController,
   "poetry--charts--motion": ChartMotionController,
+  "poetry--charts--live": ChartLiveController,
 }
 
 function publicMethods(klass) {

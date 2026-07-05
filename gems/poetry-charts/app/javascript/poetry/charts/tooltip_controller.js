@@ -81,6 +81,16 @@ export default class ChartTooltipController extends Controller {
     this.show(index)
   }
 
+  // Action: poetry--charts--live:updated->...#refresh - the live renderer
+  // rewrote the embedded coordinates; re-read them and keep serving the
+  // active index if it still exists (the tooltip follows the stream).
+  refresh() {
+    const index = this.activeIndex
+    this.connect()
+    if (index != null && index < this.count) this.show(index)
+    else if (index != null) this.leave()
+  }
+
   focus() {
     if (this.activeIndex == null) this.show(0)
   }

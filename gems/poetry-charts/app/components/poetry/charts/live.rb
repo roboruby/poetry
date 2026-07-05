@@ -14,6 +14,8 @@ module Poetry
     # formatters and label slots raise a teaching error - format data
     # host-side (pre-formatted category strings) instead.
     module Live
+      CONTROLLER = "poetry--charts--live"
+
       def self.included(base)
         base.extend(ClassMethods)
       end

@@ -62,5 +62,23 @@ new render starts from the old geometry and tweens to its own; a shape
 change (points added/removed) replays the entrance instead, recharts'
 own update behavior. See `docs/adapters.md` for BYO engines.
 
+For data that can't round-trip (streaming metrics, tickers), the
+cartesian trio takes `live: true`: the chart embeds its `{spec, frame}`
+payload and a client renderer — running on the vendored
+`@poetry/charts/d3` kernel, proven byte-equal to the Ruby engine —
+redraws it in place. Feed it either channel:
+
+```js
+// 1. Replace the payload script's JSON (what a turbo_stream.update does)
+script.textContent = JSON.stringify({ ...payload, spec: { ...payload.spec, data } })
+// 2. Or dispatch on the chart frame
+frame.dispatchEvent(new CustomEvent("poetry-chart:update", { detail: { data } }))
+```
+
+Updates tween through the same FLIP machinery, the tooltip keeps serving
+fresh values mid-stream, and `prefers-reduced-motion` snaps. Live data
+carries pre-formatted category strings (lambdas can't ride JSON — the
+server raises a teaching error on `tick_formatter`/`labels`).
+
 Part of the [poetry](../poetry) gem family. Status: N10 complete —
 six families, 52 gallery examples, the frozen spec-v1 adapter seam.

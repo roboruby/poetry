@@ -25,12 +25,24 @@ module Poetry
 
       # data attributes for the frame div (display: contents) wrapping
       # svg + chrome + coordinates. The motion controller (Phase A) rides
-      # the same element whenever animation is on.
+      # the same element whenever animation is on; the live controller
+      # (Phase B) joins when live: is, wired so its updated dispatch
+      # re-reads the tooltip's coordinates mid-stream.
       def frame_data
         controllers = []
         controllers << CONTROLLER if tooltip?
         controllers << Motion::CONTROLLER if respond_to?(:animate?) && animate?
-        controllers.empty? ? {} : { controller: controllers.join(" ") }
+        controllers << Live::CONTROLLER if respond_to?(:live?) && live?
+
+        data = {}
+        data[:controller] = controllers.join(" ") if controllers.any?
+        actions = []
+        if controllers.include?(Live::CONTROLLER)
+          actions << "poetry-chart:update->#{Live::CONTROLLER}#receive"
+          actions << "#{Live::CONTROLLER}:updated->#{CONTROLLER}#refresh" if tooltip?
+        end
+        data[:action] = actions.join(" ") if actions.any?
+        data
       end
 
       # role=img for static charts; the accessibilityLayer contract when

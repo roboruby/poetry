@@ -74,9 +74,55 @@ namespace :test do
       raise "the tooltip engine did not survive the server round-trip"
     end
 
+    # -- live mode: the streaming demo, zero server round trips -----
+    session.visit("/live")
+    raise "live demo missing" unless session.has_css?('[data-slot="demo-live"]')
+    raise "live chart never settled" unless session.has_css?('[data-slot="chart-svg"][data-motion="settled"]', wait: 6)
+
+    session.execute_script(<<~JS)
+      window.__pageMarker = true
+      window.__areaNode = document.querySelector('path[data-slot="chart-area"]')
+      window.__liveD0 = window.__areaNode.getAttribute("d")
+      window.__firstTick0 = document.querySelector('[data-slot="chart-x-axis"] text').textContent
+    JS
+
+    # The updates animate: the FLIP stamps morph on each tick.
+    raise "live ticks never morphed" unless session.has_css?('[data-slot="chart-svg"][data-motion="morph"]', wait: 5)
+
+    ticks = 0
+    30.times do
+      ticks = session.evaluate_script("window.__liveTicks || 0")
+      break if ticks >= 2
+
+      sleep 0.3
+    end
+    raise "the ticker never ticked (#{ticks})" if ticks < 2
+
+    checks = session.evaluate_script(<<~JS)
+      ({
+        samePage: window.__pageMarker === true,
+        sameNode: document.querySelector('path[data-slot="chart-area"]') === window.__areaNode,
+        dChanged: window.__areaNode.getAttribute("d") !== window.__liveD0,
+        windowSlid: document.querySelector('[data-slot="chart-x-axis"] text').textContent !== window.__firstTick0
+      })
+    JS
+    raise "the page navigated - not a client-side update" unless checks["samePage"]
+    raise "the SVG node was replaced - not an attribute-channel update" unless checks["sameNode"]
+    raise "the live chart never redrew" unless checks["dChanged"]
+    raise "the sliding window never slid" unless checks["windowSlid"]
+
+    # The tooltip serves fresh values mid-stream.
+    session.find('[data-slot="chart-svg"]').send_keys(:home)
+    live_tooltip = 'div[data-slot="chart-tooltip"]'
+    raise "tooltip dead mid-stream" unless session.has_css?(live_tooltip, visible: :visible, wait: 5)
+
+    live_label = session.find("#{live_tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
+    raise "tooltip label #{live_label.inspect} is not a stream category" unless live_label.match?(/\AT\d+\z/)
+
     puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses; " \
          "the dataset swap MORPHS between server renders (data-motion morph -> settled, new geometry), " \
-         "the 6 -> 3 month shape change replays the entrance, and the tooltip survives every swap - " \
-         "the engine works in Chrome"
+         "the 6 -> 3 month shape change replays the entrance, and the tooltip survives every swap; " \
+         "live mode streams client-side (same page, same SVG node, sliding window, morphing ticks, " \
+         "tooltip live at #{live_label}) - the engine works in Chrome"
   end
 end

@@ -35,4 +35,16 @@ class DemoController < ApplicationController
     @data = DATASETS[@dataset].last(PERIODS[@period])
     render layout: "component_preview"
   end
+
+  # The live-mode demo: the server renders the first window;
+  # the page's ticker streams new points through the payload-script
+  # channel and the chart re-renders client-side.
+  def live
+    @data = Array.new(8) do |i|
+      { t: "T#{i + 1}",
+        desktop: (180 + (Math.sin(i / 1.5) * 90)).round,
+        mobile: (110 + (Math.cos(i / 2.0) * 60)).round }
+    end
+    render layout: "component_preview"
+  end
 end

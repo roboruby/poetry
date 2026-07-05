@@ -5,4 +5,8 @@ Rails.application.routes.draw do
 
   # The interactive-chart doctrine demo: a real form, a server re-render.
   get "/interactive", to: "demo#interactive"
+
+  # The live-mode demo: a streaming ticker feeding the client
+  # renderer through the payload-script channel - zero server round trips.
+  get "/live", to: "demo#live"
 end

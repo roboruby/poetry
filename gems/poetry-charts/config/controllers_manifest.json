@@ -15,6 +15,7 @@
       "keydown",
       "leave",
       "move",
+      "refresh",
       "show"
     ]
   },
@@ -37,6 +38,18 @@
     "methods": [
       "connect",
       "disconnect"
+    ]
+  },
+  "poetry--charts--live": {
+    "targets": [
+      "payload"
+    ],
+    "values": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "receive",
+      "update"
     ]
   }
 }
