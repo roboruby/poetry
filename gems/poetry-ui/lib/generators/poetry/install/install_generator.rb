@@ -162,6 +162,10 @@ module Poetry
                   Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css").read,
                   force: true
       inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/charts.css";))
+      # The charts cn-* theme fragment (N11) - vendored like style-default.
+      create_file "app/assets/tailwind/poetry/style-charts.css",
+                  Poetry::Charts.root.join("themes/default.css").read, force: true
+      inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/style-charts.css" layer(base);))
 
       index = "app/javascript/controllers/index.js"
       unless File.exist?(File.join(destination_root, index))

@@ -106,8 +106,10 @@ module Poetry
     def with_charts_stub
       root = Pathname.new(File.expand_path("../tmp/charts-stub", __dir__))
       FileUtils.mkdir_p(root.join("app/assets/stylesheets"))
+      FileUtils.mkdir_p(root.join("themes"))
       root.join("app/assets/stylesheets/poetry-charts.css")
           .write("#{CHARTS_CSS_MARKER} { to { stroke-dashoffset: 0; } }\n")
+      root.join("themes/default.css").write(".cn-chart-tick { @apply fill-muted-foreground; }\n")
 
       charts = Module.new do
         const_set(:Engine, Class.new)
@@ -130,9 +132,11 @@ module Poetry
       end
 
       assert_file "app/assets/tailwind/poetry/charts.css", /#{Regexp.escape(CHARTS_CSS_MARKER)}/o
+      assert_file "app/assets/tailwind/poetry/style-charts.css", /cn-chart-tick/
       entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
 
       assert_equal 1, entry.scan('@import "./poetry/charts.css";').size, "entry line appended exactly once"
+      assert_equal 1, entry.scan('@import "./poetry/style-charts.css" layer(base);').size
       content = File.read(index)
 
       assert_equal 1, content.scan("registerPoetryChartsControllers(application)").size
