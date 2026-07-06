@@ -54,3 +54,6 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+
+# Server-side syntax highlighting for the gallery code tabs
+gem "rouge"

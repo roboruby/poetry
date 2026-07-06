@@ -1,31 +1,98 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for(:title) || "Poetry Docs" %></title>
+    <title><%= content_for(:title) ? "#{content_for(:title)} — poetry" : "poetry" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Poetry Docs">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# Apply the stored theme BEFORE first paint (the .dark class strategy). %>
+    <script>
+      try {
+        const stored = localStorage.getItem("poetry-docs-theme")
+        if (stored === "dark" || (!stored && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark")
+        }
+      } catch {}
+    </script>
+
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
-    <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <main class="container mx-auto mt-28 px-5 flex">
-      <%= yield %>
-    </main>
+  <body data-controller="theme" class="min-h-screen bg-background text-foreground antialiased">
+    <%= poetry_sidebar do |shell| %>
+      <% shell.with_nav do %>
+        <%= poetry_sidebar_header do %>
+          <%= link_to root_path, class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold" do %>
+            <%= poetry_icon(name: :feather, class: "size-4") %> poetry
+          <% end %>
+        <% end %>
+        <%= poetry_sidebar_content do %>
+          <%= poetry_sidebar_group do %>
+            <%= poetry_sidebar_group_label { "Get Started" } %>
+            <%= poetry_sidebar_menu do %>
+              <%= poetry_sidebar_menu_item do %>
+                <%= poetry_sidebar_menu_button(href: root_path, active: current_page?(root_path)) do %>
+                  <%= poetry_icon(name: :house) %><span>Introduction</span>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_group do %>
+            <%= poetry_sidebar_group_label { "Components" } %>
+            <%= poetry_sidebar_menu do %>
+              <% DocsCatalog.components.each do |entry| %>
+                <%= poetry_sidebar_menu_item do %>
+                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                    <span><%= entry.title %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_group do %>
+            <%= poetry_sidebar_group_label { "Charts" } %>
+            <%= poetry_sidebar_menu do %>
+              <% DocsCatalog.charts.each do |entry| %>
+                <%= poetry_sidebar_menu_item do %>
+                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                    <span><%= entry.title %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_sidebar_footer do %>
+          <div class="px-2 py-1 text-xs text-muted-foreground">
+            poetry <%= Poetry::Ui::VERSION %> · charts <%= Poetry::Charts::VERSION %>
+          </div>
+        <% end %>
+      <% end %>
+      <% shell.with_inset do %>
+        <header class="sticky top-0 z-40 flex h-14 items-center gap-2 border-b bg-background/95 px-4 backdrop-blur">
+          <%= poetry_sidebar_trigger %>
+          <div class="hidden md:block"><%= yield :breadcrumb %></div>
+          <div class="ml-auto flex items-center gap-2">
+            <%= render "shared/site_nav" %>
+            <%= render "shared/search" %>
+            <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
+                              data: { action: "click->theme#toggle" }) do %>
+              <%= poetry_icon(name: :sun, class: "dark:hidden") %>
+              <%= poetry_icon(name: :moon, class: "hidden dark:block") %>
+            <% end %>
+          </div>
+        </header>
+        <main class="mx-auto w-full max-w-4xl flex-1 p-6 lg:p-10">
+          <%= yield %>
+        </main>
+      <% end %>
+    <% end %>
   </body>
 </html>

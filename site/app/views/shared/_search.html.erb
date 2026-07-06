@@ -1,0 +1,25 @@
+<%# The ⌘K palette: every catalog entry, value = the page path. The Command
+    engine dispatches poetry:command:select and does nothing further - the
+    docs-search controller navigates. %>
+<div data-controller="docs-search" data-action="poetry:command:select->docs-search#go">
+  <%= poetry_command_dialog(hotkey: "meta+k", placeholder: "Search documentation…",
+                            label: "Search documentation") do |palette| %>
+    <% palette.with_trigger(variant: :outline, size: :sm,
+                            class: "gap-3 text-muted-foreground font-normal") do %>
+      <%= poetry_icon(name: :search, class: "size-3.5") %>
+      <span class="hidden sm:inline">Search docs…</span>
+      <%= poetry_kbd { "⌘K" } %>
+    <% end %>
+    <% palette.with_group(heading: "Components") do |group| %>
+      <% DocsCatalog.components.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Charts") do |group| %>
+      <% DocsCatalog.charts.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

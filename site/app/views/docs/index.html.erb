@@ -1,34 +1,50 @@
-<%# The smoke page: one poetry-ui composite and one poetry-chart rendering
-    through the installed pipeline proves the whole host wiring - tokens,
-    safelist, importmap pins, controller registration. The real gallery
-    replaces this. %>
-<div class="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 p-8">
-  <header class="flex flex-col gap-2">
-    <h1 class="text-3xl font-semibold tracking-tight">poetry</h1>
-    <p class="text-muted-foreground">
-      A Rails-first, shadcn-parity design system — server-rendered, agent-native.
-      This page is the standing fresh-app install proof; the gallery lands here next.
+<% content_for :title, "Introduction" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Introduction") %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-6">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">poetry</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      A Rails-first, shadcn-parity design system — ViewComponent + Hotwire +
+      Tailwind, server-rendered down to the charts, designed so coding agents
+      compose UI inside a constrained system.
     </p>
     <div class="flex gap-2">
-      <%= poetry_button { "Primary" } %>
-      <%= poetry_button(variant: :outline) { "Outline" } %>
-      <%= poetry_button(variant: :ghost) { "Ghost" } %>
+      <%= poetry_button(href: "/components/accordion") { "Browse components" } %>
+      <%= poetry_button(variant: :outline, href: "/charts/area") { "Browse charts" } %>
     </div>
   </header>
 
-  <section class="flex flex-col gap-2">
-    <h2 class="text-xl font-medium">A server-rendered chart</h2>
-    <p class="text-sm text-muted-foreground">
-      Finished SVG in the initial HTML — hover or focus the plot and arrow
-      through the categories; the tooltip reads server-embedded coordinates.
-    </p>
-    <%= poetry_area_chart(data: @data, config: @config, id: "docs-smoke",
-                          margin: { left: 12, right: 12 }) do |chart| %>
-      <% chart.with_grid %>
-      <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
-      <% chart.with_area(data_key: :mobile, stack: :a) %>
-      <% chart.with_area(data_key: :desktop, stack: :a) %>
-      <% chart.with_tooltip(indicator: :dot) %>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Server-rendered" } %>
+      <% card.with_description { "Valid without JavaScript" } %>
+      <p class="text-sm text-muted-foreground">
+        Every component — charts included — ships finished in the initial
+        HTML. Stimulus adds behavior by reading server-embedded state, never
+        by rendering.
+      </p>
     <% end %>
-  </section>
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Agent-native" } %>
+      <% card.with_description { "llms.txt built in" } %>
+      <p class="text-sm text-muted-foreground">
+        The component registry, agent rules, and
+        <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>
+        are part of the library, not an afterthought. This site's nav is
+        generated from the same registry the gems' CI verifies.
+      </p>
+    <% end %>
+  </div>
+
+  <p class="text-sm text-muted-foreground">
+    This site is built from poetry's own components — the sidebar, the ⌘K
+    palette, the top navigation's morphing viewport, the tabs on every
+    example. The gallery is the dogfood.
+  </p>
 </div>

@@ -1,19 +1,49 @@
 require "test_helper"
 
-# The install-proof smoke: the home page must render a poetry-ui component
-# and a finished poetry-charts SVG through the pipeline `rails g
-# poetry:install --charts` wired - if any host seam breaks (pins, tokens,
-# safelist, engine load), this page is where it surfaces first.
+# The install-proof smoke, now over the real shell: every page renders
+# inside poetry's own Sidebar + palette + nav chrome - if any host seam
+# breaks (pins, tokens, safelist, engine load), these pages surface it.
 class DocsControllerTest < ActionDispatch::IntegrationTest
-  test "the smoke page serves a poetry component and a server-rendered chart" do
+  test "the home page serves the poetry shell" do
     get root_url
 
     assert_response :success
-    assert_select "[data-slot=button]"
-    assert_select "svg[data-slot=chart-svg]" do
-      assert_select "path[data-slot=chart-area]", 2
-    end
-    assert_select "[data-controller~=?]", "poetry--charts--tooltip"
+    assert_select "[data-controller~=?]", "poetry--core--sidebar"
+    assert_select "[data-slot=sidebar-menu-button]", minimum: 40, text: /./ # the registry-driven nav
+    assert_select "[data-controller~=?]", "poetry--core--command"
+    assert_select "[data-controller~=?]", "poetry--core--navigation-menu"
+    assert_select "[data-action=?]", "click->theme#toggle"
+  end
+
+  test "a component page renders examples with preview and code tabs" do
+    get "/components/button"
+
+    assert_response :success
+    assert_select "[data-slot=button]", minimum: 6
+    assert_select "[data-controller~=?]", "poetry--core--tabs"
+    assert_select "div.highlight", minimum: 1 # the Rouge code tab
+  end
+
+  test "a chart page renders a finished SVG through the kernel pipeline" do
+    get "/charts/area"
+
+    assert_response :success
+    assert_select "svg[data-slot=chart-svg]", 2
+    assert_select "path[data-slot=chart-area]", minimum: 2
+    assert_select "script[data-slot=chart-live-payload]", 1 # the legend_toggle example
+  end
+
+  test "a registry component without gallery examples gets the Empty state" do
+    get "/components/accordion"
+
+    assert_response :success
+    assert_select "[data-slot=empty]"
+  end
+
+  test "an unknown slug is a 404, not a blank page" do
+    get "/components/sparkles"
+
+    assert_response :not_found
   end
 
   test "the agent docs ride the mounted engine" do

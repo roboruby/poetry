@@ -1,0 +1,28 @@
+<% content_for :title, @entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item(@entry.section.capitalize) %>
+    <% crumb.with_item(@entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
+  </header>
+
+  <% if @examples.any? %>
+    <% @examples.each do |name| %>
+      <%= docs_example(@entry.section, @entry.slug, name) %>
+    <% end %>
+  <% else %>
+    <%= poetry_empty(media_variant: :icon, class: "border border-dashed py-16") do |empty| %>
+      <% empty.with_media { poetry_icon(name: :"book-open") } %>
+      <% empty.with_title { "Docs pending" } %>
+      <% empty.with_description do %>
+        <%= @entry.title %> ships in the gems — its gallery page hasn't been written yet.
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

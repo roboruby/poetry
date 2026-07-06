@@ -1,0 +1,19 @@
+<%# The top nav: the NavigationMenu morphing viewport (D3) in production -
+    switching between the two panels morphs the shared popup. %>
+<div class="hidden lg:block">
+  <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
+    <% nav.with_item("Get Started", value: "start") do %>
+      <div class="grid w-64 gap-1">
+        <%= poetry_navigation_menu_link(href: root_path) { "Introduction" } %>
+        <%= poetry_navigation_menu_link(href: "/components/button") { "Components" } %>
+        <%= poetry_navigation_menu_link(href: "/charts/area") { "Charts" } %>
+      </div>
+    <% end %>
+    <% nav.with_item("Resources", value: "resources") do %>
+      <div class="grid w-80 grid-cols-2 gap-1">
+        <%= poetry_navigation_menu_link(href: "/poetry/llms.txt") { "llms.txt" } %>
+        <%= poetry_navigation_menu_link(href: "/poetry/llms-full.txt") { "llms-full.txt" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
