@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+- Chart tokens (`--chart-1..5`) follow upstream's current site default: a
+  monochromatic ramp of Tailwind's blue-300/500/600/700/800, declared
+  identically in light and dark (upstream sets the same values on `:root`
+  and `.dark`). The classic v4 orange/teal palette is gone from the
+  defaults; hosts wanting it back override five variables.
+
 - `HTML::Attributes#has_attribute?`: a nil simple attribute now reads as
   UNSET, so `merge_if_not_set` fills it. `Component#html_attributes`
   always seeds `class:` (nil when the dictionary base is empty), which
