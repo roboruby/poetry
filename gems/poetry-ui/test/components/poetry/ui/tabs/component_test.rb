@@ -101,7 +101,7 @@ module Poetry
           list = html.css('[data-slot="tabs-list"]').first
 
           assert_equal "line", list["data-variant"]
-          assert_includes list["class"], "bg-transparent"
+          assert_includes list["class"], "cn-tabs-list-variant-line"
           assert_equal "vertical", list["aria-orientation"]
         end
 

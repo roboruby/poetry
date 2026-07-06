@@ -78,9 +78,9 @@ module Poetry
         def test_trigger_wears_the_button_outline_chrome_with_the_double_chevron
           trigger = doc(render_combobox).css('[data-slot="combobox-trigger"]').first
 
-          %w[border bg-background shadow-xs hover:bg-accent w-[200px] justify-between font-normal
-             focus-visible:ring-[3px] aria-invalid:border-destructive
-             data-[placeholder]:text-muted-foreground].each do |token|
+          # The outline chrome (border/bg/shadow/hover, the demo width and
+          # font-normal, the placeholder dim) rides .cn-combobox-trigger.
+          %w[cn-combobox-trigger justify-between].each do |token|
             assert_includes trigger["class"].split, token
           end
           chevron = trigger.css("svg").first
@@ -158,7 +158,7 @@ module Poetry
           # focus-scope/dismissable are token-ACTIVATED by the combobox
           # controller on open (NEVER roving-focus) - never server-rendered.
           assert_nil content["data-controller"]
-          assert_includes content["class"], "p-0"
+          assert_includes content["class"], "cn-combobox-content" # p-0 rides the theme rule
           assert_predicate content.css('[data-slot="command-list"]'), :any?,
                            "the listbox sits INSIDE the content (the controller's closest() resolution)"
         end
@@ -443,8 +443,9 @@ module Poetry
 
           assert_includes html, "w-(--anchor-width)"
           assert_includes html, "origin-(--transform-origin)"
-          assert_includes html, "data-[placeholder]:text-muted-foreground"
-          assert_includes html, "data-open:zoom-in-95"
+          # The placeholder dim + the animate chain ride the theme rules.
+          assert_includes html, "cn-combobox-trigger"
+          assert_includes html, "cn-combobox-content"
         end
       end
     end

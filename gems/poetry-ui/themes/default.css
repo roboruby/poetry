@@ -53,6 +53,27 @@
   @apply bg-card text-destructive [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90;
 }
 
+/* MARK: Accordion */
+.cn-accordion-item {
+  @apply border-b last:border-b-0;
+}
+
+.cn-accordion-trigger {
+  @apply gap-4 rounded-md py-4 text-left text-sm font-medium hover:underline focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-accordion-trigger-icon {
+  @apply size-4 translate-y-0.5 text-muted-foreground;
+}
+
+.cn-accordion-content {
+  @apply text-sm data-closed:animate-accordion-up data-open:animate-accordion-down;
+}
+
+.cn-accordion-content-inner {
+  @apply pt-0 pb-4;
+}
+
 /* MARK: AlertDialog */
 .cn-alert-dialog-content {
   @apply w-full max-w-[calc(100%-2rem)] gap-4 rounded-lg border bg-background p-6 text-foreground shadow-lg data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-lg backdrop:bg-black/50 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;
@@ -226,6 +247,23 @@
   @apply bg-input;
 }
 
+/* MARK: Calendar */
+.cn-calendar {
+  @apply p-3;
+}
+
+.cn-calendar-caption {
+  @apply text-sm font-medium;
+}
+
+.cn-calendar-weekday {
+  @apply rounded-md text-[0.8rem] font-normal text-muted-foreground;
+}
+
+.cn-calendar-day-button {
+  @apply rounded-md text-sm leading-none font-normal hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:text-muted-foreground disabled:opacity-50 data-today:bg-muted data-today:text-foreground data-outside:text-muted-foreground data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground data-range-start:rounded-l-md data-range-start:bg-primary data-range-start:text-primary-foreground data-range-middle:rounded-none data-range-middle:bg-muted data-range-middle:text-foreground data-range-end:rounded-r-md data-range-end:bg-primary data-range-end:text-primary-foreground;
+}
+
 /* MARK: Card */
 .cn-card {
   @apply gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm;
@@ -254,6 +292,60 @@
 /* MARK: Checkbox */
 .cn-checkbox {
   @apply size-4 rounded-[4px] border border-input shadow-xs transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-checked:bg-primary;
+}
+
+/* MARK: Command */
+.cn-command {
+  @apply rounded-md bg-popover text-popover-foreground;
+}
+
+.cn-command-input-wrapper {
+  @apply h-9 gap-2 border-b px-3;
+}
+
+.cn-command-input {
+  @apply h-10 rounded-md bg-transparent py-3 text-sm placeholder:text-muted-foreground;
+}
+
+.cn-command-list {
+  @apply max-h-[300px] scroll-py-1;
+}
+
+.cn-command-empty {
+  @apply py-6 text-center text-sm;
+}
+
+.cn-command-group {
+  @apply p-1 text-foreground;
+}
+
+.cn-command-group-heading {
+  @apply px-2 py-1.5 text-xs font-medium text-muted-foreground;
+}
+
+.cn-command-item {
+  @apply gap-2 rounded-sm px-2 py-1.5 text-sm data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground;
+}
+
+.cn-command-shortcut {
+  @apply ms-auto text-xs tracking-widest text-muted-foreground;
+}
+
+.cn-command-separator {
+  @apply -mx-1 h-px bg-border;
+}
+
+/* MARK: Combobox */
+.cn-combobox-trigger {
+  @apply h-9 w-[200px] gap-2 rounded-md border bg-background px-4 py-2 text-sm font-normal shadow-xs hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground dark:aria-invalid:ring-destructive/40 dark:border-input dark:bg-input/30 dark:hover:bg-input/50 has-[>svg]:px-3 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-combobox-content {
+  @apply rounded-md border bg-popover p-0 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;
+}
+
+.cn-combobox-item-indicator {
+  @apply size-4;
 }
 
 /* MARK: ContextMenu */
@@ -295,6 +387,23 @@
 
 .cn-context-menu-item-indicator {
   @apply left-2 size-3.5;
+}
+
+/* MARK: DataTable */
+.cn-data-table-toolbar {
+  @apply py-4;
+}
+
+.cn-data-table-container {
+  @apply rounded-md border;
+}
+
+.cn-data-table-footer {
+  @apply py-4;
+}
+
+.cn-data-table-empty {
+  @apply h-24 text-center;
 }
 
 /* MARK: Dialog */
@@ -689,6 +798,15 @@
   @apply top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground [&>svg]:size-4;
 }
 
+/* MARK: Pagination */
+.cn-pagination-content {
+  @apply gap-1;
+}
+
+.cn-pagination-ellipsis {
+  @apply size-9 [&_svg:not([class*='size-'])]:size-4;
+}
+
 /* MARK: Popover */
 .cn-popover-content {
   @apply rounded-md border bg-popover p-4 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;
@@ -736,6 +854,35 @@
   @apply size-2 fill-primary;
 }
 
+/* MARK: Select */
+.cn-select-trigger {
+  @apply gap-2 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[placeholder]:text-muted-foreground data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:gap-2 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground;
+}
+
+.cn-select-trigger-icon {
+  @apply size-4 opacity-50;
+}
+
+.cn-select-content {
+  @apply min-w-[8rem] rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1;
+}
+
+.cn-select-item {
+  @apply gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm focus:bg-accent focus:text-accent-foreground [&_svg:not([class*='size-'])]:size-4 [&_svg:not([class*='text-'])]:text-muted-foreground *:[span]:last:gap-2;
+}
+
+.cn-select-label {
+  @apply px-2 py-1.5 text-xs text-muted-foreground;
+}
+
+.cn-select-separator {
+  @apply -mx-1 my-1 h-px bg-border;
+}
+
+.cn-select-item-indicator {
+  @apply right-2 size-3.5;
+}
+
 /* MARK: Sheet */
 /* w-full lives here so the sides' w-3/4 can beat it in-layer (split-side
  * rule) - a latent full-width regression the visual gate cannot see on a
@@ -780,6 +927,87 @@
   @apply absolute top-4 right-4;
 }
 
+/* MARK: Sidebar */
+.cn-sidebar-mobile {
+  @apply bg-sidebar p-0 text-sidebar-foreground shadow-lg transition ease-in-out data-open:animate-in data-open:duration-500 data-closed:animate-out data-closed:duration-300 backdrop:bg-black/50;
+}
+
+.cn-sidebar-mobile-left {
+  @apply border-r data-open:slide-in-from-left data-closed:slide-out-to-left;
+}
+
+.cn-sidebar-mobile-right {
+  @apply border-l data-open:slide-in-from-right data-closed:slide-out-to-right;
+}
+
+.cn-sidebar-inner {
+  @apply bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:shadow-sm group-data-[variant=floating]:ring-1 group-data-[variant=floating]:ring-sidebar-border;
+}
+
+.cn-sidebar-header {
+  @apply gap-2 p-2;
+}
+
+.cn-sidebar-footer {
+  @apply gap-2 p-2;
+}
+
+.cn-sidebar-separator {
+  @apply mx-2 bg-sidebar-border;
+}
+
+.cn-sidebar-content {
+  @apply gap-2;
+}
+
+.cn-sidebar-group {
+  @apply p-2;
+}
+
+.cn-sidebar-group-label {
+  @apply h-8 rounded-md px-2 text-xs font-medium text-sidebar-foreground/70 ring-sidebar-ring focus-visible:ring-2 [&>svg]:size-4;
+}
+
+.cn-sidebar-group-content {
+  @apply text-sm;
+}
+
+.cn-sidebar-menu {
+  @apply gap-1;
+}
+
+.cn-sidebar-menu-button {
+  @apply gap-2 rounded-md p-2 text-sm ring-sidebar-ring group-has-data-[sidebar=menu-action]/menu-item:pr-8 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:font-medium data-active:text-sidebar-accent-foreground [&_svg]:size-4;
+}
+
+.cn-sidebar-menu-button-size-default {
+  @apply h-8 text-sm;
+}
+
+.cn-sidebar-menu-button-size-sm {
+  @apply h-7 text-xs;
+}
+
+.cn-sidebar-menu-button-size-lg {
+  @apply h-12 text-sm;
+}
+
+.cn-sidebar-menu-action {
+  @apply w-5 rounded-md p-0 text-sidebar-foreground ring-sidebar-ring peer-hover/menu-button:text-sidebar-accent-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4;
+}
+
+.cn-sidebar-menu-badge {
+  @apply h-5 min-w-5 rounded-md px-1 text-xs font-medium text-sidebar-foreground tabular-nums peer-hover/menu-button:text-sidebar-accent-foreground peer-data-active/menu-button:text-sidebar-accent-foreground;
+}
+
+.cn-sidebar-menu-sub {
+  @apply gap-1 border-l border-sidebar-border px-2.5 py-0.5;
+}
+
+.cn-sidebar-menu-sub-button {
+  @apply h-7 gap-2 rounded-md px-2 text-sm text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground [&>svg]:size-4;
+}
+
 /* MARK: Skeleton */
 .cn-skeleton {
   @apply rounded-md bg-muted;
@@ -809,6 +1037,67 @@
 
 .cn-switch-thumb {
   @apply rounded-full bg-background group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-checked:translate-x-[calc(100%-2px)] data-unchecked:translate-x-0 rtl:data-checked:-translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground dark:data-unchecked:bg-foreground;
+}
+
+/* MARK: Table */
+.cn-table {
+  @apply w-full caption-bottom text-sm;
+}
+
+.cn-table-header {
+  @apply [&_tr]:border-b;
+}
+
+.cn-table-body {
+  @apply [&_tr:last-child]:border-0;
+}
+
+.cn-table-footer {
+  @apply border-t bg-muted/50 font-medium [&>tr]:last:border-b-0;
+}
+
+.cn-table-row {
+  @apply border-b hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-selected:bg-muted;
+}
+
+.cn-table-head {
+  @apply h-10 px-2 text-left align-middle font-medium whitespace-nowrap text-foreground [&:has([role=checkbox])]:pr-0;
+}
+
+.cn-table-cell {
+  @apply p-2 align-middle whitespace-nowrap [&:has([role=checkbox])]:pr-0;
+}
+
+.cn-table-caption {
+  @apply mt-4 text-sm text-muted-foreground;
+}
+
+/* MARK: Tabs */
+.cn-tabs {
+  @apply gap-2;
+}
+
+.cn-tabs-list {
+  @apply rounded-lg p-[3px] group-data-horizontal/tabs:h-9 data-[variant=line]:rounded-none;
+}
+
+.cn-tabs-list-variant-default {
+  @apply bg-muted;
+}
+
+.cn-tabs-list-variant-line {
+  @apply gap-1 bg-transparent;
+}
+
+/* The whole text-color cluster lives here (split-side rule): the base
+ * dims (text-foreground/60, dark:text-muted-foreground) must lose to the
+ * data-active colors, which they only can in-layer. */
+.cn-tabs-trigger {
+  @apply gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100;
+}
+
+.cn-tabs-content {
+  @apply text-sm;
 }
 
 /* MARK: Textarea */
@@ -935,4 +1224,9 @@
 
 .cn-input-group-button-size-icon-sm {
   @apply size-8 p-0 has-[>svg]:p-0;
+}
+
+/* CommandDialog re-tunes the Dialog panel (p-0 must beat cn-dialog-content's p-6). */
+.cn-command-dialog {
+  @apply overflow-hidden p-0;
 }

@@ -48,9 +48,9 @@ module Poetry
           assert_equal "poetry--core--command", root["data-controller"]
           assert_equal "true", root["data-poetry--core--command-filter-value"]
           assert_equal "false", root["data-poetry--core--command-loop-value"]
-          # Source-exact root chrome (the palette is popover-chromed even inline).
-          %w[flex h-full w-full flex-col overflow-hidden rounded-md bg-popover
-             text-popover-foreground].each { |token| assert_includes root["class"], token }
+          # The popover chrome rides .cn-command; the layout stays inline.
+          %w[cn-command flex h-full w-full flex-col
+             overflow-hidden].each { |token| assert_includes root["class"], token }
         end
 
         def test_filter_false_renders_the_server_driven_mode
@@ -76,13 +76,13 @@ module Poetry
           assert_equal "Command palette", input["aria-label"]
           assert_includes input["data-action"], "input->poetry--core--command#filterInput"
           assert_includes input["data-action"], "keydown->poetry--core--command#keydown"
-          # Source-exact input classes (h-10 inside the h-9 wrapper is load-bearing).
-          assert_includes input["class"], "h-10"
+          # The h-10-inside-h-9 clip is load-bearing and now lives in the
+          # theme pair (.cn-command-input / .cn-command-input-wrapper).
+          assert_includes input["class"], "cn-command-input"
           assert_includes input["class"], "outline-hidden"
           wrapper = fragment.css('[data-slot="command-input-wrapper"]').first
 
-          assert_includes wrapper["class"], "h-9"
-          assert_includes wrapper["class"], "border-b"
+          assert_includes wrapper["class"], "cn-command-input-wrapper"
           icon = fragment.css('[data-slot="command-search-icon"] svg').first
 
           assert_equal "true", icon["aria-hidden"], "the magnifier is decorative"
@@ -101,8 +101,7 @@ module Poetry
           assert_equal "listbox", list["role"]
           assert_equal "-1", list["tabindex"]
           assert_equal "Commands", list["aria-label"], "t('poetry.command.list_label') default"
-          assert_includes list["class"], "max-h-[300px]"
-          assert_includes list["class"], "scroll-py-1"
+          assert_includes list["class"], "cn-command-list"
         end
 
         def test_list_label_overrides_the_listbox_name
@@ -137,10 +136,9 @@ module Poetry
         def test_item_classes_carry_the_data_highlighted_delta
           item = doc(render_command).css('[data-slot="command-item"]').first
 
-          assert_includes item["class"], "data-[highlighted]:bg-accent"
-          assert_includes item["class"], "data-[highlighted]:text-accent-foreground"
+          # The data-[highlighted] delta rides .cn-command-item in the theme.
+          assert_includes item["class"], "cn-command-item"
           assert_includes item["class"], "data-[disabled]:pointer-events-none"
-          assert_includes item["class"], "[&_svg:not([class*='size-'])]:size-4"
           refute_includes item["class"], "data-[selected=true]", "the one deliberate class delta vs source"
         end
 
@@ -168,7 +166,8 @@ module Poetry
           shortcut = item.css('[data-slot="command-shortcut"]').first
 
           assert_equal "⌘P", shortcut.text
-          assert_includes shortcut["class"], "ms-auto", "the RTL logical fix over source's ml-auto"
+          # The RTL logical fix (ms-auto over source's ml-auto) rides the theme.
+          assert_includes shortcut["class"], "cn-command-shortcut"
           assert_equal "Profile", item.css('[data-slot="command-item-text"]').first.text,
                        "the shortcut lives OUTSIDE the filterable label"
         end
@@ -183,7 +182,7 @@ module Poetry
           assert_equal "Suggestions", heading.text
           assert_nil heading["role"], "the heading is labelling text, no ARIA role"
           assert_includes group["class"], "overflow-hidden"
-          assert_includes heading["class"], "text-muted-foreground"
+          assert_includes heading["class"], "cn-command-group-heading"
         end
 
         def test_separator_is_visible_but_decorative
@@ -194,8 +193,7 @@ module Poetry
           assert_equal "true", separator["aria-hidden"]
           assert_nil separator["role"]
           refute separator.key?("hidden"), "server renders separators visible; the controller hides on query"
-          assert_includes separator["class"], "-mx-1"
-          assert_includes separator["class"], "bg-border"
+          assert_includes separator["class"], "cn-command-separator"
         end
 
         def test_empty_and_loading_render_hidden_and_status_renders_sr_only
@@ -357,9 +355,10 @@ module Poetry
           assert_equal "Search for a command to run…", description.text
           assert_equal title["id"], dialog["aria-labelledby"]
           assert_equal description["id"], dialog["aria-describedby"]
-          # The source content override: p-0 overflow-hidden win over Dialog's p-6.
-          assert_includes dialog["class"], "overflow-hidden"
-          assert_includes dialog["class"], "p-0"
+          # The source content override rides .cn-command-dialog in the
+          # cross-component theme section (p-0 beats cn-dialog-content's
+          # themed p-6 in-layer; neither padding appears inline).
+          assert_includes dialog["class"], "cn-command-dialog"
           refute_includes dialog["class"], "p-6"
         end
 

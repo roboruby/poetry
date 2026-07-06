@@ -3,17 +3,15 @@
 module Poetry
   module Ui
     module DataTable
-      # shadcn DataTable chrome (base-vega demo), source-exact: the toolbar
-      # row, the bordered table container, and the No-results cell. The table
-      # itself is the W1 Table dictionary; the sort affordance is the ghost
-      # Button.
+      # Re-expressed through the cn-* theme layer (N11): the chrome rides
+      # poetry-named rules (own component - no upstream cn vocabulary).
       class Style < Poetry::Core::Style
         base "w-full"
 
-        element :toolbar, "flex items-center py-4"
-        element :container, "overflow-hidden rounded-md border"
-        element :footer, "py-4"
-        element :empty, "h-24 text-center"
+        element :toolbar, "cn-data-table-toolbar flex items-center"
+        element :container, "cn-data-table-container overflow-hidden"
+        element :footer, "cn-data-table-footer"
+        element :empty, "cn-data-table-empty"
       end
     end
   end

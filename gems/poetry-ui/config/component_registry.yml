@@ -30,7 +30,7 @@ components:
     - indicator
     - content
     - inner
-    capsule: 84cb5db4eb88
+    capsule: cb12e134156a
     controllers:
     - identifier: poetry--core--accordion
       targets: []
@@ -448,7 +448,7 @@ components:
     - week
     - day_cell
     - day
-    capsule: 89e5f355a824
+    capsule: 8e6c907c6369
     controllers:
     - identifier: poetry--core--calendar
       targets:
@@ -727,7 +727,7 @@ components:
     - native
     - trigger_icon
     - indicator_check
-    capsule: f96a911bf996
+    capsule: 7eb8581783a3
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -842,7 +842,7 @@ components:
     - search_icon
     - dialog_content
     - dialog_overrides
-    capsule: bdce293b6abf
+    capsule: 199341a4041b
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -1092,7 +1092,7 @@ components:
     - container
     - footer
     - empty
-    capsule: 8fc5753705d9
+    capsule: 054550d68ba7
     agent_rules:
     - 'Build State.from_params(params, sortable: [...]) in the controller - NEVER
       order by raw params; the whitelist is what makes state.order_clause injection-safe.'
@@ -2148,7 +2148,7 @@ components:
     - content
     - ellipsis
     - label
-    capsule: 273a0d39251c
+    capsule: f9a5513c2b6e
     agent_rules:
     - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
       list.
@@ -2468,7 +2468,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: d4329f24de1d
+    capsule: c10d5525ec5c
     controllers:
     - identifier: poetry--core--popper
       targets:
@@ -2664,7 +2664,7 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 99d0c98fa263
+    capsule: dd5268afe1eb
     controllers:
     - identifier: poetry--core--sidebar
       targets:
@@ -2883,7 +2883,7 @@ components:
     - head
     - cell
     - caption
-    capsule: 54e4cde8d751
+    capsule: 8792f3bd5b27
     agent_rules:
     - Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell)
       - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
@@ -2916,7 +2916,7 @@ components:
     - list_line
     - trigger
     - content
-    capsule: dd942b50e8a6
+    capsule: 1fb180a97362
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []

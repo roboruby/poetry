@@ -24,7 +24,7 @@ module Poetry
           table = container.css('table[data-slot="table"]').first
 
           assert table, "a real <table> inside the container"
-          assert_includes table["class"], "caption-bottom"
+          assert_includes table["class"], "cn-table"
         end
 
         def test_the_part_helpers_stamp_data_slots_onto_semantic_elements
@@ -45,7 +45,7 @@ module Poetry
           assert_match(/<td\b/, html)
           assert_includes html, 'colspan="2"'
           assert_includes html, "text-right"
-          assert_includes html, "align-middle" # the Style base survives the extra class
+          assert_includes html, "cn-table-cell" # the Style entry survives the extra class
           assert_includes html, 'data-slot="table-cell"'
         end
 

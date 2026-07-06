@@ -345,10 +345,10 @@ module Poetry
           assert_includes html, "max-h-(--radix-select-content-available-height)"
           assert_includes html, "origin-(--radix-select-content-transform-origin)"
           assert_includes html, "min-w-[var(--radix-select-trigger-width)]"
-          assert_includes html, "data-[placeholder]:text-muted-foreground"
-          assert_includes html, "data-[size=default]:h-9 data-[size=sm]:h-8"
-          # The popper-branch translate nudges are baked in (popper-only).
-          assert_includes html, "data-[side=bottom]:translate-y-1"
+          # The field chrome (placeholder dim, size heights) and the baked-in
+          # popper translate nudges ride the theme rules.
+          assert_includes html, "cn-select-trigger"
+          assert_includes html, "cn-select-content"
         end
       end
     end
