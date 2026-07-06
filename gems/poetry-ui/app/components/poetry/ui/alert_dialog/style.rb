@@ -27,7 +27,10 @@ module Poetry
 
         element :description, "cn-alert-dialog-description"
 
-        element :footer, "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+        # Footer hook reintroduced at N12 W2 (nova bands it); gap-2 moved
+        # theme-side with the name - direction/justify stay inline (the
+        # sm-size grid branch below replaces them via the class: merge).
+        element :footer, "cn-alert-dialog-footer flex flex-col-reverse sm:flex-row sm:justify-end"
         # sm size: the compact 2-col grid footer (source).
         element :footer_size_sm, "grid grid-cols-2"
       end

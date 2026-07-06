@@ -123,19 +123,20 @@ module Poetry
           content = doc(render_card).css('[data-slot="hover-card-content"]').first
           classes = content["class"].split
 
-          assert_includes classes, "w-64"
           assert_includes classes, "origin-(--radix-hover-card-content-transform-origin)"
-          # Panel chrome + the animate/slide chains ride the theme rule.
+          # Panel chrome + width + the animate/slide chains ride the theme
+          # rule (width moved theme-side at N12 W2 - mira/rhea widen it).
           assert_includes classes, "cn-hover-card-content"
           assert_includes classes, "outline-hidden"
+          refute_includes classes, "w-64"
         end
 
-        def test_content_class_overrides_the_source_width_via_merge
+        def test_content_class_overrides_the_theme_width_from_the_utilities_layer
           content = doc(render_card(content_class: "w-80")).css('[data-slot="hover-card-content"]').first
 
-          # Demo parity: w-80 replaces the source w-64 (tailwind_merge).
+          # Demo parity: caller w-80 rides the utilities layer, which beats
+          # the theme rule's width in every fragment (layer order).
           assert_includes content["class"], "w-80"
-          refute_includes content["class"], "w-64"
         end
       end
     end

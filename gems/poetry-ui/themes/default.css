@@ -54,6 +54,13 @@
 }
 
 /* MARK: Accordion */
+/* Root hook (N12 W2): boxed-root themes (mira/rhea, later luma/maia)
+ * style this; every fragment must give the name content (the compile
+ * gate), so default carries the upstream demo idiom. */
+.cn-accordion {
+  @apply w-full;
+}
+
 .cn-accordion-item {
   @apply border-b last:border-b-0;
 }
@@ -93,6 +100,13 @@
 
 .cn-alert-dialog-description {
   @apply text-sm text-muted-foreground;
+}
+
+/* Footer hook (N12 W2): nova bands it; gap-2 moved here from the inline
+ * set with the name (direction/justify stay inline - the sm-size grid
+ * branch replaces them consumer-side). */
+.cn-alert-dialog-footer {
+  @apply gap-2;
 }
 
 /* MARK: Attachment */
@@ -1327,8 +1341,10 @@
   @apply rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs;
 }
 
+/* Segmented edge radii live theme-side (N12 W2 side-move): each theme
+ * rounds spacing=0 segments in its own radius language. */
 .cn-toggle-group-item {
-  @apply px-3;
+  @apply px-3 data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md;
 }
 
 /* MARK: Tooltip */

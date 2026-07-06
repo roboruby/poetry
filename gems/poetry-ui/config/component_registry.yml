@@ -30,7 +30,7 @@ components:
     - indicator
     - content
     - inner
-    capsule: cb12e134156a
+    capsule: 3be341c9616e
     controllers:
     - identifier: poetry--core--accordion
       targets: []
@@ -123,7 +123,7 @@ components:
     - description
     - footer
     - footer_size_sm
-    capsule: 55b1c632f586
+    capsule: 7948486498ac
     controllers:
     - identifier: poetry--core--dialog
       targets:
@@ -1473,7 +1473,7 @@ components:
       many: false
     elements:
     - content
-    capsule: 8c8542e71073
+    capsule: bc5dc4784bee
     controllers:
     - identifier: poetry--core--hover-card
       targets: []
@@ -3174,7 +3174,7 @@ components:
       many: true
     elements:
     - item
-    capsule: 2b8127986484
+    capsule: a2500eaf5fad
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []

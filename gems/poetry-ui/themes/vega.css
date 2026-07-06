@@ -47,6 +47,12 @@
 }
 
 /* MARK: Accordion */
+/* Root hook (N12 W2, roster-wide landing): vega does not box the root -
+ * carries the default treatment. */
+.cn-accordion {
+  @apply w-full;
+}
+
 .cn-accordion-item {
   @apply not-last:border-b;
 }
@@ -86,6 +92,12 @@
 
 .cn-alert-dialog-description {
   @apply text-muted-foreground *:[a]:hover:text-foreground text-sm text-balance md:text-pretty *:[a]:underline *:[a]:underline-offset-3;
+}
+
+/* Footer hook (N12 W2, roster-wide landing): vega does not band the
+ * footer - carries the default treatment (gap-2 moved theme-side). */
+.cn-alert-dialog-footer {
+  @apply gap-2;
 }
 
 /* MARK: Attachment */
@@ -1327,8 +1339,9 @@
   @apply rounded-md data-[spacing=0]:data-[variant=outline]:shadow-xs data-[spacing=default]:data-[variant=outline]:shadow-xs;
 }
 
+/* Segmented edge radii live theme-side (N12 W2 side-move). */
 .cn-toggle-group-item {
-  @apply px-3 data-pressed:bg-muted data-[spacing=0]:px-2 data-[spacing=0]:shadow-none;
+  @apply px-3 data-pressed:bg-muted data-[spacing=0]:px-2 data-[spacing=0]:shadow-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md;
 }
 
 /* MARK: Tooltip */

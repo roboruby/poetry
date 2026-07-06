@@ -8,6 +8,11 @@ module Poetry
       # keyframes still fed by --accordion-panel-height); the chevron's
       # aria-expanded rotation + motion stay inline (state mechanism).
       class Style < Poetry::Core::Style
+        # Root hook reintroduced at N12 W2: mira/rhea (later luma/maia)
+        # style the root as a box - the name must compile in EVERY theme,
+        # so each fragment carries a rule (default: w-full).
+        base "cn-accordion"
+
         element :item, "cn-accordion-item"
 
         element :header, "flex"
