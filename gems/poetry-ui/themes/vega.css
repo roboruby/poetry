@@ -172,8 +172,9 @@
   @apply bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80;
 }
 
+/* Soft destructive, AA-held (same treatment as the destructive button). */
 .cn-badge-variant-destructive {
-  @apply bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20;
+  @apply bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive dark:bg-destructive/20;
 }
 
 .cn-badge-variant-outline {
@@ -259,8 +260,14 @@
   @apply bg-primary text-primary-foreground hover:bg-primary/80;
 }
 
+/* Soft destructive, AA-held: upstream's text-destructive on the /10 tint
+ * measures under 4.5:1 (the rig caught it at button/destructive,
+ * button/with_icons, dialog/confirmation), so light mode darkens the text
+ * via relative oklch (the tinted-Bubble idiom) and dark mode restores the
+ * token (the .dark palette is already bright). Documented deviation -
+ * the posture. */
 .cn-button-variant-destructive {
-  @apply bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30;
+  @apply bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive focus-visible:border-destructive/40 dark:hover:bg-destructive/30;
 }
 
 .cn-button-variant-outline {

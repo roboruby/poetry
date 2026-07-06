@@ -32,7 +32,7 @@ cn-avatar-group-count: identical
 cn-avatar-image: identical
 cn-badge: judged
 cn-badge-variant-default: mechanical (vega minus inline dups)
-cn-badge-variant-destructive: mechanical (vega minus inline dups)
+cn-badge-variant-destructive: judged (soft destructive, AA-held: light darkens text via relative oklch, dark restores token)
 cn-badge-variant-outline: mechanical (vega minus inline dups)
 cn-badge-variant-secondary: mechanical (vega minus inline dups)
 cn-breadcrumb-ellipsis: identical
@@ -67,7 +67,7 @@ cn-button-size-lg: judged
 cn-button-size-sm: judged
 cn-button-size-xs: judged
 cn-button-variant-default: mechanical (vega minus inline dups)
-cn-button-variant-destructive: mechanical (vega minus inline dups)
+cn-button-variant-destructive: judged (soft destructive, AA-held: light darkens text via relative oklch, dark restores token)
 cn-button-variant-ghost: mechanical (vega minus inline dups)
 cn-button-variant-link: identical
 cn-button-variant-outline: mechanical (vega minus inline dups)
