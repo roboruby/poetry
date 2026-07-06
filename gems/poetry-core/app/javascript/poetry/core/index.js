@@ -30,6 +30,7 @@ import CommandController from "@poetry/controllers/command_controller"
 import ComboboxController from "@poetry/controllers/combobox_controller"
 import TabsController from "@poetry/controllers/tabs_controller"
 import DrawerController from "@poetry/controllers/drawer_controller"
+import SheetController from "@poetry/controllers/sheet_controller"
 import CarouselController from "@poetry/controllers/carousel_controller"
 import ResizableController from "@poetry/controllers/resizable_controller"
 import NavigationMenuController from "@poetry/controllers/navigation_menu_controller"
@@ -64,6 +65,7 @@ export { default as CommandController } from "@poetry/controllers/command_contro
 export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
 export { default as TabsController } from "@poetry/controllers/tabs_controller"
 export { default as DrawerController } from "@poetry/controllers/drawer_controller"
+export { default as SheetController } from "@poetry/controllers/sheet_controller"
 export { default as CarouselController } from "@poetry/controllers/carousel_controller"
 export { default as ResizableController } from "@poetry/controllers/resizable_controller"
 export { default as NavigationMenuController } from "@poetry/controllers/navigation_menu_controller"
@@ -111,6 +113,7 @@ export const controllers = {
   "poetry--core--combobox": ComboboxController,
   "poetry--core--tabs": TabsController,
   "poetry--core--drawer": DrawerController,
+  "poetry--core--sheet": SheetController,
   "poetry--core--carousel": CarouselController,
   "poetry--core--resizable": ResizableController,
   "poetry--core--navigation-menu": NavigationMenuController,

@@ -690,6 +690,32 @@
       "valueValueChanged"
     ]
   },
+  "poetry--core--sheet": {
+    "targets": [
+      "dialog"
+    ],
+    "values": {
+      "dismissible": {
+        "type": "Boolean",
+        "default": true
+      },
+      "hotkey": {
+        "type": "String",
+        "default": ""
+      }
+    },
+    "classes": [],
+    "methods": [
+      "backdropClose",
+      "close",
+      "connect",
+      "disconnect",
+      "lockScroll",
+      "open",
+      "toggle",
+      "unlockScroll"
+    ]
+  },
   "poetry--core--sidebar": {
     "targets": [
       "sidebar"
