@@ -2622,12 +2622,15 @@ components:
     - menu_item
     - menu_button
     - menu_button_default
+    - menu_action
+    - menu_action_hover
+    - menu_badge
     - menu_button_sm
     - menu_button_lg
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 9b00cc2667c1
+    capsule: 99d0c98fa263
     controllers:
     - identifier: poetry--core--sidebar
       targets:

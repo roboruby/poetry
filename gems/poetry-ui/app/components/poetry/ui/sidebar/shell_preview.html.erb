@@ -19,10 +19,14 @@
               <%= poetry_sidebar_menu_button(href: "#") do %>
                 <%= poetry_icon(name: :inbox) %><span>Inbox</span>
               <% end %>
+              <%= poetry_sidebar_menu_badge do %>12<% end %>
             <% end %>
             <%= poetry_sidebar_menu_item do %>
               <%= poetry_sidebar_menu_button(href: "#") do %>
                 <%= poetry_icon(name: :settings) %><span>Settings</span>
+              <% end %>
+              <%= poetry_sidebar_menu_action(label: "Settings options") do %>
+                <%= poetry_icon(name: :"ellipsis") %>
               <% end %>
             <% end %>
           <% end %>

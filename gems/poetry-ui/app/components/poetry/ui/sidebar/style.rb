@@ -12,11 +12,11 @@ module Poetry
         base ""
 
         # The provider wrapper carries the width custom properties. Upstream
-        # names it group/sidebar-wrapper; nothing in this subset consumes
-        # that named group (the menu-action/badge parts that would are W5b),
-        # so it's dropped - the compiled-CSS gate flags a marker that styles
-        # nothing. Same for the peer/menu-button, group/menu-button,
-        # group/menu-item, group/menu-sub-item markers below.
+        # names it group/sidebar-wrapper; that marker (and group/menu-button,
+        # group/menu-sub-item) stays dropped - their only consumers live at
+        # BLOCK level upstream, and the compiled-CSS gate flags markers
+        # nothing in-gem consumes. peer/menu-button and group/menu-item
+        # returned at W5b commit 3 WITH their consumers (menu-action/badge).
         element :wrapper, "flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
 
         # The peer group (the desktop shell; below md the mobile <dialog>
@@ -92,9 +92,10 @@ module Poetry
         element :group_content, "w-full text-sm"
 
         element :menu, "flex w-full min-w-0 flex-col gap-1"
-        element :menu_item, "relative"
+        element :menu_item, "group/menu-item relative"
         element :menu_button,
-                "flex w-full items-center gap-2 overflow-hidden " \
+                "peer/menu-button flex w-full items-center gap-2 overflow-hidden " \
+                "group-has-data-[sidebar=menu-action]/menu-item:pr-8 " \
                 "rounded-md p-2 text-left text-sm ring-sidebar-ring outline-hidden " \
                 "transition-[width,height,padding] group-data-[collapsible=icon]:size-8! " \
                 "group-data-[collapsible=icon]:p-2! hover:bg-sidebar-accent hover:text-sidebar-accent-foreground " \
@@ -104,6 +105,27 @@ module Poetry
                 "data-active:text-sidebar-accent-foreground [&_svg]:size-4 [&_svg]:shrink-0 " \
                 "[&>span:last-child]:truncate"
         element :menu_button_default, "h-8 text-sm"
+
+        # The item-corner action + badge (W5b commit 3) - the peer/menu-button
+        # and group/menu-item consumers, source-exact (base-vega).
+        element :menu_action,
+                "absolute top-1.5 right-1 flex aspect-square w-5 items-center justify-center rounded-md " \
+                "p-0 text-sidebar-foreground ring-sidebar-ring outline-hidden transition-transform " \
+                "group-data-[collapsible=icon]:hidden peer-hover/menu-button:text-sidebar-accent-foreground " \
+                "peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 " \
+                "peer-data-[size=sm]/menu-button:top-1 after:absolute after:-inset-2 " \
+                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 " \
+                "md:after:hidden [&>svg]:size-4 [&>svg]:shrink-0"
+        element :menu_action_hover,
+                "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 " \
+                "peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 " \
+                "md:opacity-0"
+        element :menu_badge,
+                "pointer-events-none absolute right-1 flex h-5 min-w-5 items-center justify-center " \
+                "rounded-md px-1 text-xs font-medium text-sidebar-foreground tabular-nums select-none " \
+                "group-data-[collapsible=icon]:hidden peer-hover/menu-button:text-sidebar-accent-foreground " \
+                "peer-data-[size=default]/menu-button:top-1.5 peer-data-[size=lg]/menu-button:top-2.5 " \
+                "peer-data-[size=sm]/menu-button:top-1 peer-data-active/menu-button:text-sidebar-accent-foreground"
         element :menu_button_sm, "h-7 text-xs"
         element :menu_button_lg, "h-12 text-sm group-data-[collapsible=icon]:p-0!"
 

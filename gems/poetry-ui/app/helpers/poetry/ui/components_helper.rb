@@ -212,13 +212,36 @@ module Poetry
       def poetry_sidebar_menu_button(href: nil, active: false, size: :default, **attrs, &block)
         style = Poetry::Ui::Sidebar::Style
         classes = [style.css(:menu_button), style.menu_button_size(size), attrs.delete(:class)].compact.join(" ")
-        data = { slot: "sidebar-menu-button", active: active ? "" : nil }.compact.merge(attrs.delete(:data) || {})
+        data = { slot: "sidebar-menu-button", size: size,
+                 active: active ? "" : nil }.compact.merge(attrs.delete(:data) || {})
         if href
           content_tag(:a, (capture(&block) if block), href: href, class: classes, data: data,
                                                       "aria-current": active ? "page" : nil, **attrs)
         else
           content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data, **attrs)
         end
+      end
+
+      # An item-corner action (menu-action): absolutely positioned inside the
+      # menu item (the menu button reserves pr-8 room via the group marker).
+      # show_on_hover: keeps it invisible until the item is hovered/focused
+      # on desktop.
+      def poetry_sidebar_menu_action(show_on_hover: false, label: nil, **attrs, &block)
+        style = Poetry::Ui::Sidebar::Style
+        classes = [style.css(:menu_action), (style.css(:menu_action_hover) if show_on_hover),
+                   attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-action", sidebar: "menu-action" }.merge(attrs.delete(:data) || {})
+        content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data,
+                                                         "aria-label": label, **attrs)
+      end
+
+      # A trailing badge (menu-badge): count/status chrome in the item corner,
+      # pointer-transparent.
+      def poetry_sidebar_menu_badge(**attrs, &block)
+        style = Poetry::Ui::Sidebar::Style
+        classes = [style.css(:menu_badge), attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-badge", sidebar: "menu-badge" }.merge(attrs.delete(:data) || {})
+        content_tag(:div, (capture(&block) if block), class: classes, data: data, **attrs)
       end
 
       def poetry_sidebar_menu_sub_button(href: nil, active: false, **attrs, &block)

@@ -41,6 +41,8 @@ module Poetry
         "collapsible" => "sidebar collapse-mode marker (server + poetry--core--sidebar; " \
                          "the mode while collapsed, N9 W5)",
         "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups, N9 W4c)",
+        "sidebar" => "sidebar part marker (server-rendered; menu-action reserves menu-button room " \
+                     "via group-has, W5b c3)",
         "motion" => "navigation-menu direction slides (reserved - inert until the morphing viewport lands)",
         "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup, N9 W2)",
         "size" => "server-rendered size marker",
