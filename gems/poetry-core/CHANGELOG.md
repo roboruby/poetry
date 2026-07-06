@@ -1,5 +1,13 @@
 ## [Unreleased]
 
+- `HTML::Attributes#has_attribute?`: a nil simple attribute now reads as
+  UNSET, so `merge_if_not_set` fills it. `Component#html_attributes`
+  always seeds `class:` (nil when the dictionary base is empty), which
+  silently swallowed any root-part classes merged as defaults — the
+  Sidebar wrapper never received its layout classes until the poetry-docs
+  shell (the first page-scale composition) caught it. `to_attributes`
+  never rendered a nil anyway; a real value still wins the merge.
+
 - M3: `prop_definitions` introspection shim — the machine-readable
   prop surface (styles / options / slots, with types, variants, defaults —
   proc defaults reported as `:dynamic` — and required flags), derived from
