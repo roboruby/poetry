@@ -1,0 +1,20 @@
+<%# The window mechanism (frame.window slices the full dataset): the brush
+    strip below the plot slices the year, dragging a range on the plot
+    zooms in, double-click resets. All of it recomputes client-side -
+    setWindow renders instantly, no tween mid-drag. %>
+<% data = Array.new(12) do |i|
+     { month: Date::ABBR_MONTHNAMES[i + 1],
+       desktop: (200 + (Math.sin(i / 1.8) * 120) + (i * 8)).round }
+   end %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart :line, data: data, id: "window-demo", live: true, zoom: true,
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_y_axis tick_count: 3 %>
+    <% chart.with_line data_key: :desktop, curve: :monotone_x %>
+    <% chart.with_brush %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

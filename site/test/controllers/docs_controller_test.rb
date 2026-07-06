@@ -47,6 +47,47 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get "/components/sparkles"
 
     assert_response :not_found
+
+    get "/demos/sparkles"
+
+    assert_response :not_found
+  end
+
+  test "the interactive demo is a real form - params re-render the chart server-side" do
+    get "/demos/interactive"
+
+    assert_response :success
+    assert_select "form[action=?]", "/demos/interactive"
+    assert_select "[data-slot=chart-x-axis] text", 6 do |ticks|
+      assert_equal "Jan", ticks.first.text
+    end
+
+    get "/demos/interactive", params: { period: "3m", dataset: "previous" }
+
+    assert_response :success
+    assert_select "option[value=previous][selected]"
+    assert_select "[data-slot=chart-x-axis] text", 3 do |ticks|
+      assert_equal "Apr", ticks.first.text
+    end
+  end
+
+  test "the live and window demos ship the payload-script channel" do
+    get "/demos/live"
+
+    assert_response :success
+    assert_select "script[data-slot=chart-live-payload]", 1
+
+    get "/demos/window"
+
+    assert_response :success
+    assert_select "[data-slot=chart-brush]"
+  end
+
+  test "the sync demo pairs two charts in one sync group" do
+    get "/demos/sync"
+
+    assert_response :success
+    assert_select "[data-poetry--charts--tooltip-sync-value=?]", "demo", count: 2
   end
 
   test "the agent docs ride the mounted engine" do

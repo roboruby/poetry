@@ -68,6 +68,18 @@
               <% end %>
             <% end %>
           <% end %>
+          <%= poetry_sidebar_group do %>
+            <%= poetry_sidebar_group_label { "Demos" } %>
+            <%= poetry_sidebar_menu do %>
+              <% DocsCatalog.demos.each do |entry| %>
+                <%= poetry_sidebar_menu_item do %>
+                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                    <span><%= entry.title %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
         <% end %>
         <%= poetry_sidebar_footer do %>
           <div class="px-2 py-1 text-xs text-muted-foreground">

@@ -21,5 +21,11 @@
         <% group.with_item(value: entry.path) { entry.title } %>
       <% end %>
     <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Demos") do |group| %>
+      <% DocsCatalog.demos.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

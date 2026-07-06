@@ -1,0 +1,34 @@
+<%# The Rails answer to upstream's useState filter: a plain GET form.
+    DemosController reads the params and hands back @period/@dataset/@data;
+    Turbo turns the submit into a same-context body swap. The stable
+    id: "interactive" lets the chart MORPH between the two server renders
+    when the shape holds (dataset toggle) - a shape change (period toggle)
+    replays the entrance instead. %>
+<div class="flex w-full max-w-xl flex-col gap-6">
+  <%= form_with url: "/demos/interactive", method: :get, class: "flex flex-wrap items-end gap-3" do %>
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "demo-period") { "Period" } %>
+      <%= poetry_native_select(name: "period", id: "demo-period",
+                               options: [["Last 6 months", "6m"], ["Last 3 months", "3m"]],
+                               selected: @period) %>
+    </div>
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "demo-dataset") { "Traffic" } %>
+      <%= poetry_native_select(name: "dataset", id: "demo-dataset",
+                               options: [["This year", "current"], ["Last year", "previous"]],
+                               selected: @dataset) %>
+    </div>
+    <%= poetry_button(type: :submit, variant: :outline) { "Apply" } %>
+  <% end %>
+
+  <%= poetry_chart :area, data: @data, id: "interactive",
+                   config: { desktop: { label: "Desktop", color: "var(--chart-1)" },
+                             mobile: { label: "Mobile", color: "var(--chart-2)" } },
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month, tick_formatter: ->(v) { v[0, 3] } %>
+    <% chart.with_area data_key: :mobile, stack: :a %>
+    <% chart.with_area data_key: :desktop, stack: :a %>
+    <% chart.with_tooltip indicator: :dot %>
+  <% end %>
+</div>

@@ -10,6 +10,9 @@
 <div class="flex flex-col gap-10">
   <header class="flex flex-col gap-2">
     <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
+    <% if @entry.description %>
+      <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
+    <% end %>
   </header>
 
   <% if @examples.any? %>
