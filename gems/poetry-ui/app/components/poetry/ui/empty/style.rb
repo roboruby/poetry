@@ -3,8 +3,9 @@
 module Poetry
   module Ui
     module Empty
-      # Re-expressed through the cn-* theme layer (N11). The title's
-      # cn-font-heading joins with the W4 consumer-utility batch.
+      # Re-expressed through the cn-* theme layer (N11). The title wears
+      # cn-font-heading (upstream parity, W4): a no-op until a theme
+      # defines --font-heading - the sanctioned heading-font hook.
       class Style < Poetry::Core::Style
         base "cn-empty flex w-full min-w-0 flex-1 flex-col items-center justify-center " \
              "text-center text-balance"
@@ -16,7 +17,7 @@ module Poetry
                         "[&_svg]:pointer-events-none [&_svg]:shrink-0"
         element :media_default, "cn-empty-media-default"
         element :media_icon, "cn-empty-media-icon"
-        element :title, "cn-empty-title"
+        element :title, "cn-empty-title cn-font-heading"
         element :description, "cn-empty-description text-muted-foreground [&>a]:underline " \
                               "[&>a]:underline-offset-4 [&>a:hover]:text-primary"
         element :content, "cn-empty-content flex w-full max-w-sm min-w-0 flex-col items-center text-balance"

@@ -20,7 +20,7 @@
       <% end %>
       <% unless index == entries.size - 1 %>
         <li data-slot="breadcrumb-separator" role="presentation" aria-hidden="true" class="<%= css(:separator) %>">
-          <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
+          <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right", class: "cn-rtl-flip") %>
         </li>
       <% end %>
     <% end %>

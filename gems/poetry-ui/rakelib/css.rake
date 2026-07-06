@@ -95,7 +95,10 @@ namespace :css do
     coverage = Poetry::Core::CSS::ThemeCoverage.new(
       theme_css: Poetry::Ui.root.join("themes/default.css").read,
       style_classes: styles,
-      allowlist: [] # consumer utility classes (cn-font-heading, cn-rtl-flip) arrive at W4
+      # Consumer utilities: applied by templates/consumers, not emitted by
+      # any dictionary (cn-font-heading IS emitted by Empty, listed for
+      # robustness; cn-rtl-flip is template-side only).
+      allowlist: %w[cn-font-heading cn-rtl-flip]
     )
 
     problems = coverage.missing.map { |name| "missing theme rule: #{name}" } +

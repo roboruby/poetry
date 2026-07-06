@@ -1340,6 +1340,21 @@
   @apply size-2.5 rounded-[2px];
 }
 
+/* MARK: Consumer utilities
+ * Standalone cn-* classes templates and consumers apply directly (they
+ * ride the css:verify_theme allowlist - no dictionary emits cn-rtl-flip).
+ * cn-font-heading: upstream globals (@apply font-heading); poetry inlines
+ * the var with a sans fallback so it is a no-op until a theme defines
+ * --font-heading. cn-rtl-flip: upstream ships the NAME with no rule
+ * anywhere (dead in source); poetry authors the intended RTL mirror. */
+.cn-font-heading {
+  font-family: var(--font-heading, var(--font-sans));
+}
+
+.cn-rtl-flip {
+  @apply rtl:-scale-x-100;
+}
+
 /* MARK: Cross-component overrides
  * Rules that restyle ANOTHER component's cn surface must come after every
  * rule they override - in-layer order is what lets an override win, so

@@ -1396,7 +1396,7 @@ components:
     - title
     - description
     - content
-    capsule: ff9c542bca6e
+    capsule: d036f9755885
     agent_rules:
     - An empty collection gets an Empty state with a next action - never a bare 'No
       results' div.
