@@ -1,18 +1,20 @@
 <%# Lines only: fill_opacity: 0 drops the area, stroke_width: 2 keeps the
-    outline readable. %>
+    outline readable; radial_lines: false hides the grid spokes. %>
 <% data = [
-     { month: "January", desktop: 186 },
-     { month: "February", desktop: 305 },
-     { month: "March", desktop: 237 },
-     { month: "April", desktop: 73 },
-     { month: "May", desktop: 209 },
-     { month: "June", desktop: 214 }
+     { month: "January", desktop: 186, mobile: 80 },
+     { month: "February", desktop: 305, mobile: 200 },
+     { month: "March", desktop: 237, mobile: 120 },
+     { month: "April", desktop: 73, mobile: 190 },
+     { month: "May", desktop: 209, mobile: 130 },
+     { month: "June", desktop: 214, mobile: 140 }
    ]
-   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
 <div class="w-full max-w-xl">
   <%= poetry_chart(:radar, data: data, config: config, id: "radar-lines-only") do |chart| %>
     <% chart.with_angle_axis(data_key: :month) %>
-    <% chart.with_grid %>
+    <% chart.with_grid(radial_lines: false) %>
     <% chart.with_radar(data_key: :desktop, fill_opacity: 0, stroke_width: 2) %>
+    <% chart.with_radar(data_key: :mobile, fill_opacity: 0, stroke_width: 2) %>
   <% end %>
 </div>

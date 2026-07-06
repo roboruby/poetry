@@ -11,6 +11,6 @@
 <div class="w-full max-w-xl">
   <%= poetry_chart(:radar, data: data, config: config, id: "radar-grid-none") do |chart| %>
     <% chart.with_angle_axis(data_key: :month) %>
-    <% chart.with_radar(data_key: :desktop) %>
+    <% chart.with_radar(data_key: :desktop, dots: true) %>
   <% end %>
 </div>

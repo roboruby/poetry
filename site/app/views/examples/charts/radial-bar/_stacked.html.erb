@@ -1,6 +1,8 @@
-<%# Two series share the ring and stack along the ANGLE (stack: :a);
-    max_value pins the domain to the stack total so the segments fill the
-    half gauge exactly - the shadcn "stacked" radial block. %>
+<%# Two series share the ring and stack along the ANGLE (stack: :a). The
+    domain is [0, dataMax] over the raw values (recharts' default), so
+    mobile fills 570/1260 = 81deg and desktop stacks on and clips at the
+    180deg end - the shadcn "stacked" radial block. compact: the smaller
+    center number that sits above the flat baseline. %>
 <% config = {
      desktop: { label: "Desktop", color: "var(--chart-1)" },
      mobile: { label: "Mobile", color: "var(--chart-2)" }
@@ -9,9 +11,9 @@
 <div class="w-full max-w-xl">
   <%= poetry_chart(:radial, data: data, config: config, id: "radial-stacked",
                    name_key: :month, end_angle: 180,
-                   inner_radius: 80, outer_radius: 110, max_value: 1830) do |chart| %>
+                   inner_radius: 80, outer_radius: 110) do |chart| %>
     <% chart.with_radial_bar(data_key: :mobile, stack: :a, corner_radius: 5) %>
     <% chart.with_radial_bar(data_key: :desktop, stack: :a, corner_radius: 5) %>
-    <% chart.with_center_label(title: "1,830", subtitle: "Total Visitors") %>
+    <% chart.with_center_label(title: "1,830", subtitle: "Visitors", compact: true) %>
   <% end %>
 </div>

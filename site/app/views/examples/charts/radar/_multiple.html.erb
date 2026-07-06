@@ -13,6 +13,7 @@
     <% chart.with_angle_axis(data_key: :month) %>
     <% chart.with_grid %>
     <% chart.with_radar(data_key: :desktop) %>
-    <% chart.with_radar(data_key: :mobile) %>
+    <%# Only the first series is translucent (0.6); the second stays opaque. %>
+    <% chart.with_radar(data_key: :mobile, fill_opacity: 1) %>
   <% end %>
 </div>
