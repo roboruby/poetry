@@ -97,6 +97,40 @@ module Poetry
         assert_equal "var(--color-desktop)", dots.first["fill"]
       end
 
+      def test_the_hover_cursor_pre_renders_hidden
+        html = render_area
+
+        cursor = html.css('line[data-slot="chart-cursor"]').first
+
+        assert cursor, "line/area charts get the vertical rule cursor"
+        assert_equal "none", cursor["display"]
+
+        no_cursor = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "t")) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_tooltip(cursor: false)
+        end
+
+        assert_empty no_cursor.css('[data-slot="chart-cursor"]'), "cursor: false opts out"
+      end
+
+      def test_bar_charts_get_the_band_cursor_and_band_coordinates
+        html = render_inline(BarChart::Component.new(data: DATA, config: CONFIG, id: "b")) do |chart|
+          chart.with_x_axis(data_key: :month)
+          chart.with_bar(data_key: :desktop)
+          chart.with_tooltip
+        end
+
+        cursor = html.css('rect[data-slot="chart-cursor"]').first
+
+        assert cursor, "bar charts get the band rect cursor"
+        assert_equal "none", cursor["display"]
+
+        payload = JSON.parse(html.css('[data-slot="chart-coordinates"]').first.text)
+
+        assert_equal 3, payload["band"]["x"].length
+        assert_kind_of Numeric, payload["band"]["width"]
+      end
+
       def test_bars_wire_the_same_engine_without_dots
         html = render_inline(BarChart::Component.new(data: DATA, config: CONFIG, id: "b")) do |chart|
           chart.with_x_axis(data_key: :month)

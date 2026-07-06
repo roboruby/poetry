@@ -47,6 +47,33 @@ module Poetry
         LegendContent::Component.new(config: chart_config, **legend_config.slice(*LEGEND_OPTIONS))
       end
 
+      # The hover cursor (recharts Tooltip cursor, default on): bars get a
+      # translucent band rect, line/area/composed a vertical rule - hidden
+      # until the tooltip controller positions it at the active index.
+      # Renders UNDER the series (after the grid), recharts' paint order.
+      def cursor_svg(kind)
+        return unless tooltip? && tooltip_config.fetch(:cursor, true)
+
+        case kind
+        when :band
+          if respond_to?(:horizontal?) && horizontal?
+            tag.rect("data-slot": "chart-cursor", "aria-hidden": true, class: css(:cursor_band),
+                     x: fnum(cartesian.plot_left), y: 0,
+                     width: fnum(cartesian.plot_right - cartesian.plot_left), height: 0,
+                     display: "none")
+          else
+            tag.rect("data-slot": "chart-cursor", "aria-hidden": true, class: css(:cursor_band),
+                     x: fnum(cartesian.plot_left), y: fnum(cartesian.plot_top),
+                     width: 0, height: fnum(cartesian.plot_bottom - cartesian.plot_top),
+                     display: "none")
+          end
+        when :line
+          tag.line("data-slot": "chart-cursor", "aria-hidden": true, class: css(:cursor_line),
+                   x1: 0, x2: 0, y1: fnum(cartesian.plot_top), y2: fnum(cartesian.plot_bottom),
+                   display: "none")
+        end
+      end
+
       # data attributes for the frame div (display: contents) wrapping
       # svg + chrome + coordinates. The motion controller (Phase A) rides
       # the same element whenever animation is on; the live controller

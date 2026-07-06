@@ -18,6 +18,7 @@ const PAYLOAD = {
   x: [12, 320, 628],
   series: { desktop: [100, 40, 80], mobile: [140, 90, null] },
   values: { desktop: ["1,860", "3,050", "2,370"], mobile: ["800", "2,000", null] },
+  band: { x: [10, 215, 420], width: 200 },
 }
 
 const markup = () => `
@@ -26,6 +27,7 @@ const markup = () => `
       <svg viewBox="0 0 640 360" role="application" tabindex="0"
            data-poetry--charts--tooltip-target="svg"
            data-action="pointermove->poetry--charts--tooltip#move pointerleave->poetry--charts--tooltip#leave focus->poetry--charts--tooltip#focus blur->poetry--charts--tooltip#blur keydown->poetry--charts--tooltip#keydown">
+        <rect data-slot="chart-cursor" x="0" y="5" width="0" height="320" display="none"></rect>
         <path data-slot="chart-bar" data-index="0"></path>
         <path data-slot="chart-bar" data-index="1"></path>
         <circle data-slot="chart-active-dot" data-index="0" display="none"></circle>
@@ -112,6 +114,18 @@ describe("poetry--charts--tooltip", () => {
     expect(tooltip().hidden).toBe(true)
     expect(document.querySelectorAll("[data-active]").length).toBe(0)
     expect(document.querySelector('[data-slot="chart-active-dot"][data-index="1"]').getAttribute("display")).toBe("none")
+  })
+
+  it("the band cursor follows the active index from embedded geometry", () => {
+    const cursor = document.querySelector('[data-slot="chart-cursor"]')
+    controller.show(1)
+
+    expect(cursor.getAttribute("display")).toBe(null)
+    expect(cursor.getAttribute("x")).toBe("215")
+    expect(cursor.getAttribute("width")).toBe("200")
+
+    controller.leave()
+    expect(cursor.getAttribute("display")).toBe("none")
   })
 
   it("focus shows the first category when nothing is active", () => {

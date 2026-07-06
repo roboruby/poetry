@@ -15,6 +15,7 @@
         <% end %>
       </g>
     <% end %>
+    <%= cursor_svg(:line) %>
     <g data-slot="chart-lines">
       <% series_entries.each do |entry| %>
         <% if (d = series_path(entry)) %>

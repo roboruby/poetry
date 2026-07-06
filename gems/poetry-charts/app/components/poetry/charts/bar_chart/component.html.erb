@@ -29,6 +29,7 @@
         <% end %>
       </g>
     <% end %>
+    <%= cursor_svg(:band) %>
     <g data-slot="chart-bars">
       <% series_entries.each do |entry| %>
         <g data-slot="chart-bar-series" data-key="<%= entry.key %>">

@@ -24,6 +24,8 @@ export default class ChartTooltipController extends Controller {
     this.anchors = payload.anchors ?? null
     this.names = payload.names ?? null
     this.colors = payload.colors ?? null
+    // Band geometry (band-scale charts) for the hover cursor rect.
+    this.band = payload.band ?? null
     this.activeIndex = null
 
     // Synced charts (C-W4, recharts syncId): same-group tooltips follow
@@ -118,6 +120,7 @@ export default class ChartTooltipController extends Controller {
     this.activeIndex = null
     this.tooltipTarget.hidden = true
     this.#reflect(null)
+    this.#cursor(null)
     this.dispatch("hide")
     this.#broadcastSync(null)
   }
@@ -155,8 +158,36 @@ export default class ChartTooltipController extends Controller {
 
     this.#position(index)
     this.#reflect(index)
+    this.#cursor(index)
     this.dispatch("show", { detail: { index } })
     this.#broadcastSync(index)
+  }
+
+  // The hover cursor (recharts Tooltip cursor): the server pre-renders a
+  // hidden band rect (bars) or vertical rule (line/area/composed); this
+  // positions it at the active index from embedded geometry.
+  #cursor(index) {
+    const cursor = this.element.querySelector('[data-slot="chart-cursor"]')
+    if (!cursor) return
+    if (index == null) {
+      cursor.setAttribute("display", "none")
+      return
+    }
+
+    if (cursor.tagName.toLowerCase() === "rect" && this.band) {
+      if (this.layout === "horizontal") {
+        cursor.setAttribute("y", String(this.band.x[index]))
+        cursor.setAttribute("height", String(this.band.width))
+      } else {
+        cursor.setAttribute("x", String(this.band.x[index]))
+        cursor.setAttribute("width", String(this.band.width))
+      }
+    } else {
+      const center = this.centers[index]
+      cursor.setAttribute("x1", String(center))
+      cursor.setAttribute("x2", String(center))
+    }
+    cursor.removeAttribute("display")
   }
 
   // -- synced charts (C-W4) -------------------------------------------------

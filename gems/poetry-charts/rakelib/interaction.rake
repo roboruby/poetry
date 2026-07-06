@@ -19,6 +19,9 @@ namespace :test do
     # Hover the middle of the SVG - the bisect picks the nearest month.
     session.find('[data-slot="chart-svg"]').hover
     raise "tooltip did not appear on hover" unless session.has_css?(tooltip, visible: :visible, wait: 5)
+    unless session.has_css?('[data-slot="chart-cursor"]:not([display="none"])', wait: 2)
+      raise "the hover cursor did not appear"
+    end
 
     label = session.find("#{tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
     value = session.find("#{tooltip} [data-slot='chart-tooltip-value']", visible: :all).text

@@ -29,6 +29,7 @@
         <% end %>
       </g>
     <% end %>
+    <%= cursor_svg(:line) %>
     <g data-slot="chart-areas"<% if animate? %> clip-path="url(#<%= chart_id %>-reveal)"<% end %>>
       <% series_entries.each do |entry| %>
         <% if (d = series_path(entry)) %>

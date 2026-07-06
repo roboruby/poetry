@@ -29,6 +29,7 @@
         <% end %>
       </g>
     <% end %>
+    <%= cursor_svg(:line) %>
     <%# Declaration order IS paint order (recharts' children order). %>
     <% series_entries.each do |entry| %>
       <% case entry.mark %>

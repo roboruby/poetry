@@ -428,5 +428,8 @@ function applyCoordinates(frame, geometry, payload) {
       geometry.rows.map((row) => displayValue(row[entry.key])),
     ])),
   }
+  if (payload.frame.xScaleType === "band") {
+    coordinates.band = { x: geometry.xPositions.map(round2), width: round2(geometry.bandWidth) }
+  }
   script.textContent = JSON.stringify(coordinates)
 }

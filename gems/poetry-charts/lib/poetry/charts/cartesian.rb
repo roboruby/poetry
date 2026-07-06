@@ -165,6 +165,7 @@ module Poetry
       # no chart math in the browser.
       def coordinates
         top_key = horizontal? ? :x1 : :y1
+        band = ({ "x" => x_positions.map { |x| x.round(2) }, "width" => band_width.round(2) } if @x_scale_type == :band)
         {
           "layout" => layout.to_s,
           "categories" => categories,
@@ -180,7 +181,7 @@ module Poetry
           "values" => @series.to_h do |entry|
             [entry.key, @data.map { |row| display_value(row[entry.key]) }]
           end
-        }
+        }.merge(band ? { "band" => band } : {})
       end
 
       private
