@@ -7,7 +7,7 @@
 # indicators (absolute right-2, inset pl-7), filled radios
 # (data-checked:bg-primary + primary-foreground dot), press-nudge
 # buttons (active:translate-y-px, bg-clip-padding), --card-spacing var
-# cards on ring-foreground/10, flat sheets/sidebar-mobile (no shadow),
+# cards on ring-foreground/10, flat ring-only DIALOGS (sheets keep shadow-lg),
 # black/10 blur-xs scrims (the faintest of the series). Fonts: upstream
 # pairs lyra with mono FAMILIES via create-flow metadata only - the
 # fragment moves typography through size/weight/tracking utilities, so
@@ -61,7 +61,11 @@ PLAN = {
     "data-[size=default]:sm:max-w-sm #{BACKDROP} data-open:animate-in data-open:fade-in-0 " \
     "data-open:zoom-in-95",
   "cn-alert-dialog-header" => "gap-1.5",
-  "cn-alert-dialog-media" => :default,
+  # media chip: poetry's size anatomy (size-16/svg-8, the W1 call - upstream
+  # says size-10/svg-6), radius THEMED - a rounded-md chip inside a radius-0
+  # theme is an identity break (W4 judge flag; same rule as drawer directions:
+  # poetry-own surface, theme radius)
+  "cn-alert-dialog-media" => "mb-2 size-16 rounded-none bg-muted *:[svg:not([class*='size-'])]:size-8",
   "cn-alert-dialog-title" => "text-sm font-medium",
 
   # --- accordion: NO box (lyra ships none - the W2 carrier stays default);
@@ -133,26 +137,34 @@ PLAN = {
   "cn-checkbox" => { base: :upstream, drop: %w[group-has-disabled/field:opacity-50] },
 
   # --- command: poetry keeps structural gap + placeholder color; lyra's
-  #     command-input-group box is a dropped upstream-only surface, so its
-  #     pl-2 lands as wrapper px-2 (judged) --------------------------------
-  "cn-command-input-wrapper" => "gap-2 border-b px-2 pb-0",
+  #     command-input-group box (h-8 bg-input/30 border-input/30) is
+  #     ABSORBED onto poetry's wrapper - the vega W1 precedent, W4 judge
+  #     catch (the first cut dropped the box's height AND tint, leaving a
+  #     17px flat row). Also covers the combobox search row: poetry's
+  #     combobox mounts the command wrapper, not an input-group, so the
+  #     combobox-content *: cluster is inert in poetry DOM (roster-wide) -
+  "cn-command-input-wrapper" =>
+    "m-1 mb-0 h-8 gap-2 rounded-none border border-input/30 bg-input/30 px-2 shadow-none",
   "cn-command-input" => "w-full bg-transparent text-xs placeholder:text-muted-foreground",
   "cn-command-group" =>
     { base: :upstream, drop: %w[**:[[cmdk-group-heading]]:text-muted-foreground **:[[cmdk-group-heading]]:px-2
                                 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs] },
 
-  # --- dialog / sheet / sidebar-mobile (flat: no shadow anywhere); the
-  #     bare `grid` display token is dropped so the native <dialog> closed
-  #     state survives (the W3 rule) ---------------------------------------
+  # --- dialog / sheet / sidebar-mobile: DIALOGS are flat (upstream drops
+  #     shadow-lg from dialog + alert-dialog; ring only) but SHEETS keep
+  #     shadow-lg (shared token upstream ships - W4 judge catch: the plan
+  #     first over-generalized dialog flatness to sheets); sidebar-mobile
+  #     rides the sheet posture. The bare `grid` display token is dropped
+  #     so the native <dialog> closed state survives (the W3 rule) --------
   "cn-dialog-content" =>
     "w-full max-w-[calc(100%-2rem)] bg-popover text-popover-foreground ring-foreground/10 " \
     "gap-4 rounded-none p-4 text-xs/relaxed ring-1 duration-100 sm:max-w-sm #{BACKDROP} " \
     "data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95",
   "cn-sheet-content" =>
-    "m-0 w-full bg-popover text-popover-foreground text-xs/relaxed bg-clip-padding " \
+    "m-0 w-full bg-popover text-popover-foreground text-xs/relaxed bg-clip-padding shadow-lg " \
     "transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out #{BACKDROP}",
   "cn-sidebar-mobile" =>
-    "bg-sidebar p-0 text-sidebar-foreground transition duration-200 ease-in-out " \
+    "bg-sidebar p-0 text-sidebar-foreground shadow-lg transition duration-200 ease-in-out " \
     "data-open:animate-in data-closed:animate-out #{BACKDROP}",
 
   # --- drawer: no floating frame (that is luma's); square panel, borders
@@ -205,12 +217,15 @@ PLAN = {
 
   # --- tabs: poetry's full active/line machinery, lyra geometry (the
   #     whole-cluster discipline; upstream's active state lives inline in
-  #     its base component, theme-side in poetry) --------------------------
+  #     its base component, theme-side in poetry). The default-variant
+  #     active shadow-sm is DROPPED: at d0fae528 only vega's upstream rule
+  #     ships it - every other style renders box-shadow none (W4 judge
+  #     catch, settled-read receipt; the five shipped W1-W3 fragments
+  #     still carry it - roster follow-on, not this wave's scope) ---------
   "cn-tabs-trigger" =>
     "gap-1.5 rounded-none border border-transparent px-1.5 py-0.5 text-xs font-medium text-foreground/60 " \
     "hover:text-foreground has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 " \
     "dark:text-muted-foreground dark:hover:text-foreground " \
-    "group-data-[variant=default]/tabs-list:data-active:shadow-sm " \
     "group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 " \
     "group-data-[variant=line]/tabs-list:bg-transparent " \
     "group-data-[variant=line]/tabs-list:data-active:bg-transparent " \
@@ -281,8 +296,8 @@ HEADER = <<~CSS
    * whole type scale one step down (text-xs bodies), ring-1 focus
    * temperature, muted-based hovers, right-side menu indicators, filled
    * radios (dot flips to fill-primary-foreground), press-nudge buttons,
-   * --card-spacing var cards on ring-foreground/10, flat sheets (no
-   * shadow), button-group caps squared over poetry's collapse
+   * --card-spacing var cards on ring-foreground/10, flat ring-only
+   * dialogs (sheets keep upstream shadow-lg), button-group caps squared over poetry's collapse
    * machinery, and NO AA kit beyond the destructive pair: lyra's tints
    * are disabled fills (WCAG-exempt) and /30 dropdown search boxes (the
    * maia class). Fonts move via size/weight/tracking utilities only -

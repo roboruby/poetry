@@ -85,7 +85,7 @@
 }
 
 .cn-alert-dialog-media {
-  @apply mb-2 size-16 rounded-md bg-muted *:[svg:not([class*='size-'])]:size-8;
+  @apply mb-2 size-16 rounded-none bg-muted *:[svg:not([class*='size-'])]:size-8;
 }
 
 .cn-alert-dialog-title {
@@ -400,7 +400,7 @@
 }
 
 .cn-command-input-wrapper {
-  @apply gap-2 border-b px-3 py-1;
+  @apply m-1 mb-0 gap-2 border-b px-3 py-1;
 }
 
 .cn-command-input {
@@ -679,11 +679,11 @@
 }
 
 .cn-input-group-addon-align-inline-start {
-  @apply has-[>button]:-ml-1 has-[>kbd]:-ml-1;
+  @apply pl-0;
 }
 
 .cn-input-group-addon-align-inline-end {
-  @apply has-[>button]:-mr-1 has-[>kbd]:-mr-1;
+  @apply pr-0;
 }
 
 .cn-input-group-addon-align-block-start {
@@ -704,7 +704,7 @@
 }
 
 .cn-input-otp-slot {
-  @apply border-transparent border-b-input bg-transparent data-[active=true]:border-b-ring aria-invalid:border-b-destructive dark:aria-invalid:border-b-destructive/50 size-10 border text-sm transition-[color,border-color] outline-none first:rounded-none last:rounded-none;
+  @apply border-transparent border-b-input bg-transparent data-[active=true]:border-b-ring aria-invalid:border-b-destructive dark:aria-invalid:border-b-destructive/50 size-10 border text-sm transition-[color,border-color] outline-none first:rounded-none last:rounded-none not-first:ml-1;
 }
 
 .cn-input-otp-caret-line {
@@ -1244,7 +1244,7 @@
  * dims (text-foreground/60, dark:text-muted-foreground) must lose to the
  * data-active colors, which they only can in-layer. */
 .cn-tabs-trigger {
-  @apply gap-2 rounded-none border border-transparent px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-3.5 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 group-data-vertical/tabs:px-4 group-data-vertical/tabs:py-2;
+  @apply gap-2 rounded-none border border-transparent px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-3.5 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 group-data-vertical/tabs:px-4 group-data-vertical/tabs:py-2;
 }
 
 .cn-tabs-content {

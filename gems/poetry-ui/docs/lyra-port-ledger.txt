@@ -369,3 +369,10 @@ cn-sidebar-rail: dropped
 cn-table-container: dropped
 cn-tooltip-arrow-logical: dropped
 cn-tooltip-content-logical: dropped
+
+## W4f judge-pass corrections (post-generation, plan-first)
+cn-sheet-content: judged CORRECTION - shadow-lg restored (upstream ships it; the plan first over-generalized dialog flatness to sheets; judge receipt = served rule --tw-shadow 0 10px 15px -3px)
+cn-sidebar-mobile: shadow-lg restored (rides the sheet posture)
+cn-alert-dialog-media: poetry-idiom -> judged - poetry size anatomy (size-16/svg-8) at THEME radius (rounded-none); a rounded-md chip inside a radius-0 theme is an identity break (same rule as drawer directions)
+cn-tabs-trigger: judged CORRECTION - default-variant data-active:shadow-sm dropped; at d0fae528 only vega's upstream rule ships the active shadow pair, all other styles render box-shadow none (settled-read receipt; the same-tick flip read returns phantoms - trap confirmed on cross-style flips). Roster note: the five W1-W3 fragments still carry the token (W5 candidate pass).
+cn-command-input-wrapper: judged CORRECTION - upstream's command-input-group box (h-8 bg-input/30 border-input/30) ABSORBED onto the wrapper per the vega W1 precedent (first cut dropped height+tint, judge-measured 17px flat row); also fixes the combobox search row (poetry mounts the command wrapper; the combobox *:input-group cluster is inert roster-wide)

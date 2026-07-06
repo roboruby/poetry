@@ -17,8 +17,9 @@
  * whole type scale one step down (text-xs bodies), ring-1 focus
  * temperature, muted-based hovers, right-side menu indicators, filled
  * radios (dot flips to fill-primary-foreground), press-nudge buttons,
- * --card-spacing var cards on ring-foreground/10, flat sheets (no
- * shadow), button-group caps squared over poetry's collapse
+ * --card-spacing var cards on ring-foreground/10, flat ring-only
+ * dialogs (sheets keep upstream shadow-lg), button-group caps squared
+ * over poetry's collapse
  * machinery, and NO AA kit beyond the destructive pair: lyra's tints
  * are disabled fills (WCAG-exempt) and /30 dropdown search boxes (the
  * maia class). Fonts move via size/weight/tracking utilities only -
@@ -87,7 +88,7 @@
 }
 
 .cn-alert-dialog-media {
-  @apply mb-2 size-16 rounded-md bg-muted *:[svg:not([class*='size-'])]:size-8;
+  @apply mb-2 size-16 rounded-none bg-muted *:[svg:not([class*='size-'])]:size-8;
 }
 
 .cn-alert-dialog-title {
@@ -402,7 +403,7 @@
 }
 
 .cn-command-input-wrapper {
-  @apply gap-2 border-b px-2 pb-0;
+  @apply m-1 mb-0 h-8 gap-2 rounded-none border border-input/30 bg-input/30 px-2 shadow-none;
 }
 
 .cn-command-input {
@@ -1041,7 +1042,7 @@
  * rule) - a latent full-width regression the visual gate cannot see on a
  * closed dialog. */
 .cn-sheet-content {
-  @apply m-0 w-full bg-popover text-popover-foreground text-xs/relaxed bg-clip-padding transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  @apply m-0 w-full bg-popover text-popover-foreground text-xs/relaxed bg-clip-padding shadow-lg transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
 }
 
 .cn-sheet-side-top {
@@ -1082,7 +1083,7 @@
 
 /* MARK: Sidebar */
 .cn-sidebar-mobile {
-  @apply bg-sidebar p-0 text-sidebar-foreground transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  @apply bg-sidebar p-0 text-sidebar-foreground shadow-lg transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
 }
 
 .cn-sidebar-mobile-left {
@@ -1246,7 +1247,7 @@
  * dims (text-foreground/60, dark:text-muted-foreground) must lose to the
  * data-active colors, which they only can in-layer. */
 .cn-tabs-trigger {
-  @apply gap-1.5 rounded-none border border-transparent px-1.5 py-0.5 text-xs font-medium text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=default]/tabs-list:data-active:shadow-sm group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 group-data-vertical/tabs:py-[calc(--spacing(1.25))];
+  @apply gap-1.5 rounded-none border border-transparent px-1.5 py-0.5 text-xs font-medium text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-1 has-data-[icon=inline-start]:pl-1 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 group-data-vertical/tabs:py-[calc(--spacing(1.25))];
 }
 
 .cn-tabs-content {

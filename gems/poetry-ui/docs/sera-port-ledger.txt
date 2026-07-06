@@ -380,3 +380,12 @@ cn-badge-variant-secondary: same class as variant-default
 cn-button-group-orientation-horizontal: upstream drops neighbor collapse, caps-only at rounded-none! (judged; plan header)
 cn-button-group-orientation-vertical: same + poetry structural flex-col retained (W2 delta-rule lesson)
 cn-tabs-list: square muted band (radius absent by design; line-variant needs no squaring token)
+
+## W4f judge-pass corrections (post-generation, plan-first)
+cn-alert-dialog-media: poetry-idiom -> judged - upstream sera is size-16 rounded-none svg-8; only the radius differed from poetry default (identity break at radius 0, lyra-twin judge flag)
+cn-tabs-trigger: judged CORRECTION - default-variant data-active:shadow-sm dropped (see lyra ledger twin; settled-read receipt, only vega ships it upstream).
+cn-input-otp-slot: judged CORRECTION - not-first:ml-1 added (upstream's cn-input-otp-group gap-1 has no poetry attachment point; per-slot underline segmentation is the control's primary structure under an underline theme)
+cn-input-group-addon-align-inline-start/end: judged CORRECTION -> pl-0/pr-0 explicit flush. NEW DETECTOR TRAP: upstream sera COMMENTS these rules out (only style that does) but detector.rb parses commented rules as live - always check raw context for /* */ around a surprising diff
+cn-command-input-wrapper: judged refinement - m-1 mb-0 added so the underline seats 4px off the panel edges like upstream's inner box; also the combobox search row (poetry mounts the command wrapper there - the combobox-content *:data-[slot=input-group] cluster is INERT in poetry DOM, roster-wide since W1, kept as upstream-verbatim documentation)
+KNOWN-DELTA (roster-locked, no cn hook): select viewport p-1/scroll-my-1 is structural (select/style.rb) vs upstream sera's select-group p-1.5 - items inset 2px tighter; joins the calendar-cell class
+KNOWN-DELTA (roster structural): drawer scrim is baked inline (drawer/style.rb black/10 blur-xs, swipe-modulated) in all nine themes - upstream sera wants black/20 blur-sm; W5 roster-pass candidate alongside the tabs active shadow
