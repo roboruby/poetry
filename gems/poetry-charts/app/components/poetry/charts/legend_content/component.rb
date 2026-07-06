@@ -16,6 +16,10 @@ module Poetry
         option :config, ActiveModel::Type::Value.new, required: true
         option :items, ActiveModel::Type::Value.new
         option :hide_icon, :boolean, default: false
+        # Interactive legend (C-W4): items render as buttons that toggle
+        # their series through the live controller (the host chart guards
+        # that live: is on).
+        option :toggle, :boolean, default: false
 
         # A style axis, not an option - options silently drop the
         # dictionary's variant classes (the N9 W1a learning).
@@ -30,9 +34,25 @@ module Poetry
                       Array(items).map { |item| resolve(item.symbolize_keys) }
                     else
                       chart_config.color_entries.map do |entry|
-                        { name: entry.label || entry.key, color: entry.color_for(:light) ? swatch_color(entry) : nil }
+                        { key: entry.key, name: entry.label || entry.key,
+                          color: entry.color_for(:light) ? swatch_color(entry) : nil }
                       end
                     end
+        end
+
+        # The toggle buttons speak straight to the live controller on the
+        # chart frame (Stimulus action params carry the series key).
+        def toggle_attributes(row)
+          {
+            type: "button",
+            data: {
+              slot: "chart-legend-item",
+              key: row[:key],
+              action: "click->poetry--charts--live#toggleSeries",
+              "poetry--charts--live-key-param": row[:key]
+            },
+            class: "#{css(:item)} #{css(:toggle)}"
+          }
         end
 
         def root_attributes
@@ -60,6 +80,7 @@ module Poetry
           key = (item[:key] || item[:name]).to_s
           entry = chart_config[key]
           {
+            key: key,
             name: chart_config.label_for(key, item[:name]),
             color: item[:color] || (entry && swatch_color(entry))
           }

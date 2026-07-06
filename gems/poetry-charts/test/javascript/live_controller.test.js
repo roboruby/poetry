@@ -81,6 +81,38 @@ describe("poetry--charts--live", () => {
     expect(render).toHaveBeenCalledTimes(1)
   })
 
+  it("the legend toggle hides the series, rescales the domain, and restores", async () => {
+    // A toggle button as the legend renders it (action + param).
+    const button = document.createElement("button")
+    button.dataset.slot = "chart-legend-item"
+    button.dataset.key = "desktop"
+    button.dataset.action = "click->poetry--charts--live#toggleSeries"
+    button.setAttribute("data-poetry--charts--live-key-param", "desktop")
+    frame.appendChild(button)
+    await nextFrame()
+
+    const desktopArea = frame.querySelector('path[data-slot="chart-area"][data-key="desktop"]')
+    const yTick = () => frame.querySelector('[data-slot="chart-y-axis"] text')?.textContent
+    const before = yTick()
+
+    button.click()
+    await settleObservers()
+
+    expect(desktopArea.style.display).toBe("none")
+    expect(button.hasAttribute("data-hidden")).toBe(true)
+    expect(JSON.parse(payloadScript().textContent).frame.hidden).toEqual(["desktop"])
+    const coordinates = JSON.parse(frame.querySelector('[data-slot="chart-coordinates"]').textContent)
+    expect(Object.keys(coordinates.values)).toEqual(["mobile"])
+    if (before != null) expect(yTick()).not.toBe(before) // the domain rescaled
+
+    button.click()
+    await settleObservers()
+
+    expect(desktopArea.style.display).toBe("")
+    expect(button.hasAttribute("data-hidden")).toBe(false)
+    expect(JSON.parse(payloadScript().textContent).frame.hidden).toEqual([])
+  })
+
   it("the tooltip serves the fresh values after refresh", async () => {
     const svg = frame.querySelector("svg")
     // Activate index 0 via keyboard (End -> last, Home -> first).

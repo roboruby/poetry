@@ -64,6 +64,10 @@ export function displayValue(value) {
 export function computeCartesian(payload) {
   const { spec, frame } = payload
   const data = spec.data
+  // Hidden series (the C-W4 legend toggle) leave the domain and the
+  // stacks entirely - recharts' rescale-on-hide semantics.
+  const hidden = new Set(frame.hidden ?? [])
+  const series = spec.series.filter((entry) => !hidden.has(entry.key))
   const horizontal = frame.layout === "horizontal"
   const categoryAxis = frame.categoryAxis
   const margin = frame.margin
@@ -93,10 +97,10 @@ export function computeCartesian(payload) {
 
   // d3 stacks per stack id: keys in series order within the stack.
   const stackBands = {}
-  for (const entry of spec.series) {
+  for (const entry of series) {
     const id = entry.stack
     if (id == null || stackBands[id]) continue
-    const keys = spec.series.filter((s) => s.stack === id).map((s) => s.key)
+    const keys = series.filter((s) => s.stack === id).map((s) => s.key)
     const offset = frame.offset === "expand" ? stackOffsetExpand : stackOffsetNone
     const stacked = d3Stack().keys(keys).offset(offset)(data)
     stackBands[id] = Object.fromEntries(stacked.map((s) => [s.key, s.map((p) => [p[0], p[1]])]))
@@ -104,7 +108,7 @@ export function computeCartesian(payload) {
 
   // The raw numeric domain before nicing: recharts' [0, 'auto'].
   const values = []
-  for (const entry of spec.series) {
+  for (const entry of series) {
     if (entry.stack != null) {
       for (const [lo, hi] of stackBands[entry.stack][entry.key]) {
         if (!Number.isNaN(lo)) values.push(lo)
@@ -145,7 +149,7 @@ export function computeCartesian(payload) {
   }
 
   return {
-    horizontal, plotLeft, plotRight, plotTop, plotBottom,
+    horizontal, hidden, plotLeft, plotRight, plotTop, plotBottom,
     categories, xPositions, xCenters, bandWidth,
     yTicks, yScale, baseline, points, valueAt,
   }
@@ -246,6 +250,11 @@ export function applyCartesian(frame, payload) {
   const type = spec.type
 
   for (const entry of spec.series) {
+    if (geometry.hidden.has(entry.key)) {
+      setSeriesVisibility(svg, entry.key, false)
+      continue
+    }
+    setSeriesVisibility(svg, entry.key, true)
     if (type === "area") {
       const { fill, stroke } = seriesPathAttrs(type, geometry, entry)
       svg.querySelector(`path[data-slot="chart-area"][data-key="${entry.key}"]`)?.setAttribute("d", fill)
@@ -264,6 +273,24 @@ export function applyCartesian(frame, payload) {
   applyAxes(svg, geometry, payload)
   applyCoordinates(frame, geometry, payload)
   return geometry
+}
+
+// A hidden series' marks (paths, dot groups, bar groups, active dots)
+// toggle display - attribute-channel, the DOM stays intact for the
+// toggle back.
+function setSeriesVisibility(svg, key, visible) {
+  const selector = [
+    `path[data-slot="chart-area"][data-key="${key}"]`,
+    `path[data-slot="chart-area-stroke"][data-key="${key}"]`,
+    `path[data-slot="chart-line"][data-key="${key}"]`,
+    `g[data-slot="chart-dots"][data-key="${key}"]`,
+    `g[data-slot="chart-bar-series"][data-key="${key}"]`,
+    `circle[data-slot="chart-active-dot"][data-key="${key}"]`,
+  ].join(", ")
+  for (const el of svg.querySelectorAll(selector)) {
+    if (visible) el.style.removeProperty("display")
+    else el.style.setProperty("display", "none")
+  }
 }
 
 function applyDots(svg, geometry, entry) {
@@ -380,15 +407,18 @@ function applyCoordinates(frame, geometry, payload) {
   if (!script) return
   const { spec } = payload
   const topKey = geometry.horizontal ? "x1" : "y1"
+  // Hidden series drop off the wire entirely - their tooltip rows hide
+  // (a row with no values entry never shows).
+  const visible = spec.series.filter((entry) => !geometry.hidden.has(entry.key))
   const coordinates = {
     layout: payload.frame.layout,
     categories: geometry.categories,
     [geometry.horizontal ? "y" : "x"]: geometry.xCenters.map(round2),
-    series: Object.fromEntries(spec.series.map((entry) => [
+    series: Object.fromEntries(visible.map((entry) => [
       entry.key,
       geometry.points(entry).map((p) => (Number.isNaN(p.value) ? null : round2(p[topKey]))),
     ])),
-    values: Object.fromEntries(spec.series.map((entry) => [
+    values: Object.fromEntries(visible.map((entry) => [
       entry.key,
       spec.data.map((row) => displayValue(row[entry.key])),
     ])),

@@ -5,11 +5,14 @@
       "svg",
       "tooltip"
     ],
-    "values": [],
+    "values": [
+      "sync"
+    ],
     "methods": [
       "blur",
       "connect",
       "count",
+      "disconnect",
       "enter",
       "focus",
       "keydown",
@@ -49,6 +52,7 @@
       "connect",
       "disconnect",
       "receive",
+      "toggleSeries",
       "update"
     ]
   }

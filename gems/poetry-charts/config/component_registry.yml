@@ -80,6 +80,8 @@ components:
     - name: offset
       type: symbol
       default: none
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -170,6 +172,8 @@ components:
     - name: orientation
       type: symbol
       default: vertical
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -255,6 +259,8 @@ components:
       type: string
     - name: margin
       type:
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -343,11 +349,15 @@ components:
       default: false
     - name: items
       type:
+    - name: toggle
+      type: boolean
+      default: false
     slots: []
     elements:
     - item
     - swatch
-    capsule: 5be77494d940
+    - toggle
+    capsule: 3a314d6a7cf2
     agent_rules:
     - 'The legend derives from the chart config by default - omit items: unless slices
       differ from series.'
@@ -389,6 +399,8 @@ components:
       default: false
     - name: margin
       type:
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -466,6 +478,8 @@ components:
       type: string
     - name: margin
       type:
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -531,6 +545,8 @@ components:
     - name: outer_radius
       type:
       default: 80%
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -612,6 +628,8 @@ components:
     - name: start_angle
       type: integer
       default: 0
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640
@@ -679,6 +697,8 @@ components:
       type: string
     - name: margin
       type:
+    - name: sync
+      type: string
     - name: width
       type: integer
       default: 640

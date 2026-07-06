@@ -119,10 +119,50 @@ namespace :test do
     live_label = session.find("#{live_tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
     raise "tooltip label #{live_label.inspect} is not a stream category" unless live_label.match?(/\AT\d+\z/)
 
+    # -- C-W4: synced charts + the interactive legend --------------------------
+    session.visit("/sync")
+    raise "sync demo missing" unless session.has_css?('[data-slot="demo-sync-a"]')
+
+    session.find('[data-slot="demo-sync-a"] [data-slot="chart-svg"]').send_keys(:home)
+    a_tooltip = '[data-slot="demo-sync-a"] div[data-slot="chart-tooltip"]'
+    b_tooltip = '[data-slot="demo-sync-b"] div[data-slot="chart-tooltip"]'
+    raise "chart A tooltip missing" unless session.has_css?(a_tooltip, visible: :visible, wait: 5)
+    raise "the SYNCED chart B tooltip did not follow" unless session.has_css?(b_tooltip, visible: :visible, wait: 5)
+
+    a_label = session.find("#{a_tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
+    b_label = session.find("#{b_tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
+    raise "synced labels diverge (#{a_label} vs #{b_label})" unless a_label == b_label
+
+    session.find('[data-slot="demo-sync-a"] [data-slot="chart-svg"]').send_keys(:escape)
+    if session.has_css?(b_tooltip, visible: :visible, wait: 0)
+      raise "chart B tooltip did not dismiss with the synced Escape"
+    end
+
+    toggle_scope = '[data-slot="demo-legend-toggle"]'
+    ticks_before = session.all("#{toggle_scope} [data-slot='chart-y-axis'] text").map(&:text)
+    session.find("#{toggle_scope} button[data-key='desktop']").click
+    unless session.has_css?("#{toggle_scope} button[data-key='desktop'][data-hidden]", wait: 5)
+      raise "the legend item did not dim"
+    end
+
+    hidden_selector = "#{toggle_scope} path[data-slot=\"chart-area\"][data-key=\"desktop\"]"
+    hidden_area = session.evaluate_script(
+      "getComputedStyle(document.querySelector('#{hidden_selector}')).display"
+    )
+    raise "the toggled series did not hide" unless hidden_area == "none"
+
+    ticks_after = session.all("#{toggle_scope} [data-slot='chart-y-axis'] text").map(&:text)
+    session.find("#{toggle_scope} button[data-key='desktop']").click
+    unless session.has_css?("#{toggle_scope} button[data-key='desktop']:not([data-hidden])", wait: 5)
+      raise "the legend toggle did not restore"
+    end
+
     puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses; " \
          "the dataset swap MORPHS between server renders (data-motion morph -> settled, new geometry), " \
          "the 6 -> 3 month shape change replays the entrance, and the tooltip survives every swap; " \
          "live mode streams client-side (same page, same SVG node, sliding window, morphing ticks, " \
-         "tooltip live at #{live_label}) - the engine works in Chrome"
+         "tooltip live at #{live_label}); synced tooltips follow across charts (#{a_label}) and the " \
+         "legend toggle hides + rescales (y ticks #{ticks_before.join("/")} -> #{ticks_after.join("/")}) - " \
+         "the engine works in Chrome"
   end
 end

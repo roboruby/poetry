@@ -15,6 +15,9 @@ module Poetry
         }
         element :item, "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
         element :swatch, "h-2 w-2 shrink-0 rounded-[2px]"
+        # Toggle buttons dim when their series hides (the live controller
+        # stamps data-hidden).
+        element :toggle, "cursor-pointer data-hidden:opacity-40"
       end
     end
   end

@@ -44,6 +44,31 @@ export default class ChartLiveController extends Controller {
     this.update(event.detail.data)
   }
 
+  // The interactive legend (C-W4): click->poetry--charts--live#toggleSeries
+  // with the series key as an action param. Hidden series leave the domain
+  // (recharts' rescale-on-hide), their marks hide, their legend item dims.
+  toggleSeries(event) {
+    const key = event.params.key
+    if (!key) return
+    this.hiddenKeys ??= new Set()
+    if (this.hiddenKeys.has(key)) this.hiddenKeys.delete(key)
+    else this.hiddenKeys.add(key)
+
+    for (const item of this.element.querySelectorAll('[data-slot="chart-legend-item"][data-key]')) {
+      item.toggleAttribute("data-hidden", this.hiddenKeys.has(item.dataset.key))
+    }
+
+    const payload = this.#payload()
+    payload.frame.hidden = [...this.hiddenKeys]
+    this.writing = true
+    try {
+      this.payloadTarget.textContent = JSON.stringify(payload)
+    } finally {
+      queueMicrotask(() => { this.writing = false })
+    }
+    this.#render(payload)
+  }
+
   // The JS API: hosts hand over the new data rows; the payload script is
   // rewritten first (the DOM always holds current state), then rendered.
   update(data) {

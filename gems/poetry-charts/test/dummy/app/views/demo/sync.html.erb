@@ -1,0 +1,36 @@
+<%# The C-W4 demo: charts A and B share sync: "demo" - hovering or
+    keyboard-walking either shows BOTH tooltips at the same index
+    (recharts syncId). Chart C is live with an interactive legend:
+    clicking an item hides its series and the domain rescales
+    client-side (recharts' rescale-on-hide). %>
+<% config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
+<div style="width: 640px; margin: 2rem auto;" data-slot="demo-sync-a">
+  <%= poetry_chart :area, data: @data, id: "sync-a", sync: "demo", config: config,
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_area data_key: :desktop %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>
+<div style="width: 640px; margin: 2rem auto;" data-slot="demo-sync-b">
+  <%= poetry_chart :bar, data: @data, id: "sync-b", sync: "demo", config: config do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_bar data_key: :mobile, radius: 4 %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>
+<div style="width: 640px; margin: 2rem auto;" data-slot="demo-legend-toggle">
+  <%= poetry_chart :area, data: @data, id: "toggle-c", live: true, config: config,
+                   margin: { left: 12, right: 12 } do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis data_key: :month %>
+    <% chart.with_y_axis tick_count: 3 %>
+    <% chart.with_area data_key: :desktop %>
+    <% chart.with_area data_key: :mobile %>
+    <% chart.with_legend toggle: true %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

@@ -94,6 +94,50 @@ module Poetry
         assert_empty html.css('script[data-slot="chart-live-payload"]')
       end
 
+      def test_sync_rides_the_frame_as_a_tooltip_value
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      sync: "dash")) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_tooltip
+        end
+
+        frame = html.css('[data-slot="chart-svg"]').first.parent
+
+        assert_equal "dash", frame["data-poetry--charts--tooltip-sync-value"]
+
+        no_tooltip = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                            sync: "dash")) do |chart|
+          chart.with_area(data_key: :desktop)
+        end
+
+        assert_nil no_tooltip.css('[data-slot="chart-svg"]').first.parent["data-poetry--charts--tooltip-sync-value"],
+                   "sync is a tooltip feature - nothing emits without the slot"
+      end
+
+      def test_legend_toggle_renders_buttons_and_needs_live
+        html = render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      live: true)) do |chart|
+          chart.with_area(data_key: :desktop)
+          chart.with_area(data_key: :mobile)
+          chart.with_legend(toggle: true)
+        end
+
+        buttons = html.css('button[data-slot="chart-legend-item"]')
+
+        assert_equal(%w[desktop mobile], buttons.map { |b| b["data-key"] })
+        assert_equal "click->poetry--charts--live#toggleSeries", buttons.first["data-action"]
+        assert_equal "desktop", buttons.first["data-poetry--charts--live-key-param"]
+
+        error = assert_raises(ArgumentError) do
+          render_inline(AreaChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
+            chart.with_area(data_key: :desktop)
+            chart.with_legend(toggle: true)
+          end
+        end
+
+        assert_match(/needs live: true/, error.message)
+      end
+
       def test_lambdas_and_labels_raise_teaching_errors
         error = assert_raises(ArgumentError) do
           render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",

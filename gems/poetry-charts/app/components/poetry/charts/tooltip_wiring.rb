@@ -18,9 +18,33 @@ module Poetry
         keydown->#{CONTROLLER}#keydown
       ].join(" ").freeze
 
+      # Every chart with a tooltip can join a sync group (C-W4, recharts
+      # syncId): charts sharing a sync: broadcast/receive the active index.
+      def self.included(base)
+        base.option :sync, :string
+      end
+
       def tooltip_config
         tooltip?
         @tooltip_config || {}
+      end
+
+      # The legend slot's options, guarded: toggle needs the live renderer
+      # (hiding a series recomputes the domain client-side).
+      def legend_config
+        legend?
+        config = @legend_config || {}
+        if config[:toggle] && !(respond_to?(:live?) && live?)
+          raise ArgumentError, "with_legend toggle: true needs live: true - " \
+                               "the toggle recomputes the domain client-side"
+        end
+        config
+      end
+
+      LEGEND_OPTIONS = %i[align items hide_icon toggle].freeze
+
+      def legend_component
+        LegendContent::Component.new(config: chart_config, **legend_config.slice(*LEGEND_OPTIONS))
       end
 
       # data attributes for the frame div (display: contents) wrapping
@@ -42,6 +66,7 @@ module Poetry
           actions << "#{Live::CONTROLLER}:updated->#{CONTROLLER}#refresh" if tooltip?
         end
         data[:action] = actions.join(" ") if actions.any?
+        data["#{CONTROLLER}-sync-value"] = sync if tooltip? && respond_to?(:sync) && sync.present?
         data
       end
 

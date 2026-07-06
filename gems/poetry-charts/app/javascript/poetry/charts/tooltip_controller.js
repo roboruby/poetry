@@ -10,6 +10,7 @@ import { Controller } from "@hotwired/stimulus"
 // the categories, Escape dismisses.
 export default class ChartTooltipController extends Controller {
   static targets = ["svg", "tooltip", "data"]
+  static values = { sync: String }
 
   connect() {
     const payload = JSON.parse(this.dataTarget.textContent)
@@ -24,6 +25,20 @@ export default class ChartTooltipController extends Controller {
     this.names = payload.names ?? null
     this.colors = payload.colors ?? null
     this.activeIndex = null
+
+    // Synced charts (C-W4, recharts syncId): same-group tooltips follow
+    // each other's active index over a window event.
+    if (this.syncValue && !this.onSync) {
+      this.onSync = (event) => this.#applySync(event)
+      window.addEventListener("poetry-chart:sync", this.onSync)
+    }
+  }
+
+  disconnect() {
+    if (this.onSync) {
+      window.removeEventListener("poetry-chart:sync", this.onSync)
+      this.onSync = null
+    }
   }
 
   get count() {
@@ -104,6 +119,7 @@ export default class ChartTooltipController extends Controller {
     this.tooltipTarget.hidden = true
     this.#reflect(null)
     this.dispatch("hide")
+    this.#broadcastSync(null)
   }
 
   show(index) {
@@ -140,6 +156,28 @@ export default class ChartTooltipController extends Controller {
     this.#position(index)
     this.#reflect(index)
     this.dispatch("show", { detail: { index } })
+    this.#broadcastSync(index)
+  }
+
+  // -- synced charts (C-W4) -------------------------------------------------
+
+  #broadcastSync(index) {
+    if (!this.syncValue || this.applyingSync) return
+    window.dispatchEvent(new CustomEvent("poetry-chart:sync", {
+      detail: { syncId: this.syncValue, index, source: this },
+    }))
+  }
+
+  #applySync(event) {
+    const { syncId, index, source } = event.detail
+    if (source === this || syncId !== this.syncValue) return
+    this.applyingSync = true
+    try {
+      if (index == null) this.leave()
+      else this.show(index)
+    } finally {
+      this.applyingSync = false
+    }
   }
 
   // Place the box near the active category: beside the column (vertical)

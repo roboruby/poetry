@@ -36,6 +36,13 @@ class DemoController < ApplicationController
     render layout: "component_preview"
   end
 
+  # The C-W4 demo: two charts in one sync group (hover either, both
+  # tooltips follow) + a live chart with the interactive legend.
+  def sync
+    @data = DATASETS["current"]
+    render layout: "component_preview"
+  end
+
   # The live-mode demo: the server renders the first window;
   # the page's ticker streams new points through the payload-script
   # channel and the chart re-renders client-side.

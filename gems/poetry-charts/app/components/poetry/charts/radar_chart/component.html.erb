@@ -48,7 +48,7 @@
     <% end %>
   </svg>
   <% if legend? %>
-    <%= render Poetry::Charts::LegendContent::Component.new(config: chart_config) %>
+    <%= render legend_component %>
   <% end %>
   <% if tooltip? %><%= render tooltip_layer_component %><% end %>
   <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>

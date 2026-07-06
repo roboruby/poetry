@@ -9,4 +9,7 @@ Rails.application.routes.draw do
   # The live-mode demo: a streaming ticker feeding the client
   # renderer through the payload-script channel - zero server round trips.
   get "/live", to: "demo#live"
+
+  # The C-W4 demo: two sync-grouped charts + an interactive legend.
+  get "/sync", to: "demo#sync"
 end
