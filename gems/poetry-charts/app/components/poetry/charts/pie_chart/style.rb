@@ -3,17 +3,16 @@
 module Poetry
   module Charts
     module PieChart
-      # The polar chrome: inside labels ride fill-background (the
-      # label-list block's white-on-color text); the donut center label is
-      # the donut-text block's typography (text-3xl bold / muted).
+      # The polar chrome on the cn-chart-* theme rules (N11): inside labels
+      # ride fill-background, the donut center label keeps its 3xl type.
       class Style < Poetry::Core::Style
         base ""
 
         element :frame, "contents"
         element :svg, "w-full min-h-0 flex-1"
-        element :inside_label, "fill-background text-xs"
-        element :center_title, "fill-foreground text-3xl font-bold"
-        element :center_subtitle, "fill-muted-foreground"
+        element :inside_label, "cn-chart-inside-label"
+        element :center_title, "cn-chart-center-title"
+        element :center_subtitle, "cn-chart-center-subtitle"
       end
     end
   end

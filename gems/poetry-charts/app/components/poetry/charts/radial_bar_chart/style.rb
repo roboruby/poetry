@@ -3,26 +3,24 @@
 module Poetry
   module Charts
     module RadialBarChart
-      # The radial chrome: the muted track ring behind bars, the disc
-      # track fills (the shape/text blocks' first:fill-muted
-      # last:fill-background hack made explicit), and the insideStart
-      # label look (fill-white capitalize mix-blend-luminosity, 11px).
+      # The radial chrome on the cn-chart-* theme rules (N11): the muted
+      # track ring, the disc track fills (the first:fill-muted /
+      # last:fill-background hack, still explicit), the insideStart label,
+      # and the per-family center typography (4xl gauge / 2xl compact;
+      # pie keeps 3xl - per upstream).
       class Style < Poetry::Core::Style
         base ""
 
         element :frame, "contents"
         element :svg, "w-full min-h-0 flex-1"
-        element :background_ring, "fill-muted"
-        element :grid_circle, "fill-none stroke-border/50"
-        element :grid_fill_muted, "fill-muted"
-        element :grid_fill_background, "fill-background"
-        element :inside_label, "fill-white capitalize mix-blend-luminosity text-[11px]"
-        # The gauge blocks' center number is text-4xl (36px on the 250 box);
-        # the stacked half-gauge uses a smaller text-2xl; the pie donut-text
-        # stays 3xl - per-family, per upstream.
-        element :center_title, "fill-foreground text-4xl font-bold"
-        element :center_title_compact, "fill-foreground text-2xl font-bold"
-        element :center_subtitle, "fill-muted-foreground"
+        element :background_ring, "cn-chart-radial-track"
+        element :grid_circle, "cn-chart-polar-grid-circle"
+        element :grid_fill_muted, "cn-chart-radial-disc-muted"
+        element :grid_fill_background, "cn-chart-radial-disc-background"
+        element :inside_label, "cn-chart-radial-inside-label"
+        element :center_title, "cn-chart-center-title-radial"
+        element :center_title_compact, "cn-chart-center-title-compact"
+        element :center_subtitle, "cn-chart-center-subtitle"
       end
     end
   end

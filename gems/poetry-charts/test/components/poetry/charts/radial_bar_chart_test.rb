@@ -46,7 +46,7 @@ module Poetry
         tracks = html.css('[data-slot="chart-radial-background"]')
 
         assert_equal 2, tracks.length
-        assert_includes tracks.first["class"], "fill-muted"
+        assert_includes tracks.first["class"], "cn-chart-radial-track"
       end
 
       def test_corner_radius_rounds_the_arc_ends_with_tangent_circles
@@ -95,8 +95,8 @@ module Poetry
         circles = html.css('[data-slot="chart-polar-grid"] circle')
 
         assert_equal(%w[86 74], circles.map { |c| c["r"] })
-        assert_includes circles.first["class"], "fill-muted"
-        assert_includes circles.last["class"], "fill-background"
+        assert_includes circles.first["class"], "cn-chart-radial-disc-muted"
+        assert_includes circles.last["class"], "cn-chart-radial-disc-background"
       end
 
       def test_auto_grid_circles_ride_the_ring_centerlines
@@ -111,7 +111,7 @@ module Poetry
         # (recharts' radius band ticks): 2 rings over [30, 110] center at
         # 50 and 90.
         assert_equal %w[50 90], circles.map { |c| c["r"] }, "centerlines for 2 rings over [30, 110]"
-        assert_includes circles.first["class"], "stroke-border/50"
+        assert_includes circles.first["class"], "cn-chart-polar-grid-circle"
       end
 
       def test_polar_grid_spokes_sit_at_the_value_ticks
@@ -142,7 +142,7 @@ module Poetry
         labels = html.css('[data-slot="chart-labels"] text')
 
         assert_equal %w[chrome safari], labels.map(&:text)
-        assert_includes labels.first["class"], "mix-blend-luminosity"
+        assert_includes labels.first["class"], "cn-chart-radial-inside-label"
         assert_includes labels.first["transform"], "rotate("
       end
 

@@ -55,7 +55,7 @@ module Poetry
 
         # nice [0, 305] at 5 -> [0, 80, 160, 240, 320]: four nonzero rings.
         assert_equal 4, grid_paths.length
-        assert_includes grid_paths.first["class"], "stroke-border"
+        assert_includes grid_paths.first["class"], "cn-chart-polar-grid-line"
         lines = html.css('[data-slot="chart-polar-grid"] line')
 
         assert_equal DATA.length, lines.length, "one radial spoke per category"
@@ -92,7 +92,7 @@ module Poetry
         assert_includes filled.first["class"], "stroke-none"
         grid_children = html.css('[data-slot="chart-polar-grid"] > *').to_a
         first_fill = grid_children.index(filled.first)
-        last_line = grid_children.rindex { |n| n["class"].to_s.include?("stroke-border") }
+        last_line = grid_children.rindex { |n| n["class"].to_s.include?("cn-chart-polar-grid-line") }
 
         assert_operator first_fill, :>, last_line, "tinted fills render after all linework"
       end

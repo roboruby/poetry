@@ -106,7 +106,7 @@ module Poetry
 
         assert_equal %w[Chrome Safari Firefox Edge Other], labels.map(&:text),
                      "raw keys resolve through the config, the LabelList formatter"
-        assert_includes labels.first["class"], "fill-background"
+        assert_includes labels.first["class"], "cn-chart-inside-label"
       end
 
       def test_the_active_slice_pops_outward

@@ -123,7 +123,7 @@ components:
     - brush_track
     - brush_window
     - brush_handle
-    capsule: e591cf625830
+    capsule: adf1ec3bc1d1
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:)
       / with_legend.'
@@ -226,7 +226,7 @@ components:
     - brush_window
     - brush_handle
     - label
-    capsule: 07ada84eba83
+    capsule: b8433411927b
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:)
       / with_legend.'
@@ -318,7 +318,7 @@ components:
     - reference_area
     - reference_dot
     - error_bar
-    capsule: 41813e1b7f2d
+    capsule: 6947e8a26d43
     agent_rules:
     - 'Mix marks freely: with_area / with_bar / with_line - declaration order is paint
       order.'
@@ -379,7 +379,7 @@ components:
     - item
     - swatch
     - toggle
-    capsule: ed618e23cbf7
+    capsule: e0df3abb928a
     agent_rules:
     - 'The legend derives from the chart config by default - omit items: unless slices
       differ from series.'
@@ -465,7 +465,7 @@ components:
     - brush_window
     - brush_handle
     - label
-    capsule: 07ada84eba83
+    capsule: b8433411927b
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'
@@ -530,7 +530,7 @@ components:
     - inside_label
     - center_title
     - center_subtitle
-    capsule: 476a7ab55325
+    capsule: 0e163387c077
     agent_rules:
     - Rows carry their slice color in a fill key (var(--color-<name>)); the config
       maps names to labels.
@@ -599,7 +599,7 @@ components:
     - grid_line
     - grid_fill
     - tick
-    capsule: 52301de6efed
+    capsule: e07db6d1050e
     agent_rules:
     - 'Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:)
       / with_legend.'
@@ -688,7 +688,7 @@ components:
     - center_title
     - center_title_compact
     - center_subtitle
-    capsule: db6fa9139c25
+    capsule: 753933f16121
     agent_rules:
     - One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
     - 'background: true draws the muted track ring behind each bar (the gauge look).'
@@ -766,7 +766,7 @@ components:
     - reference_area
     - reference_dot
     - error_bar
-    capsule: 395c1a5f7dfa
+    capsule: 132a5aba612e
     agent_rules:
     - 'Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name
       the row keys to plot.'
@@ -816,7 +816,7 @@ components:
     - value_wrap_end
     - name
     - value
-    capsule: 3f9349bf840e
+    capsule: 74b8c24f20d2
     agent_rules:
     - Tooltip rows resolve names/colors through the chart config - pass key:, not
       a display string.

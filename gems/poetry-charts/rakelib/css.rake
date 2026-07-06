@@ -33,6 +33,7 @@ def poetry_charts_compile_tailwind
       @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
       @import "#{Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css")}";
+      @import "#{Poetry::Charts.root.join("themes/default.css")}" layer(base);
       @source "#{File.join(dir, "safelist.txt")}";
     CSS
     out = File.join(dir, "out.css")

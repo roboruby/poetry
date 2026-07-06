@@ -102,7 +102,7 @@ module Poetry
         top = render_inline(LegendContent::Component.new(config: CONFIG, align: :top))
               .css('[data-slot="chart-legend-content"]').first
 
-        assert_includes top["class"], "pb-3"
+        assert_includes top["class"], "cn-chart-legend-align-top"
       end
 
       def test_themed_series_swatch_through_the_scoped_variable
