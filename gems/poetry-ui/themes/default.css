@@ -18,10 +18,107 @@
  * `.style-<name>` wrapper; poetry ships bare selectors while exactly one
  * theme exists (the wrapper arrives with a second theme).
  *
+ * Components with no upstream cn hook stay utility-only by the
+ * upstream-faithful rule (their whole surface is structural/behavioral):
+ * AspectRatio, Separator, Spinner — plus core's legacy X. A cn name is
+ * emitted only when this file has content for it — empty rules are
+ * dropped by the compiler and would redden css:verify_compiled (upstream
+ * hook names whose whole poetry surface is structural, e.g. cn-breadcrumb
+ * or cn-card-action, return WITH content in a future theme; data-slot
+ * selectors remain the always-on restyle hook).
+ *
  * Drift gates: css:verify_compiled (every dictionary cn name must exist in
  * a real compiled build) + css:verify_theme (bidirectional name coverage:
  * dictionary cn names <-> theme rules).
  */
+
+/* MARK: Alert */
+.cn-alert {
+  @apply grid grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-4 py-3 text-sm has-[>svg]:grid-cols-[calc(var(--spacing)*4)_1fr] has-[>svg]:gap-x-3 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current;
+}
+
+.cn-alert-title {
+  @apply col-start-2 line-clamp-1 min-h-4 font-medium tracking-tight;
+}
+
+.cn-alert-description {
+  @apply col-start-2 grid justify-items-start gap-1 text-sm text-muted-foreground [&_p]:leading-relaxed;
+}
+
+.cn-alert-variant-default {
+  @apply bg-card text-card-foreground;
+}
+
+.cn-alert-variant-destructive {
+  @apply bg-card text-destructive [&>svg]:text-current *:data-[slot=alert-description]:text-destructive/90;
+}
+
+/* MARK: Avatar */
+.cn-avatar {
+  @apply size-8 rounded-full after:rounded-full data-[size=lg]:size-10 data-[size=sm]:size-6;
+}
+
+.cn-avatar-image {
+  @apply rounded-full;
+}
+
+.cn-avatar-fallback {
+  @apply rounded-full bg-muted text-muted-foreground;
+}
+
+.cn-avatar-badge {
+  @apply bg-primary text-primary-foreground ring-background group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2 group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2;
+}
+
+.cn-avatar-group-count {
+  @apply size-8 rounded-full bg-muted text-sm text-muted-foreground group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3;
+}
+
+/* MARK: Badge */
+.cn-badge {
+  @apply gap-1 rounded-md border px-2 py-0.5 text-xs font-medium transition-[color,box-shadow] [&>svg]:size-3;
+}
+
+.cn-badge-variant-default {
+  @apply border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90;
+}
+
+.cn-badge-variant-secondary {
+  @apply border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90;
+}
+
+.cn-badge-variant-destructive {
+  @apply border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60;
+}
+
+.cn-badge-variant-outline {
+  @apply text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground;
+}
+
+/* MARK: Breadcrumb */
+.cn-breadcrumb-list {
+  @apply gap-1.5 text-sm text-muted-foreground sm:gap-2.5;
+}
+
+.cn-breadcrumb-item {
+  @apply gap-1.5;
+}
+
+.cn-breadcrumb-link {
+  @apply transition-colors hover:text-foreground;
+}
+
+.cn-breadcrumb-page {
+  @apply font-normal text-foreground;
+}
+
+.cn-breadcrumb-separator {
+  @apply [&>svg]:size-3.5;
+}
+
+.cn-breadcrumb-ellipsis {
+  @apply size-5 [&>svg]:size-4;
+}
 
 /* MARK: Button */
 .cn-button {
@@ -82,4 +179,183 @@
 
 .cn-button-size-icon-lg {
   @apply size-10;
+}
+
+/* MARK: Card */
+.cn-card {
+  @apply gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm;
+}
+
+.cn-card-header {
+  @apply gap-1.5 px-6;
+}
+
+.cn-card-title {
+  @apply font-semibold leading-none;
+}
+
+.cn-card-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.cn-card-content {
+  @apply px-6;
+}
+
+.cn-card-footer {
+  @apply px-6;
+}
+
+/* MARK: Empty */
+.cn-empty {
+  @apply gap-4 rounded-lg border-dashed p-12;
+}
+
+.cn-empty-header {
+  @apply gap-2;
+}
+
+.cn-empty-media {
+  @apply mb-2;
+}
+
+.cn-empty-media-default {
+  @apply bg-transparent;
+}
+
+.cn-empty-media-icon {
+  @apply flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted text-foreground [&_svg:not([class*='size-'])]:size-6;
+}
+
+.cn-empty-title {
+  @apply text-lg font-medium tracking-tight;
+}
+
+.cn-empty-description {
+  @apply text-sm/relaxed;
+}
+
+.cn-empty-content {
+  @apply gap-4 text-sm;
+}
+
+/* MARK: Item */
+.cn-item {
+  @apply rounded-md border text-sm [a]:hover:bg-muted;
+}
+
+.cn-item-media {
+  @apply gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start;
+}
+
+.cn-item-media-variant-default {
+  @apply bg-transparent;
+}
+
+.cn-item-media-variant-icon {
+  @apply [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-item-media-variant-image {
+  @apply size-10 overflow-hidden rounded-sm group-data-[size=sm]/item:size-8 group-data-[size=xs]/item:size-6 [&_img]:size-full [&_img]:object-cover;
+}
+
+.cn-item-content {
+  @apply gap-1 group-data-[size=xs]/item:gap-0;
+}
+
+.cn-item-title {
+  @apply gap-2 text-sm leading-snug font-medium underline-offset-4;
+}
+
+.cn-item-description {
+  @apply text-left text-sm leading-normal text-muted-foreground group-data-[size=xs]/item:text-xs;
+}
+
+.cn-item-actions {
+  @apply gap-2;
+}
+
+.cn-item-header {
+  @apply gap-2;
+}
+
+.cn-item-footer {
+  @apply gap-2;
+}
+
+.cn-item-group {
+  @apply gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2;
+}
+
+.cn-item-separator {
+  @apply my-2;
+}
+
+.cn-item-variant-default {
+  @apply border-transparent;
+}
+
+.cn-item-variant-outline {
+  @apply border-border;
+}
+
+.cn-item-variant-muted {
+  @apply border-transparent bg-muted/50;
+}
+
+.cn-item-size-default {
+  @apply gap-3.5 px-4 py-3.5;
+}
+
+.cn-item-size-sm {
+  @apply gap-2.5 px-3 py-2.5;
+}
+
+.cn-item-size-xs {
+  @apply gap-2 px-2.5 py-2 in-data-[slot=dropdown-menu-content]:p-0;
+}
+
+/* MARK: Kbd */
+.cn-kbd {
+  @apply h-5 w-fit min-w-5 gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background dark:in-data-[slot=tooltip-content]:bg-background/10 [&_svg:not([class*='size-'])]:size-3;
+}
+
+/* MARK: Link */
+.cn-link {
+  @apply gap-1 rounded-sm text-primary underline-offset-4 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-link-underline-hover {
+  @apply no-underline hover:underline;
+}
+
+.cn-link-underline-always {
+  @apply underline;
+}
+
+.cn-link-underline-none {
+  @apply no-underline;
+}
+
+/* MARK: Progress */
+.cn-progress-track {
+  @apply h-1.5 rounded-full bg-muted;
+}
+
+.cn-progress-indicator {
+  @apply bg-primary;
+}
+
+.cn-progress-label {
+  @apply text-sm font-medium;
+}
+
+.cn-progress-value {
+  @apply ml-auto text-sm text-muted-foreground tabular-nums;
+}
+
+/* MARK: Skeleton */
+.cn-skeleton {
+  @apply rounded-md bg-muted;
 }

@@ -78,7 +78,7 @@ components:
     elements:
     - title
     - description
-    capsule: 6bb258e12975
+    capsule: 46f5083339ca
     agent_rules:
     - Use poetry_alert for inline callouts - it carries role/aria-live; never a hand-rolled
       div.
@@ -239,7 +239,7 @@ components:
     - badge
     - group
     - group_count
-    capsule: 128002772ab0
+    capsule: e30772918548
     agent_rules:
     - 'label: (the person''s name) is REQUIRED - it is the avatar''s accessible name
       (role=img).'
@@ -265,7 +265,7 @@ components:
     options: []
     slots: []
     elements: []
-    capsule: 025c0440036f
+    capsule: 3575b76847ba
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
       Button for actions.
@@ -288,7 +288,7 @@ components:
     - page
     - separator
     - ellipsis
-    capsule: 2b6ce64d7d25
+    capsule: 898795a6a491
     agent_rules:
     - Declare the trail with with_item(label, href:) - never hand-build the nav/ol/li
       chain.
@@ -510,7 +510,7 @@ components:
     - action
     - content
     - footer
-    capsule: c81b01706570
+    capsule: bec58bbd7225
     agent_rules:
     - Compose with the slots (title/description/action/footer) - never rebuild the
       header grid by hand.
@@ -1396,7 +1396,7 @@ components:
     - title
     - description
     - content
-    capsule: 52ec7bbd9a59
+    capsule: ff9c542bca6e
     agent_rules:
     - An empty collection gets an Empty state with a next action - never a bare 'No
       results' div.
@@ -1713,7 +1713,7 @@ components:
     - footer
     - group
     - separator
-    capsule: fa1f021bb507
+    capsule: 0c4d5480a0b2
     agent_rules:
     - 'Rows live inside poetry_item_group (role=list) and each row passes role: "listitem"
       - a role=list parent with roleless children fails aria-required-children.'
@@ -1730,7 +1730,7 @@ components:
     options: []
     slots: []
     elements: []
-    capsule: bfc6a2c0e05c
+    capsule: 27e02c8d2d38
     agent_rules:
     - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
     - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
@@ -1772,7 +1772,7 @@ components:
       required: true
     slots: []
     elements: []
-    capsule: 3053be361b99
+    capsule: e25343f18116
     agent_rules:
     - Use poetry_link for navigation - poetry_button for actions (never an <a> styled
       by hand).
@@ -2269,7 +2269,7 @@ components:
     - indicator
     - label
     - value
-    capsule: 0d9c8f72da18
+    capsule: 6cc08dd4b295
     agent_rules:
     - 'label: is REQUIRED - it is the progressbar''s accessible name and the visible
       caption.'
@@ -2701,7 +2701,7 @@ components:
     options: []
     slots: []
     elements: []
-    capsule: 9844ed8fb553
+    capsule: f4b0700a6dec
     agent_rules:
     - Skeleton is a loading placeholder - size it with classes (h-4 w-32); it has
       no content of its own.

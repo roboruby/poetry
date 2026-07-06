@@ -3,19 +3,20 @@
 module Poetry
   module Ui
     module Breadcrumb
-      # shadcn Breadcrumb (base-vega), source-exact (the separator chevron's
-      # cn-rtl-flip dropped like pagination's - the cn-* theme layer is its
-      # own milestone).
+      # Re-expressed through the cn-* theme layer (N11). The separator
+      # chevron's cn-rtl-flip lands with the W4 consumer-utility batch.
+      # No cn-breadcrumb root name: the root's poetry surface is empty and
+      # empty theme rules don't survive compilation (data-slot remains the
+      # restyle hook).
       class Style < Poetry::Core::Style
         base ""
 
-        element :list, "flex flex-wrap items-center gap-1.5 text-sm wrap-break-word " \
-                       "text-muted-foreground sm:gap-2.5"
-        element :item, "inline-flex items-center gap-1.5"
-        element :link, "transition-colors hover:text-foreground"
-        element :page, "font-normal text-foreground"
-        element :separator, "[&>svg]:size-3.5"
-        element :ellipsis, "flex size-5 items-center justify-center [&>svg]:size-4"
+        element :list, "cn-breadcrumb-list flex flex-wrap items-center wrap-break-word"
+        element :item, "cn-breadcrumb-item inline-flex items-center"
+        element :link, "cn-breadcrumb-link"
+        element :page, "cn-breadcrumb-page"
+        element :separator, "cn-breadcrumb-separator"
+        element :ellipsis, "cn-breadcrumb-ellipsis flex items-center justify-center"
       end
     end
   end

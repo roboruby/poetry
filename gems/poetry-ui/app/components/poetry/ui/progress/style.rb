@@ -3,14 +3,16 @@
 module Poetry
   module Ui
     module Progress
-      # shadcn Progress (base-vega), source-exact.
+      # Re-expressed through the cn-* theme layer (N11). The root keeps no
+      # cn name (its whole poetry surface is structural; upstream's
+      # cn-progress-root returns with content in a future theme).
       class Style < Poetry::Core::Style
         base "flex flex-wrap gap-3"
 
-        element :track, "relative flex h-1.5 w-full items-center overflow-x-hidden rounded-full bg-muted"
-        element :indicator, "h-full bg-primary transition-all"
-        element :label, "text-sm font-medium"
-        element :value, "ml-auto text-sm text-muted-foreground tabular-nums"
+        element :track, "cn-progress-track relative flex w-full items-center overflow-x-hidden"
+        element :indicator, "cn-progress-indicator h-full transition-all"
+        element :label, "cn-progress-label"
+        element :value, "cn-progress-value"
       end
     end
   end

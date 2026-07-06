@@ -3,13 +3,10 @@
 module Poetry
   module Ui
     module Kbd
-      # shadcn Kbd (base-vega), source-exact: a keyboard-key chip. The
-      # in-data-[slot=tooltip-content] variants invert it inside a tooltip.
+      # Re-expressed through the cn-* theme layer (N11): the keyboard-key
+      # chip's look (incl. the tooltip inversion) rides themes/default.css.
       class Style < Poetry::Core::Style
-        base "pointer-events-none inline-flex h-5 w-fit min-w-5 items-center justify-center gap-1 rounded-sm " \
-             "bg-muted px-1 font-sans text-xs font-medium text-muted-foreground select-none " \
-             "in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background " \
-             "dark:in-data-[slot=tooltip-content]:bg-background/10 [&_svg:not([class*='size-'])]:size-3"
+        base "cn-kbd pointer-events-none inline-flex items-center justify-center select-none"
       end
     end
   end

@@ -3,15 +3,16 @@
 module Poetry
   module Ui
     module Link
+      # Re-expressed through the cn-* theme layer (N11). No upstream
+      # counterpart (shadcn has no Link) - the split follows the category
+      # rule: layout/behavior inline, color/decoration/focus ring themed.
       class Style < Poetry::Core::Style
-        base "inline-flex items-center gap-1 rounded-sm text-primary underline-offset-4 " \
-             "outline-none transition-colors " \
-             "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        base "cn-link inline-flex items-center outline-none transition-colors"
 
         variant :underline, {
-          hover: "no-underline hover:underline",
-          always: "underline",
-          none: "no-underline"
+          hover: "cn-link-underline-hover",
+          always: "cn-link-underline-always",
+          none: "cn-link-underline-none"
         }
       end
     end

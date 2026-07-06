@@ -13,7 +13,7 @@ module Poetry
 
         assert_includes html, 'href="/pricing"'
         assert_includes html, 'data-component="link"'
-        assert_includes html, "hover:underline"
+        assert_includes html, "cn-link-underline-hover"
         refute_includes html, "aria-current"
       end
 
@@ -27,9 +27,9 @@ module Poetry
 
       def test_link_underline_variants
         assert_includes render_inline(Link::Component.new(href: "/", underline: :always)) { "x" }.to_html,
-                        %( underline)
+                        "cn-link-underline-always"
         refute_includes render_inline(Link::Component.new(href: "/", underline: :none)) { "x" }.to_html,
-                        "hover:underline"
+                        "cn-link-underline-hover"
       end
 
       # -- Badge --------------------------------------------------------------
@@ -43,7 +43,9 @@ module Poetry
 
         destructive = render_inline(Badge::Component.new(variant: :destructive)) { "x" }.to_html
 
-        assert_includes destructive, "dark:bg-destructive/60"
+        # The composited dark treatment (dark:bg-destructive/60) lives in
+        # the theme rule this name resolves to (themes/default.css).
+        assert_includes destructive, "cn-badge-variant-destructive"
       end
 
       def test_badge_without_text_refuses_to_render
@@ -63,14 +65,14 @@ module Poetry
         assert_includes html, 'role="status"'
         assert_includes html, 'data-slot="alert-title"'
         assert_includes html, 'data-slot="alert-description"'
-        assert_includes html, "font-medium tracking-tight" # the title element classes resolve
+        assert_includes html, "cn-alert-title" # the title element resolves through the dictionary
       end
 
       def test_alert_destructive_announces_assertively
         html = render_inline(Alert::Component.new(variant: :destructive)) { "Payment failed." }.to_html
 
         assert_includes html, 'role="alert"'
-        assert_includes html, "text-destructive"
+        assert_includes html, "cn-alert-variant-destructive"
       end
 
       def test_alert_icon_slot_is_typed

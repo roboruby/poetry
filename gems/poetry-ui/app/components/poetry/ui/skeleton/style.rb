@@ -3,9 +3,10 @@
 module Poetry
   module Ui
     module Skeleton
-      # shadcn Skeleton (base-vega), source-exact: a pulsing placeholder box.
+      # Re-expressed through the cn-* theme layer (N11): the pulse is the
+      # mechanism (inline), the box treatment is the theme's.
       class Style < Poetry::Core::Style
-        base "animate-pulse rounded-md bg-muted"
+        base "cn-skeleton animate-pulse"
       end
     end
   end

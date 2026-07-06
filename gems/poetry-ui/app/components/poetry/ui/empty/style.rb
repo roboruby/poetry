@@ -3,26 +3,23 @@
 module Poetry
   module Ui
     module Empty
-      # shadcn Empty (base-vega), source-exact - except the title's
-      # cn-font-heading, a theme-layer indirection class the vendored CSS
-      # does not define yet (dropped like pagination's cn-rtl-flip; the
-      # cn-* theme layer is its own later milestone).
+      # Re-expressed through the cn-* theme layer (N11). The title's
+      # cn-font-heading joins with the W4 consumer-utility batch.
       class Style < Poetry::Core::Style
-        base "flex w-full min-w-0 flex-1 flex-col items-center justify-center gap-4 rounded-lg " \
-             "border-dashed p-12 text-center text-balance"
+        base "cn-empty flex w-full min-w-0 flex-1 flex-col items-center justify-center " \
+             "text-center text-balance"
 
-        element :header, "flex max-w-sm flex-col items-center gap-2"
+        element :header, "cn-empty-header flex max-w-sm flex-col items-center"
         # The media wrapper splits shared chrome from its two variants
         # (default: transparent; icon: the rounded muted tile).
-        element :media, "mb-2 flex shrink-0 items-center justify-center " \
+        element :media, "cn-empty-media flex shrink-0 items-center justify-center " \
                         "[&_svg]:pointer-events-none [&_svg]:shrink-0"
-        element :media_default, "bg-transparent"
-        element :media_icon, "flex size-10 shrink-0 items-center justify-center rounded-lg bg-muted " \
-                             "text-foreground [&_svg:not([class*='size-'])]:size-6"
-        element :title, "text-lg font-medium tracking-tight"
-        element :description, "text-sm/relaxed text-muted-foreground [&>a]:underline " \
+        element :media_default, "cn-empty-media-default"
+        element :media_icon, "cn-empty-media-icon"
+        element :title, "cn-empty-title"
+        element :description, "cn-empty-description text-muted-foreground [&>a]:underline " \
                               "[&>a]:underline-offset-4 [&>a:hover]:text-primary"
-        element :content, "flex w-full max-w-sm min-w-0 flex-col items-center gap-4 text-sm text-balance"
+        element :content, "cn-empty-content flex w-full max-w-sm min-w-0 flex-col items-center text-balance"
       end
     end
   end

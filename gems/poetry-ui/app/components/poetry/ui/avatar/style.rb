@@ -3,35 +3,27 @@
 module Poetry
   module Ui
     module Avatar
-      # shadcn Avatar (base-vega), source-exact - except :image gains
-      # "absolute inset-0": the server-native layered fallback keeps BOTH the
-      # fallback and the image in the DOM (Base UI swaps them client-side),
-      # so the image must cover the initials, not sit beside them.
+      # shadcn Avatar, re-expressed through the cn-* theme layer (N11).
+      # :image keeps poetry's "absolute inset-0" deviation inline (the
+      # server-native layered fallback keeps BOTH fallback and image in the
+      # DOM, so the image must cover the initials); the after:* ring
+      # machinery stays inline per upstream's own split.
       class Style < Poetry::Core::Style
-        base "group/avatar relative flex size-8 shrink-0 rounded-full select-none " \
-             "after:absolute after:inset-0 after:rounded-full after:border after:border-border " \
-             "after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 " \
-             "dark:after:mix-blend-lighten"
+        base "cn-avatar group/avatar relative flex shrink-0 select-none " \
+             "after:absolute after:inset-0 after:border after:border-border " \
+             "after:mix-blend-darken dark:after:mix-blend-lighten"
 
-        element :image, "absolute inset-0 aspect-square size-full rounded-full object-cover"
-        element :fallback, "flex size-full items-center justify-center rounded-full bg-muted " \
-                           "text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs"
-        element :badge, "absolute right-0 bottom-0 z-10 inline-flex items-center justify-center " \
-                        "rounded-full bg-primary text-primary-foreground bg-blend-color ring-2 " \
-                        "ring-background select-none " \
-                        "group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden " \
-                        "group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2 " \
-                        "group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2"
+        element :image, "cn-avatar-image absolute inset-0 aspect-square size-full object-cover"
+        element :fallback, "cn-avatar-fallback flex size-full items-center justify-center " \
+                           "text-sm group-data-[size=sm]/avatar:text-xs"
+        element :badge, "cn-avatar-badge absolute right-0 bottom-0 z-10 inline-flex items-center " \
+                        "justify-center rounded-full bg-blend-color ring-2 select-none"
 
         # The stack (poetry_avatar_group) + its overflow count.
         element :group, "group/avatar-group flex -space-x-2 " \
                         "*:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background"
-        element :group_count, "relative flex size-8 shrink-0 items-center justify-center rounded-full " \
-                              "bg-muted text-sm text-muted-foreground ring-2 ring-background " \
-                              "group-has-data-[size=lg]/avatar-group:size-10 " \
-                              "group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 " \
-                              "group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 " \
-                              "group-has-data-[size=sm]/avatar-group:[&>svg]:size-3"
+        element :group_count, "cn-avatar-group-count relative flex shrink-0 items-center " \
+                              "justify-center ring-2 ring-background"
       end
     end
   end

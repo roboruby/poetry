@@ -112,8 +112,8 @@ module Poetry
         media = html.css('[data-slot="empty-icon"]').first
 
         assert_equal "icon", media["data-variant"]
-        assert_includes media["class"], "bg-muted"
-        assert_includes media["class"], "rounded-lg"
+        # The muted tile (bg-muted rounded-lg) rides the theme rule.
+        assert_includes media["class"], "cn-empty-media-icon"
       end
 
       def test_a_bare_empty_renders_no_hollow_wrappers
