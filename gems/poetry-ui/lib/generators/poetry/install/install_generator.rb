@@ -30,6 +30,15 @@ module Poetry
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
 
+    # N12: install-time theme selection. Every themes/<name>.css fragment is
+    # a complete visual theme; the chosen one fills the style-default.css
+    # slot (the SLOT filename never changes - that keeps ENTRY_LINES
+    # idempotent and makes switching themes a plain re-run with a different
+    # --theme, overwriting in place). One theme per build; the multi-theme
+    # .style-<name> wrapper arrives with the docs switcher, not here.
+    class_option :theme, type: :string, default: "default",
+                         desc: "Visual theme fragment to install (a themes/<name>.css shipped by poetry-ui)"
+
     # Injected line by line (not as one block) so a re-run after an upgrade
     # appends any line a previous poetry version didn't know about.
     ENTRY_LINES = [
@@ -72,6 +81,20 @@ module Poetry
                          '`gem "poetry-charts"` to the Gemfile, bundle, and re-run'
     end
 
+    # Same fail-fast for --theme: an unknown name (or one poetry-charts
+    # doesn't ship when --charts is on) must not half-install.
+    def verify_theme_choice
+      unless ui_theme_path.exist?
+        available = Dir[Poetry::Ui.root.join("themes/*.css").to_s].map { |f| File.basename(f, ".css") }.sort
+        raise Thor::Error, "unknown poetry theme #{options[:theme].inspect} - poetry-ui ships: #{available.join(", ")}"
+      end
+
+      return if !options[:charts] || !charts_available? || charts_theme_path.exist?
+
+      raise Thor::Error, "poetry-charts does not ship theme #{options[:theme].inspect} - " \
+                         "every installed poetry gem must provide themes/#{options[:theme]}.css"
+    end
+
     def copy_tokens_and_theme
       create_file "app/assets/tailwind/poetry/tokens.css",
                   Poetry::Core.root.join("tokens/tokens.css").read, force: true
@@ -91,8 +114,9 @@ module Poetry
       # (force) - a host restyles by overriding .cn-* rules in its OWN css
       # (any utilities-layer or unlayered rule beats layer(base)), never by
       # editing this file, so theme updates keep flowing on re-install.
+      # --theme (N12) swaps the CONTENT; the slot filename stays put.
       create_file "app/assets/tailwind/poetry/style-default.css",
-                  Poetry::Ui.root.join("themes/default.css").read, force: true
+                  ui_theme_path.read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
     end
 
@@ -162,9 +186,10 @@ module Poetry
                   Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css").read,
                   force: true
       inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/charts.css";))
-      # The charts cn-* theme fragment (N11) - vendored like style-default.
+      # The charts cn-* theme fragment (N11) - vendored like style-default,
+      # same --theme selection (N12).
       create_file "app/assets/tailwind/poetry/style-charts.css",
-                  Poetry::Charts.root.join("themes/default.css").read, force: true
+                  charts_theme_path.read, force: true
       inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/style-charts.css" layer(base);))
 
       index = "app/javascript/controllers/index.js"
@@ -194,6 +219,14 @@ module Poetry
 
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
+    end
+
+    def ui_theme_path
+      Poetry::Ui.root.join("themes/#{options[:theme]}.css")
+    end
+
+    def charts_theme_path
+      Poetry::Charts.root.join("themes/#{options[:theme]}.css")
     end
 
     # The idempotency lives in the file-mutation primitive, not the

@@ -162,6 +162,22 @@ module Poetry
 
       refute_includes entry, "charts.css", "charts wiring is opt-in even with the gem present"
     end
+
+    # -- the --theme flag (N12: install-time theme selection) ---------------
+
+    def test_unknown_theme_fails_fast_before_any_file_lands
+      stderr = capture(:stderr) { run_generator %w[--theme nope] }
+
+      assert_match(/unknown poetry theme "nope"/, stderr)
+      assert_match(/default/, stderr, "the error names the shipped themes")
+      assert_no_file "app/assets/tailwind/poetry/tokens.css" # nothing half-installed
+    end
+
+    def test_theme_default_is_the_implicit_choice
+      run_generator
+
+      assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
+    end
   end
 
   class AddGeneratorTest < Rails::Generators::TestCase

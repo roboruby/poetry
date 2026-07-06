@@ -217,7 +217,13 @@ namespace :test do
     require "fileutils"
 
     session = poetry_ui_browser_session
+    # Per-theme goldens (N12): the default set stays flat (no churn); each
+    # non-default theme keeps its own subdirectory, recorded once with
+    # POETRY_THEME=<name> VISUAL_REBASELINE=1 (browser:assets compiles the
+    # same theme via poetry_ui_compile_tailwind's POETRY_THEME default).
+    theme = poetry_ui_theme_name
     baseline_dir = Poetry::Ui.root.join("test/visual_baselines")
+    baseline_dir = baseline_dir.join(theme) unless theme == "default"
     diffs_dir = Poetry::Ui.root.join("tmp/visual_diffs")
     rebaseline = ENV["VISUAL_REBASELINE"] == "1"
     FileUtils.mkdir_p(baseline_dir)

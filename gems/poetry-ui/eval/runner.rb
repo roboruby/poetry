@@ -29,9 +29,10 @@ module Poetry
       # string: a poetry arm satisfies focus_visible_treatment through a cn
       # class whose THEME rule carries it; a raw arm still passes with
       # inline focus-visible: utilities. Resolved relative to this file so
-      # the runner stays loadable without the engine booted.
+      # the runner stays loadable without the engine booted; POETRY_THEME
+      # (N12) picks the active fragment so the gate follows the theme.
       FOCUS_VISIBLE_THEME_CLASSES =
-        File.read(File.expand_path("../themes/default.css", __dir__))
+        File.read(File.expand_path("../themes/#{ENV.fetch("POETRY_THEME", "default")}.css", __dir__))
             .scan(/^\.(cn-[a-z0-9-]+)\s*\{([^}]*)\}/)
             .select { |_name, body| body.include?("focus-visible:") }
             .map(&:first).freeze

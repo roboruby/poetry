@@ -14,12 +14,32 @@ def poetry_ui_template_classes_text
   ([TEMPLATE_CLASSES_HEADER] + templates.classes).join("\n") << "\n"
 end
 
+# The theme roster (N12): every themes/*.css fragment is a complete,
+# installable visual theme. POETRY_THEME picks one for a single run
+# (browser suites, an explicit gate); unset, the cheap gates loop over
+# ALL themes so an incomplete fragment can never sit green in CI.
+def poetry_ui_theme_names
+  Dir[Poetry::Ui.root.join("themes/*.css").to_s].map { |file| File.basename(file, ".css") }.sort
+end
+
+def poetry_ui_theme_name = ENV.fetch("POETRY_THEME", "default")
+
+def poetry_ui_theme_path(name = poetry_ui_theme_name)
+  path = Poetry::Ui.root.join("themes/#{name}.css")
+  abort "unknown poetry theme #{name.inspect} - poetry-ui ships: #{poetry_ui_theme_names.join(", ")}" unless path.exist?
+  path
+end
+
+def poetry_ui_gate_themes
+  ENV["POETRY_THEME"] ? [poetry_ui_theme_name] : poetry_ui_theme_names
+end
+
 # Compile the real Tailwind build a host's safelist produces: tokens +
 # theme + vendored animate/shadcn utilities, sourced from the Style
 # dictionaries plus the COMMITTED template classes. Shared by
 # css:verify_compiled (the drift gate) and browser:assets (the stylesheet
 # the real-browser preview pages load).
-def poetry_ui_compile_tailwind
+def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name)
   require "tailwindcss/ruby"
   require "tmpdir"
 
@@ -36,7 +56,7 @@ def poetry_ui_compile_tailwind
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
       @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
-      @import "#{Poetry::Ui.root.join("themes/default.css")}" layer(base);
+      @import "#{poetry_ui_theme_path(theme)}" layer(base);
       @source "#{File.join(dir, "safelist.txt")}";
     CSS
     out = File.join(dir, "out.css")
@@ -73,40 +93,48 @@ namespace :css do
   task :verify_compiled do
     poetry_ui_boot!
 
-    # The COMMITTED template classes (drift-gated by template_classes:verify),
-    # so this build is byte-for-byte what a host's safelist produces.
-    compiled = poetry_ui_compile_tailwind
     styles = Poetry::Core::Style.descendants.select(&:name)
 
-    verifier = Poetry::Core::CSS::Verifier.new(compiled_css: compiled)
-    failures = styles.flat_map do |style|
-      verifier.verify_style(style).map { |unknown| "#{style.name}: #{unknown}" }
-    end
-    abort "classes missing from a real Tailwind build:\n#{failures.join("\n")}" if failures.any?
+    # One compile per theme: a cn name a theme lacks cannot compile, so this
+    # doubles as the port-completeness gate for every fragment (N12).
+    poetry_ui_gate_themes.each do |theme|
+      # The COMMITTED template classes (drift-gated by template_classes:verify),
+      # so this build is byte-for-byte what a host's safelist produces.
+      compiled = poetry_ui_compile_tailwind(theme: theme)
 
-    puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build"
+      verifier = Poetry::Core::CSS::Verifier.new(compiled_css: compiled)
+      failures = styles.flat_map do |style|
+        verifier.verify_style(style).map { |unknown| "#{style.name}: #{unknown}" }
+      end
+      abort "classes missing from a real Tailwind build (theme #{theme}):\n#{failures.join("\n")}" if failures.any?
+
+      puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build (theme #{theme})"
+    end
   end
 
-  desc "Verify bidirectional cn-* coverage between the Style dictionaries and themes/default.css (N11)"
+  desc "Verify bidirectional cn-* coverage between the Style dictionaries and every themes/*.css (N11/N12)"
   task :verify_theme do
     poetry_ui_boot!
 
     styles = Poetry::Core::Style.descendants.select(&:name)
-    coverage = Poetry::Core::CSS::ThemeCoverage.new(
-      theme_css: Poetry::Ui.root.join("themes/default.css").read,
-      style_classes: styles,
-      # Consumer utilities: applied by templates/consumers, not emitted by
-      # any dictionary (cn-font-heading IS emitted by Empty, listed for
-      # robustness; cn-rtl-flip is template-side only).
-      allowlist: %w[cn-font-heading cn-rtl-flip]
-    )
+    poetry_ui_gate_themes.each do |theme|
+      coverage = Poetry::Core::CSS::ThemeCoverage.new(
+        theme_css: poetry_ui_theme_path(theme).read,
+        style_classes: styles,
+        # Consumer utilities: applied by templates/consumers, not emitted by
+        # any dictionary (cn-font-heading IS emitted by Empty, listed for
+        # robustness; cn-rtl-flip is template-side only). Every theme must
+        # carry them - they are part of the fragment contract.
+        allowlist: %w[cn-font-heading cn-rtl-flip]
+      )
 
-    problems = coverage.missing.map { |name| "missing theme rule: #{name}" } +
-               coverage.orphans.map { |name| "orphan theme rule: #{name}" }
-    abort "theme coverage (themes/default.css):\n  #{problems.join("\n  ")}" unless problems.empty?
+      problems = coverage.missing.map { |name| "missing theme rule: #{name}" } +
+                 coverage.orphans.map { |name| "orphan theme rule: #{name}" }
+      abort "theme coverage (themes/#{theme}.css):\n  #{problems.join("\n  ")}" unless problems.empty?
 
-    puts "theme coverage: #{coverage.theme_names.size} cn rules <-> " \
-         "#{coverage.dictionary_names.size} dictionary names"
+      puts "theme coverage (#{theme}): #{coverage.theme_names.size} cn rules <-> " \
+           "#{coverage.dictionary_names.size} dictionary names"
+    end
   end
 
   # The data-selected bridge probe (N6 W1 regression lock): upstream's

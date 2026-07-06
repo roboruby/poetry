@@ -89,7 +89,9 @@ module DommyTier
   # utilities-vs-theme precedence - so the layer distinction cannot change
   # a verdict here.
   def theme_css
-    Poetry::Ui.root.join("themes/default.css")
+    # POETRY_THEME (N12): the dommy tier follows the active theme like every
+    # other gate; css_digest includes the file so each theme caches apart.
+    Poetry::Ui.root.join("themes/#{ENV.fetch("POETRY_THEME", "default")}.css")
   end
 
   def safelist_text
