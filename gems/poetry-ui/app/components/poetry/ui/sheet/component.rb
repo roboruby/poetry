@@ -16,6 +16,11 @@ module Poetry
       class Component < Dialog::Component
         SIDES = %i[top right bottom left].freeze
 
+        # W5b commit 1: the Sheet gets its OWN controller - the dialog
+        # machinery + the presence-hold close its dictionary was waiting on
+        # (the Drawer subclass pattern, minus the swipe).
+        CONTROLLER = %i[poetry core sheet].freeze
+
         AGENT_RULES = [
           "Open sheets with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
@@ -68,6 +73,23 @@ module Poetry
         end
 
         private
+
+        # The Dialog parent resolves its CONTROLLER lexically, so every
+        # builder entry point re-declares here in Sheet's scope (the Drawer
+        # subclass lesson, test-pinned there).
+        def stimulus
+          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
+        end
+
+        def stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          attrs.to_attributes
+        end
+
+        def close_action
+          stimulus.action(:close)
+        end
 
         # Sheet-scoped label ids (two overlays on a page never collide).
         def instance_id

@@ -2553,9 +2553,9 @@ components:
     - description
     - footer
     - close
-    capsule: 742c8649e9de
+    capsule: 5bc16cc490b3
     controllers:
-    - identifier: poetry--core--dialog
+    - identifier: poetry--core--sheet
       targets:
       - dialog
       values:

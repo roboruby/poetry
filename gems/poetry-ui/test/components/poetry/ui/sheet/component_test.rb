@@ -33,19 +33,20 @@ module Poetry
           root = doc(html).css('[data-slot="sheet"]').first
           dialog = sheet_dialog(html)
 
-          # The whole point: poetry--core--dialog REUSED UNCHANGED - the
+          # W5b commit 1: the Sheet's OWN controller (the dialog machinery
+          # SUBCLASSED for the presence-hold close) - the
           # platform trap (showModal focus trap / Esc / top layer / focus
           # return) plus the controller's backdrop + scroll-lock wiring.
           assert_equal "sheet", root["data-component"]
-          assert_equal "poetry--core--dialog", root["data-controller"]
-          assert_equal "true", root["data-poetry--core--dialog-dismissible-value"]
-          assert_equal "dialog", dialog["data-poetry--core--dialog-target"]
-          assert_equal "cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose",
+          assert_equal "poetry--core--sheet", root["data-controller"]
+          assert_equal "true", root["data-poetry--core--sheet-dismissible-value"]
+          assert_equal "dialog", dialog["data-poetry--core--sheet-target"]
+          assert_equal "cancel->poetry--core--sheet#close click->poetry--core--sheet#backdropClose",
                        dialog["data-action"]
           assert_equal "", dialog["data-closed"]
           assert_nil dialog["data-open"]
           assert_includes dialog["class"], "backdrop:bg-black/50"
-          assert_match(/<button[^>]*data-action="poetry--core--dialog#open"/, html)
+          assert_match(/<button[^>]*data-action="poetry--core--sheet#open"/, html)
         end
 
         def test_every_side_stamps_data_side_and_its_slide_classes
@@ -103,7 +104,7 @@ module Poetry
 
           assert close, "the icon-only close ships by default (showCloseButton parity)"
           assert_equal "Close", close["aria-label"]
-          assert_equal "poetry--core--dialog#close", close["data-action"]
+          assert_equal "poetry--core--sheet#close", close["data-action"]
 
           refute_predicate doc(render_sheet(show_close_button: false)).css('[data-slot="sheet-close"]'), :any?
         end
@@ -111,7 +112,7 @@ module Poetry
         def test_dismissible_false_flows_to_the_inherited_controller_value
           root = doc(render_sheet(dismissible: false)).css('[data-slot="sheet"]').first
 
-          assert_equal "false", root["data-poetry--core--dialog-dismissible-value"]
+          assert_equal "false", root["data-poetry--core--sheet-dismissible-value"]
         end
 
         def test_footer_pins_to_the_edge
