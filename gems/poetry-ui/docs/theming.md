@@ -50,8 +50,21 @@ they win:
 
 ## Swapping the whole theme
 
-`style-default.css` is vendored — a re-run of `poetry:install` refreshes
-it, so upstream visual updates keep flowing. To own the design outright:
+poetry ships more than one theme (`themes/*.css` in each gem — `default`
+is new-york-v4, `vega` is the first upstream style port). Pick one at
+install time:
+
+```sh
+rails g poetry:install --theme vega          # or --charts --theme vega
+```
+
+The chosen fragment fills the **same slot** (`poetry/style-default.css` —
+the slot filename never changes), so switching themes later is a plain
+re-run with a different `--theme`: the slot is overwritten in place and
+no entry lines accrete. `style-default.css` is vendored — every re-run
+refreshes it, so upstream visual updates keep flowing.
+
+To own the design outright instead:
 
 1. Copy `poetry/style-default.css` to e.g. `poetry/style-acme.css`.
 2. Point the entry import at your copy (keep `layer(base)`).
@@ -90,17 +103,28 @@ Two standalone classes the theme defines for direct use:
 ## Gates that keep a theme honest
 
 - `rake css:verify_compiled` — every `cn-*` name a component emits must
-  exist in the compiled build (a missing theme rule cannot ship).
-- `rake css:verify_theme` — bidirectional name coverage: no unthemed
-  dictionary names, no dead theme rules.
-- The visual baselines — the default theme is pixel-locked; an
-  intentional restyle re-records them deliberately.
+  exist in the compiled build (a missing theme rule cannot ship). With no
+  `POETRY_THEME` set it compiles **every** shipped theme, so an incomplete
+  fragment can never sit green; set `POETRY_THEME=<name>` to gate one.
+- `rake css:verify_theme` — bidirectional name coverage per fragment: no
+  unthemed dictionary names, no dead theme rules.
+- The visual baselines — the default theme is pixel-locked per commit;
+  each shipped theme keeps its own golden set
+  (`test/visual_baselines/<theme>/`, recorded with
+  `POETRY_THEME=<name> VISUAL_REBASELINE=1`) and the full theme matrix
+  runs at milestone closes rather than per commit.
 
-## Multi-theme (the road ahead)
+## Multi-theme (what ships, what's ahead)
 
-Upstream nests theme rules under `.style-<name>` wrappers and toggles the
-wrapper class to switch themes live. poetry ships bare selectors while
-exactly one theme exists; the wrapper convention (plus
-`@custom-variant style-<name>`) arrives with the second official theme —
-your copied theme needs no wrapper either until you want two active at
-once.
+Shipped today: **install-time selection** — one theme per build via
+`--theme`, no wrapper needed, which is why poetry fragments use bare
+selectors. Upstream instead compiles all of its styles into one sheet,
+nests each under a `.style-<name>` wrapper and toggles the wrapper class
+on `<body>` to switch live; that convention (plus
+`@custom-variant style-<name>`) arrives when poetry needs two themes
+active at once — realistically the docs-site theme switcher. Your copied
+theme needs no wrapper either until then.
+
+Porting notes for the vega fragment (translation disciplines, what stayed
+poetry-idiom, what was dropped and why) live in
+`docs/vega-port-ledger.txt` and the fragment's header comment.
