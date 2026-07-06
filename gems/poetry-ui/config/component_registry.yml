@@ -842,7 +842,7 @@ components:
     - search_icon
     - dialog_content
     - dialog_overrides
-    capsule: 199341a4041b
+    capsule: 86d624b30458
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -992,7 +992,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 585d440e35d7
+    capsule: 324e23b2b3b0
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -1310,7 +1310,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: e023205c4079
+    capsule: 690c0b189346
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -1847,7 +1847,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 7b6c8e1e7eff
+    capsule: 86af6816fa92
     controllers:
     - identifier: poetry--core--menu
       targets: []

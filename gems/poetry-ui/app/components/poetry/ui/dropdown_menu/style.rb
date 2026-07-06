@@ -14,8 +14,10 @@ module Poetry
                           "origin-(--radix-dropdown-menu-content-transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
-        element :item, "cn-dropdown-menu-item relative flex cursor-default items-center " \
-                       "outline-hidden select-none data-[disabled]:pointer-events-none " \
+        # group/dropdown-menu-item (N12): bare marker, no CSS - the vega
+        # shortcut re-color (group-focus/dropdown-menu-item) keys on it.
+        element :item, "cn-dropdown-menu-item group/dropdown-menu-item relative flex cursor-default " \
+                       "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
                        "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
         element :checkbox_item, "cn-dropdown-menu-checkbox-item relative flex cursor-default " \

@@ -33,9 +33,11 @@ module Poetry
         # The source's [&_[cmdk-group-heading]] chain, landed on the part.
         element :heading, "cn-command-group-heading"
 
-        element :item, "cn-command-item relative flex cursor-default items-center outline-hidden " \
-                       "select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 " \
-                       "[&_svg]:pointer-events-none [&_svg]:shrink-0"
+        # group/command-item (N12): bare marker, no CSS - the vega shortcut
+        # re-color (group-data-selected/command-item) keys on it.
+        element :item, "cn-command-item group/command-item relative flex cursor-default " \
+                       "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
+                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
         element :shortcut, "cn-command-shortcut"
 
