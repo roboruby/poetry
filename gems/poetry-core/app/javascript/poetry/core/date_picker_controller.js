@@ -10,12 +10,26 @@ export default class DatePickerController extends Controller {
   static targets = ["label"]
   static values = {
     placeholder: { type: String, default: "Pick a date" },
+    mode: { type: String, default: "single" },
     locale: { type: String, default: "en-US" }
   }
 
   // Action: poetry--core--calendar:change->poetry--core--date-picker#picked
-  // on the wrapper.
+  // on the wrapper. Range mode (N9 D1): the label joins the pair, a
+  // start-only pick shows one date, and the popover closes only once the
+  // range COMPLETES (the shadcn convention - never mid-range).
   picked(event) {
+    if (this.modeValue === "range") {
+      const { start, end } = event.detail ?? {}
+      if (this.hasLabelTarget) {
+        this.labelTarget.textContent = start
+          ? [start, end].filter(Boolean).map((iso) => this.#format(iso)).join(" – ")
+          : this.placeholderValue
+      }
+      if (start && end) this.#closePopover()
+      return
+    }
+
     const iso = event.detail?.value
 
     if (this.hasLabelTarget) {

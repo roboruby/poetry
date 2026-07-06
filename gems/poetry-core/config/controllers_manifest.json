@@ -21,14 +21,26 @@
     "targets": [
       "caption",
       "day",
+      "endInput",
       "grid",
-      "input"
+      "input",
+      "startInput"
     ],
     "values": {
       "month": {
         "type": "String"
       },
       "selected": {
+        "type": "String"
+      },
+      "mode": {
+        "type": "String",
+        "default": "single"
+      },
+      "rangeStart": {
+        "type": "String"
+      },
+      "rangeEnd": {
         "type": "String"
       },
       "weekStart": {
@@ -196,6 +208,10 @@
       "placeholder": {
         "type": "String",
         "default": "Pick a date"
+      },
+      "mode": {
+        "type": "String",
+        "default": "single"
       },
       "locale": {
         "type": "String",

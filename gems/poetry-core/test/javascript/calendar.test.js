@@ -147,3 +147,123 @@ describe("poetry--core--calendar", () => {
     expect(document.activeElement.dataset.date).toBe("2026-07-01")
   })
 })
+
+// -- range mode (N9 D1): the addToRange transcription + the range wire ------
+
+const rangeMarkup = ({ start = "", end = "" } = {}) => `
+  <div id="cal" data-controller="poetry--core--calendar"
+       data-poetry--core--calendar-month-value="2026-06"
+       data-poetry--core--calendar-mode-value="range"
+       data-poetry--core--calendar-range-start-value="${start}"
+       data-poetry--core--calendar-range-end-value="${end}">
+    <div data-poetry--core--calendar-target="caption">June 2026</div>
+    <button id="prev" type="button" data-action="click->poetry--core--calendar#previousMonth">‹</button>
+    <input type="hidden" id="start-input" data-poetry--core--calendar-target="startInput" value="${start}">
+    <input type="hidden" id="end-input" data-poetry--core--calendar-target="endInput" value="${end}">
+    <div data-poetry--core--calendar-target="grid" data-action="keydown->poetry--core--calendar#keydown">
+      ${Array.from({ length: 42 }, (_, i) => dayButton(i)).join("")}
+    </div>
+  </div>`
+
+async function mountRange(options) {
+  document.body.innerHTML = rangeMarkup(options)
+  const application = Application.start()
+  registerPoetryControllers(application)
+  await nextFrame()
+  return application
+}
+
+describe("poetry--core--calendar range mode", () => {
+  let application
+
+  beforeEach(() => async () => {
+    application?.stop()
+    document.body.replaceChildren()
+    await nextFrame()
+  })
+
+  const attrsOf = (iso) => {
+    const day = dayFor(iso)
+    return {
+      selected: day.hasAttribute("data-selected"),
+      start: day.hasAttribute("data-range-start"),
+      middle: day.hasAttribute("data-range-middle"),
+      end: day.hasAttribute("data-range-end"),
+      aria: day.closest("[role=gridcell]").getAttribute("aria-selected"),
+    }
+  }
+
+  it("walks the addToRange states: start, complete, extend, restart, clear", async () => {
+    application = await mountRange()
+    const changes = []
+    el("cal").addEventListener("poetry--core--calendar:change", (e) => changes.push({ ...e.detail }))
+
+    // First click: a start-only pick renders as a plain selected single day.
+    dayFor("2026-06-10").click()
+    expect(attrsOf("2026-06-10")).toMatchObject({ selected: true, start: false, aria: "true" })
+    expect(el("start-input").value).toBe("2026-06-10")
+    expect(el("end-input").value).toBe("")
+    expect(changes.at(-1)).toEqual({ start: "2026-06-10", end: "" })
+
+    // Second click after: completes - the range vocabulary appears.
+    dayFor("2026-06-15").click()
+    expect(attrsOf("2026-06-10")).toMatchObject({ selected: false, start: true })
+    expect(attrsOf("2026-06-12")).toMatchObject({ middle: true, aria: "true" })
+    expect(attrsOf("2026-06-15")).toMatchObject({ end: true })
+    expect(el("end-input").value).toBe("2026-06-15")
+
+    // Click past the end: moves the end.
+    dayFor("2026-06-20").click()
+    expect(attrsOf("2026-06-15")).toMatchObject({ middle: true, end: false })
+    expect(attrsOf("2026-06-20")).toMatchObject({ end: true })
+
+    // Click before the start: extends backward.
+    dayFor("2026-06-05").click()
+    expect(attrsOf("2026-06-05")).toMatchObject({ start: true })
+    expect(attrsOf("2026-06-10")).toMatchObject({ middle: true, start: false })
+
+    // Click the end of a complete range: restarts from it.
+    dayFor("2026-06-20").click()
+    expect(attrsOf("2026-06-20")).toMatchObject({ selected: true, start: false, end: false })
+    expect(el("end-input").value).toBe("")
+    expect(attrsOf("2026-06-05")).toMatchObject({ start: false, selected: false, aria: "false" })
+
+    // Complete as a single day, then re-click clears everything.
+    dayFor("2026-06-20").click()
+    expect(attrsOf("2026-06-20")).toMatchObject({ start: true, end: true })
+    dayFor("2026-06-20").click()
+    expect(attrsOf("2026-06-20")).toMatchObject({ selected: false, start: false, end: false, aria: "false" })
+    expect(el("start-input").value).toBe("")
+    expect(changes.at(-1)).toEqual({ start: "", end: "" })
+  })
+
+  it("click-before-start swaps into a valid range", async () => {
+    application = await mountRange()
+    dayFor("2026-06-15").click()
+    dayFor("2026-06-10").click()
+
+    expect(attrsOf("2026-06-10")).toMatchObject({ start: true })
+    expect(attrsOf("2026-06-15")).toMatchObject({ end: true })
+    expect(el("start-input").value).toBe("2026-06-10")
+    expect(el("end-input").value).toBe("2026-06-15")
+  })
+
+  it("the range vocabulary survives month navigation (offscreen endpoints)", async () => {
+    application = await mountRange({ start: "2026-06-20", end: "2026-07-10" })
+    await nextFrame()
+
+    // June view: the start wears range-start, later June days are middle.
+    expect(attrsOf("2026-06-20")).toMatchObject({ start: true })
+    expect(attrsOf("2026-06-25")).toMatchObject({ middle: true })
+
+    // Navigate to July: the end appears, early July days are middle, the
+    // start is offscreen but the span still paints.
+    el("cal").querySelector("#prev").click() // May
+    el("cal").querySelector("#prev") // (noop - just ensure re-render safe)
+    application.getControllerForElementAndIdentifier(el("cal"), "poetry--core--calendar").nextMonth() // June
+    application.getControllerForElementAndIdentifier(el("cal"), "poetry--core--calendar").nextMonth() // July
+
+    expect(dayFor("2026-07-05").hasAttribute("data-range-middle")).toBe(true)
+    expect(dayFor("2026-07-10").hasAttribute("data-range-end")).toBe(true)
+  })
+})

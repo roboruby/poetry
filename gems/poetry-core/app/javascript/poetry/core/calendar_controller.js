@@ -9,17 +9,27 @@ import { Controller } from "@hotwired/stimulus"
 // focus over the days. Selection is a real form value; the DatePicker
 // composes this inside a Popover.
 //
-// Deferred (v2): range selection (the range_start/middle/end classes ship
-// in the dictionary but no controller path yet), dropdown caption, week
-// numbers, multiple months.
+// Range mode: mode="range" swaps the click path for a
+// transcription of react-day-picker's addToRange and the reflection for
+// the range vocabulary (data-range-start/middle/end - the dictionary
+// classes shipped inert at W6). The form value is TWO hidden inputs
+// (name[start]/name[end] - upstream has no form story; the wire shape is
+// poetry's). rdp semantics kept exactly: an incomplete start-only pick
+// renders as a plain selected single day; the range vocabulary appears
+// only once the range completes.
+//
+// Still deferred: dropdown caption, week numbers, multiple months.
 const DAY_SELECTOR = '[data-slot="calendar-day"]'
 const MS_PER_DAY = 86400000
 
 export default class CalendarController extends Controller {
-  static targets = ["grid", "caption", "input", "day"]
+  static targets = ["grid", "caption", "input", "startInput", "endInput", "day"]
   static values = {
     month: String, // the visible month, "YYYY-MM"
     selected: String, // the chosen date, "YYYY-MM-DD" (or "")
+    mode: { type: String, default: "single" }, // "single" | "range"
+    rangeStart: String, // "YYYY-MM-DD" (or "")
+    rangeEnd: String,
     weekStart: { type: Number, default: 0 }, // 0 = Sunday
     min: String,
     max: String,
@@ -54,9 +64,51 @@ export default class CalendarController extends Controller {
     const button = event.target.closest(DAY_SELECTOR)
     if (!button || button.disabled) return
 
+    if (this.modeValue === "range") {
+      this.#addToRange(button.dataset.date)
+      this.#reflectSelection()
+      this.dispatch("change", { detail: { start: this.rangeStartValue, end: this.rangeEndValue } })
+      return
+    }
+
     this.selectedValue = button.dataset.date
     this.#reflectSelection()
     this.dispatch("change", { detail: { value: this.selectedValue } })
+  }
+
+  // react-day-picker's addToRange, transcribed (ISO strings compare
+  // lexicographically, so <,> are date order).
+  #addToRange(clicked) {
+    const start = this.rangeStartValue
+    const end = this.rangeEndValue
+
+    if (!start) {
+      this.rangeStartValue = clicked
+      this.rangeEndValue = ""
+      return
+    }
+    if (!end) {
+      if (clicked === start) this.rangeEndValue = clicked // re-click completes the single-day range
+      else if (clicked < start) {
+        this.rangeStartValue = clicked
+        this.rangeEndValue = start
+      } else this.rangeEndValue = clicked
+      return
+    }
+    // A complete range:
+    if (clicked === start && clicked === end) {
+      this.rangeStartValue = "" // re-click the single-day range clears it
+      this.rangeEndValue = ""
+    } else if (clicked === start) {
+      this.rangeEndValue = clicked // collapse onto the start
+    } else if (clicked === end) {
+      this.rangeStartValue = clicked // restart from the end
+      this.rangeEndValue = ""
+    } else if (clicked < start) {
+      this.rangeStartValue = clicked // extend backward
+    } else {
+      this.rangeEndValue = clicked // move the end
+    }
   }
 
   // Action: keydown->poetry--core--calendar#keydown on the grid - arrows
@@ -125,6 +177,10 @@ export default class CalendarController extends Controller {
   }
 
   #reflectSelection() {
+    if (this.modeValue === "range") {
+      this.#reflectRange()
+      return
+    }
     for (const button of this.dayTargets) {
       const selected = button.dataset.date === this.selectedValue && this.selectedValue !== ""
 
@@ -132,17 +188,46 @@ export default class CalendarController extends Controller {
       // aria-selected belongs on the role=gridcell parent, not the button
       // (the ARIA grid contract; a plain button can't carry aria-selected).
       button.closest('[role="gridcell"]')?.setAttribute("aria-selected", selected ? "true" : "false")
-      if (button.dataset.date === this.#todayIso()) button.setAttribute("aria-current", "date")
-      else button.removeAttribute("aria-current")
+      this.#reflectToday(button)
     }
     if (this.hasInputTarget) this.inputTarget.value = this.selectedValue ?? ""
+  }
+
+  // The range vocabulary (rdp modifiers): the span wears range-start /
+  // range-middle / range-end only once COMPLETE; a start-only pick is a
+  // plain selected single day. Survives month nav because it re-derives
+  // from every visible button's date (a span may extend offscreen).
+  #reflectRange() {
+    const start = this.rangeStartValue || ""
+    const end = this.rangeEndValue || ""
+    const complete = start !== "" && end !== ""
+
+    for (const button of this.dayTargets) {
+      const iso = button.dataset.date
+      const inSpan = complete ? iso >= start && iso <= end : start !== "" && iso === start
+
+      this.#toggle(button, "data-selected", !complete && start !== "" && iso === start)
+      this.#toggle(button, "data-range-start", complete && iso === start)
+      this.#toggle(button, "data-range-end", complete && iso === end)
+      this.#toggle(button, "data-range-middle", complete && iso > start && iso < end)
+      button.closest('[role="gridcell"]')?.setAttribute("aria-selected", inSpan ? "true" : "false")
+      this.#reflectToday(button)
+    }
+    if (this.hasStartInputTarget) this.startInputTarget.value = start
+    if (this.hasEndInputTarget) this.endInputTarget.value = end
+  }
+
+  #reflectToday(button) {
+    if (button.dataset.date === this.#todayIso()) button.setAttribute("aria-current", "date")
+    else button.removeAttribute("aria-current")
   }
 
   // Exactly one day is the tab stop (the roving contract): the selected
   // day, else today in view, else the first enabled day.
   #rovingStop(preferred) {
+    const anchor = this.modeValue === "range" ? this.rangeStartValue : this.selectedValue
     const stop = preferred
-      || this.dayTargets.find((d) => d.dataset.date === this.selectedValue)
+      || this.dayTargets.find((d) => d.dataset.date === anchor)
       || this.dayTargets.find((d) => d.dataset.date === this.#todayIso())
       || this.dayTargets.find((d) => !d.disabled)
 
