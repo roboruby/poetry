@@ -22,6 +22,12 @@ module Poetry
           assert_includes wrapper["style"], "--sidebar-width: 16rem"
           assert_includes wrapper["style"], "--sidebar-width-icon: 3rem"
           assert_equal "true", wrapper["data-poetry--core--sidebar-open-value"]
+          # The layout classes the empty-base class:nil seed silently
+          # swallowed for two milestones (the poetry-docs shell caught it:
+          # gap + inset stacked vertically and the fixed column overlapped
+          # the page). merge_if_not_set now treats nil as unset.
+          assert_includes wrapper["class"], "flex", "the wrapper must lay gap + inset side by side"
+          assert_includes wrapper["class"], "min-h-svh"
         end
 
         def test_the_peer_carries_the_server_rendered_state_as_the_controller_target
