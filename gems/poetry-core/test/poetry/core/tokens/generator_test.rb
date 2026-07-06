@@ -22,7 +22,11 @@ module Poetry
           css = Generator.new.tailwind_theme_css
 
           assert_includes css, "@theme inline {"
-          assert_includes css, "  --radius-sm: calc(var(--radius) - 4px);"
+          # The Base-era multiplicative scale (N12): identical px to the old
+          # additive ny-v4 stops at the default --radius, plus 2xl..4xl for
+          # the style ports.
+          assert_includes css, "  --radius-sm: calc(var(--radius) * 0.6);"
+          assert_includes css, "  --radius-4xl: calc(var(--radius) * 2.6);"
           Tokens::SHADCN_V4_COMPAT_VARS.each do |name|
             assert_includes css, "  --color-#{name}: var(--#{name});"
           end

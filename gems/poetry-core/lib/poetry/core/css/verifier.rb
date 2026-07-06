@@ -25,6 +25,16 @@ module Poetry
         # Maximum Levenshtein distance for a did-you-mean suggestion.
         SUGGESTION_DISTANCE = 2
 
+        # Named group/peer MARKER classes (`group/menu-item`, `peer/menu-button`).
+        # Tailwind emits no CSS for the bare marker by design - it only ever
+        # appears inside the selectors of utilities that CONSUME it
+        # (`group-focus/menu-item:*`), so its presence in compiled CSS depends
+        # on which theme is active. A marker is valid markup regardless (N12:
+        # the vega port stamps markers whose consumers live in the vega
+        # fragment only), so verification skips them instead of rewarding the
+        # coincidence of a same-theme consumer.
+        MARKER_CLASS = %r{\A(?:group|peer)/[a-z0-9-]+\z}
+
         # Extracts the set of class names defined by a compiled CSS text.
         # Selectors are the text runs preceding `{` (which also covers rules
         # nested in @media etc.); Tailwind's escaping (`\:` `\/` `\[` ...) is
@@ -54,7 +64,7 @@ module Poetry
         # @param classes [Enumerable<String>]
         # @return [Array<Unknown>]
         def unknown(classes)
-          classes.uniq.reject { |name| @known.include?(name) }.map do |name|
+          classes.uniq.reject { |name| @known.include?(name) || name.match?(MARKER_CLASS) }.map do |name|
             Unknown.new(name, suggestion_for(name))
           end
         end

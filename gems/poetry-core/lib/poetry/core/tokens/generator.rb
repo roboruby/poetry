@@ -26,12 +26,20 @@ module Poetry
           "floor (4.54:1 on muted, 4.96:1 on background; shadcn's own value is 4.34:1 on muted, sub-AA)."
         ].freeze
 
-        # The distributed shadcn v4 radius scale (@theme inline).
+        # The distributed shadcn radius scale (@theme inline). N12 adopted
+        # the Base-era MULTIPLICATIVE form (upstream globals.css) over
+        # ny-v4's additive one: at the default --radius (0.625rem = 10px)
+        # every sm..xl stop computes to the same px (6/8/10/14), so the
+        # switch is pixel-neutral, and it brings the 2xl..4xl stops the
+        # style ports use (vega: rounded-2xl toast, rounded-4xl badge).
         RADIUS_SCALE = {
-          "sm" => "calc(var(--radius) - 4px)",
-          "md" => "calc(var(--radius) - 2px)",
+          "sm" => "calc(var(--radius) * 0.6)",
+          "md" => "calc(var(--radius) * 0.8)",
           "lg" => "var(--radius)",
-          "xl" => "calc(var(--radius) + 4px)"
+          "xl" => "calc(var(--radius) * 1.4)",
+          "2xl" => "calc(var(--radius) * 1.8)",
+          "3xl" => "calc(var(--radius) * 2.2)",
+          "4xl" => "calc(var(--radius) * 2.6)"
         }.freeze
 
         ARTIFACTS = ["tokens/tokens.css", "tokens/tailwind-theme.css", "DESIGN.md"].freeze

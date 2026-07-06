@@ -5,10 +5,13 @@ generator: bin/rake tokens:generate
 dark_mode: class.dark
 radius: 0.625rem
 radius_scale:
-  radius-sm: calc(var(--radius) - 4px)
-  radius-md: calc(var(--radius) - 2px)
+  radius-sm: calc(var(--radius) * 0.6)
+  radius-md: calc(var(--radius) * 0.8)
   radius-lg: var(--radius)
-  radius-xl: calc(var(--radius) + 4px)
+  radius-xl: calc(var(--radius) * 1.4)
+  radius-2xl: calc(var(--radius) * 1.8)
+  radius-3xl: calc(var(--radius) * 2.2)
+  radius-4xl: calc(var(--radius) * 2.6)
 colors:
   light:
     background: oklch(1 0 0)

@@ -51,6 +51,15 @@ module Poetry
           assert_nil unknown.first.suggestion
         end
 
+        # N12: bare group/peer markers emit no CSS by design - their compiled
+        # presence depends on which THEME consumes them, so they are valid
+        # dictionary classes even when the active theme never references them.
+        def test_named_group_and_peer_markers_are_never_unknown
+          assert_empty @verifier.unknown(%w[group/command-item peer/menu-button])
+          assert_equal 1, @verifier.unknown(%w[group/command-item definitely-not-real]).size,
+                       "the marker skip must not swallow real hallucinations"
+        end
+
         def test_verify_style_flags_dictionary_classes_missing_from_the_build
           style = Class.new(Poetry::Core::Style) do
             base "inline-flex rounded"
