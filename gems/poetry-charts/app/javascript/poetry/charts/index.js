@@ -7,6 +7,7 @@ import ChartTooltipController from "@poetry/charts/tooltip_controller"
 import ChartAdapterController from "@poetry/charts/adapter_controller"
 import ChartMotionController from "@poetry/charts/motion_controller"
 import ChartLiveController from "@poetry/charts/live_controller"
+import ChartWindowController from "@poetry/charts/window_controller"
 import { registerChartAdapter, chartAdapter, registeredAdapters } from "@poetry/charts/adapter_registry"
 import { createChartJsAdapter } from "@poetry/charts/adapters/chartjs"
 
@@ -15,6 +16,7 @@ export {
   ChartAdapterController,
   ChartMotionController,
   ChartLiveController,
+  ChartWindowController,
   registerChartAdapter,
   chartAdapter,
   registeredAdapters,
@@ -26,4 +28,5 @@ export function registerPoetryChartsControllers(application) {
   application.register("poetry--charts--adapter", ChartAdapterController)
   application.register("poetry--charts--motion", ChartMotionController)
   application.register("poetry--charts--live", ChartLiveController)
+  application.register("poetry--charts--window", ChartWindowController)
 }

@@ -44,6 +44,21 @@ export default class ChartLiveController extends Controller {
     this.update(event.detail.data)
   }
 
+  // The window (C-W5): [start, end] inclusive indices into the FULL data;
+  // the renderer slices before computing. Instant renders - a drag should
+  // track the pointer, not tween behind it.
+  setWindow(window) {
+    const payload = this.#payload()
+    payload.frame.window = window
+    this.writing = true
+    try {
+      this.payloadTarget.textContent = JSON.stringify(payload)
+    } finally {
+      queueMicrotask(() => { this.writing = false })
+    }
+    this.#render(payload, { animate: false })
+  }
+
   // The interactive legend (C-W4): click->poetry--charts--live#toggleSeries
   // with the series key as an action param. Hidden series leave the domain
   // (recharts' rescale-on-hide), their marks hide, their legend item dims.
@@ -101,13 +116,13 @@ export default class ChartLiveController extends Controller {
     return JSON.parse(this.payloadTarget.textContent)
   }
 
-  #render(payload) {
+  #render(payload, { animate = true } = {}) {
     this.cancel?.()
     const before = captureGeometry(this.svg)
     applyCartesian(this.element, payload)
     this.dispatch("updated") // the tooltip re-reads the fresh coordinates
 
-    if (this.#reducedMotion()) {
+    if (!animate || this.#reducedMotion()) {
       this.#settle()
       return
     }

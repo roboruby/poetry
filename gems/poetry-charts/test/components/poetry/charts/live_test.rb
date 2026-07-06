@@ -138,6 +138,55 @@ module Poetry
         assert_match(/needs live: true/, error.message)
       end
 
+      def test_brush_renders_the_strip_and_wires_the_window_controller
+        html = render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                      live: true, zoom: true)) do |chart|
+          chart.with_x_axis(data_key: :month)
+          chart.with_line(data_key: :desktop)
+          chart.with_brush
+        end
+
+        brush = html.css('g[data-slot="chart-brush"]').first
+
+        assert brush, "the strip renders"
+        assert_equal "pointerdown->poetry--charts--window#startBrush", brush["data-action"]
+        assert_predicate html.css('[data-slot="chart-brush-track"]'), :any?
+        assert_predicate html.css('[data-slot="chart-brush-window"]'), :any?
+        assert_equal(%w[start end], html.css('[data-slot="chart-brush-handle"]').map { |h| h["data-edge"] })
+
+        frame = html.css('[data-slot="chart-svg"]').first.parent
+
+        assert_includes frame["data-controller"], "poetry--charts--window"
+        assert frame["data-poetry--charts--window-plot-value"]
+        assert frame["data-poetry--charts--window-brush-value"]
+
+        svg = html.css('[data-slot="chart-svg"]').first
+
+        assert_includes svg["data-action"], "pointerdown->poetry--charts--window#startZoom"
+        assert_includes svg["data-action"], "dblclick->poetry--charts--window#reset"
+        assert_predicate html.css('[data-slot="chart-zoom-selection"][display="none"]'), :any?
+      end
+
+      def test_window_features_need_live
+        error = assert_raises(ArgumentError) do
+          render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv")) do |chart|
+            chart.with_line(data_key: :desktop)
+            chart.with_brush
+          end
+        end
+
+        assert_match(/with_brush needs live: true/, error.message)
+
+        error = assert_raises(ArgumentError) do
+          render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",
+                                                 zoom: true)) do |chart|
+            chart.with_line(data_key: :desktop)
+          end
+        end
+
+        assert_match(/zoom: true needs live: true/, error.message)
+      end
+
       def test_lambdas_and_labels_raise_teaching_errors
         error = assert_raises(ArgumentError) do
           render_inline(LineChart::Component.new(data: DATA, config: CONFIG, id: "lv",

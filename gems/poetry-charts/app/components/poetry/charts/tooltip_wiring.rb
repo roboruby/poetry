@@ -53,10 +53,12 @@ module Poetry
       # (Phase B) joins when live: is, wired so its updated dispatch
       # re-reads the tooltip's coordinates mid-stream.
       def frame_data
+        window = respond_to?(:window_features?) && window_features?
         controllers = []
         controllers << CONTROLLER if tooltip?
         controllers << Motion::CONTROLLER if respond_to?(:animate?) && animate?
         controllers << Live::CONTROLLER if respond_to?(:live?) && live?
+        controllers << Live::WINDOW_CONTROLLER if window
 
         data = {}
         data[:controller] = controllers.join(" ") if controllers.any?
@@ -67,6 +69,7 @@ module Poetry
         end
         data[:action] = actions.join(" ") if actions.any?
         data["#{CONTROLLER}-sync-value"] = sync if tooltip? && respond_to?(:sync) && sync.present?
+        data.merge!(window_frame_data) if window
         data
       end
 
@@ -85,6 +88,11 @@ module Poetry
                else
                  { "role" => "img" }
                end
+        if respond_to?(:zoom?) && zoom?
+          zoom_actions = "pointerdown->#{Live::WINDOW_CONTROLLER}#startZoom " \
+                         "dblclick->#{Live::WINDOW_CONTROLLER}#reset"
+          base["data-action"] = [base["data-action"], zoom_actions].compact.join(" ")
+        end
         respond_to?(:motion_svg_attributes) ? base.merge(motion_svg_attributes) : base
       end
 

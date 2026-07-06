@@ -137,7 +137,7 @@ module Poetry
             width: width,
             height: height,
             x_key: horizontal? ? y_axis_config&.data_key : x_axis_config&.data_key,
-            margin: margin || {},
+            margin: live_margin,
             category_axis: horizontal? ? y_axis? : x_axis?,
             # Horizontal charts hide the numeric axis (implicit tickCount 5);
             # vertical ones take the visible Y axis's count when present.

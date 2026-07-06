@@ -43,6 +43,15 @@ class DemoController < ApplicationController
     render layout: "component_preview"
   end
 
+  # The C-W5 demo: a year of data behind a brush strip + drag-zoom.
+  def window
+    @data = Array.new(12) do |i|
+      { month: Date::ABBR_MONTHNAMES[i + 1],
+        desktop: (200 + (Math.sin(i / 1.8) * 120) + (i * 8)).round }
+    end
+    render layout: "component_preview"
+  end
+
   # The live-mode demo: the server renders the first window;
   # the page's ticker streams new points through the payload-script
   # channel and the chart re-renders client-side.

@@ -157,12 +157,57 @@ namespace :test do
       raise "the legend toggle did not restore"
     end
 
+    # -- C-W5: the window (brush drag + drag-zoom + reset) ---------------------
+    session.visit("/window")
+    raise "window demo missing" unless session.has_css?('[data-slot="demo-window"]')
+    raise "expected 12 months" unless session.all('[data-slot="chart-x-axis"] text').length == 12
+
+    mouse = session.driver.browser.mouse
+    handle_rect = session.evaluate_script(
+      "document.querySelector('[data-slot=\"chart-brush-handle\"][data-edge=\"end\"]').getBoundingClientRect().toJSON()"
+    )
+    from_x = handle_rect["x"] + (handle_rect["width"] / 2)
+    from_y = handle_rect["y"] + (handle_rect["height"] / 2)
+    mouse.move(x: from_x, y: from_y)
+    mouse.down
+    mouse.move(x: from_x - (handle_rect["width"] * 30), y: from_y, steps: 8)
+    mouse.up
+
+    brushed_ticks = nil
+    20.times do
+      brushed_ticks = session.all('[data-slot="chart-x-axis"] text').length
+      break if brushed_ticks < 12
+
+      sleep 0.1
+    end
+    raise "the brush drag never narrowed the window (still #{brushed_ticks} ticks)" unless brushed_ticks < 12
+
+    brush_window = session.evaluate_script(
+      "JSON.parse(document.querySelector('[data-slot=\"chart-live-payload\"]').textContent).frame.window"
+    )
+    raise "the window was not persisted (#{brush_window.inspect})" unless brush_window.is_a?(Array)
+
+    # Two CDP clicks are too slow to coalesce into a dblclick - dispatch it
+    # (the pointer mechanics are already proven by the drag above).
+    session.execute_script(
+      "document.querySelector('[data-slot=\"chart-svg\"]').dispatchEvent(new MouseEvent('dblclick', { bubbles: true }))"
+    )
+    reset_ticks = nil
+    20.times do
+      reset_ticks = session.all('[data-slot="chart-x-axis"] text').length
+      break if reset_ticks == 12
+
+      sleep 0.1
+    end
+    raise "double-click did not reset the window (#{reset_ticks} ticks)" unless reset_ticks == 12
+
     puts "interaction: hover -> #{label} #{value}, keyboard -> June, Escape dismisses; " \
          "the dataset swap MORPHS between server renders (data-motion morph -> settled, new geometry), " \
          "the 6 -> 3 month shape change replays the entrance, and the tooltip survives every swap; " \
          "live mode streams client-side (same page, same SVG node, sliding window, morphing ticks, " \
          "tooltip live at #{live_label}); synced tooltips follow across charts (#{a_label}) and the " \
-         "legend toggle hides + rescales (y ticks #{ticks_before.join("/")} -> #{ticks_after.join("/")}) - " \
-         "the engine works in Chrome"
+         "legend toggle hides + rescales (y ticks #{ticks_before.join("/")} -> #{ticks_after.join("/")}); " \
+         "the brush drag narrows 12 -> #{brushed_ticks} months (window #{brush_window.inspect}) and " \
+         "double-click resets - the engine works in Chrome"
   end
 end

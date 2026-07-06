@@ -12,4 +12,7 @@ Rails.application.routes.draw do
 
   # The C-W4 demo: two sync-grouped charts + an interactive legend.
   get "/sync", to: "demo#sync"
+
+  # The C-W5 demo: brush + drag-zoom over the live window.
+  get "/window", to: "demo#window"
 end

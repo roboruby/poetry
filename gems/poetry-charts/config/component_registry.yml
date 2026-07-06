@@ -85,6 +85,9 @@ components:
     - name: width
       type: integer
       default: 640
+    - name: zoom
+      type: boolean
+      default: false
     slots:
     - name: reference_lines
       many: true
@@ -92,6 +95,8 @@ components:
       many: true
     - name: reference_dots
       many: true
+    - name: brush
+      many: false
     - name: areas
       many: true
     - name: x_axis
@@ -113,7 +118,10 @@ components:
     - reference_area
     - reference_dot
     - error_bar
-    capsule: e362a23d5e5a
+    - brush_track
+    - brush_window
+    - brush_handle
+    capsule: fedc26b7c0f6
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:)
       / with_legend.'
@@ -177,6 +185,9 @@ components:
     - name: width
       type: integer
       default: 640
+    - name: zoom
+      type: boolean
+      default: false
     slots:
     - name: reference_lines
       many: true
@@ -184,6 +195,8 @@ components:
       many: true
     - name: reference_dots
       many: true
+    - name: brush
+      many: false
     - name: bars
       many: true
     - name: x_axis
@@ -205,8 +218,11 @@ components:
     - reference_area
     - reference_dot
     - error_bar
+    - brush_track
+    - brush_window
+    - brush_handle
     - label
-    capsule: 703c05039452
+    capsule: 7b3560599905
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:)
       / with_legend.'
@@ -404,6 +420,9 @@ components:
     - name: width
       type: integer
       default: 640
+    - name: zoom
+      type: boolean
+      default: false
     slots:
     - name: reference_lines
       many: true
@@ -411,6 +430,8 @@ components:
       many: true
     - name: reference_dots
       many: true
+    - name: brush
+      many: false
     - name: lines
       many: true
     - name: x_axis
@@ -432,8 +453,11 @@ components:
     - reference_area
     - reference_dot
     - error_bar
+    - brush_track
+    - brush_window
+    - brush_handle
     - label
-    capsule: 703c05039452
+    capsule: 7b3560599905
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'

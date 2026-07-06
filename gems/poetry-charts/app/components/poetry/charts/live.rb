@@ -23,11 +23,113 @@ module Poetry
       module ClassMethods
         def live_option
           option :live, :boolean, default: false
+          # The window features (C-W5): both slice the data client-side, so
+          # both need the live renderer.
+          option :zoom, :boolean, default: false
+          renders_one :brush, lambda { |height: 30|
+            @brush_config = { height: height.to_f }
+            nil
+          }
         end
       end
 
       def live?
         !!live
+      end
+
+      WINDOW_CONTROLLER = "poetry--charts--window"
+      BRUSH_GAP = 8
+
+      def brush_config
+        brush?
+        if @brush_config && !live?
+          raise ArgumentError, "with_brush needs live: true - the window recomputes client-side"
+        end
+
+        @brush_config
+      end
+
+      def zoom?
+        raise ArgumentError, "zoom: true needs live: true - the window recomputes client-side" if zoom && !live?
+
+        !!zoom
+      end
+
+      def window_features?
+        !!brush_config || zoom?
+      end
+
+      # The brush strip reserves space below the x axis by growing the
+      # bottom margin the cartesian sees.
+      def live_margin
+        base = (margin || {}).to_h.symbolize_keys
+        return base unless brush_config
+
+        bottom = (base[:bottom] || Cartesian::DEFAULT_MARGIN[:bottom]).to_f
+        base.merge(bottom: bottom + brush_config[:height] + BRUSH_GAP)
+      end
+
+      def brush_top
+        original_bottom = (margin || {}).to_h.symbolize_keys.fetch(:bottom, Cartesian::DEFAULT_MARGIN[:bottom]).to_f
+        height - original_bottom - brush_config[:height]
+      end
+
+      # The strip: track + window + two handles, all server-rendered; the
+      # window controller drags them and repaints on window changes.
+      def brush_svg
+        config = brush_config
+        return unless config
+
+        left = cartesian.plot_left
+        width = cartesian.plot_right - left
+        top = brush_top
+        handle = 6.0
+
+        tag.g("data-slot": "chart-brush", "aria-hidden": true,
+              "data-action": "pointerdown->#{WINDOW_CONTROLLER}#startBrush") do
+          safe_join([
+                      tag.rect(class: css(:brush_track), "data-slot": "chart-brush-track",
+                               x: fnum(left), y: fnum(top), width: fnum(width),
+                               height: fnum(config[:height]), rx: 4),
+                      tag.rect(class: css(:brush_window), "data-slot": "chart-brush-window",
+                               x: fnum(left), y: fnum(top), width: fnum(width),
+                               height: fnum(config[:height]), rx: 4),
+                      tag.rect(class: css(:brush_handle), "data-slot": "chart-brush-handle", "data-edge": "start",
+                               x: fnum(left - (handle / 2)), y: fnum(top), width: fnum(handle),
+                               height: fnum(config[:height]), rx: 2),
+                      tag.rect(class: css(:brush_handle), "data-slot": "chart-brush-handle", "data-edge": "end",
+                               x: fnum(left + width - (handle / 2)), y: fnum(top), width: fnum(handle),
+                               height: fnum(config[:height]), rx: 2)
+                    ])
+        end
+      end
+
+      # The zoom drag-selection overlay (hidden until a drag starts).
+      def zoom_selection_svg
+        return unless zoom?
+
+        tag.rect(class: css(:reference_area), "data-slot": "chart-zoom-selection", "aria-hidden": true,
+                 x: 0, y: fnum(cartesian.plot_top), width: 0,
+                 height: fnum(cartesian.plot_bottom - cartesian.plot_top),
+                 "fill-opacity": 0.15, display: "none")
+      end
+
+      # Stimulus values for the window controller: the plot rect and the
+      # brush strip rect, server-computed (the controller's only layout
+      # math is fractions of these).
+      def window_frame_data
+        return {} unless window_features?
+
+        data = {
+          "#{WINDOW_CONTROLLER}-zoom-value" => zoom?.to_s,
+          "#{WINDOW_CONTROLLER}-plot-value" =>
+            [cartesian.plot_left, cartesian.plot_right, cartesian.plot_top, cartesian.plot_bottom].to_json
+        }
+        if (config = brush_config)
+          data["#{WINDOW_CONTROLLER}-brush-value"] =
+            [cartesian.plot_left, brush_top, cartesian.plot_right - cartesian.plot_left, config[:height]].to_json
+        end
+        data
       end
 
       def live_payload

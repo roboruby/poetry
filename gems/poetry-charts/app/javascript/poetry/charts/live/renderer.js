@@ -63,7 +63,11 @@ export function displayValue(value) {
 
 export function computeCartesian(payload) {
   const { spec, frame } = payload
-  const data = spec.data
+  // The window (C-W5 brush/zoom): [start, end] inclusive indices slice
+  // the FULL data before anything computes.
+  const data = frame.window
+    ? spec.data.slice(frame.window[0], frame.window[1] + 1)
+    : spec.data
   // Hidden series (the C-W4 legend toggle) leave the domain and the
   // stacks entirely - recharts' rescale-on-hide semantics.
   const hidden = new Set(frame.hidden ?? [])
@@ -149,7 +153,7 @@ export function computeCartesian(payload) {
   }
 
   return {
-    horizontal, hidden, plotLeft, plotRight, plotTop, plotBottom,
+    horizontal, hidden, rows: data, plotLeft, plotRight, plotTop, plotBottom,
     categories, xPositions, xCenters, bandWidth,
     yTicks, yScale, baseline, points, valueAt,
   }
@@ -420,7 +424,7 @@ function applyCoordinates(frame, geometry, payload) {
     ])),
     values: Object.fromEntries(visible.map((entry) => [
       entry.key,
-      spec.data.map((row) => displayValue(row[entry.key])),
+      geometry.rows.map((row) => displayValue(row[entry.key])),
     ])),
   }
   script.textContent = JSON.stringify(coordinates)

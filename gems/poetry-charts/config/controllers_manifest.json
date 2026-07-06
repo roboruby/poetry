@@ -52,8 +52,24 @@
       "connect",
       "disconnect",
       "receive",
+      "setWindow",
       "toggleSeries",
       "update"
+    ]
+  },
+  "poetry--charts--window": {
+    "targets": [],
+    "values": [
+      "brush",
+      "plot",
+      "zoom"
+    ],
+    "methods": [
+      "connect",
+      "disconnect",
+      "reset",
+      "startBrush",
+      "startZoom"
     ]
   }
 }

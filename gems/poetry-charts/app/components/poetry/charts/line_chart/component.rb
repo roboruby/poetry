@@ -119,7 +119,7 @@ module Poetry
             width: width,
             height: height,
             x_key: x_axis_config&.data_key,
-            margin: margin || {},
+            margin: live_margin,
             category_axis: x_axis?,
             y_tick_count: y_axis_config&.tick_count || 5
           )

@@ -16,6 +16,9 @@ module Poetry
         element :reference_area, "fill-muted-foreground"
         element :reference_dot, "fill-background stroke-muted-foreground"
         element :error_bar, "stroke-foreground"
+        element :brush_track, "fill-muted"
+        element :brush_window, "fill-foreground/10 stroke-border"
+        element :brush_handle, "fill-muted-foreground"
         element :label, "fill-foreground"
       end
     end
