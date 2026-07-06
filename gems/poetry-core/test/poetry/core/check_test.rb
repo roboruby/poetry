@@ -132,6 +132,13 @@ module Poetry
         refute_includes rules(%(<div class="bg-primary text-muted-foreground border-input"></div>)), "raw-color"
       end
 
+      def test_cn_theme_classes_are_sanctioned
+        # The N11 theme layer: cn-* names are the sanctioned restyle
+        # surface and must never read as off-system classes.
+        refute_includes rules(%(<div class="cn-button cn-button-variant-destructive cn-rtl-flip"></div>)),
+                        "raw-color"
+      end
+
       # --- output ---
 
       def test_json_output_is_structured
