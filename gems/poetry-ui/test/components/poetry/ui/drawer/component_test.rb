@@ -60,7 +60,9 @@ module Poetry
           dialog = html.css("dialog").first
 
           assert_equal "right", dialog["data-swipe-direction"]
-          assert_includes dialog["class"], "rounded-l-xl"
+          # The corner/edge chrome rides the per-direction theme rule; the
+          # movement-axis var mapping stays inline (mechanism).
+          assert_includes dialog["class"], "cn-drawer-direction-right"
           assert_includes dialog["class"], "[--translate-x:var(--drawer-swipe-movement-x,0px)]"
         end
 

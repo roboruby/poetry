@@ -311,7 +311,8 @@ module Poetry
 
           assert_includes html, "max-h-(--radix-dropdown-menu-content-available-height)"
           assert_includes html, "origin-(--radix-dropdown-menu-content-transform-origin)"
-          assert_includes html, "data-[variant=destructive]:focus:bg-destructive/10"
+          # The destructive focus treatment rides .cn-dropdown-menu-item.
+          assert_includes html, "cn-dropdown-menu-item"
         end
       end
     end

@@ -20,7 +20,7 @@ module Poetry
           assert_includes html, "<dialog"
           assert_includes html, 'data-controller="poetry--core--dialog"'
           assert_includes html, 'data-closed=""'
-          assert_includes html, "backdrop:bg-black/50"
+          assert_includes html, "cn-dialog-content" # panel chrome + backdrop tint ride the theme rule
           assert_includes html,
                           'data-action="cancel->poetry--core--dialog#close click->poetry--core--dialog#backdropClose"'
         end

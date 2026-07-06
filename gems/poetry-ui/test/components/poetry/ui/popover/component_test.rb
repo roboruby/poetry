@@ -95,9 +95,9 @@ module Poetry
 
           assert_includes header["class"], "flex-col"
           assert_equal "Dimensions", title.text
-          assert_includes title["class"], "font-medium"
+          assert_includes title["class"], "cn-popover-title"
           assert_equal "Set the dimensions for the layer.", description.text
-          assert_includes description["class"], "text-muted-foreground"
+          assert_includes description["class"], "cn-popover-description"
           assert_equal title["id"], content["aria-labelledby"]
           assert_equal description["id"], content["aria-describedby"]
           # No ARIA roles on the parts - name/description are wired by id.
@@ -177,8 +177,8 @@ module Poetry
 
           assert_includes html, "origin-(--radix-popover-content-transform-origin)"
           assert_includes html, "w-72"
-          assert_includes html, "data-open:zoom-in-95"
-          assert_includes html, "data-[side=bottom]:slide-in-from-top-2"
+          # Panel chrome + the animate/slide chains ride the theme rule.
+          assert_includes html, "cn-popover-content"
           assert_includes html, "outline-hidden"
         end
 

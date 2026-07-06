@@ -125,8 +125,8 @@ module Poetry
 
           assert_includes classes, "w-64"
           assert_includes classes, "origin-(--radix-hover-card-content-transform-origin)"
-          assert_includes classes, "bg-popover"
-          assert_includes classes, "data-open:zoom-in-95"
+          # Panel chrome + the animate/slide chains ride the theme rule.
+          assert_includes classes, "cn-hover-card-content"
           assert_includes classes, "outline-hidden"
         end
 

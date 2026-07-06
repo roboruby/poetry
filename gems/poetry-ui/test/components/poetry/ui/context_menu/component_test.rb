@@ -315,11 +315,14 @@ module Poetry
 
           assert_includes html, "max-h-(--radix-context-menu-content-available-height)"
           assert_includes html, "origin-(--radix-context-menu-content-transform-origin)"
-          # The context deltas vs the dropdown dictionary:
+          # The context deltas vs the dropdown dictionary now live in the
+          # theme rules (label adds text-foreground; the sub-trigger omits
+          # gap-2) - the names prove the family split:
           label = doc(html).css('[data-slot="context-menu-label"]').first
           sub_trigger = doc(html).css('[data-slot="context-menu-sub-trigger"]').first
 
-          assert_includes label["class"], "text-foreground"
+          assert_includes label["class"], "cn-context-menu-label"
+          assert_includes sub_trigger["class"], "cn-context-menu-sub-trigger"
           refute_includes sub_trigger["class"], "gap-2", "the context sub-trigger omits gap-2 (source-exact)"
         end
       end

@@ -3,26 +3,19 @@
 module Poetry
   module Ui
     module Tooltip
-      # The Tooltip dictionary - shadcn new-york-v4 tooltip.tsx,
-      # source-validated 2026-07-02 (Tooltip). The
-      # inverse scheme (bg-foreground/text-background) IS the treatment -
-      # the only trio member not on popover tokens. Note animate-in is
-      # UNGATED (source-exact): the open animation classes are
-      # unconditional, only the exit chain is data-closed-gated. The origin
-      # class binds through the tokens/aliases.css alias to popper's
-      # generic var.
+      # Re-expressed through the cn-* theme layer (N11). The inverse scheme
+      # (bg-foreground/text-background) stays INLINE per upstream's own
+      # split - it IS the treatment and upstream keeps it in markup; the
+      # box, type, and animation chain ride the theme (animate-in remains
+      # UNGATED there, source-exact).
       class Style < Poetry::Core::Style
-        element :content, "z-50 w-fit origin-(--radix-tooltip-content-transform-origin) animate-in " \
-                          "rounded-md bg-foreground px-3 py-1.5 text-xs text-balance text-background " \
-                          "fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 " \
-                          "data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 " \
-                          "data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out " \
-                          "data-closed:fade-out-0 data-closed:zoom-out-95"
+        element :content, "cn-tooltip-content z-50 w-fit " \
+                          "origin-(--radix-tooltip-content-transform-origin) " \
+                          "bg-foreground text-background"
 
-        # The built-in arrow's visual classes (source-exact, riding an
-        # inner span; the outer data-slot=tooltip-arrow box is popper's
-        # ARROW target - positioned + rotated by the controller).
-        element :arrow, "z-50 size-2.5 translate-y-[calc(-50%_-_2px)] rotate-45 rounded-[2px] " \
+        # The arrow: popper positions/rotates the outer box; the visual
+        # size/rounding rides the theme, the paint + geometry stay inline.
+        element :arrow, "cn-tooltip-arrow z-50 translate-y-[calc(-50%_-_2px)] rotate-45 " \
                         "bg-foreground fill-foreground"
       end
     end

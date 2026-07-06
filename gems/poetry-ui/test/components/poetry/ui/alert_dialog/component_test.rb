@@ -39,7 +39,7 @@ module Poetry
           assert_equal "", dialog["data-closed"]
           assert_nil dialog["data-open"]
           assert_equal "dialog", dialog["data-poetry--core--dialog-target"]
-          assert_includes dialog["class"], "backdrop:bg-black/50"
+          assert_includes dialog["class"], "cn-alert-dialog-content"
           assert_includes dialog["class"], "open:grid"
         end
 
@@ -175,7 +175,7 @@ module Poetry
           fragment = doc(html)
           media = fragment.css('[data-slot="alert-dialog-media"]').first
 
-          assert_includes media["class"], "size-16"
+          assert_includes media["class"], "cn-alert-dialog-media"
           assert_includes media["class"], "sm:row-span-2"
           assert_includes fragment.css('[data-slot="alert-dialog-header"]').first["class"], "grid-rows-[auto_auto_1fr]"
           assert_includes fragment.css('[data-slot="alert-dialog-title"]').first["class"], "sm:col-start-2"

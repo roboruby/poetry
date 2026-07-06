@@ -3,71 +3,46 @@
 module Poetry
   module Ui
     module DropdownMenu
-      # The DropdownMenu dictionary - shadcn new-york-v4, source-validated
-      # 2026-07-02 (DropdownMenu). Class strings are
-      # source-exact per part; the only poetry additions are the indicator
-      # visibility switch (:item_indicator_state - React conditionally
-      # renders the indicator, poetry server-renders it and lets the item's
-      # data-unchecked hide it) and the named icon sizes the source inlined on
-      # its lucide elements.
+      # Re-expressed through the cn-* theme layer (N11): panel/item chrome,
+      # focus treatments, and the animate chains ride themes/default.css;
+      # popper vars, overflow, and the poetry indicator-visibility switch
+      # stay inline. Icon glyph classes stay inline per upstream (TSX
+      # inlines them on the lucide elements).
       class Style < Poetry::Core::Style
-        element :content, "z-50 max-h-(--radix-dropdown-menu-content-available-height) min-w-[8rem] " \
-                          "origin-(--radix-dropdown-menu-content-transform-origin) overflow-x-hidden " \
-                          "overflow-y-auto rounded-md border bg-popover p-1 text-popover-foreground shadow-md " \
-                          "data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 " \
-                          "data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 " \
-                          "data-closed:animate-out data-closed:fade-out-0 " \
-                          "data-closed:zoom-out-95 data-open:animate-in " \
-                          "data-open:fade-in-0 data-open:zoom-in-95"
+        element :content, "cn-dropdown-menu-content z-50 " \
+                          "max-h-(--radix-dropdown-menu-content-available-height) " \
+                          "origin-(--radix-dropdown-menu-content-transform-origin) " \
+                          "overflow-x-hidden overflow-y-auto"
 
-        element :item, "relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm " \
-                       "outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
-                       "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 " \
-                       "data-[variant=destructive]:text-destructive " \
-                       "data-[variant=destructive]:focus:bg-destructive/10 " \
-                       "data-[variant=destructive]:focus:text-destructive " \
-                       "dark:data-[variant=destructive]:focus:bg-destructive/20 " \
-                       "[&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 " \
-                       "[&_svg:not([class*='text-'])]:text-muted-foreground " \
-                       "data-[variant=destructive]:*:[svg]:text-destructive!"
+        element :item, "cn-dropdown-menu-item relative flex cursor-default items-center " \
+                       "outline-hidden select-none data-[disabled]:pointer-events-none " \
+                       "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :checkbox_item, "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 " \
-                                "text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
+        element :checkbox_item, "cn-dropdown-menu-checkbox-item relative flex cursor-default " \
+                                "items-center outline-hidden select-none " \
                                 "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 " \
-                                "[&_svg]:pointer-events-none [&_svg]:shrink-0 " \
-                                "[&_svg:not([class*='size-'])]:size-4"
+                                "[&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :radio_item, "relative flex cursor-default items-center gap-2 rounded-sm py-1.5 pr-2 pl-8 " \
-                             "text-sm outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
-                             "data-[disabled]:pointer-events-none data-[disabled]:opacity-50 " \
-                             "[&_svg]:pointer-events-none [&_svg]:shrink-0 " \
-                             "[&_svg:not([class*='size-'])]:size-4"
+        element :radio_item, "cn-dropdown-menu-radio-item relative flex cursor-default items-center " \
+                             "outline-hidden select-none data-[disabled]:pointer-events-none " \
+                             "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :label, "px-2 py-1.5 text-sm font-medium data-[inset]:pl-8"
+        element :label, "cn-dropdown-menu-label"
 
-        element :separator, "-mx-1 my-1 h-px bg-border"
+        element :separator, "cn-dropdown-menu-separator"
 
-        element :shortcut, "ml-auto text-xs tracking-widest text-muted-foreground"
+        element :shortcut, "cn-dropdown-menu-shortcut"
 
-        element :sub_trigger, "flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm " \
-                              "outline-hidden select-none focus:bg-accent focus:text-accent-foreground " \
-                              "data-[inset]:pl-8 data-popup-open:bg-accent " \
-                              "data-popup-open:text-accent-foreground [&_svg]:pointer-events-none " \
-                              "[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 " \
-                              "[&_svg:not([class*='text-'])]:text-muted-foreground"
+        element :sub_trigger, "cn-dropdown-menu-sub-trigger flex cursor-default items-center " \
+                              "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :sub_content, "z-50 min-w-[8rem] origin-(--radix-dropdown-menu-content-transform-origin) " \
-                              "overflow-hidden rounded-md border bg-popover p-1 text-popover-foreground " \
-                              "shadow-lg data-[side=bottom]:slide-in-from-top-2 " \
-                              "data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 " \
-                              "data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out " \
-                              "data-closed:fade-out-0 data-closed:zoom-out-95 " \
-                              "data-open:animate-in data-open:fade-in-0 " \
-                              "data-open:zoom-in-95"
+        element :sub_content, "cn-dropdown-menu-sub-content z-50 " \
+                              "origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it dropdown-menu-item-indicator - the self-identification rule).
-        element :item_indicator, "pointer-events-none absolute left-2 flex size-3.5 items-center justify-center"
+        element :item_indicator, "cn-dropdown-menu-item-indicator pointer-events-none absolute " \
+                                 "flex items-center justify-center"
 
         # POETRY ADDITION: the source renders the indicator only while
         # checked (Radix ItemIndicator unmounts); poetry keeps it in the

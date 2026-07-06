@@ -135,12 +135,10 @@ module Poetry
           html = render_toast(variant: :destructive)
           toast = doc(html).css('[data-slot="toast"]').first
 
-          assert_includes toast["class"], "bg-popover"
-          assert_includes toast["class"], "text-destructive"
-          # The slide direction keys on the TOASTER's corner at runtime
-          # (a streamed toast cannot know the position server-side).
-          assert_includes toast["class"], "group-data-[position^=top]/toaster:data-open:slide-in-from-top-2"
-          assert_includes toast["class"], "data-closed:fade-out-80"
+          # The popover token surface + the corner-aware slide chains ride
+          # .cn-toast; the destructive tinting rides its variant rule.
+          assert_includes toast["class"], "cn-toast"
+          assert_includes toast["class"], "cn-toast-variant-destructive"
         end
       end
     end

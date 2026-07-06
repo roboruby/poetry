@@ -142,15 +142,14 @@ module Poetry
           content = doc(render_tooltip).css('[data-slot="tooltip-content"]').first
           classes = content["class"].split
 
-          # The open animation is UNCONDITIONAL (source-exact) - only the
-          # exit chain is data-closed-gated.
-          assert_includes classes, "animate-in"
-          assert_includes classes, "fade-in-0"
-          assert_includes classes, "zoom-in-95"
+          # The open animation stays UNCONDITIONAL inside the theme rule
+          # (source-exact there) - only the exit chain is data-closed-gated.
+          # Inline: the inverse scheme + the popper origin (upstream's own
+          # split keeps bg-foreground/text-background in markup).
+          assert_includes classes, "cn-tooltip-content"
           assert_includes classes, "bg-foreground"
           assert_includes classes, "text-background"
           assert_includes classes, "origin-(--radix-tooltip-content-transform-origin)"
-          assert_includes classes, "data-closed:animate-out"
         end
 
         def test_content_class_merges_over_the_source_classes

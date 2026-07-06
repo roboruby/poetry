@@ -316,14 +316,15 @@ module Poetry
           checkbox = fragment.css('[data-slot="menubar-checkbox-item"]').first
           sub_trigger = fragment.css('[data-slot="menubar-sub-trigger"]').first
 
-          %w[flex h-9 items-center gap-1 rounded-md border bg-background p-1 shadow-xs].each do |token|
+          %w[cn-menubar flex items-center].each do |token|
             assert_includes bar["class"].split, token
           end
-          assert_includes content["class"], "min-w-[12rem]"
+          assert_includes content["class"], "cn-menubar-content"
           assert_includes content["class"], "origin-(--radix-menubar-content-transform-origin)"
-          # The source's own quirks, kept verbatim:
-          refute_includes content["class"], "data-closed:animate-out"
-          assert_includes checkbox["class"], "rounded-xs"
+          # The source's own quirks now live verbatim in the theme rules
+          # (content omits data-closed:animate-out; checkbox rounds with
+          # rounded-xs). Inline quirk still visible here:
+          assert_includes checkbox["class"], "cn-menubar-checkbox-item"
           assert_includes sub_trigger["class"].split, "outline-none"
         end
       end

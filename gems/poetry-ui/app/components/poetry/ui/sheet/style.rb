@@ -3,46 +3,36 @@
 module Poetry
   module Ui
     module Sheet
-      # The Sheet dictionary - shadcn new-york-v4 sheet.tsx, source-validated
-      # 2026-07-02 (see Sheet). Ported like the parent
-      # Dialog: shadcn's fixed/inset positioning becomes top-layer margins on
-      # the native <dialog> (m-0 + the side's auto margin replace Dialog's
-      # m-auto centering); the separate SheetOverlay div becomes ::backdrop.
-      # Exit animations landed with the presence-hold controller (W5b
-      # commit 1, poetry--core--sheet) exactly as this comment once
-      # demanded: data-closed:animate-out slide-out-to-* over duration-300
-      # while exitPresence holds the dialog open.
+      # Re-expressed through the cn-* theme layer (N11), still on the
+      # native-dialog spine. m-0 and the per-side auto margins moved to the
+      # theme TOGETHER (the split-side conflict rule: the side margins must
+      # beat m-0, which they only can from the same layer); the UA display
+      # guard stays inline.
       class Style < Poetry::Core::Style
         # open:flex, NOT flex: a bare display class would defeat the UA's
         # dialog:not([open]) { display: none } (the Dialog's 2026-07-01
         # browser-pass lesson, inherited here).
-        element :content, "relative m-0 open:flex w-full flex-col gap-4 bg-background text-foreground shadow-lg " \
-                          "transition ease-in-out data-open:animate-in data-open:duration-500 " \
-                          "data-closed:animate-out data-closed:duration-300 " \
-                          "backdrop:bg-black/50"
+        # w-full rides the theme so the sides' w-3/4 beats it in-layer.
+        element :content, "cn-sheet-content relative open:flex flex-col"
 
-        # The side branches, source-exact minus fixed/inset (top layer =
-        # margins; max-w-none / max-h-none clear the UA's top-layer caps so
-        # the sheet reaches edge to edge). Applied to :content by the
-        # component via Style.side - the resolver renders variants only at
-        # the dictionary root, and the Sheet's root wrapper is non-visual.
+        # The side branches ride cn-sheet-side-* theme rules (margins,
+        # edge borders, sizes, slide animations). Applied to :content by
+        # the component via Style.side - the resolver renders variants only
+        # at the dictionary root, and the Sheet's root wrapper is
+        # non-visual.
         variant :side, {
-          top: "mb-auto h-auto w-full max-w-none border-b data-open:slide-in-from-top " \
-               "data-closed:slide-out-to-top",
-          right: "ml-auto h-full max-h-none w-3/4 border-l data-open:slide-in-from-right " \
-                 "data-closed:slide-out-to-right sm:max-w-sm",
-          bottom: "mt-auto h-auto w-full max-w-none border-t data-open:slide-in-from-bottom " \
-                  "data-closed:slide-out-to-bottom",
-          left: "mr-auto h-full max-h-none w-3/4 border-r data-open:slide-in-from-left " \
-                "data-closed:slide-out-to-left sm:max-w-sm"
+          top: "cn-sheet-side-top",
+          right: "cn-sheet-side-right",
+          bottom: "cn-sheet-side-bottom",
+          left: "cn-sheet-side-left"
         }
 
-        element :header, "flex flex-col gap-1.5 p-4"
-        element :title, "font-semibold text-foreground"
-        element :description, "text-sm text-muted-foreground"
+        element :header, "cn-sheet-header flex flex-col"
+        element :title, "cn-sheet-title"
+        element :description, "cn-sheet-description"
         # mt-auto pins the footer to the bottom edge (source).
-        element :footer, "mt-auto flex flex-col gap-2 p-4"
-        element :close, "absolute top-4 right-4"
+        element :footer, "cn-sheet-footer mt-auto flex flex-col"
+        element :close, "cn-sheet-close"
 
         # The side's edge classes for the <dialog> element.
         def self.side(value)

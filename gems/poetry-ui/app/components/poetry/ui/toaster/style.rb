@@ -3,16 +3,14 @@
 module Poetry
   module Ui
     module Toaster
-      # The toast viewport dictionary - poetry's own visual (the source
-      # ships the sonner LIBRARY; poetry keeps its layout language: a
-      # fixed corner column, 420px cap past mobile). pointer-events-none
-      # on the region / pointer-events-auto on the items keeps the empty
-      # region from swallowing clicks. The group/toaster name + the
-      # data-position stamp are what the items' slide-direction selectors
-      # key on.
+      # Re-expressed through the cn-* theme layer (N11). The position
+      # variants stay INLINE, unnamed: corner placement is pure positioning
+      # mechanism (fixed-corner geometry the slide selectors key on), with
+      # zero conflicts against the themed spacing/width.
       class Style < Poetry::Core::Style
-        base "group/toaster pointer-events-none fixed z-50 flex w-full max-w-full flex-col gap-2 " \
-             "p-4 sm:max-w-[420px]"
+        # max-w-full rides the theme WITH its sm: cap (split-side rule for
+        # responsive pairs - inline it would beat the themed cap always).
+        base "cn-toaster group/toaster pointer-events-none fixed z-50 flex w-full flex-col"
 
         variant :position, {
           "top-left": "top-0 left-0",

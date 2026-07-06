@@ -45,7 +45,7 @@ module Poetry
                        dialog["data-action"]
           assert_equal "", dialog["data-closed"]
           assert_nil dialog["data-open"]
-          assert_includes dialog["class"], "backdrop:bg-black/50"
+          assert_includes dialog["class"], "cn-sheet-content" # surface + backdrop tint ride the theme rule
           assert_match(/<button[^>]*data-action="poetry--core--sheet#open"/, html)
         end
 
@@ -54,11 +54,11 @@ module Poetry
             dialog = sheet_dialog(render_sheet(side: side))
 
             assert_equal side.to_s, dialog["data-side"]
-            assert_includes dialog["class"], SLIDE.fetch(side)
-            assert_includes dialog["class"], EDGE_BORDER.fetch(side)
+            # Slides + edge borders ride the per-side theme rule.
+            assert_includes dialog["class"], "cn-sheet-side-#{side}"
             (Component::SIDES - [side]).each do |other|
-              refute_includes dialog["class"], SLIDE.fetch(other),
-                              "side #{side} must not carry #{other}'s slide class"
+              refute_includes dialog["class"], "cn-sheet-side-#{other}",
+                              "side #{side} must not carry #{other}'s side class"
             end
           end
         end
@@ -67,7 +67,7 @@ module Poetry
           dialog = sheet_dialog(render_sheet)
 
           assert_equal "right", dialog["data-side"]
-          assert_includes dialog["class"], "sm:max-w-sm"
+          assert_includes dialog["class"], "cn-sheet-side-right"
         end
 
         def test_closed_sheet_stays_hidden_under_ua_styles
