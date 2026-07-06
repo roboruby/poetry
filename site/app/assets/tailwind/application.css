@@ -7,3 +7,5 @@
 @import "./poetry/base.css";
 @source "./poetry/safelist.txt";
 @import "./poetry/charts.css";
+@import "./poetry/style-default.css" layer(base);
+@import "./poetry/style-charts.css" layer(base);

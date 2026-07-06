@@ -1,0 +1,146 @@
+/* poetry-charts default theme — the cn-* named-class layer (N11).
+ *
+ * Same contract as poetry-ui's themes/default.css: imported layer(base),
+ * dictionaries emit the names + structural classes, this file carries the
+ * design. The chart chrome names are SHARED across families (one
+ * .cn-chart-grid-line serves every cartesian family) — the equivalent of
+ * upstream's [&_.recharts-*] override chains, landed on parts poetry owns.
+ * Series fills/strokes stay var(--color-<key>) ATTRIBUTES, never classes;
+ * the --chart-1..5 palette rides tokens, not this file.
+ */
+
+/* MARK: Tooltip */
+.cn-chart-tooltip {
+  @apply gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl;
+}
+
+.cn-chart-tooltip-label {
+  @apply font-medium;
+}
+
+.cn-chart-tooltip-row {
+  @apply gap-2 [&>svg]:h-2.5 [&>svg]:w-2.5 [&>svg]:text-muted-foreground;
+}
+
+.cn-chart-tooltip-name {
+  @apply text-muted-foreground;
+}
+
+.cn-chart-tooltip-value {
+  @apply font-mono font-medium text-foreground tabular-nums;
+}
+
+/* MARK: Legend */
+.cn-chart-legend {
+  @apply gap-4;
+}
+
+.cn-chart-legend-align-top {
+  @apply pb-3;
+}
+
+.cn-chart-legend-align-bottom {
+  @apply pt-3;
+}
+
+.cn-chart-legend-item {
+  @apply gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground;
+}
+
+.cn-chart-legend-swatch {
+  @apply h-2 w-2 rounded-[2px];
+}
+
+/* MARK: Cartesian chrome (shared across families) */
+.cn-chart-grid-line {
+  @apply stroke-border/50;
+}
+
+.cn-chart-tick {
+  @apply fill-muted-foreground;
+}
+
+.cn-chart-cursor-line {
+  @apply stroke-border;
+}
+
+.cn-chart-cursor-band {
+  @apply fill-muted;
+}
+
+.cn-chart-reference-line {
+  @apply stroke-muted-foreground;
+}
+
+.cn-chart-reference-area {
+  @apply fill-muted-foreground;
+}
+
+.cn-chart-reference-dot {
+  @apply fill-background stroke-muted-foreground;
+}
+
+.cn-chart-error-bar {
+  @apply stroke-foreground;
+}
+
+.cn-chart-brush-track {
+  @apply fill-muted;
+}
+
+.cn-chart-brush-window {
+  @apply fill-foreground/10 stroke-border;
+}
+
+.cn-chart-brush-handle {
+  @apply fill-muted-foreground;
+}
+
+.cn-chart-label {
+  @apply fill-foreground;
+}
+
+/* MARK: Polar chrome */
+.cn-chart-polar-grid-line {
+  @apply fill-none stroke-border;
+}
+
+.cn-chart-polar-grid-circle {
+  @apply fill-none stroke-border/50;
+}
+
+.cn-chart-radial-track {
+  @apply fill-muted;
+}
+
+.cn-chart-radial-disc-muted {
+  @apply fill-muted;
+}
+
+.cn-chart-radial-disc-background {
+  @apply fill-background;
+}
+
+.cn-chart-inside-label {
+  @apply fill-background text-xs;
+}
+
+.cn-chart-radial-inside-label {
+  @apply fill-white capitalize mix-blend-luminosity text-[11px];
+}
+
+.cn-chart-center-title {
+  @apply fill-foreground text-3xl font-bold;
+}
+
+.cn-chart-center-title-radial {
+  @apply fill-foreground text-4xl font-bold;
+}
+
+.cn-chart-center-title-compact {
+  @apply fill-foreground text-2xl font-bold;
+}
+
+.cn-chart-center-subtitle {
+  @apply fill-muted-foreground;
+}
