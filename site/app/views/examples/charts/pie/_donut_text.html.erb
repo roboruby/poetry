@@ -14,7 +14,7 @@
               other: { label: "Other", color: "var(--chart-5)" } } %>
 <div class="w-full max-w-xl">
   <%= poetry_chart(:pie, data: data, config: config, id: "pie-donut-text") do |chart| %>
-    <% chart.with_pie(data_key: :visitors, name_key: :browser, inner_radius: 60, stroke_width: 5) %>
+    <% chart.with_pie(data_key: :visitors, name_key: :browser, inner_radius: 60) %>
     <% chart.with_center_label(title: "925", subtitle: "Visitors") %>
   <% end %>
 </div>
