@@ -195,7 +195,11 @@ namespace :test do
     require "fileutils"
 
     session = poetry_charts_browser_session(reduced_motion: true)
+    # Per-theme goldens (N12): the default set stays flat; non-default
+    # themes keep their own subdirectory (POETRY_THEME=<name>).
+    theme = poetry_charts_theme_name
     baseline_dir = Poetry::Charts.root.join("test/visual_baselines")
+    baseline_dir = baseline_dir.join(theme) unless theme == "default"
     diffs_dir = Poetry::Charts.root.join("tmp/visual_diffs")
     rebaseline = ENV["VISUAL_REBASELINE"] == "1"
     FileUtils.mkdir_p(baseline_dir)
