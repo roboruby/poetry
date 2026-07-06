@@ -264,8 +264,12 @@ module Poetry
 
             false
           else
-            # For simple attributes, check if key exists
-            key?(key)
+            # A nil simple attribute is UNSET, not set: to_attributes drops
+            # nils, so a nil key must not block merge_if_not_set defaults.
+            # (Component#html_attributes always seeds class: - nil when the
+            # dictionary base is empty - which silently swallowed Sidebar's
+            # wrapper layout classes; the poetry-docs shell caught it.)
+            key?(key) && !self[key].nil?
           end
         end
 
