@@ -1,29 +1,30 @@
 # frozen_string_literal: true
 
 #
-# N12 theme-port tooling (banked from the W1 vega run - see
-# the theme-port plan close-out + docs/vega-port-ledger.txt).
-# For the NEXT port (nova/mira/rhea): point the upstream path at the new
-# style-<name>.css, re-run the detector for the diff/conflict report, then
-# author a fresh PLAN in a copy of the writer. NOTE: the writer is a
-# ONE-SHOT generator - themes/vega.css is canonical and has been hand-
-# edited since generation (AA-hold comments); never regenerate over it.
-# N12 W1b: the translation pipeline's front half.
+# N12 theme-port tooling (banked from the W1 vega run, parameterized for
+# See the theme-port close-out +
+# docs/*-port-ledger.txt). Run per theme for the diff/conflict report,
+# then author a fresh PLAN in script/theme_port/plans/<theme>.rb for
+# write_theme.rb. NOTE: writer.rb is the frozen W1 vega artifact - a
+# ONE-SHOT generator; themes/vega.css is canonical and hand-edited; never
+# regenerate over a shipped fragment.
 #
 # Inputs:  poetry-ui dictionaries (inline structural sets per cn name),
 #          poetry-ui themes/default.css, poetry-charts themes/default.css,
-#          upstream style-vega.css (pinned clone).
-# Outputs: scratchpad/vega/report.txt   - human triage report
-#          scratchpad/vega/parts.json   - machine form for the fragment writer
+#          upstream style-<theme>.css (pinned clone).
+# Outputs: script/theme_port/report-<theme>.txt - human triage report
+#          script/theme_port/parts-<theme>.json - machine form for the writer
 #
-# Run: cd Code/poetry-ui && bundle exec ruby <this file>
+# Run: cd Code/poetry-ui && bundle exec ruby script/theme_port/detector.rb <theme>
 
 require "json"
 require "tailwind_merge"
 
 UI_ROOT = "poetry-ui"
 CHARTS_ROOT = "poetry-charts"
-VEGA = File.expand_path("~/Desktop/save/shadcn-ui/apps/v4/registry/styles/style-vega.css")
+THEME = ARGV.fetch(0, "vega")
+UPSTREAM = File.expand_path("~/Desktop/save/shadcn-ui/apps/v4/registry/styles/style-#{THEME}.css")
+abort "no upstream style-#{THEME}.css at the pinned clone" unless File.exist?(UPSTREAM)
 OUT_DIR = __dir__
 
 MERGER = TailwindMerge::Merger.new
@@ -71,23 +72,23 @@ def displaced_by(inline_tokens, token)
   inline_tokens - merged
 end
 
-vega = parse_theme(File.read(VEGA))
+upstream = parse_theme(File.read(UPSTREAM))
 default_ui = parse_theme(File.read("#{UI_ROOT}/themes/default.css"))
 default_charts = parse_theme(File.read("#{CHARTS_ROOT}/themes/default.css"))
 default_all = default_ui.merge(default_charts)
 dict = dictionary_entries
 interpolated = dict.delete("__interpolated__") || []
 
-shared = vega.keys & default_all.keys
-vega_only = vega.keys - default_all.keys
-poetry_only = default_all.keys - vega.keys
+shared = upstream.keys & default_all.keys
+upstream_only = upstream.keys - default_all.keys
+poetry_only = default_all.keys - upstream.keys
 
 report = +""
 parts = {}
 
 identical = []
 shared.sort.each do |name| # rubocop:disable Metrics/BlockLength
-  v = vega[name]
+  v = upstream[name]
   d = default_all[name]
   inline = dict.dig(name, "tokens") || []
 
@@ -106,37 +107,38 @@ shared.sort.each do |name| # rubocop:disable Metrics/BlockLength
 
   parts[name] = {
     "status" => "diff",
-    "vega" => v, "default" => d, "inline" => inline,
-    "vega_only" => v - d, "default_only" => d - v,
+    "upstream" => v, "default" => d, "inline" => inline,
+    "upstream_only" => v - d, "default_only" => d - v,
     "dup_inline" => dup_inline, "inline_conflicts" => conflicts
   }
 
   report << "== #{name}\n"
-  report << "  vega+  : #{(v - d).join(" ")}\n" unless (v - d).empty?
-  report << "  vega-  : #{(d - v).join(" ")}\n" unless (d - v).empty?
+  report << "  #{THEME}+  : #{(v - d).join(" ")}\n" unless (v - d).empty?
+  report << "  #{THEME}-  : #{(d - v).join(" ")}\n" unless (d - v).empty?
   report << "  dup(in): #{dup_inline.join(" ")}\n" unless dup_inline.empty?
   conflicts.each { |t, hits| report << "  SPLIT-SIDE: #{t} displaces inline [#{hits.join(" ")}]\n" }
   report << "\n"
 end
 
 report << "#{"=" * 70}\nIDENTICAL (#{identical.size}): #{identical.join(" ")}\n\n"
-report << "#{"=" * 70}\nVEGA-ONLY names (#{vega_only.size}) - triage drop/translate:\n"
-vega_only.sort.each do |name|
+report << "#{"=" * 70}\n#{THEME.upcase}-ONLY names (#{upstream_only.size}) - triage drop/translate:\n"
+upstream_only.sort.each do |name|
   inline = dict.dig(name, "tokens")
-  report << "  #{name}#{"  [poetry emits: #{inline.join(" ")}]" if inline}\n    #{vega[name].join(" ")}\n"
+  report << "  #{name}#{"  [poetry emits: #{inline.join(" ")}]" if inline}\n    #{upstream[name].join(" ")}\n"
 end
-report << "\n#{"=" * 70}\nPOETRY-ONLY names (#{poetry_only.size}) - poetry-own surfaces (vega inherits/adapts):\n"
+report << "\n#{"=" * 70}\nPOETRY-ONLY names (#{poetry_only.size}) - poetry-own surfaces (#{THEME} inherits/adapts):\n"
 poetry_only.sort.each { |name| report << "  #{name}\n" }
 report << "\n#{"=" * 70}\nINTERPOLATED dictionary strings (hand-check):\n"
 interpolated.uniq.each { |line| report << "  #{line}\n" }
 
-File.write(File.join(OUT_DIR, "report.txt"), report)
-File.write(File.join(OUT_DIR, "parts.json"),
-           JSON.pretty_generate({ "shared" => parts, "vega_only" => vega_only.sort.to_h { |n| [n, vega[n]] },
+File.write(File.join(OUT_DIR, "report-#{THEME}.txt"), report)
+File.write(File.join(OUT_DIR, "parts-#{THEME}.json"),
+           JSON.pretty_generate({ "shared" => parts,
+                                  "upstream_only" => upstream_only.sort.to_h { |n| [n, upstream[n]] },
                                   "poetry_only" => poetry_only.sort }))
 
 diff_count = parts.count { |_, p| p["status"] == "diff" }
 split = parts.sum { |_, p| (p["inline_conflicts"] || {}).size }
 puts "shared=#{shared.size} identical=#{identical.size} diff=#{diff_count} " \
-     "vega_only=#{vega_only.size} poetry_only=#{poetry_only.size} split_side_hits=#{split}"
-puts "report: #{File.join(OUT_DIR, "report.txt")}"
+     "#{THEME}_only=#{upstream_only.size} poetry_only=#{poetry_only.size} split_side_hits=#{split}"
+puts "report: #{File.join(OUT_DIR, "report-#{THEME}.txt")}"
