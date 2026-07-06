@@ -7,6 +7,10 @@ AllCops:
   TargetRubyVersion: 3.3
   NewCops: enable
   SuggestExtensions: false
+  Exclude:
+    - "test/dommy_tier/support/browser_harness.rb" # vendored from dommy-js-quickjs, kept byte-identical
+    - "vendor/**/*"
+    - "node_modules/**/*"
 
 Style/StringLiterals:
   EnforcedStyle: double_quotes

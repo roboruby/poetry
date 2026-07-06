@@ -38,6 +38,10 @@ Scope: the measured shadcn parity surface — 6 chart families, 70 blocks
 gem "poetry-charts"
 ```
 
+Hosts running poetry-ui can wire everything below in one shot —
+`bin/rails g poetry:install --charts` — and skip the rest of this
+section.
+
 The engine merges its importmap pins automatically (`@poetry/charts`) —
 no build step. The tooltip chrome boots with one registration in your
 Stimulus entrypoint:
