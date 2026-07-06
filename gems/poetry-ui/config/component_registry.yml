@@ -429,6 +429,9 @@ components:
     bem_block: poetry-ui-calendar
     styles: []
     options:
+    - name: mode
+      type: symbol
+      default: single
     - name: name
       type: string
     - name: week_start
@@ -445,19 +448,24 @@ components:
     - week
     - day_cell
     - day
-    capsule: d433c3b420e2
+    capsule: 89e5f355a824
     controllers:
     - identifier: poetry--core--calendar
       targets:
       - caption
       - day
+      - endInput
       - grid
       - input
+      - startInput
       values:
       - max
       - min
+      - mode
       - month
       - monthNames
+      - rangeEnd
+      - rangeStart
       - selected
       - weekStart
       actions:
@@ -467,9 +475,12 @@ components:
       - select
     agent_rules:
     - 'name: makes it a form control (the chosen date posts as an ISO string in a
-      hidden input).'
+      hidden input; range mode posts name[start] + name[end]).'
     - 'month:/selected:/today accept a Date or an ISO string; min:/max: bound the
       selectable range.'
+    - 'mode: :range selects a span - selected: takes a Date..Date Range, [start, end],
+      or {start:, end:}; the second click completes, click-before-start swaps, re-click
+      clears.'
     - The grid is server-rendered - it shows a valid month with no JS; the controller
       adds navigation + selection.
     - For a text-field + popover, use DatePicker (it composes this) - a bare Calendar
@@ -1097,6 +1108,9 @@ components:
     options:
     - name: label
       type: string
+    - name: mode
+      type: symbol
+      default: single
     - name: name
       type: string
       required: true
@@ -1112,6 +1126,7 @@ components:
       - label
       values:
       - locale
+      - mode
       - placeholder
       actions:
       - picked

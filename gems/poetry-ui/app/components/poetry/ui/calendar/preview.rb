@@ -15,6 +15,12 @@ module Poetry
           render_component(month: "2026-06-01", today: "2026-06-15",
                            min: "2026-06-08", max: "2026-06-22", class: "rounded-md border")
         end
+
+        def range
+          render_component(mode: :range, month: "2026-06-01", today: "2026-06-15",
+                           selected: Date.new(2026, 6, 9)..Date.new(2026, 6, 18),
+                           class: "rounded-md border")
+        end
       end
     end
   end

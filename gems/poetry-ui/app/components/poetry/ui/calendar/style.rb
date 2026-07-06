@@ -10,7 +10,10 @@ module Poetry
       # radius vars, the day-button states) as a semantic grid - not a port
       # of the day-picker class map.
       class Style < Poetry::Core::Style
-        base "group/calendar bg-background p-3 [--cell-size:--spacing(8)] w-fit " \
+        # group/calendar dropped (the sidebar-marker precedent): upstream
+        # carries it with no consumer of its own either, and the compiled-CSS
+        # gate flags markers nothing consumes. It returns with a consumer.
+        base "bg-background p-3 [--cell-size:--spacing(8)] w-fit " \
              "in-data-[slot=popover-content]:bg-transparent"
 
         element :nav, "flex items-center justify-between gap-1 pb-2"

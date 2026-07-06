@@ -28,7 +28,14 @@
     <% end %>
   </div>
   <% if name.present? %>
-    <input type="hidden" name="<%= name %>" value="<%= selected&.iso8601 %>"
-           data-poetry--core--calendar-target="input">
+    <% if range? %>
+      <input type="hidden" name="<%= name %>[start]" value="<%= range_start&.iso8601 %>"
+             data-poetry--core--calendar-target="startInput">
+      <input type="hidden" name="<%= name %>[end]" value="<%= range_end&.iso8601 %>"
+             data-poetry--core--calendar-target="endInput">
+    <% else %>
+      <input type="hidden" name="<%= name %>" value="<%= selected&.iso8601 %>"
+             data-poetry--core--calendar-target="input">
+    <% end %>
   <% end %>
 <% end %>

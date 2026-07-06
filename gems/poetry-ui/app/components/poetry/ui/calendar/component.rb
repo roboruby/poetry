@@ -13,8 +13,11 @@ module Poetry
       # picks a date, the DatePicker wraps it in a Popover.
       class Component < Poetry::Core::Component
         AGENT_RULES = [
-          "name: makes it a form control (the chosen date posts as an ISO string in a hidden input).",
+          "name: makes it a form control (the chosen date posts as an ISO string in a hidden input; " \
+          "range mode posts name[start] + name[end]).",
           "month:/selected:/today accept a Date or an ISO string; min:/max: bound the selectable range.",
+          "mode: :range selects a span - selected: takes a Date..Date Range, [start, end], or " \
+          "{start:, end:}; the second click completes, click-before-start swaps, re-click clears.",
           "The grid is server-rendered - it shows a valid month with no JS; the controller adds " \
           "navigation + selection.",
           "For a text-field + popover, use DatePicker (it composes this) - a bare Calendar is the " \
@@ -22,20 +25,38 @@ module Poetry
         ].freeze
 
         CONTROLLER = %i[poetry core calendar].freeze
+        MODES = %i[single range].freeze
 
         option :name, :string
+        option :mode, :symbol, default: :single
         option :week_start, :integer, default: 0 # 0 = Sunday
 
         def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **) # rubocop:disable Metrics/ParameterLists
           super(**)
-          @selected = to_date(selected)
+          raise ArgumentError, "unknown mode #{mode.inspect} (one of #{MODES.join(", ")})" unless MODES.include?(mode)
+
+          if range?
+            @range_start, @range_end = parse_range(selected)
+          else
+            @selected = to_date(selected)
+          end
           @today = to_date(today) || Date.today
           @min = to_date(min)
           @max = to_date(max)
-          @month = to_date(month) || @selected || @today
+          @month = to_date(month) || @selected || @range_start || @today
         end
 
-        attr_reader :selected, :today, :min, :max
+        attr_reader :selected, :today, :min, :max, :range_start, :range_end
+
+        def range? = mode == :range
+        def range_complete? = !!(@range_start && @range_end)
+
+        def in_span?(date)
+          return false unless range?
+          return date == @range_start unless range_complete?
+
+          date.between?(@range_start, @range_end)
+        end
 
         # The 42 cells (6 weeks) for the visible month, leading/trailing
         # days from the neighbours so every week is full.
@@ -59,10 +80,11 @@ module Poetry
           @month.strftime("%B %Y")
         end
 
-        # Exactly one day is the tab stop: the selection, else today (in
-        # view), else the first enabled day.
+        # Exactly one day is the tab stop: the selection (the range start
+        # in range mode), else today (in view), else the first enabled day.
         def tab_stop
-          @tab_stop ||= (@selected if @selected && in_month?(@selected)) ||
+          anchor = range? ? @range_start : @selected
+          @tab_stop ||= (anchor if anchor && in_month?(anchor)) ||
                         (@today if in_month?(@today)) ||
                         cells.find { |date| in_month?(date) && !disabled?(date) }
         end
@@ -76,10 +98,12 @@ module Poetry
 
         # aria-selected lives on the role=gridcell (the ARIA grid contract -
         # it is not a valid attribute on a plain button, the axe catch).
+        # Range mode marks the whole span.
         def cell_attributes(date)
+          selected = range? ? in_span?(date) : selected?(date)
           {
             "role" => "gridcell", "data-slot" => "calendar-day-cell",
-            "class" => css(:day_cell), "aria-selected" => selected?(date).to_s
+            "class" => css(:day_cell), "aria-selected" => selected.to_s
           }
         end
 
@@ -91,7 +115,7 @@ module Poetry
             "aria-label" => date.strftime("%B %-d, %Y"),
             "tabindex" => date == tab_stop ? "0" : "-1"
           }.merge(day_stimulus_attributes)
-          attrs["data-selected"] = "" if selected?(date)
+          merge_selection_attributes(attrs, date)
           attrs["data-today"] = "" if today?(date)
           attrs["data-outside"] = "" unless in_month?(date)
           attrs["aria-current"] = "date" if today?(date)
@@ -128,12 +152,48 @@ module Poetry
           Date.parse(value.to_s)
         end
 
+        # A preselected range: Date..Date, [start, end], or {start:, end:}.
+        def parse_range(value)
+          case value
+          when nil then [nil, nil]
+          when Range then [to_date(value.first), to_date(value.last)]
+          when Array then [to_date(value[0]), to_date(value[1])]
+          when Hash
+            pair = value.symbolize_keys
+            [to_date(pair[:start]), to_date(pair[:end])]
+          else
+            [to_date(value), nil] # a single value starts the range
+          end
+        end
+
+        # The selection vocabulary per day (rdp semantics): a COMPLETE
+        # range wears range-start/middle/end; a start-only pick is a plain
+        # selected single day; single mode keeps data-selected.
+        def merge_selection_attributes(attrs, date)
+          if range?
+            if range_complete?
+              attrs["data-range-start"] = "" if date == @range_start
+              attrs["data-range-end"] = "" if date == @range_end
+              attrs["data-range-middle"] = "" if date > @range_start && date < @range_end
+            elsif @range_start && date == @range_start
+              attrs["data-selected"] = ""
+            end
+          elsif selected?(date)
+            attrs["data-selected"] = ""
+          end
+        end
+
         def root_stimulus_attributes
           attrs = Poetry::Core::HTML::Attributes.new
           calendar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
           calendar.register_controller
           calendar.with_value(:month, @month.strftime("%Y-%m"))
           calendar.with_value(:selected, @selected&.iso8601 || "")
+          if range?
+            calendar.with_value(:mode, "range")
+            calendar.with_value(:range_start, @range_start&.iso8601 || "")
+            calendar.with_value(:range_end, @range_end&.iso8601 || "")
+          end
           calendar.with_value(:week_start, week_start)
           calendar.with_value(:min, @min&.iso8601 || "")
           calendar.with_value(:max, @max&.iso8601 || "")

@@ -13,6 +13,12 @@ module Poetry
         def preselected
           render_component(name: "due_on", label: "Due date", value: "2026-06-12", month: "2026-06-01")
         end
+
+        def range
+          render_component(name: "stay", mode: :range, label: "Stay dates",
+                           placeholder: "Pick a date range",
+                           value: %w[2026-06-09 2026-06-18], month: "2026-06-01")
+        end
       end
     end
   end

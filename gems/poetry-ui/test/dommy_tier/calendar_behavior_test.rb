@@ -45,6 +45,38 @@ module DommyTier
       assert_equal "2026-06-20", input, "the hidden form value updates"
     end
 
+    def test_range_mode_completes_a_span_across_two_clicks
+      harness = render_in_dommy(Poetry::Ui::Calendar::Component.new(
+                                  month: "2026-06-01", today: "2026-06-15", name: "stay", mode: :range
+                                ))
+
+      %w[2026-06-09 2026-06-13].each do |iso|
+        harness.execute(<<~JS)
+          document.querySelector('[data-slot="calendar-day"][data-date="#{iso}"]')
+            .dispatchEvent(new MouseEvent("click", { bubbles: true }));
+        JS
+        harness.pump(rounds: 3)
+      end
+
+      assert_no_js_errors harness
+      vocabulary = harness.evaluate(<<~JS)
+        (() => {
+          const attr = (iso, name) => document
+            .querySelector('[data-slot="calendar-day"][data-date="' + iso + '"]').hasAttribute(name);
+          return [attr("2026-06-09", "data-range-start"), attr("2026-06-11", "data-range-middle"),
+                  attr("2026-06-13", "data-range-end")];
+        })()
+      JS
+
+      assert_equal [true, true, true], vocabulary
+      inputs = harness.evaluate(
+        '[document.querySelector(\'input[name="stay[start]"]\').value, ' \
+        'document.querySelector(\'input[name="stay[end]"]\').value]'
+      )
+
+      assert_equal %w[2026-06-09 2026-06-13], inputs, "the two nested form values"
+    end
+
     def test_next_month_regenerates_the_grid_in_place
       harness = render_calendar
 

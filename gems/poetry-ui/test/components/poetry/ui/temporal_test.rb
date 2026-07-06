@@ -83,6 +83,59 @@ module Poetry
         assert_equal "2026-06-12", stops.first["data-date"], "the selection is the tab stop"
       end
 
+      # -- Calendar range mode (N9 D1) ---------------------------------------
+
+      def test_a_preselected_range_paints_the_span_with_no_js
+        html = render_calendar(mode: :range, selected: Date.new(2026, 6, 9)..Date.new(2026, 6, 12))
+        day = ->(iso) { html.css(%([data-date="#{iso}"])).first }
+
+        assert day.call("2026-06-09").key?("data-range-start")
+        assert day.call("2026-06-10").key?("data-range-middle")
+        assert day.call("2026-06-11").key?("data-range-middle")
+        assert day.call("2026-06-12").key?("data-range-end")
+        refute day.call("2026-06-09").key?("data-selected"), "complete ranges wear only the range vocabulary"
+
+        # aria-selected marks the whole span on the gridcells.
+        span_cells = %w[2026-06-09 2026-06-10 2026-06-12].map do |iso|
+          day.call(iso).parent["aria-selected"]
+        end
+
+        assert_equal %w[true true true], span_cells
+        assert_equal "false", day.call("2026-06-13").parent["aria-selected"]
+      end
+
+      def test_a_start_only_range_renders_as_a_selected_single_day
+        html = render_calendar(mode: :range, selected: [Date.new(2026, 6, 9), nil])
+        day = html.css('[data-date="2026-06-09"]').first
+
+        assert day.key?("data-selected"), "rdp semantics: incomplete picks look single"
+        refute day.key?("data-range-start")
+      end
+
+      def test_range_mode_posts_two_nested_inputs
+        html = render_calendar(mode: :range, name: "stay",
+                               selected: { start: "2026-06-09", end: "2026-06-12" })
+
+        assert_equal "2026-06-09", html.css('input[name="stay[start]"]').first["value"]
+        assert_equal "2026-06-12", html.css('input[name="stay[end]"]').first["value"]
+        assert_empty html.css('input[name="stay"]'), "the single-mode input is replaced"
+      end
+
+      def test_range_mode_wires_the_controller_values
+        html = render_calendar(mode: :range, selected: %w[2026-06-09 2026-06-12])
+        root = html.css('[data-slot="calendar"]').first
+
+        assert_equal "range", root["data-poetry--core--calendar-mode-value"]
+        assert_equal "2026-06-09", root["data-poetry--core--calendar-range-start-value"]
+        assert_equal "2026-06-12", root["data-poetry--core--calendar-range-end-value"]
+      end
+
+      def test_unknown_calendar_mode_teaches
+        error = assert_raises(ArgumentError) { render_calendar(mode: :multi) }
+
+        assert_match(/unknown mode/, error.message)
+      end
+
       # -- DatePicker -----------------------------------------------------------
 
       def test_the_date_picker_is_a_popover_wrapping_a_calendar
@@ -112,6 +165,21 @@ module Poetry
         label = html.css('[data-poetry--core--date-picker-target="label"]').first
 
         assert_equal "Pick a date", label.text.strip
+      end
+
+      def test_a_range_date_picker_joins_the_label_and_passes_the_mode_down
+        html = render_inline(DatePicker::Component.new(name: "stay", mode: :range, label: "Stay",
+                                                       value: %w[2026-06-09 2026-06-18],
+                                                       month: "2026-06-01"))
+
+        label = html.css('[data-poetry--core--date-picker-target="label"]').first
+
+        assert_equal "June 9, 2026 – June 18, 2026", label.text.strip
+        assert_equal "range",
+                     html.css('[data-slot="date-picker"]').first["data-poetry--core--date-picker-mode-value"]
+        assert_equal "2026-06-09", html.css('input[name="stay[start]"]').first["value"]
+        assert html.css('[data-date="2026-06-12"]').first.key?("data-range-middle"),
+               "the wrapped calendar paints the span server-side"
       end
 
       def test_the_date_picker_requires_a_name

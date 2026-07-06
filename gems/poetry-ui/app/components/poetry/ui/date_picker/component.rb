@@ -23,29 +23,46 @@ module Poetry
         CONTROLLER = %i[poetry core date_picker].freeze
 
         option :name, :string, required: true
+        option :mode, :symbol, default: :single
         option :placeholder, :string, default: "Pick a date"
         option :label, :string # the trigger's accessible name (aria-label)
 
         def initialize(value: nil, min: nil, max: nil, month: nil, **)
           super(**)
-          @value = to_date(value)
+          if range?
+            @range_start, @range_end = parse_range(value)
+          else
+            @value = to_date(value)
+          end
           @min = to_date(min)
           @max = to_date(max)
           @month = to_date(month)
         end
 
-        attr_reader :value, :min, :max, :month
+        attr_reader :value, :min, :max, :month, :range_start, :range_end
+
+        def range? = mode == :range
 
         def before_render
           raise ArgumentError, "DatePicker requires name: (the form field)" if name.blank?
         end
 
+        # Range mode joins the pair ("March 5, 2026 - March 12, 2026"); a
+        # start-only value shows one date (the rdp/shadcn convention).
         def formatted
-          @value ? @value.strftime("%B %-d, %Y") : placeholder
+          if range?
+            return placeholder unless @range_start
+
+            [@range_start, @range_end].compact.map { |date| date.strftime("%B %-d, %Y") }.join(" – ")
+          else
+            @value ? @value.strftime("%B %-d, %Y") : placeholder
+          end
         end
 
         def calendar_options
-          { name: name, selected: @value, min: @min, max: @max, month: @month || @value }.compact
+          selected = range? ? [@range_start, @range_end].compact.presence : @value
+          { name: name, mode: (:range if range?), selected: selected,
+            min: @min, max: @max, month: @month || @value || @range_start }.compact
         end
 
         def root_attributes
@@ -73,11 +90,26 @@ module Poetry
           Date.parse(value.to_s)
         end
 
+        # A preselected range: Date..Date, [start, end], or {start:, end:}.
+        def parse_range(value)
+          case value
+          when nil then [nil, nil]
+          when Range then [to_date(value.first), to_date(value.last)]
+          when Array then [to_date(value[0]), to_date(value[1])]
+          when Hash
+            pair = value.symbolize_keys
+            [to_date(pair[:start]), to_date(pair[:end])]
+          else
+            [to_date(value), nil]
+          end
+        end
+
         def root_stimulus_attributes
           attrs = Poetry::Core::HTML::Attributes.new
           picker = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
           picker.register_controller
           picker.with_value(:placeholder, placeholder)
+          picker.with_value(:mode, "range") if range?
           picker.with_action(:picked, on: "poetry--core--calendar:change")
           attrs.to_attributes
         end
