@@ -39,8 +39,8 @@ module Poetry
         option :data, ActiveModel::Type::Value.new, required: true
         option :config, ActiveModel::Type::Value.new, required: true
         option :id, :string
-        option :width, :integer, default: 640
-        option :height, :integer, default: 360
+        option :width, :integer, default: 250
+        option :height, :integer, default: 250
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
 
@@ -50,9 +50,10 @@ module Poetry
         option :end_angle, :integer, default: 360
         option :inner_radius, ActiveModel::Type::Value.new, default: "20%"
         option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
-        # The angle-axis maximum: nil = recharts' nice [0, auto] domain for
-        # ring charts; stacked gauges pass the stack total so the segments
-        # fill the span exactly (the stacked block's full half-ring).
+        # The angle-axis maximum: nil = recharts' [0, dataMax] domain - the
+        # largest ring closes the full sweep EXACTLY (nicing it would leave
+        # a notch); stacked gauges pass the stack total when the segments
+        # should fill the span (the stacked block's full half-ring).
         option :max_value, ActiveModel::Type::Value.new
 
         renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
@@ -63,7 +64,10 @@ module Poetry
           nil
         }
 
-        renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: false|
+        # radial_lines defaults ON (recharts PolarGrid) - the faint value
+        # spokes that show through ring gaps and the open wedge; the gauge
+        # blocks (shape/text) turn them off explicitly, as upstream does.
+        renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: true|
           @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
           nil
         }
@@ -153,7 +157,7 @@ module Poetry
                            rows.map { |row| series_entries.sum { |e| row[e.data_key].to_f } }.max
                          else
                            key = series_entries.first&.data_key
-                           Geometry::NiceTicks.nice_ticks([0, rows.map { |row| row[key].to_f }.max || 1], 5).last
+                           rows.map { |row| row[key].to_f }.max&.nonzero? || 1
                          end
         end
 
@@ -212,23 +216,61 @@ module Poetry
         end
 
         # insideStart labels: at the ring middle, a few degrees into the
-        # sweep, rotated to read along the arc.
+        # sweep, rotated onto the arc's TANGENT pointing into the sweep -
+        # SVG rotate() is clockwise-positive in the y-down plane, so the
+        # tangent at chart angle t is (-sin t, -cos t) for a CCW sweep.
+        # (90 - angle reads plausibly but points the text the OPPOSITE way:
+        # mirrored and upside down.) When the tangent would still leave the
+        # text inverted, flip it 180 and anchor the END at the start edge -
+        # recharts' readability flip.
         def label_placement(segment)
           direction = Polar.sign(end_angle - start_angle)
           angle = segment.seg_start + (direction * 5)
           radius = (segment.ring_inner + segment.ring_outer) / 2.0
           x, y = Polar.polar_to_cartesian(cx, cy, radius, angle)
-          { x: x, y: y, rotate: 90 - angle }
+          rad = Polar::RADIAN * angle
+          rotate = Math.atan2(-direction * Math.cos(rad), -direction * Math.sin(rad)) / Polar::RADIAN
+          anchor = "start"
+          if rotate > 90 || rotate <= -90
+            rotate -= 180 * Polar.sign(rotate)
+            anchor = "end"
+          end
+          { x: x, y: y, rotate: rotate, anchor: anchor }
         end
 
         def grid_radii
           config_radii = polar_grid_config[:radii]
           return config_radii if config_radii
 
-          # Auto: circles at every ring boundary.
+          # Auto: circles through each ring's CENTERLINE (recharts' radius
+          # band ticks) - each circle continues a bar's track through the
+          # uncovered wedge.
+          (0...rows.length).map { |i| ring(i).sum / 2.0 }
+        end
+
+        # d3.ticks over the value domain (count 10) - recharts' implicit
+        # PolarAngleAxis, where the grid's radial spokes sit.
+        def angle_tick_values
+          max = angle_max.to_f
+          return [] unless max.positive?
+
+          step0 = max / 10.0
+          power = 10.0**Math.log10(step0).floor
+          error = step0 / power
+          step = if error >= Math.sqrt(50) then power * 10
+                 elsif error >= Math.sqrt(10) then power * 5
+                 elsif error >= Math.sqrt(2) then power * 2
+                 else power
+                 end
+          (0..(max / step).floor).map { |i| i * step }
+        end
+
+        # A grid spoke at one value tick, spanning the chart's radial band
+        # (template helper - bare Polar does not resolve from compiled ERB).
+        def spoke_points(tick)
           inner, outer = radii
-          band = (outer - inner) / rows.length
-          (0..rows.length).map { |i| inner + (band * i) }
+          angle = start_angle + sweep(tick)
+          Polar.polar_to_cartesian(cx, cy, inner, angle) + Polar.polar_to_cartesian(cx, cy, outer, angle)
         end
 
         def grid_fill_class(index)

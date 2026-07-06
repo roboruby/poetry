@@ -43,16 +43,22 @@ module Poetry
         render_inline(PieChart::Component.new(data: DATA, config: CONFIG, id: "p", **), &)
       end
 
-      def test_slices_take_their_row_fills_and_background_separators
+      def test_slices_take_their_row_fills_and_meet_flush_by_default
         html = render_pie { |chart| chart.with_pie(data_key: :visitors, name_key: :browser) }
 
         sectors = html.css('[data-slot="chart-pie-sector"]')
 
         assert_equal 5, sectors.length
         assert_equal "var(--color-chrome)", sectors.first["fill"]
-        assert_equal "var(--background)", sectors.first["stroke"],
-                     "the separator is background-colored (dark-mode-correct; recharts hard-codes #fff)"
+        assert_nil sectors.first["stroke"], "slices meet flush (the current recharts render)"
         assert sectors.first["d"].end_with?("Z")
+      end
+
+      def test_stroke_width_opts_into_background_separators
+        html = render_pie { |chart| chart.with_pie(data_key: :visitors, name_key: :browser, stroke_width: 2) }
+
+        assert_equal "var(--background)", html.css('[data-slot="chart-pie-sector"]').first["stroke"],
+                     "the opt-in separator is background-colored (dark-mode-correct; recharts hard-codes #fff)"
       end
 
       def test_the_donut_hole_comes_from_inner_radius
@@ -73,7 +79,7 @@ module Poetry
         label = html.css('[data-slot="chart-center-label"]').first
 
         assert_equal %w[925 Visitors], label.css("tspan").map(&:text)
-        assert_equal "320", label["x"], "centered in the plot box"
+        assert_equal "125", label["x"], "centered in the square 250 plot box"
       end
 
       def test_stacked_pies_nest_two_rings_with_their_own_data
@@ -98,7 +104,8 @@ module Poetry
 
         labels = html.css('[data-slot="chart-labels"] text')
 
-        assert_equal %w[chrome safari firefox edge other], labels.map(&:text)
+        assert_equal %w[Chrome Safari Firefox Edge Other], labels.map(&:text),
+                     "raw keys resolve through the config, the LabelList formatter"
         assert_includes labels.first["class"], "fill-background"
       end
 
@@ -110,10 +117,10 @@ module Poetry
         active = html.css('[data-slot="chart-pie-sector"][data-active]').first
 
         assert active
-        assert_includes active["d"], "A150,150,0,", "the active outer radius grows by 10 (140 -> 150)"
+        assert_includes active["d"], "A106,106,0,", "the active outer radius grows by 10 (96 -> 106)"
         inactive = html.css('[data-slot="chart-pie-sector"]:not([data-active])').first
 
-        assert_includes inactive["d"], "A140,140,0,"
+        assert_includes inactive["d"], "A96,96,0,"
       end
 
       def test_the_polar_tooltip_payload_retints_the_single_row

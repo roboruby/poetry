@@ -81,8 +81,8 @@ module Poetry
         # mobile sweeps 570/1830 of 180deg from 3 o'clock; desktop continues
         # from mobile's end and finishes at 180 (9 o'clock). The band trims
         # 10% each side: ring 83..107, so the edges sit at cx +/- 107.
-        assert mobile.start_with?("M427,"), "mobile starts at the 3 o'clock outer edge (cx 320 + 107)"
-        assert_includes desktop, "213,180", "desktop's outer arc ends at 9 o'clock (cx 320 - 107)"
+        assert mobile.start_with?("M232,"), "mobile starts at the 3 o'clock outer edge (cx 125 + 107)"
+        assert_includes desktop, "18,125", "desktop's outer arc ends at 9 o'clock (cx 125 - 107)"
       end
 
       def test_grid_discs_take_their_fill_tokens
@@ -99,7 +99,7 @@ module Poetry
         assert_includes circles.last["class"], "fill-background"
       end
 
-      def test_auto_grid_circles_sit_at_ring_boundaries
+      def test_auto_grid_circles_ride_the_ring_centerlines
         html = render_radial do |chart|
           chart.with_polar_grid
           chart.with_radial_bar(data_key: :visitors)
@@ -107,8 +107,31 @@ module Poetry
 
         circles = html.css('[data-slot="chart-polar-grid"] circle')
 
-        assert_equal %w[30 70 110], circles.map { |c| c["r"] }, "boundaries for 2 rings over [30, 110]"
+        # Each circle continues a bar's track through the uncovered wedge
+        # (recharts' radius band ticks): 2 rings over [30, 110] center at
+        # 50 and 90.
+        assert_equal %w[50 90], circles.map { |c| c["r"] }, "centerlines for 2 rings over [30, 110]"
         assert_includes circles.first["class"], "stroke-border/50"
+      end
+
+      def test_polar_grid_spokes_sit_at_the_value_ticks
+        html = render_radial do |chart|
+          chart.with_polar_grid
+          chart.with_radial_bar(data_key: :visitors)
+        end
+
+        spokes = html.css('[data-slot="chart-polar-grid"] line')
+
+        # d3.ticks over [0, dataMax] (count 10) - the faint value spokes
+        # recharts' implicit angle axis draws; explicit radial_lines: false
+        # (the gauge blocks) removes them.
+        assert_operator spokes.length, :>, 2
+        bare = render_radial do |chart|
+          chart.with_polar_grid(radial_lines: false)
+          chart.with_radial_bar(data_key: :visitors)
+        end
+
+        assert_empty bare.css('[data-slot="chart-polar-grid"] line')
       end
 
       def test_inside_start_labels_rotate_along_the_arc

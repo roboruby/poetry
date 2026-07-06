@@ -9,7 +9,7 @@ module Poetry
         base ""
 
         element :frame, "contents"
-        element :svg, "size-full"
+        element :svg, "w-full min-h-0 flex-1"
         element :grid_line, "stroke-border/50"
         element :tick, "fill-muted-foreground"
         element :reference_line, "stroke-muted-foreground"

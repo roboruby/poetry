@@ -180,7 +180,7 @@ module Poetry
         params = sectors.map { |s| s["data-motion-sector"].split.map(&:to_f) }
 
         # cx cy inner outer start end; two slices accumulate 0 -> 360.
-        assert_equal [320, 180, 0], params.first[0, 3]
+        assert_equal [125, 125, 0], params.first[0, 3]
         assert_in_delta 0, params.first[4]
         assert_in_delta 208.4210, params.first[5], 0.001
         assert_in_delta 208.4210, params.last[4], 0.001

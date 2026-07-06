@@ -40,9 +40,9 @@ module Poetry
 
         d = html.css('[data-slot="chart-radar"]').first["d"]
 
-        # First vertex: angle 90 (straight up), radius 186/320 nice-domain
-        # fraction of 140px -> cy 180 - 81.375 = 98.625 at cx 320.
-        assert d.start_with?("M320,98.6"), "January sits straight above center (clockwise start)"
+        # First vertex: angle 90 (straight up), radius 186/305 of the
+        # [0, dataMax] domain over 96px -> cy 125 - 58.54 = 66.46 at cx 125.
+        assert d.start_with?("M125,66.4"), "January sits straight above center (clockwise start)"
         assert d.end_with?("Z"), "radar polygons close"
         assert_equal 5, d.scan("L").length, "six vertices, five line segments"
         assert_equal "0.6", html.css('[data-slot="chart-radar"]').first["fill-opacity"]
@@ -72,18 +72,21 @@ module Poetry
         assert_empty html.css('[data-slot="chart-polar-grid"] path')
       end
 
-      def test_the_tinted_grid_fills_the_outer_ring_only
+      def test_the_tinted_grid_fills_every_ring
         html = render_radar do |chart|
           chart.with_angle_axis(data_key: :month)
           chart.with_grid(fill: :desktop)
           chart.with_radar(data_key: :desktop)
         end
 
-        filled = html.css('[data-slot="chart-polar-grid"] path[fill]')
+        filled = html.css('[data-slot="chart-polar-grid"] path[style]')
 
-        assert_equal 1, filled.length, "only the outermost polygon takes the tint"
-        assert_equal "var(--color-desktop)", filled.first["fill"]
-        assert_equal "0.2", filled.first["fill-opacity"]
+        # Every ring tints and the overlaps compound toward the center
+        # (upstream fills the whole PolarGrid). Inline style, because the
+        # grid class's fill-none would beat a fill attribute.
+        assert_equal 4, filled.length, "all four rings take the tint"
+        assert_includes filled.first["style"], "fill: var(--color-desktop)"
+        assert_equal ["0.2"], filled.map { |p| p["fill-opacity"] }.uniq
       end
 
       def test_lines_only_radars_stroke_without_fill

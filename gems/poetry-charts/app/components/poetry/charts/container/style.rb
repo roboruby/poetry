@@ -13,7 +13,10 @@ module Poetry
       # (a declared degradation).
       class Style < Poetry::Core::Style
         # relative anchors the absolute tooltip layer (visual no-op).
-        base "relative flex aspect-video justify-center text-xs [&_svg]:outline-hidden"
+        # flex-col stacks the legend under (or over, via order-first) the
+        # chart SVG - recharts reserves plot space for its Legend the same
+        # way; a row layout would park the legend beside the plot.
+        base "relative flex aspect-video flex-col items-center justify-center text-xs [&_svg]:outline-hidden"
       end
     end
   end

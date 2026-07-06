@@ -54,7 +54,7 @@ module Poetry
 
         def donut_text
           render_component(data: DATA, config: CONFIG, id: "pie-donut-text") do |chart|
-            chart.with_pie(data_key: :visitors, name_key: :browser, inner_radius: 60, stroke_width: 5)
+            chart.with_pie(data_key: :visitors, name_key: :browser, inner_radius: 60)
             chart.with_center_label(title: "925", subtitle: "Visitors")
           end
         end

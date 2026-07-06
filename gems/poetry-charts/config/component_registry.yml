@@ -123,7 +123,7 @@ components:
     - brush_track
     - brush_window
     - brush_handle
-    capsule: b0b83c11a551
+    capsule: e591cf625830
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:)
       / with_legend.'
@@ -226,7 +226,7 @@ components:
     - brush_window
     - brush_handle
     - label
-    capsule: dfff0c5d3e23
+    capsule: 07ada84eba83
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:)
       / with_legend.'
@@ -318,7 +318,7 @@ components:
     - reference_area
     - reference_dot
     - error_bar
-    capsule: 73ae105c85b2
+    capsule: 41813e1b7f2d
     agent_rules:
     - 'Mix marks freely: with_area / with_bar / with_line - declaration order is paint
       order.'
@@ -340,7 +340,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: c7633651f500
+    capsule: 7b90eeaff974
     agent_rules:
     - Every chart lives inside poetry_chart_container(config:) - the config maps series
       keys to labels/colors.
@@ -379,7 +379,7 @@ components:
     - item
     - swatch
     - toggle
-    capsule: 3a314d6a7cf2
+    capsule: ed618e23cbf7
     agent_rules:
     - 'The legend derives from the chart config by default - omit items: unless slices
       differ from series.'
@@ -465,7 +465,7 @@ components:
     - brush_window
     - brush_handle
     - label
-    capsule: dfff0c5d3e23
+    capsule: 07ada84eba83
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'
@@ -503,7 +503,7 @@ components:
       type:
     - name: height
       type: integer
-      default: 360
+      default: 250
     - name: id
       type: string
     - name: label
@@ -514,7 +514,7 @@ components:
       type: string
     - name: width
       type: integer
-      default: 640
+      default: 250
     slots:
     - name: pies
       many: true
@@ -530,7 +530,7 @@ components:
     - inside_label
     - center_title
     - center_subtitle
-    capsule: 2a57318123c0
+    capsule: 476a7ab55325
     agent_rules:
     - Rows carry their slice color in a fill key (var(--color-<name>)); the config
       maps names to labels.
@@ -567,7 +567,7 @@ components:
       required: true
     - name: height
       type: integer
-      default: 360
+      default: 250
     - name: id
       type: string
     - name: label
@@ -581,7 +581,7 @@ components:
       type: string
     - name: width
       type: integer
-      default: 640
+      default: 250
     slots:
     - name: radars
       many: true
@@ -598,14 +598,14 @@ components:
     - svg
     - grid_line
     - tick
-    capsule: 27de0a67a373
+    capsule: 791b79212629
     agent_rules:
     - 'Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:)
       / with_legend.'
     - 'Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width:
       2.'
-    - 'with_grid type: :circle swaps polygons for circles; fill: :desktop tints the
-      disc (opacity 0.2).'
+    - 'with_grid type: :circle swaps polygons for circles; fill: :desktop tints every
+      grid ring (opacity 0.2, compounding toward the center - the grid-fill look).'
     - 'dots: true marks every vertex (r 4, solid).'
     - Colors come from the config - never set fill/stroke on a radar directly.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
@@ -639,7 +639,7 @@ components:
       default: 360
     - name: height
       type: integer
-      default: 360
+      default: 250
     - name: id
       type: string
     - name: inner_radius
@@ -664,7 +664,7 @@ components:
       type: string
     - name: width
       type: integer
-      default: 640
+      default: 250
     slots:
     - name: radial_bars
       many: true
@@ -686,7 +686,7 @@ components:
     - inside_label
     - center_title
     - center_subtitle
-    capsule: d24530cda99c
+    capsule: 2b7f2f26f26b
     agent_rules:
     - One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
     - 'background: true draws the muted track ring behind each bar (the gauge look).'
@@ -764,7 +764,7 @@ components:
     - reference_area
     - reference_dot
     - error_bar
-    capsule: e362a23d5e5a
+    capsule: 395c1a5f7dfa
     agent_rules:
     - 'Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name
       the row keys to plot.'

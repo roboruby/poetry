@@ -10,8 +10,8 @@ module Poetry
         base ""
 
         element :frame, "contents"
-        element :svg, "size-full"
-        element :inside_label, "fill-background"
+        element :svg, "w-full min-h-0 flex-1"
+        element :inside_label, "fill-background text-xs"
         element :center_title, "fill-foreground text-3xl font-bold"
         element :center_subtitle, "fill-muted-foreground"
       end

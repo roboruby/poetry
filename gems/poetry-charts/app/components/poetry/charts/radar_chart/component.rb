@@ -26,7 +26,8 @@ module Poetry
         AGENT_RULES = [
           "Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:) / with_legend.",
           "Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width: 2.",
-          "with_grid type: :circle swaps polygons for circles; fill: :desktop tints the disc (opacity 0.2).",
+          "with_grid type: :circle swaps polygons for circles; fill: :desktop tints every grid ring " \
+          "(opacity 0.2, compounding toward the center - the grid-fill look).",
           "dots: true marks every vertex (r 4, solid).",
           "Colors come from the config - never set fill/stroke on a radar directly.",
           "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
@@ -42,8 +43,8 @@ module Poetry
         option :data, ActiveModel::Type::Value.new, required: true
         option :config, ActiveModel::Type::Value.new, required: true
         option :id, :string
-        option :width, :integer, default: 640
-        option :height, :integer, default: 360
+        option :width, :integer, default: 250
+        option :height, :integer, default: 250
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
 
@@ -129,10 +130,14 @@ module Poetry
                                              Polar.max_radius(plot[:width], plot[:height]) * 0.8)
         end
 
+        # recharts' PolarRadiusAxis: the domain is [0, dataMax] EXACTLY (no
+        # nicing - the max vertex touches the outer ring) and the default
+        # tickCount 5 divides it evenly, putting grid rings at 25/50/75/100%.
         def radius_ticks
           @radius_ticks ||= begin
             max = series_entries.flat_map { |e| rows.map { |row| row[e.data_key].to_f } }.max || 1
-            Geometry::NiceTicks.nice_ticks([0, max], 5)
+            max = 1 if max.zero?
+            (0..4).map { |i| max * i / 4.0 }
           end
         end
 
@@ -167,10 +172,16 @@ module Poetry
           Polar.polar_to_cartesian(cx, cy, radius_px, angle_at(index))
         end
 
+        # Lands in an inline style= (the class's fill-none beats a fill
+        # attribute), so the token is validated - never interpolate a raw
+        # string into CSS.
         def grid_fill_attribute
           return nil unless grid_config&.fill
 
-          "var(--color-#{grid_config.fill})"
+          token = grid_config.fill
+          raise ArgumentError, "grid fill #{token.inspect} is not a series key" unless token.match?(/\A[\w-]+\z/)
+
+          "var(--color-#{token})"
         end
 
         # Angle-axis labels around the rim, anchored by which side of the

@@ -55,7 +55,7 @@ module Poetry
           render_component(data: [{ browser: "safari", visitors: 1260, fill: "var(--color-safari)" }],
                            config: CONFIG, id: "radial-shape", name_key: :browser,
                            end_angle: 100, inner_radius: 65, outer_radius: 95) do |chart|
-            chart.with_polar_grid(radii: [86, 74], fills: %i[muted background])
+            chart.with_polar_grid(radii: [86, 74], fills: %i[muted background], radial_lines: false)
             chart.with_radial_bar(data_key: :visitors, background: true)
             chart.with_center_label(title: "1,260", subtitle: "Visitors")
           end
@@ -65,7 +65,7 @@ module Poetry
           render_component(data: [{ browser: "safari", visitors: 200, fill: "var(--color-safari)" }],
                            config: CONFIG, id: "radial-text", name_key: :browser,
                            start_angle: 0, end_angle: 250, inner_radius: 80, outer_radius: 90) do |chart|
-            chart.with_polar_grid(radii: [90, 80], fills: %i[muted background])
+            chart.with_polar_grid(radii: [90, 80], fills: %i[muted background], radial_lines: false)
             chart.with_radial_bar(data_key: :visitors, background: true, corner_radius: 10)
             chart.with_center_label(title: "200", subtitle: "Visitors")
           end

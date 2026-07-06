@@ -7,10 +7,13 @@ module Poetry
       # polar math (Polar module), server-rendered sectors. Slices color
       # from their row's fill key (the upstream data convention), the donut
       # hole comes from inner_radius, stacked pies nest two rings with their
-      # own data, and the center label (donut-text) is plain SVG text. The
-      # slice stroke is var(--background) - recharts hard-codes #fff, which
-      # breaks in dark mode; visually identical in light (documented
-      # deviation).
+      # own data, and the center label (donut-text) is plain SVG text.
+      # The 250x250 viewBox mirrors the shadcn blocks' aspect-square
+      # max-h-[250px] canvas, so recharts' absolute-px radii (innerRadius
+      # 60, outerRadius+10 pop-outs) mean the identical proportion here.
+      # Slices meet flush by default (the current recharts render);
+      # stroke_width: N opts back into var(--background) separators -
+      # recharts' #fff would break in dark mode.
       #
       #   <%= poetry_chart :pie, data: browsers, config: config do |c| %>
       #     <% c.with_pie data_key: :visitors, name_key: :browser, inner_radius: 60 %>
@@ -37,15 +40,15 @@ module Poetry
         option :data, ActiveModel::Type::Value.new
         option :config, ActiveModel::Type::Value.new, required: true
         option :id, :string
-        option :width, :integer, default: 640
-        option :height, :integer, default: 360
+        option :width, :integer, default: 250
+        option :height, :integer, default: 250
         option :margin, ActiveModel::Type::Value.new
         option :label, :string
 
         motion_options(delay: 400)
 
         renders_many :pies, lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
-                                      outer_radius: "80%", padding_angle: 0, stroke_width: 1,
+                                      outer_radius: "80%", padding_angle: 0, stroke_width: 0,
                                       color_key: :fill, labels: nil, label_key: nil,
                                       active_index: nil, active_grow: 10|
           (@series_entries ||= []) << Series.new(data: data, data_key: data_key.to_s, name_key: name_key.to_s,
@@ -155,8 +158,14 @@ module Poetry
           end
         end
 
+        # Named labels resolve through the config (raw "chrome" -> "Chrome"),
+        # the same lookup the tooltip and legend already do - upstream's
+        # LabelList formatter in one place.
         def slice_label(entry, slice)
-          entry.label_key ? rows(entry)[slice.index][entry.label_key].to_s : slice.value.to_i.to_s
+          return slice.value.to_i.to_s unless entry.label_key
+
+          raw = rows(entry)[slice.index][entry.label_key].to_s
+          chart_config.label_for(raw, raw)
         end
 
         # -- the tooltip payload (polar shape) ---------------------------------

@@ -19,25 +19,30 @@ module Poetry
           simple(id: "radar-dots", dots: true)
         end
 
+        # Upstream draws BOTH series as strokes and turns the grid's radial
+        # spokes off (PolarGrid radialLines={false}).
         def lines_only
-          render_component(data: DATA, config: ONE, id: "radar-lines-only") do |chart|
+          render_component(data: DATA, config: TWO, id: "radar-lines-only") do |chart|
             chart.with_angle_axis(data_key: :month)
-            chart.with_grid
+            chart.with_grid(radial_lines: false)
             chart.with_radar(data_key: :desktop, fill_opacity: 0, stroke_width: 2)
+            chart.with_radar(data_key: :mobile, fill_opacity: 0, stroke_width: 2)
           end
         end
 
+        # Only the FIRST series is translucent upstream (fillOpacity 0.6);
+        # the second keeps the opaque default and covers the overlap.
         def multiple
           render_component(data: DATA, config: TWO, id: "radar-multiple") do |chart|
             chart.with_angle_axis(data_key: :month)
             chart.with_grid
             chart.with_radar(data_key: :desktop)
-            chart.with_radar(data_key: :mobile)
+            chart.with_radar(data_key: :mobile, fill_opacity: 1)
           end
         end
 
         def grid_circle
-          simple(id: "radar-grid-circle", grid_type: :circle)
+          simple(id: "radar-grid-circle", grid_type: :circle, dots: true)
         end
 
         def grid_fill
@@ -51,7 +56,7 @@ module Poetry
         def grid_none
           render_component(data: DATA, config: ONE, id: "radar-grid-none") do |chart|
             chart.with_angle_axis(data_key: :month)
-            chart.with_radar(data_key: :desktop)
+            chart.with_radar(data_key: :desktop, dots: true)
           end
         end
 
@@ -60,7 +65,7 @@ module Poetry
             chart.with_angle_axis(data_key: :month)
             chart.with_grid
             chart.with_radar(data_key: :desktop)
-            chart.with_radar(data_key: :mobile)
+            chart.with_radar(data_key: :mobile, fill_opacity: 1)
             chart.with_legend
           end
         end

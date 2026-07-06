@@ -3,11 +3,17 @@
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
     <% if grid? %>
       <g data-slot="chart-polar-grid" aria-hidden="true">
-        <% grid_radii.each_with_index do |radius, i| %>
+        <%# The tinted grid (grid-fill block): EVERY ring fills at the low
+            opacity and the overlaps compound toward the center - upstream
+            puts fill+opacity on the whole PolarGrid. Inline style, because
+            the grid_line class sets fill-none and a fill ATTRIBUTE loses
+            to any CSS. %>
+        <% grid_radii.each do |radius| %>
+          <% fill_attrs = grid_fill_attribute ? %( style="fill: #{grid_fill_attribute}" fill-opacity="#{grid_config.opacity}").html_safe : "" %>
           <% if grid_config.type == :circle %>
-            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"<% if grid_fill_attribute && i == grid_radii.length - 1 %> fill="<%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"<% end %>/>
+            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"<%= fill_attrs %>/>
           <% else %>
-            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"<% if grid_fill_attribute && i == grid_radii.length - 1 %> fill="<%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"<% end %>/>
+            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"<%= fill_attrs %>/>
           <% end %>
         <% end %>
         <% if grid_config.radial_lines %>
