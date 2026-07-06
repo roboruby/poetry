@@ -718,6 +718,9 @@
   },
   "poetry--core--sidebar": {
     "targets": [
+      "inner",
+      "mobileDialog",
+      "mobileInner",
       "sidebar"
     ],
     "values": {
@@ -745,8 +748,10 @@
     "classes": [],
     "methods": [
       "close",
+      "closeMobile",
       "connect",
       "disconnect",
+      "mobileBackdropClose",
       "open",
       "toggle"
     ]
