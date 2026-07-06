@@ -178,6 +178,35 @@ module Poetry
 
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
     end
+
+    def test_theme_vega_fills_the_same_slot_and_switching_back_is_a_plain_rerun
+      run_generator %w[--theme vega]
+
+      # The SLOT filename never changes - only the content swaps.
+      assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
+      assert_file "app/assets/tailwind/poetry/style-default.css", /rounded-4xl/
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/style-default.css" layer(base);').size
+
+      run_generator # back to default: same slot, overwritten in place
+
+      assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/style-default.css" layer(base);').size,
+                   "switching themes never accretes entry lines"
+    end
+
+    def test_charts_gem_missing_the_requested_theme_fails_fast
+      # The stub ships only themes/default.css - poetry-ui has vega, the
+      # charts side does not: the install must fail before any file lands.
+      stderr = with_charts_stub { capture(:stderr) { run_generator %w[--charts --theme vega] } }
+
+      assert_match(/poetry-charts does not ship theme "vega"/, stderr)
+      assert_no_file "app/assets/tailwind/poetry/tokens.css"
+      assert_no_file "app/assets/tailwind/poetry/style-charts.css"
+    end
   end
 
   class AddGeneratorTest < Rails::Generators::TestCase
