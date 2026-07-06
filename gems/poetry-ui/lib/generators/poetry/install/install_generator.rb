@@ -38,6 +38,7 @@ module Poetry
       %(@import "./poetry/animate.css";),
       %(@import "./poetry/utilities.css";),
       %(@import "./poetry/aliases.css";),
+      %(@import "./poetry/style-default.css" layer(base);),
       %(@import "./poetry/base.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
@@ -85,6 +86,13 @@ module Poetry
                   Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css").read, force: true
       create_file "app/assets/tailwind/poetry/aliases.css",
                   Poetry::Core.root.join("tokens/aliases.css").read, force: true
+      # The cn-* theme layer (N11): the named-class design source, imported
+      # layer(base) so host utilities always win. Vendored like tokens
+      # (force) - a host restyles by overriding .cn-* rules in its OWN css
+      # (any utilities-layer or unlayered rule beats layer(base)), never by
+      # editing this file, so theme updates keep flowing on re-install.
+      create_file "app/assets/tailwind/poetry/style-default.css",
+                  Poetry::Ui.root.join("themes/default.css").read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
     end
 

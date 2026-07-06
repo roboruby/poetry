@@ -20,8 +20,11 @@ module Poetry
           assert_includes html, 'data-variant="default"'
           assert_includes html, 'data-size="default"'
           assert_includes html, 'type="button"'
-          assert_includes html, "bg-primary"
-          assert_includes html, "focus-visible:ring-[3px]"
+          # The design rides the theme layer (N11): the block class plus the
+          # variant name are the markup-level contract; themes/default.css
+          # carries bg-primary / the focus-visible ring under these names.
+          assert_includes html, "cn-button "
+          assert_includes html, "cn-button-variant-default"
           assert_includes html, %(<span data-slot="label">Save</span>)
         end
 
@@ -43,9 +46,11 @@ module Poetry
         def test_variant_and_size_classes_resolve_through_the_dictionary
           html = render_button(variant: :destructive, size: :lg)
 
-          assert_includes html, "bg-destructive"
-          assert_includes html, "dark:bg-destructive/60" # the composited dark treatment the contrast gate models
-          assert_includes html, "h-10 px-6"
+          # The names ARE the resolution proof; the composited dark
+          # destructive treatment the contrast gate models (dark:bg-destructive/60)
+          # lives in the theme rule .cn-button-variant-destructive.
+          assert_includes html, "cn-button-variant-destructive"
+          assert_includes html, "cn-button-size-lg"
         end
 
         # The variant_smoke bar from the plan: every variant x size renders.

@@ -36,6 +36,7 @@ def poetry_ui_compile_tailwind
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
       @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
+      @import "#{Poetry::Ui.root.join("themes/default.css")}" layer(base);
       @source "#{File.join(dir, "safelist.txt")}";
     CSS
     out = File.join(dir, "out.css")
@@ -84,6 +85,25 @@ namespace :css do
     abort "classes missing from a real Tailwind build:\n#{failures.join("\n")}" if failures.any?
 
     puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build"
+  end
+
+  desc "Verify bidirectional cn-* coverage between the Style dictionaries and themes/default.css (N11)"
+  task :verify_theme do
+    poetry_ui_boot!
+
+    styles = Poetry::Core::Style.descendants.select(&:name)
+    coverage = Poetry::Core::CSS::ThemeCoverage.new(
+      theme_css: Poetry::Ui.root.join("themes/default.css").read,
+      style_classes: styles,
+      allowlist: [] # consumer utility classes (cn-font-heading, cn-rtl-flip) arrive at W4
+    )
+
+    problems = coverage.missing.map { |name| "missing theme rule: #{name}" } +
+               coverage.orphans.map { |name| "orphan theme rule: #{name}" }
+    abort "theme coverage (themes/default.css):\n  #{problems.join("\n  ")}" unless problems.empty?
+
+    puts "theme coverage: #{coverage.theme_names.size} cn rules <-> " \
+         "#{coverage.dictionary_names.size} dictionary names"
   end
 
   # The data-selected bridge probe (N6 W1 regression lock): upstream's

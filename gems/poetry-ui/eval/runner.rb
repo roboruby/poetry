@@ -25,6 +25,22 @@ module Poetry
         end
       end
 
+      # The cn-* theme layer (N11) moved visual treatments off the class
+      # string: a poetry arm satisfies focus_visible_treatment through a cn
+      # class whose THEME rule carries it; a raw arm still passes with
+      # inline focus-visible: utilities. Resolved relative to this file so
+      # the runner stays loadable without the engine booted.
+      FOCUS_VISIBLE_THEME_CLASSES =
+        File.read(File.expand_path("../themes/default.css", __dir__))
+            .scan(/^\.(cn-[a-z0-9-]+)\s*\{([^}]*)\}/)
+            .select { |_name, body| body.include?("focus-visible:") }
+            .map(&:first).freeze
+
+      FOCUS_VISIBLE_TREATMENT = lambda { |_doc, html|
+        html.include?("focus-visible:") ||
+          FOCUS_VISIBLE_THEME_CLASSES.any? { |cn| html.include?(cn) }
+      }
+
       # Gates every arm of every task faces (checkable on ANY html).
       UNIVERSAL = [
         Gate.new(:no_raw_colors, :cross_arm, lambda { |_doc, html|
@@ -47,7 +63,7 @@ module Poetry
               types = %w[button submit reset]
               doc.css("button").all? { |button| types.include?(button["type"]) }
             }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "dialog" => {
@@ -59,7 +75,7 @@ module Poetry
               !overlay.nil? && !(overlay["aria-labelledby"] || overlay["aria-label"]).nil?
             }),
             Gate.new(:trigger_present, :cross_arm, ->(doc, _html) { doc.css("button").any? }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "form_field" => {
@@ -141,7 +157,7 @@ module Poetry
             Gate.new(:content_complete, :cross_arm, lambda { |doc, _html|
               doc.text.include?("Accept terms") && doc.text.include?("Email alerts")
             }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "alert" => {
@@ -361,7 +377,7 @@ module Poetry
             Gate.new(:triggers_are_real_buttons, :cross_arm, lambda { |doc, _html|
               doc.xpath(".//*[@onclick]").empty? && doc.css("button").size >= 2
             }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "floating" => {
@@ -416,7 +432,7 @@ module Poetry
               inputs = doc.css("input")
               inputs.any? && inputs.all? { |input| doc.css(%(label[for="#{input["id"]}"])).any? }
             }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "toast" => {
@@ -439,7 +455,7 @@ module Poetry
             Gate.new(:dismissal_is_real_wiring, :cross_arm, lambda { |doc, _html|
               doc.xpath(".//*[@onclick]").empty? && doc.css("button").any?
             }),
-            Gate.new(:focus_visible_treatment, :cross_arm, ->(_doc, html) { html.include?("focus-visible:") })
+            Gate.new(:focus_visible_treatment, :cross_arm, FOCUS_VISIBLE_TREATMENT)
           ]
         },
         "primitives" => {

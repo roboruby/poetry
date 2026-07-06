@@ -388,7 +388,7 @@ components:
     - name: trailing
       many: false
     elements: []
-    capsule: aa16559d9dce
+    capsule: 2f3c60cb16e5
     agent_rules:
     - Use poetry_button - never a raw <button> with hand-written Tailwind.
     - 'The visible text is the content block: poetry_button { "Save" }. label: is
