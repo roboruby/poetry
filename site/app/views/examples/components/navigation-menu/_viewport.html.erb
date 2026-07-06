@@ -1,0 +1,20 @@
+<div class="flex min-h-72 justify-center p-4">
+  <%= poetry_navigation_menu(label: "Main", viewport: true) do |nav| %>
+    <% nav.with_item("Products", value: "products") do %>
+      <div class="grid w-64 gap-1">
+        <%= poetry_navigation_menu_link(href: "#", active: true) { "Analytics" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Automation" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Reports" } %>
+      </div>
+    <% end %>
+    <% nav.with_item("Company", value: "company") do %>
+      <div class="grid w-96 grid-cols-2 gap-1">
+        <%= poetry_navigation_menu_link(href: "#") { "About" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Careers" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Press" } %>
+        <%= poetry_navigation_menu_link(href: "#") { "Contact" } %>
+      </div>
+    <% end %>
+    <% nav.with_link("Docs", href: "#") %>
+  <% end %>
+</div>

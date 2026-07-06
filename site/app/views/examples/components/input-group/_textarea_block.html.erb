@@ -1,0 +1,12 @@
+<%# The block form: a textarea with a full-width footer row. Block-aligned
+    addons (align: :"block-end") span the surface; poetry_input_group_text
+    gives the muted caption treatment. %>
+<div class="w-80">
+  <%= poetry_label(for_id: "input-group-notes", class: "sr-only") { "Notes" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_textarea(id: "input-group-notes", name: "notes", placeholder: "Add a note…") %>
+    <%= poetry_input_group_addon(align: :"block-end") do %>
+      <%= poetry_input_group_text { "Markdown supported" } %>
+    <% end %>
+  <% end %>
+</div>

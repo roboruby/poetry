@@ -1,0 +1,17 @@
+<div class="flex flex-col gap-3">
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "newsletter", checked: true, id: "checkbox-checked") %>
+    <%= poetry_label(for_id: "checkbox-checked") { "Checked" } %>
+  </div>
+  <%# Indeterminate is server/programmatic only - the select-all parent
+      over a partial selection. Announces as "mixed"; the first toggle
+      resolves to checked. %>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "select_all", checked: :indeterminate, id: "checkbox-indeterminate") %>
+    <%= poetry_label(for_id: "checkbox-indeterminate") { "Select all rows" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "terms_invalid", "aria-invalid": true, id: "checkbox-invalid") %>
+    <%= poetry_label(for_id: "checkbox-invalid") { "Accept terms and conditions" } %>
+  </div>
+</div>

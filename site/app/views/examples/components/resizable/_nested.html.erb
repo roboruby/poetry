@@ -1,0 +1,15 @@
+<%= poetry_resizable(class: "h-48 max-w-md rounded-lg border") do |group| %>
+  <% group.with_panel(default_size: 40) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Left</div>
+  <% end %>
+  <% group.with_panel do %>
+    <%= poetry_resizable(direction: :vertical) do |inner| %>
+      <% inner.with_panel do %>
+        <div class="flex h-full items-center justify-center p-6 text-sm">Top</div>
+      <% end %>
+      <% inner.with_panel do %>
+        <div class="flex h-full items-center justify-center p-6 text-sm">Bottom</div>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

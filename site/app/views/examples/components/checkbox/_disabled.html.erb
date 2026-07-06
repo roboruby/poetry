@@ -1,0 +1,12 @@
+<div class="flex flex-col gap-3">
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "notifications", disabled: true, id: "checkbox-disabled") %>
+    <%= poetry_label(for_id: "checkbox-disabled") { "Enable notifications" } %>
+  </div>
+  <%# Disabled inputs don't submit - a disabled checked checkbox
+      submits nothing, not "1". %>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "plan_locked", checked: true, disabled: true, id: "checkbox-locked") %>
+    <%= poetry_label(for_id: "checkbox-locked") { "Locked on (submits nothing)" } %>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<%= poetry_scroll_area(label: "Tags", class: "h-72 w-48 rounded-md border") do %>
+  <div class="p-4">
+    <h4 class="mb-4 text-sm leading-none font-medium">Tags</h4>
+    <% (1..30).each do |n| %>
+      <div class="border-b py-2 text-sm last:border-0">v1.2.0-beta.<%= n %></div>
+    <% end %>
+  </div>
+<% end %>

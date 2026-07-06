@@ -1,0 +1,6 @@
+<div class="w-full max-w-md">
+  <%= poetry_item do |item| %>
+    <% item.with_title { "Basic Item" } %>
+    <% item.with_description { "A simple item with title and description." } %>
+  <% end %>
+</div>

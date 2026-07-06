@@ -1,0 +1,16 @@
+<%# No with_grid slot: just the angle axis labels and the shape. %>
+<% data = [
+     { month: "January", desktop: 186 },
+     { month: "February", desktop: 305 },
+     { month: "March", desktop: 237 },
+     { month: "April", desktop: 73 },
+     { month: "May", desktop: 209 },
+     { month: "June", desktop: 214 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radar, data: data, config: config, id: "radar-grid-none") do |chart| %>
+    <% chart.with_angle_axis(data_key: :month) %>
+    <% chart.with_radar(data_key: :desktop) %>
+  <% end %>
+</div>

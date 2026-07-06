@@ -1,0 +1,25 @@
+<% members = [
+     ["Ada Lovelace", "ada@example.com", "Owner"],
+     ["Grace Hopper", "grace@example.com", "Admin"],
+     ["Alan Turing", "alan@example.com", "Member"]
+   ] %>
+<div class="w-full max-w-2xl">
+  <%= poetry_table do %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head { "Name" } %>
+        <%= poetry_table_head { "Email" } %>
+        <%= poetry_table_head { "Role" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <% members.each do |name, email, role| %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { name } %>
+          <%= poetry_table_cell { email } %>
+          <%= poetry_table_cell { role } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,9 @@
+<%= poetry_popover(content_class: "w-80") do |popover| %>
+  <% popover.with_trigger(variant: :outline) { "Open popover" } %>
+  <% popover.with_title { "Dimensions" } %>
+  <% popover.with_description { "Set the dimensions for the layer." } %>
+  <%= poetry_label(for_id: "popover-demo-width") { "Width" } %>
+  <%= poetry_input(name: "width", value: "100%", id: "popover-demo-width") %>
+  <%= poetry_label(for_id: "popover-demo-height") { "Height" } %>
+  <%= poetry_input(name: "height", value: "25px", id: "popover-demo-height") %>
+<% end %>

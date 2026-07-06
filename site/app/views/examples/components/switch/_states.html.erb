@@ -1,0 +1,16 @@
+<div class="flex flex-col gap-3">
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "wifi", checked: true, id: "switch-checked") %>
+    <%= poetry_label(for_id: "switch-checked") { "Wi-Fi" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "bluetooth", disabled: true, id: "switch-disabled") %>
+    <%= poetry_label(for_id: "switch-disabled") { "Bluetooth" } %>
+  </div>
+  <%# Disabled inputs don't submit - a disabled checked switch
+      submits nothing, not "1". %>
+  <div class="flex items-center gap-3">
+    <%= poetry_switch(name: "managed_policy", checked: true, disabled: true, id: "switch-locked") %>
+    <%= poetry_label(for_id: "switch-locked") { "Locked on" } %>
+  </div>
+</div>

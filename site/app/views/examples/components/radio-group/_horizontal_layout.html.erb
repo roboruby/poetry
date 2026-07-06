@@ -1,0 +1,7 @@
+<%# Horizontal layout is a caller class - the source has no orientation
+    styling. The keyboard stays both-axis (all four arrows). %>
+<%= poetry_radio_group(name: "align", value: "left", label: "Alignment", class: "grid-flow-col") do |group| %>
+  <% group.with_item(value: "left", label: "Left") %>
+  <% group.with_item(value: "center", label: "Center") %>
+  <% group.with_item(value: "right", label: "Right") %>
+<% end %>

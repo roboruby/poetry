@@ -1,0 +1,6 @@
+<%# The label carries peer-disabled: styles - when the control before it
+    is disabled, the label dims and gets a not-allowed cursor for free. %>
+<div class="flex items-center gap-3">
+  <%= poetry_checkbox(name: "notifications", disabled: true, id: "label-disabled") %>
+  <%= poetry_label(for_id: "label-disabled") { "Enable notifications" } %>
+</div>

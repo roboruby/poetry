@@ -1,0 +1,6 @@
+<%# size: :sm drops the trigger to h-8, matching Input's dense form rows. %>
+<%= poetry_select(size: :sm, placeholder: "Per page", "aria-label": "Per page") do |select| %>
+  <% select.with_item(value: "10") { "10" } %>
+  <% select.with_item(value: "25") { "25" } %>
+  <% select.with_item(value: "50") { "50" } %>
+<% end %>

@@ -1,0 +1,4 @@
+<%# pattern: :alphanumeric filters each char to [a-zA-Z0-9] and switches
+    to inputmode=text (the default :digits shows the numeric keypad). %>
+<%= poetry_input_otp(name: "code", length: 6, pattern: :alphanumeric,
+                     "aria-label": "Verification code") %>

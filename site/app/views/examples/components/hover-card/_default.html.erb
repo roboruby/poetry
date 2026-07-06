@@ -1,0 +1,8 @@
+<%= poetry_hover_card(content_class: "w-80") do |card| %>
+  <% card.with_trigger(href: "https://github.com/nextjs", class: "text-sm font-medium underline-offset-4 hover:underline") { "@nextjs" } %>
+  <div class="flex flex-col gap-1 text-sm">
+    <h4 class="font-semibold">@nextjs</h4>
+    <p>The React Framework - created and maintained by @vercel.</p>
+    <div class="text-xs text-muted-foreground">Joined December 2021</div>
+  </div>
+<% end %>

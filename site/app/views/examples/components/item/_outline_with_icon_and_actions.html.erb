@@ -1,0 +1,9 @@
+<div class="w-full max-w-md">
+  <%= poetry_item(variant: :outline, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :"badge-check") } %>
+    <% item.with_title { "Your profile has been verified." } %>
+    <% item.with_actions do %>
+      <%= poetry_button(size: :sm, variant: :outline) { "View" } %>
+    <% end %>
+  <% end %>
+</div>

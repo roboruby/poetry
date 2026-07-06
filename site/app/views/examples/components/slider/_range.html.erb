@@ -1,0 +1,5 @@
+<div class="w-80">
+  <%= poetry_slider(name: "price_range", values: [200, 800], min: 0, max: 1000, step: 10,
+                    label: ["Minimum price", "Maximum price"],
+                    value_text: ->(value) { "$#{value}" }) %>
+</div>

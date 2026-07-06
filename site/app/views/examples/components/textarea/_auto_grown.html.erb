@@ -1,0 +1,6 @@
+<%# Auto-grow is the field-sizing-content CSS property (Chromium) - no
+    JS autosizer. Elsewhere: min-h-16 plus the native resize handle. %>
+<div class="w-80">
+  <%= poetry_textarea(name: "notes", "aria-label": "Notes",
+                      value: "Paragraph one.\n\nParagraph two keeps pushing the height - no JS autosizer, the CSS does it.\n\nParagraph three.") %>
+</div>

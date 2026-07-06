@@ -1,0 +1,9 @@
+<div class="w-full max-w-sm">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Team" } %>
+    <% card.with_description { "Active members" } %>
+    <% card.with_action { poetry_button(size: :sm, variant: :outline) { "Invite" } } %>
+    <% card.with_footer { "Updated hourly" } %>
+    24 members
+  <% end %>
+</div>

@@ -1,0 +1,8 @@
+<%= poetry_resizable(direction: :vertical, grip: true, class: "h-48 max-w-md rounded-lg border") do |group| %>
+  <% group.with_panel(default_size: 30) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Header</div>
+  <% end %>
+  <% group.with_panel do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Content</div>
+  <% end %>
+<% end %>

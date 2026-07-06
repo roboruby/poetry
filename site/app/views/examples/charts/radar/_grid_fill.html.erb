@@ -1,0 +1,17 @@
+<%# fill: :desktop tints the grid disc with that series' color (opacity 0.2). %>
+<% data = [
+     { month: "January", desktop: 186 },
+     { month: "February", desktop: 305 },
+     { month: "March", desktop: 237 },
+     { month: "April", desktop: 73 },
+     { month: "May", desktop: 209 },
+     { month: "June", desktop: 214 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radar, data: data, config: config, id: "radar-grid-fill") do |chart| %>
+    <% chart.with_angle_axis(data_key: :month) %>
+    <% chart.with_grid(fill: :desktop) %>
+    <% chart.with_radar(data_key: :desktop) %>
+  <% end %>
+</div>

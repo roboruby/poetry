@@ -1,0 +1,6 @@
+<%# focusable_surface: true puts the surface in the tab order — Shift+F10 or the Menu key opens it. %>
+<%= poetry_context_menu(focusable_surface: true, label: "Row actions") do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Focusable row (Shift+F10)" } %>
+  <% menu.with_item { "Rename" } %>
+  <% menu.with_item { "Duplicate" } %>
+<% end %>

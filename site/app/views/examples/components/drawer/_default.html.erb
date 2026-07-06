@@ -1,0 +1,9 @@
+<%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Open drawer" } %>
+  <% drawer.with_title { "Move goal" } %>
+  <% drawer.with_description { "Set your daily activity goal." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button { "Submit" } %>
+  <% end %>
+  Drag the handle down to dismiss.
+<% end %>

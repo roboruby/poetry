@@ -1,0 +1,4 @@
+<%= poetry_attachment(state: :idle) do |attachment| %>
+  <% attachment.with_media { poetry_icon(name: :plus) } %>
+  <% attachment.with_title { "Add a file" } %>
+<% end %>

@@ -1,0 +1,6 @@
+<%# Snappier timings for preview-dense surfaces. Keep open_delay >= ~300ms -
+    accidental opens while mousing across text feel broken. %>
+<%= poetry_hover_card(open_delay: 300, close_delay: 150) do |card| %>
+  <% card.with_trigger(href: "https://github.com/rails", class: "text-sm font-medium underline-offset-4 hover:underline") { "@rails" } %>
+  Ruby on Rails - the full-stack web framework.
+<% end %>

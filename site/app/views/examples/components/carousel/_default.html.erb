@@ -1,0 +1,9 @@
+<%= poetry_carousel(label: "Featured artwork", class: "mx-14 w-64") do |carousel| %>
+  <% 3.times do |n| %>
+    <% carousel.with_item do %>
+      <div class="flex aspect-square items-center justify-center rounded-md border bg-muted text-2xl">
+        Slide <%= n + 1 %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

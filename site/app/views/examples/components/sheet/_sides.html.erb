@@ -1,0 +1,20 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_sheet(side: :left) do |sheet| %>
+    <% sheet.with_trigger(variant: :outline) { "Left" } %>
+    <% sheet.with_title { "Slide from the left" } %>
+    <% sheet.with_description { "Navigation belongs on the left." } %>
+    Sheet body content.
+  <% end %>
+  <%= poetry_sheet(side: :top) do |sheet| %>
+    <% sheet.with_trigger(variant: :outline) { "Top" } %>
+    <% sheet.with_title { "Slide from the top" } %>
+    <% sheet.with_description { "A banner-style panel." } %>
+    Sheet body content.
+  <% end %>
+  <%= poetry_sheet(side: :bottom) do |sheet| %>
+    <% sheet.with_trigger(variant: :outline) { "Bottom" } %>
+    <% sheet.with_title { "Slide from the bottom" } %>
+    <% sheet.with_description { "Pickers belong on the bottom." } %>
+    Sheet body content.
+  <% end %>
+</div>

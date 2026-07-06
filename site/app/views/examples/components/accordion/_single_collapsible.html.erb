@@ -1,0 +1,5 @@
+<div class="w-full max-w-md">
+  <%= poetry_accordion(collapsible: true, open: %w[only]) do |accordion| %>
+    <% accordion.with_item(value: "only", title: "Toggle me") { "I can close." } %>
+  <% end %>
+</div>

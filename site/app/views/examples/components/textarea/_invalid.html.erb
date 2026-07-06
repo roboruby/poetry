@@ -1,0 +1,6 @@
+<%# Error styling comes from aria-invalid - in real forms the
+    Field/FormBuilder sets it from model errors, never by hand. %>
+<div class="w-80">
+  <%= poetry_textarea(name: "message", placeholder: "Type your message here.",
+                      value: "too short", invalid: true, "aria-label": "Message") %>
+</div>

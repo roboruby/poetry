@@ -1,0 +1,7 @@
+<%# A server-rendered value: the trigger shows the label and the native
+    <select> ships with the option already selected. %>
+<%= poetry_select(value: "banana", placeholder: "Select a fruit", "aria-label": "Fruit") do |select| %>
+  <% select.with_item(value: "apple") { "Apple" } %>
+  <% select.with_item(value: "banana") { "Banana" } %>
+  <% select.with_item(value: "blueberry") { "Blueberry" } %>
+<% end %>

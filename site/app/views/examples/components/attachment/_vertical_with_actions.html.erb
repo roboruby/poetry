@@ -1,0 +1,5 @@
+<%= poetry_attachment(orientation: :vertical) do |attachment| %>
+  <% attachment.with_media(variant: :image) { poetry_icon(name: :image) } %>
+  <% attachment.with_title { "screenshot.png" } %>
+  <% attachment.with_action(label: "Remove") { poetry_icon(name: :x) } %>
+<% end %>

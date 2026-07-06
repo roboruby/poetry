@@ -1,0 +1,12 @@
+<%# Field-bound: control_attributes lands the id (the label-for target)
+    and aria-describedby on the switch button. %>
+<% field = Poetry::Ui::Field::Component.new(
+     id: "switch-notifications", label_text: "Notifications",
+     hint: "Applied the moment it flips."
+   ) %>
+<div class="w-80">
+  <%= render field do %>
+    <%= poetry_switch(name: "email_notifications", checked: true,
+                      **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

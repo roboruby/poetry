@@ -1,0 +1,36 @@
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content">
+  <%= poetry_sidebar(collapsible: :offcanvas, open: false) do |shell| %>
+    <% shell.with_nav do %>
+      <%= poetry_sidebar_header do %>
+        <div class="flex items-center gap-2 px-2 py-1 text-sm font-semibold">Acme Inc</div>
+      <% end %>
+      <%= poetry_sidebar_content do %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Platform" } %>
+          <%= poetry_sidebar_menu do %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
+                <%= poetry_icon(name: :"layout-dashboard") %><span>Dashboard</span>
+              <% end %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :inbox) %><span>Inbox</span>
+              <% end %>
+              <%= poetry_sidebar_menu_badge do %>12<% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% shell.with_inset do %>
+      <div class="flex items-center gap-2 border-b p-3">
+        <%= poetry_sidebar_trigger %>
+        <span class="text-sm font-medium">Dashboard</span>
+      </div>
+      <div class="p-4 text-sm text-muted-foreground">
+        The sidebar starts collapsed &mdash; the trigger slides it back in.
+      </div>
+    <% end %>
+  <% end %>
+</div>

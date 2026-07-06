@@ -1,0 +1,6 @@
+<%# label: sets aria-label for label-less placements; disabled: dims the
+    whole wrapper, chevron included. %>
+<div class="w-80">
+  <%= poetry_native_select(size: :sm, disabled: true, name: "plan", id: "native-select-plan",
+                           label: "Plan", options: %w[Starter Team], selected: "Team") %>
+</div>

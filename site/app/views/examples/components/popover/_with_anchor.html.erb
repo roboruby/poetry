@@ -1,0 +1,6 @@
+<%= poetry_popover do |popover| %>
+  <% popover.with_trigger(variant: :outline) { "Open popover" } %>
+  <% popover.with_anchor { "The panel anchors to this text, not the button." } %>
+  <% popover.with_title { "Anchored" } %>
+  Positioned against the anchor part.
+<% end %>

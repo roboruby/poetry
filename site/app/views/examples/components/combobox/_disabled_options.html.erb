@@ -1,0 +1,6 @@
+<%= poetry_combobox(name: "plan", placeholder: "Select a plan...",
+                    "aria-label": "Plan") do |combobox| %>
+  <% combobox.with_item(value: "hobby") { "Hobby" } %>
+  <% combobox.with_item(value: "pro") { "Pro" } %>
+  <% combobox.with_item(value: "enterprise", disabled: true) { "Enterprise (contact sales)" } %>
+<% end %>

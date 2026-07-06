@@ -1,0 +1,7 @@
+<div class="w-full max-w-xl">
+  <%= poetry_alert(variant: :destructive) do |alert| %>
+    <% alert.with_icon(name: :"triangle-alert") %>
+    <% alert.with_title { "Payment failed" } %>
+    Your card was declined - update your billing details.
+  <% end %>
+</div>

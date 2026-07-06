@@ -1,0 +1,25 @@
+<%# insideStart labels ride each arc a few degrees into the sweep;
+    the -90..380 span is the shadcn "label" block's overshoot spiral. %>
+<% config = {
+     visitors: { label: "Visitors" },
+     chrome: { label: "Chrome", color: "var(--chart-1)" },
+     safari: { label: "Safari", color: "var(--chart-2)" },
+     firefox: { label: "Firefox", color: "var(--chart-3)" },
+     edge: { label: "Edge", color: "var(--chart-4)" },
+     other: { label: "Other", color: "var(--chart-5)" }
+   }
+   data = [
+     { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },
+     { browser: "safari", visitors: 200, fill: "var(--color-safari)" },
+     { browser: "firefox", visitors: 187, fill: "var(--color-firefox)" },
+     { browser: "edge", visitors: 173, fill: "var(--color-edge)" },
+     { browser: "other", visitors: 90, fill: "var(--color-other)" }
+   ] %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radial, data: data, config: config, id: "radial-label",
+                   name_key: :browser, start_angle: -90, end_angle: 380,
+                   inner_radius: 30, outer_radius: 110) do |chart| %>
+    <% chart.with_radial_bar(data_key: :visitors, background: true,
+                             labels: :inside_start, label_key: :browser) %>
+  <% end %>
+</div>

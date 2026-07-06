@@ -1,0 +1,9 @@
+<div class="w-full max-w-md">
+  <%= poetry_message_scroller(id: "scroller-demo", class: "h-80 rounded-lg border") do %>
+    <% 12.times do |i| %>
+      <%= poetry_message_scroller_item(id: "m#{i}") do %>
+        <div class="rounded-xl bg-muted px-3 py-2 w-fit">Message <%= i + 1 %></div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

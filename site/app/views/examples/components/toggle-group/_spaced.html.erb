@@ -1,0 +1,6 @@
+<%= poetry_toggle_group(type: :multiple, variant: :outline, spacing: 2,
+                        values: %w[bold italic], label: "Text formatting") do |group| %>
+  <% group.with_item(value: "bold", label: "Toggle bold") { poetry_icon(name: :bold) } %>
+  <% group.with_item(value: "italic", label: "Toggle italic") { poetry_icon(name: :italic) } %>
+  <% group.with_item(value: "underline", label: "Toggle underline") { poetry_icon(name: :underline) } %>
+<% end %>

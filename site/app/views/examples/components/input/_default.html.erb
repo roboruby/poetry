@@ -1,0 +1,6 @@
+<%# Standalone inputs carry an aria-label; inside a form, use the
+    FormBuilder's field instead (it wires ids, errors, and aria). %>
+<div class="w-80">
+  <%= poetry_input(type: "email", name: "email", placeholder: "you@example.com",
+                   "aria-label": "Email") %>
+</div>

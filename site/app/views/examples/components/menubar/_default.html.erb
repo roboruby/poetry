@@ -1,0 +1,59 @@
+<%= poetry_menubar(label: "Application menu") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_item(shortcut: "⌘T") { "New Tab" } %>
+    <% menu.with_item(shortcut: "⌘N") { "New Window" } %>
+    <% menu.with_item(disabled: true) { "New Incognito Window" } %>
+    <% menu.with_separator %>
+    <% menu.with_sub do |sub| %>
+      <% sub.with_trigger { "Share" } %>
+      <% sub.with_item { "Email link" } %>
+      <% sub.with_item { "Messages" } %>
+      <% sub.with_item { "Notes" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(shortcut: "⌘P") { "Print..." } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Edit" } %>
+    <% menu.with_item(shortcut: "⌘Z") { "Undo" } %>
+    <% menu.with_item(shortcut: "⇧⌘Z") { "Redo" } %>
+    <% menu.with_separator %>
+    <% menu.with_sub do |sub| %>
+      <% sub.with_trigger { "Find" } %>
+      <% sub.with_item { "Search the web" } %>
+      <% sub.with_separator %>
+      <% sub.with_item { "Find..." } %>
+      <% sub.with_item { "Find Next" } %>
+      <% sub.with_item { "Find Previous" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item { "Cut" } %>
+    <% menu.with_item { "Copy" } %>
+    <% menu.with_item { "Paste" } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "View" } %>
+    <% menu.with_checkbox_item(close_on_select: false) { "Always Show Bookmarks Bar" } %>
+    <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Always Show Full URLs" } %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true, shortcut: "⌘R") { "Reload" } %>
+    <% menu.with_item(inset: true, disabled: true, shortcut: "⇧⌘R") { "Force Reload" } %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true) { "Toggle Fullscreen" } %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true) { "Hide Sidebar" } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Profiles" } %>
+    <% menu.with_radio_group(value: "benoit") do |group| %>
+      <% group.with_radio_item(value: "andy") { "Andy" } %>
+      <% group.with_radio_item(value: "benoit") { "Benoit" } %>
+      <% group.with_radio_item(value: "luis") { "Luis" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true) { "Edit..." } %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true) { "Add Profile..." } %>
+  <% end %>
+<% end %>

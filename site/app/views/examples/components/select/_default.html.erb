@@ -1,0 +1,9 @@
+<%= poetry_select(placeholder: "Select a fruit", "aria-label": "Fruit") do |select| %>
+  <% select.with_group(label: "Fruits") do |group| %>
+    <% group.with_item(value: "apple") { "Apple" } %>
+    <% group.with_item(value: "banana") { "Banana" } %>
+    <% group.with_item(value: "blueberry") { "Blueberry" } %>
+    <% group.with_item(value: "grapes", disabled: true) { "Grapes" } %>
+    <% group.with_item(value: "pineapple") { "Pineapple" } %>
+  <% end %>
+<% end %>

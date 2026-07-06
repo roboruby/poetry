@@ -1,0 +1,7 @@
+<div class="w-full max-w-md">
+  <%= poetry_message do |message| %>
+    <% message.with_avatar { "AI" } %>
+    <% message.with_header { "Assistant" } %>
+    <%= poetry_bubble(variant: :muted) { "Here's the plan for today." } %>
+  <% end %>
+</div>

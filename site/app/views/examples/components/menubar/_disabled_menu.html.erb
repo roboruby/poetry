@@ -1,0 +1,15 @@
+<%# disabled: true skips the menu in roving focus - the bar keeps one tab stop. %>
+<%= poetry_menubar(label: "Editor menu") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_item { "New" } %>
+  <% end %>
+  <% bar.with_menu(disabled: true) do |menu| %>
+    <% menu.with_trigger { "Team" } %>
+    <% menu.with_item { "Invite" } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Help" } %>
+    <% menu.with_item { "About" } %>
+  <% end %>
+<% end %>

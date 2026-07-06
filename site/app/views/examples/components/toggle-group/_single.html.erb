@@ -1,0 +1,5 @@
+<%= poetry_toggle_group(type: :single, value: "center", label: "Text alignment") do |group| %>
+  <% group.with_item(value: "left", label: "Align left") { poetry_icon(name: :"text-align-start") } %>
+  <% group.with_item(value: "center", label: "Align center") { poetry_icon(name: :"text-align-center") } %>
+  <% group.with_item(value: "right", label: "Align right") { poetry_icon(name: :"text-align-end") } %>
+<% end %>

@@ -1,0 +1,25 @@
+<%# Reference marks annotate the plot area; error_key: names a row key
+    holding a symmetric offset (or [low, high]) drawn as a whisker. %>
+<% data = [
+     { height: 161, weight: 51, werr: 3 },
+     { height: 167, weight: 59, werr: 4 },
+     { height: 170, weight: 68, werr: 5 },
+     { height: 174, weight: 66, werr: 4 },
+     { height: 178, weight: 79, werr: 6 },
+     { height: 183, weight: 84, werr: 5 },
+     { height: 189, weight: 95, werr: 7 }
+   ]
+   config = { sample: { label: "Sample", color: "var(--chart-1)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:scatter, data: data, config: config, id: "scatter-refs",
+                   margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :height, name: "Height") %>
+    <% chart.with_y_axis(data_key: :weight, name: "Weight") %>
+    <% chart.with_scatter(key: :sample, error_key: :werr) %>
+    <% chart.with_reference_area(y1: 60, y2: 80, label: "target band") %>
+    <% chart.with_reference_line(x: 175) %>
+    <% chart.with_reference_dot(x: 172, y: 70, r: 10, label: "median") %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

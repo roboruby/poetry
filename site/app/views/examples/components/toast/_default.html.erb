@@ -1,0 +1,8 @@
+<%# duration: 0 pins the toast open for this demo - without it a plain
+    toast auto-dismisses after 5s (the timer pauses on hover and focus). %>
+<ul class="w-full max-w-sm">
+  <%= poetry_toast(duration: 0) do |toast| %>
+    <% toast.with_title { "Event scheduled" } %>
+    <% toast.with_description { "Friday, July 10 at 5:00 PM" } %>
+  <% end %>
+</ul>

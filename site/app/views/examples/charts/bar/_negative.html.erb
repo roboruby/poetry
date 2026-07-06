@@ -1,0 +1,19 @@
+<%# Negative values drop below the zero baseline; cell_fill colors each
+    bar by sign, and labels: true + label_key: writes the month above
+    (or below) each bar. %>
+<% data = [
+     { month: "January", visitors: 186 },
+     { month: "February", visitors: 205 },
+     { month: "March", visitors: -207 },
+     { month: "April", visitors: 173 },
+     { month: "May", visitors: -209 },
+     { month: "June", visitors: 214 }
+   ]
+   config = { visitors: { label: "Visitors" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_bar_chart(data: data, config: config, id: "bar-negative") do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_bar(data_key: :visitors, labels: true, label_key: :month,
+                      cell_fill: ->(_row, value) { value.positive? ? "var(--chart-1)" : "var(--chart-2)" }) %>
+  <% end %>
+</div>

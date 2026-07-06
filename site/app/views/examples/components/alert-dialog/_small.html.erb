@@ -1,0 +1,7 @@
+<%= poetry_alert_dialog(size: :sm) do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Publish changes" } %>
+  <% dialog.with_title { "Publish these changes?" } %>
+  <% dialog.with_description { "Your edits go live immediately." } %>
+  <% dialog.with_cancel { "Cancel" } %>
+  <% dialog.with_action { "Publish" } %>
+<% end %>

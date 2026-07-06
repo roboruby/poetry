@@ -1,0 +1,8 @@
+<%# Field owns the ids and yields control_attributes - wire the textarea
+    with them, never hand-write the label/aria pairing. %>
+<div class="w-80">
+  <%= poetry_field(id: "textarea-message", label_text: "Your message") do |field| %>
+    <%= poetry_textarea(name: "message", placeholder: "Type your message here.",
+                        **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

@@ -1,0 +1,6 @@
+<%# Every control gets a Label wired via for_id - placeholder text is
+    never the label. %>
+<div class="grid w-80 gap-2">
+  <%= poetry_label(for_id: "label-full-name") { "Full name" } %>
+  <%= poetry_input(name: "full_name", id: "label-full-name") %>
+</div>

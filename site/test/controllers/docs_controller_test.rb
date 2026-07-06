@@ -33,11 +33,14 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "script[data-slot=chart-live-payload]", 1 # the legend_toggle example
   end
 
-  test "a registry component without gallery examples gets the Empty state" do
-    get "/components/accordion"
+  test "the gallery is fully populated - every page carries at least one example" do
+    # (The docs/page Empty branch covers FUTURE registry additions; since
+    # the 71-agent port there is no catalog entry without examples.)
+    DocsCatalog.all.each do |entry|
+      dir = Rails.root.join("app/views/examples/#{entry.section}/#{entry.slug}")
 
-    assert_response :success
-    assert_select "[data-slot=empty]"
+      assert_predicate dir.glob("_*.html.erb"), :any?, "#{entry.path} has no example partials"
+    end
   end
 
   test "an unknown slug is a 404, not a blank page" do
@@ -50,5 +53,15 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     get "/poetry/llms.txt"
 
     assert_response :success
+  end
+
+  test "every catalog page renders" do
+    # The whole-gallery gate: a broken example partial 500s its page; a
+    # page with no examples must still 200 with the Empty state.
+    DocsCatalog.all.each do |entry|
+      get entry.path
+
+      assert_response :success, "#{entry.path} failed to render"
+    end
   end
 end

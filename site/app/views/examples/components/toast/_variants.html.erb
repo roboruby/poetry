@@ -1,0 +1,20 @@
+<%# Each variant brings its own icon; destructive also announces
+    assertively (politeness derives from the variant). %>
+<ul class="flex w-full max-w-sm flex-col gap-2">
+  <%= poetry_toast(variant: :success, duration: 0) do |toast| %>
+    <% toast.with_title { "Changes saved" } %>
+    <% toast.with_description { "Your profile has been updated." } %>
+  <% end %>
+  <%= poetry_toast(variant: :info, duration: 0) do |toast| %>
+    <% toast.with_title { "Heads up" } %>
+    <% toast.with_description { "A new version is available." } %>
+  <% end %>
+  <%= poetry_toast(variant: :warning, duration: 0) do |toast| %>
+    <% toast.with_title { "Storage almost full" } %>
+    <% toast.with_description { "You have used 90% of your quota." } %>
+  <% end %>
+  <%= poetry_toast(variant: :destructive, duration: 0) do |toast| %>
+    <% toast.with_title { "Payment failed" } %>
+    <% toast.with_description { "Your card was declined." } %>
+  <% end %>
+</ul>

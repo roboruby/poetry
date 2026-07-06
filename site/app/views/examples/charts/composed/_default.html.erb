@@ -1,0 +1,20 @@
+<% data = [
+     { month: "January", visitors: 320, trend: 240 },
+     { month: "February", visitors: 410, trend: 290 },
+     { month: "March", visitors: 380, trend: 320 },
+     { month: "April", visitors: 250, trend: 300 },
+     { month: "May", visitors: 445, trend: 340 },
+     { month: "June", visitors: 480, trend: 390 }
+   ]
+   config = { visitors: { label: "Visitors", color: "var(--chart-1)" },
+              trend: { label: "Trend", color: "var(--chart-3)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:composed, data: data, config: config, id: "composed-default",
+                   margin: { left: 12, right: 12 }) do |chart| %>
+    <% chart.with_grid %>
+    <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+    <% chart.with_bar(data_key: :visitors, radius: 4) %>
+    <% chart.with_line(data_key: :trend, stroke_width: 2, dots: true) %>
+    <% chart.with_tooltip %>
+  <% end %>
+</div>

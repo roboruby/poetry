@@ -1,0 +1,16 @@
+<%# A thin 250-degree gauge with pill caps (corner_radius: 10 on a 10px
+    ring) and center text - the shadcn "text" radial block. %>
+<% config = {
+     visitors: { label: "Visitors" },
+     safari: { label: "Safari", color: "var(--chart-2)" }
+   }
+   data = [{ browser: "safari", visitors: 200, fill: "var(--color-safari)" }] %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radial, data: data, config: config, id: "radial-text",
+                   name_key: :browser, start_angle: 0, end_angle: 250,
+                   inner_radius: 80, outer_radius: 90) do |chart| %>
+    <% chart.with_polar_grid(radii: [90, 80], fills: %i[muted background]) %>
+    <% chart.with_radial_bar(data_key: :visitors, background: true, corner_radius: 10) %>
+    <% chart.with_center_label(title: "200", subtitle: "Visitors") %>
+  <% end %>
+</div>

@@ -1,0 +1,15 @@
+<%# A content block overrides options: - compose real <option>/<optgroup>
+    elements; the helpers stamp the styled classes. %>
+<div class="grid w-80 gap-2">
+  <%= poetry_label(for_id: "native-select-timezone") { "Timezone" } %>
+  <%= poetry_native_select(name: "timezone", id: "native-select-timezone") do %>
+    <%= poetry_native_select_optgroup(label: "Americas") do %>
+      <%= poetry_native_select_option(value: "america/new_york") { "New York" } %>
+      <%= poetry_native_select_option(value: "america/chicago") { "Chicago" } %>
+    <% end %>
+    <%= poetry_native_select_optgroup(label: "Europe") do %>
+      <%= poetry_native_select_option(value: "europe/london") { "London" } %>
+      <%= poetry_native_select_option(value: "europe/berlin") { "Berlin" } %>
+    <% end %>
+  <% end %>
+</div>

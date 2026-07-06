@@ -1,0 +1,22 @@
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Open" } %>
+  <% menu.with_label { "My Account" } %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(shortcut: "⇧⌘P") { "Profile" } %>
+    <% group.with_item(shortcut: "⌘B") { "Billing" } %>
+    <% group.with_item(shortcut: "⌘S") { "Settings" } %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_sub do |sub| %>
+    <% sub.with_trigger { "Invite users" } %>
+    <% sub.with_item { "Email" } %>
+    <% sub.with_item { "Message" } %>
+    <% sub.with_sub do |nested| %>
+      <% nested.with_trigger { "More..." } %>
+      <% nested.with_item { "Import from CSV" } %>
+    <% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_item(disabled: true) { "API" } %>
+  <% menu.with_item(variant: :destructive, shortcut: "⇧⌘Q") { "Log out" } %>
+<% end %>

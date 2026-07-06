@@ -1,0 +1,9 @@
+<%# close_on_select: false keeps the menu open while toggling. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "View" } %>
+  <% menu.with_label { "Appearance" } %>
+  <% menu.with_separator %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Status Bar" } %>
+  <% menu.with_checkbox_item(checked: false, close_on_select: false, disabled: true) { "Activity Bar" } %>
+  <% menu.with_checkbox_item(checked: false, close_on_select: false) { "Panel" } %>
+<% end %>

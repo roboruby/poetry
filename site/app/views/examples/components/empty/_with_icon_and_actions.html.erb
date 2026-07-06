@@ -1,0 +1,6 @@
+<%= poetry_empty(media_variant: :icon) do |empty| %>
+  <% empty.with_media { poetry_icon(name: :folder) } %>
+  <% empty.with_title { "No projects yet" } %>
+  <% empty.with_description { "Get started by creating your first project." } %>
+  <%= poetry_button(size: :sm) { "Create project" } %>
+<% end %>

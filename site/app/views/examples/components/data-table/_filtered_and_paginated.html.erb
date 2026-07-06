@@ -1,0 +1,16 @@
+<% rows = [
+     { number: "INV-001", customer: "Acme", amount: "$250.00" },
+     { number: "INV-002", customer: "Globex", amount: "$1,150.00" }
+   ]
+   state = Poetry::Ui::DataTable::State.from_params(
+     { q: "inv", sort: "customer", dir: "desc", page: 2 }, sortable: %w[number customer]
+   ) %>
+<div class="w-full max-w-2xl">
+  <%= poetry_data_table(rows: rows, state: state, total: 3,
+                        path: ->(params) { "?#{params.to_query}" },
+                        caption: "A list of recent invoices.") do |table| %>
+    <% table.with_column("Invoice", key: :number, sortable: true) { |row| row[:number] } %>
+    <% table.with_column("Customer", key: :customer, sortable: true) { |row| row[:customer] } %>
+    <% table.with_column("Amount", classes: "text-right") { |row| row[:amount] } %>
+  <% end %>
+</div>

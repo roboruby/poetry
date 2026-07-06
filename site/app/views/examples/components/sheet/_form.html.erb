@@ -1,0 +1,10 @@
+<%= poetry_sheet(side: :right) do |sheet| %>
+  <% sheet.with_trigger(variant: :outline) { "Edit profile" } %>
+  <% sheet.with_title { "Edit profile" } %>
+  <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
+  <% sheet.with_footer do %>
+    <%= poetry_button(type: :submit) { "Save changes" } %>
+  <% end %>
+  <%= poetry_label(for_id: "sheet-demo-name") { "Name" } %>
+  <%= poetry_input(name: "name", value: "Pedro Duarte", id: "sheet-demo-name") %>
+<% end %>

@@ -1,0 +1,9 @@
+<%# inset: true aligns flush items with the checkbox/radio gutter. %>
+<%= poetry_dropdown_menu do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Edit" } %>
+  <% menu.with_label(inset: true) { "Actions" } %>
+  <% menu.with_item(inset: true) { "Undo" } %>
+  <% menu.with_item(inset: true, disabled: true) { "Redo" } %>
+  <% menu.with_separator %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) { "Autosave" } %>
+<% end %>

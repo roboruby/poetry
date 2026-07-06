@@ -1,0 +1,7 @@
+<%# In RTL the thumb still travels toward the "on" end - the checked
+    translate is logical, not physical (a poetry addition over shadcn's
+    LTR-only translate). %>
+<div dir="rtl" class="flex items-center gap-3">
+  <%= poetry_switch(name: "rtl_demo", checked: true, id: "switch-rtl", dir: "rtl") %>
+  <%= poetry_label(for_id: "switch-rtl") { "وضع الطيران" } %>
+</div>

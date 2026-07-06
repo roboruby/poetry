@@ -1,0 +1,17 @@
+<%# Two series share the ring and stack along the ANGLE (stack: :a);
+    max_value pins the domain to the stack total so the segments fill the
+    half gauge exactly - the shadcn "stacked" radial block. %>
+<% config = {
+     desktop: { label: "Desktop", color: "var(--chart-1)" },
+     mobile: { label: "Mobile", color: "var(--chart-2)" }
+   }
+   data = [{ month: "january", desktop: 1260, mobile: 570 }] %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart(:radial, data: data, config: config, id: "radial-stacked",
+                   name_key: :month, end_angle: 180,
+                   inner_radius: 80, outer_radius: 110, max_value: 1830) do |chart| %>
+    <% chart.with_radial_bar(data_key: :mobile, stack: :a, corner_radius: 5) %>
+    <% chart.with_radial_bar(data_key: :desktop, stack: :a, corner_radius: 5) %>
+    <% chart.with_center_label(title: "1,830", subtitle: "Total Visitors") %>
+  <% end %>
+</div>

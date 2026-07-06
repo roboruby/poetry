@@ -1,0 +1,6 @@
+<%= poetry_popover(modal: true, content_class: "w-80") do |popover| %>
+  <% popover.with_trigger(variant: :outline) { "Open modal popover" } %>
+  <% popover.with_title { "Modal" } %>
+  <% popover.with_description { "Focus is trapped; outside interaction dismisses instead of passing through." } %>
+  Press Escape or click outside to dismiss.
+<% end %>

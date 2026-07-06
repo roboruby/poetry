@@ -1,0 +1,11 @@
+<%# One checked value per radio group; values must be unique. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Panel Position" } %>
+  <% menu.with_label { "Panel Position" } %>
+  <% menu.with_separator %>
+  <% menu.with_radio_group(value: "bottom") do |group| %>
+    <% group.with_radio_item(value: "top") { "Top" } %>
+    <% group.with_radio_item(value: "bottom") { "Bottom" } %>
+    <% group.with_radio_item(value: "right") { "Right" } %>
+  <% end %>
+<% end %>

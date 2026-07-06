@@ -1,0 +1,27 @@
+<%# The BYO-engine mount (Door 2): engine: routes the same
+    poetry_chart call to the adapter path, which renders the Container
+    frame, a mount element, and the frozen chart-spec v1 as embedded JSON.
+    A registered client adapter draws inside the mount. This docs site
+    does not load registerChartAdapter or Chart.js yet, so the mount stays
+    empty here - the server-side seam (mount + spec) is what this example
+    shows, and it is fully inspectable in the page source. %>
+<%# The adapter path takes series:/axes: ARGUMENTS (the closed spec), not
+    slots. The spec travels as JSON, so the data carries pre-formatted
+    month names - formatter lambdas cannot ride the payload. %>
+<% data = [
+     { month: "Jan", desktop: 186, mobile: 80 },
+     { month: "Feb", desktop: 305, mobile: 200 },
+     { month: "Mar", desktop: 237, mobile: 120 },
+     { month: "Apr", desktop: 73, mobile: 190 },
+     { month: "May", desktop: 209, mobile: 130 },
+     { month: "Jun", desktop: 214, mobile: 140 }
+   ]
+   config = { desktop: { label: "Desktop", color: "var(--chart-1)" },
+              mobile: { label: "Mobile", color: "var(--chart-2)" } } %>
+<div class="w-full max-w-xl">
+  <%= poetry_chart :bar, engine: "chartjs", data: data, config: config,
+                   id: "adapter-default",
+                   series: [{ data_key: :desktop }, { data_key: :mobile }],
+                   axes: { x: { data_key: :month } },
+                   label: "Bar chart (Chart.js adapter)" %>
+</div>

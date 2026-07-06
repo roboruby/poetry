@@ -1,0 +1,9 @@
+<%= poetry_sheet do |sheet| %>
+  <% sheet.with_trigger(variant: :outline) { "Open right sheet" } %>
+  <% sheet.with_title { "Slide from the right" } %>
+  <% sheet.with_description { "A Dialog that stays visually adjacent to the page." } %>
+  <% sheet.with_footer do %>
+    <%= poetry_button { "Apply" } %>
+  <% end %>
+  Sheet body content.
+<% end %>

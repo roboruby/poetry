@@ -1,0 +1,6 @@
+<div class="w-full max-w-md">
+  <%= poetry_message(align: :end) do |message| %>
+    <% message.with_footer { "Read 10:42" } %>
+    <%= poetry_bubble { "Sounds good!" } %>
+  <% end %>
+</div>

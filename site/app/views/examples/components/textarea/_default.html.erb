@@ -1,0 +1,6 @@
+<%# Standalone textareas carry an aria-label; inside a form, pair with
+    Field instead (it wires label, ids, and aria). %>
+<div class="w-80">
+  <%= poetry_textarea(name: "message", placeholder: "Type your message here.",
+                      "aria-label": "Message") %>
+</div>

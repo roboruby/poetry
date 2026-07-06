@@ -1,0 +1,8 @@
+<div class="flex flex-col gap-6">
+  <%# One group of six - no separator rendered for a single group. %>
+  <%= poetry_input_otp(name: "code_single", length: 6,
+                       "aria-label": "Verification code") %>
+  <%# groups must sum to length: [2, 2, 2] gives three pairs. %>
+  <%= poetry_input_otp(name: "code_pairs", length: 6, groups: [2, 2, 2],
+                       "aria-label": "Verification code") %>
+</div>
