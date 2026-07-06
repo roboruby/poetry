@@ -205,7 +205,7 @@ components:
     - actions
     - trigger
     - group
-    capsule: e9f3a3096e2f
+    capsule: c9f9fe0aecb0
     agent_rules:
     - 'State is server-owned: render data-upload-state and flip it by Turbo Stream
       replace - never toggle it in JS.'
@@ -328,7 +328,7 @@ components:
     - group
     - content
     - reactions
-    capsule: 846f16b098a4
+    capsule: 2a423d154712
     agent_rules:
     - One Bubble per message; stack a sender's run inside poetry_bubble_group.
     - 'Quick replies are tag: :button (with the caller''s data-action) or tag: :a
@@ -1805,7 +1805,7 @@ components:
     elements:
     - icon
     - content
-    capsule: 3ba6d98024fa
+    capsule: c2bdbdcafa1f
     agent_rules:
     - The marker text is real announced content - never mark it aria-hidden or role=separator.
     - 'announce: :status is for the ONE in-flight marker (streaming status); static
@@ -1942,7 +1942,7 @@ components:
     - content
     - header
     - footer
-    capsule: 87068aab9f92
+    capsule: aba6da951085
     agent_rules:
     - 'One Message per turn: avatar slot + header/footer slots; the body block holds
       the Bubbles.'
@@ -1982,7 +1982,7 @@ components:
     - content
     - item
     - button
-    capsule: f625c06ba66b
+    capsule: ca2c7a64375e
     controllers:
     - identifier: poetry--core--message-scroller
       targets:

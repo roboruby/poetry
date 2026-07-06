@@ -3,10 +3,12 @@
 module Poetry
   module Ui
     module MessageScroller
-      # The MessageScroller dictionary - shadcn new-york-v4 AI-chat set,
-      # source-validated 2026-07-01 (MessageScroller).
-      # The jump button's show/hide choreography rides data-[active] and
-      # data-[direction] selectors; rows get content-visibility containment.
+      # Re-expressed through the cn-* theme layer (N11) - minimally: the
+      # 4-state scroll machine's whole surface is machinery (viewport
+      # containment/scrollbar choreography, row content-visibility, the
+      # jump button's show/hide translate dance - upstream keeps every one
+      # of those inline too). Only the row rhythm is design: gap-8 rides
+      # .cn-message-scroller-content.
       class Style < Poetry::Core::Style
         # Source also stamps a group/message-scroller named-group marker;
         # dropped until a dictionary consumer references it - an unconsumed
@@ -17,7 +19,7 @@ module Poetry
         element :viewport, "size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable " \
                            "overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-none"
 
-        element :content, "flex h-max min-h-full flex-col gap-8"
+        element :content, "cn-message-scroller-content flex h-max min-h-full flex-col"
 
         element :item, "min-w-0 shrink-0 [contain-intrinsic-size:auto_10rem] [content-visibility:auto]"
 

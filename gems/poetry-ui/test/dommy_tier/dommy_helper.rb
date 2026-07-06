@@ -83,6 +83,15 @@ module DommyTier
       .map { |path| Poetry::Core.root.join(path) }
   end
 
+  # The cn-* theme layer (N11). The real recipe imports it layer(base);
+  # dommy imports it UNLAYERED (limit 3): lexbor's @layer handling is
+  # unproven, and this tier asserts computed component styles - never
+  # utilities-vs-theme precedence - so the layer distinction cannot change
+  # a verdict here.
+  def theme_css
+    Poetry::Ui.root.join("themes/default.css")
+  end
+
   def safelist_text
     styles = Poetry::Core::Style.descendants.select(&:name)
     Poetry::Core::CSS::Safelist.new(style_classes: styles,
@@ -90,7 +99,8 @@ module DommyTier
   end
 
   def css_digest
-    Digest::SHA256.hexdigest(CSS_TRANSFORM_VERSION + safelist_text + css_inputs.map(&:read).join)[0, 16]
+    Digest::SHA256.hexdigest(CSS_TRANSFORM_VERSION + safelist_text +
+                             css_inputs.map(&:read).join + theme_css.read)[0, 16]
   end
 
   def build_compiled_css(cache)
@@ -100,6 +110,7 @@ module DommyTier
       File.write(File.join(dir, "entry.css"), <<~CSS)
         @import "tailwindcss";
         #{css_inputs.map { |path| %(@import "#{path}";) }.join("\n")}
+        @import "#{theme_css}";
         @source "#{File.join(dir, "safelist.txt")}";
       CSS
       out = File.join(dir, "out.css")

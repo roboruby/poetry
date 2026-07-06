@@ -23,11 +23,15 @@ module Poetry
       # can't be reproduced here - this suite has already loaded every
       # component. The fresh-app install proof covers it.
       assert_file "app/assets/tailwind/poetry/safelist.txt" do |safelist|
-        assert_match(/bg-primary/, safelist)
+        # Post-N11 the visual utilities live in style-default.css (@apply
+        # needs no safelisting); the safelist carries cn names + the
+        # structural inline set.
+        assert_match(/^cn-button$/, safelist)
         assert_match(/^sr-only$/, safelist, "committed template classes included (no herb needed in a host)")
         assert_match(/^animate-spin$/, safelist)
         assert_operator safelist.lines.size, :>, 100, "the full dictionary, not a stub"
       end
+      assert_file "app/assets/tailwind/poetry/style-default.css", /\.cn-button \{/
       assert_file "config/initializers/poetry.rb", /icon_library/
       assert_file "config/poetry_components.yml", /components: \{\}/
     end

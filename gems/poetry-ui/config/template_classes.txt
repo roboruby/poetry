@@ -9,10 +9,12 @@ font-semibold
 gap-1
 gap-2
 grid
+grid-cols-2
 h-96
 items-center
 justify-center
 min-h-64
+min-h-72
 overflow-hidden
 p-3
 p-4
@@ -25,3 +27,4 @@ text-sm
 text-xs
 w-64
 w-80
+w-96

@@ -27,7 +27,8 @@ module Poetry
         def test_variant_classes_style_the_content_child_from_the_root
           html = render_inline(Component.new) { "x" }.to_html
 
-          assert_includes html, "*:data-[slot=bubble-content]:bg-primary"
+          # The root-styles-the-child pattern rides the variant theme rule.
+          assert_includes html, "cn-bubble-variant-default"
         end
 
         def test_quick_reply_content_is_a_real_button_or_link
@@ -63,7 +64,7 @@ module Poetry
           html = render_inline(Component.new(align: :end, variant: :ghost)) { "x" }.to_html
 
           assert_includes html, "data-[align=end]:self-end"
-          assert_includes html, "data-[variant=ghost]:max-w-full"
+          assert_includes html, "cn-bubble" # ghost's max-w-full rides the theme rule
         end
       end
     end

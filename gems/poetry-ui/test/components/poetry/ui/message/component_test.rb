@@ -34,7 +34,8 @@ module Poetry
           # The :has() context selector ships in the avatar element classes
           # (the cross-part coupling the contract documents).
           assert_includes Style.css(:avatar), "group-has-data-[slot=message-footer]/message:-translate-y-8"
-          assert_includes Style.css(:header), "group-has-data-[variant=ghost]/message:px-0"
+          # The ghost padding collapse rides .cn-message-header in the theme.
+          assert_includes Style.css(:header), "cn-message-header"
           assert_includes html, 'data-slot="message"'
         end
 
@@ -57,7 +58,9 @@ module Poetry
           end.to_html
 
           assert_includes html, 'data-variant="ghost"', "Bubble emits the data-variant Message's :has() reads"
-          assert_includes html, "group-has-data-[variant=ghost]/message:px-0"
+          # The :has() padding collapse itself lives in the theme rules the
+          # header/footer names resolve to.
+          assert_includes html, "cn-message-header"
         end
       end
     end
