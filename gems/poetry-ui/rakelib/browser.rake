@@ -58,7 +58,17 @@ def poetry_ui_browser_session
                                        headless: true, timeout: 30, process_timeout: 30)
   end
   Capybara.server = :puma, { Silent: true }
-  Capybara::Session.new(:poetry_cuprite, Rails.application)
+  session = Capybara::Session.new(:poetry_cuprite, Rails.application)
+
+  # The layout's motion kill-switch lives behind prefers-reduced-motion
+  # (the poetry-charts pattern); the rig emulates it via CDP - persists
+  # across navigations - so screenshots stay deterministic while a real
+  # browser sees live motion.
+  session.driver.browser.page.command(
+    "Emulation.setEmulatedMedia",
+    features: [{ "name" => "prefers-reduced-motion", "value" => "reduce" }]
+  )
+  session
 end
 
 # Visit a preview page and wait until Stimulus has booted (the layout flips

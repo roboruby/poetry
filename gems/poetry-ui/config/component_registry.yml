@@ -775,6 +775,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     agent_rules:
     - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
       this component IS that wiring, with the form story done right.
@@ -1041,6 +1042,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     agent_rules:
     - NEVER make a context menu the only path to an action - it is an invisible affordance;
       every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar,
@@ -1348,6 +1350,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     agent_rules:
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
@@ -1503,6 +1506,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     agent_rules:
     - Use poetry_hover_card - never hand-roll hover-div previews.
     - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
@@ -1895,6 +1899,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     - identifier: poetry--core--roving-focus
       targets: []
       values:
@@ -2055,6 +2060,9 @@ components:
     options:
     - name: label
       type: string
+    - name: viewport
+      type: boolean
+      default: false
     slots:
     - name: items
       many: true
@@ -2065,8 +2073,12 @@ components:
     - chevron
     - content
     - content_position
+    - positioner
+    - popup
+    - viewport_shell
+    - viewport_panel
     - link
-    capsule: 8c60a7070257
+    capsule: f009d20e1b2a
     controllers:
     - identifier: poetry--core--navigation-menu
       targets: []
@@ -2074,11 +2086,31 @@ components:
       - closeDelay
       - openDelay
       actions:
+      - cancelClose
       - focusLeft
       - keydown
       - scheduleClose
       - scheduleOpen
       - toggle
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
+      - setAnchorElement
     agent_rules:
     - 'label: is REQUIRED (the nav landmark''s accessible name).'
     - with_item(title, value:) declares a trigger + panel; with_link(title, href:)
@@ -2198,6 +2230,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     agent_rules:
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
     - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
@@ -2455,6 +2488,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     - identifier: poetry--core--select
       targets: []
       values:
@@ -3224,6 +3258,7 @@ components:
       - anchorPointValueChanged
       - reposition
       - setAnchor
+      - setAnchorElement
     - identifier: poetry--core--tooltip
       targets: []
       values:

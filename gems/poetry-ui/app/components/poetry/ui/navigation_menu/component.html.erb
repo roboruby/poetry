@@ -15,4 +15,11 @@
       <% end %>
     <% end %>
   </div>
+  <% if viewport %>
+    <%= content_tag(:div, positioner_attributes) do %>
+      <div data-slot="navigation-menu-popup" data-closed class="<%= css(:popup) %>">
+        <div data-slot="navigation-menu-viewport" class="<%= css(:viewport_shell) %>"></div>
+      </div>
+    <% end %>
+  <% end %>
 <% end %>

@@ -43,7 +43,8 @@ module Poetry
         "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups, N9 W4c)",
         "sidebar" => "sidebar part marker (server-rendered; menu-action reserves menu-button room " \
                      "via group-has, W5b c3)",
-        "motion" => "navigation-menu direction slides (reserved - inert until the morphing viewport lands)",
+        "activation-direction" => "navigation-menu travel direction (poetry--core--navigation-menu " \
+                                  "stamps it on both panels during viewport switches, D3)",
         "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup, N9 W2)",
         "size" => "server-rendered size marker",
         "spacing" => "server-rendered spacing marker",

@@ -9,11 +9,17 @@
     <link rel="stylesheet" href="/assets/poetry.css">
     <style>
       /* Deterministic screenshots (rake test:visual): no motion in the
-         preview host - spinners freeze, presence animations land instantly. */
-      *, *::before, *::after {
-        animation: none !important;
-        transition: none !important;
-        caret-color: transparent !important;
+         preview host - spinners freeze, presence animations land instantly.
+         Scoped behind reduced-motion (the poetry-charts pattern): the
+         browser rig emulates it via CDP, while a real browser visiting the
+         previews keeps live motion (the D3 viewport-morph lesson - the
+         blanket rule masked the transitions it was supposed to prove). */
+      @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+          animation: none !important;
+          transition: none !important;
+          caret-color: transparent !important;
+        }
       }
     </style>
     <script type="importmap"><%= raw Rails.public_path.join("assets/importmap.json").read %></script>

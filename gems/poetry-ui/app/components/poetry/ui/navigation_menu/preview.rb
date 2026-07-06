@@ -10,6 +10,10 @@ module Poetry
         def default
           render_with_template(template: "poetry/ui/navigation_menu/bar_preview")
         end
+
+        def viewport
+          render_with_template(template: "poetry/ui/navigation_menu/viewport_preview")
+        end
       end
     end
   end
