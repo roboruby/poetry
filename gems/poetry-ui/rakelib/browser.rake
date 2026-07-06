@@ -45,7 +45,12 @@ def poetry_ui_preview_pages
     preview = ViewComponent::Preview.find(key)
     abort "no preview class for registry component #{key}" unless preview
 
-    component = key.split("/").last
+    # Every segment after the poetry/ui namespace, dash-joined: last-segment
+    # naming let poetry/ui/command/dialog shadow poetry/ui/dialog at
+    # dialog--*.png (272 baseline files for 273 shots, and the two pages
+    # took turns diffing ~0.24% against the one baseline - the tolerance
+    # entry that looked like animation jitter).
+    component = key.delete_prefix("poetry/ui/").tr("/", "-")
     preview.examples.sort.map { |example| [component, example, "/previews/#{key}/#{example}"] }
   end
 end
@@ -270,12 +275,11 @@ end
 POETRY_VISUAL_PIXEL_TOLERANCE = 0.001
 
 # Per-file overrides for KNOWN nondeterministic renders - each entry
-# carries its reason; anything else rides the global tolerance.
-POETRY_VISUAL_TOLERANCES = {
-  # The open-animation frame: consecutive runs alternate by a stable
-  # ~0.24% (2026-07-03) - timing, not drift.
-  "dialog--default.png" => 0.005
-}.freeze
+# carries its reason; anything else rides the global tolerance. (The one
+# historical entry - dialog--default.png at 0.005, blamed on animation
+# timing - was really the command/dialog name shadow above: two pages
+# alternating against one baseline. Removed with the naming fix; W2a.)
+POETRY_VISUAL_TOLERANCES = {}.freeze
 
 def poetry_ui_visual_diff(baseline_path, candidate_path)
   baseline = baseline_path.binread
