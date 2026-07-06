@@ -1,5 +1,15 @@
 ## [Unreleased]
 
+- `poetry:install --charts` — one-shot poetry-charts wiring for hosts
+  carrying the gem: copies the motion stylesheet into the Tailwind entry
+  (tailwindcss-rails compiles standalone, so a gem-path @import cannot
+  resolve) and registers the chart controllers in the Stimulus index,
+  riding the same idempotent primitives as the core wiring. Fails fast
+  with a Gemfile hint when poetry-charts is absent. The safelist pass
+  already covers the chart dictionaries on its own (they subclass
+  Poetry::Core::Style), and the charts engine merges its own importmap
+  pins — the flag adds exactly the two wires the engine cannot.
+
 - DropdownMenu — the menus-family ANCHOR (DropdownMenu):
   the full item union (item/checkbox/radio-group/label/separator/group/
   recursive sub) as one ordered polymorphic slot collection, a typed

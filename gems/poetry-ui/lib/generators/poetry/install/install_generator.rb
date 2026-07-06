@@ -18,8 +18,17 @@ module Poetry
   #
   # plus idempotent @import/@source injection into the host's Tailwind entry
   # (append-unless-present - re-running install is always safe).
+  #
+  # `--charts` additionally wires poetry-charts (the gem must already be in
+  # the bundle - its engine merges the @poetry/charts importmap pins and the
+  # safelist pass picks the chart dictionaries up on its own; what a host
+  # still needs by hand is the motion stylesheet in the Tailwind entry and
+  # the Stimulus registration, and that is exactly what the flag does).
   class InstallGenerator < Rails::Generators::Base
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
+
+    class_option :charts, type: :boolean, default: false,
+                          desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
 
     # Injected line by line (not as one block) so a re-run after an upgrade
     # appends any line a previous poetry version didn't know about.
@@ -52,6 +61,15 @@ module Poetry
     CSS
 
     desc "Install poetry: tokens, Tailwind theme, safelist, initializer, and the component manifest"
+
+    # Fails fast BEFORE any file lands: --charts against a bundle without
+    # the gem would otherwise half-install (css copied, dead registration).
+    def verify_charts_gem
+      return if !options[:charts] || charts_available?
+
+      raise Thor::Error, "--charts needs poetry-charts in the bundle - add " \
+                         '`gem "poetry-charts"` to the Gemfile, bundle, and re-run'
+    end
 
     def copy_tokens_and_theme
       create_file "app/assets/tailwind/poetry/tokens.css",
@@ -124,6 +142,32 @@ module Poetry
       JS
     end
 
+    # --charts: the two host-side wires the charts engine cannot do itself.
+    # The motion stylesheet is COPIED (tailwindcss-rails compiles standalone;
+    # a gem-path @import would not resolve) - vendored artifact, force like
+    # tokens; the entry @import and the Stimulus registration ride the same
+    # idempotent primitives as the core wiring.
+    def wire_charts
+      return unless options[:charts]
+
+      create_file "app/assets/tailwind/poetry/charts.css",
+                  Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css").read,
+                  force: true
+      inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/charts.css";))
+
+      index = "app/javascript/controllers/index.js"
+      unless File.exist?(File.join(destination_root, index))
+        say_status :note, "no #{index} - register the chart controllers yourself: " \
+                          "registerPoetryChartsControllers(application) from \"@poetry/charts\"", :yellow
+        return
+      end
+
+      inject_unless_present(index, <<~JS.strip)
+        import { registerPoetryChartsControllers } from "@poetry/charts"
+        registerPoetryChartsControllers(application)
+      JS
+    end
+
     # The llms.txt / llms-full.txt agent docs are engine routes - without
     # the mount they are unreachable (the fresh-app proof caught this).
     def mount_engine
@@ -135,6 +179,10 @@ module Poetry
     end
 
     private
+
+    def charts_available?
+      defined?(Poetry::Charts::Engine) ? true : false
+    end
 
     # The idempotency lives in the file-mutation primitive, not the
     # generator (the vite_ruby review lesson): appending is a no-op when

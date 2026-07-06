@@ -89,6 +89,71 @@ module Poetry
       assert_equal 1, content.scan('@import "./poetry/tokens.css";').size, "pre-existing line not duplicated"
       assert_equal 1, content.scan('@import "./poetry/animate.css";').size, "the upgrade path: new lines appended"
     end
+
+    # -- the --charts flag (cross-repo: poetry-charts) ----------------------
+    #
+    # poetry-charts is not in this gem's bundle, so the flag is tested
+    # against a STUB carrying the two things the generator touches: the
+    # Engine constant (the availability probe) and root (the stylesheet
+    # source). The real-gem path is the fresh-app install proof's job.
+
+    CHARTS_CSS_MARKER = "@keyframes poetry-chart-line-draw"
+
+    def with_charts_stub
+      root = Pathname.new(File.expand_path("../tmp/charts-stub", __dir__))
+      FileUtils.mkdir_p(root.join("app/assets/stylesheets"))
+      root.join("app/assets/stylesheets/poetry-charts.css")
+          .write("#{CHARTS_CSS_MARKER} { to { stroke-dashoffset: 0; } }\n")
+
+      charts = Module.new do
+        const_set(:Engine, Class.new)
+        define_singleton_method(:root) { root }
+      end
+      Poetry.const_set(:Charts, charts)
+      yield
+    ensure
+      Poetry.send(:remove_const, :Charts) if Poetry.const_defined?(:Charts, false)
+    end
+
+    def test_charts_flag_copies_the_motion_stylesheet_and_registers_once
+      index = File.join(destination_root, "app/javascript/controllers/index.js")
+      FileUtils.mkdir_p(File.dirname(index))
+      File.write(index, "import { application } from \"controllers/application\"\n")
+
+      with_charts_stub do
+        run_generator %w[--charts]
+        run_generator %w[--charts]
+      end
+
+      assert_file "app/assets/tailwind/poetry/charts.css", /#{Regexp.escape(CHARTS_CSS_MARKER)}/o
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      assert_equal 1, entry.scan('@import "./poetry/charts.css";').size, "entry line appended exactly once"
+      content = File.read(index)
+
+      assert_equal 1, content.scan("registerPoetryChartsControllers(application)").size
+      assert_includes content, %(import { registerPoetryChartsControllers } from "@poetry/charts")
+    end
+
+    def test_charts_flag_without_the_gem_fails_fast_before_any_file_lands
+      # Thor rescues its own error class inside .start (prints, aborts the
+      # command chain), so the observable contract is the stderr hint plus
+      # the abort - no install work lands.
+      stderr = capture(:stderr) { run_generator %w[--charts] }
+
+      assert_match(/gem "poetry-charts"/, stderr)
+      assert_no_file "app/assets/tailwind/poetry/tokens.css" # nothing half-installed
+      assert_no_file "app/assets/tailwind/poetry/charts.css"
+    end
+
+    def test_without_the_flag_charts_wiring_stays_out
+      with_charts_stub { run_generator }
+
+      assert_no_file "app/assets/tailwind/poetry/charts.css"
+      entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
+
+      refute_includes entry, "charts.css", "charts wiring is opt-in even with the gem present"
+    end
   end
 
   class AddGeneratorTest < Rails::Generators::TestCase
