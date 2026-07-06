@@ -167,20 +167,19 @@ module Poetry
         def test_source_exact_classes_land_on_root_track_range_and_thumb
           fragment = render_slider(value: 25)
 
-          %w[relative flex w-full touch-none select-none data-[disabled]:opacity-50
-             data-[orientation=vertical]:min-h-44].each do |token|
+          %w[cn-slider relative flex w-full touch-none select-none
+             data-[disabled]:opacity-50].each do |token|
             assert_includes fragment.css('[data-slot="slider"]').first["class"], token
           end
-          %w[grow overflow-hidden rounded-full bg-muted data-[orientation=horizontal]:h-1.5].each do |token|
+          %w[cn-slider-track grow overflow-hidden].each do |token|
             assert_includes fragment.css('[data-slot="slider-track"]').first["class"], token
           end
-          assert_includes fragment.css('[data-slot="slider-range"]').first["class"], "bg-primary"
+          assert_includes fragment.css('[data-slot="slider-range"]').first["class"], "cn-slider-range"
           thumb_class = fragment.css('[data-slot="slider-thumb"]').first["class"]
 
-          # The RECORDED focus-ring exception: the source ring-4 swell, not
-          # the suite 3px ring.
-          %w[size-4 rounded-full border-primary bg-white shadow-sm hover:ring-4 focus-visible:ring-4
-             focus-visible:outline-hidden transition-[color,box-shadow]].each do |token|
+          # The RECORDED focus-ring exception (the source ring-4 swell, not
+          # the suite 3px ring) rides .cn-slider-thumb in the theme.
+          %w[cn-slider-thumb block shrink-0].each do |token|
             assert_includes thumb_class, token
           end
         end

@@ -141,8 +141,7 @@ module Poetry
           control = doc(html).css('[data-slot="checkbox"]').first
           indicator = doc(html).css('[data-slot="checkbox-indicator"]').first
 
-          %w[peer size-4 rounded-[4px] transition-shadow data-checked:bg-primary
-             dark:bg-input/30 focus-visible:ring-[3px] aria-invalid:border-destructive].each do |token|
+          %w[peer cn-checkbox shrink-0 outline-none].each do |token|
             assert_includes control["class"], token
           end
           %w[place-content-center transition-none data-unchecked:invisible].each do |token|

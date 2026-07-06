@@ -16,13 +16,15 @@ module Poetry
         assert_equal "group", root["role"]
         assert_equal "horizontal", root["data-orientation"]
         assert_equal "Alignment", root["aria-label"]
-        assert_includes root["class"], "rounded-r-none", "the horizontal joining classes compose"
+        assert_includes root["class"], "cn-button-group-orientation-horizontal",
+                        "the horizontal joining classes compose (via the theme rule)"
       end
 
       def test_button_group_vertical_flips_the_axis
         html = render_inline(ButtonGroup::Component.new(orientation: :vertical)) { "b" }
 
-        assert_includes html.css('[data-slot="button-group"]').first["class"], "flex-col"
+        assert_includes html.css('[data-slot="button-group"]').first["class"],
+                        "cn-button-group-orientation-vertical"
       end
 
       def test_button_group_requires_members
@@ -75,7 +77,7 @@ module Poetry
         root = html.css('[data-slot="input-group"]').first
 
         assert_equal "group", root["role"]
-        assert_includes root["class"], "border-input", "the GROUP wears the field chrome"
+        assert_includes root["class"], "cn-input-group", "the GROUP wears the field chrome (theme rule)"
       end
 
       def test_input_group_requires_content

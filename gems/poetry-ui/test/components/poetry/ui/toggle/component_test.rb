@@ -54,21 +54,20 @@ module Poetry
 
           assert_equal "outline", control["data-variant"]
           assert_equal "sm", control["data-size"]
-          %w[border-input shadow-xs h-8 min-w-8 px-1.5].each { |token| assert_includes control["class"], token }
-          # Outline's hover DOES use accent (source-exact) - the merger
-          # collapses the base's muted hover, exactly as cn() does.
-          assert_includes control["class"], "hover:bg-accent"
+          %w[cn-toggle-variant-outline cn-toggle-size-sm].each { |token| assert_includes control["class"], token }
+          # Outline's accent hover and the base muted hover both live in
+          # the theme (same layer, outline later, so accent wins - the
+          # split-side conflict rule); neither appears inline.
           refute_includes control["class"], "hover:bg-muted"
 
           base = doc(render_toggle).css('[data-slot="toggle"]').first
 
-          # The base string on the default variant: MUTED hover (pressed
-          # owns accent), the svg auto-size convention, the suite ring.
-          %w[hover:bg-muted data-pressed:bg-accent data-pressed:text-accent-foreground
-             focus-visible:ring-[3px] transition-[color,box-shadow]].each do |token|
+          # The default variant: the base treatments (MUTED hover - pressed
+          # owns accent - pressed fills, the svg auto-size convention) ride
+          # .cn-toggle in the theme; the suite ring stays inline.
+          %w[cn-toggle cn-toggle-variant-default focus-visible:ring-[3px]].each do |token|
             assert_includes base["class"], token
           end
-          assert_includes base["class"], "[&_svg:not([class*='size-'])]:size-4"
         end
 
         def test_disabled_renders_native_disabled_plus_data_disabled

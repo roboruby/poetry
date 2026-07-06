@@ -71,9 +71,8 @@ module Poetry
         def test_the_source_exact_class_string_lands
           textarea = render_textarea(name: "bio").css("textarea").first
 
-          %w[field-sizing-content min-h-16 w-full rounded-md border-input bg-transparent
-             text-base md:text-sm placeholder:text-muted-foreground focus-visible:ring-[3px]
-             aria-invalid:border-destructive dark:bg-input/30].each do |token|
+          %w[cn-textarea field-sizing-content min-h-16 w-full
+             placeholder:text-muted-foreground].each do |token|
             assert_includes textarea["class"], token
           end
         end

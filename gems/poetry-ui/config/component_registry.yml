@@ -265,7 +265,7 @@ components:
     options: []
     slots: []
     elements: []
-    capsule: 3575b76847ba
+    capsule: 478817760aef
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
       Button for actions.
@@ -415,7 +415,7 @@ components:
     elements:
     - text
     - separator
-    capsule: 27f89cdeb63b
+    capsule: f0d4ed413dc4
     agent_rules:
     - Members go in the content block - the group's selectors join ANY data-slot children
       (buttons, inputs, select triggers); never hand-round the inner corners.
@@ -601,7 +601,7 @@ components:
     - indicator
     - icon
     - input
-    capsule: 91bce7b2ac6d
+    capsule: 583bfd450a0b
     controllers:
     - identifier: poetry--core--checked
       targets: []
@@ -1431,7 +1431,7 @@ components:
     elements:
     - hint
     - error
-    capsule: 0c204c4dfa15
+    capsule: 5f7366b0e1f1
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
@@ -1562,7 +1562,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: f0c8d25982d7
+    capsule: 898afef0e157
     agent_rules:
     - Inside a form, never render Input directly - use the FormBuilder's field (it
       wires ids, errors, and aria).
@@ -1588,7 +1588,7 @@ components:
     - button_xs
     - button_icon_xs
     - button_icon_sm
-    capsule: 1a690cdd9c92
+    capsule: 4a85770e4326
     agent_rules:
     - The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input
       keeps its own border+ring and double-chromes the group.
@@ -1635,7 +1635,7 @@ components:
     - slot
     - caret
     - caret_bar
-    capsule: 2dbf5afbe2b5
+    capsule: ed09d64cf39e
     controllers:
     - identifier: poetry--core--otp
       targets:
@@ -1744,7 +1744,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: 0da43bf4aac4
+    capsule: 2652e627917b
     agent_rules:
     - Every control gets a Label wired via for_id - placeholder text is never the
       label.
@@ -2044,7 +2044,7 @@ components:
     - icon
     - option
     - optgroup
-    capsule: 8f263b0e5f60
+    capsule: 0aac4b538ae8
     agent_rules:
     - This is a REAL <select> - use it for plain picking; the JS Select is for styled
       options.
@@ -2313,7 +2313,7 @@ components:
     - dot
     - input
     - row
-    capsule: 5d535e15c68c
+    capsule: 7c28cae8a192
     controllers:
     - identifier: poetry--core--radio-group
       targets:
@@ -2757,7 +2757,7 @@ components:
     - anchor
     - anchor_start
     - anchor_end
-    capsule: 4854958c1f17
+    capsule: cd8572084778
     controllers:
     - identifier: poetry--core--slider
       targets:
@@ -2844,7 +2844,7 @@ components:
     elements:
     - thumb
     - input
-    capsule: 238d7b288d46
+    capsule: d116e5cc39c8
     controllers:
     - identifier: poetry--core--checked
       targets: []
@@ -2965,7 +2965,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: a252d80bec23
+    capsule: 2d674fe677b3
     agent_rules:
     - Wire through Field/FormBuilder (control_attributes) - never hand-write the aria
       plumbing.
@@ -3108,7 +3108,7 @@ components:
       default: false
     slots: []
     elements: []
-    capsule: b8c926f12ccf
+    capsule: e828a426aa14
     controllers:
     - identifier: poetry--core--pressed
       targets: []
@@ -3174,7 +3174,7 @@ components:
       many: true
     elements:
     - item
-    capsule: 2d7e0714a9b8
+    capsule: 2b8127986484
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []

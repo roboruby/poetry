@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Label
+      # Re-expressed through the cn-* theme layer (N11).
       class Style < Poetry::Core::Style
-        base "flex select-none items-center gap-2 text-sm font-medium leading-none " \
-             "peer-disabled:cursor-not-allowed peer-disabled:opacity-50"
+        base "cn-label flex items-center select-none peer-disabled:cursor-not-allowed"
       end
     end
   end

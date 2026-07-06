@@ -3,29 +3,19 @@
 module Poetry
   module Ui
     module Checkbox
-      # The Checkbox dictionary - shadcn new-york-v4 checkbox.tsx,
-      # source-validated 2026-07-03 (Checkbox). The
-      # control string is source-exact (size-4 well, transition-shadow,
-      # data-checked primary fill, the suite 3px focus ring,
-      # aria-invalid destructive hooks, dark:bg-input/30). Two poetry
-      # additions on the indicator: data-unchecked:invisible keeps
-      # it in the DOM CSS-hidden (Radix unmounts via Presence; source is
-      # transition-none - there is no exit animation to await) and
-      # data-indeterminate never needs extra classes (the icon
-      # swap is render-time). The input element is the sr-only store.
+      # Re-expressed through the cn-* theme layer (N11): the well treatment
+      # rides .cn-checkbox in themes/default.css. Poetry mechanisms stay
+      # inline: data-unchecked:invisible keeps the indicator in the DOM
+      # CSS-hidden (Radix unmounts via Presence; there is no exit animation
+      # to await), the glyph size matches source (CheckIcon size-3.5,
+      # upstream-inline in TSX), and :input is the sr-only form store.
       class Style < Poetry::Core::Style
-        base "peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow " \
-             "outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 " \
-             "disabled:cursor-not-allowed disabled:opacity-50 " \
-             "aria-invalid:border-destructive aria-invalid:ring-destructive/20 " \
-             "data-checked:border-primary data-checked:bg-primary " \
-             "data-checked:text-primary-foreground dark:bg-input/30 " \
-             "dark:aria-invalid:ring-destructive/40 dark:data-checked:bg-primary"
+        base "cn-checkbox peer shrink-0 outline-none " \
+             "disabled:cursor-not-allowed disabled:opacity-50"
 
         element :indicator, "grid place-content-center text-current transition-none " \
                             "data-unchecked:invisible"
 
-        # The check/minus glyph size (source: CheckIcon className="size-3.5").
         element :icon, "size-3.5"
 
         # The form participant + the store: visually hidden, out of the

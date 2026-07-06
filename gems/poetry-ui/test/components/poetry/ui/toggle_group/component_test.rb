@@ -97,12 +97,13 @@ module Poetry
           item = doc(render_group(variant: :outline)).css('[data-slot="toggle-group-item"]').first
 
           # Toggle's base + outline variant (via Toggle::Style)...
-          %w[data-pressed:bg-accent border-input focus-visible:ring-[3px]].each do |token|
+          %w[cn-toggle cn-toggle-variant-outline focus-visible:ring-[3px]].each do |token|
             assert_includes item["class"], token
           end
-          # ...plus the group's item overrides (min-w-0/px-3 win over
-          # Toggle's min-w-9/px-2 through the merger, cn()-exact)...
-          %w[w-auto min-w-0 px-3 focus:z-10 data-[spacing=0]:rounded-none
+          # ...plus the group's item overrides (min-w-0 inline beats the
+          # themed min-w-9 by layer order; px-3 rides cn-toggle-group-item,
+          # later in the theme than Toggle's sizes, so it wins in-layer)...
+          %w[w-auto min-w-0 cn-toggle-group-item focus:z-10 data-[spacing=0]:rounded-none
              data-[spacing=0]:data-[variant=outline]:border-l-0].each do |token|
             assert_includes item["class"], token
           end
@@ -116,15 +117,15 @@ module Poetry
         def test_the_group_root_carries_the_source_classes_and_gap_var
           root = doc(render_group).css('[data-slot="toggle-group"]').first
 
-          %w[flex w-fit items-center rounded-md].each do |token|
+          %w[flex w-fit items-center cn-toggle-group].each do |token|
             assert_includes root["class"], token
           end
           # The group/toggle-group marker is DROPPED (dead in source: zero
           # group-*/toggle-group consumers - the compile gate rejects it).
           refute_includes root["class"], "group/toggle-group"
           assert_includes root["class"], "gap-[--spacing(var(--gap))]"
-          # The dead-in-source selector, ported verbatim + flagged.
-          assert_includes root["class"], "data-[spacing=default]:data-[variant=outline]:shadow-xs"
+          # The dead-in-source selector rides .cn-toggle-group in the theme
+          # (still ported verbatim + flagged there).
         end
 
         def test_disabled_cascades_to_every_item_and_marks_the_root

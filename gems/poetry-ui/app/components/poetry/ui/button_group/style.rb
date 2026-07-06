@@ -3,25 +3,23 @@
 module Poetry
   module Ui
     module ButtonGroup
-      # shadcn ButtonGroup (base-vega), source-exact. The separator's
-      # data-horizontal/vertical selectors are the N6 bridge orientation
-      # variants (they match the data-orientation the Separator emits).
+      # Re-expressed through the cn-* theme layer (N11). One documented
+      # deviation from upstream's literal split: upstream ships the
+      # orientation corner-chains inline AND under cn names; poetry puts
+      # them theme-side only (pure radius/border design - the theme owns
+      # them, nothing is emitted twice).
       class Style < Poetry::Core::Style
-        base "flex w-fit items-stretch *:focus-visible:relative *:focus-visible:z-10 " \
-             "has-[>[data-slot=button-group]]:gap-2 " \
-             "has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md " \
+        base "cn-button-group flex w-fit items-stretch *:focus-visible:relative *:focus-visible:z-10 " \
              "[&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit [&>input]:flex-1"
 
         variant :orientation, {
-          horizontal: "*:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! " \
-                      "[&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0",
-          vertical: "flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! " \
-                    "[&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0"
+          horizontal: "cn-button-group-orientation-horizontal",
+          vertical: "cn-button-group-orientation-vertical"
         }
 
-        element :text, "flex items-center gap-2 rounded-md border bg-muted px-2.5 text-sm font-medium " \
-                       "shadow-xs [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4"
-        element :separator, "relative self-stretch bg-input data-horizontal:mx-px data-horizontal:w-auto " \
+        element :text, "cn-button-group-text flex items-center [&_svg]:pointer-events-none"
+        element :separator, "cn-button-group-separator relative self-stretch " \
+                            "data-horizontal:mx-px data-horizontal:w-auto " \
                             "data-vertical:my-px data-vertical:h-auto"
       end
     end

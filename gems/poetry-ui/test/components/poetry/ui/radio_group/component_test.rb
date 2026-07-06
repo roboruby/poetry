@@ -183,13 +183,10 @@ module Poetry
         def test_source_exact_classes_land_on_root_item_indicator_and_dot
           fragment = doc(render_group(value: "monthly"))
 
-          %w[grid gap-3].each do |token|
-            assert_includes fragment.css('[data-slot="radio-group"]').first["class"], token
-          end
+          assert_includes fragment.css('[data-slot="radio-group"]').first["class"], "cn-radio-group"
           item_class = fragment.css('[data-slot="radio-group-item"]').first["class"]
 
-          %w[aspect-square size-4 rounded-full border-input text-primary transition-[color,box-shadow]
-             focus-visible:ring-[3px] aria-invalid:border-destructive dark:bg-input/30].each do |token|
+          %w[cn-radio-group-item aspect-square border outline-none].each do |token|
             assert_includes item_class, token
           end
           indicator = fragment.css('[data-slot="radio-group-indicator"]').first
@@ -197,7 +194,7 @@ module Poetry
           assert_includes indicator["class"], "items-center"
           dot = indicator.css("svg").first
 
-          %w[size-2 fill-primary -translate-x-1/2].each { |token| assert_includes dot["class"], token }
+          %w[cn-radio-group-indicator-icon -translate-x-1/2].each { |token| assert_includes dot["class"], token }
           assert_equal "true", dot["aria-hidden"]
         end
 

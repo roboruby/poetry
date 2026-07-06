@@ -157,19 +157,17 @@ module Poetry
         def test_source_exact_classes_land_on_container_slot_and_caret
           fragment = render_otp(groups: [3, 3], value: "1")
 
-          %w[flex items-center gap-2 has-disabled:opacity-50].each do |token|
+          %w[cn-input-otp flex items-center has-disabled:opacity-50].each do |token|
             assert_includes fragment.css('[data-slot="input-otp-container"]').first["class"], token
           end
           slot_class = fragment.css('[data-slot="input-otp-slot"]').first["class"]
 
-          %w[h-9 w-9 border-y border-r border-input first:rounded-l-md first:border-l last:rounded-r-md
-             data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/50
-             aria-invalid:border-destructive dark:bg-input/30].each do |token|
+          %w[cn-input-otp-slot relative data-[active=true]:z-10].each do |token|
             assert_includes slot_class, token
           end
           caret_bar = fragment.css("[data-otp-caret] div").first
 
-          %w[h-4 w-px animate-caret-blink bg-foreground duration-1000].each do |token|
+          %w[cn-input-otp-caret-line animate-caret-blink duration-1000].each do |token|
             assert_includes caret_bar["class"], token
           end
         end

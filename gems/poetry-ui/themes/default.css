@@ -75,8 +75,11 @@
 }
 
 /* MARK: Badge */
+/* The focus/invalid ring chain lives HERE (upstream keeps it inline): the
+ * destructive variant re-colors focus-visible:ring-* and can only beat
+ * the base treatment from the same layer. */
 .cn-badge {
-  @apply gap-1 rounded-md border px-2 py-0.5 text-xs font-medium transition-[color,box-shadow] [&>svg]:size-3;
+  @apply gap-1 rounded-md border px-2 py-0.5 text-xs font-medium transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:size-3;
 }
 
 .cn-badge-variant-default {
@@ -181,6 +184,27 @@
   @apply size-10;
 }
 
+/* MARK: ButtonGroup */
+.cn-button-group {
+  @apply has-[>[data-slot=button-group]]:gap-2 has-[select[aria-hidden=true]:last-child]:[&>[data-slot=select-trigger]:last-of-type]:rounded-r-md;
+}
+
+.cn-button-group-orientation-horizontal {
+  @apply *:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0;
+}
+
+.cn-button-group-orientation-vertical {
+  @apply flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0;
+}
+
+.cn-button-group-text {
+  @apply gap-2 rounded-md border bg-muted px-2.5 text-sm font-medium shadow-xs [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-button-group-separator {
+  @apply bg-input;
+}
+
 /* MARK: Card */
 .cn-card {
   @apply gap-6 rounded-xl border bg-card py-6 text-card-foreground shadow-sm;
@@ -204,6 +228,11 @@
 
 .cn-card-footer {
   @apply px-6;
+}
+
+/* MARK: Checkbox */
+.cn-checkbox {
+  @apply size-4 rounded-[4px] border border-input shadow-xs transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-checked:bg-primary;
 }
 
 /* MARK: Empty */
@@ -237,6 +266,66 @@
 
 .cn-empty-content {
   @apply gap-4 text-sm;
+}
+
+/* MARK: Field */
+.cn-field {
+  @apply gap-2;
+}
+
+.cn-field-description {
+  @apply text-sm text-muted-foreground;
+}
+
+.cn-field-error {
+  @apply text-sm font-medium text-destructive;
+}
+
+/* MARK: Input */
+.cn-input {
+  @apply flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] md:text-sm selection:bg-primary selection:text-primary-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30;
+}
+
+/* MARK: InputGroup */
+.cn-input-group {
+  @apply h-9 rounded-md border border-input shadow-xs transition-[color,box-shadow] in-data-[slot=combobox-content]:focus-within:border-inherit in-data-[slot=combobox-content]:focus-within:ring-0 has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-3 has-[[data-slot=input-group-control]:focus-visible]:ring-ring/50 has-[[data-slot][aria-invalid=true]]:border-destructive has-[[data-slot][aria-invalid=true]]:ring-3 has-[[data-slot][aria-invalid=true]]:ring-destructive/20 dark:bg-input/30 dark:has-[[data-slot][aria-invalid=true]]:ring-destructive/40 has-[>[data-align=block-end]]:[&>input]:pt-3 has-[>[data-align=block-start]]:[&>input]:pb-3 has-[>[data-align=inline-end]]:[&>input]:pr-1.5 has-[>[data-align=inline-start]]:[&>input]:pl-1.5;
+}
+
+.cn-input-group-addon {
+  @apply h-auto gap-2 py-1.5 text-sm font-medium text-muted-foreground group-data-[disabled=true]/input-group:opacity-50 [&>kbd]:rounded-[calc(var(--radius)-5px)] [&>svg:not([class*='size-'])]:size-4;
+}
+
+.cn-input-group-addon-align-inline-start {
+  @apply pl-2 has-[>button]:-ml-1 has-[>kbd]:ml-[-0.15rem];
+}
+
+.cn-input-group-addon-align-inline-end {
+  @apply pr-2 has-[>button]:-mr-1 has-[>kbd]:mr-[-0.15rem];
+}
+
+.cn-input-group-addon-align-block-start {
+  @apply px-2.5 pt-2 group-has-[>input]/input-group:pt-2 [.border-b]:pb-2;
+}
+
+.cn-input-group-addon-align-block-end {
+  @apply px-2.5 pb-2 group-has-[>input]/input-group:pb-2 [.border-t]:pt-2;
+}
+
+.cn-input-group-text {
+  @apply gap-2 text-sm text-muted-foreground [&_svg:not([class*='size-'])]:size-4;
+}
+
+/* MARK: InputOTP */
+.cn-input-otp {
+  @apply gap-2;
+}
+
+.cn-input-otp-slot {
+  @apply h-9 w-9 border-y border-r border-input text-sm shadow-xs transition-all outline-none first:rounded-l-md first:border-l last:rounded-r-md aria-invalid:border-destructive data-[active=true]:border-ring data-[active=true]:ring-[3px] data-[active=true]:ring-ring/50 data-[active=true]:aria-invalid:border-destructive data-[active=true]:aria-invalid:ring-destructive/20 dark:bg-input/30 dark:data-[active=true]:aria-invalid:ring-destructive/40;
+}
+
+.cn-input-otp-caret-line {
+  @apply h-4 w-px bg-foreground;
 }
 
 /* MARK: Item */
@@ -321,6 +410,11 @@
   @apply h-5 w-fit min-w-5 gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background dark:in-data-[slot=tooltip-content]:bg-background/10 [&_svg:not([class*='size-'])]:size-3;
 }
 
+/* MARK: Label */
+.cn-label {
+  @apply gap-2 text-sm font-medium leading-none peer-disabled:opacity-50;
+}
+
 /* MARK: Link */
 .cn-link {
   @apply gap-1 rounded-sm text-primary underline-offset-4 focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50;
@@ -336,6 +430,15 @@
 
 .cn-link-underline-none {
   @apply no-underline;
+}
+
+/* MARK: NativeSelect */
+.cn-native-select {
+  @apply h-9 w-full min-w-0 rounded-md border border-input bg-transparent py-1 pr-8 pl-2.5 text-sm shadow-xs transition-[color,box-shadow] select-none selection:bg-primary selection:text-primary-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 data-[size=sm]:h-8 dark:bg-input/30 dark:hover:bg-input/50 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40;
+}
+
+.cn-native-select-icon {
+  @apply top-1/2 right-2.5 -translate-y-1/2 text-muted-foreground [&>svg]:size-4;
 }
 
 /* MARK: Progress */
@@ -355,7 +458,118 @@
   @apply ml-auto text-sm text-muted-foreground tabular-nums;
 }
 
+/* MARK: RadioGroup */
+.cn-radio-group {
+  @apply grid gap-3;
+}
+
+.cn-radio-group-item {
+  @apply size-4 rounded-full border-input text-primary shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:bg-input/30 dark:aria-invalid:ring-destructive/40;
+}
+
+.cn-radio-group-indicator-icon {
+  @apply size-2 fill-primary;
+}
+
 /* MARK: Skeleton */
 .cn-skeleton {
   @apply rounded-md bg-muted;
+}
+
+/* MARK: Slider */
+.cn-slider {
+  @apply data-[orientation=vertical]:min-h-44;
+}
+
+.cn-slider-track {
+  @apply rounded-full bg-muted data-[orientation=horizontal]:h-1.5 data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-1.5;
+}
+
+.cn-slider-range {
+  @apply bg-primary;
+}
+
+.cn-slider-thumb {
+  @apply size-4 rounded-full border border-primary bg-white shadow-sm ring-ring/50 transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden;
+}
+
+/* MARK: Switch */
+.cn-switch {
+  @apply shrink-0 rounded-full border border-transparent shadow-xs focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 data-[size=default]:h-[1.15rem] data-[size=default]:w-8 data-[size=sm]:h-3.5 data-[size=sm]:w-6 data-checked:bg-primary data-unchecked:bg-input dark:data-unchecked:bg-input/80;
+}
+
+.cn-switch-thumb {
+  @apply rounded-full bg-background group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-checked:translate-x-[calc(100%-2px)] data-unchecked:translate-x-0 rtl:data-checked:-translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground dark:data-unchecked:bg-foreground;
+}
+
+/* MARK: Textarea */
+.cn-textarea {
+  @apply rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40;
+}
+
+/* MARK: Toggle */
+/* hover:bg-muted lives HERE (not inline, where upstream keeps it): the
+ * outline variant's hover:bg-accent must beat it, and it only can when
+ * both sides share the base layer (in-layer order = the merger's old
+ * last-wins). An inline utility would win the cascade unconditionally. */
+.cn-toggle {
+  @apply gap-2 rounded-md text-sm font-medium transition-[color,box-shadow] hover:bg-muted hover:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-pressed:bg-accent data-pressed:text-accent-foreground dark:aria-invalid:ring-destructive/40 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-toggle-variant-default {
+  @apply bg-transparent;
+}
+
+.cn-toggle-variant-outline {
+  @apply border border-input bg-transparent shadow-xs hover:bg-accent hover:text-accent-foreground;
+}
+
+.cn-toggle-size-default {
+  @apply h-9 min-w-9 px-2;
+}
+
+.cn-toggle-size-sm {
+  @apply h-8 min-w-8 px-1.5;
+}
+
+.cn-toggle-size-lg {
+  @apply h-10 min-w-10 px-2.5;
+}
+
+/* MARK: ToggleGroup */
+.cn-toggle-group {
+  @apply rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs;
+}
+
+.cn-toggle-group-item {
+  @apply px-3;
+}
+
+/* MARK: Cross-component overrides
+ * Rules that restyle ANOTHER component's cn surface must come after every
+ * rule they override - in-layer order is what lets an override win, so
+ * alphabetical placement would silently lose (cn-input-group-textarea vs
+ * the later cn-textarea). Keep every such rule in this closing section. */
+.cn-input-group-input {
+  @apply rounded-none border-0 bg-transparent shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent;
+}
+
+.cn-input-group-textarea {
+  @apply rounded-none border-0 bg-transparent py-2 shadow-none ring-0 focus-visible:ring-0 aria-invalid:ring-0 dark:bg-transparent;
+}
+
+.cn-input-group-button {
+  @apply gap-2 text-sm;
+}
+
+.cn-input-group-button-size-xs {
+  @apply h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-1.5 [&>svg:not([class*='size-'])]:size-3.5;
+}
+
+.cn-input-group-button-size-icon-xs {
+  @apply size-6 rounded-[calc(var(--radius)-5px)] p-0 has-[>svg]:p-0;
+}
+
+.cn-input-group-button-size-icon-sm {
+  @apply size-8 p-0 has-[>svg]:p-0;
 }
