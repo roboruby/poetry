@@ -12,12 +12,24 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 // (data-popup-open on the trigger - the chevron's rotation hook - and the
 // presence-driven open/closed pair on the panel).
 //
-// Deferred with the Base UI viewport machinery: the morphing shared
-// popup (--positioner-* size/position transitions) and data-motion
-// direction slides (the classes ship inert until it lands).
+// THE VIEWPORT MODE: when the markup ships the shared
+// positioner > popup > viewport shell (viewport: true), panels are
+// lazily ADOPTED into the viewport on first activation (the Rails
+// stand-in for Base UI's portal - server-rendered content stays in
+// place until JS activates) and the composite MORPHS: the popper
+// re-anchors to the active trigger (full floating-ui) while CSS
+// transitions the positioner's insets, the popup's --popup-width/height
+// pin old -> new across two frames so width/height transition, panels
+// slide by data-activation-direction (new trigger vs old, recharts'
+// travel semantics), and data-instant suppresses transitions on cold
+// opens. Vars reset to auto after the animations finish (the Base UI
+// auto-size reset via getAnimations().finished).
 const TRIGGER_SELECTOR = '[data-slot="navigation-menu-trigger"]'
 const PANEL_SELECTOR = '[data-slot="navigation-menu-content"]'
 const ITEM_SELECTOR = '[data-slot="navigation-menu-item"]'
+const POSITIONER_SELECTOR = '[data-slot="navigation-menu-positioner"]'
+const POPUP_SELECTOR = '[data-slot="navigation-menu-popup"]'
+const VIEWPORT_SELECTOR = '[data-slot="navigation-menu-viewport"]'
 
 export default class NavigationMenuController extends Controller {
   static values = {
@@ -29,6 +41,7 @@ export default class NavigationMenuController extends Controller {
   #timer = null
   #cancelExit = new Map() // value -> abandon-this-panel's-exit (per panel, not global)
   #onOutsidePress = null
+  #sizeGeneration = 0
 
   disconnect() {
     this.#clearTimer()
@@ -70,6 +83,13 @@ export default class NavigationMenuController extends Controller {
     this.#schedule(() => this.#close(), this.closeDelayValue)
   }
 
+  // Action: pointerenter->...#cancelClose on the shared positioner - in
+  // viewport mode the panel no longer lives inside its item, so entering
+  // the popup must cancel a pending close.
+  cancelClose() {
+    this.#clearTimer()
+  }
+
   // Action: keydown->...#keydown on the root.
   keydown(event) {
     if (event.key === "Escape") {
@@ -108,7 +128,10 @@ export default class NavigationMenuController extends Controller {
 
   #open(value) {
     if (this.#openValue === value) return
-    if (this.#openValue !== null) this.#hidePanel(this.#openValue)
+
+    const previous = this.#openValue
+    if (this.#viewport() && previous !== null) this.#stampDirection(previous, value)
+    if (previous !== null) this.#hidePanel(previous)
 
     this.#openValue = value
     const trigger = this.#triggerFor(value)
@@ -124,8 +147,12 @@ export default class NavigationMenuController extends Controller {
       // sibling's pending exit must still run onRemove and hide it).
       this.#cancelExit.get(value)?.()
       this.#cancelExit.delete(value)
-      panel.hidden = false
-      enterPresence(panel)
+      if (this.#viewport()) {
+        this.#showInViewport(panel, trigger, previous)
+      } else {
+        panel.hidden = false
+        enterPresence(panel)
+      }
     }
     this.#bindOutsidePress()
   }
@@ -136,6 +163,149 @@ export default class NavigationMenuController extends Controller {
     this.#hidePanel(this.#openValue)
     this.#openValue = null
     this.#unbindOutsidePress()
+    this.#closeViewport()
+  }
+
+  // -- the morphing viewport -----------------------------------
+
+  #viewport() {
+    return this.element.querySelector(VIEWPORT_SELECTOR)
+  }
+
+  #showInViewport(panel, trigger, previous) {
+    const viewport = this.#viewport()
+    const positioner = this.element.querySelector(POSITIONER_SELECTOR)
+    const popup = this.element.querySelector(POPUP_SELECTOR)
+    const cold = previous === null
+
+    // Lazy adoption: the server-rendered panel moves from its item into
+    // the shared viewport on FIRST activation (the portal's Rails
+    // stand-in - no-JS content stays in place until JS activates).
+    if (panel.parentElement !== viewport) {
+      panel.setAttribute("data-viewport-panel", "")
+      viewport.appendChild(panel)
+    }
+
+    // The size choreography (Base UI setSharedFixedSize): pin the popup
+    // to the OLD size, reveal the new panel, measure its natural size
+    // (panels are absolutely stacked, so they size intrinsically), then
+    // pin the NEW size a frame later so width/height transition.
+    const oldWidth = popup.offsetWidth
+    const oldHeight = popup.offsetHeight
+
+    panel.hidden = false
+    const nextWidth = panel.offsetWidth
+    const nextHeight = panel.offsetHeight
+
+    if (cold) {
+      this.#stampInstant(positioner, popup) // no transition on a cold open
+      this.#pinSize(positioner, popup, nextWidth, nextHeight)
+      this.#scheduleSizeReset(positioner, popup)
+    } else {
+      // Pin old, pin new a frame later (the width/height transition), and
+      // only THEN arm the settle reset - armed alongside the OLD pin it
+      // samples getAnimations before the transition exists, resets to auto
+      // synchronously, and the late new-size pin sticks forever (the D3
+      // Chrome-proof catch: the morph never ran).
+      this.#pinSize(positioner, popup, oldWidth, oldHeight)
+      this.#nextFrame(() => {
+        this.#pinSize(positioner, popup, nextWidth, nextHeight)
+        this.#nextFrame(() => this.#scheduleSizeReset(positioner, popup))
+      })
+    }
+
+    positioner.hidden = false
+    setState(popup, "open")
+    enterPresence(panel)
+    this.#anchorPopper(trigger)
+  }
+
+  #closeViewport() {
+    const positioner = this.element.querySelector(POSITIONER_SELECTOR)
+    const popup = this.element.querySelector(POPUP_SELECTOR)
+    if (!positioner || positioner.hidden) return
+
+    setState(popup, "closed")
+    positioner.hidden = true
+  }
+
+  // The popper (full floating-ui) re-anchors to the active
+  // trigger; the positioner's inset transition gives the slide.
+  #anchorPopper(trigger) {
+    if (!trigger) return
+
+    const popper =
+      this.application.getControllerForElementAndIdentifier(this.element, "poetry--core--popper")
+    popper?.setAnchorElement(trigger)
+  }
+
+  // data-activation-direction: which way the activation traveled (the new
+  // trigger relative to the old); outgoing AND incoming panels wear it so
+  // the starting/ending-style slides read one direction.
+  #stampDirection(previousValue, nextValue) {
+    const previous = this.#triggerFor(previousValue)
+    const next = this.#triggerFor(nextValue)
+    if (!previous || !next) return
+
+    const delta = next.getBoundingClientRect().left - previous.getBoundingClientRect().left
+    if (delta === 0) return
+
+    const direction = delta > 0 ? "right" : "left"
+    for (const panel of [this.#panelFor(previousValue), this.#panelFor(nextValue)]) {
+      panel?.setAttribute("data-activation-direction", direction)
+    }
+  }
+
+  // Pin the shared size vars (popup + positioner, Base UI's pairing).
+  #pinSize(positioner, popup, width, height) {
+    popup.style.setProperty("--popup-width", `${width}px`)
+    popup.style.setProperty("--popup-height", `${height}px`)
+    positioner.style.setProperty("--positioner-width", `${width}px`)
+    positioner.style.setProperty("--positioner-height", `${height}px`)
+  }
+
+  // The Base UI auto-size reset: once the morph settles the vars return
+  // to auto, so later content growth isn't clipped. A newer activation
+  // cancels a stale reset (the generation counter).
+  #scheduleSizeReset(positioner, popup) {
+    const generation = ++this.#sizeGeneration
+    const reset = () => {
+      if (generation !== this.#sizeGeneration) return
+
+      this.#pinAuto(positioner, popup)
+    }
+
+    if (typeof popup.getAnimations === "function") {
+      const animations = popup.getAnimations()
+      if (animations.length > 0) {
+        Promise.allSettled(animations.map((animation) => animation.finished)).then(reset)
+        return
+      }
+    }
+    reset()
+  }
+
+  #pinAuto(positioner, popup) {
+    popup.style.setProperty("--popup-width", "auto")
+    popup.style.setProperty("--popup-height", "auto")
+    positioner.style.setProperty("--positioner-width", "auto")
+    positioner.style.setProperty("--positioner-height", "auto")
+  }
+
+  // data-instant suppresses the positioner/popup transitions for one
+  // painted frame (cold opens - a Base UI instant reason).
+  #stampInstant(positioner, popup) {
+    positioner.setAttribute("data-instant", "")
+    popup.setAttribute("data-instant", "")
+    this.#nextFrame(() => this.#nextFrame(() => {
+      positioner.removeAttribute("data-instant")
+      popup.removeAttribute("data-instant")
+    }))
+  }
+
+  #nextFrame(callback) {
+    if (typeof requestAnimationFrame === "function") requestAnimationFrame(callback)
+    else callback()
   }
 
   #hidePanel(value) {
@@ -203,8 +373,14 @@ export default class NavigationMenuController extends Controller {
     return this.#itemFor(value)?.querySelector(TRIGGER_SELECTOR) ?? null
   }
 
+  // An adopted panel (viewport mode) no longer lives inside its item -
+  // the trigger's aria-controls id finds it wherever it moved.
   #panelFor(value) {
-    return this.#itemFor(value)?.querySelector(PANEL_SELECTOR) ?? null
+    const inItem = this.#itemFor(value)?.querySelector(PANEL_SELECTOR)
+    if (inItem) return inItem
+
+    const id = this.#triggerFor(value)?.getAttribute("aria-controls")
+    return id ? document.getElementById(id) : null
   }
 
   #itemFor(value) {

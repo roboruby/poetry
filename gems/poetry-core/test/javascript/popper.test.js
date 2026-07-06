@@ -296,6 +296,23 @@ describe("poetry--core--popper", () => {
     expect(floating.computePosition).toHaveBeenCalledTimes(2)
   })
 
+  // --- caller-supplied element anchor (the NavigationMenu viewport, D3) ---
+
+  it("setAnchorElement(element) re-arms autoUpdate against it and repositions", async () => {
+    const { controller } = await mount()
+
+    expect(floating.autoUpdate.mock.calls.at(-1)[0]).toBe(document.getElementById("trigger"))
+    const callsBefore = floating.computePosition.mock.calls.length
+
+    const elsewhere = document.createElement("button")
+    document.body.appendChild(elsewhere)
+    await controller.setAnchorElement(elsewhere)
+
+    expect(floating.autoUpdate.mock.calls.at(-1)[0]).toBe(elsewhere)
+    expect(floating.computePosition.mock.calls.at(-1)[0]).toBe(elsewhere)
+    expect(floating.computePosition.mock.calls.length).toBeGreaterThan(callsBefore)
+  })
+
   // --- virtual-anchor mode (the ContextMenu contract) ---
 
   describe("virtual anchor (anchorPoint)", () => {

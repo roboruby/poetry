@@ -76,6 +76,7 @@ export default class PopperController extends Controller {
   }
 
   #stopAutoUpdate = null
+  #anchorElement = null
   #generation = 0
   #connected = false
 
@@ -113,6 +114,19 @@ export default class PopperController extends Controller {
   // the value-changed callback then re-arms autoUpdate's tracking.
   setAnchor(x, y) {
     this.anchorPointValue = `${x},${y}`
+
+    return this.reposition()
+  }
+
+  // The NavigationMenu viewport entry point (D3): float against a caller-
+  // supplied element (the active trigger) instead of a target/selector.
+  // Re-arms autoUpdate so the new reference's ancestors are tracked, then
+  // repositions - the positioner's inset transition turns that write into
+  // the position morph.
+  setAnchorElement(element) {
+    this.#anchorElement = element
+    this.#stop()
+    this.#start()
 
     return this.reposition()
   }
@@ -310,6 +324,7 @@ export default class PopperController extends Controller {
   }
 
   #anchor() {
+    if (this.#anchorElement) return this.#anchorElement
     if (this.hasAnchorTarget) return this.anchorTarget
     if (this.anchorValue) return document.querySelector(this.anchorValue)
 

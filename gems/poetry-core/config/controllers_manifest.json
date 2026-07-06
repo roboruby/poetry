@@ -474,6 +474,7 @@
     },
     "classes": [],
     "methods": [
+      "cancelClose",
       "disconnect",
       "focusLeft",
       "keydown",
@@ -574,7 +575,8 @@
       "connect",
       "disconnect",
       "reposition",
-      "setAnchor"
+      "setAnchor",
+      "setAnchorElement"
     ]
   },
   "poetry--core--pressed": {
