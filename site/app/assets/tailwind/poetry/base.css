@@ -1,0 +1,11 @@
+/* poetry base layer (shadcn-parity defaults) - yours to edit. */
+@layer base {
+  * {
+    border-color: var(--border);
+    outline-color: color-mix(in oklab, var(--ring) 50%, transparent);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+}

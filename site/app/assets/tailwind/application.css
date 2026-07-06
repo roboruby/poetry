@@ -1,0 +1,9 @@
+@import "tailwindcss";
+@import "./poetry/tokens.css";
+@import "./poetry/theme.css";
+@import "./poetry/animate.css";
+@import "./poetry/utilities.css";
+@import "./poetry/aliases.css";
+@import "./poetry/base.css";
+@source "./poetry/safelist.txt";
+@import "./poetry/charts.css";

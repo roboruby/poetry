@@ -1,0 +1,66 @@
+/* poetry-owned component var aliases (hand-authored, NOT generated).
+   The menus-family popper aliases (DropdownMenu
+   install_actions): shadcn's source-exact class strings reference
+   Radix-namespaced content vars; poetry--core--popper ships the Base UI
+   names (anchor-width / --available-height / --transform-origin)
+   - these aliases bind the Radix family names so ny-v4 source-exact class
+   strings keep reading them. */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"] {
+  --radix-dropdown-menu-content-available-height: var(--available-height);
+  --radix-dropdown-menu-content-transform-origin: var(--transform-origin);
+}
+
+[data-slot="context-menu-content"],
+[data-slot="context-menu-sub-content"] {
+  --radix-context-menu-content-available-height: var(--available-height);
+  --radix-context-menu-content-transform-origin: var(--transform-origin);
+}
+
+[data-slot="menubar-content"],
+[data-slot="menubar-sub-content"] {
+  --radix-menubar-content-available-height: var(--available-height);
+  --radix-menubar-content-transform-origin: var(--transform-origin);
+}
+
+/* The listbox (Select install_actions): the menus
+   alias pair PLUS the anchor-size pair - popper measures the anchor
+   (anchor-width/-height) so the source-exact
+   trigger-width/-height viewport classes bind in popper mode. */
+[data-slot="select-content"] {
+  --radix-select-content-available-height: var(--available-height);
+  --radix-select-content-transform-origin: var(--transform-origin);
+  --radix-select-trigger-width: var(--anchor-width);
+  --radix-select-trigger-height: var(--anchor-height);
+}
+
+/* The popper-consumer trio (Popover / Tooltip /
+   HoverCard install_actions) - the same alias pattern, one per consumer,
+   so the source-exact origin-(--radix-*-content-transform-origin) classes
+   bind to popper's generic var. */
+[data-slot="popover-content"] {
+  --radix-popover-content-transform-origin: var(--transform-origin);
+}
+
+[data-slot="tooltip-content"] {
+  --radix-tooltip-content-transform-origin: var(--transform-origin);
+}
+
+[data-slot="hover-card-content"] {
+  --radix-hover-card-content-transform-origin: var(--transform-origin);
+}
+
+/* data-selected bridge extension (Base UI Vocabulary §3):
+   the vendored shadcn/tailwind.css @custom-variant data-selected matches
+   [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare
+   Base UI presence attribute (data-selected="") on committed select/combobox
+   items. Tailwind v4 @custom-variant redefinition is last-wins (verified
+   v4.3.1: a later definition fully REPLACES the earlier one, including
+   across @import files - this file imports after the vendored layer), so
+   this single definition must carry the whole match: bare presence AND
+   ="true", excluding ="false". */
+@custom-variant data-selected {
+  &:where([data-selected]:not([data-selected="false"])) {
+    @slot;
+  }
+}

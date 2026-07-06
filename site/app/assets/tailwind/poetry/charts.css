@@ -1,0 +1,118 @@
+/*
+ * poetry-charts motion tier: entrance animation for the
+ * server-rendered charts, driven by the data-animate flag and the
+ * --poetry-motion-* custom properties the components emit on the SVG.
+ *
+ * Two invariants:
+ *  - every keyframe ends at the natural attribute state, so a chart at
+ *    rest is pixel-identical to animation never having run;
+ *  - everything sits behind prefers-reduced-motion: no-preference, so
+ *    reduced-motion users get the finished chart in the initial paint.
+ *
+ * Hosts add this file to their CSS build (see the README install story).
+ */
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Line: pathLength="1" normalizes the path to unit length, so the
+     classic dash draw-in needs no measurement (recharts calls
+     getTotalLength() at runtime for the same effect). */
+  [data-animate] path[data-slot="chart-line"] {
+    stroke-dasharray: 1 1;
+    animation: poetry-chart-draw var(--poetry-motion-duration, 1500ms) var(--poetry-motion-easing, ease) var(--poetry-motion-delay, 0ms) both;
+  }
+
+  /* Area: the clipPath rect reveals the series left-to-right (recharts
+     AreaRevealShape). The rect covers the full frame at rest. */
+  [data-animate] rect[data-slot="chart-motion-reveal"] {
+    transform-origin: 0 0;
+    animation: poetry-chart-reveal var(--poetry-motion-duration, 1500ms) var(--poetry-motion-easing, ease) var(--poetry-motion-delay, 0ms) both;
+  }
+
+  /* Bars grow from the value baseline; data-motion-origin carries the
+     zero edge (sign x orientation). Corner radii stretch mid-flight -
+     the declared simplification vs recharts' per-frame path rebuild. */
+  [data-animate] path[data-slot="chart-bar"] {
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: poetry-chart-grow-y var(--poetry-motion-duration, 400ms) var(--poetry-motion-easing, ease) var(--poetry-motion-delay, 0ms) both;
+  }
+  [data-animate] path[data-slot="chart-bar"][data-motion-origin="top"] {
+    transform-origin: center top;
+  }
+  [data-animate] path[data-slot="chart-bar"][data-motion-origin="left"],
+  [data-animate] path[data-slot="chart-bar"][data-motion-origin="right"] {
+    animation-name: poetry-chart-grow-x;
+    transform-origin: left center;
+  }
+  [data-animate] path[data-slot="chart-bar"][data-motion-origin="right"] {
+    transform-origin: right center;
+  }
+
+  /* Scatter points pop from their own centers (recharts Scatter: 400ms
+     linear scale-in). */
+  [data-animate] circle[data-slot="chart-scatter-point"] {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: poetry-chart-rise var(--poetry-motion-duration, 400ms) var(--poetry-motion-easing, linear) var(--poetry-motion-delay, 0ms) both;
+  }
+
+  /* Radar rises from the polar center (the component ships it in
+     --poetry-motion-center). recharts lerps every vertex from (cx, cy) -
+     linear interpolation toward one point IS a uniform scale, so this is
+     the identical per-frame geometry. Dots ride the same group. */
+  [data-animate] g[data-slot="chart-radars"] {
+    transform-box: view-box;
+    transform-origin: var(--poetry-motion-center, center);
+    animation: poetry-chart-rise var(--poetry-motion-duration, 1500ms) var(--poetry-motion-easing, ease) var(--poetry-motion-delay, 0ms) both;
+  }
+
+  /* Labels wait for the series animation (recharts gates them on
+     isAnimationFinished), then take a short fade. Line dots do the same;
+     radar dots are excluded - they ride the rising group above. */
+  [data-animate] g[data-slot="chart-labels"],
+  [data-animate] g[data-slot="chart-lines"] g[data-slot="chart-dots"] {
+    animation: poetry-chart-fade 200ms ease calc(var(--poetry-motion-delay, 0ms) + var(--poetry-motion-duration, 1500ms)) both;
+  }
+
+  /* A cross-render morph (A-W3) replaces the entrance: the controller
+     stamps data-motion="morph" before the new render's first paint, and
+     this kill switch stops the fresh elements' entrance animations so the
+     FLIP tween owns the frame. It stays on at "settled" - otherwise the
+     morph's end would re-arm the entrance keyframes and replay them.
+     Killing a COMPLETED entrance is pixel-identical by the invariant
+     above: every keyframe ends at the natural attribute state. */
+  [data-animate][data-motion="morph"] :is(path, g, rect, circle, text),
+  [data-animate][data-motion="settled"] :is(path, g, rect, circle, text) {
+    animation: none !important;
+  }
+
+  @keyframes poetry-chart-draw {
+    from { stroke-dashoffset: 1; }
+    to { stroke-dashoffset: 0; }
+  }
+
+  @keyframes poetry-chart-reveal {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes poetry-chart-grow-y {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+
+  @keyframes poetry-chart-grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  @keyframes poetry-chart-rise {
+    from { transform: scale(0); }
+    to { transform: scale(1); }
+  }
+
+  @keyframes poetry-chart-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}

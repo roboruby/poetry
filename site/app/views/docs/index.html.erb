@@ -1,0 +1,34 @@
+<%# The smoke page: one poetry-ui composite and one poetry-chart rendering
+    through the installed pipeline proves the whole host wiring - tokens,
+    safelist, importmap pins, controller registration. The real gallery
+    replaces this. %>
+<div class="mx-auto flex min-h-screen max-w-3xl flex-col gap-8 p-8">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight">poetry</h1>
+    <p class="text-muted-foreground">
+      A Rails-first, shadcn-parity design system — server-rendered, agent-native.
+      This page is the standing fresh-app install proof; the gallery lands here next.
+    </p>
+    <div class="flex gap-2">
+      <%= poetry_button { "Primary" } %>
+      <%= poetry_button(variant: :outline) { "Outline" } %>
+      <%= poetry_button(variant: :ghost) { "Ghost" } %>
+    </div>
+  </header>
+
+  <section class="flex flex-col gap-2">
+    <h2 class="text-xl font-medium">A server-rendered chart</h2>
+    <p class="text-sm text-muted-foreground">
+      Finished SVG in the initial HTML — hover or focus the plot and arrow
+      through the categories; the tooltip reads server-embedded coordinates.
+    </p>
+    <%= poetry_area_chart(data: @data, config: @config, id: "docs-smoke",
+                          margin: { left: 12, right: 12 }) do |chart| %>
+      <% chart.with_grid %>
+      <% chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] }) %>
+      <% chart.with_area(data_key: :mobile, stack: :a) %>
+      <% chart.with_area(data_key: :desktop, stack: :a) %>
+      <% chart.with_tooltip(indicator: :dot) %>
+    <% end %>
+  </section>
+</div>
