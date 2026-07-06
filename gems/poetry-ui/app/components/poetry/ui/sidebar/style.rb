@@ -19,8 +19,28 @@ module Poetry
         # group/menu-item, group/menu-sub-item markers below.
         element :wrapper, "flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
 
-        # The peer group (hidden on mobile in v1 - the Sheet mode is W5b).
+        # The peer group (the desktop shell; below md the mobile <dialog>
+        # takes over - W5b).
         element :peer, "group peer hidden text-sidebar-foreground md:block"
+
+        # The mobile sheet (W5b): the Sheet's presence-animated panel
+        # skinned as the sidebar - w-(--sidebar-width) at the 18rem mobile
+        # width, p-0, bg-sidebar, no close button (dismissal = backdrop /
+        # Esc), md:hidden keeps it out of the desktop layout wholesale.
+        # open:flex not flex (the Dialog browser-pass lesson).
+        element :mobile, "relative m-0 open:flex h-full max-h-none w-(--sidebar-width) max-w-none flex-col " \
+                         "bg-sidebar p-0 text-sidebar-foreground shadow-lg transition ease-in-out " \
+                         "data-open:animate-in data-open:duration-500 " \
+                         "data-closed:animate-out data-closed:duration-300 " \
+                         "backdrop:bg-black/50 md:hidden"
+        element :mobile_left, "mr-auto border-r data-open:slide-in-from-left data-closed:slide-out-to-left"
+        element :mobile_right, "ml-auto border-l data-open:slide-in-from-right data-closed:slide-out-to-right"
+        element :mobile_inner, "flex h-full w-full flex-col"
+
+        # The mobile side's edge classes for the <dialog>.
+        def self.mobile_side(value)
+          resolver.render(:"mobile_#{value}")
+        end
 
         # The desktop gap that pushes the inset over.
         element :gap, "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 " \

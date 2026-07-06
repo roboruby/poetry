@@ -2600,6 +2600,10 @@ components:
     elements:
     - wrapper
     - peer
+    - mobile
+    - mobile_left
+    - mobile_right
+    - mobile_inner
     - gap
     - gap_inset
     - container
@@ -2623,10 +2627,13 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 2c2bf877daf6
+    capsule: 9b00cc2667c1
     controllers:
     - identifier: poetry--core--sidebar
       targets:
+      - inner
+      - mobileDialog
+      - mobileInner
       - sidebar
       values:
       - collapsible
@@ -2636,6 +2643,8 @@ components:
       - shortcut
       actions:
       - close
+      - closeMobile
+      - mobileBackdropClose
       - open
       - toggle
     agent_rules:

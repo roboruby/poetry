@@ -42,6 +42,8 @@ module Poetry
 
         WIDTH = "16rem"
         WIDTH_ICON = "3rem"
+        # SIDEBAR_WIDTH_MOBILE (source): the mobile sheet's panel width.
+        WIDTH_MOBILE = "18rem"
 
         option :open, :boolean, default: true
         option :side, :symbol, default: :left
@@ -99,6 +101,25 @@ module Poetry
           inset_variant? ? "#{css(:container)} #{css(:container_inset)}" : css(:container)
         end
 
+        # The mobile sheet <dialog> (DOM-move): server-rendered
+        # EMPTY - the controller adopts the nav children on open. Skinned
+        # with the Sheet's presence classes off the sidebar dictionary;
+        # md:hidden keeps it out of the desktop layout wholesale.
+        def mobile_dialog_attributes
+          attrs = {
+            "data-slot" => "sidebar-mobile", "data-sidebar" => "sidebar",
+            "data-mobile" => "true", "data-side" => side, "data-closed" => "",
+            "class" => "#{css(:mobile)} #{Style.mobile_side(side)}",
+            "style" => "--sidebar-width: #{WIDTH_MOBILE};",
+            "aria-labelledby" => mobile_title_id
+          }
+          attrs.merge(mobile_stimulus_attributes)
+        end
+
+        def mobile_title_id
+          @mobile_title_id ||= "poetry-sidebar-mobile-#{SecureRandom.hex(4)}"
+        end
+
         private
 
         def root_stimulus_attributes
@@ -116,6 +137,31 @@ module Poetry
           sidebar.with_target(:sidebar)
           attrs.to_attributes
         end
+
+        def inner_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          sidebar.with_target(:inner)
+          attrs.to_attributes
+        end
+        public :inner_stimulus_attributes
+
+        def mobile_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          sidebar.with_target(:mobile_dialog)
+          sidebar.with_action(:close_mobile, on: :cancel)
+          sidebar.with_action(:mobile_backdrop_close, on: :click)
+          attrs.to_attributes
+        end
+
+        def mobile_inner_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          sidebar.with_target(:mobile_inner)
+          attrs.to_attributes
+        end
+        public :mobile_inner_stimulus_attributes
       end
     end
   end

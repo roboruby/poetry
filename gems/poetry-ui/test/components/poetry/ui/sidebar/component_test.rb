@@ -46,6 +46,33 @@ module Poetry
           assert_equal "false", html.css('[data-slot="sidebar-wrapper"]').first["data-poetry--core--sidebar-open-value"]
         end
 
+        def test_the_mobile_sheet_renders_empty_with_the_dom_move_wiring
+          html = render_shell(side: :left)
+
+          dialog = html.css('dialog[data-slot="sidebar-mobile"]').first
+
+          assert dialog, "the mobile <dialog> ships with the shell"
+          assert_equal "true", dialog["data-mobile"]
+          assert_equal "left", dialog["data-side"]
+          assert_includes dialog["style"], "--sidebar-width: 18rem"
+          assert_equal "mobileDialog", dialog["data-poetry--core--sidebar-target"]
+          assert_includes dialog["data-action"], "cancel->poetry--core--sidebar#closeMobile"
+          assert_includes dialog["data-action"], "click->poetry--core--sidebar#mobileBackdropClose"
+          assert_includes dialog["class"], "md:hidden"
+
+          # Rendered EMPTY - the controller adopts the nav on open (
+          # DOM-move: one render, no duplicate ids).
+          inner = dialog.css('[data-slot="sidebar-mobile-inner"]').first
+
+          assert_equal "mobileInner", inner["data-poetry--core--sidebar-target"]
+          assert_empty inner.text.strip
+          assert_equal "inner",
+                       html.css('[data-slot="sidebar-inner"]').first["data-poetry--core--sidebar-target"]
+
+          # The sr-only accessible name (upstream parity).
+          assert_equal dialog.css("h2").first["id"], dialog["aria-labelledby"]
+        end
+
         def test_the_inset_is_a_main_landmark_holding_the_page
           html = render_shell
 
