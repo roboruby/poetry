@@ -18,8 +18,10 @@ module Poetry
         element :grid_fill_background, "fill-background"
         element :inside_label, "fill-white capitalize mix-blend-luminosity text-[11px]"
         # The gauge blocks' center number is text-4xl (36px on the 250 box);
-        # the pie donut-text stays 3xl - per-family, per upstream.
+        # the stacked half-gauge uses a smaller text-2xl; the pie donut-text
+        # stays 3xl - per-family, per upstream.
         element :center_title, "fill-foreground text-4xl font-bold"
+        element :center_title_compact, "fill-foreground text-2xl font-bold"
         element :center_subtitle, "fill-muted-foreground"
       end
     end

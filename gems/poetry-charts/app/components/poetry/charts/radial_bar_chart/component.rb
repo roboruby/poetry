@@ -72,8 +72,11 @@ module Poetry
           nil
         }
 
-        renders_one :center_label, lambda { |title:, subtitle: nil|
-          @center_label_config = { title: title, subtitle: subtitle }
+        # compact: the stacked half-gauge's smaller number sitting just
+        # above the flat baseline (text-2xl at cy-16 / caption at cy+4);
+        # the default is the full gauge's big centered number (text-4xl).
+        renders_one :center_label, lambda { |title:, subtitle: nil, compact: false|
+          @center_label_config = { title: title, subtitle: subtitle, compact: compact }
           nil
         }
 
@@ -150,19 +153,30 @@ module Poetry
           series_entries.any?(&:stack)
         end
 
+        # recharts' PolarAngleAxis default domain is [0, dataMax] over the
+        # RAW cell values, NOT the stacked totals - so a stacked ring maps
+        # each segment through the max single value and the overflow past
+        # end_angle is clipped (the stacked half-gauge: mobile 570 of
+        # dataMax 1260 = 81deg, desktop stacks on and clips at 180deg).
+        # An explicit max_value: overrides (a caller who wants the stack
+        # total to fill the span exactly passes it).
         def angle_max
           @angle_max ||= if max_value
                            max_value.to_f
-                         elsif stacked?
-                           rows.map { |row| series_entries.sum { |e| row[e.data_key].to_f } }.max
                          else
-                           key = series_entries.first&.data_key
-                           rows.map { |row| row[key].to_f }.max&.nonzero? || 1
+                           rows.flat_map { |row| series_entries.map { |e| row[e.data_key].to_f } }
+                               .max&.nonzero? || 1
                          end
         end
 
         def sweep(value)
           (value.to_f / angle_max) * (end_angle - start_angle)
+        end
+
+        # Clip a stacked segment's end at end_angle (recharts clips the
+        # overflow when the stack runs past the domain max).
+        def clip_angle(angle)
+          Polar.sign(end_angle - start_angle).positive? ? [angle, end_angle.to_f].min : [angle, end_angle.to_f].max
         end
 
         Segment = Data.define(:index, :name, :value, :fill, :path, :ring_inner, :ring_outer,
@@ -177,6 +191,7 @@ module Poetry
             base = @segment_cursor&.dig(entry.stack, i) || start_angle.to_f
             seg_start = entry.stack ? base : start_angle.to_f
             seg_end = seg_start + sweep(row[entry.data_key])
+            seg_end = clip_angle(seg_end) if entry.stack
             if entry.stack
               @segment_cursor ||= {}
               (@segment_cursor[entry.stack] ||= {})[i] = seg_end

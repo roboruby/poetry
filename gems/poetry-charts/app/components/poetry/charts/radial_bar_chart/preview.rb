@@ -73,12 +73,14 @@ module Poetry
 
         def stacked
           data = [{ month: "january", desktop: 1260, mobile: 570 }]
+          # No max_value: recharts maps the stack through [0, dataMax] over
+          # the raw values (1260), so mobile fills 570/1260 = 81deg and
+          # desktop stacks on and clips at the 180deg end.
           render_component(data: data, config: CONFIG, id: "radial-stacked", name_key: :month,
-                           end_angle: 180, inner_radius: 80, outer_radius: 110,
-                           max_value: 1830) do |chart|
+                           end_angle: 180, inner_radius: 80, outer_radius: 110) do |chart|
             chart.with_radial_bar(data_key: :mobile, stack: :a, corner_radius: 5)
             chart.with_radial_bar(data_key: :desktop, stack: :a, corner_radius: 5)
-            chart.with_center_label(title: "1,830", subtitle: "Total Visitors")
+            chart.with_center_label(title: "1,830", subtitle: "Visitors", compact: true)
           end
         end
       end

@@ -686,8 +686,9 @@ components:
     - grid_fill_background
     - inside_label
     - center_title
+    - center_title_compact
     - center_subtitle
-    capsule: 2b7f2f26f26b
+    capsule: db6fa9139c25
     agent_rules:
     - One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
     - 'background: true draws the muted track ring behind each bar (the gauge look).'
