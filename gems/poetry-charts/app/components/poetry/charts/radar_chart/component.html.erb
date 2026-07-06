@@ -3,23 +3,34 @@
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
     <% if grid? %>
       <g data-slot="chart-polar-grid" aria-hidden="true">
-        <%# The tinted grid (grid-fill block): EVERY ring fills at the low
-            opacity and the overlaps compound toward the center - upstream
-            puts fill+opacity on the whole PolarGrid. Inline style, because
-            the grid_line class sets fill-none and a fill ATTRIBUTE loses
-            to any CSS. %>
+        <%# Linework FIRST (rings + spokes), so the tinted fills below can
+            wash over it - recharts paints the grid, then stacks the
+            translucent ring fills on top, leaving the strokes near-invisible. %>
         <% grid_radii.each do |radius| %>
-          <% fill_attrs = grid_fill_attribute ? %( style="fill: #{grid_fill_attribute}" fill-opacity="#{grid_config.opacity}").html_safe : "" %>
           <% if grid_config.type == :circle %>
-            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"<%= fill_attrs %>/>
+            <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"/>
           <% else %>
-            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"<%= fill_attrs %>/>
+            <path class="<%= css(:grid_line) %>" d="<%= grid_polygon(radius) %>"/>
           <% end %>
         <% end %>
         <% if grid_config.radial_lines %>
           <% rows.each_index do |i| %>
             <% x, y = spoke_end(i) %>
             <line class="<%= css(:grid_line) %>" x1="<%= fnum(cx) %>" y1="<%= fnum(cy) %>" x2="<%= fnum(x) %>" y2="<%= fnum(y) %>"/>
+          <% end %>
+        <% end %>
+        <%# The tinted fills (grid-fill block): EVERY ring fills at the low
+            opacity, painted OVER the linework, overlaps compounding toward
+            the center - upstream puts fill+opacity on the whole PolarGrid.
+            Inline style, because grid_line sets fill-none and a fill
+            ATTRIBUTE loses to that CSS. %>
+        <% if grid_fill_attribute %>
+          <% grid_radii.each do |radius| %>
+            <% if grid_config.type == :circle %>
+              <circle class="<%= css(:grid_fill) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"/>
+            <% else %>
+              <path class="<%= css(:grid_fill) %>" d="<%= grid_polygon(radius) %>" style="fill: <%= grid_fill_attribute %>" fill-opacity="<%= grid_config.opacity %>"/>
+            <% end %>
           <% end %>
         <% end %>
       </g>

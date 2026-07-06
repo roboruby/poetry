@@ -130,14 +130,13 @@ module Poetry
                                              Polar.max_radius(plot[:width], plot[:height]) * 0.8)
         end
 
-        # recharts' PolarRadiusAxis: the domain is [0, dataMax] EXACTLY (no
-        # nicing - the max vertex touches the outer ring) and the default
-        # tickCount 5 divides it evenly, putting grid rings at 25/50/75/100%.
+        # recharts' PolarRadiusAxis auto-nices the [0, dataMax] domain
+        # (tickCount 5), so the outer ring is the ROUNDED max and the top
+        # datum sits just inside it (dataMax 305 -> [0, 320], Feb at 95.3%).
         def radius_ticks
           @radius_ticks ||= begin
             max = series_entries.flat_map { |e| rows.map { |row| row[e.data_key].to_f } }.max || 1
-            max = 1 if max.zero?
-            (0..4).map { |i| max * i / 4.0 }
+            Geometry::NiceTicks.nice_ticks([0, max], 5)
           end
         end
 

@@ -40,9 +40,9 @@ module Poetry
 
         d = html.css('[data-slot="chart-radar"]').first["d"]
 
-        # First vertex: angle 90 (straight up), radius 186/305 of the
-        # [0, dataMax] domain over 96px -> cy 125 - 58.54 = 66.46 at cx 125.
-        assert d.start_with?("M125,66.4"), "January sits straight above center (clockwise start)"
+        # First vertex: angle 90 (straight up), radius 186/320 of the
+        # nice-rounded domain over 96px -> cy 125 - 55.8 = 69.2 at cx 125.
+        assert d.start_with?("M125,69.2"), "January sits straight above center (clockwise start)"
         assert d.end_with?("Z"), "radar polygons close"
         assert_equal 5, d.scan("L").length, "six vertices, five line segments"
         assert_equal "0.6", html.css('[data-slot="chart-radar"]').first["fill-opacity"]
@@ -87,6 +87,14 @@ module Poetry
         assert_equal 4, filled.length, "all four rings take the tint"
         assert_includes filled.first["style"], "fill: var(--color-desktop)"
         assert_equal ["0.2"], filled.map { |p| p["fill-opacity"] }.uniq
+        # The fills paint AFTER the linework so the strokes wash out
+        # (the fill discs carry stroke-none; the ring outlines don't).
+        assert_includes filled.first["class"], "stroke-none"
+        grid_children = html.css('[data-slot="chart-polar-grid"] > *').to_a
+        first_fill = grid_children.index(filled.first)
+        last_line = grid_children.rindex { |n| n["class"].to_s.include?("stroke-border") }
+
+        assert_operator first_fill, :>, last_line, "tinted fills render after all linework"
       end
 
       def test_lines_only_radars_stroke_without_fill

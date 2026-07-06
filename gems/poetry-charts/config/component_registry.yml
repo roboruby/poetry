@@ -597,8 +597,9 @@ components:
     - frame
     - svg
     - grid_line
+    - grid_fill
     - tick
-    capsule: 791b79212629
+    capsule: 52301de6efed
     agent_rules:
     - 'Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:)
       / with_legend.'

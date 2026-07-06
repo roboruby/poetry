@@ -215,18 +215,22 @@ module Poetry
           end
         end
 
-        # insideStart labels: at the ring middle, a few degrees into the
-        # sweep, rotated onto the arc's TANGENT pointing into the sweep -
-        # SVG rotate() is clockwise-positive in the y-down plane, so the
-        # tangent at chart angle t is (-sin t, -cos t) for a CCW sweep.
-        # (90 - angle reads plausibly but points the text the OPPOSITE way:
-        # mirrored and upside down.) When the tangent would still leave the
-        # text inverted, flip it 180 and anchor the END at the start edge -
-        # recharts' readability flip.
+        # insideStart labels: a FIXED ARC LENGTH into the sweep (not a fixed
+        # angle), so an inner ring - where the same ~9px arc spans a larger
+        # angle - tilts more, tapering to near-flat on the outer rings, the
+        # recharts insideStart look. Rotated onto the arc's TANGENT pointing
+        # into the sweep: SVG rotate() is clockwise-positive in the y-down
+        # plane, so the tangent at chart angle t is (-sin t, -cos t) for a
+        # CCW sweep. (90 - angle reads plausibly but points the text the
+        # OPPOSITE way: mirrored and upside down.) When the tangent would
+        # still leave the text inverted, flip it 180 and anchor the END at
+        # the start edge - recharts' readability flip.
+        LABEL_ARC = 9.0
+
         def label_placement(segment)
           direction = Polar.sign(end_angle - start_angle)
-          angle = segment.seg_start + (direction * 5)
           radius = (segment.ring_inner + segment.ring_outer) / 2.0
+          angle = segment.seg_start + (direction * (LABEL_ARC / radius) / Polar::RADIAN)
           x, y = Polar.polar_to_cartesian(cx, cy, radius, angle)
           rad = Polar::RADIAN * angle
           rotate = Math.atan2(-direction * Math.cos(rad), -direction * Math.sin(rad)) / Polar::RADIAN

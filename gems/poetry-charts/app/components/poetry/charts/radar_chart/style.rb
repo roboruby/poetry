@@ -12,6 +12,8 @@ module Poetry
         element :frame, "contents"
         element :svg, "w-full min-h-0 flex-1"
         element :grid_line, "fill-none stroke-border"
+        # The tinted grid-fill discs: no stroke (they overlay the linework).
+        element :grid_fill, "stroke-none"
         element :tick, "fill-muted-foreground"
       end
     end
