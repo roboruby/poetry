@@ -76,7 +76,8 @@ export function computeCartesian(payload) {
   const categoryAxis = frame.categoryAxis
   const margin = frame.margin
 
-  const plotLeft = margin.left + (horizontal && categoryAxis ? Y_AXIS_WIDTH : 0)
+  const reservedLeft = (horizontal && categoryAxis) || (!horizontal && frame.valueAxis)
+  const plotLeft = margin.left + (reservedLeft ? Y_AXIS_WIDTH : 0)
   const plotRight = frame.width - margin.right
   const plotTop = margin.top
   const plotBottom = frame.height - margin.bottom - (!horizontal && categoryAxis ? X_AXIS_HEIGHT : 0)

@@ -161,6 +161,7 @@ module Poetry
           "layout" => cartesian.layout.to_s,
           "xScaleType" => live_x_scale_type.to_s,
           "categoryAxis" => live_category_axis?,
+          "valueAxis" => !cartesian.horizontal? && !y_axis_config.nil?,
           "yTickCount" => cartesian.y_tick_count,
           "offset" => cartesian.offset.to_s,
           "xTickMargin" => x_axis_config&.tick_margin,

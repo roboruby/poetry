@@ -127,6 +127,7 @@ module Poetry
             x_key: x_axis_config&.data_key,
             margin: live_margin,
             category_axis: x_axis?,
+            value_axis: y_axis?,
             # The Y axis strip: the axes block shows ticks with tickCount 3;
             # the implicit hidden axis uses 5 (recharts implicitYAxis).
             y_tick_count: y_axis_config&.tick_count || 5,

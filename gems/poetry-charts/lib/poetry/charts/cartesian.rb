@@ -27,7 +27,7 @@ module Poetry
       attr_reader :width, :height, :margin, :y_tick_count, :offset, :layout
 
       def initialize(data:, series:, width:, height:, x_key: nil, margin: {},
-                     category_axis: true, y_tick_count: 5, offset: :none,
+                     category_axis: true, value_axis: false, y_tick_count: 5, offset: :none,
                      x_scale_type: :point, layout: :vertical)
         @data = data.map { |row| row.to_h.transform_keys(&:to_s) }
         @series = series
@@ -36,6 +36,7 @@ module Poetry
         @x_key = x_key&.to_s
         @margin = DEFAULT_MARGIN.merge(margin.to_h.symbolize_keys)
         @category_axis = category_axis
+        @value_axis = value_axis
         @y_tick_count = y_tick_count
         @x_scale_type = x_scale_type.to_sym
         @layout = layout.to_sym
@@ -52,9 +53,13 @@ module Poetry
       # -- the plot rectangle ---------------------------------------------------
       # The category-axis strip sits at the bottom (vertical layout, height
       # 30) or the left (horizontal layout, the implicit YAxis width 60).
+      # A VISIBLE value axis in the vertical layout reserves the same left
+      # strip (recharts YAxis width 60 - the pre-N10 gap where shown y
+      # labels clipped at the plot edge).
 
       def plot_left
-        margin[:left].to_f + (horizontal? && @category_axis ? Y_AXIS_WIDTH : 0)
+        reserved = (horizontal? && @category_axis) || (!horizontal? && @value_axis)
+        margin[:left].to_f + (reserved ? Y_AXIS_WIDTH : 0)
       end
 
       def plot_right = width - margin[:right]

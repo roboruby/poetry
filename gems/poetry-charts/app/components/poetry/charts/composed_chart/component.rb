@@ -134,6 +134,7 @@ module Poetry
             x_key: x_axis_config&.data_key,
             margin: margin || {},
             category_axis: x_axis?,
+            value_axis: y_axis?,
             y_tick_count: y_axis_config&.tick_count || 5,
             x_scale_type: :band
           )
