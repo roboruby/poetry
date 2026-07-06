@@ -51,11 +51,13 @@ they win:
 ## Swapping the whole theme
 
 poetry ships more than one theme (`themes/*.css` in each gem — `default`
-is new-york-v4, `vega` is the first upstream style port). Pick one at
-install time:
+is new-york-v4; `vega`, `nova`, `mira` and `rhea` are upstream style
+ports: vega the clean neutral pilot, then the density trio — nova
+reduced, mira compact, rhea soft-round compact). Pick one at install
+time:
 
 ```sh
-rails g poetry:install --theme vega          # or --charts --theme vega
+rails g poetry:install --theme vega          # or --charts --theme mira
 ```
 
 The chosen fragment fills the **same slot** (`poetry/style-default.css` —
@@ -125,6 +127,8 @@ on `<body>` to switch live; that convention (plus
 active at once — realistically the docs-site theme switcher. Your copied
 theme needs no wrapper either until then.
 
-Porting notes for the vega fragment (translation disciplines, what stayed
+Porting notes per fragment (translation disciplines, what stayed
 poetry-idiom, what was dropped and why) live in
-`docs/vega-port-ledger.txt` and the fragment's header comment.
+`docs/<theme>-port-ledger.txt` and each fragment's header comment. The
+port pipeline itself (detector, per-theme plans, writer, thin-body scan)
+is banked in `script/theme_port/`.

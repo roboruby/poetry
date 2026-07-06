@@ -1562,7 +1562,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: 898afef0e157
+    capsule: 64b28e72ead3
     agent_rules:
     - Inside a form, never render Input directly - use the FormBuilder's field (it
       wires ids, errors, and aria).
@@ -2965,7 +2965,7 @@ components:
       type: string
     slots: []
     elements: []
-    capsule: 2d674fe677b3
+    capsule: ccb23b46547a
     agent_rules:
     - Wire through Field/FormBuilder (control_attributes) - never hand-write the aria
       plumbing.
@@ -3174,7 +3174,7 @@ components:
       many: true
     elements:
     - item
-    capsule: a2500eaf5fad
+    capsule: b5c1a9940c88
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []

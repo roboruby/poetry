@@ -102,11 +102,14 @@ module Poetry
           end
           # ...plus the group's item overrides (min-w-0 inline beats the
           # themed min-w-9 by layer order; px-3 rides cn-toggle-group-item,
-          # later in the theme than Toggle's sizes, so it wins in-layer)...
-          %w[w-auto min-w-0 cn-toggle-group-item focus:z-10 data-[spacing=0]:rounded-none
+          # later in the theme than Toggle's sizes, so it wins in-layer).
+          # The whole segment-radius cluster (rounded-none + edge radii)
+          # rides the theme since N12 W2 - split-side rule.
+          %w[w-auto min-w-0 cn-toggle-group-item focus:z-10
              data-[spacing=0]:data-[variant=outline]:border-l-0].each do |token|
             assert_includes item["class"], token
           end
+          refute_includes item["class"], "data-[spacing=0]:rounded-none"
           refute_includes item["class"], "min-w-9"
           refute_includes item["class"], "px-2 "
           # ...and the group dictionary never duplicates Toggle's strings

@@ -11,6 +11,10 @@
 # posture); input-group-button-size-sm targets a size poetry's API does
 # not ship - dropped, ledgered.
 
+# NOTE: the shipped themes/mira.css has been hand-edited since generation
+# (bang audit, thin-body fixes, axe AA holds, W2 side-move consumers) - the
+# fragment is canon; write_theme.rb refuses to regenerate over it.
+
 BACKDROP = "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs"
 
 PLAN = {
@@ -152,6 +156,7 @@ PLAN = {
   "cn-toggle-group-item" =>
     "data-[spacing=0]:px-2 data-[spacing=0]:has-data-[icon=inline-end]:pr-1.5 " \
     "data-[spacing=0]:has-data-[icon=inline-start]:pl-1.5 " \
+    "data-[spacing=0]:rounded-none " \
     "data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md",
 
   "cn-toggle-size-default" =>

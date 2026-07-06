@@ -672,7 +672,7 @@
 
 /* MARK: Input */
 .cn-input {
-  @apply flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] md:text-sm selection:bg-primary selection:text-primary-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30;
+  @apply flex h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-xs transition-[color,box-shadow] md:text-sm placeholder:text-muted-foreground selection:bg-primary selection:text-primary-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:bg-input/30;
 }
 
 /* MARK: InputGroup */
@@ -1259,7 +1259,7 @@
 
 /* MARK: Textarea */
 .cn-textarea {
-  @apply rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40;
+  @apply rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs transition-[color,box-shadow] placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:aria-invalid:ring-destructive/40;
 }
 
 /* MARK: Toast */
@@ -1344,7 +1344,7 @@
 /* Segmented edge radii live theme-side (N12 W2 side-move): each theme
  * rounds spacing=0 segments in its own radius language. */
 .cn-toggle-group-item {
-  @apply px-3 data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md;
+  @apply px-3 data-[spacing=0]:rounded-none data-[spacing=0]:first:rounded-l-md data-[spacing=0]:last:rounded-r-md;
 }
 
 /* MARK: Tooltip */

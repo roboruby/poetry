@@ -7,9 +7,11 @@ module Poetry
       # novelty stays inline: field-sizing-content is CSS-only auto-grow
       # (Chromium-first; other engines fall back to min-h-16 + the native
       # resize handle - graceful, no polyfill, no JS autosizer ever).
+      # Placeholder color moved theme-side at N12 W2 (rhea AA hold - see
+      # the Input dictionary note).
       class Style < Poetry::Core::Style
         base "cn-textarea flex field-sizing-content min-h-16 w-full outline-none " \
-             "placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+             "disabled:cursor-not-allowed disabled:opacity-50"
       end
     end
   end

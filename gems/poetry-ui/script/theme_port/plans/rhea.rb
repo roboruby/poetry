@@ -9,6 +9,10 @@
 # before:-frame drawer is deferred (edge-attached idiom kept, ledgered);
 # data-[state=on] -> data-pressed on toggle-group items.
 
+# NOTE: the shipped themes/rhea.css has been hand-edited since generation
+# (bang audit, thin-body fixes, axe AA holds, W2 side-move consumers) - the
+# fragment is canon; write_theme.rb refuses to regenerate over it.
+
 BACKDROP = "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs"
 
 PLAN = {
@@ -156,6 +160,7 @@ PLAN = {
   "cn-toggle-group-item" =>
     "data-pressed:bg-muted data-[spacing=0]:px-2 data-[spacing=0]:shadow-none " \
     "data-[spacing=0]:has-data-[icon=inline-end]:pr-1.5 data-[spacing=0]:has-data-[icon=inline-start]:pl-1.5 " \
+    "data-[spacing=0]:rounded-none " \
     "data-[spacing=0]:first:rounded-l-2xl data-[spacing=0]:last:rounded-r-2xl",
 
   "cn-toggle-size-default" =>

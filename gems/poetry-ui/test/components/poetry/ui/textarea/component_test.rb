@@ -71,10 +71,12 @@ module Poetry
         def test_the_source_exact_class_string_lands
           textarea = render_textarea(name: "bio").css("textarea").first
 
-          %w[cn-textarea field-sizing-content min-h-16 w-full
-             placeholder:text-muted-foreground].each do |token|
+          # Placeholder color rides the theme since N12 W2 (rhea darkens it
+          # on tinted surfaces to hold AA - inline would beat every theme).
+          %w[cn-textarea field-sizing-content min-h-16 w-full].each do |token|
             assert_includes textarea["class"], token
           end
+          refute_includes textarea["class"], "placeholder:text-muted-foreground"
         end
 
         def test_caller_classes_merge

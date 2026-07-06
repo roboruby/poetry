@@ -7,6 +7,10 @@
 # (h-8 buttons), tighter paddings (p-4 dialogs), sm:max-w-sm dialogs, and
 # the banded alert-dialog footer (the W2 hook nova exists for).
 
+# NOTE: the shipped themes/nova.css has been hand-edited since generation
+# (bang audit, thin-body fixes, axe AA holds, W2 side-move consumers) - the
+# fragment is canon; write_theme.rb refuses to regenerate over it.
+
 BACKDROP = "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs"
 
 PLAN = {
@@ -161,6 +165,7 @@ PLAN = {
   "cn-toggle-group-item" =>
     "data-[spacing=0]:px-2 data-[spacing=0]:has-data-[icon=inline-end]:pr-1.5 " \
     "data-[spacing=0]:has-data-[icon=inline-start]:pl-1.5 " \
+    "data-[spacing=0]:rounded-none " \
     "data-[spacing=0]:first:rounded-l-lg data-[spacing=0]:last:rounded-r-lg",
 
   # --- toggle sizes: nova paddings + icon-side twins ----------------------
