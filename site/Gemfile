@@ -42,6 +42,10 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # ERB parser behind `bin/rails poetry:check` (optional for poetry hosts;
+  # this app is the standing install proof, so it lints for real)
+  gem "herb", require: false
 end
 
 group :development do

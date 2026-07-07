@@ -37,7 +37,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (64 components + 13 chart components)
+## Building UI with poetry (65 components + 13 chart components)
 
 - Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw
   hex/oklch colors, or off-scale arbitrary values - tokens and variants carry
@@ -45,7 +45,10 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 - Machine catalog: `/poetry/llms.txt` (index) and `/poetry/llms-full.txt`
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Verify markup before finishing: `bin/rails poetry:check` (unknown
-  components/slots/variants/wiring, did-you-mean, `--json`).
+  components/slots/variants/wiring, did-you-mean, `--json`; needs the
+  `herb` gem in the Gemfile).
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
+- Design interop: `bin/rails poetry:design:export` writes this app's
+  DESIGN.md (tokens + treatment) for external design skills.
 <!-- poetry:agents:end -->
