@@ -96,3 +96,29 @@ signal you have, and it runs before a single component renders.
 Assert the **contract** (slots, ARIA, form participation, wiring), never the
 **classes**. The contract is what poetry promises to keep stable across token
 retunes and primitive-vocabulary shifts; the classes are free to move under it.
+
+## The design tier — slop is a tested property
+
+Above the mechanical gate sits the taste tier (N14): `DesignLint`, twelve
+deterministic design-slop rules, each citing its the design-rule analogue/the slop-gate analogue analogue
+and naming the fix. Warnings, not errors — but the dogfood surfaces gate on
+them staying at zero.
+
+- **AST tier** (rides the same herb walk as `poetry check`, reads ERB and
+  plain HTML alike): card-in-card, icon-tile-over-heading, wall-of-cards,
+  off-scale arbitrary values, gradients off the token surface, heading
+  skips, center-everything, shadow stacking.
+- **DOM tier** (computed styles from the dommy tier — no browser): type-scale
+  monotony, invisible adjacent surfaces, near-identical adjacent surfaces,
+  and the stock-theme-while-a-brand-exists nudge.
+
+```
+bundle exec rake design:lint                    # both tiers over the gem's own surfaces
+POETRY_CHECK_DESIGN=1 bin/rails poetry:check    # host apps: taste tier joins the linter
+```
+
+The default gate holds all three design surfaces: the component templates
+(unit test), the 60+ rendered component pages (dommy test), and the nine
+committed DESIGN.md exports (`design:verify`). The eval's `design_slop`
+cross-arm gate runs the identical rules on every arm — the raw arms fail it
+on genuine slop; the poetry arms pass.

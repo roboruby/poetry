@@ -16,6 +16,9 @@ visual fragments under `themes/`.
 - `bundle exec rake registry:verify` — component_registry.yml drift
   (regenerate with `rake registry:generate`, never hand-edit)
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
+  (`POETRY_CHECK_DESIGN=1` adds the twelve design-slop rules)
+- `bundle exec rake design:lint` — design-slop, both tiers (AST + dommy DOM);
+  `design:verify` gates the nine committed DESIGN.md exports
 - `bundle exec rubocop`
 - `bundle exec rake eval:scorecard` — frozen-arm mechanical eval
 
