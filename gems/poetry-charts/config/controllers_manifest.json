@@ -20,6 +20,10 @@
       "move",
       "refresh",
       "show"
+    ],
+    "events": [
+      "poetry--charts--tooltip:hide",
+      "poetry--charts--tooltip:show"
     ]
   },
   "poetry--charts--adapter": {
@@ -33,6 +37,9 @@
     "methods": [
       "connect",
       "disconnect"
+    ],
+    "events": [
+      "poetry--charts--adapter:rendered"
     ]
   },
   "poetry--charts--motion": {
@@ -41,6 +48,9 @@
     "methods": [
       "connect",
       "disconnect"
+    ],
+    "events": [
+      "poetry--charts--motion:settled"
     ]
   },
   "poetry--charts--live": {
@@ -55,6 +65,10 @@
       "setWindow",
       "toggleSeries",
       "update"
+    ],
+    "events": [
+      "poetry--charts--live:settled",
+      "poetry--charts--live:updated"
     ]
   },
   "poetry--charts--window": {
@@ -70,6 +84,7 @@
       "reset",
       "startBrush",
       "startZoom"
-    ]
+    ],
+    "events": []
   }
 }

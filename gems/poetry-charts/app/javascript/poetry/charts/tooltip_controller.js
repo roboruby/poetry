@@ -9,6 +9,10 @@ import { Controller } from "@hotwired/stimulus"
 // recharts accessibilityLayer floor: the SVG is focusable, arrows walk
 // the categories, Escape dismisses.
 export default class ChartTooltipController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--charts--tooltip:hide", "poetry--charts--tooltip:show"]
+
   static targets = ["svg", "tooltip", "data"]
   static values = { sync: String }
 

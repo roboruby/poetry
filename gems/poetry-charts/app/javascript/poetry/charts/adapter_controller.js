@@ -8,6 +8,10 @@ import { chartAdapter } from "@poetry/charts/adapter_registry"
 // resolveColor turns var(--color-key)/var(--chart-N) into concrete
 // values at paint time (CSS variables cannot reach a canvas).
 export default class ChartAdapterController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--charts--adapter:rendered"]
+
   static targets = ["mount", "spec"]
   static values = { engine: String }
 

@@ -40,6 +40,7 @@ function introspect() {
         targets: [...(klass.targets ?? [])].sort(),
         values: Object.keys(klass.values ?? {}).sort(),
         methods: publicMethods(klass),
+        events: [...(klass.events ?? [])].sort(),
       },
     ])
   )

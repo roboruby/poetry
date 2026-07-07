@@ -40,6 +40,10 @@ const MORPH_WINDOW_MS = 5000
 const registry = new Map()
 
 export default class ChartMotionController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--charts--motion:settled"]
+
   connect() {
     this.svg = this.element.querySelector('[data-slot="chart-svg"]')
     if (!this.svg) return

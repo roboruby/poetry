@@ -22,6 +22,10 @@ import { tween } from "@poetry/charts/motion/tween"
 // so it serves fresh values mid-stream. prefers-reduced-motion snaps
 // every update.
 export default class ChartLiveController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--charts--live:settled", "poetry--charts--live:updated"]
+
   static targets = ["payload"]
 
   connect() {
