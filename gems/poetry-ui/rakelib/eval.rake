@@ -81,6 +81,96 @@ namespace :eval do
          "(#{Poetry::Eval::Runner::TASKS.size} tasks, viewport #{POETRY_BROWSER_VIEWPORT.join("x")})"
   end
 
+  desc "Run the paired LLM judge over the frozen eval arms (the claude CLI; needs eval/captures) " \
+       "and write eval/results/<date>/judge-verdicts.json. POETRY_JUDGE_TASKS=a,b filters; " \
+       "POETRY_JUDGE_MODEL, POETRY_JUDGE_CONCURRENCY, POETRY_JUDGE_DATE tune."
+  task :judge do
+    poetry_ui_boot!
+    require_relative "../eval/runner"
+    require_relative "../eval/judge"
+    require "json"
+    require "date"
+
+    runner = Poetry::Eval::Runner.new
+    card = runner.scorecard # fresh mechanical ledgers; only cross_arm reaches the judge
+    judge = Poetry::Eval::Judge.new
+
+    names = Poetry::Eval::Runner::TASKS.keys.sort
+    if (filter = ENV.fetch("POETRY_JUDGE_TASKS", nil))
+      names = filter.split(",").map(&:strip)
+      unknown = names - Poetry::Eval::Runner::TASKS.keys
+      abort "unknown POETRY_JUDGE_TASKS: #{unknown.join(", ")}" unless unknown.empty?
+    end
+
+    queue = Queue.new
+    names.each { |task| queue << task }
+    results = {}
+    mutex = Mutex.new
+    puts "judging #{names.size} task pairs (model #{judge.model}, " \
+         "#{judge.votes_per_order} votes x 2 orders each)..."
+
+    workers = Array.new([Integer(ENV.fetch("POETRY_JUDGE_CONCURRENCY", "4")), names.size].min) do
+      Thread.new do
+        loop do
+          task = begin
+            queue.pop(true)
+          rescue ThreadError
+            break
+          end
+          spec = card["tasks"].fetch(task)
+          arms = spec["arms"].keys.sort.to_h do |arm|
+            png = Poetry::Ui.root.join("eval/captures", task, "#{arm}.png")
+            abort "missing capture #{png} - run rake eval:capture first" unless png.exist?
+
+            [arm, { "capture" => png.to_s, "ledger" => spec["arms"][arm]["cross_arm"] }]
+          end
+          record = judge.judge_pair(task: task, brief: spec["description"], arms: arms)
+          mutex.synchronize do
+            results[task] = record
+            puts format("  %<task>-19s %<verdict>-14s swap-consistency %<swap>.2f",
+                        task: task, verdict: record["verdict"], swap: record["swap_consistency"])
+          end
+        end
+      end
+    end
+    workers.each(&:join)
+
+    decided = results.reject { |_, record| record["verdict"] == "inconclusive" }
+    agreement = decided.count { |_, record| record["verdict"] == "poetry" }
+    payload = {
+      "schema" => Poetry::Eval::Judge::SCHEMA,
+      "generated_on" => ENV.fetch("POETRY_JUDGE_DATE", Date.today.iso8601),
+      "model" => judge.model,
+      "votes_per_order" => judge.votes_per_order,
+      "axes" => Poetry::Eval::Judge::AXES,
+      "tasks" => results.sort.to_h,
+      "summary" => {
+        "verdicts" => results.values.group_by { |record| record["verdict"] }.transform_values(&:size),
+        "mean_swap_consistency" =>
+          (results.values.sum { |record| record["swap_consistency"] } / results.size).round(3),
+        "usage" => { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
+      },
+      "calibration" => {
+        "note" => "Frozen arms have known intended winners (the raw arms were authored WITH " \
+                  "failure modes): the intended winner is the poetry arm on every task.",
+        "intended_winner" => "poetry",
+        "agreement_rate" => "#{agreement}/#{results.size}",
+        "agreement_rate_decided" => "#{agreement}/#{decided.size}"
+      }
+    }
+    dir = Poetry::Ui.root.join("eval/results", payload["generated_on"])
+    dir.mkpath
+    path = dir.join("judge-verdicts.json")
+    path.write(JSON.pretty_generate(payload))
+
+    puts "verdicts: #{payload["summary"]["verdicts"].map { |verdict, n| "#{verdict} #{n}" }.join(", ")}"
+    puts "calibration agreement: #{payload["calibration"]["agreement_rate"]} " \
+         "(#{payload["calibration"]["agreement_rate_decided"]} of decided)"
+    puts "mean swap-consistency: #{payload["summary"]["mean_swap_consistency"]}"
+    puts "usage: #{judge.calls} judge calls, $#{payload["summary"]["usage"]["total_cost_usd"]}"
+    puts "verdicts written: #{path}"
+  end
+
   desc "Run the eval harness (frozen task arms, deterministic gates) and emit the scorecard"
   task :scorecard do
     poetry_ui_boot!
@@ -98,6 +188,11 @@ namespace :eval do
       end
     end
     puts "components exercised: #{card["components_exercised"].join(", ")}"
+    if (judged = card["judged"])
+      tally = judged["verdicts"].values.tally.map { |verdict, n| "#{verdict} #{n}" }.join(", ")
+      puts "judged (#{judged["model"]}, #{judged["source"]}): #{tally}; " \
+           "calibration agreement #{judged.dig("calibration", "agreement_rate")}"
+    end
     puts "scorecard: #{path}"
   end
 end

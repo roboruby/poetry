@@ -751,12 +751,33 @@ module Poetry
           results = arms(task).to_h { |arm, erb| [arm, score_arm(task, arm, erb, exercised)] }
           [task, { "description" => spec["description"], "arms" => results }]
         end
-        {
+        card = {
           "generated_note" => "Frozen arms, deterministic gates. cross_arm gates are the only " \
                               "comparable numbers; poetry_only gates are diagnostics (they cannot " \
                               "fail a non-poetry arm).",
           "tasks" => tasks,
           "components_exercised" => exercised.uniq.sort
+        }
+        judged = judged_section
+        card["judged"] = judged if judged
+        card
+      end
+
+      # The judged half (N15): fold the LATEST committed judge verdicts into
+      # the scorecard - read from eval/results/, never computed here, so the
+      # scorecard stays deterministic (the judge runs on demand via rake
+      # eval:judge; cost + nondeterminism stay out of CI).
+      def judged_section
+        latest = Dir.glob(Poetry::Ui.root.join("eval/results/*/judge-verdicts.json").to_s).max
+        return nil unless latest
+
+        verdicts = JSON.parse(File.read(latest))
+        {
+          "source" => Pathname(latest).relative_path_from(Poetry::Ui.root).to_s,
+          "model" => verdicts["model"],
+          "summary" => verdicts["summary"],
+          "calibration" => verdicts["calibration"],
+          "verdicts" => verdicts.fetch("tasks", {}).transform_values { |task| task["verdict"] }
         }
       end
 
