@@ -1,0 +1,46 @@
+/* poetry-docs style registry (N12 W5): all nine poetry themes coexist,
+   scoped. Wrapped fragments in ./styles/ are GENERATED from the sibling
+   gems by script/build_style_registry.rb - regenerate, don't hand-edit.
+
+   Mechanism (upstream shadcn d0fae528, apps/v4): each fragment is nested
+   inside .style-<name> { ... } and imported into layer(base); the
+   @custom-variant declarations below additionally allow markup-level
+   opt-ins like style-vega:rounded-none. Exactly one .style-<name> class
+   sits on <html> at all times (server-rendered style-default; the layout
+   pre-paint script swaps in the stored choice; style_controller.js
+   switches it live). There is deliberately NO unscoped visual layer -
+   poetry fragments are complete, so one scoped layer per theme means no
+   token leak-through between themes. */
+
+@import "./styles/style-default.css" layer(base);
+@import "./styles/style-vega.css" layer(base);
+@import "./styles/style-nova.css" layer(base);
+@import "./styles/style-mira.css" layer(base);
+@import "./styles/style-rhea.css" layer(base);
+@import "./styles/style-maia.css" layer(base);
+@import "./styles/style-luma.css" layer(base);
+@import "./styles/style-lyra.css" layer(base);
+@import "./styles/style-sera.css" layer(base);
+
+@custom-variant style-default (&:where(.style-default *));
+@custom-variant style-vega (&:where(.style-vega *));
+@custom-variant style-nova (&:where(.style-nova *));
+@custom-variant style-mira (&:where(.style-mira *));
+@custom-variant style-rhea (&:where(.style-rhea *));
+@custom-variant style-maia (&:where(.style-maia *));
+@custom-variant style-luma (&:where(.style-luma *));
+@custom-variant style-lyra (&:where(.style-lyra *));
+@custom-variant style-sera (&:where(.style-sera *));
+
+/* The font-pairing story is docs metadata, not gem CSS:
+   upstream's create flow biases lyra to mono (JetBrains Mono; radius
+   forced to none) and pairs sera with serif (Noto Serif / Instrument
+   Serif in its roster). No poetry theme moves a font token - the docs
+   switcher tells the story with system stacks keyed off the same class. */
+.style-lyra {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.style-sera {
+  font-family: ui-serif, Georgia, Cambria, "Times New Roman", serif;
+}

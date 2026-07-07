@@ -1,17 +1,23 @@
 <!DOCTYPE html>
-<html>
+<html class="style-default">
   <head>
     <title><%= content_for(:title) ? "#{content_for(:title)} — poetry" : "poetry" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%# Apply the stored theme BEFORE first paint (the .dark class strategy). %>
+    <%# Apply the stored dark mode AND component style BEFORE first paint.
+        The style axis (N12 W5) swaps the server-rendered style-default for
+        the stored choice; style_controller.js switches it live. %>
     <script>
       try {
         const stored = localStorage.getItem("poetry-docs-theme")
         if (stored === "dark" || (!stored && matchMedia("(prefers-color-scheme: dark)").matches)) {
           document.documentElement.classList.add("dark")
+        }
+        const style = localStorage.getItem("poetry-docs-style")
+        if (style && style !== "default" && /^[a-z]{4,7}$/.test(style)) {
+          document.documentElement.classList.replace("style-default", "style-" + style)
         }
       } catch {}
     </script>
@@ -40,6 +46,11 @@
               <%= poetry_sidebar_menu_item do %>
                 <%= poetry_sidebar_menu_button(href: root_path, active: current_page?(root_path)) do %>
                   <%= poetry_icon(name: :house) %><span>Introduction</span>
+                <% end %>
+              <% end %>
+              <%= poetry_sidebar_menu_item do %>
+                <%= poetry_sidebar_menu_button(href: theming_path, active: current_page?(theming_path)) do %>
+                  <%= poetry_icon(name: :palette) %><span>Theming</span>
                 <% end %>
               <% end %>
             <% end %>
@@ -94,6 +105,12 @@
           <div class="ml-auto flex items-center gap-2">
             <%= render "shared/site_nav" %>
             <%= render "shared/search" %>
+            <div data-controller="style" data-action="change->style#apply" class="w-28">
+              <label for="style-switcher" class="sr-only">Component style</label>
+              <%= poetry_native_select(name: "style", id: "style-switcher",
+                                       options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
+                                       selected: "default") %>
+            </div>
             <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Toggle theme",
                               data: { action: "click->theme#toggle" }) do %>
               <%= poetry_icon(name: :sun, class: "dark:hidden") %>

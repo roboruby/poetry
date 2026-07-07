@@ -7,5 +7,13 @@
 @import "./poetry/base.css";
 @source "./poetry/safelist.txt";
 @import "./poetry/charts.css";
-@import "./poetry/style-default.css" layer(base);
-@import "./poetry/style-charts.css" layer(base);
+/* Docs switcher (N12 W5): the two installed slot imports are replaced by
+   the scoped nine-theme registry (see style-registry.css). The slot files
+   stay on disk, synced to the gem's default theme by
+   script/build_style_registry.rb, so the installer diff stays quiet - but
+   if a `poetry:install` re-run re-injects the two lines below, REMOVE
+   them again: an unscoped visual layer leaks default-only tokens into
+   whichever theme is stamped on <html>.
+   @import "./poetry/style-default.css" layer(base);
+   @import "./poetry/style-charts.css" layer(base); */
+@import "./style-registry.css";
