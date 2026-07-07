@@ -71,6 +71,64 @@ module Poetry
 
           assert_in_delta red.luminance, blend.luminance, 0.0001
         end
+
+        def test_parse_oklch_keeps_components_verbatim
+          # poetry-authored values round-trip byte-exact through parse -> css.
+          ["oklch(1 0 0)", "oklch(0.577 0.245 27.325)", "oklch(1 0 0 / 10%)"].each do |css|
+            assert_equal css, Color.parse(css).css
+          end
+        end
+
+        def test_parse_oklch_percent_lightness_and_bare_alpha
+          color = Color.parse("oklch(57.7% 0.245 27.325 / 0.5)")
+
+          assert_in_delta 0.577, color.l
+          assert_in_delta 0.5, color.alpha
+        end
+
+        def test_parse_hex_extremes_land_on_the_neutral_axis
+          assert_equal "oklch(1 0 0)", Color.parse("#ffffff").css
+          assert_equal "oklch(0 0 0)", Color.parse("#000").css
+        end
+
+        def test_parse_hex_red_matches_the_published_oklch
+          # sRGB pure red is oklch(0.628 0.258 29.234) in every reference
+          # implementation - the inverse matrices are only right if this is.
+          color = Color.parse("#ff0000")
+
+          assert_in_delta 0.628, color.l, 0.001
+          assert_in_delta 0.258, color.c, 0.001
+          assert_in_delta 29.234, color.h, 0.01
+        end
+
+        def test_parse_inverse_agrees_with_the_forward_conversion
+          # hex -> Color -> srgb must land back on the original channels.
+          color = Color.parse("#1a1c1e")
+
+          assert_equal([0x1a, 0x1c, 0x1e], color.srgb.map { |v| (v * 255).round })
+        end
+
+        def test_parse_rgb_forms_and_hex_alpha
+          assert_equal "oklch(1 0 0)", Color.parse("rgb(255, 255, 255)").css
+          assert_in_delta 0.5, Color.parse("rgba(255, 255, 255, 0.5)").alpha
+          assert_in_delta 0x80 / 255.0, Color.parse("#ffffff80").alpha, 0.01
+        end
+
+        def test_parse_drops_what_it_cannot_read
+          [nil, "", "bisque", "var(--primary)", "linear-gradient(red, blue)", "hsl(0 0% 0%)"].each do |value|
+            assert_nil Color.parse(value), "#{value.inspect} must parse to nil, never a guess"
+          end
+        end
+
+        def test_with_replaces_only_the_named_component
+          color = Color.new(l: 0.5, c: 0.2, h: 120.0, alpha: 0.9)
+          walked = color.with(l: 0.4)
+
+          assert_in_delta 0.4, walked.l
+          assert_in_delta 0.2, walked.c
+          assert_in_delta 120.0, walked.h
+          assert_in_delta 0.9, walked.alpha
+        end
       end
     end
   end

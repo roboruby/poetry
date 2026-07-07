@@ -58,6 +58,72 @@ module Poetry
         WHITE = new(l: 1.0)
         BLACK = new(l: 0.0)
 
+        # The CSS color spellings DESIGN.md files carry across the design-skill
+        # ecosystem: poetry emits oklch; the slop-gate analogue/an external design tool-authored files
+        # arrive in hex or rgb().
+        OKLCH_CSS = %r{\Aoklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:\s*/\s*([\d.]+)(%?))?\s*\)\z}i
+        HEX_CSS = /\A#(\h{3}|\h{4}|\h{6}|\h{8})\z/
+        RGB_CSS = %r{\Argba?\(\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})(?:\s*[,/]\s*([\d.]+)(%?))?\s*\)\z}i
+
+        class << self
+          # Parse a CSS color string into a Color, or nil for anything else
+          # (named colors, var() refs, gradients) - the DESIGN.md importer
+          # DROPS what it cannot parse, never guesses. oklch input keeps its
+          # components verbatim so poetry-authored values round-trip
+          # byte-exact through parse -> css.
+          def parse(css)
+            value = css.to_s.strip
+            if (match = value.match(OKLCH_CSS))
+              lightness = match[2] == "%" ? match[1].to_f / 100.0 : match[1].to_f
+              new(l: lightness, c: match[3].to_f, h: match[4].to_f, alpha: parse_alpha(match[5], match[6]))
+            elsif (match = value.match(HEX_CSS))
+              from_hex(match[1])
+            elsif (match = value.match(RGB_CSS))
+              channels = [match[1], match[2], match[3]].map { |channel| channel.to_i / 255.0 }
+              from_srgb(channels, alpha: parse_alpha(match[4], match[5]))
+            end
+          end
+
+          # Gamma-encoded sRGB [0,1] triplet -> Color, via Ottosson's inverse
+          # path (linear sRGB -> LMS -> OKLab -> LCH). Components round to the
+          # 3-decimal precision shadcn themes publish.
+          def from_srgb(srgb, alpha: 1.0)
+            r, g, b = srgb.map { |v| v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)**2.4 }
+
+            l_ = Math.cbrt((0.4122214708 * r) + (0.5363325363 * g) + (0.0514459929 * b))
+            m_ = Math.cbrt((0.2119034982 * r) + (0.6806995451 * g) + (0.1073969566 * b))
+            s_ = Math.cbrt((0.0883024619 * r) + (0.2817188376 * g) + (0.6299787005 * b))
+
+            lab_l = (0.2104542553 * l_) + (0.7936177850 * m_) - (0.0040720468 * s_)
+            lab_a = (1.9779984951 * l_) - (2.4285922050 * m_) + (0.4505937099 * s_)
+            lab_b = (0.0259040371 * l_) + (0.7827717662 * m_) - (0.8086757660 * s_)
+
+            chroma = Math.sqrt((lab_a**2) + (lab_b**2))
+            hue = chroma < 1e-4 ? 0.0 : ((Math.atan2(lab_b, lab_a) * 180.0 / Math::PI) % 360.0)
+            new(l: lab_l.clamp(0.0, 1.0).round(3), c: chroma.round(3), h: hue.round(3), alpha: alpha)
+          end
+
+          private
+
+          def from_hex(digits)
+            digits = digits.chars.map { |d| d * 2 }.join if digits.length <= 4
+            channels = digits.scan(/\h{2}/).map { |pair| pair.to_i(16) / 255.0 }
+            from_srgb(channels.first(3), alpha: channels.fetch(3, 1.0))
+          end
+
+          def parse_alpha(raw, percent)
+            return 1.0 if raw.nil?
+
+            percent == "%" ? raw.to_f / 100.0 : raw.to_f
+          end
+        end
+
+        # A copy with any component replaced. The import AA-walk (N14 W2)
+        # moves L in fixed steps while chroma holds - deterministic.
+        def with(l: self.l, c: self.c, h: self.h, alpha: self.alpha)
+          self.class.new(l: l, c: c, h: h, alpha: alpha)
+        end
+
         # The CSS serialization, matching shadcn's formatting:
         # "oklch(0.577 0.245 27.325)" / "oklch(1 0 0 / 10%)".
         def css
