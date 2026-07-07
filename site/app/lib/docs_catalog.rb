@@ -3,13 +3,28 @@
 # palette, and the routable slugs. Nothing here is hand-maintained; a new
 # component appears in the nav the moment its gem registers it.
 class DocsCatalog
-  Entry = Struct.new(:slug, :title, :section, :description, keyword_init: true) do
-    def path = "/#{section}/#{slug}"
+  Entry = Struct.new(:slug, :title, :section, :description, :icon, keyword_init: true) do
+    # Docs guides are top-level routes (/theming, /typography); the gallery
+    # sections nest under their section prefix.
+    def path = section == "docs" ? "/#{slug}" : "/#{section}/#{slug}"
   end
 
   # Chart chrome components documented THROUGH the family pages, not as
   # their own entries.
   CHART_CHROME = %w[container legend_content tooltip_content tooltip_layer].freeze
+
+  # Hand-curated guide pages: cross-component content no single registry
+  # entry owns. Each has its own controller action; entries here feed the
+  # sidebar, the palette, the search index, and the 200-gate.
+  DOCS = [
+    Entry.new(slug: "theming", title: "Theming", section: "docs", icon: :palette,
+              description: "All nine upstream themes: install-time selection with --theme, the " \
+                           "docs style switcher mechanism, and the lyra/sera font-pairing story."),
+    Entry.new(slug: "typography", title: "Typography", section: "docs", icon: :type,
+              description: "Heading, paragraph, list, table, and inline-text recipes on poetry " \
+                           "tokens — class strings transcribed from upstream at the pin. Fonts " \
+                           "ride the theme: the same markup goes mono under lyra, serif under sera.")
+  ].freeze
 
   # The interaction demos are the one hand-curated section: full-page
   # machinery (server round trips, streaming, cross-chart sync) that no
@@ -55,12 +70,14 @@ class DocsCatalog
 
     def demos = DEMOS
 
+    def docs = DOCS
+
     def find(section, slug)
       list = { "charts" => charts, "demos" => demos }.fetch(section, components)
       list.find { |entry| entry.slug == slug }
     end
 
-    def all = components + charts + demos
+    def all = docs + components + charts + demos
 
     private
 

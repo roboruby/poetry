@@ -48,9 +48,11 @@
                   <%= poetry_icon(name: :house) %><span>Introduction</span>
                 <% end %>
               <% end %>
-              <%= poetry_sidebar_menu_item do %>
-                <%= poetry_sidebar_menu_button(href: theming_path, active: current_page?(theming_path)) do %>
-                  <%= poetry_icon(name: :palette) %><span>Theming</span>
+              <% DocsCatalog.docs.each do |entry| %>
+                <%= poetry_sidebar_menu_item do %>
+                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                    <%= poetry_icon(name: entry.icon) %><span><%= entry.title %></span>
+                  <% end %>
                 <% end %>
               <% end %>
             <% end %>

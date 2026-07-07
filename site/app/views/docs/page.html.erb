@@ -2,7 +2,7 @@
 <% content_for :breadcrumb do %>
   <%= poetry_breadcrumb do |crumb| %>
     <% crumb.with_item("Docs", href: root_path) %>
-    <% crumb.with_item(@entry.section.capitalize) %>
+    <% crumb.with_item(@entry.section.capitalize) unless @entry.section == "docs" %>
     <% crumb.with_item(@entry.title) %>
   <% end %>
 <% end %>

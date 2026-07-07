@@ -36,11 +36,24 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
   test "the gallery is fully populated - every page carries at least one example" do
     # (The docs/page Empty branch covers FUTURE registry additions; since
     # the 71-agent port there is no catalog entry without examples.)
-    DocsCatalog.all.each do |entry|
+    # The three GALLERY sections only: docs guides are prose-first pages
+    # (theming carries no example partials by design).
+    (DocsCatalog.components + DocsCatalog.charts + DocsCatalog.demos).each do |entry|
       dir = Rails.root.join("app/views/examples/#{entry.section}/#{entry.slug}")
 
       assert_predicate dir.glob("_*.html.erb"), :any?, "#{entry.path} has no example partials"
     end
+  end
+
+  test "the typography guide renders the upstream recipes as examples" do
+    get "/typography"
+
+    assert_response :success
+    assert_select "h1.scroll-m-20", text: /Taxing Laughter/
+    assert_select "h2[id=?]", "headings" # the example anchors feed search
+    assert_select "code.font-mono", minimum: 1
+    assert_select "[data-controller~=?]", "poetry--core--tabs"
+    assert_select "div.highlight", minimum: 7 # every recipe ships its source
   end
 
   test "an unknown slug is a 404, not a blank page" do
