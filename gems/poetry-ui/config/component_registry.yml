@@ -2532,6 +2532,9 @@ components:
     - name: align
       type: symbol
       default: start
+    - name: align_item_with_trigger
+      type: boolean
+      default: false
     - name: avoid_collisions
       type: boolean
       default: true

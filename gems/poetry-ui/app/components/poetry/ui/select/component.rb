@@ -194,6 +194,11 @@ module Poetry
         option :side_offset, :integer, default: 4
         option :avoid_collisions, :boolean, default: true
         option :loop, :boolean, default: false
+        # N13 W2: Base UI alignItemWithTrigger - the popup opens OVER the
+        # trigger with the selected item aligned on it (native-select feel);
+        # falls back to popper positioning on touch, viewport-edge triggers,
+        # or squeezed heights. Default off (the shadcn posture is popper).
+        option :align_item_with_trigger, :boolean, default: false
         option :dir, :symbol
         option :size, :symbol, default: :default
 
@@ -418,6 +423,7 @@ module Poetry
           select.with_value(:value, value.to_s)
           select.with_value(:modal, modal)
           select.with_value(:loop, loop)
+          select.with_value(:align_item_with_trigger, align_item_with_trigger)
           popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
           popper.register_controller
           popper.with_value(:side, side)
