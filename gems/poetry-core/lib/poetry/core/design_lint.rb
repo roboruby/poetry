@@ -300,6 +300,11 @@ module Poetry
 
       def type_scale_monotony(doc, styles, findings)
         nodes = doc.css(TEXT_ELEMENTS).select { |el| el.text.strip.length.positive? }
+        # Navigation chrome (pagination, menus) is legitimately uniform.
+        nodes = nodes.reject do |el|
+          el.name == "li" && el.ancestors.any? { |a| a.name == "nav" || a["role"] == "navigation" }
+        end
+        nodes = nodes.select { |el| rendered?(styles.call(el)) }
         return if nodes.size < 6
 
         sizes = nodes.filter_map { |el| styles.call(el)["font-size"] }.uniq
@@ -309,6 +314,16 @@ module Poetry
                             "#{nodes.size} text elements all render at #{sizes.first} - give the " \
                             "page a type hierarchy (text-xl+ headings, text-sm support)")
       end
+
+      # Boundary exemptions, each a deliberate design pattern, not slop:
+      # composite controls share surfaces (segmented buttons, toolbars);
+      # landmark regions may differ by a subtle tint (the sidebar rail);
+      # non-rendered elements (closed popups in the initial DOM) paint
+      # nothing.
+      INTERACTIVE_TAGS = %w[button a input select textarea].freeze
+      INTERACTIVE_ROLES = %w[button tab menuitem menuitemcheckbox menuitemradio option radio switch].freeze
+      LANDMARK_TAGS = %w[aside main nav header footer].freeze
+      LANDMARK_ROLES = %w[complementary main navigation banner contentinfo region].freeze
 
       def surface_boundaries(doc, styles, findings)
         doc.css("*").each do |parent|
@@ -324,7 +339,23 @@ module Poetry
         end
       end
 
+      def interactive?(element)
+        INTERACTIVE_TAGS.include?(element.name) || INTERACTIVE_ROLES.include?(element["role"])
+      end
+
+      def landmark?(element)
+        LANDMARK_TAGS.include?(element.name) || LANDMARK_ROLES.include?(element["role"])
+      end
+
+      def rendered?(computed)
+        computed["display"].to_s != "none" && computed["visibility"].to_s != "hidden"
+      end
+
       def check_boundary(first, second, styles, findings)
+        return if interactive?(first) && interactive?(second)
+        return if landmark?(first) || landmark?(second)
+        return unless rendered?(styles.call(first)) && rendered?(styles.call(second))
+
         bg_a = surface_color(styles.call(first))
         bg_b = surface_color(styles.call(second))
         return unless bg_a && bg_b
@@ -349,9 +380,13 @@ module Poetry
         color
       end
 
+      # Some computed-style engines (dommy) never aggregate the border-width
+      # shorthand - the per-side property is the reliable read.
       def bordered?(computed)
-        width = computed["border-width"].to_s
-        !width.empty? && width != "0px"
+        %w[border-width border-top-width].any? do |property|
+          width = computed[property].to_s
+          !width.empty? && width != "0px"
+        end
       end
 
       def shadowed?(computed)
