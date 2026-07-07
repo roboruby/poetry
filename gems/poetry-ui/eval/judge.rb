@@ -32,6 +32,8 @@ module Poetry
       VOTES_PER_ORDER = 3
       DEFAULT_MODEL = "claude-sonnet-5"
       POSITIONS = %w[first second].freeze
+      MALFORMED = "malformed"
+      MAX_VOTE_ATTEMPTS = 3
 
       class Error < StandardError; end
 
@@ -54,6 +56,11 @@ module Poetry
       # arms: exactly two entries, { "<arm id>" => { "capture" => <png path>,
       # "ledger" => { "<gate>" => true/false } } }. Returns the task verdict
       # record (votes, verdict, axis tallies, swap consistency).
+      #
+      # Blast radius rule (learned when call ~180 of a 186-call run raised):
+      # a vote that stays malformed after MAX_VOTE_ATTEMPTS becomes a
+      # DISCARDED vote - recorded, counted against swap-consistency, never
+      # fatal. Only staging/setup errors abort a pair.
       def judge_pair(task:, brief:, arms:)
         ids = arms.keys
         raise Error, "judge_pair needs exactly two arms, got #{ids.inspect}" unless ids.size == 2
@@ -61,16 +68,30 @@ module Poetry
         votes = %i[ab ba].flat_map do |order|
           pair = order == :ab ? ids : ids.reverse
           prompt = staged_prompt(task, order, brief, pair, arms)
-          Array.new(@votes_per_order) { normalize_vote(claude_vote(prompt), pair, order) }
+          Array.new(@votes_per_order) do
+            normalize_vote(claude_vote(prompt), pair, order)
+          rescue Error => e
+            { "overall" => MALFORMED, "axes" => {}, "order" => order.to_s,
+              "rationale" => "discarded: #{e.message[0, 200]}" }
+          end
         end
-        decision = self.class.decide(votes)
         { "brief" => brief, "arms" => ids, "votes" => votes,
-          "verdict" => decision[:verdict], "surviving_votes" => decision[:surviving],
-          "swap_consistency" => decision[:swap_consistency],
-          "axis_tallies" => self.class.axis_tallies(votes, ids) }
+          "axis_tallies" => self.class.axis_tallies(votes, ids) }.merge(self.class.tally(votes))
       end
 
       # --- the vote math (pure; unit-tested without the CLI) ---------------
+
+      # Fold a full vote set (malformed markers included) into the verdict
+      # fragment: malformed votes leave the decide pool but count against
+      # swap-consistency - a judge that can't emit a valid vote spent one.
+      def self.tally(votes)
+        valid = votes.reject { |vote| vote["overall"] == MALFORMED }
+        decision = decide(valid)
+        { "verdict" => decision[:verdict],
+          "surviving_votes" => decision[:surviving],
+          "swap_consistency" => votes.empty? ? 0.0 : (decision[:surviving].to_f / votes.size).round(3),
+          "malformed_votes" => votes.size - valid.size }
+      end
 
       # A verdict group survives only if it drew votes in BOTH presentation
       # orders; the majority of surviving votes decides; a tie between
@@ -154,12 +175,18 @@ module Poetry
         PROMPT
       end
 
-      # Pull the JSON object out of a model reply (tolerates code fences).
+      # Pull the JSON object out of a model reply. Tolerates code fences and
+      # the observed trailing-garbage shape (a dangling `,"` before the
+      # closing brace - seen live from the judge model mid-calibration).
       def self.extract_json(text)
         body = text[/\{.*\}/m]
         raise Error, "no JSON object in judge reply: #{text.inspect}" unless body
 
-        JSON.parse(body)
+        begin
+          JSON.parse(body)
+        rescue JSON::ParserError
+          JSON.parse(body.sub(/,\s*"?\s*\}\s*\z/, "}"))
+        end
       rescue JSON::ParserError => e
         raise Error, "unparseable judge reply (#{e.message}): #{text.inspect}"
       end
@@ -196,7 +223,8 @@ module Poetry
       end
 
       # One judge vote through the claude CLI - print mode, JSON envelope,
-      # Read-only toolbelt (the screenshots), one retry on a malformed vote.
+      # Read-only toolbelt (the screenshots); MAX_VOTE_ATTEMPTS tries before
+      # the caller downgrades the vote to a discarded one.
       def claude_vote(prompt, attempt: 1)
         command = "claude -p #{Shellwords.escape(prompt)} --output-format json " \
                   "--model #{Shellwords.escape(@model)} --allowedTools Read --max-turns 8 2>/dev/null"
@@ -209,7 +237,7 @@ module Poetry
         record_usage(envelope)
         self.class.extract_json(envelope.fetch("result"))
       rescue Error, JSON::ParserError => e
-        raise Error, "judge vote failed after retry: #{e.message}" if attempt >= 2
+        raise Error, "judge vote failed after #{attempt} attempts: #{e.message}" if attempt >= MAX_VOTE_ATTEMPTS
 
         claude_vote(prompt, attempt: attempt + 1)
       end

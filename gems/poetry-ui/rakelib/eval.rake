@@ -6,6 +6,10 @@
 # evidence honesty rule): click the trigger, screenshot whatever results.
 # An arm whose trigger does nothing captures that truth. Values are candidate
 # trigger texts tried in order (both arms' spellings).
+# Verdict classes that are not decisions (excluded from the decided-only
+# calibration rate).
+POETRY_JUDGE_UNDECIDED = %w[inconclusive error].freeze
+
 POETRY_EVAL_REVEAL = {
   "dialog" => ["Settings"],
   "overlay" => ["Delete API key"],
@@ -151,9 +155,21 @@ namespace :eval do
 
             [arm, { "capture" => png.to_s, "ledger" => spec["arms"][arm]["cross_arm"] }]
           end
-          record = judge.judge_pair(task: task, brief: spec["description"], arms: arms)
+          record = begin
+            judge.judge_pair(task: task, brief: spec["description"], arms: arms)
+          rescue Poetry::Eval::Judge::Error => e
+            # A task-level failure is a reported verdict class, not a run
+            # killer (the blast-radius lesson: call ~180 of 186 once raised
+            # and took the whole run's verdicts with it).
+            { "brief" => spec["description"], "arms" => arms.keys, "votes" => [],
+              "verdict" => "error", "surviving_votes" => 0, "swap_consistency" => 0.0,
+              "malformed_votes" => 0, "error" => e.message }
+          end
           mutex.synchronize do
             results[task] = record
+            # Crash insurance: the partial file makes a dead run inspectable.
+            Poetry::Ui.root.join("tmp/eval-judge-partial.json")
+                      .write(JSON.pretty_generate(results.sort.to_h))
             puts format("  %<task>-19s %<verdict>-14s swap-consistency %<swap>.2f",
                         task: task, verdict: record["verdict"], swap: record["swap_consistency"])
           end
@@ -162,7 +178,7 @@ namespace :eval do
     end
     workers.each(&:join)
 
-    decided = results.reject { |_, record| record["verdict"] == "inconclusive" }
+    decided = results.reject { |_, record| POETRY_JUDGE_UNDECIDED.include?(record["verdict"]) }
     agreement = decided.count { |_, record| record["verdict"] == "poetry" }
     payload = {
       "schema" => Poetry::Eval::Judge::SCHEMA,

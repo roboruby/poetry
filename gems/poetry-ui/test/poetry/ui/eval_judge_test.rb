@@ -132,6 +132,25 @@ module Poetry
         assert_raises(Poetry::Eval::Judge::Error) { Poetry::Eval::Judge.extract_json("no json here") }
       end
 
+      def test_extract_json_repairs_the_dangling_quote_the_judge_emitted_live
+        # Verbatim tail shape from the crashed calibration run: a trailing
+        # `,"` before the closing brace.
+        live = '{"overall":"second","axes":{"hierarchy":"first"},"rationale":"near-identical.","}'
+
+        assert_equal "second", Poetry::Eval::Judge.extract_json(live)["overall"]
+      end
+
+      def test_tally_discards_malformed_votes_without_killing_the_verdict
+        votes = Array.new(3) { vote_for("poetry", "ab") } + Array.new(2) { vote_for("poetry", "ba") } +
+                [{ "overall" => "malformed", "axes" => {}, "order" => "ba", "rationale" => "discarded: junk" }]
+        tally = Poetry::Eval::Judge.tally(votes)
+
+        assert_equal "poetry", tally["verdict"]
+        assert_equal 5, tally["surviving_votes"]
+        assert_equal 1, tally["malformed_votes"]
+        assert_in_delta 0.833, tally["swap_consistency"]
+      end
+
       def test_render_ledger_spells_out_pass_and_fail
         rendered = Poetry::Eval::Judge.render_ledger({ "renders" => true, "caption_present" => false })
 
