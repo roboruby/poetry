@@ -37,6 +37,7 @@ import NavigationMenuController from "@poetry/controllers/navigation_menu_contro
 import SidebarController from "@poetry/controllers/sidebar_controller"
 import CalendarController from "@poetry/controllers/calendar_controller"
 import DatePickerController from "@poetry/controllers/date_picker_controller"
+import DeferredController from "@poetry/controllers/deferred_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -72,6 +73,7 @@ export { default as NavigationMenuController } from "@poetry/controllers/navigat
 export { default as SidebarController } from "@poetry/controllers/sidebar_controller"
 export { default as CalendarController } from "@poetry/controllers/calendar_controller"
 export { default as DatePickerController } from "@poetry/controllers/date_picker_controller"
+export { default as DeferredController } from "@poetry/controllers/deferred_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -119,7 +121,8 @@ export const controllers = {
   "poetry--core--navigation-menu": NavigationMenuController,
   "poetry--core--sidebar": SidebarController,
   "poetry--core--calendar": CalendarController,
-  "poetry--core--date-picker": DatePickerController
+  "poetry--core--date-picker": DatePickerController,
+  "poetry--core--deferred": DeferredController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

@@ -250,6 +250,24 @@
     ],
     "events": []
   },
+  "poetry--core--deferred": {
+    "targets": [
+      "error",
+      "placeholder"
+    ],
+    "values": {
+      "src": {
+        "type": "String"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "retry"
+    ],
+    "events": []
+  },
   "poetry--core--dialog": {
     "targets": [
       "dialog"
