@@ -1,0 +1,17 @@
+<%# align_item_with_trigger: the popup opens OVER the trigger with the
+    selected item's text sitting on the trigger's text (native-select
+    feel) and the list scrolled to match. Falls back to plain popper
+    positioning on touch, near viewport edges, or when squeezed. %>
+<%= poetry_select(value: "nova", "aria-label": "Theme", align_item_with_trigger: true) do |select| %>
+  <% select.with_group(label: "Themes") do |group| %>
+    <% group.with_item(value: "default") { "Default" } %>
+    <% group.with_item(value: "vega") { "Vega" } %>
+    <% group.with_item(value: "nova") { "Nova" } %>
+    <% group.with_item(value: "mira") { "Mira" } %>
+    <% group.with_item(value: "rhea") { "Rhea" } %>
+    <% group.with_item(value: "maia") { "Maia" } %>
+    <% group.with_item(value: "luma") { "Luma" } %>
+    <% group.with_item(value: "lyra") { "Lyra" } %>
+    <% group.with_item(value: "sera") { "Sera" } %>
+  <% end %>
+<% end %>

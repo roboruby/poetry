@@ -1320,6 +1320,12 @@
     "path": "/components/select#default"
   },
   {
+    "title": "Aligned",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#aligned"
+  },
+  {
     "title": "Disabled",
     "page": "Select",
     "section": "components",
