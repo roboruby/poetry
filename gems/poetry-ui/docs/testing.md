@@ -122,3 +122,22 @@ The default gate holds all three design surfaces: the component templates
 committed DESIGN.md exports (`design:verify`). The eval's `design_slop`
 cross-arm gate runs the identical rules on every arm — the raw arms fail it
 on genuine slop; the poetry arms pass.
+
+## The eval tier — the thesis is a tested property
+
+Above everything sits the harness that measures whether the system works at
+all (completed): 31 frozen task pairs — a poetry arm and a
+realistic raw-Tailwind arm per component family — scored two ways.
+
+- **Mechanical** (deterministic, in the default gate): `rake eval:verify`
+  asserts every poetry arm passes every cross-arm gate and every diagnostic,
+  and every raw arm still fails at least one cross-arm gate — so the planted
+  failure modes survive gate evolution. `rake eval:scorecard` prints the full
+  card.
+- **Judged** (on demand, never in CI): `rake eval:capture` screenshots both
+  arms through the browser rig; `rake eval:judge` runs a blind, paired,
+  position-swapped LLM judge whose verdicts commit under `eval/results/`.
+  The frozen arms have known intended winners, so every judge run doubles as
+  the judge's own calibration — its agreement rate is in the verdicts file.
+
+Doctrine and cadence live in `eval/README.md`.

@@ -20,7 +20,10 @@ visual fragments under `themes/`.
 - `bundle exec rake design:lint` — design-slop, both tiers (AST + dommy DOM);
   `design:verify` gates the nine committed DESIGN.md exports
 - `bundle exec rubocop`
-- `bundle exec rake eval:scorecard` — frozen-arm mechanical eval
+- `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
+  green, every raw arm keeps its planted tell); `eval:scorecard` prints the
+  card. The judged half (`eval:capture` + `eval:judge`) is on-demand, never
+  CI — doctrine in `eval/README.md`.
 
 ## Layout
 
@@ -30,7 +33,8 @@ visual fragments under `themes/`.
   plans in `script/theme_port/plans/`
 - `docs/testing.md` — the three-tier testing doctrine (wiring / behavior /
   browser); `docs/*-port-ledger.txt` — per-theme residuals, kept current
-- `eval/` — the harness (arms + runner)
+- `eval/` — the harness: frozen arms + runner (mechanical), judge + captures
+  + committed results (judged); `eval/README.md` is the doctrine
 
 ## Known traps
 

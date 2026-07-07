@@ -81,6 +81,33 @@ namespace :eval do
          "(#{Poetry::Eval::Runner::TASKS.size} tasks, viewport #{POETRY_BROWSER_VIEWPORT.join("x")})"
   end
 
+  desc "The eval regression net (deterministic - in the default gate): every poetry arm passes " \
+       "every cross-arm gate and every diagnostic; every raw arm still fails at least one " \
+       "cross-arm gate, so the planted tells survive gate evolution"
+  task :verify do
+    poetry_ui_boot!
+    require_relative "../eval/runner"
+
+    card = Poetry::Eval::Runner.new.scorecard
+    failures = []
+    card["tasks"].each do |task, spec|
+      spec["arms"].each do |arm, result|
+        if result.key?("poetry_only_diagnostics")
+          broken = result["cross_arm"].reject { |_, pass| pass }.keys +
+                   result["poetry_only_diagnostics"].reject { |_, pass| pass }.keys
+          failures << "#{task}/#{arm} fails: #{broken.join(", ")}" unless broken.empty?
+        elsif result["cross_arm"].values.all?
+          failures << "#{task}/#{arm} passes every cross-arm gate - its planted tell is gone " \
+                      "(a gate rewrite stopped catching this arm's authored failure modes)"
+        end
+      end
+    end
+    abort "eval verify:\n  #{failures.join("\n  ")}" unless failures.empty?
+
+    puts "eval verify: #{card["tasks"].size} task pairs hold (poetry arms fully green, " \
+         "every raw arm still carries a tell)"
+  end
+
   desc "Run the paired LLM judge over the frozen eval arms (the claude CLI; needs eval/captures) " \
        "and write eval/results/<date>/judge-verdicts.json. POETRY_JUDGE_TASKS=a,b filters; " \
        "POETRY_JUDGE_MODEL, POETRY_JUDGE_CONCURRENCY, POETRY_JUDGE_DATE tune."
