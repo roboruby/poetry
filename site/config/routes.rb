@@ -12,6 +12,8 @@ Rails.application.routes.draw do
 
   get "theming" => "docs#theming", as: :theming
   get "typography" => "docs#typography", as: :typography
+  get "deferred" => "docs#deferred", as: :deferred
+  get "deferred/fragment" => "docs#deferred_fragment", as: :deferred_fragment
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart

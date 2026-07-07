@@ -78,6 +78,30 @@
     "path": "/typography#small"
   },
   {
+    "title": "Deferred Regions",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred"
+  },
+  {
+    "title": "Error retry",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#error-retry"
+  },
+  {
+    "title": "In tabs",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#in-tabs"
+  },
+  {
+    "title": "Lazy",
+    "page": "Deferred Regions",
+    "section": "docs",
+    "path": "/deferred#lazy"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",
@@ -616,6 +640,18 @@
     "page": "Date Picker",
     "section": "components",
     "path": "/components/date-picker#range"
+  },
+  {
+    "title": "Deferred",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred"
+  },
+  {
+    "title": "Default",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#default"
   },
   {
     "title": "Dialog",

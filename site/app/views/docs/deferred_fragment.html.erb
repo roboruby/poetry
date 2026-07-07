@@ -1,0 +1,11 @@
+<%= turbo_frame_tag(request.headers["Turbo-Frame"] || "fragment") do %>
+  <%= poetry_card do %>
+    <div class="flex flex-col gap-1 p-4">
+      <p class="text-sm font-medium">Deploy finished</p>
+      <p class="text-sm text-muted-foreground">
+        poetry-docs · main · 42s — fetched <%= Time.current.strftime("%H:%M:%S") %>,
+        after the frame became visible.
+      </p>
+    </div>
+  <% end %>
+<% end %>

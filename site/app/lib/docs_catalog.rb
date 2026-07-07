@@ -23,7 +23,11 @@ class DocsCatalog
     Entry.new(slug: "typography", title: "Typography", section: "docs", icon: :type,
               description: "Heading, paragraph, list, table, and inline-text recipes on poetry " \
                            "tokens — class strings transcribed from upstream at the pin. Fonts " \
-                           "ride the theme: the same markup goes mono under lyra, serif under sera.")
+                           "ride the theme: the same markup goes mono under lyra, serif under sera."),
+    Entry.new(slug: "deferred", title: "Deferred Regions", section: "docs", icon: :timer,
+              description: "poetry_deferred(src:) — Turbo owns the loading physics (lazy fetches " \
+                           "on visibility, so hidden Tabs panels and HoverCards defer for free); " \
+                           "poetry owns the states: a Skeleton placeholder and a retryable error card.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page

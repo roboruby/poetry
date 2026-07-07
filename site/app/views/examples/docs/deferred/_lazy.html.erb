@@ -1,0 +1,6 @@
+<%# The frame fetches when it becomes visible; until then the Skeleton
+    placeholder holds the box. The endpoint echoes the requesting frame id
+    (the standard Turbo pattern), so one fragment route serves any region. %>
+<div class="w-full max-w-md">
+  <%= poetry_deferred(src: deferred_fragment_path, id: "demo-activity") %>
+</div>
