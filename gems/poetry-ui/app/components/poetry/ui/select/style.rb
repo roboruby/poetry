@@ -20,8 +20,10 @@ module Poetry
                           "origin-(--radix-select-content-transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
-        element :viewport, "p-1 h-[var(--radix-select-trigger-height)] w-full " \
-                           "min-w-[var(--radix-select-trigger-width)] scroll-my-1"
+        # Padding/scroll-margin are theme-owned via cn-select-viewport
+        # (W5 roster pass; sera runs p-1.5). Sizing vars stay structural.
+        element :viewport, "cn-select-viewport h-[var(--radix-select-trigger-height)] w-full " \
+                           "min-w-[var(--radix-select-trigger-width)]"
 
         element :item, "cn-select-item relative flex w-full cursor-default items-center " \
                        "outline-hidden select-none data-[disabled]:pointer-events-none " \

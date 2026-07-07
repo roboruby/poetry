@@ -169,7 +169,15 @@ PLAN = {
 
   # --- drawer: no floating frame (that is luma's); square panel, borders
   #     per side via poetry's own direction rules --------------------------
-  "cn-drawer-content" => "bg-popover text-popover-foreground text-xs/relaxed",
+  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # values = upstream lyra drawer-overlay at d0fae528.
+  "cn-drawer-content" =>
+    "bg-popover text-popover-foreground text-xs/relaxed " \
+    "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs",
+
+  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # explicit String; default geometry unchanged).
+  "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-direction-down" => "rounded-none border-t",
   "cn-drawer-direction-left" => "rounded-none border-r",
   "cn-drawer-direction-right" => "rounded-none border-l",

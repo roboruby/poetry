@@ -16,6 +16,10 @@ module Poetry
       class Style < Poetry::Core::Style
         # open:flex, not flex: never defeat the UA's dialog:not([open])
         # display:none (the Dialog browser-pass lesson).
+        # Scrim color + blur are theme-owned (W5 roster pass): each
+        # themes/<name>.css carries backdrop:bg-* / backdrop-blur-* on
+        # .cn-drawer-content. Only the swipe machinery (transition +
+        # opacity calc) stays structural here.
         element :content,
                 "cn-drawer-content relative m-0 open:flex min-h-0 flex-col " \
                 "outline-none select-none will-change-transform " \
@@ -25,10 +29,9 @@ module Poetry
                 "data-starting-style:transform-(--closed-transform) " \
                 "data-ending-style:transform-(--closed-transform) " \
                 "data-ending-style:duration-[calc(var(--drawer-swipe-strength,1)*400ms)] " \
-                "backdrop:bg-black/10 backdrop:transition-opacity backdrop:duration-450 " \
+                "backdrop:transition-opacity backdrop:duration-450 " \
                 "backdrop:opacity-[calc(1-var(--drawer-swipe-progress,0))] " \
-                "data-swiping:backdrop:transition-none " \
-                "supports-backdrop-filter:backdrop:backdrop-blur-xs"
+                "data-swiping:backdrop:transition-none"
 
         # The dismiss-direction geometry: top-layer edge margins + the
         # direction's closed transform, with the controller's positive

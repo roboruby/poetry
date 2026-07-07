@@ -179,7 +179,16 @@ PLAN = {
 
   # --- drawer: square panel, borders per side via poetry's own direction
   #     rules ---------------------------------------------------------------
-  "cn-drawer-content" => "bg-popover text-popover-foreground text-sm",
+  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # values = upstream sera drawer-overlay at d0fae528.
+  "cn-drawer-content" =>
+    "bg-popover text-popover-foreground text-sm " \
+    "backdrop:bg-black/20 supports-backdrop-filter:backdrop:backdrop-blur-sm",
+
+  # W5 roster pass: upstream sera pads menus per-group (cn-select-group
+  # p-1.5 scroll-my-1.5); poetry's single viewport carries it menu-level,
+  # closing the W4 KNOWN-DELTA. Poetry-only name - explicit String (W4 lesson).
+  "cn-select-viewport" => "p-1.5 scroll-my-1.5",
   "cn-drawer-direction-down" => "rounded-none border-t",
   "cn-drawer-direction-left" => "rounded-none border-r",
   "cn-drawer-direction-right" => "rounded-none border-l",

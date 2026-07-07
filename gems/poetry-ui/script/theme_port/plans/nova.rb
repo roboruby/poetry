@@ -52,7 +52,13 @@ PLAN = {
   "cn-combobox-trigger" => :default,
   "cn-drawer-swipe-handle" => :default,
   "cn-switch-thumb" => :default,
-  "cn-tabs-trigger" => :default,
+  # W5 roster pass: only vega ships the default-variant active shadow-sm
+  # upstream at d0fae528 (settled-read receipt) - default keeps its ny-v4
+  # trait, the ported themes drop it.
+  "cn-tabs-trigger" => {
+    base: :default,
+    drop: %w[group-data-[variant=default]/tabs-list:data-active:shadow-sm]
+  },
 
   # --- buttons: nova sizes + the >svg:first/last-child icon-side twins ---
   "cn-button-size-default" =>
@@ -119,7 +125,15 @@ PLAN = {
 
   # --- drawer: poetry per-direction rules carry geometry (nova's vaul
   #     chains equal default's edge treatment exactly) --------------------
-  "cn-drawer-content" => "bg-popover text-sm text-popover-foreground",
+  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # values = upstream nova drawer-overlay at d0fae528.
+  "cn-drawer-content" =>
+    "bg-popover text-sm text-popover-foreground " \
+    "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs",
+
+  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # explicit String; default geometry unchanged).
+  "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-0.5 p-4 md:gap-0.5 md:text-left",
   "cn-drawer-footer" => :default,
 

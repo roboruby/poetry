@@ -1226,7 +1226,7 @@ components:
     - title
     - description
     - body
-    capsule: 564303e21866
+    capsule: dc83860da928
     controllers:
     - identifier: poetry--core--drawer
       targets:
@@ -2468,7 +2468,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: c10d5525ec5c
+    capsule: 5ac2c0e96e2a
     controllers:
     - identifier: poetry--core--popper
       targets:

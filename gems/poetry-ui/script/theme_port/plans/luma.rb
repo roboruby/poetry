@@ -132,7 +132,12 @@ PLAN = {
   #     (poetry inlines open:flex), and poetry keeps its own sizing. -----
   "cn-drawer-content" =>
     "bg-transparent p-4 text-sm before:absolute before:inset-2 before:-z-10 before:rounded-4xl " \
-    "before:border before:border-border before:bg-popover before:shadow-xl",
+    "before:border before:border-border before:bg-popover before:shadow-xl " \
+    "backdrop:bg-black/30 supports-backdrop-filter:backdrop:backdrop-blur-sm",
+
+  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # explicit String; default geometry unchanged).
+  "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-0.5 p-4 md:gap-1.5 md:text-left",
   "cn-drawer-footer" => "gap-2 p-4",
 
@@ -183,11 +188,12 @@ PLAN = {
   # --- tabs: poetry's full active/line machinery, luma pill geometry;
   #     dark:data-active:border-input dropped (luma keeps borders
   #     transparent everywhere - upstream bangs it, we drop honestly) -----
+  # W5 roster pass: default-variant active shadow-sm dropped (only vega
+  # ships it upstream at d0fae528; settled-read receipt).
   "cn-tabs-trigger" =>
     "gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-medium text-foreground/60 " \
     "hover:text-foreground has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 " \
     "dark:text-muted-foreground dark:hover:text-foreground " \
-    "group-data-[variant=default]/tabs-list:data-active:shadow-sm " \
     "group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 " \
     "group-data-[variant=line]/tabs-list:bg-transparent " \
     "group-data-[variant=line]/tabs-list:data-active:bg-transparent " \

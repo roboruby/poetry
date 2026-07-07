@@ -124,7 +124,16 @@ PLAN = {
     "data-open:animate-in data-closed:animate-out #{BACKDROP}",
 
   # --- drawer: maia does not speak to the popup; poetry idiom kept -------
-  "cn-drawer-content" => :default,
+  # W5 roster pass: drawer scrim theme-owned; upstream maia drawer-overlay
+  # runs black/80 (heavier than its dialogs - same posture as mira).
+  "cn-drawer-content" => {
+    base: :default,
+    sub: { "backdrop:bg-black/10" => "backdrop:bg-black/80" }
+  },
+
+  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # explicit String; default geometry unchanged).
+  "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-0.5 p-4 md:gap-1.5 md:text-left",
   "cn-drawer-footer" => "gap-2 p-4",
 
@@ -166,11 +175,12 @@ PLAN = {
   # --- tabs: poetry's full active/line machinery, maia geometry (the
   #     whole-cluster discipline; nova/mira kept default radius so W2's
   #     :default was a coincidence, not the rule) --------------------------
+  # W5 roster pass: default-variant active shadow-sm dropped (only vega
+  # ships it upstream at d0fae528; settled-read receipt).
   "cn-tabs-trigger" =>
     "gap-1.5 rounded-xl border border-transparent px-2 py-1 text-sm font-medium text-foreground/60 " \
     "hover:text-foreground has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 " \
     "dark:text-muted-foreground dark:hover:text-foreground " \
-    "group-data-[variant=default]/tabs-list:data-active:shadow-sm " \
     "group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 " \
     "group-data-[variant=line]/tabs-list:bg-transparent " \
     "group-data-[variant=line]/tabs-list:data-active:bg-transparent " \

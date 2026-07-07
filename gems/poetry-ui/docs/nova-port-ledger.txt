@@ -375,3 +375,8 @@ cn-sidebar-rail: dropped: poetry's sidebar DOM (N9) has no such part
 cn-table-container: dropped: container is structural inline in poetry
 cn-tooltip-arrow-logical: dropped: Base UI logical-side (side=inline-start/end) values poetry's floating controller never emits
 cn-tooltip-content-logical: dropped: Base UI logical-side (side=inline-start/end) values poetry's floating controller never emits
+
+## W5 roster pass (2026-07-06)
+cn-tabs-trigger: default-variant active shadow-sm DROPPED (W4 panel discovery; settled-read receipt: only vega ships the pair upstream at d0fae528 - the W2/W3 panels never measured the 3px ramp).
+cn-drawer-content: scrim (native ::backdrop color+blur) moved from the inline dictionary to this fragment at upstream nova drawer-overlay values (backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs). Swipe machinery (transition/opacity calc) stays structural in drawer/style.rb.
+cn-select-viewport: NEW poetry-only hook (dictionary 319->320); padding moved theme-side (p-1 scroll-my-1).
