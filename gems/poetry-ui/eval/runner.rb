@@ -716,6 +716,15 @@ module Poetry
             Gate.new(:real_link, :cross_arm, lambda { |doc, _html|
               doc.css("a").any? && doc.css("a").all? { |a| a["href"].to_s.strip.length.positive? }
             }),
+            Gate.new(:links_have_accessible_names, :cross_arm, lambda { |doc, _html|
+              # The calibration catch (N15): a block bound to Component.new
+              # instead of render left the anchor EMPTY - present in the DOM
+              # (real_link passed) but invisible and nameless on screen. The
+              # judge's unanimous dissent found it; this gate keeps it found.
+              doc.css("a").all? do |a|
+                a.text.strip.length.positive? || a["aria-label"].to_s.strip.length.positive?
+              end
+            }),
             Gate.new(:badge_not_interactive, :cross_arm, lambda { |doc, _html|
               badge = doc.xpath(".//*[normalize-space(text())='beta']").first
               !badge.nil? && !INTERACTIVE_TAGS.include?(badge.name) &&

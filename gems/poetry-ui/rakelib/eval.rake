@@ -178,11 +178,30 @@ namespace :eval do
     end
     workers.each(&:join)
 
+    generated_on = ENV.fetch("POETRY_JUDGE_DATE", Date.today.iso8601)
+    dir = Poetry::Ui.root.join("eval/results", generated_on)
+    dir.mkpath
+    path = dir.join("judge-verdicts.json")
+
+    usage = { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
+    # A subset run (POETRY_JUDGE_TASKS) MERGES into the same-date file:
+    # re-judged tasks replace their records, the rest stand, usage
+    # accumulates - a single-task re-run never clobbers a calibration.
+    if path.exist?
+      previous = JSON.parse(path.read)
+      results = previous.fetch("tasks", {}).merge(results)
+      before = previous.dig("summary", "usage") || {}
+      usage = {
+        "judge_calls" => before.fetch("judge_calls", 0) + usage["judge_calls"],
+        "total_cost_usd" => (before.fetch("total_cost_usd", 0.0) + usage["total_cost_usd"]).round(4)
+      }
+    end
+
     decided = results.reject { |_, record| POETRY_JUDGE_UNDECIDED.include?(record["verdict"]) }
     agreement = decided.count { |_, record| record["verdict"] == "poetry" }
     payload = {
       "schema" => Poetry::Eval::Judge::SCHEMA,
-      "generated_on" => ENV.fetch("POETRY_JUDGE_DATE", Date.today.iso8601),
+      "generated_on" => generated_on,
       "model" => judge.model,
       "votes_per_order" => judge.votes_per_order,
       "axes" => Poetry::Eval::Judge::AXES,
@@ -191,7 +210,7 @@ namespace :eval do
         "verdicts" => results.values.group_by { |record| record["verdict"] }.transform_values(&:size),
         "mean_swap_consistency" =>
           (results.values.sum { |record| record["swap_consistency"] } / results.size).round(3),
-        "usage" => { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
+        "usage" => usage
       },
       "calibration" => {
         "note" => "Frozen arms have known intended winners (the raw arms were authored WITH " \
@@ -201,16 +220,13 @@ namespace :eval do
         "agreement_rate_decided" => "#{agreement}/#{decided.size}"
       }
     }
-    dir = Poetry::Ui.root.join("eval/results", payload["generated_on"])
-    dir.mkpath
-    path = dir.join("judge-verdicts.json")
     path.write(JSON.pretty_generate(payload))
 
     puts "verdicts: #{payload["summary"]["verdicts"].map { |verdict, n| "#{verdict} #{n}" }.join(", ")}"
     puts "calibration agreement: #{payload["calibration"]["agreement_rate"]} " \
          "(#{payload["calibration"]["agreement_rate_decided"]} of decided)"
     puts "mean swap-consistency: #{payload["summary"]["mean_swap_consistency"]}"
-    puts "usage: #{judge.calls} judge calls, $#{payload["summary"]["usage"]["total_cost_usd"]}"
+    puts "usage: #{judge.calls} judge calls this run, $#{payload["summary"]["usage"]["total_cost_usd"]} cumulative"
     puts "verdicts written: #{path}"
   end
 

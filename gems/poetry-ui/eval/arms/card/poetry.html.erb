@@ -6,6 +6,8 @@
   <% card.with_action do %>
     <%= poetry_badge(variant: :secondary) { "beta" } %>
   <% end %>
+  <% card.with_footer do %>
+    <%= poetry_link(href: "/plans/team") { "Learn more" } %>
+  <% end %>
   Invite unlimited collaborators and manage roles from one place.
-  <%= render Poetry::Ui::Link::Component.new(href: "/plans/team") { "Learn more" } %>
 <% end %>
