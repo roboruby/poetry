@@ -58,7 +58,8 @@ export default class SelectController extends Controller {
     value: { type: String, default: "" },
     modal: { type: Boolean, default: true },
     loop: { type: Boolean, default: false },
-    typeaheadTimeout: { type: Number, default: 1000 }
+    typeaheadTimeout: { type: Number, default: 1000 },
+    alignItemWithTrigger: { type: Boolean, default: false }
   }
 
   #connected = false
@@ -315,9 +316,184 @@ export default class SelectController extends Controller {
       if (!this.#isOpen()) return
 
       this.#focusSelected(content)
+      // AFTER #focusSelected: the aligned scroll write must win over the
+      // focus scroll-into-view.
+      if (this.#alignEligible()) this.#alignWithTrigger(content)
       this.syncScrollButtons()
       this.dispatch("open", { prefix: EVENT_PREFIX, detail: seed ? { reason, seed } : { reason } })
     })
+  }
+
+  // --- alignItemWithTrigger (N13 W2: the Base UI SelectPopup algorithm,
+  // ported from SelectPositioner/SelectPopup @ the N6 checkout) ---
+  //
+  // The popup opens OVER the trigger with the selected item's TEXT center
+  // aligned to the trigger's value-text center (native <select> feel): the
+  // content stretches from the trigger line to the viewport bottom (or top,
+  // when the selection sits deep in a long list) and the LIST SCROLLS so
+  // the item lands on the trigger. Not a popper placement: the content is
+  // fixed-positioned by this routine and popper's writes are suppressed by
+  // the data-align-item-with-trigger attribute (its #update bails). Base UI
+  // deltas kept: touch environments fall back (openMethod!=='touch'
+  // approximated by pointer:coarse), trigger within 20px of a viewport
+  // edge falls back, a popup squeezed under min(scrollHeight, 100px) falls
+  // back - all to plain popper positioning for THAT open. Skipped
+  // deliberately: WebKit pinch-zoom detection and scale normalization.
+
+  #alignEligible() {
+    return this.alignItemWithTriggerValue && !window.matchMedia?.("(pointer: coarse)")?.matches
+  }
+
+  #alignWithTrigger(content) {
+    const trigger = this.#trigger()
+
+    if (!trigger) return
+
+    // Aligned mode has no side: kill popper's writes for this open (the
+    // attribute gates popper#update) and the data-side entrance variants.
+    content.setAttribute("data-align-item-with-trigger", "")
+    content.removeAttribute("data-side")
+
+    const placed = this.#placeAligned(content, trigger)
+
+    if (!placed) {
+      content.removeAttribute("data-align-item-with-trigger")
+      this.#clearAlignedStyles(content)
+    }
+  }
+
+  #placeAligned(content, trigger) {
+    const scroller = content.querySelector(VIEWPORT_SELECTOR) ?? content
+    const selected =
+      content.querySelector(`${ITEM_SELECTOR}[data-selected]`) ?? content.querySelector(ITEM_SELECTOR)
+    const textElement = selected?.querySelector(ITEM_TEXT_SELECTOR) ?? selected
+    const valueElement = trigger.querySelector(VALUE_SELECTOR)
+
+    if (!selected) return false
+
+    // Aligned mode ships NO entrance (Base UI renderedSide "none"), and
+    // measuring demands it: the presence starting-style is a STATIC
+    // transform (scale) that animation/transition suppression cannot
+    // remove - it distorts every rect read this routine makes (caught
+    // live: the correction pass measured dy~0 through a scale(.95) and
+    // the popup settled 100px low). Suppress all three for the whole
+    // open; the fallback path restores them for popper mode, and
+    // #clearAlignedStyles clears them on close.
+    const previousAnimation = content.style.animation
+    const previousTransition = content.style.transition
+    const previousTransform = content.style.transform
+    content.style.animation = "none"
+    content.style.transition = "none"
+    content.style.transform = "none"
+
+    const styles = getComputedStyle(content)
+    const marginTop = parseFloat(styles.marginTop) || 10
+    const marginBottom = parseFloat(styles.marginBottom) || 10
+    const minHeight = parseFloat(styles.minHeight) || 100
+    const borderBottom = parseFloat(styles.borderBottomWidth) || 0
+    const collisionThreshold = 20
+    const paddingX = 5
+
+    const triggerRect = trigger.getBoundingClientRect()
+    const contentRect = content.getBoundingClientRect()
+    const viewportHeight = document.documentElement.clientHeight - marginTop - marginBottom
+    const viewportWidth = document.documentElement.clientWidth
+    const availableBeneathTrigger = viewportHeight - triggerRect.bottom + triggerRect.height
+
+    let alignedLeft = triggerRect.left
+    let offsetY = 0
+
+    if (textElement && valueElement) {
+      const valueRect = valueElement.getBoundingClientRect()
+      const textRect = textElement.getBoundingClientRect()
+
+      alignedLeft = contentRect.left + (valueRect.left - textRect.left)
+      const valueCenterFromTriggerTop = valueRect.top - triggerRect.top + valueRect.height / 2
+      const textCenterFromContentTop = textRect.top - contentRect.top + textRect.height / 2
+
+      offsetY = textCenterFromContentTop - valueCenterFromTriggerTop
+    }
+
+    const idealHeight = availableBeneathTrigger + offsetY + marginBottom + borderBottom
+    let height = Math.min(viewportHeight, idealHeight)
+    const scrollTop = idealHeight - height
+    const maxScrollTop = scroller.scrollHeight - scroller.clientHeight
+
+    const fallback =
+      triggerRect.top < collisionThreshold ||
+      triggerRect.bottom > viewportHeight - collisionThreshold ||
+      Math.ceil(height) < Math.min(scroller.scrollHeight, minHeight)
+
+    if (fallback) {
+      content.style.animation = previousAnimation
+      content.style.transition = previousTransition
+      content.style.transform = previousTransform
+      return false
+    }
+
+    // The dictionary's cn-select-viewport consumes these (shadcn/Radix
+    // parity vars) - aligned mode is what they exist for.
+    content.style.setProperty("--radix-select-trigger-height", `${triggerRect.height}px`)
+    content.style.setProperty("--radix-select-trigger-width", `${triggerRect.width}px`)
+
+    content.style.position = "fixed"
+    content.style.left = `${Math.min(Math.max(alignedLeft, paddingX), viewportWidth - paddingX - contentRect.width)}px`
+    content.style.maxHeight = "none"
+    content.style.marginTop = `${marginTop}px`
+    content.style.marginBottom = `${marginBottom}px`
+
+    if (scrollTop >= maxScrollTop - 1) {
+      // Selection deep in the list: anchor to the top edge instead and pin
+      // the list at its end (Base UI's top-positioned branch).
+      const topOffset = Math.max(0, viewportHeight - idealHeight)
+      height = Math.min(viewportHeight, contentRect.height) - (scrollTop - maxScrollTop)
+      content.style.top = `${contentRect.height >= viewportHeight - marginTop ? 0 : topOffset}px`
+      content.style.bottom = ""
+      content.style.height = `${Math.max(minHeight, height)}px`
+      scroller.scrollTop = scroller.scrollHeight - scroller.clientHeight
+    } else {
+      content.style.top = ""
+      content.style.bottom = "0"
+      content.style.height = `${Math.max(minHeight, height)}px`
+      scroller.scrollTop = scrollTop
+    }
+
+    // Second pass: Base UI portals its positioner to <body>, so fixed
+    // coordinates ARE viewport coordinates. poetry keeps the content in
+    // place, so a transformed/filtered ancestor becomes the fixed
+    // containing block and every coordinate above lands shifted by that
+    // box's offset (caught live: a docs example frame put the item 112px
+    // under the trigger). Measure the ACTUAL text/value deltas after
+    // placement and correct both axes - containing-block-proof by
+    // construction.
+    if (textElement && valueElement) {
+      const valueRect = valueElement.getBoundingClientRect()
+      const placedText = textElement.getBoundingClientRect()
+      const dy = (placedText.top + placedText.height / 2) - (valueRect.top + valueRect.height / 2)
+      const dx = placedText.left - valueRect.left
+
+      if (Math.abs(dy) > 0.5) {
+        if (content.style.bottom === "0px" || content.style.bottom === "0") {
+          content.style.bottom = `${parseFloat(content.style.bottom || "0") + dy}px`
+        } else {
+          content.style.top = `${parseFloat(content.style.top || "0") - dy}px`
+        }
+      }
+      if (Math.abs(dx) > 0.5) {
+        content.style.left = `${parseFloat(content.style.left || "0") - dx}px`
+      }
+    }
+
+    return true
+  }
+
+  #clearAlignedStyles(content) {
+    for (const property of ["position", "left", "top", "bottom", "height", "max-height",
+                            "margin-top", "margin-bottom", "animation", "transition", "transform"]) {
+      content.style.removeProperty(property)
+    }
+    content.style.removeProperty("--radix-select-trigger-height")
+    content.style.removeProperty("--radix-select-trigger-width")
   }
 
   #hide(reason, { restoreFocus = true } = {}) {
@@ -335,6 +511,10 @@ export default class SelectController extends Controller {
     if (trigger) setState(trigger, "popup-closed")
     content.removeAttribute("data-open-reason")
     content.removeAttribute("data-open-seed")
+    if (content.hasAttribute("data-align-item-with-trigger")) {
+      content.removeAttribute("data-align-item-with-trigger")
+      this.#clearAlignedStyles(content)
+    }
     this.openValue = false
 
     this.#cancelExit = exitPresence(content, {

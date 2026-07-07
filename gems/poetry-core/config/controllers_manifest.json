@@ -769,6 +769,10 @@
       "typeaheadTimeout": {
         "type": "Number",
         "default": 1000
+      },
+      "alignItemWithTrigger": {
+        "type": "Boolean",
+        "default": false
       }
     },
     "classes": [],

@@ -154,6 +154,9 @@ export default class PopperController extends Controller {
     const content = this.#content()
 
     if (!anchor || !content) return
+    // Select's alignItemWithTrigger mode (N13 W2) fixed-positions the
+    // content itself; while the attribute is on, popper must not fight it.
+    if (content.hasAttribute("data-align-item-with-trigger")) return
 
     const arrowElement = this.#arrow()
     const generation = this.#generation
