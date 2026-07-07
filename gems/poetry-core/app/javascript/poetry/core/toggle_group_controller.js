@@ -22,6 +22,10 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 const ITEM_SELECTOR = '[data-slot="toggle-group-item"]'
 
 export default class ToggleGroupController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:toggle-group:change"]
+
   static values = {
     type: { type: String, default: "single" }
   }

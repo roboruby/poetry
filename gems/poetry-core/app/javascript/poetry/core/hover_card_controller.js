@@ -29,6 +29,10 @@ const EVENT_PREFIX = "poetry:hover-card"
 const DISMISSABLE = "poetry--core--dismissable"
 
 export default class HoverCardController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:hover-card:closed", "poetry:hover-card:open"]
+
   static values = {
     open: { type: Boolean, default: false },
     openDelay: { type: Number, default: 700 },

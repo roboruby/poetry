@@ -59,6 +59,13 @@ const USER_SCROLL_KEYS = new Set([
 // flags need addEventListener) - do NOT also declare them as data-actions.
 // The jump button IS a data-action: click->...#jump.
 export default class extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = [
+    "poetry--core--message-scroller:mode", "poetry--core--message-scroller:pinned", "poetry--core--message-scroller:scrollable",
+    "poetry--core--message-scroller:unpinned", "poetry--core--message-scroller:visibility"
+  ]
+
   static targets = ["viewport", "content", "spacer", "button"]
   static values = {
     // Source-faithful default (the contract): the poetry ViewComponent

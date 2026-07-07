@@ -38,6 +38,10 @@ const MENU_SCOPE_SELECTOR = `[data-controller~="${MENU}"]`
 const EVENT_PREFIX = "poetry:menubar"
 
 export default class MenubarController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:menubar:value-changed"]
+
   static values = {
     value: { type: String, default: "" },
     loop: { type: Boolean, default: false }

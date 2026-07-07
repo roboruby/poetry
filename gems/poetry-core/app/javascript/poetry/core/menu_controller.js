@@ -69,6 +69,13 @@ const SUB_OPEN_DELAY = 100
 const SUB_CLOSE_DELAY = 300
 
 export default class MenuController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = [
+    "poetry:menu:change", "poetry:menu:closed", "poetry:menu:edge-navigate",
+    "poetry:menu:open", "poetry:menu:select"
+  ]
+
   static values = {
     open: { type: Boolean, default: false },
     modal: { type: Boolean, default: true },

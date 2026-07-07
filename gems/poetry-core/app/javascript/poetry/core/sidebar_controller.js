@@ -21,6 +21,10 @@ import { setState } from "@poetry/controllers/helpers/state"
 // sheet presence path; closing holds through the slide-out, then moves
 // the children back. Crossing to desktop while open restores INSTANTLY.
 export default class SidebarController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--sidebar:mobile-toggle", "poetry--core--sidebar:toggle"]
+
   static targets = ["sidebar", "inner", "mobileDialog", "mobileInner"]
   static values = {
     open: { type: Boolean, default: true },

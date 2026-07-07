@@ -23,6 +23,10 @@ const ITEM_SELECTOR = '[data-slot="radio-group-item"]'
 const INDICATOR_SELECTOR = '[data-slot="radio-group-indicator"]'
 
 export default class RadioGroupController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:radio-group:change"]
+
   static values = {
     value: { type: String, default: "" }
   }

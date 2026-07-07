@@ -50,6 +50,10 @@ const EVENT_PREFIX = "poetry:command"
 const STATUS_DEBOUNCE = 100
 
 export default class CommandController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:command:filter", "poetry:command:highlight", "poetry:command:select"]
+
   static values = {
     // false = SERVER-DRIVEN mode (cmdk shouldFilter=false): never hide -
     // the host re-renders the list (Turbo frame) and Command only runs

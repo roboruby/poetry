@@ -140,7 +140,8 @@ module Poetry
             "identifier" => identifier,
             "targets" => definition["targets"] || [],
             "values" => (definition["values"] || {}).keys.sort,
-            "actions" => (definition["methods"] || []) - LIFECYCLE_METHODS
+            "actions" => (definition["methods"] || []) - LIFECYCLE_METHODS,
+            "events" => definition["events"] || []
           }
         end
       end

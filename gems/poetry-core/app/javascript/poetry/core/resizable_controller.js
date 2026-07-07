@@ -16,6 +16,10 @@ const DEFAULT_MIN = 10
 const DEFAULT_MAX = 90
 
 export default class ResizableController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--resizable:resize"]
+
   static values = {
     orientation: { type: String, default: "horizontal" }
   }

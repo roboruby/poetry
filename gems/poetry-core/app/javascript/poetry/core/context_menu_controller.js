@@ -30,6 +30,10 @@ const ANCHOR_POINT_ATTRIBUTE = "data-poetry--core--popper-anchor-point-value"
 const EVENT_PREFIX = "poetry:context-menu"
 
 export default class ContextMenuController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:context-menu:open"]
+
   static values = {
     longPressDelay: { type: Number, default: 700 },
     disabled: { type: Boolean, default: false }

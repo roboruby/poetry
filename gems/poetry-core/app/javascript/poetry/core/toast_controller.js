@@ -35,6 +35,10 @@ const PAUSE_REASONS = {
 let toastSequence = 0
 
 export default class ToastController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:toast:dismiss", "poetry:toast:show"]
+
   static targets = ["action", "close"]
   static values = {
     duration: { type: Number, default: 5000 },

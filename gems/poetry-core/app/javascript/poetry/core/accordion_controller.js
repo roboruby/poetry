@@ -9,6 +9,10 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // --accordion-panel-height var feeds the vendored accordion-down/up
 // keyframes.
 export default class extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--accordion:change"]
+
   static values = {
     type: { type: String, default: "single" },
     collapsible: { type: Boolean, default: false }

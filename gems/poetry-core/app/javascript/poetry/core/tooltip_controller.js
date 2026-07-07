@@ -50,6 +50,10 @@ const scopeFor = (element) => {
 }
 
 export default class TooltipController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:tooltip:closed", "poetry:tooltip:open"]
+
   static values = {
     open: { type: Boolean, default: false },
     delayDuration: { type: Number, default: -1 }, // -1 = inherit the provider (default 0)

@@ -70,13 +70,15 @@ module Poetry
 
       # The Stimulus wiring surface (N7 W3): the controllers a component
       # renders, each with the targets / values / actions an agent may wire
-      # by hand. Base UI vocabulary. Absent for static components.
+      # by hand and the events it may listen for (N13 W1). Base UI
+      # vocabulary. Absent for static components.
       def wiring_lines(entry)
         (entry["controllers"] || []).map do |controller|
           facets = []
           facets << "targets #{controller["targets"].join(", ")}" if controller["targets"].any?
           facets << "values #{controller["values"].join(", ")}" if controller["values"].any?
           facets << "actions #{controller["actions"].join(", ")}" if controller["actions"].any?
+          facets << "events #{controller["events"].join(", ")}" if (controller["events"] || []).any?
           "- WIRING `#{controller["identifier"]}`#{": #{facets.join("; ")}" unless facets.empty?}"
         end
       end

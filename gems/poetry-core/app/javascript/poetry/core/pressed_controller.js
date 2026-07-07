@@ -15,6 +15,10 @@ import { setState } from "@poetry/controllers/helpers/state"
 // preventDefault vetoes it (hosts that must confirm). The pressed value in
 // the detail is the state the toggle is ABOUT to enter.
 export default class PressedController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:toggle:change"]
+
   static values = {}
 
   toggle() {

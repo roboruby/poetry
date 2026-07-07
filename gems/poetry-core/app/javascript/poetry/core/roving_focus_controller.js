@@ -16,6 +16,10 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 // pressed. The MutationObserver exists for that one job - re-stamping the
 // roving tabindex the moment items enter or leave.
 export default class RovingFocusController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--roving-focus:entry"]
+
   static values = {
     orientation: { type: String, default: "vertical" }, // horizontal | vertical | both
     loop: { type: Boolean, default: true },

@@ -10,6 +10,10 @@ import { Controller } from "@hotwired/stimulus"
 const SLIDE_SELECTOR = '[data-slot="carousel-item"]'
 
 export default class CarouselController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--carousel:select"]
+
   static targets = ["viewport", "previous", "next"]
   static values = {
     orientation: { type: String, default: "horizontal" }

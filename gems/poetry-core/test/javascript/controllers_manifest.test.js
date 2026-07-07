@@ -71,7 +71,8 @@ const buildManifest = () =>
       targets: mergedList(controller, "targets"),
       values: serializeValues(mergedValues(controller)),
       classes: mergedList(controller, "classes"),
-      methods: methodNames(controller)
+      methods: methodNames(controller),
+      events: mergedList(controller, "events")
     }
   ]))
 

@@ -23,6 +23,10 @@ const DAY_SELECTOR = '[data-slot="calendar-day"]'
 const MS_PER_DAY = 86400000
 
 export default class CalendarController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--calendar:change"]
+
   static targets = ["grid", "caption", "input", "startInput", "endInput", "day"]
   static values = {
     month: String, // the visible month, "YYYY-MM"

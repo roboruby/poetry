@@ -31,6 +31,10 @@ const EVENT_PREFIX = "poetry:popover"
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
 
 export default class PopoverController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:popover:closed", "poetry:popover:open"]
+
   static values = {
     open: { type: Boolean, default: false },
     modal: { type: Boolean, default: false }

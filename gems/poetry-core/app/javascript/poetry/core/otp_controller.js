@@ -23,6 +23,10 @@ import { Controller } from "@hotwired/stimulus"
 //   fires once when the value reaches length and re-arms below it (the
 //   enable-the-submit-button hook - it never submits).
 export default class OtpController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:otp:change", "poetry:otp:complete"]
+
   static values = {
     length: { type: Number, default: 6 },
     pattern: { type: String, default: "\\d" }

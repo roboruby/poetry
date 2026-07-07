@@ -32,6 +32,10 @@ import { directionOf } from "@poetry/controllers/helpers/direction"
 const LARGE_STEP_MULTIPLIER = 10
 
 export default class SliderController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry:slider:change", "poetry:slider:commit"]
+
   static values = {
     min: { type: Number, default: 0 },
     max: { type: Number, default: 100 },

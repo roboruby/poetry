@@ -20,6 +20,10 @@ const TRIGGER_SELECTOR = '[data-slot="tabs-trigger"]'
 const PANEL_SELECTOR = '[data-slot="tabs-content"]'
 
 export default class TabsController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = ["poetry--core--tabs:change"]
+
   static values = {
     // false = manual activation (arrows only move focus; Enter/Space - the
     // native button click - activates). true is the APG-recommended default.

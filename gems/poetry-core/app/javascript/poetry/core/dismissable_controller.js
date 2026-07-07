@@ -7,6 +7,12 @@ import { onEscapeKeydown } from "@poetry/controllers/helpers/escape"
 // navigates a frame). The class-level stack makes Esc topmost-only, so
 // stacked overlays peel one at a time.
 export default class DismissableController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = [
+    "poetry--core--dismissable:dismiss", "poetry--core--dismissable:interact-outside"
+  ]
+
   static stack = []
 
   // The body pointer-events scrim (the CSS-only modal): refcounted across

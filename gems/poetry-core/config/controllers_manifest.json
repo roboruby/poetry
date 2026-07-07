@@ -15,6 +15,9 @@
     "methods": [
       "connect",
       "toggle"
+    ],
+    "events": [
+      "poetry--core--accordion:change"
     ]
   },
   "poetry--core--calendar": {
@@ -78,6 +81,9 @@
       "nextMonth",
       "previousMonth",
       "select"
+    ],
+    "events": [
+      "poetry--core--calendar:change"
     ]
   },
   "poetry--core--carousel": {
@@ -101,6 +107,9 @@
       "previous",
       "scrollTo",
       "scrolled"
+    ],
+    "events": [
+      "poetry--core--carousel:select"
     ]
   },
   "poetry--core--checked": {
@@ -119,6 +128,9 @@
       "set",
       "toggle",
       "uncheck"
+    ],
+    "events": [
+      "poetry--core--checked:change"
     ]
   },
   "poetry--core--combobox": {
@@ -149,6 +161,12 @@
       "toggle",
       "triggerKeydown",
       "valueValueChanged"
+    ],
+    "events": [
+      "poetry:combobox:change",
+      "poetry:combobox:closed",
+      "poetry:combobox:open",
+      "poetry:combobox:select"
     ]
   },
   "poetry--core--command": {
@@ -177,6 +195,11 @@
       "keydown",
       "pointerHighlight",
       "reset"
+    ],
+    "events": [
+      "poetry:command:filter",
+      "poetry:command:highlight",
+      "poetry:command:select"
     ]
   },
   "poetry--core--context-menu": {
@@ -198,6 +221,9 @@
       "open",
       "pressCancel",
       "pressStart"
+    ],
+    "events": [
+      "poetry:context-menu:open"
     ]
   },
   "poetry--core--date-picker": {
@@ -221,7 +247,8 @@
     "classes": [],
     "methods": [
       "picked"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--dialog": {
     "targets": [
@@ -247,7 +274,8 @@
       "open",
       "toggle",
       "unlockScroll"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--dismissable": {
     "targets": [],
@@ -261,6 +289,10 @@
     "methods": [
       "connect",
       "disconnect"
+    ],
+    "events": [
+      "poetry--core--dismissable:dismiss",
+      "poetry--core--dismissable:interact-outside"
     ]
   },
   "poetry--core--drawer": {
@@ -295,7 +327,8 @@
       "swipeStart",
       "toggle",
       "unlockScroll"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--focus-scope": {
     "targets": [],
@@ -313,6 +346,10 @@
     "methods": [
       "connect",
       "disconnect"
+    ],
+    "events": [
+      "poetry--core--focus-scope:mount-auto-focus",
+      "poetry--core--focus-scope:unmount-auto-focus"
     ]
   },
   "poetry--core--hover-card": {
@@ -341,6 +378,10 @@
       "pointerEnter",
       "pointerLeave",
       "touchGuard"
+    ],
+    "events": [
+      "poetry:hover-card:closed",
+      "poetry:hover-card:open"
     ]
   },
   "poetry--core--menu": {
@@ -382,6 +423,13 @@
       "subLeave",
       "toggle",
       "triggerKeydown"
+    ],
+    "events": [
+      "poetry:menu:change",
+      "poetry:menu:closed",
+      "poetry:menu:edge-navigate",
+      "poetry:menu:open",
+      "poetry:menu:select"
     ]
   },
   "poetry--core--menubar": {
@@ -406,6 +454,9 @@
       "toggle",
       "triggerKeydown",
       "valueValueChanged"
+    ],
+    "events": [
+      "poetry:menubar:value-changed"
     ]
   },
   "poetry--core--message-scroller": {
@@ -458,6 +509,13 @@
       "scrollToStart",
       "syncAfterScroll",
       "userScrollIntent"
+    ],
+    "events": [
+      "poetry--core--message-scroller:mode",
+      "poetry--core--message-scroller:pinned",
+      "poetry--core--message-scroller:scrollable",
+      "poetry--core--message-scroller:unpinned",
+      "poetry--core--message-scroller:visibility"
     ]
   },
   "poetry--core--navigation-menu": {
@@ -481,7 +539,8 @@
       "scheduleClose",
       "scheduleOpen",
       "toggle"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--otp": {
     "targets": [
@@ -505,6 +564,10 @@
       "focusInput",
       "paste",
       "sync"
+    ],
+    "events": [
+      "poetry:otp:change",
+      "poetry:otp:complete"
     ]
   },
   "poetry--core--popover": {
@@ -527,6 +590,10 @@
       "open",
       "openValueChanged",
       "toggle"
+    ],
+    "events": [
+      "poetry:popover:closed",
+      "poetry:popover:open"
     ]
   },
   "poetry--core--popper": {
@@ -577,7 +644,8 @@
       "reposition",
       "setAnchor",
       "setAnchorElement"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--pressed": {
     "targets": [],
@@ -588,6 +656,9 @@
       "set",
       "toggle",
       "unpress"
+    ],
+    "events": [
+      "poetry:toggle:change"
     ]
   },
   "poetry--core--radio-group": {
@@ -607,6 +678,9 @@
       "entryCheck",
       "setValue",
       "valueValueChanged"
+    ],
+    "events": [
+      "poetry:radio-group:change"
     ]
   },
   "poetry--core--resizable": {
@@ -624,6 +698,9 @@
       "dragMove",
       "dragStart",
       "keydown"
+    ],
+    "events": [
+      "poetry--core--resizable:resize"
     ]
   },
   "poetry--core--roving-focus": {
@@ -647,6 +724,9 @@
       "connect",
       "disconnect",
       "keydown"
+    ],
+    "events": [
+      "poetry--core--roving-focus:entry"
     ]
   },
   "poetry--core--select": {
@@ -690,6 +770,12 @@
       "toggle",
       "triggerKeydown",
       "valueValueChanged"
+    ],
+    "events": [
+      "poetry:select:change",
+      "poetry:select:closed",
+      "poetry:select:open",
+      "poetry:select:select"
     ]
   },
   "poetry--core--sheet": {
@@ -716,7 +802,8 @@
       "open",
       "toggle",
       "unlockScroll"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--sidebar": {
     "targets": [
@@ -756,6 +843,10 @@
       "mobileBackdropClose",
       "open",
       "toggle"
+    ],
+    "events": [
+      "poetry--core--sidebar:mobile-toggle",
+      "poetry--core--sidebar:toggle"
     ]
   },
   "poetry--core--slider": {
@@ -803,6 +894,10 @@
       "pointerdown",
       "setValue",
       "valueValueChanged"
+    ],
+    "events": [
+      "poetry:slider:change",
+      "poetry:slider:commit"
     ]
   },
   "poetry--core--state": {
@@ -823,7 +918,8 @@
       "disconnect",
       "open",
       "toggle"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--tabs": {
     "targets": [],
@@ -839,6 +935,9 @@
       "connect",
       "focusActivate",
       "setValue"
+    ],
+    "events": [
+      "poetry--core--tabs:change"
     ]
   },
   "poetry--core--toast": {
@@ -863,6 +962,10 @@
       "dismiss",
       "pause",
       "resume"
+    ],
+    "events": [
+      "poetry:toast:dismiss",
+      "poetry:toast:show"
     ]
   },
   "poetry--core--toaster": {
@@ -888,7 +991,8 @@
       "disconnect",
       "focusRegion",
       "reflow"
-    ]
+    ],
+    "events": []
   },
   "poetry--core--toggle-group": {
     "targets": [],
@@ -903,6 +1007,9 @@
       "connect",
       "setValue",
       "toggle"
+    ],
+    "events": [
+      "poetry:toggle-group:change"
     ]
   },
   "poetry--core--tooltip": {
@@ -932,6 +1039,10 @@
       "pointerDown",
       "pointerLeave",
       "pointerMove"
+    ],
+    "events": [
+      "poetry:tooltip:closed",
+      "poetry:tooltip:open"
     ]
   }
 }

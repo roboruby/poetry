@@ -10,6 +10,12 @@ import { ensureFocusGuards, removeFocusGuards } from "@poetry/controllers/helper
 // Listeners are wired here, not as data-actions: pause/resume must attach
 // and detach them dynamically as scopes stack, which data-action cannot do.
 export default class FocusScopeController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = [
+    "poetry--core--focus-scope:mount-auto-focus", "poetry--core--focus-scope:unmount-auto-focus"
+  ]
+
   // Nested scopes: only the TOP scope has live listeners. Opening a child
   // pauses the parent; closing it resumes the parent (Radix's module-level
   // stack, verbatim - class-level here so it is shared and inspectable).

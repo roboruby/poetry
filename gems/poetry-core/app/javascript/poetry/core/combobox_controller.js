@@ -54,6 +54,13 @@ const COMMAND_IDENTIFIER = "poetry--core--command"
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
 
 export default class ComboboxController extends Controller {
+  // The events this controller dispatches (manifest surface;
+  // events_declaration.test.js enforces the list stays honest).
+  static events = [
+    "poetry:combobox:change", "poetry:combobox:closed", "poetry:combobox:open",
+    "poetry:combobox:select"
+  ]
+
   static values = {
     open: { type: Boolean, default: false },
     value: { type: String, default: "" },
