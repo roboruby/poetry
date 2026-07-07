@@ -16,6 +16,17 @@ internals) the component gems build on.
   drift (regen with the matching `:generate`)
 - `bundle exec rubocop`
 
+## Design interop + slop rules (N14)
+
+- `Poetry::Core::DesignMd` — DESIGN.md serialize/parse (google-labs front
+  matter + canonical sections; round-trip byte-stable; foreign files via the
+  tolerant section walker). `DesignMd::Import` plans token overrides with
+  WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
+  L-walk, chroma held) and DROP-not-fabricate for the rest.
+- `Poetry::Core::DesignLint` — twelve deterministic design-slop rules
+  (AST tier on the herb walk, ERB or plain HTML; DOM tier on computed
+  styles). Warnings that name the fix; provenance cited per rule.
+
 ## Controller conventions
 
 - State vocabulary is Base UI: bare boolean data attributes via
