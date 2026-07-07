@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "rails/generators"
+require_relative "../agents_section"
 
 module Poetry
   # `rails g poetry:install` - wires poetry into a host app (M8):
@@ -25,6 +26,8 @@ module Poetry
   # still needs by hand is the motion stylesheet in the Tailwind entry and
   # the Stimulus registration, and that is exactly what the flag does).
   class InstallGenerator < Rails::Generators::Base
+    include Generators::AgentsSection
+
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
 
     class_option :charts, type: :boolean, default: false,
@@ -213,6 +216,12 @@ module Poetry
       return if File.read(routes).include?("Poetry::Ui::Engine")
 
       route %(mount Poetry::Ui::Engine => "/poetry" # llms.txt + llms-full.txt (agent-facing docs))
+    end
+
+    # The AGENTS.md pointer section (N13 W1) - marker-bounded so a re-run
+    # refreshes it in place. Standalone refresh: `rails g poetry:agents`.
+    def write_agents_md
+      apply_agents_section
     end
 
     private

@@ -1,0 +1,48 @@
+# AGENTS.md — poetry-ui
+
+The component gem: the 64-component shadcn-parity catalog on ViewComponent +
+Stimulus (machinery from poetry-core), themed by the cn-* layer — nine complete
+visual fragments under `themes/`.
+
+## Gates — run what your change touches, all of it before "done"
+
+- `bundle exec rake test` — unit suite + the dommy middle tier
+- `bundle exec rake test:accessibility` — axe over every preview page
+- `bundle exec rake test:visual` — screenshot goldens. The differ passes at
+  byte-equal OR ≤0.1% pixels; a ~3px shadow ramp sits UNDER that tolerance, so
+  when bytes legitimately change, re-record and keep goldens byte-honest.
+- `bundle exec rake css:verify_compiled` and `css:verify_theme[<name>]` —
+  dictionary ↔ compiled ↔ theme drift (all nine themes)
+- `bundle exec rake registry:verify` — component_registry.yml drift
+  (regenerate with `rake registry:generate`, never hand-edit)
+- `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
+- `bundle exec rubocop`
+- `bundle exec rake eval:scorecard` — frozen-arm mechanical eval
+
+## Layout
+
+- `app/components/poetry/ui/<name>/` — component.rb + style.rb (the class
+  dictionary) + preview sidecars
+- `themes/*.css` — the nine theme fragments; port-time edits go through the
+  plans in `script/theme_port/plans/`
+- `docs/testing.md` — the three-tier testing doctrine (wiring / behavior /
+  browser); `docs/*-port-ledger.txt` — per-theme residuals, kept current
+- `eval/` — the harness (arms + runner)
+
+## Known traps
+
+- Stimulus controller traps live in the vault note "Components Library -
+  Stimulus Controller Gotchas" — read it before touching a controller, add
+  what you learn.
+- Kill CSS transitions/animations before cross-style computed reads;
+  double-rAF is NOT settled.
+- Tailwind box-shadow never computes "none" while ring/shadow var plumbing is
+  live — parse layers and filter transparent zeros.
+- Preview sidecars are class-level; variant axes must be `style` attributes,
+  not `option`s.
+
+## Standing rules
+
+- The naming hold: never push, publish, or claim gems.
+- Commit per logical change; registry and safelist artifacts are generated —
+  regenerate, don't edit.

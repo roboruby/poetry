@@ -36,6 +36,16 @@ module Poetry
       assert_file "config/poetry_components.yml", /components: \{\}/
     end
 
+    def test_install_writes_the_agents_md_section_idempotently
+      run_generator
+      run_generator
+
+      assert_file "AGENTS.md" do |content|
+        assert_match(/Building UI with poetry \(\d+ components/, content)
+        assert_equal 1, content.scan(Generators::AgentsSection::BEGIN_MARKER).size
+      end
+    end
+
     def test_tailwind_entry_injection_is_idempotent
       entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
       FileUtils.mkdir_p(File.dirname(entry))
