@@ -40,10 +40,14 @@ module Poetry
           "Don't add aria-expanded/haspopup to the trigger - advertising an unreachable surface is " \
           "worse than silence (Radix-aligned).",
           "Never use HoverCard for hints (Tooltip) or for content users act on (Popover).",
-          "Prefer a lazy turbo_frame inside the content for expensive previews."
+          "Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first open."
         ].freeze
 
         option :open, :boolean, default: false
+        # N13 W5: defer the card body to a lazy turbo-frame. The panel is
+        # hidden until hover, so the fetch fires on first open for free;
+        # the component block (if any) becomes the frame's placeholder.
+        option :defer, :string
         option :open_delay, :integer, default: 700 # Radix Root default (shadcn passes nothing)
         option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
         option :side, :symbol, default: :bottom

@@ -1,0 +1,16 @@
+<%= content_tag(:"turbo-frame", **root_attributes.to_attributes) do %>
+  <div data-poetry--core--deferred-target="placeholder">
+    <%= content.presence || render(Poetry::Ui::Skeleton::Component.new(class: "h-24 w-full")) %>
+  </div>
+  <template data-poetry--core--deferred-target="error">
+    <div data-slot="deferred-error" class="flex flex-col items-start gap-2">
+      <p class="text-sm text-destructive"><%= t("poetry.deferred.failed") %></p>
+      <%= render(Poetry::Ui::Button::Component.new(
+                   variant: :outline, size: :sm,
+                   data: { action: "click->poetry--core--deferred#retry" }
+                 )) do %>
+        <%= t("poetry.deferred.retry") %>
+      <% end %>
+    </div>
+  </template>
+<% end %>

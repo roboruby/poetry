@@ -16,7 +16,7 @@ module Poetry
                       poetry/ui/checkbox
                       poetry/ui/collapsible
                       poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/context_menu
-                      poetry/ui/data_table poetry/ui/date_picker poetry/ui/dialog poetry/ui/drawer
+                      poetry/ui/data_table poetry/ui/date_picker poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
                       poetry/ui/dropdown_menu
                       poetry/ui/empty
                       poetry/ui/field

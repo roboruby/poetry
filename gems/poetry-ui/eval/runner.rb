@@ -581,6 +581,23 @@ module Poetry
             Gate.new(:dismissal_is_real_wiring, :cross_arm, ->(doc, _html) { doc.xpath(".//*[@onclick]").empty? })
           ]
         },
+        "deferred_region" => {
+          "description" => "A dashboard activity panel that loads only when scrolled into view, " \
+                           "with a visible retry affordance when the fetch fails",
+          "gates" => [
+            Gate.new(:defers_via_lazy_frame, :cross_arm, lambda { |doc, _html|
+              doc.css('turbo-frame[loading="lazy"]').any? do |frame|
+                frame["src"] || frame["data-poetry--core--deferred-src-value"]
+              end
+            }),
+            Gate.new(:failure_is_visible_and_retryable, :cross_arm, lambda { |doc, _html|
+              doc.css("template [data-slot=deferred-error] button").any?
+            }),
+            Gate.new(:loading_is_real_wiring, :cross_arm, lambda { |doc, _html|
+              doc.xpath(".//*[@onclick]").empty? && doc.css("script").none? { |s| s.text.include?("fetch(") }
+            })
+          ]
+        },
         "scrollable_tags" => {
           "description" => "A bounded, scrollable list of 20 version tags in a 12rem box",
           "gates" => [

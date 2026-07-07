@@ -1182,6 +1182,37 @@ components:
       text.'
     - For an always-visible grid use Calendar directly - DatePicker is the field+popover
       form.
+  poetry/ui/deferred:
+    class_name: Poetry::Ui::Deferred::Component
+    identifier: poetry--ui--deferred
+    bem_block: poetry-ui-deferred
+    styles: []
+    options:
+    - name: loading
+      type: symbol
+      default: lazy
+    - name: src
+      type: string
+    slots: []
+    controllers:
+    - identifier: poetry--core--deferred
+      targets:
+      - error
+      - placeholder
+      values:
+      - src
+      actions:
+      - retry
+      events: []
+    agent_rules:
+    - Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled
+      fetch.
+    - 'loading: :lazy (the default) fetches on visibility: a deferred region inside
+      a hidden Tabs panel (with_tab defer:) or HoverCard (defer:) loads on first reveal
+      for free.'
+    - The block is the placeholder (a Skeleton renders when absent); failure shows
+      a retryable error card automatically - never hand-wire loading or error states
+      around it.
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog
@@ -1506,6 +1537,8 @@ components:
       default: 300
     - name: content_class
       type: string
+    - name: defer
+      type: string
     - name: open
       type: boolean
       default: false
@@ -1574,7 +1607,8 @@ components:
     - Don't add aria-expanded/haspopup to the trigger - advertising an unreachable
       surface is worse than silence (Radix-aligned).
     - Never use HoverCard for hints (Tooltip) or for content users act on (Popover).
-    - Prefer a lazy turbo_frame inside the content for expensive previews.
+    - 'Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first
+      open.'
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -2579,6 +2613,7 @@ components:
     - identifier: poetry--core--select
       targets: []
       values:
+      - alignItemWithTrigger
       - loop
       - modal
       - open
@@ -3040,8 +3075,8 @@ components:
       events:
       - poetry--core--tabs:change
     agent_rules:
-    - Declare tabs with with_tab(title, value:) + the panel block - never hand-wire
-      role=tab/tabpanel ids.
+    - 'Declare tabs with with_tab(title, value:) + the panel block (or defer: for
+      a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.'
     - 'default: picks the server-rendered active tab (the first enabled tab otherwise)
       - the panel is visible without JS.'
     - 'label: names the tablist (aria-label) - recommended whenever the page has several

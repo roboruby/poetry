@@ -5,6 +5,6 @@
     <% end %>
   <% end %>
   <% tab_defs.each do |tab| %>
-    <%= content_tag(:div, capture(&tab.panel), panel_attributes(tab)) %>
+    <%= content_tag(:div, panel_body(tab), panel_attributes(tab)) %>
   <% end %>
 <% end %>

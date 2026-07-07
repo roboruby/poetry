@@ -79,6 +79,13 @@ module Poetry
         render(Poetry::Ui::Spinner::Component.new(**))
       end
 
+      # N13 W5: a deferred region - Turbo loading physics (lazy/eager) plus
+      # poetry-owned placeholder and retryable-error states. The block is the
+      # placeholder. See Deferred::Component.
+      def poetry_deferred(**, &)
+        render(Poetry::Ui::Deferred::Component.new(**), &)
+      end
+
       # The key text is the content block: poetry_kbd { "⌘" }.
       def poetry_kbd(**, &)
         render(Poetry::Ui::Kbd::Component.new(**), &)

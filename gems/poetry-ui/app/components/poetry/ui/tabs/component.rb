@@ -19,8 +19,8 @@ module Poetry
         VARIANTS = %i[default line].freeze
 
         AGENT_RULES = [
-          "Declare tabs with with_tab(title, value:) + the panel block - never hand-wire " \
-          "role=tab/tabpanel ids.",
+          "Declare tabs with with_tab(title, value:) + the panel block (or defer: for a " \
+          "lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.",
           "default: picks the server-rendered active tab (the first enabled tab otherwise) - the " \
           "panel is visible without JS.",
           "label: names the tablist (aria-label) - recommended whenever the page has several tab sets.",
@@ -30,7 +30,7 @@ module Poetry
         TABS_CONTROLLER = %i[poetry core tabs].freeze
         ROVING = %i[poetry core roving_focus].freeze
 
-        Tab = Data.define(:title, :value, :disabled, :panel)
+        Tab = Data.define(:title, :value, :disabled, :panel, :defer)
 
         option :default, :string
         option :label, :string
@@ -42,10 +42,10 @@ module Poetry
         validates :orientation, inclusion: { in: ORIENTATIONS }
         validates :variant, inclusion: { in: VARIANTS }
 
-        renders_many :tabs, lambda { |title, value:, disabled: false, &panel|
-          raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block" unless panel
+        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, &panel|
+          raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block or defer:" unless panel || defer
 
-          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: panel)
+          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: panel, defer: defer)
           nil
         }
 
@@ -74,6 +74,16 @@ module Poetry
 
         def trigger_id(tab) = "#{instance_id}-trigger-#{tab.value}"
         def panel_id(tab) = "#{instance_id}-panel-#{tab.value}"
+
+        # N13 W5: defer: swaps the panel body for a lazy turbo-frame - a
+        # hidden panel is not visible, so Turbo fetches on first
+        # activation with zero tabs-controller involvement. The panel
+        # block (if given) becomes the frame's placeholder.
+        def panel_body(tab)
+          return capture(&tab.panel) unless tab.defer
+
+          helpers.poetry_deferred(src: tab.defer) { tab.panel ? capture(&tab.panel) : nil }
+        end
 
         def root_attributes
           html_attributes.merge_if_not_set(

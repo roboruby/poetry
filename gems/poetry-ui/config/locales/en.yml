@@ -16,6 +16,9 @@ en:
       input_label: "Search commands"
       dialog_title: "Command palette"
       dialog_description: "Search for a command to run…"
+    deferred:
+      failed: "This section failed to load."
+      retry: "Retry"
     dialog:
       close: "Close"
     sheet:

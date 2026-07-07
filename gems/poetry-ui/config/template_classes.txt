@@ -12,6 +12,7 @@ grid
 grid-cols-2
 h-96
 items-center
+items-start
 justify-center
 min-h-64
 min-h-72
@@ -22,6 +23,7 @@ px-2
 py-1
 rounded-lg
 sr-only
+text-destructive
 text-muted-foreground
 text-sm
 text-xs
