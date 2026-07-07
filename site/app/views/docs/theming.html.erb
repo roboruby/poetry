@@ -111,4 +111,38 @@
       it when installing lyra.
     </p>
   </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="design-md-interop">DESIGN.md interop</h2>
+    <p class="text-sm text-muted-foreground">
+      DESIGN.md is the design-skill ecosystem's shared artifact — the slop-gate analogue
+      emits one from <code class="font-mono">study</code>, the design-rule analogue authors
+      one, Stitch exports one, and poetry both writes and reads the format.
+      The loop end-to-end: study a brand with any design skill, hand the
+      resulting file to poetry, and the app themes itself — with the same
+      contrast gate poetry's own tokens live under.
+    </p>
+    <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code># write this app's design as the shared artifact
+bin/rails poetry:design:export        # -&gt; DESIGN.md (tokens + treatment + both modes)
+
+# read a brand's DESIGN.md into token overrides
+bin/rails 'poetry:design:import[path/to/DESIGN.md]'</code></pre>
+    <p class="text-sm text-muted-foreground">
+      Import maps role names conservatively (poetry roles, a short alias set
+      like <code class="font-mono">brand → primary</code>, and Material-style
+      <code class="font-mono">on-*</code> pairs); everything else is listed in
+      the report and dropped, never guessed. Every token-pair the import
+      touches is measured against the WCAG AA floor on the merged set — a
+      failing pair is dropped with a deterministic nearest-passing suggestion
+      (an OKLCH lightness walk, chroma held), and only
+      <code class="font-mono">POETRY_DESIGN_FORCE=1</code> ships one. Fonts
+      never enter CSS (the pairing above stays metadata); a light-only palette
+      gets its dark values pinned to the poetry defaults so the overrides
+      can't leak across modes. The result lands in
+      <code class="font-mono">app/assets/tailwind/poetry/design-overrides.css</code>,
+      wired after the theme imports;
+      <code class="font-mono">POETRY_DESIGN_JSON=1</code> emits the report as
+      JSON for tooling.
+    </p>
+  </section>
 </div>
