@@ -5,12 +5,11 @@ require "nokogiri"
 
 module Poetry
   module Eval
-    # The eval harness: five frozen task pairs covering the
-    # full 10-component catalog, each rendered per arm and scored by
+    # The eval harness: frozen task pairs accrued one per
+    # component family (31 at N15), each rendered per arm and scored by
     # deterministic gates. Arms are FROZEN representative generations
     # (realistic, never strawmen) so the eval runs without burning tokens
-    # (the hifumi lesson); thesis-level receipts accrue as the skill and
-    # live generation land.
+    # (the recorded lesson); the judged half lives in judge.rb.
     #
     # The scorer-portability rule (the A/B honesty split): CROSS_ARM gates
     # run identically on every arm and are the only comparable numbers;
