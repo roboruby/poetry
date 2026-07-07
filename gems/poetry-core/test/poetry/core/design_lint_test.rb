@@ -93,6 +93,14 @@ module Poetry
                          green: "<div class='text-center'><h1>Hero</h1>#{centered}</div>")
       end
 
+      def test_centered_cells_and_controls_never_count
+        # A calendar month: dozens of centered gridcells are correct design.
+        cell = %(<div role="gridcell" class="text-center"><button class="text-center">1</button></div>)
+        green = %(<div role="grid">#{cell * 40}</div>)
+
+        refute_includes rules_hit(green), "center-everything"
+      end
+
       def test_shadow_stack
         assert_red_green("shadow-stack",
                          red: %(<div class="shadow-lg"><div class="shadow-sm">x</div></div>),

@@ -278,7 +278,16 @@ module Poetry
                             "heroes and empty states; left-align body copy")
       end
 
+      # Centered CELLS are correct design (day grids, numeric columns,
+      # buttons) - the rule targets centered body COPY, so grid/table
+      # subtrees and cell/control elements never count.
+      CENTERED_EXEMPT_TAGS = %w[button td th table].freeze
+      CENTERED_EXEMPT_ROLES = %w[grid gridcell cell columnheader rowheader row table].freeze
+
       def collect_centered(node, centered)
+        return if node.element? &&
+                  (CENTERED_EXEMPT_TAGS.include?(node.tag) || CENTERED_EXEMPT_ROLES.include?(node.attrs["role"]))
+
         centered << node if node.element? && node.classes.include?("text-center")
         node.children.each { |child| collect_centered(child, centered) }
       end
