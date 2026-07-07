@@ -33,5 +33,16 @@
         <% group.with_item(value: entry.path) { entry.title } %>
       <% end %>
     <% end %>
+    <%# Full-text tier (N13 W4): heading-level deep links from the committed
+        search index - server-rendered, the Command engine filters them like
+        any other item. %>
+    <% if SearchIndex.headings.any? %>
+      <% palette.with_separator %>
+      <% palette.with_group(heading: "Reference") do |group| %>
+        <% SearchIndex.headings.each do |hit| %>
+          <% group.with_item(value: hit["path"]) { "#{hit["page"]} — #{hit["title"]}" } %>
+        <% end %>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

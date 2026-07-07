@@ -45,6 +45,17 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "the search index is fresh and the palette serves its deep links" do
+    assert_equal SearchIndex.build, JSON.parse(SearchIndex::PATH.read),
+                 "stale search index - run bin/rails docs:search_index and commit"
+
+    get root_url
+
+    assert_select "[data-slot=command-item][data-value=?]", "/typography#headings"
+    assert_select "[data-slot=command-item][data-value=?]", "/theming#the-font-pairing"
+    assert_select "[data-slot=command-item]", minimum: 300 # the Reference tier is in the DOM
+  end
+
   test "the typography guide renders the upstream recipes as examples" do
     get "/typography"
 

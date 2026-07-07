@@ -1,0 +1,2102 @@
+[
+  {
+    "title": "Theming",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming"
+  },
+  {
+    "title": "The nine themes",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#the-nine-themes"
+  },
+  {
+    "title": "Installing a theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#installing-a-theme"
+  },
+  {
+    "title": "How this site renders all nine",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#how-this-site-renders-all-nine"
+  },
+  {
+    "title": "The font pairing",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#the-font-pairing"
+  },
+  {
+    "title": "Typography",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography"
+  },
+  {
+    "title": "Default",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#default"
+  },
+  {
+    "title": "Headings",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#headings"
+  },
+  {
+    "title": "Inline code",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#inline-code"
+  },
+  {
+    "title": "Large",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#large"
+  },
+  {
+    "title": "Lead",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#lead"
+  },
+  {
+    "title": "Muted",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#muted"
+  },
+  {
+    "title": "Small",
+    "page": "Typography",
+    "section": "docs",
+    "path": "/typography#small"
+  },
+  {
+    "title": "Accordion",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion"
+  },
+  {
+    "title": "Default",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#default"
+  },
+  {
+    "title": "Multiple",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#multiple"
+  },
+  {
+    "title": "Single collapsible",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#single-collapsible"
+  },
+  {
+    "title": "Alert",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert"
+  },
+  {
+    "title": "Default",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#default"
+  },
+  {
+    "title": "Destructive",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#destructive"
+  },
+  {
+    "title": "Alert Dialog",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog"
+  },
+  {
+    "title": "Default",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#default"
+  },
+  {
+    "title": "Small",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#small"
+  },
+  {
+    "title": "Aspect Ratio",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio"
+  },
+  {
+    "title": "Default",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#default"
+  },
+  {
+    "title": "Portrait",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#portrait"
+  },
+  {
+    "title": "Square",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#square"
+  },
+  {
+    "title": "Attachment",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment"
+  },
+  {
+    "title": "Default",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#default"
+  },
+  {
+    "title": "Idle dropzone",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#idle-dropzone"
+  },
+  {
+    "title": "States",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#states"
+  },
+  {
+    "title": "Vertical with actions",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#vertical-with-actions"
+  },
+  {
+    "title": "Avatar",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar"
+  },
+  {
+    "title": "Default",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#default"
+  },
+  {
+    "title": "Badge",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#badge"
+  },
+  {
+    "title": "Group",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#group"
+  },
+  {
+    "title": "Sizes",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#sizes"
+  },
+  {
+    "title": "With image",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#with-image"
+  },
+  {
+    "title": "Badge",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge"
+  },
+  {
+    "title": "Default",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#default"
+  },
+  {
+    "title": "Variants",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#variants"
+  },
+  {
+    "title": "Breadcrumb",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb"
+  },
+  {
+    "title": "Default",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#default"
+  },
+  {
+    "title": "Collapsed",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#collapsed"
+  },
+  {
+    "title": "Bubble",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble"
+  },
+  {
+    "title": "Default",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#default"
+  },
+  {
+    "title": "Quick replies",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#quick-replies"
+  },
+  {
+    "title": "Variants",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#variants"
+  },
+  {
+    "title": "With reactions",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#with-reactions"
+  },
+  {
+    "title": "Button",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button"
+  },
+  {
+    "title": "Default",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#default"
+  },
+  {
+    "title": "As link",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#as-link"
+  },
+  {
+    "title": "Sizes",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#sizes"
+  },
+  {
+    "title": "Button Group",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group"
+  },
+  {
+    "title": "Default",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#default"
+  },
+  {
+    "title": "Text prefix",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#text-prefix"
+  },
+  {
+    "title": "Vertical",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#vertical"
+  },
+  {
+    "title": "Calendar",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar"
+  },
+  {
+    "title": "Default",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#default"
+  },
+  {
+    "title": "Bounded",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#bounded"
+  },
+  {
+    "title": "Range",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#range"
+  },
+  {
+    "title": "Card",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card"
+  },
+  {
+    "title": "Default",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#default"
+  },
+  {
+    "title": "With action and footer",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#with-action-and-footer"
+  },
+  {
+    "title": "Carousel",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel"
+  },
+  {
+    "title": "Default",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#default"
+  },
+  {
+    "title": "Strip",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#strip"
+  },
+  {
+    "title": "Checkbox",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox"
+  },
+  {
+    "title": "Default",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#disabled"
+  },
+  {
+    "title": "In a field",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#in-a-field"
+  },
+  {
+    "title": "States",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#states"
+  },
+  {
+    "title": "Collapsible",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible"
+  },
+  {
+    "title": "Default",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#default"
+  },
+  {
+    "title": "Initially open",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#initially-open"
+  },
+  {
+    "title": "Combobox",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox"
+  },
+  {
+    "title": "Default",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#default"
+  },
+  {
+    "title": "Disabled options",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#disabled-options"
+  },
+  {
+    "title": "Grouped",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#grouped"
+  },
+  {
+    "title": "Valued",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#valued"
+  },
+  {
+    "title": "Wide",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#wide"
+  },
+  {
+    "title": "Command",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command"
+  },
+  {
+    "title": "Default",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#default"
+  },
+  {
+    "title": "Dialog",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#dialog"
+  },
+  {
+    "title": "Initial value",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#initial-value"
+  },
+  {
+    "title": "Zero match",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#zero-match"
+  },
+  {
+    "title": "Command Dialog",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog"
+  },
+  {
+    "title": "Default",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#default"
+  },
+  {
+    "title": "Empty state",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#empty-state"
+  },
+  {
+    "title": "Context Menu",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu"
+  },
+  {
+    "title": "Default",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#default"
+  },
+  {
+    "title": "Destructive",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#destructive"
+  },
+  {
+    "title": "Disabled surface",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#disabled-surface"
+  },
+  {
+    "title": "Focusable surface",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#focusable-surface"
+  },
+  {
+    "title": "Rtl",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#rtl"
+  },
+  {
+    "title": "Data Table",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table"
+  },
+  {
+    "title": "Default",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#default"
+  },
+  {
+    "title": "Empty",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#empty"
+  },
+  {
+    "title": "Filtered and paginated",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#filtered-and-paginated"
+  },
+  {
+    "title": "Date Picker",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker"
+  },
+  {
+    "title": "Default",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#default"
+  },
+  {
+    "title": "Preselected",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#preselected"
+  },
+  {
+    "title": "Range",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#range"
+  },
+  {
+    "title": "Dialog",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog"
+  },
+  {
+    "title": "Default",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#default"
+  },
+  {
+    "title": "Confirmation",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#confirmation"
+  },
+  {
+    "title": "Drawer",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer"
+  },
+  {
+    "title": "Default",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#default"
+  },
+  {
+    "title": "Right edge",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#right-edge"
+  },
+  {
+    "title": "Dropdown Menu",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu"
+  },
+  {
+    "title": "Default",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#default"
+  },
+  {
+    "title": "Checkboxes",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#checkboxes"
+  },
+  {
+    "title": "Inset and disabled",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#inset-and-disabled"
+  },
+  {
+    "title": "Radio group",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#radio-group"
+  },
+  {
+    "title": "Rtl",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#rtl"
+  },
+  {
+    "title": "Empty",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty"
+  },
+  {
+    "title": "Default",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#default"
+  },
+  {
+    "title": "With icon and actions",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-icon-and-actions"
+  },
+  {
+    "title": "Field",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field"
+  },
+  {
+    "title": "Default",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#default"
+  },
+  {
+    "title": "With error",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-error"
+  },
+  {
+    "title": "With hint",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-hint"
+  },
+  {
+    "title": "Hover Card",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card"
+  },
+  {
+    "title": "Default",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#default"
+  },
+  {
+    "title": "Custom delays",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#custom-delays"
+  },
+  {
+    "title": "Side right",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#side-right"
+  },
+  {
+    "title": "Icon",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon"
+  },
+  {
+    "title": "Default",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#default"
+  },
+  {
+    "title": "Labeled",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#labeled"
+  },
+  {
+    "title": "Input",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input"
+  },
+  {
+    "title": "Default",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#disabled"
+  },
+  {
+    "title": "Invalid",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#invalid"
+  },
+  {
+    "title": "With value",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#with-value"
+  },
+  {
+    "title": "Input Group",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group"
+  },
+  {
+    "title": "Default",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#default"
+  },
+  {
+    "title": "Textarea block",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#textarea-block"
+  },
+  {
+    "title": "With button",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#with-button"
+  },
+  {
+    "title": "Input Otp",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp"
+  },
+  {
+    "title": "Default",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#default"
+  },
+  {
+    "title": "Alphanumeric",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#alphanumeric"
+  },
+  {
+    "title": "Groupings",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#groupings"
+  },
+  {
+    "title": "In a field",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#in-a-field"
+  },
+  {
+    "title": "States",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#states"
+  },
+  {
+    "title": "Item",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item"
+  },
+  {
+    "title": "Default",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#default"
+  },
+  {
+    "title": "Group",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#group"
+  },
+  {
+    "title": "Outline with icon and actions",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#outline-with-icon-and-actions"
+  },
+  {
+    "title": "Kbd",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd"
+  },
+  {
+    "title": "Default",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#default"
+  },
+  {
+    "title": "Chord",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#chord"
+  },
+  {
+    "title": "Command",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#command"
+  },
+  {
+    "title": "Label",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label"
+  },
+  {
+    "title": "Default",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#disabled"
+  },
+  {
+    "title": "With checkbox",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#with-checkbox"
+  },
+  {
+    "title": "Link",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link"
+  },
+  {
+    "title": "Default",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#default"
+  },
+  {
+    "title": "Current",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#current"
+  },
+  {
+    "title": "External",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#external"
+  },
+  {
+    "title": "Underline",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#underline"
+  },
+  {
+    "title": "Marker",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker"
+  },
+  {
+    "title": "Default",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#default"
+  },
+  {
+    "title": "Status",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#status"
+  },
+  {
+    "title": "Variants",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#variants"
+  },
+  {
+    "title": "With icon",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#with-icon"
+  },
+  {
+    "title": "Menubar",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar"
+  },
+  {
+    "title": "Default",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#default"
+  },
+  {
+    "title": "Disabled menu",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#disabled-menu"
+  },
+  {
+    "title": "Rtl",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#rtl"
+  },
+  {
+    "title": "Message",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message"
+  },
+  {
+    "title": "Default",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#default"
+  },
+  {
+    "title": "Align end",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#align-end"
+  },
+  {
+    "title": "With footer",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#with-footer"
+  },
+  {
+    "title": "Message Scroller",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller"
+  },
+  {
+    "title": "Default",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#default"
+  },
+  {
+    "title": "Without jump button",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#without-jump-button"
+  },
+  {
+    "title": "Native Select",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select"
+  },
+  {
+    "title": "Default",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#default"
+  },
+  {
+    "title": "Grouped",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#grouped"
+  },
+  {
+    "title": "Small disabled",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#small-disabled"
+  },
+  {
+    "title": "Navigation Menu",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu"
+  },
+  {
+    "title": "Default",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#default"
+  },
+  {
+    "title": "Viewport",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#viewport"
+  },
+  {
+    "title": "Pagination",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination"
+  },
+  {
+    "title": "Default",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#default"
+  },
+  {
+    "title": "First page",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#first-page"
+  },
+  {
+    "title": "Long range",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#long-range"
+  },
+  {
+    "title": "Short range",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#short-range"
+  },
+  {
+    "title": "Popover",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover"
+  },
+  {
+    "title": "Default",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#default"
+  },
+  {
+    "title": "Modal",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#modal"
+  },
+  {
+    "title": "Open",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#open"
+  },
+  {
+    "title": "Side top",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#side-top"
+  },
+  {
+    "title": "With anchor",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#with-anchor"
+  },
+  {
+    "title": "Progress",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress"
+  },
+  {
+    "title": "Default",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#default"
+  },
+  {
+    "title": "Complete",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#complete"
+  },
+  {
+    "title": "Custom max without value",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#custom-max-without-value"
+  },
+  {
+    "title": "Radio Group",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group"
+  },
+  {
+    "title": "Default",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#disabled"
+  },
+  {
+    "title": "Horizontal layout",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#horizontal-layout"
+  },
+  {
+    "title": "In a field",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#in-a-field"
+  },
+  {
+    "title": "Invalid",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#invalid"
+  },
+  {
+    "title": "Resizable",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable"
+  },
+  {
+    "title": "Default",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#default"
+  },
+  {
+    "title": "Nested",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#nested"
+  },
+  {
+    "title": "Vertical",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#vertical"
+  },
+  {
+    "title": "Scroll Area",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area"
+  },
+  {
+    "title": "Default",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#default"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#horizontal"
+  },
+  {
+    "title": "Select",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select"
+  },
+  {
+    "title": "Default",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#disabled"
+  },
+  {
+    "title": "Scrollable",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#scrollable"
+  },
+  {
+    "title": "Small",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#small"
+  },
+  {
+    "title": "Valued",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#valued"
+  },
+  {
+    "title": "Separator",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator"
+  },
+  {
+    "title": "Default",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#default"
+  },
+  {
+    "title": "Vertical semantic",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#vertical-semantic"
+  },
+  {
+    "title": "Sheet",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet"
+  },
+  {
+    "title": "Default",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#default"
+  },
+  {
+    "title": "Form",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#form"
+  },
+  {
+    "title": "Sides",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#sides"
+  },
+  {
+    "title": "Sidebar",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar"
+  },
+  {
+    "title": "Default",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#default"
+  },
+  {
+    "title": "Offcanvas collapsed",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#offcanvas-collapsed"
+  },
+  {
+    "title": "Skeleton",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton"
+  },
+  {
+    "title": "Default",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#default"
+  },
+  {
+    "title": "Avatar",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#avatar"
+  },
+  {
+    "title": "Block",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#block"
+  },
+  {
+    "title": "Composed",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#composed"
+  },
+  {
+    "title": "Slider",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider"
+  },
+  {
+    "title": "Default",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#disabled"
+  },
+  {
+    "title": "Range",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#range"
+  },
+  {
+    "title": "Range with gap",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#range-with-gap"
+  },
+  {
+    "title": "Vertical",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#vertical"
+  },
+  {
+    "title": "Spinner",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner"
+  },
+  {
+    "title": "Default",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#default"
+  },
+  {
+    "title": "Large",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#large"
+  },
+  {
+    "title": "With context label",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#with-context-label"
+  },
+  {
+    "title": "Switch",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch"
+  },
+  {
+    "title": "Default",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#default"
+  },
+  {
+    "title": "In a field",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#in-a-field"
+  },
+  {
+    "title": "Rtl",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#rtl"
+  },
+  {
+    "title": "Sizes",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#sizes"
+  },
+  {
+    "title": "States",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#states"
+  },
+  {
+    "title": "Table",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table"
+  },
+  {
+    "title": "Default",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#default"
+  },
+  {
+    "title": "Minimal",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#minimal"
+  },
+  {
+    "title": "Tabs",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs"
+  },
+  {
+    "title": "Default",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#default"
+  },
+  {
+    "title": "Line",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#line"
+  },
+  {
+    "title": "Vertical",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#vertical"
+  },
+  {
+    "title": "Textarea",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea"
+  },
+  {
+    "title": "Default",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#default"
+  },
+  {
+    "title": "Auto grown",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#auto-grown"
+  },
+  {
+    "title": "Disabled",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#disabled"
+  },
+  {
+    "title": "Invalid",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#invalid"
+  },
+  {
+    "title": "With label",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#with-label"
+  },
+  {
+    "title": "Toast",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast"
+  },
+  {
+    "title": "Default",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#default"
+  },
+  {
+    "title": "Variants",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#variants"
+  },
+  {
+    "title": "With action",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#with-action"
+  },
+  {
+    "title": "Toaster",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster"
+  },
+  {
+    "title": "Default",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#default"
+  },
+  {
+    "title": "Top center",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#top-center"
+  },
+  {
+    "title": "Toggle",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle"
+  },
+  {
+    "title": "Default",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#default"
+  },
+  {
+    "title": "Outline",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#outline"
+  },
+  {
+    "title": "Sizes",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#sizes"
+  },
+  {
+    "title": "States",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#states"
+  },
+  {
+    "title": "With text",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#with-text"
+  },
+  {
+    "title": "Toggle Group",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group"
+  },
+  {
+    "title": "Default",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#default"
+  },
+  {
+    "title": "Disabled",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#disabled"
+  },
+  {
+    "title": "Single",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#single"
+  },
+  {
+    "title": "Sizes",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#sizes"
+  },
+  {
+    "title": "Spaced",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#spaced"
+  },
+  {
+    "title": "Tooltip",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip"
+  },
+  {
+    "title": "Default",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#default"
+  },
+  {
+    "title": "Open",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#open"
+  },
+  {
+    "title": "Provider row",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#provider-row"
+  },
+  {
+    "title": "Side bottom",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#side-bottom"
+  },
+  {
+    "title": "With label",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#with-label"
+  },
+  {
+    "title": "Adapter Chart",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter"
+  },
+  {
+    "title": "Default",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#default"
+  },
+  {
+    "title": "Area Chart",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area"
+  },
+  {
+    "title": "Default",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#default"
+  },
+  {
+    "title": "Legend toggle",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#legend-toggle"
+  },
+  {
+    "title": "Bar Chart",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar"
+  },
+  {
+    "title": "Default",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#default"
+  },
+  {
+    "title": "Active",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#active"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#horizontal"
+  },
+  {
+    "title": "Label",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#label"
+  },
+  {
+    "title": "Mixed",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#mixed"
+  },
+  {
+    "title": "Multiple",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#multiple"
+  },
+  {
+    "title": "Negative",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#negative"
+  },
+  {
+    "title": "Stacked",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#stacked"
+  },
+  {
+    "title": "Composed Chart",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed"
+  },
+  {
+    "title": "Default",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#default"
+  },
+  {
+    "title": "Full mix",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#full-mix"
+  },
+  {
+    "title": "Line Chart",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line"
+  },
+  {
+    "title": "Default",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#default"
+  },
+  {
+    "title": "Dots",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#dots"
+  },
+  {
+    "title": "Dots colors",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#dots-colors"
+  },
+  {
+    "title": "Label",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#label"
+  },
+  {
+    "title": "Linear",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#linear"
+  },
+  {
+    "title": "Multiple",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#multiple"
+  },
+  {
+    "title": "References and errors",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#references-and-errors"
+  },
+  {
+    "title": "Step",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#step"
+  },
+  {
+    "title": "Pie Chart",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie"
+  },
+  {
+    "title": "Default",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#default"
+  },
+  {
+    "title": "Donut",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut"
+  },
+  {
+    "title": "Donut active",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut-active"
+  },
+  {
+    "title": "Donut text",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#donut-text"
+  },
+  {
+    "title": "Label list",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#label-list"
+  },
+  {
+    "title": "Legend",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#legend"
+  },
+  {
+    "title": "Stacked",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#stacked"
+  },
+  {
+    "title": "Radar Chart",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar"
+  },
+  {
+    "title": "Default",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#default"
+  },
+  {
+    "title": "Dots",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#dots"
+  },
+  {
+    "title": "Grid circle",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-circle"
+  },
+  {
+    "title": "Grid fill",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-fill"
+  },
+  {
+    "title": "Grid none",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#grid-none"
+  },
+  {
+    "title": "Legend",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#legend"
+  },
+  {
+    "title": "Lines only",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#lines-only"
+  },
+  {
+    "title": "Multiple",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#multiple"
+  },
+  {
+    "title": "Radial Bar Chart",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar"
+  },
+  {
+    "title": "Default",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#default"
+  },
+  {
+    "title": "Grid",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#grid"
+  },
+  {
+    "title": "Label",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#label"
+  },
+  {
+    "title": "Shape",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#shape"
+  },
+  {
+    "title": "Stacked",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#stacked"
+  },
+  {
+    "title": "Text",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#text"
+  },
+  {
+    "title": "Scatter Chart",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter"
+  },
+  {
+    "title": "Default",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#default"
+  },
+  {
+    "title": "Bubbles",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#bubbles"
+  },
+  {
+    "title": "Multiple",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#multiple"
+  },
+  {
+    "title": "Reference zones",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#reference-zones"
+  },
+  {
+    "title": "Interactive Filter",
+    "page": "Interactive Filter",
+    "section": "demos",
+    "path": "/demos/interactive"
+  },
+  {
+    "title": "Default",
+    "page": "Interactive Filter",
+    "section": "demos",
+    "path": "/demos/interactive#default"
+  },
+  {
+    "title": "Live Streaming",
+    "page": "Live Streaming",
+    "section": "demos",
+    "path": "/demos/live"
+  },
+  {
+    "title": "Default",
+    "page": "Live Streaming",
+    "section": "demos",
+    "path": "/demos/live#default"
+  },
+  {
+    "title": "Synced Tooltips",
+    "page": "Synced Tooltips",
+    "section": "demos",
+    "path": "/demos/sync"
+  },
+  {
+    "title": "Default",
+    "page": "Synced Tooltips",
+    "section": "demos",
+    "path": "/demos/sync#default"
+  },
+  {
+    "title": "Brush & Zoom",
+    "page": "Brush & Zoom",
+    "section": "demos",
+    "path": "/demos/window"
+  },
+  {
+    "title": "Default",
+    "page": "Brush & Zoom",
+    "section": "demos",
+    "path": "/demos/window#default"
+  }
+]
