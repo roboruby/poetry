@@ -27,6 +27,10 @@ namespace :poetry do
     end
 
     findings = Poetry::Core::Check::Runner.new(poetry_check_catalog).run(paths)
+    # The taste tier (N14 W3): design-slop warnings on request.
+    if ENV["POETRY_CHECK_DESIGN"] == "1"
+      findings += paths.flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
+    end
 
     if ENV["POETRY_CHECK_JSON"] == "1"
       puts Poetry::Core::Check.to_json(findings)

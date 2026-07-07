@@ -31,6 +31,21 @@ namespace :poetry do
     catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Ui.root, helpers: helpers)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
+    # The taste tier (N14 W3): design-slop warnings join the mechanical
+    # findings on request - same vocabulary, same JSON/text output. The
+    # stock-theme nudge fires only for a FOREIGN DESIGN.md (a brand waiting
+    # to be applied) - poetry's own export IS the current state.
+    if ENV["POETRY_CHECK_DESIGN"] == "1"
+      findings += paths.flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
+      design_md = Rails.root.join("DESIGN.md")
+      foreign = design_md.exist? && Poetry::Core::DesignMd.parse(design_md.read)["theme"].nil?
+      findings += Poetry::Core::DesignLint.lint_dom(
+        doc: nil,
+        context: { design_md_present: foreign,
+                   overrides_present: Rails.root.join("app/assets/tailwind/poetry/design-overrides.css").exist? }
+      )
+    end
+
     if ENV["POETRY_CHECK_JSON"] == "1"
       puts Poetry::Core::Check.to_json(findings)
     else

@@ -48,6 +48,13 @@ module Poetry
           # The cheapest slop-detector rule: arbitrary color values
           # bypass the theme.
           !html.match?(/\b(?:bg|text|border|ring|stroke|fill)-\[(?:#|rgb|hsl|oklch)/)
+        }),
+        Gate.new(:design_slop, :cross_arm, lambda { |_doc, html|
+          # The DesignLint AST tier (N14 W3) reads plain HTML exactly as it
+          # reads ERB, so the same twelve-rule vocabulary scores every arm.
+          # The frozen raw arms carry genuine slop (cards-in-cards, stacked
+          # shadows, centered body copy) - the A/B tell, not a strawman.
+          Poetry::Core::DesignLint.lint(html).empty?
         })
       ].freeze
 

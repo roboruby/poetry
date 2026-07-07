@@ -39,4 +39,19 @@ namespace :design do
       abort "stale DESIGN.md exports: #{stale.join(", ")} - run `bin/rake design:export_all` and commit"
     end
   end
+
+  desc "Design-slop lint: the AST tier over the gem's templates + the DOM tier over rendered previews"
+  task :lint do
+    poetry_ui_boot!
+    paths = Dir[Poetry::Ui.root.join("app/components/**/*.html.erb").to_s]
+    findings = paths.flat_map do |path|
+      relative = Pathname.new(path).relative_path_from(Poetry::Ui.root).to_s
+      Poetry::Core::DesignLint.lint(File.read(path), file: relative)
+    end
+    puts Poetry::Core::Check.to_text(findings)
+    abort "design:lint: AST-tier findings above" if findings.any?
+
+    puts "design:lint: AST tier clean (#{paths.size} templates); running the DOM tier (dommy)..."
+    sh "bundle exec ruby -Itest test/dommy_tier/design_dom_test.rb"
+  end
 end

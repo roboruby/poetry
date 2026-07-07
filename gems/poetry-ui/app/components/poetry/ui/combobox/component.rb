@@ -310,9 +310,10 @@ module Poetry
         option :side_offset, :integer, default: 4
         option :avoid_collisions, :boolean, default: true
         option :dir, :symbol
-        # The trigger width utility (demo-exact default; the popup ALWAYS
+        # The trigger width utility (the demo 200px as its scale spelling,
+        # w-50 - DesignLint off-scale-arbitrary; the popup ALWAYS
         # tracks it via the anchor-width binding - one knob, two surfaces).
-        option :width, :string, default: "w-[200px]"
+        option :width, :string, default: "w-50"
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
