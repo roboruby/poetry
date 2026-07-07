@@ -44,9 +44,12 @@ module Poetry
           - Machine catalog: `/poetry/llms.txt` (index) and `/poetry/llms-full.txt`
             (full contracts + Stimulus wiring: targets / values / actions / events).
           - Verify markup before finishing: `bin/rails poetry:check` (unknown
-            components/slots/variants/wiring, did-you-mean, `--json`).
+            components/slots/variants/wiring, did-you-mean, `--json`; needs the
+            `herb` gem in the Gemfile).
           - One visual theme per app (chosen at install with `--theme`); components
             read tokens, never restate them.
+          - Design interop: `bin/rails poetry:design:export` writes this app's
+            DESIGN.md (tokens + treatment) for external design skills.
           #{END_MARKER}
         MD
       end

@@ -30,6 +30,7 @@ Metrics/BlockLength:
     - "app/components/poetry/core/concerns/*.rb"
     # Rake namespace blocks are naturally long task lists.
     - "rakelib/**/*.rake"
+    - "lib/tasks/**/*.rake"
 
 Naming/FileName:
   # lib/poetry-core.rb is the hyphenated Bundler auto-require entrypoint for the

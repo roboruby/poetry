@@ -24,6 +24,7 @@ module Poetry
                         "count reads the components map, not the YAML root"
         assert_match %r{/poetry/llms-full\.txt}, content
         assert_match(/poetry:check/, content)
+        assert_match(/poetry:design:export/, content, "the DESIGN.md interop surface is part of the front door")
       end
     end
 

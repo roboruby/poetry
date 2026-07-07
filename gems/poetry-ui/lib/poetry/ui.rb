@@ -2,6 +2,7 @@
 
 require "poetry/core"
 require_relative "ui/version"
+require_relative "ui/themes"
 
 module Poetry
   # The component library: shadcn-parity ViewComponents built entirely on
