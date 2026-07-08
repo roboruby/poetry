@@ -47,6 +47,11 @@ visual fragments under `themes/`.
   live — parse layers and filter transparent zeros.
 - Preview sidecars are class-level; variant axes must be `style` attributes,
   not `option`s.
+- `render SomeComponent.new(...) { "text" }` binds the block to `.new`, not
+  `render` — the content silently vanishes and the element paints empty
+  while DOM checks stay green. Use the `poetry_*` helpers (or parenthesize
+  `render(Component.new(...)) { }`). The eval's `links_have_accessible_names`
+  gate exists because the judge caught exactly this.
 
 ## Standing rules
 
