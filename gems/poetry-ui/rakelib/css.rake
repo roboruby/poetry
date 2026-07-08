@@ -38,8 +38,11 @@ end
 # theme + vendored animate/shadcn utilities, sourced from the Style
 # dictionaries plus the COMMITTED template classes. Shared by
 # css:verify_compiled (the drift gate) and browser:assets (the stylesheet
-# the real-browser preview pages load).
-def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name)
+# the real-browser preview pages load). extra_sources adds Tailwind
+# @source dirs beyond the safelist - the benchmark capture (N15 W2) scans
+# the generated arms so a raw arm's arbitrary utilities compile with full
+# fidelity (no purge bias in the judge's evidence).
+def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
   require "tailwindcss/ruby"
   require "tmpdir"
 
@@ -58,6 +61,7 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name)
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
       @import "#{poetry_ui_theme_path(theme)}" layer(base);
       @source "#{File.join(dir, "safelist.txt")}";
+      #{extra_sources.map { |src| %(@source "#{src}";) }.join("\n")}
     CSS
     out = File.join(dir, "out.css")
     system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,

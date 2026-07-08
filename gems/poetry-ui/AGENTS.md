@@ -22,8 +22,9 @@ visual fragments under `themes/`.
 - `bundle exec rubocop`
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the
-  card. The judged half (`eval:capture` + `eval:judge`) is on-demand, never
-  CI — doctrine in `eval/README.md`.
+  card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm
+  benchmark (`eval:benchmark:*`, N15 W2) are on-demand, never CI — doctrine
+  in `eval/README.md`.
 
 ## Layout
 

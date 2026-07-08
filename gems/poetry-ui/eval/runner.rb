@@ -2,6 +2,7 @@
 
 require "json"
 require "nokogiri"
+require "pathname"
 
 module Poetry
   module Eval
@@ -747,13 +748,23 @@ module Poetry
         })
       ].freeze
 
+      # arms_root swaps the corpus under the same tasks/gates/scoring: the
+      # frozen arms by default, a benchmark run's generated arms (N15 W2)
+      # when pointed at eval/results/<date>/generated.
+      def initialize(arms_root: Poetry::Ui.root.join("eval/arms"))
+        @arms_root = Pathname(arms_root)
+      end
+
       def arms(task)
-        Dir.glob(Poetry::Ui.root.join("eval/arms/#{task}/*.html.erb")).to_h do |path|
+        Dir.glob(@arms_root.join("#{task}/*.html.erb").to_s).to_h do |path|
           [File.basename(path, ".html.erb"), File.read(path)]
         end
       end
 
-      def scorecard
+      # fold_judged: false keeps the frozen-arm calibration verdicts out of
+      # a generated-arm scorecard (the benchmark folds its own verdicts in
+      # results.json instead).
+      def scorecard(fold_judged: true)
         exercised = []
         tasks = TASKS.to_h do |task, spec|
           results = arms(task).to_h { |arm, erb| [arm, score_arm(task, arm, erb, exercised)] }
@@ -766,7 +777,7 @@ module Poetry
           "tasks" => tasks,
           "components_exercised" => exercised.uniq.sort
         }
-        judged = judged_section
+        judged = fold_judged ? judged_section : nil
         card["judged"] = judged if judged
         card
       end
@@ -799,9 +810,9 @@ module Poetry
       private
 
       def score_arm(task, arm, erb, exercised)
+        gates = TASKS.fetch(task)["gates"] + UNIVERSAL
         html = render(erb)
         doc = Nokogiri::HTML5.fragment(html)
-        gates = TASKS.fetch(task)["gates"] + UNIVERSAL
         cross = gates.to_h { |gate| gate.run(doc, html) }
         result = {
           "cross_arm" => cross,
@@ -817,6 +828,14 @@ module Poetry
           exercised.concat(doc.css("[data-component]").map { |node| node["data-component"] })
         end
         result
+      rescue StandardError => e
+        # A generated arm that cannot render is a recorded outcome, not a
+        # run killer (the blast-radius rule): it passes nothing, and the
+        # error text travels with the ledger. Frozen arms stay loud - all
+        # gates false fails eval:verify immediately.
+        { "cross_arm" => gates.to_h { |gate| [gate.name, false] },
+          "cross_arm_score" => "0/#{gates.size}",
+          "render_error" => "#{e.class}: #{e.message[0, 300]}" }
       end
 
       def poetry_check_clean?(erb)
