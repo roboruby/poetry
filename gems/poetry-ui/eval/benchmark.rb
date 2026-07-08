@@ -36,7 +36,12 @@ module Poetry
       SCHEMA = "results-v1"
       UNDECIDED = %w[inconclusive error].freeze
       DEFAULT_MODEL = "claude-sonnet-5"
-      DEFAULT_MAX_TURNS = 24
+      # One budget, both arms. 40 because the poetry workflow legitimately
+      # spends turns on its documented loop (read catalog -> write -> check
+      # -> fix): at 24 the two heaviest briefs exhausted mid-loop while the
+      # raw twin cruised at ~5-8 turns - a starved treatment arm measures
+      # the cap, not the system.
+      DEFAULT_MAX_TURNS = 40
       MAX_GENERATION_ATTEMPTS = 3
       HERMETIC_NEEDLE = "poetry"
       ARM_HOSTS = { "poetry" => "a", "raw_tailwind" => "b" }.freeze
@@ -56,6 +61,11 @@ module Poetry
       # A hermeticity breach invalidates the experiment - it must abort the
       # run, never degrade into a recorded per-unit error.
       class HermeticityError < Error; end
+      # Turn-budget exhaustion is deterministic at a fixed budget: retrying
+      # it re-spends the whole budget for the same outcome, so it skips the
+      # retry loop and records as an error unit (its cost still receipts -
+      # the envelope carries total_cost_usd even on error_max_turns).
+      class MaxTurnsError < Error; end
 
       def initialize(results_root:,
                      model: ENV.fetch("POETRY_BENCH_MODEL", DEFAULT_MODEL),
@@ -428,15 +438,34 @@ module Poetry
           "--allowedTools", toolbelt,
           chdir: host.to_s
         )
-        unless status.success?
-          raise Error, "claude exited #{status.exitstatus}: #{err.to_s[0, 200]} #{out.to_s[0, 200]}".strip
+        # A failed run still emits an envelope on stdout (exit 1, is_error,
+        # subtype) - parse it first so its spend receipts and its reason is
+        # legible; only a non-envelope crash falls through to raw output.
+        envelope = begin
+          JSON.parse(out)
+        rescue JSON::ParserError
+          nil
         end
-
-        envelope = JSON.parse(out)
-        record_usage(envelope)
+        record_usage(envelope) if envelope
+        if envelope&.fetch("subtype", nil) == "error_max_turns"
+          raise MaxTurnsError, "max turns (#{@max_turns}) exhausted, " \
+                               "$#{envelope["total_cost_usd"].to_f.round(2)} spent"
+        end
+        unless status.success?
+          detail = if envelope
+                     envelope.slice("subtype",
+                                    "result").compact.to_json
+                   else
+                     "#{err.to_s[0, 200]} #{out.to_s[0, 200]}"
+                   end
+          raise Error, "claude exited #{status.exitstatus}: #{detail[0, 300]}".strip
+        end
+        raise Error, "no envelope in claude output: #{out.to_s[0, 120]}" if envelope.nil?
         raise Error, "claude errored: #{envelope["result"].to_s[0, 200]}" if envelope["is_error"]
 
         envelope.merge("poetry_bench_attempts" => attempt)
+      rescue MaxTurnsError
+        raise
       rescue Error, JSON::ParserError => e
         raise Error, "generation failed after #{attempt} attempts: #{e.message}" if attempt >= MAX_GENERATION_ATTEMPTS
 
