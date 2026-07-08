@@ -50,10 +50,14 @@ module Poetry
       MAX_GENERATION_ATTEMPTS = 3
       HERMETIC_NEEDLE = "poetry"
       ARM_HOSTS = { "poetry" => "a", "raw_tailwind" => "b" }.freeze
-      # The toolbelt asymmetry IS the pre-registered treatment: host A's
-      # `poetry check` is runnable (bin/check); host B has nothing to run.
+      # The toolbelt asymmetry IS the treatment: host A's poetry surface is
+      # runnable - bin/check plus the poetry MCP server ( remediation:
+      # boot-free check/describe/list, attacking the turn-exhaustion tail
+      # that cost menu/app_shell in the pre-registered run); host B has
+      # nothing to run.
       TOOLBELTS = {
-        "poetry" => "Read,Glob,Grep,Write,Bash(bin/check:*)",
+        "poetry" => "Read,Glob,Grep,Write,Bash(bin/check:*)," \
+                    "mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components",
         "raw_tailwind" => "Read,Glob,Grep,Write"
       }.freeze
       # CLAUDE.md is byte-identical in both hosts: the project-memory hook
@@ -174,7 +178,7 @@ module Poetry
           Write the finished template to app/views/eval/#{task}.html.erb (create the file; overwrite if present).
 
           Rules:
-          - Your tools are Read, Glob, Grep, and Write. General shell commands are unavailable, except a check command if AGENTS.md documents one.
+          - Your tools are Read, Glob, Grep, and Write, plus any checking tools AGENTS.md documents. General shell commands are unavailable.
           - One self-contained ERB template. No partials, no layout code, no <script> tags, no external assets, nothing this application does not already provide.
           - Tailwind CSS v4 is compiled with full utility coverage for the classes you use.
           - If a behavior would need app JavaScript beyond what this application already wires, prefer native HTML capabilities (details/summary, popover, dialog, form controls, links).
@@ -374,7 +378,7 @@ module Poetry
 
       def write_host_a
         host = host_root("poetry")
-        registry = Poetry::Core::Registry.new(source_root: @ui_root)
+        registry = Poetry::Ui.registry
         llms = Poetry::Core::LlmsText.new(registry: registry)
         host.join("llms.txt").write(llms.index)
         host.join("llms-full.txt").write(llms.full)
@@ -390,9 +394,13 @@ module Poetry
             `/poetry/llms.txt` -> `llms.txt`, `/poetry/llms-full.txt` -> `llms-full.txt`.
           - Run the markup linter as `bin/check app/views/eval/<file>.html.erb`
             (wraps `bin/rails poetry:check`).
+          - The `poetry` MCP server is configured in `.mcp.json` (per the section
+            below) - its `check` tool takes ERB source directly and returns
+            instantly; `bin/check` boots the app (~15s a run).
 
         MD
         write_bin_check(host)
+        write_mcp_config(host)
       end
 
       def write_host_b
@@ -431,6 +439,24 @@ module Poetry
         check.chmod(0o755)
       end
 
+      # The poetry MCP server for host A: the fixture host has no
+      # Gemfile of its own, so the server runs out of the gem checkout's
+      # bundle - exactly what an installed app's plain
+      # `bundle exec poetry-agent` resolves to. Loaded via --mcp-config +
+      # --strict-mcp-config (both arms strict: arm B runs with NO servers,
+      # so nothing user-scoped can leak into either arm).
+      def write_mcp_config(host)
+        host.join(".mcp.json").write(JSON.pretty_generate(
+                                       "mcpServers" => {
+                                         "poetry" => {
+                                           "command" => "bundle",
+                                           "args" => ["exec", "poetry-agent", @ui_root.to_s],
+                                           "env" => { "BUNDLE_GEMFILE" => @ui_root.join("Gemfile").to_s }
+                                         }
+                                       }
+                                     ))
+      end
+
       # ------------------------------------------------------------- CLI calls
 
       # A fresh copy of the arm's template host for one unit: no sibling
@@ -461,10 +487,15 @@ module Poetry
       # reports an error); MAX_GENERATION_ATTEMPTS retries, then the caller
       # records the unit as an error entry - never a run killer.
       def claude_generate(prompt, host:, toolbelt:, attempt: 1)
+        # --strict-mcp-config for BOTH arms: only the host's own .mcp.json
+        # (host A) or no servers at all (host B) - user-scoped MCP servers
+        # must never leak into either arm.
+        mcp_args = ["--strict-mcp-config"]
+        mcp_args.push("--mcp-config", ".mcp.json") if host.join(".mcp.json").exist?
         out, err, status = Open3.capture3(
           "claude", "-p", prompt, "--output-format", "json",
           "--model", @model, "--max-turns", @max_turns.to_s,
-          "--allowedTools", toolbelt,
+          "--allowedTools", toolbelt, *mcp_args,
           chdir: host.to_s
         )
         # A failed run still emits an envelope on stdout (exit 1, is_error,

@@ -6,7 +6,9 @@ module Poetry
   module Ui
     class RegistryTest < Minitest::Test
       def registry
-        Poetry::Core::Registry.new(source_root: Poetry::Ui.root)
+        # The shared builder the rake task generates from - the sync test
+        # must verify the exact same construction (helpers section included).
+        Poetry::Ui.registry
       end
 
       def test_discovers_poetry_ui_components

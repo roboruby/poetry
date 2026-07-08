@@ -38,6 +38,29 @@ module Poetry
         # module can't load standalone in some host.
         root.join("app/helpers/poetry/ui/components_helper.rb").read.scan(/def (poetry_[a-z_]+)/).flatten.uniq
       end
+
+      # The registry builder this gem commits from (booted contexts only:
+      # rake registry:generate/verify and the sync test share it, so the
+      # drift gate always compares against the exact construction that
+      # generated the file - helpers section included).
+      def registry
+        components = Poetry::Core::Registry.new(source_root: root).components
+        Poetry::Core::Registry.new(
+          components: components, source_root: root,
+          helpers: registry_helpers(component_paths: components.map(&:component_path))
+        )
+      end
+
+      # The registry "helpers" section: every poetry_* helper that
+      # maps to no component - group/provider/item wrappers - each carrying
+      # its declared value contract (ComponentsHelper::HELPER_CONTRACTS) or
+      # {} for a plain wrapper.
+      def registry_helpers(component_paths:)
+        mapped = component_paths.map { |path| "poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}" }
+        (helper_names - mapped).sort.to_h do |name|
+          [name, ComponentsHelper::HELPER_CONTRACTS.fetch(name, {})]
+        end
+      end
     end
   end
 end

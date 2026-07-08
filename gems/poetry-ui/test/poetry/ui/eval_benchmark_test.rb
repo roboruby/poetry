@@ -63,9 +63,11 @@ module Poetry
         assert_includes prompt, "The brief: A plan card"
         assert_includes prompt, "reply with exactly: DONE"
         # Truthful toolbelt disclosure (denied Bash flailing burned turns
-        # in the wild); "a check command if AGENTS.md documents one" stays
-        # arm-neutral - only host A's AGENTS.md documents one.
-        assert_includes prompt, "Your tools are Read, Glob, Grep, and Write."
+        # in the wild); "any checking tools AGENTS.md documents" stays
+        # arm-neutral - only host A's AGENTS.md documents any (bin/check +
+        # the MCP server since).
+        assert_includes prompt, "Your tools are Read, Glob, Grep, and Write, " \
+                                "plus any checking tools AGENTS.md documents."
         # No arm keyword exists, so no arm conditional can creep in.
         assert_equal %i[task brief],
                      Poetry::Eval::Benchmark.method(:generation_prompt).parameters.map(&:last)

@@ -17,7 +17,10 @@ module Poetry
           "Never inline raw <svg> markup where an icon exists - use poetry_icon."
         ].freeze
 
-        option :name, :symbol, required: true
+        # format: :"icon-name" is the machine-readable value contract:
+        # the registry carries it, poetry check validates literals against the
+        # icon set statically - the W2 :folder_plus render crash, moved left.
+        option :name, :symbol, required: true, format: :"icon-name"
         option :label, :string
         option :library, :symbol
 

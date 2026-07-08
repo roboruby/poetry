@@ -77,6 +77,7 @@ components:
     slots:
     - name: icon
       many: false
+      component: poetry/ui/icon
     - name: title
       many: false
     elements:
@@ -286,6 +287,8 @@ components:
     slots:
     - name: items
       many: true
+    slot_extras:
+    - ellipsis
     elements:
     - list
     - item
@@ -729,6 +732,10 @@ components:
       many: false
     - name: items
       many: true
+      types:
+      - item
+      - group
+      - separator
     elements:
     - trigger
     - value
@@ -848,6 +855,10 @@ components:
       many: false
     - name: items
       many: true
+      types:
+      - item
+      - group
+      - separator
     elements:
     - input_wrapper
     - input
@@ -937,6 +948,12 @@ components:
     slots:
     - name: trigger
       many: false
+    slot_extras:
+    - empty
+    - group
+    - item
+    - loading
+    - separator
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -1006,6 +1023,14 @@ components:
     slots:
     - name: items
       many: true
+      types:
+      - item
+      - checkbox_item
+      - radio_group
+      - label
+      - separator
+      - group
+      - sub
     - name: trigger
       many: false
     elements:
@@ -1367,6 +1392,14 @@ components:
     slots:
     - name: items
       many: true
+      types:
+      - item
+      - checkbox_item
+      - radio_group
+      - label
+      - separator
+      - group
+      - sub
     - name: trigger
       many: false
     elements:
@@ -1622,6 +1655,7 @@ components:
     - name: name
       type: symbol
       required: true
+      format: icon-name
     slots: []
     agent_rules:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
@@ -1893,6 +1927,7 @@ components:
     slots:
     - name: icon
       many: false
+      component: poetry/ui/icon
     elements:
     - icon
     - content
@@ -2174,6 +2209,8 @@ components:
     slots:
     - name: items
       many: true
+    slot_extras:
+    - link
     elements:
     - list
     - item
@@ -2577,6 +2614,10 @@ components:
       many: false
     - name: items
       many: true
+      types:
+      - item
+      - group
+      - separator
     elements:
     - trigger
     - content
@@ -3442,3 +3483,65 @@ components:
       the row feel continuous.
     - 'Rich visual content needs label: (the plain-text announcement).'
     - Do not pin tooltips open as onboarding callouts - that is a Popover.
+helpers:
+  poetry_attachment_group: {}
+  poetry_avatar_group: {}
+  poetry_avatar_group_count: {}
+  poetry_bubble_group: {}
+  poetry_button_group_separator: {}
+  poetry_button_group_text: {}
+  poetry_input_group_addon:
+    options:
+    - name: align
+      type: symbol
+      default: inline-start
+      variants:
+      - inline-start
+      - inline-end
+      - block-start
+      - block-end
+  poetry_input_group_button:
+    options:
+    - name: size
+      type: symbol
+      default: xs
+      variants:
+      - xs
+      - sm
+      - icon-xs
+      - icon-sm
+  poetry_input_group_input: {}
+  poetry_input_group_text: {}
+  poetry_input_group_textarea: {}
+  poetry_item_group: {}
+  poetry_item_separator: {}
+  poetry_message_group: {}
+  poetry_message_scroller_item: {}
+  poetry_native_select_optgroup: {}
+  poetry_native_select_option: {}
+  poetry_navigation_menu_link: {}
+  poetry_sidebar_content: {}
+  poetry_sidebar_footer: {}
+  poetry_sidebar_group: {}
+  poetry_sidebar_group_content: {}
+  poetry_sidebar_group_label: {}
+  poetry_sidebar_header: {}
+  poetry_sidebar_menu: {}
+  poetry_sidebar_menu_action: {}
+  poetry_sidebar_menu_badge: {}
+  poetry_sidebar_menu_button: {}
+  poetry_sidebar_menu_item: {}
+  poetry_sidebar_menu_sub: {}
+  poetry_sidebar_menu_sub_button: {}
+  poetry_sidebar_menu_sub_item: {}
+  poetry_sidebar_rail: {}
+  poetry_sidebar_separator: {}
+  poetry_sidebar_trigger: {}
+  poetry_table_body: {}
+  poetry_table_caption: {}
+  poetry_table_cell: {}
+  poetry_table_footer: {}
+  poetry_table_head: {}
+  poetry_table_header: {}
+  poetry_table_row: {}
+  poetry_tooltip_provider: {}

@@ -398,6 +398,23 @@ module Poetry
                                                  "data-size": size), &)
       end
 
+      # The value contracts runtime-enforced inside wrapper helpers, in
+      # registry shape - emitted as the registry's "helpers" section
+      # (rakelib/registry.rake) so poetry check and the MCP server validate
+      # these literals statically (: the W2 filter_toolbar align:
+      # :leading crash class). Plain wrapper helpers need no entry here;
+      # registry generation lists them name-only.
+      HELPER_CONTRACTS = {
+        "poetry_input_group_addon" => {
+          "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
+                          "variants" => INPUT_GROUP_ALIGNS.map(&:to_s) }]
+        },
+        "poetry_input_group_button" => {
+          "options" => [{ "name" => "size", "type" => "symbol", "default" => "xs",
+                          "variants" => INPUT_GROUP_BUTTON_SIZES.map(&:to_s) }]
+        }
+      }.freeze
+
       def poetry_dialog(**, &)
         render(Poetry::Ui::Dialog::Component.new(**), &)
       end

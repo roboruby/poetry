@@ -9,8 +9,10 @@ def poetry_ui_boot!
   Rails.application.eager_load!
 end
 
+# The shared builder (lib/poetry/ui.rb) - the same construction the sync
+# test verifies, helpers section included.
 def poetry_ui_registry
-  Poetry::Core::Registry.new(source_root: Poetry::Ui.root)
+  Poetry::Ui.registry
 end
 
 namespace :registry do

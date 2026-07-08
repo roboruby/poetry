@@ -44,8 +44,12 @@ module Poetry
           - Machine catalog: `/poetry/llms.txt` (index) and `/poetry/llms-full.txt`
             (full contracts + Stimulus wiring: targets / values / actions / events).
           - Verify markup before finishing: `bin/rails poetry:check` (unknown
-            components/slots/variants/wiring, did-you-mean, `--json`; needs the
-            `herb` gem in the Gemfile).
+            components/slots/variants/wiring, icon names, enum values, typed-slot
+            props, did-you-mean, `--json`; needs the `herb` gem in the Gemfile).
+          - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
+            `["exec", "poetry-agent"]`) serves `check`, `describe_component`, and
+            `list_components` from the live registry with no app boot - prefer its
+            `check` tool when iterating.
           - One visual theme per app (chosen at install with `--theme`); components
             read tokens, never restate them.
           - Design interop: `bin/rails poetry:design:export` writes this app's

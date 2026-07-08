@@ -10,8 +10,18 @@
 def poetry_check_catalog
   Poetry::Core::Check::Catalog.from_registry(
     Poetry::Ui.root,
-    helpers: Poetry::Ui::ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/)
+    helpers: Poetry::Ui::ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/),
+    icon_names: poetry_check_icon_names
   )
+end
+
+# The active icon set's names, for the value-contract tier. A host
+# without a registered set still checks icon-name SHAPE - membership is
+# extra rigor, never a requirement.
+def poetry_check_icon_names
+  Poetry::Core::Icons.set.names
+rescue Poetry::Core::Error
+  nil
 end
 
 namespace :poetry do
