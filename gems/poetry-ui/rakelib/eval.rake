@@ -18,9 +18,9 @@ POETRY_EVAL_REVEAL = {
   "overlay" => ["Delete API key", "Delete"],
   "mobile_sheet" => ["Set goal", "Set daily goal"],
   "menu" => %w[Options File],
-  "searchable_select" => ["Select framework", "Filter frameworks", "Next.js"],
+  "searchable_select" => ["Select framework", "Select a framework", "Filter frameworks", "Next.js"],
   "site_nav" => ["Products"],
-  "date_field" => ["June 12, 2026", "Pick a date", "Pick a due date", "Jul 15, 2026"],
+  "date_field" => ["June 12, 2026", "Pick a date", "Pick a due date", "Jul 15, 2026", "July 14, 2026"],
   "floating" => ["Open popover"]
 }.freeze
 
