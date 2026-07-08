@@ -68,7 +68,7 @@ end
 # points the runner and the arms endpoint at a results/<date>/generated
 # corpus). Tasks with no arms present (a subset benchmark state) are
 # skipped, not errors.
-def poetry_ui_eval_capture_all(runner, captures_root)
+def poetry_ui_eval_capture_all(runner, captures_root, tolerant: false)
   require "fileutils"
 
   session = poetry_ui_browser_session
@@ -80,8 +80,17 @@ def poetry_ui_eval_capture_all(runner, captures_root)
     dir = captures_root.join(task)
     FileUtils.mkdir_p(dir)
     arms.keys.sort.each do |arm|
-      poetry_ui_visit_preview(session, "/eval/#{task}/#{arm}")
-      poetry_ui_eval_reveal(session, task)
+      begin
+        poetry_ui_visit_preview(session, "/eval/#{task}/#{arm}")
+        poetry_ui_eval_reveal(session, task)
+      rescue StandardError => e
+        # A GENERATED arm may 500 at render (a real authoring failure) -
+        # the error state IS the judge's honest evidence, so screenshot it
+        # (tolerant mode, benchmark only). Frozen arms stay loud.
+        raise unless tolerant
+
+        puts "  (#{task}/#{arm}: page errored - #{e.class} - capturing the error state)"
+      end
       session.driver.save_screenshot(dir.join("#{arm}.png").to_s, full: true)
       count += 1
     end
@@ -427,7 +436,7 @@ namespace :eval do
                  poetry_ui_compile_tailwind(extra_sources: [generated]))
       ENV["POETRY_EVAL_ARMS_ROOT"] = generated.to_s
       count = poetry_ui_eval_capture_all(Poetry::Eval::Runner.new(arms_root: generated),
-                                         poetry_bench_results_root.join("captures"))
+                                         poetry_bench_results_root.join("captures"), tolerant: true)
       puts "benchmark capture: #{count} screenshots in #{poetry_bench_results_root.join("captures")}"
     end
 
