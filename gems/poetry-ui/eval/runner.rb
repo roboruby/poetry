@@ -726,7 +726,11 @@ module Poetry
               end
             }),
             Gate.new(:badge_not_interactive, :cross_arm, lambda { |doc, _html|
-              badge = doc.xpath(".//*[normalize-space(text())='beta']").first
+              # The text is only the LOCATOR (the gate tests interactivity);
+              # case-insensitive so a generated arm's "Beta" is found too
+              # (N15 W2 smoke: both generated arms wrote "Beta" and failed
+              # here on casing luck, not quality).
+              badge = doc.xpath(".//*[translate(normalize-space(text()), 'BETA', 'beta')='beta']").first
               !badge.nil? && !INTERACTIVE_TAGS.include?(badge.name) &&
                 badge.ancestors.none? { |node| INTERACTIVE_TAGS.include?(node.name) }
             })
