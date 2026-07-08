@@ -333,7 +333,10 @@ namespace :eval do
       end
       unless ENV["POETRY_BENCH_FORCE"] == "1"
         units = units.reject do |task, arm|
-          manifest["units"].dig(task, arm) &&
+          entry = manifest["units"].dig(task, arm)
+          # An error entry only has a placeholder artifact - a plain re-run
+          # must retry it, not skip it.
+          entry && !entry.key?("error") &&
             poetry_bench_results_root.join("generated", task, "#{arm}.html.erb").exist?
         end
       end

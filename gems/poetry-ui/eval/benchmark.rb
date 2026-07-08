@@ -428,7 +428,9 @@ module Poetry
           "--allowedTools", toolbelt,
           chdir: host.to_s
         )
-        raise Error, "claude exited #{status.exitstatus}: #{err.to_s[0, 200]}" unless status.success?
+        unless status.success?
+          raise Error, "claude exited #{status.exitstatus}: #{err.to_s[0, 200]} #{out.to_s[0, 200]}".strip
+        end
 
         envelope = JSON.parse(out)
         record_usage(envelope)
