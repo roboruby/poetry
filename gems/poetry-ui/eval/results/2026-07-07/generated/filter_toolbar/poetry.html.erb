@@ -1,0 +1,34 @@
+<div class="flex flex-wrap items-center justify-between gap-3">
+  <div class="w-full max-w-sm">
+    <%= poetry_input_group do %>
+      <%= poetry_input_group_addon(align: :leading) do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(type: "text", name: "q", placeholder: "Search…", "aria-label": "Search") %>
+      <%= poetry_input_group_addon(align: :trailing) do %>
+        <span class="inline-flex items-center gap-0.5">
+          <%= poetry_kbd { "⌘" } %>
+          <%= poetry_kbd { "K" } %>
+        </span>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex items-center gap-3">
+    <%= poetry_select(id: "filter-toolbar-sort", name: "sort", value: "newest", "aria-label": "Sort by") do |select| %>
+      <% select.with_item("Newest first", value: "newest") %>
+      <% select.with_item("Oldest first", value: "oldest") %>
+      <% select.with_item("Name (A–Z)", value: "name_asc") %>
+      <% select.with_item("Name (Z–A)", value: "name_desc") %>
+    <% end %>
+
+    <%= poetry_toggle_group(type: :single, value: "list", label: "View") do |group| %>
+      <% group.with_item(value: "list", label: "List view") do %>
+        <%= poetry_icon(name: :list) %>
+      <% end %>
+      <% group.with_item(value: "grid", label: "Grid view") do %>
+        <%= poetry_icon(name: "layout-grid") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

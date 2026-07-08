@@ -1,0 +1,29 @@
+<section class="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center gap-6 p-8 text-center">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold text-foreground">Daily activity goal</h1>
+    <p class="text-sm text-muted-foreground">Set a target to stay on track today.</p>
+  </div>
+
+  <%= poetry_drawer(direction: :down, show_swipe_handle: true) do |drawer| %>
+    <% drawer.with_trigger do %>
+      <%= poetry_button { "Set daily goal" } %>
+    <% end %>
+
+    <% drawer.with_title { "Set daily activity goal" } %>
+    <% drawer.with_description { "Choose what you're tracking and how much of it you want to do today. You can change this anytime." } %>
+
+    <div class="space-y-4 px-4 pb-2">
+      <%= poetry_field(id: "activity_goal_type", label_text: "Goal type") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "activity_goal[type]", options: [["Steps", "steps"], ["Active minutes", "minutes"], ["Calories burned", "calories"]], selected: "steps") %>
+      <% end %>
+
+      <%= poetry_field(id: "activity_goal_target", label_text: "Daily target", hint: "Most adults aim for 7,000-10,000 steps a day.") do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "number", name: "activity_goal[target]", value: "8000", placeholder: "8000") %>
+      <% end %>
+    </div>
+
+    <% drawer.with_footer do %>
+      <%= poetry_button(type: :submit) { "Save goal" } %>
+    <% end %>
+  <% end %>
+</section>

@@ -1,0 +1,22 @@
+<section class="mx-auto max-w-xl px-6 py-16">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Contact information" } %>
+    <% card.with_description { "We'll use this to send account and billing notifications." } %>
+
+    <form class="flex flex-col gap-6">
+      <%= poetry_field(
+            id: "work_email",
+            label_text: "Work email",
+            hint: "Use the email address tied to your company account.",
+            error: "can't be blank",
+            required: true
+          ) do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "email", name: "work_email", placeholder: "you@company.com") %>
+      <% end %>
+
+      <div class="flex justify-end">
+        <%= poetry_button(type: :submit) { "Save changes" } %>
+      </div>
+    </form>
+  <% end %>
+</section>

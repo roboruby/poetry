@@ -1,0 +1,24 @@
+<section class="mx-auto max-w-md p-8">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "New project" } %>
+    <% card.with_description { "Pick the framework this project will run on." } %>
+
+    <div class="flex flex-col gap-1.5">
+      <%= poetry_label(for_id: "framework") { "Framework" } %>
+
+      <%= poetry_combobox(
+            id: "framework",
+            name: "framework",
+            placeholder: "Select framework...",
+            search_placeholder: "Search framework..."
+          ) do |combobox| %>
+        <% combobox.with_empty { "No framework found." } %>
+        <% combobox.with_item(value: "next") { "Next.js" } %>
+        <% combobox.with_item(value: "sveltekit") { "SvelteKit" } %>
+        <% combobox.with_item(value: "nuxt") { "Nuxt.js" } %>
+        <% combobox.with_item(value: "remix") { "Remix" } %>
+        <% combobox.with_item(value: "astro") { "Astro" } %>
+      <% end %>
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,24 @@
+<div class="mx-auto flex max-w-md flex-col gap-6 rounded-lg border border-border bg-card p-6 text-card-foreground">
+  <div class="flex items-center gap-3">
+    <%= poetry_spinner(label: "Loading results…") %>
+    <span class="text-sm font-medium text-foreground" aria-hidden="true">Loading results…</span>
+  </div>
+
+  <div class="flex items-center gap-4" aria-busy="true">
+    <%= poetry_skeleton(class: "size-10 shrink-0 rounded-full") %>
+    <div class="flex flex-1 flex-col gap-2">
+      <%= poetry_skeleton(class: "h-4 w-2/5") %>
+      <%= poetry_skeleton(class: "h-3 w-3/5") %>
+    </div>
+  </div>
+
+  <%= poetry_separator %>
+
+  <div class="flex items-center justify-between">
+    <span class="text-sm text-muted-foreground">Press to search anytime</span>
+    <span class="inline-flex items-center gap-1">
+      <%= poetry_kbd do %>⌘<% end %>
+      <%= poetry_kbd do %>K<% end %>
+    </span>
+  </div>
+</div>

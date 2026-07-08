@@ -1,0 +1,162 @@
+<section class="flex h-screen flex-col bg-slate-100 text-slate-900" aria-label="Code editor">
+  <header class="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
+    <div class="flex items-center gap-3">
+      <h1 class="text-sm font-semibold tracking-wide text-slate-700">Code Editor</h1>
+      <span class="hidden text-xs text-slate-400 sm:inline">billing-service</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700">
+        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+        All changes saved
+      </span>
+      <span class="rounded border border-slate-200 px-2 py-1 font-mono text-xs text-slate-500">main</span>
+    </div>
+  </header>
+
+  <div class="flex min-h-0 flex-1">
+    <!-- Files pane: drag the right edge to resize (native CSS resize handle) -->
+    <aside
+      class="flex w-64 min-w-[180px] max-w-[480px] shrink-0 resize-x flex-col overflow-auto border-r-2 border-slate-200 bg-white pb-4"
+      title="Drag the right edge to resize this pane"
+      aria-label="Files"
+    >
+      <div class="sticky top-0 z-10 flex items-center justify-between border-b border-slate-100 bg-white px-3 py-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-slate-400">Files</h2>
+        <span class="text-[10px] uppercase tracking-wide text-slate-300">drag edge to resize</span>
+      </div>
+
+      <nav class="px-2 py-2 text-sm leading-6 text-slate-600" aria-label="File tree">
+        <ul>
+          <li>
+            <details open>
+              <summary class="cursor-pointer select-none rounded px-2 py-1 font-medium text-slate-700 hover:bg-slate-100">app</summary>
+              <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                <li>
+                  <details open>
+                    <summary class="cursor-pointer select-none rounded px-2 py-1 text-slate-600 hover:bg-slate-100">models</summary>
+                    <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                      <li>
+                        <a href="#editor-content" aria-current="page" class="block truncate rounded bg-sky-50 px-2 py-1 font-medium text-sky-700">
+                          invoice.rb
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">line_item.rb</a>
+                      </li>
+                      <li>
+                        <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">customer.rb</a>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li>
+                  <details>
+                    <summary class="cursor-pointer select-none rounded px-2 py-1 text-slate-600 hover:bg-slate-100">controllers</summary>
+                    <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                      <li>
+                        <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">invoices_controller.rb</a>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li>
+                  <details>
+                    <summary class="cursor-pointer select-none rounded px-2 py-1 text-slate-600 hover:bg-slate-100">services</summary>
+                    <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                      <li>
+                        <details>
+                          <summary class="cursor-pointer select-none rounded px-2 py-1 text-slate-600 hover:bg-slate-100">billing</summary>
+                          <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                            <li>
+                              <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">charge_processor.rb</a>
+                            </li>
+                          </ul>
+                        </details>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <details>
+              <summary class="cursor-pointer select-none rounded px-2 py-1 font-medium text-slate-700 hover:bg-slate-100">config</summary>
+              <ul class="ml-3 border-l border-slate-200 pl-2.5">
+                <li>
+                  <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">routes.rb</a>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">Gemfile</a>
+          </li>
+          <li>
+            <a href="#editor-content" class="block truncate rounded px-2 py-1 text-slate-600 hover:bg-slate-100">README.md</a>
+          </li>
+        </ul>
+      </nav>
+    </aside>
+
+    <!-- Editor pane -->
+    <div class="flex min-h-0 min-w-0 flex-1 flex-col bg-slate-900">
+      <div class="flex shrink-0 items-center justify-between border-b border-slate-800 bg-slate-900 px-4 py-2">
+        <div class="flex items-center gap-1.5 font-mono text-xs text-slate-400">
+          <span>app</span>
+          <span class="text-slate-600">/</span>
+          <span>models</span>
+          <span class="text-slate-600">/</span>
+          <span class="font-medium text-slate-100">invoice.rb</span>
+        </div>
+        <span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-slate-400">Ruby</span>
+      </div>
+
+      <label for="editor-content" class="sr-only">Editor contents for app/models/invoice.rb</label>
+      <textarea
+        id="editor-content"
+        name="editor-content"
+        spellcheck="false"
+        wrap="off"
+        class="w-full min-h-0 flex-1 resize-none overflow-auto border-0 bg-slate-900 p-4 font-mono text-[13px] leading-6 text-slate-200 outline-none focus:ring-0"
+      ># frozen_string_literal: true
+
+class Invoice < ApplicationRecord
+  belongs_to :customer
+  has_many :line_items, dependent: :destroy
+
+  validates :number, presence: true, uniqueness: true
+  validates :due_on, presence: true
+
+  enum status: { draft: 0, sent: 1, paid: 2, void: 3 }
+
+  scope :overdue, -> { where(status: :sent).where("due_on < ?", Time.zone.today) }
+
+  def total
+    line_items.sum(&:amount)
+  end
+
+  def mark_as_paid!
+    update!(status: :paid, paid_at: Time.current)
+  end
+
+  def overdue?
+    sent? && due_on < Time.zone.today
+  end
+end
+</textarea>
+
+      <div class="flex shrink-0 items-center justify-between border-t border-slate-800 bg-slate-900 px-4 py-1.5 text-[11px] text-slate-500">
+        <div class="flex items-center gap-3">
+          <span>UTF-8</span>
+          <span>LF</span>
+          <span>Ruby</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <span>Ln 12, Col 6</span>
+          <span>Spaces: 2</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,99 @@
+<section class="mx-auto max-w-md p-8">
+  <form action="#" method="get">
+    <div class="flex flex-col gap-1.5">
+      <span id="framework-label" class="text-sm font-medium text-gray-900">
+        Framework
+      </span>
+
+      <details class="group relative" name="framework-picker">
+        <summary
+          id="framework-trigger"
+          role="combobox"
+          aria-haspopup="listbox"
+          aria-expanded="false"
+          aria-controls="framework-listbox"
+          aria-labelledby="framework-label framework-trigger"
+          tabindex="0"
+          class="flex list-none items-center justify-between gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 shadow-sm cursor-pointer select-none marker:content-none [&::-webkit-details-marker]:hidden focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 group-open:rounded-b-none group-open:border-indigo-500 group-open:ring-2 group-open:ring-indigo-500"
+        >
+          <span class="truncate text-gray-500 group-has-[input:checked]:text-gray-900" data-selected-label>
+            Select a framework&hellip;
+          </span>
+          <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+
+        <div class="absolute z-10 mt-0 w-full overflow-hidden rounded-b-md border border-t-0 border-indigo-500 bg-white shadow-lg">
+          <div class="border-b border-gray-200 p-2">
+            <label for="framework-search" class="sr-only">Filter frameworks</label>
+            <input
+              type="search"
+              id="framework-search"
+              name="framework_search"
+              placeholder="Type to filter&hellip;"
+              autocomplete="off"
+              class="w-full rounded-md border border-gray-300 px-2.5 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
+          </div>
+
+          <ul id="framework-listbox" role="listbox" aria-labelledby="framework-label" class="max-h-60 overflow-y-auto py-1 text-sm">
+            <li class="contents">
+              <label class="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-gray-700 hover:bg-indigo-50 has-[input:checked]:bg-indigo-50 has-[input:checked]:font-medium has-[input:checked]:text-indigo-700">
+                <span>Next.js</span>
+                <input type="radio" name="framework" value="nextjs" class="peer sr-only">
+                <svg class="hidden h-4 w-4 text-indigo-600 peer-checked:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            </li>
+            <li class="contents">
+              <label class="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-gray-700 hover:bg-indigo-50 has-[input:checked]:bg-indigo-50 has-[input:checked]:font-medium has-[input:checked]:text-indigo-700">
+                <span>SvelteKit</span>
+                <input type="radio" name="framework" value="sveltekit" class="peer sr-only">
+                <svg class="hidden h-4 w-4 text-indigo-600 peer-checked:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            </li>
+            <li class="contents">
+              <label class="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-gray-700 hover:bg-indigo-50 has-[input:checked]:bg-indigo-50 has-[input:checked]:font-medium has-[input:checked]:text-indigo-700">
+                <span>Nuxt.js</span>
+                <input type="radio" name="framework" value="nuxtjs" class="peer sr-only">
+                <svg class="hidden h-4 w-4 text-indigo-600 peer-checked:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            </li>
+            <li class="contents">
+              <label class="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-gray-700 hover:bg-indigo-50 has-[input:checked]:bg-indigo-50 has-[input:checked]:font-medium has-[input:checked]:text-indigo-700">
+                <span>Remix</span>
+                <input type="radio" name="framework" value="remix" class="peer sr-only">
+                <svg class="hidden h-4 w-4 text-indigo-600 peer-checked:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            </li>
+            <li class="contents">
+              <label class="flex cursor-pointer items-center justify-between gap-2 px-3 py-2 text-gray-700 hover:bg-indigo-50 has-[input:checked]:bg-indigo-50 has-[input:checked]:font-medium has-[input:checked]:text-indigo-700">
+                <span>Astro</span>
+                <input type="radio" name="framework" value="astro" class="peer sr-only">
+                <svg class="hidden h-4 w-4 text-indigo-600 peer-checked:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                </svg>
+              </label>
+            </li>
+          </ul>
+        </div>
+      </details>
+
+      <p class="text-xs text-gray-500">Search or pick a framework for your project.</p>
+    </div>
+
+    <div class="mt-6">
+      <button type="submit" class="inline-flex items-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+        Continue
+      </button>
+    </div>
+  </form>
+</section>

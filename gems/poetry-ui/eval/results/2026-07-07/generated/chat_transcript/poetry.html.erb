@@ -1,0 +1,62 @@
+<div class="mx-auto flex max-w-2xl flex-col gap-4 p-6">
+  <%= poetry_message_scroller(id: "chat-transcript-scroller", jump_button: false) do %>
+    <%= poetry_message_scroller_item(id: "divider-today") do %>
+      <%= poetry_marker(variant: :separator) do %>
+        Today — July 7, 2026
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "message-assistant-1") do %>
+      <%= poetry_message(align: :start) do |message| %>
+        <% message.with_avatar do %>
+          <%= poetry_avatar(label: "Assistant") { "AI" } %>
+        <% end %>
+
+        <% message.with_header do %>
+          Assistant
+        <% end %>
+
+        <% message.with_footer do %>
+          10:24 AM
+        <% end %>
+
+        <%= poetry_bubble_group do %>
+          <%= poetry_bubble(variant: :default) do %>
+            <p>I pulled together the Q2 sales report you asked for. Take a look, and let me know if you would like a breakdown by region.</p>
+          <% end %>
+
+          <%= poetry_bubble(variant: :outline) do %>
+            <%= poetry_attachment do |attachment| %>
+              <% attachment.with_media(variant: :icon) do %>
+                <%= poetry_icon(name: :paperclip) %>
+              <% end %>
+
+              <% attachment.with_title do %>
+                Q2-sales-report.pdf
+              <% end %>
+
+              <% attachment.with_description do %>
+                1.2 MB
+              <% end %>
+
+              <% attachment.with_action(label: "Download") do %>
+                <%= poetry_icon(name: :download) %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <%= poetry_bubble(tag: :button, variant: :outline) do %>
+            Show regional breakdown
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "status-thinking") do %>
+      <%= poetry_marker(announce: :status) do %>
+        <%= poetry_spinner(label: "Thinking") %>
+        Assistant is thinking…
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

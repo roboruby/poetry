@@ -1,0 +1,39 @@
+<% members = [
+  { name: "Priya Natarajan", initials: "PN", role: "Engineering Manager, Platform" },
+  { name: "Marcus Webb", initials: "MW", role: "Senior Product Designer" },
+  { name: "Sofia Alvarez", initials: "SA", role: "Backend Engineer" },
+  { name: "Daniel Kim", initials: "DK", role: "Product Manager" },
+  { name: "Grace Osei", initials: "GO", role: "Frontend Engineer" },
+  { name: "Liam O'Connor", initials: "LO", role: "Customer Success Lead" },
+] %>
+
+<div class="mx-auto max-w-3xl px-6 py-10">
+  <%= poetry_breadcrumb do |b| %>
+    <% b.with_item("Home", href: "/") %>
+    <% b.with_item("Team", href: "/team") %>
+    <% b.with_item("Directory") %>
+  <% end %>
+
+  <div class="mt-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Directory</h1>
+    <p class="mt-1 text-sm text-muted-foreground">Everyone on the team, in one place.</p>
+  </div>
+
+  <div class="mt-6">
+    <%= poetry_item_group do %>
+      <% members.each_with_index do |member, index| %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media do %>
+            <%= poetry_avatar(label: member[:name]) { member[:initials] } %>
+          <% end %>
+          <% item.with_title { member[:name] } %>
+          <% item.with_description { member[:role] } %>
+          <% item.with_actions do %>
+            <%= poetry_button(variant: :outline, size: :sm, label: "Message #{member[:name]}") { "Message" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator unless index == members.length - 1 %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

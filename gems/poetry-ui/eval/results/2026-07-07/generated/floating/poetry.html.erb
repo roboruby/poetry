@@ -1,0 +1,76 @@
+<div class="mx-auto max-w-3xl px-8 py-12">
+  <div class="mb-10 space-y-1">
+    <h2 class="text-2xl font-semibold">Popper consumers</h2>
+    <p class="text-sm">Three overlays anchored to their triggers: a popover form, a tooltip hint, and a hover-card profile preview.</p>
+  </div>
+
+  <div class="flex flex-wrap items-start gap-10">
+    <div class="space-y-3">
+      <h3 class="text-sm font-medium">Dimensions popover</h3>
+
+      <%= poetry_popover(align: "start") do |popover| %>
+        <% popover.with_trigger do %>
+          <%= poetry_button(variant: "outline") { "Open popover" } %>
+        <% end %>
+        <% popover.with_title { "Dimensions" } %>
+        <% popover.with_description { "Set the exact width and height for the selected layer." } %>
+
+        <div class="grid w-72 gap-4">
+          <div class="grid grid-cols-2 gap-3">
+            <%= poetry_field(id: "dimensions-width", label_text: "Width") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "width", type: "number", value: "1024") %>
+            <% end %>
+            <%= poetry_field(id: "dimensions-height", label_text: "Height") do |field| %>
+              <%= poetry_input(**field.control_attributes, name: "height", type: "number", value: "768") %>
+            <% end %>
+          </div>
+
+          <%= poetry_field(id: "dimensions-unit", label_text: "Unit") do |field| %>
+            <%= poetry_native_select(**field.control_attributes, name: "unit", options: [["Pixels", "px"], ["Percent", "%"], ["Em", "em"]], selected: "px") %>
+          <% end %>
+
+          <%= poetry_checkbox(name: "lock_aspect_ratio", value: "1", checked: true, label: "Lock aspect ratio") %>
+
+          <%= poetry_separator %>
+
+          <div class="flex justify-end gap-2">
+            <%= poetry_button(variant: "ghost") { "Cancel" } %>
+            <%= poetry_button(variant: "default") { "Apply" } %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="space-y-3">
+      <h3 class="text-sm font-medium">Add to library</h3>
+
+      <%= poetry_tooltip do |tooltip| %>
+        <% tooltip.with_trigger do %>
+          <%= poetry_button(size: "icon", variant: "outline", label: "Add to library") do %>
+            <%= poetry_icon(name: "bookmark") %>
+          <% end %>
+        <% end %>
+        Add to library
+      <% end %>
+    </div>
+
+    <div class="space-y-3">
+      <h3 class="text-sm font-medium">Profile hover card</h3>
+
+      <%= poetry_hover_card do |hover_card| %>
+        <% hover_card.with_trigger do %>
+          <%= poetry_link(href: "https://nextjs.org", external: true) { "@nextjs" } %>
+        <% end %>
+
+        <div class="flex w-72 gap-3 p-1">
+          <%= poetry_avatar(label: "Next.js") { "N" } %>
+          <div class="space-y-1">
+            <p class="text-sm font-semibold">Next.js</p>
+            <p class="text-sm">@nextjs</p>
+            <p class="text-sm">The React Framework for the Web — hybrid rendering, file-system routing, and built-in optimizations.</p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

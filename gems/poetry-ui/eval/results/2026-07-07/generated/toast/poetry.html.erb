@@ -1,0 +1,19 @@
+<div class="p-8">
+  <h1 class="text-2xl font-semibold text-foreground">Dashboard</h1>
+  <p class="mt-2 text-sm text-muted-foreground">
+    Notifications surface here as toasts in the corner of the screen.
+  </p>
+
+  <%= poetry_toaster(position: "top-right") do %>
+    <%= poetry_toast(variant: "success") do |toast| %>
+      <% toast.with_title { "Saved" } %>
+      <% toast.with_description { "Your changes have been saved." } %>
+    <% end %>
+
+    <%= poetry_toast(variant: "destructive") do |toast| %>
+      <% toast.with_title { "Payment failed" } %>
+      <% toast.with_description { "We couldn't process your last payment." } %>
+      <% toast.with_action { "Retry" } %>
+    <% end %>
+  <% end %>
+</div>

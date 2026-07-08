@@ -1,0 +1,69 @@
+<%
+  invoice_class = Struct.new(:number, :customer, :status, :amount, :due_date)
+
+  customers = [
+    "Acme Corp", "Globex", "Initech", "Umbrella LLC", "Soylent Inc",
+    "Stark Industries", "Wayne Enterprises", "Wonka Co", "Hooli", "Vandelay Industries"
+  ]
+  statuses = %w[paid pending overdue draft]
+
+  invoices = (1..42).map do |i|
+    invoice_class.new(
+      1000 + i,
+      customers[i % customers.length],
+      statuses[i % statuses.length],
+      (82.5 + (i * 37.35)).round(2),
+      Date.new(2026, 6, 1) + i
+    )
+  end
+
+  state = Poetry::Ui::DataTable::State.from_params(
+    params, sortable: %w[number customer status amount due_date],
+            default_sort: "number", default_dir: "asc"
+  )
+
+  visible_invoices = invoices
+  if state.q.present?
+    query = state.q.downcase
+    visible_invoices = invoices.select do |invoice|
+      "inv-#{invoice.number}".include?(query) ||
+        invoice.customer.downcase.include?(query) ||
+        invoice.status.include?(query)
+    end
+  end
+
+  visible_invoices = visible_invoices.sort_by { |invoice| invoice.public_send(state.sort) }
+  visible_invoices = visible_invoices.reverse if state.dir == "desc"
+
+  per_page = 8
+  total_pages = [(visible_invoices.size / per_page.to_f).ceil, 1].max
+  current_page = [state.page, total_pages].min
+  page_invoices = visible_invoices.each_slice(per_page).to_a[current_page - 1] || []
+
+  status_variant = lambda do |status|
+    case status
+    when "paid" then :secondary
+    when "overdue" then :destructive
+    when "pending" then :outline
+    else :default
+    end
+  end
+%>
+
+<div class="mx-auto max-w-5xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Invoices</h1>
+    <p class="text-sm text-muted-foreground">Sorted by invoice number. Filter by invoice, customer, or status, then page through the results.</p>
+  </div>
+
+  <%= poetry_data_table(rows: page_invoices, state: state, total: total_pages,
+                        path: ->(p) { "?#{p.to_query}" },
+                        caption: "A sortable, filterable list of invoices.",
+                        filter_placeholder: "Filter by invoice, customer, or status…") do |table| %>
+    <% table.with_column("Invoice #", key: :number, sortable: true) { |invoice| "INV-#{invoice.number}" } %>
+    <% table.with_column("Customer", key: :customer, sortable: true) { |invoice| invoice.customer } %>
+    <% table.with_column("Status", key: :status, sortable: true) { |invoice| poetry_badge(variant: status_variant.call(invoice.status)) { invoice.status.capitalize } } %>
+    <% table.with_column("Amount", key: :amount, sortable: true, classes: "text-right") { |invoice| number_to_currency(invoice.amount) } %>
+    <% table.with_column("Due date", key: :due_date, sortable: true) { |invoice| invoice.due_date.strftime("%b %d, %Y") } %>
+  <% end %>
+</div>

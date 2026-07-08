@@ -1,0 +1,111 @@
+<div class="mx-auto flex h-full min-h-screen w-full max-w-3xl flex-col bg-gray-50">
+
+  <header class="flex items-center gap-3 border-b border-gray-200 bg-white px-6 py-4">
+    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-sm font-semibold text-white">
+      AI
+    </div>
+    <div class="min-w-0">
+      <h1 class="truncate text-sm font-semibold text-gray-900">Research Assistant</h1>
+      <p class="text-xs text-gray-500">Usually replies in a few seconds</p>
+    </div>
+  </header>
+
+  <main class="flex-1 overflow-y-auto px-6 py-6">
+    <ol class="flex flex-col gap-6">
+
+      <li class="flex items-center justify-center" aria-hidden="false">
+        <div class="flex items-center gap-3 text-xs font-medium text-gray-400">
+          <span class="h-px w-16 bg-gray-200"></span>
+          <span>Today, July 7</span>
+          <span class="h-px w-16 bg-gray-200"></span>
+        </div>
+      </li>
+
+      <li class="flex items-start gap-3">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+          AI
+        </div>
+
+        <div class="flex max-w-[80%] flex-col items-start gap-1.5">
+          <div class="rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-sm leading-relaxed text-gray-800 shadow-sm ring-1 ring-gray-200">
+            I pulled together the quarterly figures you asked for. I've attached the full spreadsheet below &mdash; let me know if you'd like me to break down any specific region.
+          </div>
+
+          <a
+            href="#"
+            class="flex w-full items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2.5 shadow-sm transition-colors hover:border-indigo-300 hover:bg-indigo-50/40"
+          >
+            <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <path d="M14 2v6h6"/>
+                <path d="M9 15h6"/>
+                <path d="M9 11h2"/>
+              </svg>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block truncate text-sm font-medium text-gray-900">Q2-quarterly-figures.xlsx</span>
+              <span class="block text-xs text-gray-500">248 KB &middot; Spreadsheet</span>
+            </span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4 shrink-0 text-gray-400">
+              <path d="M12 5v14"/>
+              <path d="M19 12l-7 7-7-7"/>
+            </svg>
+          </a>
+
+          <div class="mt-1 flex flex-wrap gap-2">
+            <button type="button" class="rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-medium text-indigo-700 transition-colors hover:bg-indigo-100">
+              Break down by region
+            </button>
+          </div>
+
+          <span class="px-1 text-[11px] text-gray-400">9:41 AM</span>
+        </div>
+      </li>
+
+      <li class="flex items-start gap-3">
+        <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-xs font-semibold text-white">
+          AI
+        </div>
+
+        <div class="flex flex-col items-start gap-1.5">
+          <div
+            class="flex items-center gap-1.5 rounded-2xl rounded-tl-sm bg-white px-4 py-3 shadow-sm ring-1 ring-gray-200"
+            role="status"
+            aria-live="polite"
+          >
+            <span class="sr-only">Assistant is thinking&hellip;</span>
+            <span class="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.3s]"></span>
+            <span class="h-2 w-2 animate-bounce rounded-full bg-gray-400 [animation-delay:-0.15s]"></span>
+            <span class="h-2 w-2 animate-bounce rounded-full bg-gray-400"></span>
+          </div>
+        </div>
+      </li>
+
+    </ol>
+  </main>
+
+  <footer class="border-t border-gray-200 bg-white px-6 py-4">
+    <form class="flex items-center gap-3">
+      <label for="chat-message" class="sr-only">Message</label>
+      <input
+        type="text"
+        id="chat-message"
+        name="message"
+        placeholder="Type a message&hellip;"
+        class="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-2.5 text-sm text-gray-800 placeholder:text-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+      >
+      <button
+        type="submit"
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-600 text-white transition-colors hover:bg-indigo-500"
+      >
+        <span class="sr-only">Send message</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4">
+          <path d="M22 2 11 13"/>
+          <path d="M22 2 15 22l-4-9-9-4z"/>
+        </svg>
+      </button>
+    </form>
+  </footer>
+
+</div>

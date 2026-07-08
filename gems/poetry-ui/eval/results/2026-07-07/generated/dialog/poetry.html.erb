@@ -1,0 +1,43 @@
+<div class="mx-auto flex max-w-2xl flex-col gap-8 px-6 py-16">
+  <div class="flex items-center justify-between gap-4">
+    <div class="flex flex-col gap-1">
+      <h1 class="text-lg font-semibold">Workspace settings</h1>
+      <p class="text-sm text-muted-foreground">
+        Control how this workspace looks and how your team is notified.
+      </p>
+    </div>
+
+    <%= poetry_dialog do |dialog| %>
+      <% dialog.with_trigger do %>
+        <%= poetry_button(variant: :outline) { "Open settings" } %>
+      <% end %>
+
+      <% dialog.with_title { "Workspace settings" } %>
+      <% dialog.with_description { "Update your workspace name, theme, and notification preferences. Changes take effect once you confirm." } %>
+
+      <div class="flex flex-col gap-6">
+        <%= poetry_field(id: "settings_display_name", label_text: "Display name", hint: "Shown to your teammates across the workspace.") do |field| %>
+          <%= poetry_input(**field.control_attributes, name: "display_name", value: "Acme Workspace", placeholder: "Acme Workspace") %>
+        <% end %>
+
+        <%= poetry_field(id: "settings_theme", label_text: "Theme", hint: "Applies across all of your signed-in devices.") do |field| %>
+          <%= poetry_native_select(**field.control_attributes, name: "theme", options: [["System default", "system"], ["Light", "light"], ["Dark", "dark"]], selected: "system") %>
+        <% end %>
+
+        <%= poetry_separator %>
+
+        <div class="flex flex-col gap-3">
+          <%= poetry_checkbox(name: "email_notifications", label: "Email notifications", checked: true) %>
+          <%= poetry_checkbox(name: "two_factor_authentication", label: "Require two-factor authentication") %>
+        </div>
+      </div>
+
+      <% dialog.with_footer do %>
+        <div class="flex justify-end gap-2">
+          <%= poetry_button(variant: :outline, data: { action: "poetry--core--dialog#close" }) { "Cancel" } %>
+          <%= poetry_button(variant: :default, data: { action: "poetry--core--dialog#close" }) { "Confirm" } %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

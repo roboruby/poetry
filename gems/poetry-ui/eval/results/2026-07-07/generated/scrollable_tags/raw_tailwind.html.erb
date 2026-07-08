@@ -1,0 +1,26 @@
+<% versions = [
+  "v2.14.0", "v2.13.2", "v2.13.1", "v2.13.0", "v2.12.3",
+  "v2.12.2", "v2.12.1", "v2.12.0", "v2.11.1", "v2.11.0",
+  "v2.10.0", "v2.9.4", "v2.9.3", "v2.9.2", "v2.9.1",
+  "v2.9.0", "v2.8.1", "v2.8.0", "v2.7.1", "v2.7.0"
+] %>
+
+<section class="max-w-md mx-auto my-12 px-4">
+  <h2 class="text-lg font-semibold text-gray-900">Version tags</h2>
+  <p class="mt-1 text-sm text-gray-500">All published releases for this project.</p>
+
+  <ul class="mt-4 h-48 overflow-y-auto divide-y divide-gray-100 rounded-lg border border-gray-200 bg-white shadow-sm">
+    <% versions.each_with_index do |version, index| %>
+      <li class="flex items-center justify-between gap-3 px-4 py-2.5">
+        <span class="font-mono text-sm text-gray-800"><%= version %></span>
+        <% if index.zero? %>
+          <span class="inline-flex items-center rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+            Latest
+          </span>
+        <% else %>
+          <span class="text-xs text-gray-400">Release</span>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</section>

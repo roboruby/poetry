@@ -5,6 +5,7 @@ require "open3"
 require "fileutils"
 require "tmpdir"
 require "pathname"
+require_relative "judge"
 
 module Poetry
   module Eval

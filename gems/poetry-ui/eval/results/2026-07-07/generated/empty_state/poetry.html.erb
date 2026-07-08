@@ -1,0 +1,20 @@
+<div class="mx-auto flex max-w-3xl flex-col items-center px-6 py-24">
+  <%= poetry_empty(media_variant: :icon) do |empty| %>
+    <% empty.with_media do %>
+      <%= poetry_icon(name: :folder_plus, label: "Projects") %>
+    <% end %>
+
+    <% empty.with_title do %>
+      No projects yet
+    <% end %>
+
+    <% empty.with_description do %>
+      Create your first project to start organizing your work, or import an existing one from a Git repository.
+    <% end %>
+
+    <%= poetry_button_group(aria_label: "Project actions") do %>
+      <%= poetry_button(variant: :default) { "Create project" } %>
+      <%= poetry_button(variant: :outline) { "Import project" } %>
+    <% end %>
+  <% end %>
+</div>
