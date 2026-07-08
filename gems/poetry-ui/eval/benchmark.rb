@@ -23,6 +23,10 @@ module Poetry
     #   files. assert_hermetic! is the runtime guarantee that host B's tree
     #   and the prompt never contain the house name (the assert_blind!
     #   discipline applied to generation).
+    # - Unit isolation: every (task, arm) runs in its own fresh copy of the
+    #   template host - units can never read sibling units' outputs (the
+    #   shared-host pilot leaked finished views to later units, and the
+    #   exposure was arm-asymmetric because raw arms finish first).
     # - One prompt, no arm conditionals: the treatment lives entirely in the
     #   host files (AGENTS.md is the app's own voice in both hosts).
     # - Symmetric no-<script> rule: neither agent ships page JS; native HTML
@@ -103,7 +107,13 @@ module Poetry
       def build_hosts!
         require "generators/poetry/agents_section"
 
-        ARM_HOSTS.each_key { |arm| FileUtils.mkdir_p(host_root(arm).join("app/views/eval")) }
+        ARM_HOSTS.each_key do |arm|
+          # Reset the template's views dir: every unit gets a fresh COPY of
+          # this template (unit_host), so nothing generated may sit here.
+          views = host_root(arm).join("app/views/eval")
+          FileUtils.rm_rf(views)
+          FileUtils.mkdir_p(views)
+        end
         write_common_files
         write_host_a
         write_host_b
@@ -113,15 +123,19 @@ module Poetry
 
       # ------------------------------------------------------------ generation
 
-      # Generate one arm of one task: a fresh claude CLI agent in the arm's
-      # host, the identical prompt, the arm's toolbelt. The artifact is the
-      # file the agent wrote; it is harvested into results/generated/ (an
-      # absent/empty artifact becomes a truthful placeholder that renders
-      # blank - a recorded outcome, never a crash). Returns the manifest
-      # entry. Blast-radius rule: infra failures retry, then the unit is
-      # recorded as an error entry by the caller.
+      # Generate one arm of one task: a fresh claude CLI agent in ITS OWN
+      # copy of the arm's template host (unit isolation - a shared host let
+      # late units read earlier units' finished views, and since raw arms
+      # finish fast and ran first, the exposure was asymmetric; caught by
+      # transcript audit mid-run and regenerated). The identical prompt,
+      # the arm's toolbelt. The artifact is the file the agent wrote,
+      # harvested into results/generated/ (an absent/empty artifact becomes
+      # a truthful placeholder that renders blank - a recorded outcome,
+      # never a crash). Returns the manifest entry. Blast-radius rule:
+      # infra failures retry, then the unit is recorded as an error entry
+      # by the caller.
       def generate_unit(task:, brief:, arm:)
-        host = host_root(arm)
+        host = unit_host(task, arm)
         prompt = self.class.generation_prompt(task: task, brief: brief)
         self.class.assert_hermetic!(host, prompt: prompt) if arm == "raw_tailwind"
         view = host.join("app/views/eval/#{task}.html.erb")
@@ -159,6 +173,7 @@ module Poetry
           Write the finished template to app/views/eval/#{task}.html.erb (create the file; overwrite if present).
 
           Rules:
+          - Your tools are Read, Glob, Grep, and Write. General shell commands are unavailable, except a check command if AGENTS.md documents one.
           - One self-contained ERB template. No partials, no layout code, no <script> tags, no external assets, nothing this application does not already provide.
           - Tailwind CSS v4 is compiled with full utility coverage for the classes you use.
           - If a behavior would need app JavaScript beyond what this application already wires, prefer native HTML capabilities (details/summary, popover, dialog, form controls, links).
@@ -416,6 +431,19 @@ module Poetry
       end
 
       # ------------------------------------------------------------- CLI calls
+
+      # A fresh copy of the arm's template host for one unit: no sibling
+      # views to crib from, no scratch leakage between units, safe under
+      # concurrency. Path shape hosts_root/units/<task>/<a|b> keeps the
+      # raw twin's path free of the house name.
+      def unit_host(task, arm)
+        template = host_root(arm)
+        host = @hosts_root.join("units", task, ARM_HOSTS.fetch(arm))
+        FileUtils.rm_rf(host)
+        FileUtils.mkdir_p(host.dirname)
+        FileUtils.cp_r(template, host)
+        host
+      end
 
       def harvest(view, task, arm)
         target = generated_root.join(task, "#{arm}.html.erb")
