@@ -28,9 +28,17 @@ module Poetry
       #   whose source lives under source_root.
       # @param source_root [Pathname, String] the gem root to discover in and
       #   write the registry to - poetry-ui passes its own root.
-      def initialize(components: nil, source_root: Poetry::Core.root)
+      # @param helpers [Hash, nil] wrapper helpers that are NOT components
+      #   (poetry_input_group_addon et al): helper name => contract hash
+      #   ({"options" => [...]}, or {} for a plain wrapper). Emitted as the
+      #   registry's "helpers" section so boot-free consumers (poetry check,
+      #   the MCP server) know the full valid helper set AND the value
+      #   contracts runtime-enforced inside those helpers (the W2
+      #   filter_toolbar crash class).
+      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
+        @helpers = helpers
       end
 
       # The discovered component classes (the registry's working set).
@@ -41,7 +49,9 @@ module Poetry
       end
 
       def to_yaml
-        HEADER + YAML.dump({ "components" => entries })
+        payload = { "components" => entries }
+        payload["helpers"] = plain(@helpers.sort.to_h) if @helpers&.any?
+        HEADER + YAML.dump(payload)
       end
 
       def generate!(root: @source_root)
@@ -87,6 +97,10 @@ module Poetry
           "options" => plain(props[:options]),
           "slots" => plain(props[:slots])
         }
+        # Hand-rolled with_* conveniences beyond the registered slots
+        # (NavigationMenu#with_link) - consumers call them, so check and the
+        # agent surfaces must know them.
+        entry["slot_extras"] = plain(props[:slot_extras]) if props[:slot_extras]&.any?
         if (style = component.style_class)
           entry["elements"] = style.resolver.elements.keys.map(&:to_s)
           entry["capsule"] = style.capsule

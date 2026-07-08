@@ -50,6 +50,24 @@ module Poetry
         end
       end
 
+      def test_helpers_section_is_emitted_when_given_and_absent_otherwise
+        contracts = {
+          "poetry_widget_addon" => {
+            "options" => [{ "name" => "align", "type" => :symbol, "variants" => %i[inline-start inline-end] }]
+          },
+          "poetry_widget_group" => {}
+        }
+        with_helpers = Registry.new(components: [Poetry::Core::X::Component], helpers: contracts)
+        parsed = YAML.safe_load(with_helpers.to_yaml)
+
+        assert_equal %w[poetry_widget_addon poetry_widget_group], parsed["helpers"].keys
+        align = parsed.dig("helpers", "poetry_widget_addon", "options").first
+
+        assert_equal %w[inline-start inline-end], align["variants"], "helper contracts must be plain data"
+        refute_includes with_helpers.to_yaml, "!ruby"
+        refute YAML.safe_load(registry.to_yaml).key?("helpers"), "no helpers given means no helpers key"
+      end
+
       def test_committed_registry_is_in_sync_with_source
         # The CI drift gate as a unit test: default discovery filters to
         # components whose source lives in this gem, so the set is identical

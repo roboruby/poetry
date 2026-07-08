@@ -61,7 +61,7 @@ module Poetry
         lines = ["## #{title(path)} (`#{helper(path)}`)", ""]
         lines << "Class: #{entry["class_name"]} - BEM block `#{entry["bem_block"]}`."
         lines.concat(prop_lines(entry))
-        slots = entry["slots"].map { |slot| "#{slot["name"]}#{" (many)" if slot["many"]}" }
+        slots = entry["slots"].map { |slot| slot_summary(slot) }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
         lines.concat(wiring_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
@@ -89,8 +89,22 @@ module Poetry
           details << "one of #{prop["variants"].join("|")}" if prop["variants"]
           details << "default #{prop["default"].inspect}" if prop.key?("default")
           details << "required" if prop["required"]
+          details << "format: #{prop["format"]}" if prop["format"]
           "- `#{prop["name"]}:` (#{prop["type"]})#{" - #{details.join(", ")}" if details.any?}"
         end
+      end
+
+      # A typed slot renders another component: the call takes THAT
+      # component's props, never a render block (with_icon(name: ...) - the
+      # W2 alert crash was an agent block-form guess this line now
+      # forecloses). Untyped slots take blocks; many-slots say so; a
+      # polymorphic slot lists its with_<type> setters.
+      def slot_summary(slot)
+        qualifiers = []
+        qualifiers << "many" if slot["many"]
+        qualifiers << "types #{slot["types"].join("|")}" if slot["types"]
+        qualifiers << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
+        "#{slot["name"]}#{" (#{qualifiers.join("; ")})" if qualifiers.any?}"
       end
     end
   end

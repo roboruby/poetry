@@ -22,11 +22,32 @@ module Poetry
           "styles" => [], "options" => [{ "name" => "hotkey", "type" => "string" }], "slots" => [],
           "controllers" => [{ "identifier" => "poetry--core--dialog", "targets" => ["dialog"],
                               "values" => %w[hotkey], "actions" => %w[open close toggle] }]
+        },
+        "poetry/ui/icon" => {
+          "class_name" => "Poetry::Ui::Icon::Component", "bem_block" => "poetry-ui-icon",
+          "styles" => [],
+          "options" => [{ "name" => "name", "type" => "symbol", "required" => true, "format" => "icon-name" }],
+          "slots" => []
+        },
+        "poetry/ui/alert" => {
+          "class_name" => "Poetry::Ui::Alert::Component", "bem_block" => "poetry-ui-alert",
+          "styles" => [], "options" => [],
+          "slots" => [{ "name" => "icon", "many" => false, "component" => "poetry/ui/icon" },
+                      { "name" => "title", "many" => false }]
+        }
+      }.freeze
+
+      HELPER_ENTRIES = {
+        "poetry_input_group_addon" => {
+          "options" => [{ "name" => "align", "type" => "symbol",
+                          "variants" => %w[inline-start inline-end block-start block-end] }]
         }
       }.freeze
 
       def server
-        Agent::Server.new(entries: ENTRIES, catalog: Check::Catalog.new(ENTRIES))
+        catalog = Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES,
+                                              icon_names: %w[circle-alert triangle-alert])
+        Agent::Server.new(entries: ENTRIES, catalog: catalog)
       end
 
       def call(name, arguments = {})
@@ -116,6 +137,30 @@ module Poetry
 
         assert_includes text, "FAIL"
         assert_includes text, "not a poetry_button variant"
+      end
+
+      def test_describe_marks_typed_slots_and_value_contracts
+        icon = call("describe_component", "name" => "icon", "detail" => "detailed")
+        alert = call("describe_component", "name" => "alert", "detail" => "detailed")
+
+        assert_includes icon, "name: symbol (required; format: icon-name)"
+        assert_includes alert, "icon (takes poetry_icon props, not a block)"
+        assert_includes alert, "title"
+      end
+
+      def test_check_catches_the_value_contract_crash_classes
+        block_slot = call("check", "source" => <<~ERB)
+          <%= poetry_alert do |alert| %>
+            <% alert.with_icon do %><%= poetry_icon(name: :triangle_alert) %><% end %>
+          <% end %>
+        ERB
+        bad_align = call("check", "source" => %(<%= poetry_input_group_addon(align: :leading) { "@" } %>))
+
+        assert_includes block_slot, "FAIL"
+        assert_includes block_slot, "not a block"
+        assert_includes block_slot, %(name: "triangle_alert" is not an icon name)
+        assert_includes bad_align, "FAIL"
+        assert_includes bad_align, "inline-start, inline-end, block-start, block-end"
       end
 
       # --- stdio framing ---

@@ -43,10 +43,10 @@ module Poetry
         ].freeze
         RAW_COLOR = /\b(?:#{COLOR_UTILITIES.join("|")})-(?:#{COLOR_FAMILIES.join("|")})-\d{2,3}\b/
 
-        def self.from_registry(root, helpers: nil)
-          components = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
-                           .fetch("components")
-          new(components, helpers: helpers)
+        def self.from_registry(root, helpers: nil, icon_names: nil)
+          payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
+          new(payload.fetch("components"), helpers: helpers,
+                                           helper_entries: payload["helpers"], icon_names: icon_names)
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -54,17 +54,26 @@ module Poetry
         # helper". Group / provider / item helpers (poetry_bubble_group,
         # poetry_tooltip_provider) are valid but map to no component, so they
         # pass the existence check and skip option/variant validation. When
-        # omitted, the valid set falls back to the component-mapped helpers.
-        def initialize(components, helpers: nil)
+        # omitted, the valid set falls back to the component-mapped helpers
+        # plus the registry's own "helpers" section (helper_entries), which
+        # also carries the value contracts runtime-enforced inside wrapper
+        # helpers (poetry_input_group_addon align: et al). icon_names: the
+        # active icon set's valid names - when given, icon-formatted option
+        # values are checked for membership, not just shape.
+        def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil)
           @components = components
+          @helper_entries = helper_entries || {}
+          @icon_names = icon_names&.to_set(&:to_s)
           # helper name -> registry path: poetry_ + the path under poetry/ui/
           # (poetry/ui/command/dialog -> poetry_command_dialog, avoiding the
           # last-segment collision with poetry/ui/dialog).
           @path_by_helper = components.keys.to_h do |path|
             ["poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}", path]
           end
-          @helper_names = (helpers&.map(&:to_s) || @path_by_helper.keys).to_set
+          @helper_names = ((helpers&.map(&:to_s) || @path_by_helper.keys) + @helper_entries.keys).to_set
         end
+
+        attr_reader :icon_names
 
         def helper_names = @helper_names.to_a
 
@@ -77,11 +86,58 @@ module Poetry
             (entry["styles"] || []).map { |style| style["name"] }
         end
 
-        # style name => allowed variant values (only enumerated styles)
-        def variants(path)
-          styles = @components.dig(path, "styles") || []
-          enumerated = styles.reject { |style| (style["variants"] || []).empty? }
-          enumerated.to_h { |style| [style["name"], style["variants"]] }
+        # The full declaration (variants/required/default/format) for one
+        # option or style attribute, or nil for pass-through keys.
+        def option_entry(path, key)
+          entry = @components.fetch(path, {})
+          ((entry["options"] || []) + (entry["styles"] || [])).find { |option| option["name"] == key }
+        end
+
+        # Options a call cannot omit: required with no default to fall back
+        # on (poetry_icon name:). Required styles WITH defaults (alert
+        # variant:) are satisfiable by omission and stay out.
+        def required_options(path)
+          entry = @components.fetch(path, {})
+          ((entry["options"] || []) + (entry["styles"] || []))
+            .select { |option| option["required"] && !option.key?("default") }
+            .map { |option| option["name"] }
+        end
+
+        def slots(path)
+          @components.dig(path, "slots") || []
+        end
+
+        # The slot behind a with_<name> call: exact match, the singular form
+        # of a many-slot (renders_many :items => with_item), or one of a
+        # polymorphic slot's types (with_separator => items' separator type).
+        def slot_entry(path, name)
+          slots(path).find do |slot|
+            slot["name"] == name || (slot["many"] && slot["name"] == "#{name}s") ||
+              (slot["types"] || []).include?(name)
+          end
+        end
+
+        # Hand-rolled with_* conveniences the registry knows are real
+        # (NavigationMenu#with_link) - valid calls with no slot entry to
+        # validate against.
+        def slot_extra?(path, name)
+          (@components.dig(path, "slot_extras") || []).include?(name)
+        end
+
+        # Every name valid after with_ on this component (many-slots accept
+        # both the plural and the singular setter; polymorphic slots accept
+        # one setter per type).
+        def slot_call_names(path)
+          slots(path).flat_map do |slot|
+            names = slot["many"] ? [slot["name"], slot["name"].delete_suffix("s")] : [slot["name"]]
+            names + (slot["types"] || [])
+          end + (@components.dig(path, "slot_extras") || [])
+        end
+
+        # The declared value contract of a wrapper helper's option (from the
+        # registry "helpers" section), or nil.
+        def helper_option_entry(helper, key)
+          (@helper_entries.dig(helper, "options") || []).find { |option| option["name"] == key }
         end
 
         def raw_color(class_string)
@@ -95,6 +151,9 @@ module Poetry
       class Linter
         ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>poetry--[\w-]+)#(?<method>\w+)/
         POETRY_PREFIX = Stimulus::Manifest::POETRY_PREFIX
+        # A literal `nil` argument, distinct from "no literal to check"
+        # (dynamic values return plain nil and are left alone).
+        NIL_LITERAL = Object.new.tap { |sentinel| sentinel.define_singleton_method(:inspect) { "nil" } }.freeze
 
         def initialize(catalog)
           @catalog = catalog
@@ -108,8 +167,12 @@ module Poetry
             Finding.new(rule: "parse-error", severity: :error, message: error.message,
                         line: error.location&.start&.line)
           end
+          # Block-param name -> component path, accumulated in document order
+          # (the `do |alert|` chunk precedes the `alert.with_icon` chunk), so
+          # slot calls resolve across ERB tag boundaries.
+          bindings = {}
           walk(document.value) do |node|
-            findings.concat(ruby_findings(node)) if erb?(node)
+            findings.concat(ruby_findings(node, bindings)) if erb?(node)
             findings.concat(attribute_findings(node)) if node.is_a?(Herb::AST::HTMLAttributeNode)
           end
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
@@ -122,14 +185,15 @@ module Poetry
             node.class.name.include?("ERB")
         end
 
-        # --- Ruby-call rules (component / option / variant) ---
+        # --- Ruby-call rules (component / option / variant / value / slot) ---
 
-        def ruby_findings(node)
+        def ruby_findings(node, bindings)
           base_line = node.location.start.line
           parsed = Prism.parse(node.content.value)
           calls = []
           collect_calls(parsed.value, calls)
-          calls.flat_map { |call| call_findings(call, base_line) }
+          findings = calls.flat_map { |call| call_findings(call, base_line, bindings) }
+          findings + slot_findings(parsed.value, bindings, base_line)
         end
 
         def collect_calls(node, into)
@@ -139,7 +203,7 @@ module Poetry
           node.compact_child_nodes.each { |child| collect_calls(child, into) } if node.respond_to?(:compact_child_nodes)
         end
 
-        def call_findings(call, base_line)
+        def call_findings(call, base_line, bindings)
           helper = call.name.to_s
           line = base_line + (call.location.start_line - 1)
 
@@ -150,19 +214,22 @@ module Poetry
           end
 
           # A valid helper with no component mapping (group / provider / item
-          # wrapper) - nothing to validate against options/variants.
+          # wrapper): its registry-declared value contracts still check.
           path = @catalog.path_for(helper)
-          return [] unless path
+          return helper_findings(helper, call, base_line) unless path
 
-          keyword_pairs(call).flat_map do |key, value, kw_line|
+          record_binding(call, path, bindings)
+          pairs = keyword_pairs(call)
+          findings = pairs.flat_map do |key, value, kw_line|
             option_findings(path, key, value, base_line + kw_line - 1)
           end
+          findings + missing_option_findings(path, helper_of(path), call, pairs, line)
         end
 
         def option_findings(path, key, value, line)
           findings = []
           known = @catalog.option_names(path)
-          variants = @catalog.variants(path)
+          entry = @catalog.option_entry(path, key)
 
           unless known.include?(key) || Catalog::PASSTHROUGH.include?(key)
             suggestion = suggest(key, known)
@@ -174,11 +241,145 @@ module Poetry
             end
           end
 
-          if variants.key?(key) && value && !variants[key].include?(value)
-            findings << Finding.new(rule: "unknown-variant", severity: :error,
-                                    message: "#{key}: #{value.inspect} is not a #{helper_of(path)} #{key} " \
-                                             "(#{variants[key].join(", ")})",
-                                    line: line, suggestion: suggest(value, variants[key]))
+          findings + (entry ? value_findings(entry, helper_of(path), key, value, line) : [])
+        end
+
+        # The value-contract tier (the W2 crash classes poetry check was
+        # blind to): enumerated values on any declared attribute, literal nil
+        # against required options, and icon-name format/membership.
+        def value_findings(entry, owner, key, value, line)
+          if value.equal?(NIL_LITERAL)
+            return [] unless entry["required"]
+
+            return [Finding.new(rule: "missing-option", severity: :error,
+                                message: "#{key}: is required on #{owner} and cannot be nil", line: line)]
+          end
+          return [] unless value
+
+          variants = entry["variants"]
+          if variants && !variants.include?(value)
+            return [Finding.new(rule: "unknown-variant", severity: :error,
+                                message: "#{key}: #{value.inspect} is not a #{owner} #{key} " \
+                                         "(#{variants.join(", ")})",
+                                line: line, suggestion: suggest(value, variants))]
+          end
+
+          entry["format"] == "icon-name" ? icon_findings(key, value, line) : []
+        end
+
+        # Icon names are kebab-case names from the active icon set. Shape is
+        # always checkable (the W2 :folder_plus crash); membership only when
+        # the catalog carries the set's names.
+        def icon_findings(key, value, line)
+          unless value.match?(Icons::FileSet::NAME_FORMAT)
+            kebab = value.tr("_", "-")
+            suggestion = kebab if kebab.match?(Icons::FileSet::NAME_FORMAT) &&
+                                  (@catalog.icon_names.nil? || @catalog.icon_names.include?(kebab))
+            return [Finding.new(rule: "unknown-icon", severity: :error,
+                                message: "#{key}: #{value.inspect} is not an icon name " \
+                                         "(icon names are kebab-case, like :\"circle-alert\")",
+                                line: line, suggestion: suggestion)]
+          end
+          return [] if @catalog.icon_names.nil? || @catalog.icon_names.include?(value)
+
+          [Finding.new(rule: "unknown-icon", severity: :error,
+                       message: "#{key}: #{value.inspect} is not in the icon set", line: line,
+                       suggestion: suggest(value, @catalog.icon_names))]
+        end
+
+        # Required-with-no-default options that a literal call omits (a
+        # **splat may carry anything - such calls are left alone).
+        def missing_option_findings(path, owner, call, pairs, line)
+          return [] if splatted?(call)
+
+          (@catalog.required_options(path) - pairs.map(&:first)).map do |key|
+            Finding.new(rule: "missing-option", severity: :error,
+                        message: "#{key}: is required on #{owner}", line: line)
+          end
+        end
+
+        # A wrapper helper (no component mapping) with registry-declared
+        # value contracts: poetry_input_group_addon(align: :leading) fails
+        # here the way it fails at render - minus the render.
+        def helper_findings(helper, call, base_line)
+          keyword_pairs(call).flat_map do |key, value, kw_line|
+            entry = @catalog.helper_option_entry(helper, key)
+            entry ? value_findings(entry, helper, key, value, base_line + kw_line - 1) : []
+          end
+        end
+
+        # --- slot rules (typed slots are prop calls, not blocks) ---
+
+        # A poetry_* call opening a block binds its param name to the
+        # component (poetry_alert do |alert| -> alert), so later chunks can
+        # validate alert.with_icon(...) against the alert slot surface.
+        def record_binding(call, path, bindings)
+          block_parameters = call.block&.parameters&.parameters
+          name = block_parameters && block_parameters.requireds.first&.name
+          bindings[name.to_s] = path if name
+        rescue StandardError
+          nil # a block shape Prism could not recover fully never blocks linting
+        end
+
+        def slot_findings(root, bindings, base_line)
+          slot_calls = []
+          collect_slot_calls(root, slot_calls)
+          slot_calls.flat_map do |call|
+            path = bindings[receiver_name(call)]
+            path ? slot_call_findings(call, path, base_line) : []
+          end
+        end
+
+        def collect_slot_calls(node, into)
+          return unless node
+
+          into << node if node.is_a?(Prism::CallNode) && node.name.to_s.start_with?("with_") && node.receiver
+          return unless node.respond_to?(:compact_child_nodes)
+
+          node.compact_child_nodes.each do |child|
+            collect_slot_calls(child, into)
+          end
+        end
+
+        # Inside one ERB chunk the receiver parses as a local variable; in a
+        # later chunk the same name parses as a bare method call - both are
+        # the block param the bindings map knows.
+        def receiver_name(call)
+          receiver = call.receiver
+          case receiver
+          when Prism::LocalVariableReadNode then receiver.name.to_s
+          when Prism::CallNode then receiver.name.to_s if receiver.receiver.nil? && receiver.arguments.nil?
+          end
+        end
+
+        def slot_call_findings(call, path, base_line)
+          slot_name = call.name.to_s.delete_prefix("with_")
+          line = base_line + (call.location.start_line - 1)
+          entry = @catalog.slot_entry(path, slot_name)
+          unless entry
+            return [] if @catalog.slot_extra?(path, slot_name)
+
+            return [Finding.new(rule: "unknown-slot", severity: :error,
+                                message: "#{helper_of(path)} has no slot #{slot_name}", line: line,
+                                suggestion: suggest(slot_name, @catalog.slot_call_names(path)))]
+          end
+
+          component = entry["component"]
+          return [] unless component
+
+          # A typed slot IS a component call: same option/value rules, plus
+          # the block-form trap (with_icon do ... end builds the component
+          # with no props - the W2 alert crash).
+          pairs = keyword_pairs(call)
+          findings = pairs.flat_map do |key, value, kw_line|
+            option_findings(component, key, value, base_line + kw_line - 1)
+          end
+          unless splatted?(call)
+            findings += (@catalog.required_options(component) - pairs.map(&:first)).map do |key|
+              Finding.new(rule: "missing-option", severity: :error,
+                          message: "#{slot_name} is a typed slot rendering #{helper_of(component)} - pass " \
+                                   "#{key}: (with_#{slot_name}(#{key}: ...)), not a block", line: line)
+            end
           end
           findings
         end
@@ -195,9 +396,24 @@ module Poetry
           end
         end
 
-        # Simple literal values only (symbols/strings) - dynamic values are
-        # unknowable statically and are left alone.
+        # A call carrying **splat (or a bare hash variable) may set anything
+        # statically invisible - required-option checks stand down.
+        def splatted?(call)
+          arguments = call.arguments&.arguments
+          return false unless arguments
+
+          arguments.any? do |argument|
+            argument.is_a?(Prism::KeywordHashNode) &&
+              argument.elements.any? { |element| !element.is_a?(Prism::AssocNode) }
+          end
+        end
+
+        # Simple literal values only (symbols/strings, plus literal nil as
+        # its own sentinel) - dynamic values are unknowable statically and
+        # are left alone.
         def literal_value(node)
+          return NIL_LITERAL if node.is_a?(Prism::NilNode)
+
           node.unescaped if node.is_a?(Prism::SymbolNode) || node.is_a?(Prism::StringNode)
         end
 

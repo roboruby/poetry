@@ -47,7 +47,8 @@ module Poetry
         {
           "name" => "check",
           "description" => "Lint ERB source against the poetry contracts WITHOUT rendering - unknown " \
-                           "components/options/variants/wiring + raw colors. Returns a verdict and findings.",
+                           "components/options/variants/wiring, raw colors, icon names, enum values, " \
+                           "and typed-slot props. Returns a verdict and findings.",
           "inputSchema" => {
             "type" => "object",
             "properties" => { "source" => { "type" => "string", "description" => "the ERB template source" } },
@@ -58,13 +59,18 @@ module Poetry
       ].freeze
 
       # The server: constructed with the registry root (and the host's helper
-      # names, so check knows the group/provider helpers). Everything read is
-      # the live committed registry.
+      # names, so check knows the group/provider helpers - though the
+      # registry's own "helpers" section now carries those boot-free).
+      # icon_names: the active icon set's names, so the check tool validates
+      # icon values by membership, not just shape. Everything read is the
+      # live committed registry.
       class Server
-        def self.from_registry(root, helpers: nil)
-          entries = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
-                        .fetch("components")
-          new(entries: entries, catalog: Check::Catalog.new(entries, helpers: helpers))
+        def self.from_registry(root, helpers: nil, icon_names: nil)
+          payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
+          entries = payload.fetch("components")
+          catalog = Check::Catalog.new(entries, helpers: helpers,
+                                                helper_entries: payload["helpers"], icon_names: icon_names)
+          new(entries: entries, catalog: catalog)
         end
 
         def initialize(entries:, catalog:)
@@ -155,7 +161,10 @@ module Poetry
           findings = Check.lint(arguments["source"].to_s, catalog: @catalog)
           errors = findings.count { |finding| finding.severity == :error }
           verdict = errors.zero? ? "PASS" : "FAIL"
-          report = findings.map { |finding| "- [#{finding.severity}] line #{finding.line}: #{finding.message}" }
+          report = findings.map do |finding|
+            hint = finding.suggestion ? " (did you mean #{finding.suggestion}?)" : ""
+            "- [#{finding.severity}] line #{finding.line}: #{finding.message}#{hint}"
+          end
           (["#{verdict} - #{errors} error(s), #{findings.length - errors} warning(s)"] + report).join("\n")
         end
 
@@ -164,10 +173,19 @@ module Poetry
         def surface_lines(entry)
           lines = []
           (entry["styles"] + entry["options"]).each do |prop|
-            suffix = prop["variants"] ? " (#{prop["variants"].join("|")})" : ""
+            facets = []
+            facets << prop["variants"].join("|") if prop["variants"]
+            facets << "required" if prop["required"] && !prop.key?("default")
+            facets << "format: #{prop["format"]}" if prop["format"]
+            suffix = facets.any? ? " (#{facets.join("; ")})" : ""
             lines << "- #{prop["name"]}: #{prop["type"]}#{suffix}"
           end
-          slots = (entry["slots"] || []).map { |slot| slot["name"] }
+          slots = (entry["slots"] || []).map do |slot|
+            facets = []
+            facets << "types #{slot["types"].join("|")}" if slot["types"]
+            facets << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
+            "#{slot["name"]}#{" (#{facets.join("; ")})" if facets.any?}"
+          end
           lines << "- slots: #{slots.join(", ")}" if slots.any?
           lines
         end

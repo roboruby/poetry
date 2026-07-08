@@ -77,10 +77,14 @@ module Poetry
           #
           # @example Boolean attribute
           #   option :enabled, :boolean, default: false
+          #
+          # @example Value format (machine-checkable value contract)
+          #   option :name, :symbol, required: true, format: :"icon-name"
           def option(name, type, **options)
             register_option_attribute(name, options)
 
             required, default_value = extract_option_options(options)
+            register_option_format(name, options.delete(:format))
 
             define_option_attribute(name, type, options)
             add_option_validations(name, type, required)
@@ -144,6 +148,27 @@ module Poetry
             types[name.to_sym]
           end
 
+          # Returns the declared value format for a given option attribute
+          # (e.g. :"icon-name") - the machine-checkable value contract the
+          # registry and poetry check read. Nil when the option is free-form.
+          #
+          # @param name [Symbol, String] the attribute name
+          # @return [Symbol, nil] the declared format
+          def option_format(name)
+            formats = {}
+            klass = self
+
+            while klass&.respond_to?(:instance_variable_get)
+              klass_formats = klass.instance_variable_get(:@_option_formats)
+              formats = klass_formats.merge(formats) if klass_formats
+
+              klass = klass.superclass
+              break if klass == BASE_COMPONENT_CLASS || !klass.ancestors.include?(BASE_COMPONENT_CLASS)
+            end
+
+            formats[name.to_sym]
+          end
+
           private
 
           # Collects option types from the class hierarchy.
@@ -176,6 +201,17 @@ module Poetry
             return unless options[:default].is_a?(Proc)
 
             (@_option_proc_defaults ||= {})[name.to_sym] = options[:default]
+          end
+
+          # Records a declared value format so option_format can surface it
+          # (hierarchy-walked like types, so subclasses inherit it).
+          #
+          # @param name [Symbol, String] the attribute name
+          # @param format [Symbol, nil] the declared format, if any
+          def register_option_format(name, format)
+            return unless format
+
+            (@_option_formats ||= {})[name.to_sym] = format.to_sym
           end
 
           # Extracts and processes option-specific options from the options hash.
