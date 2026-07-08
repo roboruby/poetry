@@ -10,14 +10,17 @@
 # calibration rate).
 POETRY_JUDGE_UNDECIDED = %w[inconclusive error].freeze
 
+# Candidates carry every arm's actual spelling, tried in order - frozen
+# arms match their original entries first (committed captures untouched);
+# the tail entries are the W2 generated arms' spellings (N15).
 POETRY_EVAL_REVEAL = {
   "dialog" => ["Settings"],
-  "overlay" => ["Delete API key"],
-  "mobile_sheet" => ["Set goal"],
-  "menu" => ["Options"],
-  "searchable_select" => ["Select framework", "Next.js"],
+  "overlay" => ["Delete API key", "Delete"],
+  "mobile_sheet" => ["Set goal", "Set daily goal"],
+  "menu" => %w[Options File],
+  "searchable_select" => ["Select framework", "Filter frameworks", "Next.js"],
   "site_nav" => ["Products"],
-  "date_field" => ["June 12, 2026", "Pick a date"],
+  "date_field" => ["June 12, 2026", "Pick a date", "Pick a due date", "Jul 15, 2026"],
   "floating" => ["Open popover"]
 }.freeze
 
