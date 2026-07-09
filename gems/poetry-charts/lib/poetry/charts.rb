@@ -31,6 +31,28 @@ module Poetry
         @root ||= Pathname.new(File.expand_path("../..", __dir__))
       end
 
+      # The registry builder this gem commits from (the poetry-ui shared-
+      # builder rule: rake registry:generate/verify and the sync test share
+      # ONE construction). helper_args carries each poetry_* helper's max
+      # positional arity from its real signature - poetry_chart(type, ...)
+      # legitimately takes one, which is exactly why arity is an emitted
+      # per-helper fact and never a convention.
+      def registry
+        Poetry::Core::Registry.new(source_root: root, helper_args: registry_helper_args)
+      end
+
+      POSITIONAL_PARAM_KINDS = %i[req opt].freeze
+
+      def registry_helper_args
+        require root.join("app/helpers/poetry/charts/components_helper.rb")
+        ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/).sort.filter_map do |name|
+          params = ComponentsHelper.instance_method(name).parameters
+          next if params.any? { |kind, _param| kind == :rest }
+
+          [name.to_s, params.count { |kind, _param| POSITIONAL_PARAM_KINDS.include?(kind) }]
+        end.to_h
+      end
+
       # The tooltip display string shared by every chart family (matches
       # TooltipContent's Row: delimited numerics from RAW values so
       # integers stay integers, verbatim strings, nil for missing).

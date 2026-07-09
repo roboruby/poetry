@@ -11,7 +11,7 @@ module Poetry
     class RegistryTest < ActiveSupport::TestCase
       def registry
         Rails.application.eager_load!
-        Poetry::Core::Registry.new(source_root: Poetry::Charts.root)
+        Poetry::Charts.registry
       end
 
       def test_the_committed_registry_matches_a_fresh_build

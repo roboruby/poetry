@@ -6,7 +6,7 @@
 # poetry check / llms.txt / poetry-agent project from.
 
 def poetry_charts_registry
-  Poetry::Core::Registry.new(source_root: Poetry::Charts.root)
+  Poetry::Charts.registry
 end
 
 namespace :registry do

@@ -978,3 +978,11 @@ components:
     slots: []
     elements: []
     capsule: 3aa9cd90e2e1
+helper_args:
+  poetry_area_chart: 0
+  poetry_bar_chart: 0
+  poetry_chart: 1
+  poetry_chart_container: 0
+  poetry_chart_legend_content: 0
+  poetry_chart_tooltip_content: 0
+  poetry_line_chart: 0
