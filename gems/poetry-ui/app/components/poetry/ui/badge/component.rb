@@ -16,7 +16,10 @@ module Poetry
           "Badges are non-interactive status labels - never attach click handlers; use Button for actions.",
           "The visible text is the content block: render ... { \"beta\" } - there is no label: option.",
           "Pick the variant by intent (destructive = error states; success/warning/info = record " \
-          "status, e.g. Fulfilled/Processing/Syncing), never by color preference."
+          "status, e.g. Fulfilled/Processing/Syncing), never by color preference.",
+          "Status badges on one surface read as a SET: keep one treatment family per table/list - " \
+          "the soft trio (+ outline for neutral) together, or the solid pair together; never a " \
+          "solid destructive pill inside a soft status column (design lint flags the mix)."
         ].freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS

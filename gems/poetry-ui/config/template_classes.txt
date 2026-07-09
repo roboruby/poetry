@@ -43,6 +43,7 @@ py-1
 py-1.5
 rounded-lg
 shrink-0
+space-y-0.5
 space-y-1
 space-y-2
 space-y-3
@@ -62,5 +63,4 @@ transition-[height]
 w-64
 w-80
 w-96
-w-[28rem]
 w-full

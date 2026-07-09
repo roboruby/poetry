@@ -23,7 +23,10 @@ module Poetry
           "Panel content is poetry_navigation_menu_link entries (active: marks the current page) - " \
           "never buttons; navigation navigates.",
           "This is a DISCLOSURE bar: Tab moves through it normally and nothing traps - do not " \
-          "wire menu/menuitem roles."
+          "wire menu/menuitem roles.",
+          "Rich panels (title + description grids) want viewport: true - the shared morphing " \
+          "card contains and sizes them; the default per-item mode suits simple link lists " \
+          "(the top-nav block shows the viewport pattern)."
         ].freeze
 
         CONTROLLER = %i[poetry core navigation_menu].freeze

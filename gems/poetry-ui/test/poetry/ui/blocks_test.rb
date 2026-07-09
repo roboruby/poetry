@@ -59,6 +59,31 @@ module Poetry
         end
       end
 
+      # W4's outcome, locked: every block renders DesignLint-clean (the
+      # app_shell h1->h3 lesson - source lint cannot see Card internals,
+      # so blocks are held at the rendered tier).
+      def test_every_block_renders_design_lint_clean
+        templates.each do |path|
+          html = BlocksController.render(inline: File.read(path), layout: nil)
+          findings = Poetry::Core::DesignLint.lint(html)
+
+          assert_empty findings.map(&:rule), "#{File.basename(path)} must render DesignLint-clean"
+        end
+      end
+
+      # The mixed-status-weight fixture (lead): the v1.1 table arm
+      # mixed a solid destructive pill into a soft status column - the rule
+      # exists because this shipped past every other gate.
+      def test_the_v11_table_arm_is_the_mixed_status_fixture
+        html = BlocksController.render(
+          inline: Poetry::Ui.root.join("eval/results/2026-07-09-v11/generated/table/poetry.html.erb").read,
+          layout: nil
+        )
+        rules = Poetry::Core::DesignLint.lint(html).map(&:rule)
+
+        assert_includes rules, "mixed-status-weight"
+      end
+
       def test_the_app_shell_block_consumes_the_returned_sidebar_wrapper_marker
         source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "app_shell.html.erb").read
 

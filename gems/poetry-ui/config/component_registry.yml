@@ -317,6 +317,10 @@ components:
       label: option.'
     - Pick the variant by intent (destructive = error states; success/warning/info
       = record status, e.g. Fulfilled/Processing/Syncing), never by color preference.
+    - 'Status badges on one surface read as a SET: keep one treatment family per table/list
+      - the soft trio (+ outline for neutral) together, or the solid pair together;
+      never a solid destructive pill inside a soft status column (design lint flags
+      the mix).'
   poetry/ui/breadcrumb:
     class_name: Poetry::Ui::Breadcrumb::Component
     identifier: poetry--ui--breadcrumb
@@ -2841,6 +2845,9 @@ components:
       page) - never buttons; navigation navigates.'
     - 'This is a DISCLOSURE bar: Tab moves through it normally and nothing traps -
       do not wire menu/menuitem roles.'
+    - 'Rich panels (title + description grids) want viewport: true - the shared morphing
+      card contains and sizes them; the default per-item mode suits simple link lists
+      (the top-nav block shows the viewport pattern).'
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination
