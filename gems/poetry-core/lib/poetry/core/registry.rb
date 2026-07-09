@@ -41,11 +41,19 @@ module Poetry
       #   composed components derived from its poetry_* calls, template the
       #   gem-relative source path boot-free consumers (the MCP server) read.
       #   Emitted as the registry's "blocks" section.
-      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil)
+      # @param helper_args [Hash, nil] max POSITIONAL arity per poetry_*
+      #   helper, introspected from the gem's helper-module signatures (the
+      #   site_nav crash class: `poetry_link "text", href:` on a kwargs-only
+      #   helper). Rest-signatures are omitted (unknowable); the linter
+      #   enforces arity only where a key exists, so registries without the
+      #   map stay lint-identical.
+      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil,
+                     helper_args: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
         @blocks = blocks
+        @helper_args = helper_args
       end
 
       # The discovered component classes (the registry's working set).
@@ -63,6 +71,7 @@ module Poetry
         payload = { "components" => entries }
         payload["helpers"] = plain(@helpers.sort.to_h) if @helpers&.any?
         payload["blocks"] = plain(@blocks.sort.to_h) if @blocks&.any?
+        payload["helper_args"] = plain(@helper_args.sort.to_h) if @helper_args&.any?
         HEADER + YAML.dump(payload)
       end
 

@@ -48,7 +48,7 @@ module Poetry
           "name" => "check",
           "description" => "Lint ERB source against the poetry contracts WITHOUT rendering - unknown " \
                            "components/options/variants/wiring, raw colors, icon names, enum values, " \
-                           "and typed-slot props. Returns a verdict and findings.",
+                           "typed-slot props, and helper/setter arity. Returns a verdict and findings.",
           "inputSchema" => {
             "type" => "object",
             "properties" => { "source" => { "type" => "string", "description" => "the ERB template source" } },
@@ -90,7 +90,8 @@ module Poetry
           payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           entries = payload.fetch("components")
           catalog = Check::Catalog.new(entries, helpers: helpers,
-                                                helper_entries: payload["helpers"], icon_names: icon_names)
+                                                helper_entries: payload["helpers"], icon_names: icon_names,
+                                                helper_args: payload["helper_args"])
           new(entries: entries, catalog: catalog, blocks: payload["blocks"] || {}, root: root)
         end
 

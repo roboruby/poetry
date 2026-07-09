@@ -46,7 +46,8 @@ module Poetry
         def self.from_registry(root, helpers: nil, icon_names: nil)
           payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
           new(payload.fetch("components"), helpers: helpers,
-                                           helper_entries: payload["helpers"], icon_names: icon_names)
+                                           helper_entries: payload["helpers"], icon_names: icon_names,
+                                           helper_args: payload["helper_args"])
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -60,9 +61,10 @@ module Poetry
         # helpers (poetry_input_group_addon align: et al). icon_names: the
         # active icon set's valid names - when given, icon-formatted option
         # values are checked for membership, not just shape.
-        def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil)
+        def initialize(components, helpers: nil, helper_entries: nil, icon_names: nil, helper_args: nil)
           @components = components
           @helper_entries = helper_entries || {}
+          @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
           # helper name -> registry path: poetry_ + the path under poetry/ui/
           # (poetry/ui/command/dialog -> poetry_command_dialog, avoiding the
@@ -79,6 +81,10 @@ module Poetry
 
         def helper?(name) = @helper_names.include?(name)
         def path_for(helper) = @path_by_helper[helper]
+
+        # Max positional arity for a helper, or nil when the registry does
+        # not state one (legacy registries stay lint-identical).
+        def helper_args(helper) = @helper_args[helper]
 
         def option_names(path)
           entry = @components.fetch(path, {})
@@ -227,14 +233,42 @@ module Poetry
           # declared block param will be nil at render (the W2r app_shell
           # crash: `poetry_sidebar_group do |group|`).
           path = @catalog.path_for(helper)
-          return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) unless path
+          unless path
+            return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
+                   helper_arity_findings(helper, call, line)
+          end
 
           record_binding(call, path, bindings)
           pairs = keyword_pairs(call)
           findings = pairs.flat_map do |key, value, kw_line|
             option_findings(path, key, value, base_line + kw_line - 1)
           end
-          findings + missing_option_findings(path, helper_of(path), call, pairs, line)
+          findings + missing_option_findings(path, helper_of(path), call, pairs, line) +
+            helper_arity_findings(helper, call, line)
+        end
+
+        # The helper-arity rule (the blocks-gate site_nav crash class:
+        # `poetry_link "text", href:` on a kwargs-only helper). Enforced
+        # only where the registry states an arity - introspected from the
+        # helper module's real signatures, never assumed - and only on
+        # receiverless calls (a form builder's poetry_select owns its own
+        # signature).
+        def helper_arity_findings(helper, call, line)
+          return [] if call.receiver
+
+          allowed = @catalog.helper_args(helper)
+          return [] unless allowed
+
+          positionals = positional_arguments(call)
+          return [] if positionals.nil? || positionals.size <= allowed
+
+          limit = if allowed.zero?
+                    "no positional arguments - options are keywords, content is the block"
+                  else
+                    "at most #{allowed} positional argument#{"s" if allowed > 1}"
+                  end
+          [Finding.new(rule: "helper-arity", severity: :error,
+                       message: "#{helper} takes #{limit}", line: line)]
         end
 
         def yieldless_findings(helper, call, line)

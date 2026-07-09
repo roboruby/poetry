@@ -61,14 +61,43 @@ module Poetry
             "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                             "variants" => %w[inline-start inline-end block-start block-end] }]
           },
-          "poetry_sidebar_group" => {}
+          "poetry_sidebar_group" => {},
+          "poetry_chart" => {}
         },
-        icon_names: %w[circle-alert folder-plus triangle-alert]
+        icon_names: %w[circle-alert folder-plus triangle-alert],
+        helper_args: { "poetry_button" => 0, "poetry_sidebar_group" => 0, "poetry_chart" => 1 }
       ).freeze
 
       def lint(source) = Check.lint(source, catalog: CATALOG)
       def rules(source) = lint(source).map(&:rule)
       def first(source, rule) = lint(source).find { |finding| finding.rule == rule }
+
+      # --- helper arity (the blocks-gate site_nav crash class) ---
+
+      def test_positional_text_on_a_kwargs_only_helper_is_a_helper_arity_error
+        finding = first(%(<%= poetry_button "Delete", variant: :destructive %>), "helper-arity")
+
+        assert_equal :error, finding.severity
+        assert_match(/options are keywords, content is the block/, finding.message)
+      end
+
+      def test_a_declared_positional_arity_allows_up_to_the_limit
+        assert_empty rules(%(<%= poetry_chart :bar, data: rows %>)),
+                     "poetry_chart declares args 1 - one positional is its real signature"
+        finding = first(%(<%= poetry_chart :bar, :extra %>), "helper-arity")
+
+        assert_match(/at most 1 positional argument/, finding.message)
+      end
+
+      def test_receivered_calls_own_their_signatures
+        assert_empty rules(%(<%= form.poetry_button "Save" %>)),
+                     "a form builder's poetry_* methods are not view-helper calls"
+      end
+
+      def test_helpers_without_a_declared_arity_stay_unchecked
+        assert_empty rules(%(<%= poetry_select "country" %>)),
+                     "no helper_args key means unknowable - legacy registries stay lint-identical"
+      end
 
       # --- green: no false positives ---
 
