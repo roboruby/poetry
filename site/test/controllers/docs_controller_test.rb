@@ -78,7 +78,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "the blocks gallery covers every registry block" do
-    assert_equal %w[app-shell data-index destructive-panel page-header section-card],
+    assert_equal %w[app-shell data-index destructive-panel page-header section-card top-nav],
                  DocsCatalog.blocks.map(&:slug)
 
     DocsCatalog.blocks.each do |entry|

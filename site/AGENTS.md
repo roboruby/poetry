@@ -37,7 +37,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (65 components + 13 chart components + 5 blocks)
+## Building UI with poetry (65 components + 13 chart components + 6 blocks)
 
 - Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw
   hex/oklch colors, or off-scale arbitrary values - tokens and variants carry
@@ -50,14 +50,18 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Verify markup before finishing: `bin/rails poetry:check` (unknown
   components/slots/variants/wiring, icon names, enum values, typed-slot
-  props, setter arity, yield-less wrappers, did-you-mean, `--json`;
-  needs the `herb` gem in the Gemfile).
+  props, helper + setter arity, yield-less wrappers, did-you-mean,
+  `--json`; needs the `herb` gem in the Gemfile).
 - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
   `["exec", "poetry-agent"]`) serves `check`, `describe_component`, and
   `list_components` from the live registry with no app boot - prefer its
   `check` tool when iterating.
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
+- Claude Code skills: `poetry` (component contracts by family) and
+  `poetry-design` (theme / compose / audit / study - the taste layer)
+  live under `.claude/skills/` - load them when composing or styling.
+  Install/refresh: `bin/rails g poetry:skill`.
 - Design interop: `bin/rails poetry:design:export` writes this app's
   DESIGN.md (tokens + treatment) for external design skills.
 <!-- poetry:agents:end -->

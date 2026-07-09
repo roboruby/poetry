@@ -34,10 +34,13 @@
       <% card.with_title { "Agent-native" } %>
       <% card.with_description { "llms.txt built in" } %>
       <p class="text-sm text-muted-foreground">
-        The component registry, agent rules, and
-        <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>
-        are part of the library, not an afterthought. This site's nav is
-        generated from the same registry the gems' CI verifies.
+        The component registry, agent rules,
+        <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>,
+        an MCP server, and two installable Claude Code skills (component
+        usage + the poetry-design taste layer, via
+        <code class="font-mono">bin/rails g poetry:skill</code>) are part of
+        the library, not an afterthought. This site's nav is generated from
+        the same registry the gems' CI verifies.
       </p>
     <% end %>
   </div>

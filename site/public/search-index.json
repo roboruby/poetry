@@ -2136,6 +2136,12 @@
     "path": "/blocks/section-card"
   },
   {
+    "title": "Top nav",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav"
+  },
+  {
     "title": "Interactive Filter",
     "page": "Interactive Filter",
     "section": "demos",
