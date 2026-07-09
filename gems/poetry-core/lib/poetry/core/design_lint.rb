@@ -35,6 +35,8 @@ module Poetry
         "off-scale-arbitrary" => [:ast, "the design-rule analogue: spacing scale discipline (extends)"],
         "gradient-off-token" => [:ast, "the slop-gate analogue: purple-blue gradient tell; raw-color posture"],
         "heading-skip" => [:ast, "the design-rule analogue: document outline audit (WCAG 1.3.1 adjacent)"],
+        "mixed-status-weight" => [:ast, "Blocks v1.1 (lead): one status set, one treatment - " \
+                                        "solid and soft badge pills must not mix in one table"],
         "center-everything" => [:ast, "the slop-gate analogue: centered-body-copy tell"],
         "shadow-stack" => [:ast, "the design-rule analogue: one elevation level per surface"],
         "type-scale-monotony" => [:dom, "the design-rule analogue: type hierarchy audit; checkable design axis"],
@@ -92,6 +94,7 @@ module Poetry
         walk_rules(root, findings)
         heading_skips(root, findings)
         center_everything(root, findings)
+        mixed_status_weight(root, findings)
         findings.sort_by! { |finding| [finding.line || 0, finding.rule] }
         findings.each { |finding| finding.file = file }
       end
@@ -266,6 +269,43 @@ module Poetry
       def collect_headings(node, levels)
         levels << [node.heading_level, node.line] if node.element? && node.heading_level
         node.children.each { |child| collect_headings(child, levels) }
+      end
+
+      # One status set, one treatment (Blocks v1.1, a lead): the v1.1
+      # table arm mixed a solid destructive "Overdue" pill into a soft
+      # success/warning column and the judge called the inconsistency out.
+      # Detection rides the rendered badge markup (data-slot/data-variant) -
+      # a badge call's kwargs are invisible to the ERB pseudo-node, so the
+      # rule bites where the eval gate and design:lint read: rendered HTML.
+      SOLID_BADGE_VARIANTS = %w[default destructive].freeze
+      SOFT_BADGE_VARIANTS = %w[success warning info].freeze
+
+      def mixed_status_weight(root, findings)
+        each_table(root) do |table|
+          variants = []
+          collect_badge_variants(table, variants)
+          solid = (variants.map(&:first) & SOLID_BADGE_VARIANTS)
+          soft = (variants.map(&:first) & SOFT_BADGE_VARIANTS)
+          next unless solid.any? && soft.any?
+
+          line = variants.find { |variant, _line| solid.include?(variant) }&.last || table.line
+          findings << finding("mixed-status-weight", line,
+                              "one table mixes solid (#{solid.join(", ")}) and soft " \
+                              "(#{soft.join(", ")}) badge pills - status sets read as a set: " \
+                              "keep one treatment family per surface")
+        end
+      end
+
+      def each_table(node, &block)
+        yield node if node.element? && node.tag == "table"
+        node.children.each { |child| each_table(child, &block) }
+      end
+
+      def collect_badge_variants(node, variants)
+        if node.element? && node.attrs["data-slot"] == "badge" && node.attrs["data-variant"]
+          variants << [node.attrs["data-variant"], node.line]
+        end
+        node.children.each { |child| collect_badge_variants(child, variants) }
       end
 
       def center_everything(root, findings)

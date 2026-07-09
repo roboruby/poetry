@@ -170,11 +170,40 @@ module Poetry
         refute_includes applied, "stock-theme-nudge"
       end
 
+      def test_mixed_status_weight_in_one_table
+        red = <<~HTML
+          <table>
+            <tr><td><span data-slot="badge" data-variant="success">Fulfilled</span></td></tr>
+            <tr><td><span data-slot="badge" data-variant="destructive">Overdue</span></td></tr>
+          </table>
+        HTML
+        green = <<~HTML
+          <table>
+            <tr><td><span data-slot="badge" data-variant="success">Fulfilled</span></td></tr>
+            <tr><td><span data-slot="badge" data-variant="warning">Processing</span></td></tr>
+            <tr><td><span data-slot="badge" data-variant="outline">Refunded</span></td></tr>
+          </table>
+        HTML
+
+        assert_red_green("mixed-status-weight", red: red, green: green)
+      end
+
+      def test_mixed_status_weight_scopes_per_table
+        separate = <<~HTML
+          <table><tr><td><span data-slot="badge" data-variant="destructive">Failed</span></td></tr></table>
+          <table><tr><td><span data-slot="badge" data-variant="success">Paid</span></td></tr></table>
+        HTML
+
+        refute_includes rules_hit(separate), "mixed-status-weight",
+                        "solid and soft in DIFFERENT tables are two consistent sets"
+      end
+
       def test_rules_registry_documents_every_rule_with_provenance
-        assert_equal 12, DesignLint::RULES.size
+        assert_equal 13, DesignLint::RULES.size
         DesignLint::RULES.each do |id, (tier, provenance)|
           assert_includes %i[ast dom], tier, id
-          assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration/, provenance, "#{id} must cite its analogue")
+          assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration|/, provenance,
+                       "#{id} must cite its analogue or the measured run that earned it")
         end
       end
     end
