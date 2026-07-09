@@ -26,6 +26,7 @@ justify-center
 justify-end
 leading-tight
 max-w-5xl
+max-w-md
 max-w-xl
 md:grid-cols-3
 min-h-64
