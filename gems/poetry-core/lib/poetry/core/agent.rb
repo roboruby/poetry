@@ -182,7 +182,11 @@ module Poetry
           end
           slots = (entry["slots"] || []).map do |slot|
             facets = []
-            facets << "types #{slot["types"].join("|")}" if slot["types"]
+            if slot["types"]
+              args = slot["setter_args"]
+              convention = args && slot["types"].all? { |type| args[type]&.zero? } ? " - options as keywords" : ""
+              facets << "types #{slot["types"].join("|")}#{convention}"
+            end
             facets << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
             "#{slot["name"]}#{" (#{facets.join("; ")})" if facets.any?}"
           end

@@ -35,16 +35,33 @@ module Poetry
               { "name" => "icon", "many" => false, "component" => "poetry/ui/icon" },
               { "name" => "title", "many" => false },
               { "name" => "actions", "many" => true },
-              { "name" => "rows", "many" => true, "types" => %w[row divider] }
+              { "name" => "rows", "many" => true, "types" => %w[row divider],
+                "setter_args" => { "row" => 1, "divider" => 0 } }
             ],
             "slot_extras" => ["link"]
+          },
+          "poetry/ui/menubar" => {
+            "styles" => [], "options" => [],
+            "slots" => [
+              { "name" => "menus", "many" => true, "setter_args" => { "menu" => 0 },
+                "builders" => {
+                  "menu" => {
+                    "slots" => [
+                      { "name" => "trigger", "many" => false, "setter_args" => { "trigger" => 0 } },
+                      { "name" => "items", "many" => true, "types" => %w[item separator checkbox_item],
+                        "setter_args" => { "item" => 0, "separator" => 0, "checkbox_item" => 0 } }
+                    ]
+                  }
+                } }
+            ]
           }
         },
         helper_entries: {
           "poetry_input_group_addon" => {
             "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                             "variants" => %w[inline-start inline-end block-start block-end] }]
-          }
+          },
+          "poetry_sidebar_group" => {}
         },
         icon_names: %w[circle-alert folder-plus triangle-alert]
       ).freeze
@@ -241,6 +258,108 @@ module Poetry
                         "unknown-icon"
         refute_includes Check.lint(%(<%= poetry_icon(name: :"any-kebab-name") %>), catalog: catalog).map(&:rule),
                         "unknown-icon"
+      end
+
+      # --- composition contracts (the crash classes) ---
+
+      def test_a_wrapper_block_param_errors_as_yieldless
+        finding = first(%(<%= poetry_sidebar_group do |group| %>x<% end %>), "yieldless-block")
+
+        assert_equal :error, finding.severity
+        assert_includes finding.message, "poetry_sidebar_group yields nothing"
+      end
+
+      def test_a_wrapper_plain_block_is_fine
+        refute_includes rules(%(<%= poetry_sidebar_group do %>x<% end %>)), "yieldless-block"
+        refute_includes rules(%(<%= poetry_input_group_addon { "@" } %>)), "yieldless-block"
+      end
+
+      def test_a_component_block_param_is_not_yieldless
+        refute_includes rules(%(<%= poetry_alert do |alert| %>x<% end %>)), "yieldless-block"
+      end
+
+      def test_a_type_symbol_passed_positionally_suggests_the_sibling_setter
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_item(:separator) %>
+            <% end %>
+          <% end %>
+        ERB
+        finding = first(source, "slot-arity")
+
+        assert_equal :error, finding.severity
+        assert_equal "with_separator", finding.suggestion
+        assert_includes finding.message, "keyword options only"
+      end
+
+      def test_the_type_as_argument_convention_is_named_in_the_message
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_item(:item, shortcut: "⌘T") { "New Tab" } %>
+            <% end %>
+          <% end %>
+        ERB
+        finding = first(source, "slot-arity")
+
+        assert_nil finding.suggestion
+        assert_includes finding.message, "the type is the setter"
+        assert_includes finding.message, "with_separator"
+      end
+
+      def test_nested_builder_slots_validate_through_the_binding
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_itm { "x" } %>
+            <% end %>
+          <% end %>
+        ERB
+        finding = first(source, "unknown-slot")
+
+        assert_includes finding.message, "with_menu has no slot itm"
+        assert_equal "item", finding.suggestion
+      end
+
+      def test_kwargs_only_setters_stay_clean_within_the_builder
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_trigger { "File" } %>
+              <% menu.with_item(shortcut: "⌘T") { "New Tab" } %>
+              <% menu.with_separator %>
+            <% end %>
+          <% end %>
+        ERB
+
+        assert_empty lint(source), -> { lint(source).join("\n") }
+      end
+
+      def test_a_positional_within_declared_arity_passes_and_excess_errors
+        clean = <<~ERB
+          <%= poetry_alert do |alert| %>
+            <% alert.with_row("only") %>
+          <% end %>
+        ERB
+        over = <<~ERB
+          <%= poetry_alert do |alert| %>
+            <% alert.with_row("one", "two") %>
+          <% end %>
+        ERB
+
+        refute_includes rules(clean), "slot-arity"
+        assert_includes first(over, "slot-arity").message, "at most 1 positional argument"
+      end
+
+      def test_a_splatted_setter_call_stands_down_on_arity
+        source = <<~ERB
+          <%= poetry_alert do |alert| %>
+            <% alert.with_divider(*args) %>
+          <% end %>
+        ERB
+
+        refute_includes rules(source), "slot-arity"
       end
 
       def test_a_wrapper_helper_enum_violation_errors_with_the_valid_set

@@ -18,6 +18,21 @@ module Poetry
             end
           end
 
+          # A plain ViewComponent builder (the Menubar::Menu shape): its own
+          # slot surface + a hand-rolled convenience, reachable only through
+          # a SLOT_BUILDERS declaration.
+          class Tray < ViewComponent::Base
+            renders_one :handle, ->(**options, &block) { { options: options, block: block } }
+
+            def with_grip(text)
+              with_handle { text }
+            end
+
+            def call
+              content_tag(:span, "tray")
+            end
+          end
+
           class Component < Poetry::Core::Component
             style :color, default: :gray, required: true, variants: %i[gray red]
             style :dot_color, default: -> { color }, variants: %i[gray red]
@@ -35,6 +50,10 @@ module Poetry
               row: { renders: ->(**) { "row" }, as: :row },
               divider: { renders: ->(**) { "divider" }, as: :divider }
             }
+            renders_many :chips, ->(text, tone: :gray) { { text: text, tone: tone } }
+            renders_one :footer, ->(*parts) { parts }
+
+            SLOT_BUILDERS = { row: Tray }.freeze
 
             # A hand-rolled convenience beyond the registered slots - part
             # of the consumer call surface (the NavigationMenu#with_link
@@ -121,6 +140,27 @@ module Poetry
         def test_hand_rolled_with_conveniences_surface_as_slot_extras
           assert_equal ["shortcut"], props[:slot_extras]
           assert_empty Probe::Glyph.prop_definitions[:slot_extras]
+        end
+
+        def test_setter_positional_arities_are_introspected_from_the_callables
+          slots = props[:slots]
+          entries = slots.find { |slot| slot[:name] == :entries }
+          chips = slots.find { |slot| slot[:name] == :chips }
+          footer = slots.find { |slot| slot[:name] == :footer }
+
+          assert_equal({ row: 0, divider: 0 }, entries[:setter_args], "kwargs-only lambdas take zero positionals")
+          assert_equal({ chip: 1 }, chips[:setter_args], "a required positional counts")
+          refute footer.key?(:setter_args), "a *rest signature is unknowable - no arity claimed"
+        end
+
+        def test_a_declared_builder_recurses_into_its_own_surface
+          entries = props[:slots].find { |slot| slot[:name] == :entries }
+          surface = entries[:builders].fetch(:row)
+
+          assert_equal :handle, surface[:slots].first[:name]
+          assert_equal({ handle: 0 }, surface[:slots].first[:setter_args])
+          assert_equal ["grip"], surface[:slot_extras]
+          refute entries[:builders].key?(:divider), "no builder declared means no surface"
         end
 
         def test_x_component_full_surface

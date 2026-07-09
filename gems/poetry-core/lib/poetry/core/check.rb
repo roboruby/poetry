@@ -103,15 +103,23 @@ module Poetry
             .map { |option| option["name"] }
         end
 
-        def slots(path)
-          @components.dig(path, "slots") || []
+        # Slot queries take an OWNER: a component path (String) or a nested
+        # builder surface (Hash - the "builders" payload of a slot entry,
+        #), so `menubar.with_menu do |menu|` and `menu.with_item` walk
+        # the same rules at every depth.
+        def slots_of(owner)
+          owner.is_a?(Hash) ? (owner["slots"] || []) : (@components.dig(owner, "slots") || [])
+        end
+
+        def slot_extras_of(owner)
+          owner.is_a?(Hash) ? (owner["slot_extras"] || []) : (@components.dig(owner, "slot_extras") || [])
         end
 
         # The slot behind a with_<name> call: exact match, the singular form
         # of a many-slot (renders_many :items => with_item), or one of a
         # polymorphic slot's types (with_separator => items' separator type).
-        def slot_entry(path, name)
-          slots(path).find do |slot|
+        def slot_entry(owner, name)
+          slots_of(owner).find do |slot|
             slot["name"] == name || (slot["many"] && slot["name"] == "#{name}s") ||
               (slot["types"] || []).include?(name)
           end
@@ -120,18 +128,18 @@ module Poetry
         # Hand-rolled with_* conveniences the registry knows are real
         # (NavigationMenu#with_link) - valid calls with no slot entry to
         # validate against.
-        def slot_extra?(path, name)
-          (@components.dig(path, "slot_extras") || []).include?(name)
+        def slot_extra?(owner, name)
+          slot_extras_of(owner).include?(name)
         end
 
-        # Every name valid after with_ on this component (many-slots accept
-        # both the plural and the singular setter; polymorphic slots accept
-        # one setter per type).
-        def slot_call_names(path)
-          slots(path).flat_map do |slot|
+        # Every name valid after with_ on this owner (many-slots accept both
+        # the plural and the singular setter; polymorphic slots accept one
+        # setter per type).
+        def slot_call_names(owner)
+          slots_of(owner).flat_map do |slot|
             names = slot["many"] ? [slot["name"], slot["name"].delete_suffix("s")] : [slot["name"]]
             names + (slot["types"] || [])
-          end + (@components.dig(path, "slot_extras") || [])
+          end + slot_extras_of(owner)
         end
 
         # The declared value contract of a wrapper helper's option (from the
@@ -214,9 +222,12 @@ module Poetry
           end
 
           # A valid helper with no component mapping (group / provider / item
-          # wrapper): its registry-declared value contracts still check.
+          # wrapper): its registry-declared value contracts still check, and
+          # NO wrapper yields anything to its block (a roster invariant) - a
+          # declared block param will be nil at render (the W2r app_shell
+          # crash: `poetry_sidebar_group do |group|`).
           path = @catalog.path_for(helper)
-          return helper_findings(helper, call, base_line) unless path
+          return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) unless path
 
           record_binding(call, path, bindings)
           pairs = keyword_pairs(call)
@@ -224,6 +235,15 @@ module Poetry
             option_findings(path, key, value, base_line + kw_line - 1)
           end
           findings + missing_option_findings(path, helper_of(path), call, pairs, line)
+        end
+
+        def yieldless_findings(helper, call, line)
+          block = call.block
+          return [] unless block.respond_to?(:parameters) && block.parameters
+
+          [Finding.new(rule: "yieldless-block", severity: :error,
+                       message: "#{helper} yields nothing to its block - the param will be nil; " \
+                                "remove it and write the content directly", line: line)]
         end
 
         def option_findings(path, key, value, line)
@@ -313,10 +333,18 @@ module Poetry
         # A poetry_* call opening a block binds its param name to the
         # component (poetry_alert do |alert| -> alert), so later chunks can
         # validate alert.with_icon(...) against the alert slot surface.
+        # Bindings map param name -> [owner, label]: owner is a component
+        # path or a nested builder surface, label names the owner in
+        # messages.
         def record_binding(call, path, bindings)
+          name = block_param_name(call)
+          bindings[name] = [path, helper_of(path)] if name
+        end
+
+        def block_param_name(call)
           block_parameters = call.block&.parameters&.parameters
           name = block_parameters && block_parameters.requireds.first&.name
-          bindings[name.to_s] = path if name
+          name&.to_s
         rescue StandardError
           nil # a block shape Prism could not recover fully never blocks linting
         end
@@ -325,8 +353,8 @@ module Poetry
           slot_calls = []
           collect_slot_calls(root, slot_calls)
           slot_calls.flat_map do |call|
-            path = bindings[receiver_name(call)]
-            path ? slot_call_findings(call, path, base_line) : []
+            owner, label = bindings[receiver_name(call)]
+            owner ? slot_call_findings(call, owner, label, base_line, bindings) : []
           end
         end
 
@@ -352,26 +380,34 @@ module Poetry
           end
         end
 
-        def slot_call_findings(call, path, base_line)
+        def slot_call_findings(call, owner, label, base_line, bindings)
           slot_name = call.name.to_s.delete_prefix("with_")
           line = base_line + (call.location.start_line - 1)
-          entry = @catalog.slot_entry(path, slot_name)
+          entry = @catalog.slot_entry(owner, slot_name)
           unless entry
-            return [] if @catalog.slot_extra?(path, slot_name)
+            return [] if @catalog.slot_extra?(owner, slot_name)
 
             return [Finding.new(rule: "unknown-slot", severity: :error,
-                                message: "#{helper_of(path)} has no slot #{slot_name}", line: line,
-                                suggestion: suggest(slot_name, @catalog.slot_call_names(path)))]
+                                message: "#{label} has no slot #{slot_name}", line: line,
+                                suggestion: suggest(slot_name, @catalog.slot_call_names(owner)))]
           end
 
+          # A setter opening a block over a declared builder binds the
+          # nested surface (menubar.with_menu do |menu| - menu's own items
+          # then lint at this same depth).
+          if (surface = entry.dig("builders", slot_name)) && (param = block_param_name(call))
+            bindings[param] = [surface, "with_#{slot_name}"]
+          end
+
+          findings = arity_findings(entry, slot_name, call, line)
           component = entry["component"]
-          return [] unless component
+          return findings unless component
 
           # A typed slot IS a component call: same option/value rules, plus
           # the block-form trap (with_icon do ... end builds the component
           # with no props - the W2 alert crash).
           pairs = keyword_pairs(call)
-          findings = pairs.flat_map do |key, value, kw_line|
+          findings += pairs.flat_map do |key, value, kw_line|
             option_findings(component, key, value, base_line + kw_line - 1)
           end
           unless splatted?(call)
@@ -382,6 +418,44 @@ module Poetry
             end
           end
           findings
+        end
+
+        # Positional args a setter does not take (the W2r menu crash:
+        # `with_item(:item, ...)` guessed a type-as-argument dispatch no
+        # setter has - the type IS the setter). Arity comes from the
+        # registry's introspected lambda signatures; anything unknowable
+        # (splats, untracked setters) is left alone.
+        def arity_findings(entry, slot_name, call, line)
+          max = entry.dig("setter_args", slot_name)
+          return [] unless max
+
+          positionals = positional_arguments(call)
+          return [] if positionals.nil? || positionals.size <= max
+
+          first = positionals.first
+          first_symbol = first.unescaped if first.is_a?(Prism::SymbolNode)
+          sibling = first_symbol && first_symbol != slot_name &&
+                    (entry["setter_args"].key?(first_symbol) || (entry["types"] || []).include?(first_symbol))
+          detail = if first_symbol && (entry["types"] || []).include?(first_symbol)
+                     " - the type is the setter (#{(entry["types"] || []).map { |type| "with_#{type}" }.join(" / ")})"
+                   else
+                     ""
+                   end
+          limit = max.zero? ? "keyword options only" : "at most #{max} positional argument#{"s" if max > 1}"
+          [Finding.new(rule: "slot-arity", severity: :error,
+                       message: "with_#{slot_name} takes #{limit}#{detail}", line: line,
+                       suggestion: (sibling ? "with_#{first_symbol}" : nil))]
+        end
+
+        # nil when a splat makes the count unknowable.
+        def positional_arguments(call)
+          arguments = call.arguments&.arguments
+          return [] unless arguments
+          return nil if arguments.any?(Prism::SplatNode)
+
+          arguments.reject do |argument|
+            argument.is_a?(Prism::KeywordHashNode) || argument.is_a?(Prism::BlockArgumentNode)
+          end
         end
 
         # [key_string, literal_value_or_nil, line] per keyword argument.

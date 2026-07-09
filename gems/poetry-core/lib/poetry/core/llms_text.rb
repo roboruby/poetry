@@ -98,13 +98,25 @@ module Poetry
       # component's props, never a render block (with_icon(name: ...) - the
       # W2 alert crash was an agent block-form guess this line now
       # forecloses). Untyped slots take blocks; many-slots say so; a
-      # polymorphic slot lists its with_<type> setters.
+      # polymorphic slot lists its with_<type> setters - and when they are
+      # all kwargs-only, says so (the W2r menu crash guessed a
+      # type-as-argument dispatch no setter has).
       def slot_summary(slot)
         qualifiers = []
         qualifiers << "many" if slot["many"]
-        qualifiers << "types #{slot["types"].join("|")}" if slot["types"]
+        if slot["types"]
+          convention = kwargs_only_setters?(slot) ? " - one with_<type> setter each, options as keywords" : ""
+          qualifiers << "types #{slot["types"].join("|")}#{convention}"
+        end
         qualifiers << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
         "#{slot["name"]}#{" (#{qualifiers.join("; ")})" if qualifiers.any?}"
+      end
+
+      def kwargs_only_setters?(slot)
+        args = slot["setter_args"]
+        # A type with no tracked arity (rest-signature) is unknowable - the
+        # claim only holds when every setter is known kwargs-only.
+        args && slot["types"].all? { |type| args[type]&.zero? }
       end
     end
   end

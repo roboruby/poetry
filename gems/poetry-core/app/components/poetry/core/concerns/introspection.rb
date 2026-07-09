@@ -13,6 +13,7 @@ module Poetry
         extend ActiveSupport::Concern
 
         DYNAMIC_DEFAULT = :dynamic
+        POSITIONAL_KINDS = %i[req opt].freeze
 
         class_methods do
           # The component's full prop surface.
@@ -55,37 +56,17 @@ module Poetry
           # slot component's registry path - the machine-readable form of "this
           # slot takes that component's props, not a render block" (the W2
           # alert crash class: an agent can only honor a contract a surface
-          # states).
+          # states). Recursion, setter arities, and builder surfaces come from
+          # the module-level walker.
           def slot_definitions
-            registered_slots.map do |slot_name, config|
-              definition = { name: slot_name, many: config[:collection] == true }
-              renderable = config[:renderable]
-              definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
-              # Polymorphic slots (renders_many :items, types: {...}) accept
-              # one with_<type> setter per type - the consumer-facing call
-              # surface, which poetry check and the docs must know.
-              definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
-              definition
-            end
+            Introspection.slot_surface(self)
           end
 
           # Hand-rolled with_* conveniences (NavigationMenu#with_link) are
           # part of the consumer call surface even though they are not
-          # registered slots: every own with_* method that is neither a
-          # slot-generated setter (with_<name>/<singular>/<type> and their
-          # _content twins) nor inherited.
+          # registered slots.
           def slot_extras
-            generated = slot_definitions.flat_map do |slot|
-              names = [slot[:name].to_s]
-              names << slot[:name].to_s.delete_suffix("s") if slot[:many]
-              names.concat((slot[:types] || []).map(&:to_s))
-              names
-            end
-            public_instance_methods(false).map(&:to_s)
-                                          .select { |method| method.start_with?("with_") }
-                                          .reject { |method| method.end_with?("_content") }
-                                          .map { |method| method.delete_prefix("with_") }
-                                          .sort - generated
+            Introspection.hand_rolled_setters(self, slot_definitions)
           end
 
           # The default, keyed three ways: a static value (from ActiveModel's
@@ -103,6 +84,119 @@ module Poetry
 
           def required_attribute?(name)
             validators_on(name).any? { |validator| validator.kind == :presence }
+          end
+        end
+
+        # The recursive slot walker (composition contracts). Works on
+        # ANY slot-owning class - poetry components and their internal
+        # builder classes alike (Menubar::Menu is a plain ViewComponent::Base)
+        # - so the registry can state the full nested call surface:
+        #
+        # - types: a polymorphic slot's with_<type> setters
+        # - setter_args: max POSITIONAL arity per setter, introspected from
+        #   the slot lambda / renderable class (a kwargs-only lambda is 0 -
+        #   the menu crash class: `with_item(:item, ...)` guessed a
+        #   type-as-argument convention no setter has)
+        # - builders: a class cannot be seen through a wrapping lambda
+        #   (`->(**o) { Menu.new(bar: self, **o) }`), so a slot-owning class
+        #   declares SLOT_BUILDERS = { setter => BuilderClass } and the
+        #   walker recurses into the builder's own surface (cycle-guarded:
+        #   sub-in-sub terminates by omission, not loop)
+        class << self
+          def slot_surface(klass, seen: [])
+            return [] unless klass.respond_to?(:registered_slots)
+
+            builders = declared_builders(klass)
+            klass.registered_slots.map do |slot_name, config|
+              definition = { name: slot_name, many: config[:collection] == true }
+              renderable = config[:renderable]
+              definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
+              definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
+              setter_args = setter_positional_args(slot_name, config)
+              definition[:setter_args] = setter_args unless setter_args.empty?
+              surfaces = builder_surfaces(slot_name, config, builders, seen + [klass])
+              definition[:builders] = surfaces unless surfaces.empty?
+              definition
+            end
+          end
+
+          # Every own with_* method that is neither a slot-generated setter
+          # (with_<name>/<singular>/<type> and their _content twins) nor
+          # inherited - NavigationMenu#with_link, PieChart's with_py.
+          def hand_rolled_setters(klass, definitions)
+            generated = definitions.flat_map do |slot|
+              names = [slot[:name].to_s]
+              names << slot[:name].to_s.delete_suffix("s") if slot[:many]
+              names.concat((slot[:types] || []).map(&:to_s))
+              names
+            end
+            klass.public_instance_methods(false).map(&:to_s)
+                 .select { |method| method.start_with?("with_") }
+                 .reject { |method| method.end_with?("_content") }
+                 .map { |method| method.delete_prefix("with_") }
+                 .sort - generated
+          end
+
+          private
+
+          def declared_builders(klass)
+            klass.const_defined?(:SLOT_BUILDERS) ? klass.const_get(:SLOT_BUILDERS) : {}
+          rescue NameError
+            {}
+          end
+
+          # The per-item setter suffixes a slot generates (the plural batch
+          # setter of a collection has a different shape and is not tracked).
+          def slot_setters(slot_name, config)
+            return config[:renderable_hash].keys.map(&:to_s) if config[:renderable_hash]
+
+            name = slot_name.to_s
+            [config[:collection] ? name.delete_suffix("s") : name]
+          end
+
+          def setter_positional_args(slot_name, config)
+            if (types = config[:renderable_hash])
+              types.filter_map do |type, definition|
+                arity = positional_arity(definition[:renderable_function] || definition[:renderable])
+                [type, arity] if arity
+              end.to_h
+            else
+              setter = slot_setters(slot_name, config).first
+              arity = positional_arity(config[:renderable_function] || config[:renderable])
+              arity ? { setter.to_sym => arity } : {}
+            end
+          end
+
+          # Max positional argument count, or nil when unknowable (no
+          # callable, or a *rest signature).
+          def positional_arity(callable)
+            parameters =
+              if callable.is_a?(Class)
+                callable.instance_method(:initialize).parameters
+              elsif callable.respond_to?(:parameters)
+                callable.parameters
+              end
+            return nil unless parameters
+            return nil if parameters.any? { |kind, _name| kind == :rest }
+
+            parameters.count { |kind, _name| POSITIONAL_KINDS.include?(kind) }
+          rescue NameError
+            nil
+          end
+
+          def builder_surfaces(slot_name, config, builders, seen)
+            slot_setters(slot_name, config).filter_map do |setter|
+              builder = builders[setter.to_sym]
+              next if builder.nil? || seen.include?(builder)
+
+              slots = slot_surface(builder, seen: seen)
+              extras = hand_rolled_setters(builder, slots)
+              next if slots.empty? && extras.empty?
+
+              surface = { slots: slots }
+              surface[:slot_extras] = extras unless extras.empty?
+              [setter.to_sym, surface]
+            end.to_h
           end
         end
       end
