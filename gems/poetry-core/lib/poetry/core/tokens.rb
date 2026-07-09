@@ -33,6 +33,13 @@ module Poetry
         sidebar-border sidebar-ring
       ].freeze
 
+      # Poetry-original extensions BEYOND the shadcn v4 set (Blocks v1.1,
+      #): the soft status vocabulary the benchmark measured as
+      # missing. Kept separate so the drop-in contract stays sharp: a
+      # shadcn theme block replaces the compat set wholesale, and these
+      # keep their poetry defaults unless the theme chooses to override.
+      POETRY_STATUS_VARS = %w[success warning info].freeze
+
       class << self
         def default_path
           Poetry::Core.root.join(DEFAULT_RELATIVE_PATH)

@@ -42,6 +42,14 @@ module Poetry
 
           def option_definition(name)
             definition = { name: name, type: attribute_types[name.to_s].type }
+            # An inclusion validator IS the option's enum contract (Blocks
+            # v1.1): projecting it makes every enum option statically
+            # checkable - select's side:/align:, pagination's
+            # current_variant: - through the same value tier style variants
+            # already ride. Procs/ranges stay unprojected (unknowable).
+            enum = validators_on(name).find { |validator| validator.kind == :inclusion }
+                                      &.options&.dig(:in)
+            definition[:variants] = enum if enum.is_a?(Array)
             definition.merge!(default_definition(name, option_attributes_with_static_defaults,
                                                  option_attributes_with_proc_defaults))
             definition[:required] = true if required_attribute?(name)

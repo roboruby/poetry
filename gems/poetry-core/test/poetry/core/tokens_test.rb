@@ -13,13 +13,17 @@ module Poetry
         assert_equal %w[light dark], @tokens.modes
       end
 
-      def test_shadcn_v4_drop_in_var_set_parity
+      def test_shadcn_v4_drop_in_var_set_parity_plus_declared_status_extensions
         # The drop-in contract (M1 DoD): poetry defines exactly the shadcn v4
         # distributed var set in BOTH modes, so any shadcn theme block can
-        # replace tokens.css wholesale.
+        # replace tokens.css wholesale - PLUS the declared poetry-original
+        # status vocabulary (Blocks v1.1), which survives such a swap
+        # on its poetry defaults. Any OTHER divergence still fails here.
+        expected = (Tokens::SHADCN_V4_COMPAT_VARS + Tokens::POETRY_STATUS_VARS).sort
+
         @tokens.modes.each do |mode|
-          assert_equal Tokens::SHADCN_V4_COMPAT_VARS.sort, @tokens.color_names(mode).sort,
-                       "#{mode} color tokens must match the shadcn v4 var set exactly"
+          assert_equal expected, @tokens.color_names(mode).sort,
+                       "#{mode} color tokens must be the shadcn v4 set + the declared status extensions"
         end
       end
 
