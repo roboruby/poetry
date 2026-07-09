@@ -1,0 +1,224 @@
+{
+  "schema": "results-remediation-v1",
+  "headline_stands": "'s pre-registered result (raw 18 - poetry 13) is untouched; everything here is a post-hoc remediation demonstration.",
+  "remediation": {
+    "legs": [
+      "check value-contract tier (icon names, enum values, typed-slot props) - poetry-core b3095ee",
+      "poetry-agent MCP wired into the documented workflow + benchmark host A - poetry-ui 2b5784d",
+      "theme variant: same markup recaptured under vega; raw pixels reused untouched"
+    ],
+    "affected_tasks": [
+      "alert",
+      "app_shell",
+      "empty_state",
+      "filter_toolbar",
+      "menu"
+    ],
+    "control": "raw arms frozen from the pre-registered run (no resampling)"
+  },
+  "subset": {
+    "alert": {
+      "before": {
+        "verdict": "raw_tailwind",
+        "failure": "render/turn failure "
+      },
+      "after": {
+        "delivered": true,
+        "generation": {
+          "cost_usd": 0.4634,
+          "num_turns": 16,
+          "duration_s": 61.2,
+          "attempts": 1
+        },
+        "render_error": null,
+        "cross_arm_score": "3/5",
+        "verdict_default_theme": "raw_tailwind",
+        "verdict_themed": "raw_tailwind",
+        "swap_consistency": 1.0
+      }
+    },
+    "app_shell": {
+      "before": {
+        "verdict": "raw_tailwind",
+        "failure": "render/turn failure "
+      },
+      "after": {
+        "delivered": true,
+        "generation": {
+          "cost_usd": 1.1166,
+          "num_turns": 32,
+          "duration_s": 224.4,
+          "attempts": 1
+        },
+        "render_error": "ActionView::Template::Error: undefined method 'with_label' for nil",
+        "cross_arm_score": "0/5",
+        "verdict_default_theme": "raw_tailwind",
+        "verdict_themed": "raw_tailwind",
+        "swap_consistency": 1.0
+      }
+    },
+    "empty_state": {
+      "before": {
+        "verdict": "raw_tailwind",
+        "failure": "render/turn failure "
+      },
+      "after": {
+        "delivered": true,
+        "generation": {
+          "cost_usd": 0.5035,
+          "num_turns": 15,
+          "duration_s": 48.2,
+          "attempts": 1
+        },
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "verdict_default_theme": "poetry",
+        "verdict_themed": "poetry",
+        "swap_consistency": 1.0
+      }
+    },
+    "filter_toolbar": {
+      "before": {
+        "verdict": "raw_tailwind",
+        "failure": "render/turn failure "
+      },
+      "after": {
+        "delivered": true,
+        "generation": {
+          "cost_usd": 0.9905,
+          "num_turns": 28,
+          "duration_s": 201.6,
+          "attempts": 1
+        },
+        "render_error": null,
+        "cross_arm_score": "4/5",
+        "verdict_default_theme": "poetry",
+        "verdict_themed": "poetry",
+        "swap_consistency": 1.0
+      }
+    },
+    "menu": {
+      "before": {
+        "verdict": "raw_tailwind",
+        "failure": "render/turn failure "
+      },
+      "after": {
+        "delivered": true,
+        "generation": {
+          "cost_usd": 1.9172,
+          "num_turns": 48,
+          "duration_s": 476.3,
+          "attempts": 1
+        },
+        "render_error": "ActionView::Template::Error: wrong number of arguments (given 1, expected 0)",
+        "cross_arm_score": "0/8",
+        "verdict_default_theme": "raw_tailwind",
+        "verdict_themed": "raw_tailwind",
+        "swap_consistency": 1.0
+      }
+    }
+  },
+  "overall": {
+    "pre_registered": {
+      "raw_tailwind": 18,
+      "poetry": 13
+    },
+    "remediated_default_theme": {
+      "poetry": 15,
+      "raw_tailwind": 16
+    },
+    "themed_original_arms": {
+      "poetry": 13,
+      "raw_tailwind": 18
+    },
+    "remediated_and_themed": {
+      "poetry": 15,
+      "raw_tailwind": 16
+    }
+  },
+  "axes": {
+    "pre_registered": {
+      "hierarchy": {
+        "poetry": 8,
+        "raw_tailwind": 22,
+        "tied": 1
+      },
+      "composition": {
+        "poetry": 9,
+        "raw_tailwind": 21,
+        "tied": 1
+      },
+      "clarity": {
+        "poetry": 10,
+        "raw_tailwind": 21,
+        "tied": 0
+      },
+      "brief_fit": {
+        "poetry": 18,
+        "raw_tailwind": 13,
+        "tied": 0
+      }
+    },
+    "themed_original_arms": {
+      "hierarchy": {
+        "poetry": 9,
+        "raw_tailwind": 21,
+        "tied": 1
+      },
+      "composition": {
+        "poetry": 9,
+        "raw_tailwind": 20,
+        "tied": 2
+      },
+      "clarity": {
+        "poetry": 9,
+        "raw_tailwind": 21,
+        "tied": 1
+      },
+      "brief_fit": {
+        "poetry": 17,
+        "raw_tailwind": 14
+      }
+    },
+    "remediated_and_themed": {
+      "hierarchy": {
+        "poetry": 10,
+        "raw_tailwind": 20,
+        "tied": 1
+      },
+      "composition": {
+        "poetry": 11,
+        "raw_tailwind": 18,
+        "tied": 2
+      },
+      "clarity": {
+        "poetry": 10,
+        "raw_tailwind": 20,
+        "tied": 1
+      },
+      "brief_fit": {
+        "poetry": 19,
+        "raw_tailwind": 12
+      }
+    }
+  },
+  "usage": {
+    "generation": {
+      "units_recorded": 5,
+      "unit_cost_sum_usd": 4.9912,
+      "receipted_cost_usd": 4.9912
+    },
+    "judge_default": {
+      "judge_calls": 30,
+      "total_cost_usd": 3.3018
+    },
+    "judge_themed": {
+      "judge_calls": 188,
+      "total_cost_usd": 22.41
+    },
+    "judge_remediated_themed": {
+      "judge_calls": 30,
+      "total_cost_usd": 1.6692
+    }
+  }
+}

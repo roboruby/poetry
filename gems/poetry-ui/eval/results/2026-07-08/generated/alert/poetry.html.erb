@@ -1,0 +1,7 @@
+<div class="mx-auto max-w-2xl py-10">
+  <%= poetry_alert(variant: :destructive) do |alert| %>
+    <% alert.with_icon(name: :"triangle-alert", label: "Warning") %>
+    <% alert.with_title { "Payment failed" } %>
+    We couldn't process your payment. Please check your payment method and try again, or contact support if the problem persists.
+  <% end %>
+</div>

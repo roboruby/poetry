@@ -71,13 +71,14 @@ end
 # points the runner and the arms endpoint at a results/<date>/generated
 # corpus). Tasks with no arms present (a subset benchmark state) are
 # skipped, not errors.
-def poetry_ui_eval_capture_all(runner, captures_root, tolerant: false)
+def poetry_ui_eval_capture_all(runner, captures_root, tolerant: false, only: nil)
   require "fileutils"
 
   session = poetry_ui_browser_session
   count = 0
   Poetry::Eval::Runner::TASKS.keys.sort.each do |task|
     arms = runner.arms(task)
+    arms = arms.slice(*only) if only
     next if arms.empty?
 
     dir = captures_root.join(task)
@@ -343,6 +344,15 @@ namespace :eval do
       units = poetry_bench_task_names.flat_map do |task|
         Poetry::Eval::Benchmark::ARM_HOSTS.keys.map { |arm| [task, arm] }
       end
+      # POETRY_BENCH_ARMS=poetry regenerates only the treated arm (the
+      # remediation re-run keeps the control arm's pre-registered
+      # sample frozen - resampling the control would confound the delta).
+      if (arm_filter = ENV.fetch("POETRY_BENCH_ARMS", nil))
+        arms = arm_filter.split(",").map(&:strip)
+        unknown = arms - Poetry::Eval::Benchmark::ARM_HOSTS.keys
+        abort "unknown POETRY_BENCH_ARMS: #{unknown.join(", ")}" unless unknown.empty?
+        units = units.select { |_task, arm| arms.include?(arm) }
+      end
       unless ENV["POETRY_BENCH_FORCE"] == "1"
         units = units.reject do |task, arm|
           entry = manifest["units"].dig(task, arm)
@@ -443,6 +453,38 @@ namespace :eval do
       puts "benchmark capture: #{count} screenshots in #{poetry_bench_results_root.join("captures")}"
     end
 
+    desc "Theme-variant recapture: poetry arms under POETRY_BENCH_THEME, raw PNGs reused byte-for-byte"
+    task capture_themed: :"browser:assets" do
+      require_relative "../eval/runner"
+      require "fileutils"
+
+      # The theme sensitivity pass: SAME generated markup (poetry
+      # components are theme-agnostic by construction - cn-* names resolve
+      # through the theme layer), recaptured under a shipped rich theme.
+      # The raw arm's evidence is reused from the source run untouched: raw
+      # utilities restate their colors inline and must not shift under a
+      # theme's base layer, so the judge compares themed poetry against the
+      # exact raw pixels the pre-registered run judged.
+      theme = ENV.fetch("POETRY_BENCH_THEME", "vega")
+      source = Pathname(ENV.fetch("POETRY_BENCH_SOURCE"))
+      generated = source.join("generated")
+      abort "no generated arms at #{generated}" unless generated.exist?
+
+      captures = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_CAPTURES_DIR", "captures-themed-#{theme}"))
+      File.write(poetry_ui_dummy_assets_dir.join("poetry.css"),
+                 poetry_ui_compile_tailwind(theme: theme, extra_sources: [generated]))
+      ENV["POETRY_EVAL_ARMS_ROOT"] = generated.to_s
+      count = poetry_ui_eval_capture_all(Poetry::Eval::Runner.new(arms_root: generated), captures,
+                                         tolerant: true, only: ["poetry"])
+      copied = Dir.glob(source.join("captures/*/raw_tailwind.png").to_s).sum do |png|
+        task_dir = captures.join(File.basename(File.dirname(png)))
+        FileUtils.mkdir_p(task_dir)
+        FileUtils.cp(png, task_dir.join("raw_tailwind.png"))
+        1
+      end
+      puts "themed capture (#{theme}): #{count} poetry screenshots + #{copied} raw reused in #{captures}"
+    end
+
     desc "Judge the generated pairs (the W1 paired judge) -> benchmark-verdicts.json"
     task :judge do
       poetry_ui_boot!
@@ -453,8 +495,12 @@ namespace :eval do
       require "date"
       require "tmpdir"
 
-      generated = poetry_bench_results_root.join("generated")
-      captures = poetry_bench_results_root.join("captures")
+      # Variant runs point SOURCE at the arms/captures to judge and
+      # VERDICTS at their own output file - the default remains this run's
+      # own dir end-to-end.
+      source = Pathname(ENV.fetch("POETRY_BENCH_SOURCE", poetry_bench_results_root.to_s))
+      generated = source.join("generated")
+      captures = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_CAPTURES_DIR", "captures"))
       card = Poetry::Eval::Runner.new(arms_root: generated).scorecard(fold_judged: false)
       judge = Poetry::Eval::Judge.new(workdir: File.join(Dir.tmpdir, "ui-eval-bench-judge"))
 
@@ -465,14 +511,13 @@ namespace :eval do
       skipped = poetry_bench_task_names - names
       puts "skipping #{skipped.size} tasks without complete pairs+captures: #{skipped.join(", ")}" if skipped.any?
 
+      path = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_VERDICTS", "benchmark-verdicts.json"))
       puts "judging #{names.size} generated pairs (model #{judge.model}, " \
-           "#{judge.votes_per_order} votes x 2 orders each)..."
+           "#{judge.votes_per_order} votes x 2 orders each) -> #{path.basename}..."
       results = poetry_ui_eval_judge_run(
         names: names, card: card, captures_root: captures,
-        judge: judge, partial: "tmp/eval-bench-judge-partial.json"
+        judge: judge, partial: "tmp/eval-bench-judge-partial-#{path.basename(".json")}.json"
       )
-
-      path = poetry_bench_results_root.join("benchmark-verdicts.json")
       usage = { "judge_calls" => judge.calls, "total_cost_usd" => judge.total_cost_usd.round(4) }
       if path.exist?
         previous = JSON.parse(path.read)

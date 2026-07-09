@@ -21,6 +21,9 @@ experiment that tests it. Two halves:
   arms — an arm whose trigger does nothing captures that truth).
 - `results/<date>/judge-verdicts.json` — committed FROZEN-arm judge runs
   (`judge-v1`; the calibration lives here and only here).
+- `results/2026-07-07/` is the FROZEN pre-registered W2 run — never
+  rewritten; `results/2026-07-08/` is the remediation run (subset
+  regeneration + theme variants) layered beside it.
 - `results/<date>/` benchmark artifacts (N15 W2): `generated/<task>/<arm>.html.erb`
   (the agent-written arms), `generation-manifest.json`, `generated-scorecard.json`,
   `captures/`, `benchmark-verdicts.json`, `results.json` (`results-v1`).
@@ -99,11 +102,21 @@ chains them):
 | `rake eval:benchmark:score` | Mechanical gates on generated arms → `generated-scorecard.json` |
 | `rake eval:benchmark:capture` | Screenshots, stylesheet compiled WITH the generated arms as a Tailwind source (no purge bias) |
 | `rake eval:benchmark:judge` | The W1 paired judge → `benchmark-verdicts.json` (never `judge-verdicts.json`) |
+| `rake eval:benchmark:capture_themed` | theme variant: poetry arms recaptured under `POETRY_BENCH_THEME` (default vega), raw PNGs reused byte-for-byte from the source run |
 | `rake eval:benchmark:aggregate` | Fold into `results.json` (`results-v1`) with the pre-registered prediction checks |
 
 Env: `POETRY_BENCH_DATE`, `POETRY_BENCH_MODEL`, `POETRY_BENCH_MAX_TURNS`,
 `POETRY_BENCH_HOSTS`, `POETRY_BENCH_TASKS`, `POETRY_BENCH_CONCURRENCY`,
 `POETRY_BENCH_FORCE=1`, plus the `POETRY_JUDGE_*` family for the judge leg.
+Variant runs (remediation): `POETRY_BENCH_ARMS` regenerates only the
+listed arms (the control stays the pre-registered sample);
+`POETRY_BENCH_SOURCE` points judge/capture_themed at another run's
+`generated/` (+ its `captures/` for reused raw PNGs);
+`POETRY_BENCH_CAPTURES_DIR` and `POETRY_BENCH_VERDICTS` name a variant's
+captures dir and verdicts file so the run's own `benchmark-verdicts.json`
+stays frozen. `results-remediation.json` (schema `results-remediation-v1`)
+folds the subset re-run + theme variants; the pre-registered `results.json`
+is never rewritten.
 
 Fairness invariants (runtime-enforced where possible): generation is
 hermetic — agents run via the claude CLI cwd'd into tmp twin hosts outside

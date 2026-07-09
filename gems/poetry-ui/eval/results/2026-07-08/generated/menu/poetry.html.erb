@@ -1,0 +1,69 @@
+<div class="mx-auto max-w-3xl space-y-8 p-8">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Documents</h1>
+    <p class="text-sm text-muted-foreground">Manage shared files for this workspace.</p>
+  </div>
+
+  <%= poetry_menubar(label: "Application menu") do |menubar| %>
+    <% menubar.with_menu(value: "file") do |menu| %>
+      <% menu.with_trigger { "File" } %>
+      <% menu.with_item(:item, shortcut: "⌘T") { "New Tab" } %>
+      <% menu.with_item(:item, shortcut: "⌘N") { "New Window" } %>
+      <% menu.with_item(:separator) %>
+      <% menu.with_item(:item, shortcut: "⌘S") { "Save" } %>
+      <% menu.with_item(:item, shortcut: "⌘P") { "Print…" } %>
+      <% menu.with_item(:separator) %>
+      <% menu.with_item(:item) { "Close Window" } %>
+    <% end %>
+    <% menubar.with_menu(value: "view") do |menu| %>
+      <% menu.with_trigger { "View" } %>
+      <% menu.with_item(:checkbox_item, checked: true) { "Always Show Toolbar" } %>
+      <% menu.with_item(:checkbox_item, checked: false) { "Always Show Full URLs" } %>
+      <% menu.with_item(:separator) %>
+      <% menu.with_item(:item, shortcut: "⌘R") { "Reload" } %>
+      <% menu.with_item(:item, disabled: true) { "Enter Full Screen" } %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_context_menu(label: "Document actions") do |cm| %>
+    <% cm.with_trigger do %>
+      <%= poetry_item(variant: :outline) do |item| %>
+        <% item.with_media(variant: :icon) { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Q3 Marketing Plan.pdf" } %>
+        <% item.with_description { "Edited 2 hours ago by Priya Shah" } %>
+        <% item.with_actions do %>
+          <div class="flex items-center gap-1">
+            <%= poetry_alert_dialog do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :icon_sm, label: "Delete Q3 Marketing Plan.pdf") { poetry_icon(name: :trash) } %>
+              <% ad.with_title { "Delete this file?" } %>
+              <% ad.with_description { "“Q3 Marketing Plan.pdf” will be permanently deleted. This action cannot be undone." } %>
+              <% ad.with_cancel { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Delete" } %>
+            <% end %>
+            <%= poetry_dropdown_menu do |dd| %>
+              <% dd.with_trigger(variant: :outline, size: :sm) { "Options" } %>
+              <% dd.with_item(:label) { "My Account" } %>
+              <% dd.with_item(:separator) %>
+              <% dd.with_item(:item) { "View File" } %>
+              <% dd.with_item(:item, shortcut: "⌘B") { "Billing" } %>
+              <% dd.with_item(:item) { "Share…" } %>
+              <% dd.with_item(:separator) %>
+              <% dd.with_item(:checkbox_item, checked: true) { "Email me when this file changes" } %>
+              <% dd.with_item(:separator) %>
+              <% dd.with_item(:item, variant: :destructive) { "Delete" } %>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% cm.with_item(:label) { "Q3 Marketing Plan.pdf" } %>
+    <% cm.with_item(:separator) %>
+    <% cm.with_item(:item, shortcut: "⌘O") { "Open" } %>
+    <% cm.with_item(:item) { "Share…" } %>
+    <% cm.with_item(:item) { "Rename" } %>
+    <% cm.with_item(:separator) %>
+    <% cm.with_item(:checkbox_item, checked: true) { "Email me when this file changes" } %>
+    <% cm.with_item(:separator) %>
+    <% cm.with_item(:item, variant: :destructive) { "Delete" } %>
+  <% end %>
+</div>

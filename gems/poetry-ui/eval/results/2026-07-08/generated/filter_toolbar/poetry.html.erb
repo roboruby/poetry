@@ -1,0 +1,37 @@
+<div class="w-full border-b border-border bg-background px-6 py-4">
+  <form action="" method="get" class="flex flex-wrap items-center justify-between gap-3">
+    <div class="w-full max-w-sm">
+      <%= poetry_input_group do %>
+        <%= poetry_input_group_addon(align: :"inline-start") do %>
+          <%= poetry_icon(name: :search) %>
+        <% end %>
+        <%= poetry_input_group_input(type: "search", name: "q", placeholder: "Search…", "aria-label": "Search") %>
+        <%= poetry_input_group_addon(align: :"inline-end") do %>
+          <span class="inline-flex items-center gap-0.5 text-muted-foreground">
+            <%= poetry_kbd { "⌘" } %>
+            <%= poetry_kbd { "K" } %>
+          </span>
+        <% end %>
+      <% end %>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <%= poetry_select(name: "sort", placeholder: "Sort by", "aria-label": "Sort by") do |select| %>
+        <% select.with_trigger %>
+        <% select.with_item(value: "newest") { "Newest first" } %>
+        <% select.with_item(value: "oldest") { "Oldest first" } %>
+        <% select.with_item(value: "name_asc") { "Name (A–Z)" } %>
+        <% select.with_item(value: "name_desc") { "Name (Z–A)" } %>
+      <% end %>
+
+      <%= poetry_toggle_group(type: :single, value: "list", label: "View") do |group| %>
+        <% group.with_item(value: "list", label: "List view") do %>
+          <%= poetry_icon(name: :list) %>
+        <% end %>
+        <% group.with_item(value: "grid", label: "Grid view") do %>
+          <%= poetry_icon(name: :"layout-grid") %>
+        <% end %>
+      <% end %>
+    </div>
+  </form>
+</div>
