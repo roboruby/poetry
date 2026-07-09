@@ -82,6 +82,18 @@
             <% end %>
           <% end %>
           <%= poetry_sidebar_group do %>
+            <%= poetry_sidebar_group_label { "Blocks" } %>
+            <%= poetry_sidebar_menu do %>
+              <% DocsCatalog.blocks.each do |entry| %>
+                <%= poetry_sidebar_menu_item do %>
+                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                    <span><%= entry.title %></span>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_group do %>
             <%= poetry_sidebar_group_label { "Demos" } %>
             <%= poetry_sidebar_menu do %>
               <% DocsCatalog.demos.each do |entry| %>

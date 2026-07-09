@@ -17,7 +17,7 @@ class SearchIndex
 
         page = { "title" => entry.title, "page" => entry.title,
                  "section" => entry.section, "path" => entry.path }
-        [page, *heading_entries_for(entry, Nokogiri::HTML5(session.response.body))]
+        [ page, *heading_entries_for(entry, Nokogiri::HTML5(session.response.body)) ]
       end
     end
 

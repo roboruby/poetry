@@ -2100,6 +2100,42 @@
     "path": "/charts/scatter#reference-zones"
   },
   {
+    "title": "App shell",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell"
+  },
+  {
+    "title": "Data index",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index"
+  },
+  {
+    "title": "Destructive panel",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel"
+  },
+  {
+    "title": "Revoke deploy token",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#destructive-panel-title"
+  },
+  {
+    "title": "Page header",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header"
+  },
+  {
+    "title": "Section card",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card"
+  },
+  {
     "title": "Interactive Filter",
     "page": "Interactive Filter",
     "section": "demos",

@@ -17,6 +17,7 @@ Rails.application.routes.draw do
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
+  get "blocks/:slug" => "blocks#show", as: :block
   get "demos/:slug" => "demos#show", as: :demo
 
   # Defines the root path route ("/")

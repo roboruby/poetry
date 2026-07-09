@@ -1,0 +1,33 @@
+<% content_for :title, @entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Blocks") %>
+    <% crumb.with_item(@entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
+    <div class="flex flex-wrap items-center gap-2 text-sm">
+      <code class="rounded-md border bg-muted/30 px-2 py-1 font-mono"><%= "bin/rails g poetry:block #{@entry.slug}" %></code>
+      <span class="text-muted-foreground">copies this source into <code class="font-mono">app/views/blocks/</code> — it's yours to edit.</span>
+    </div>
+    <p class="text-sm text-muted-foreground">Composes: <%= @components.join(", ") %>.</p>
+  </header>
+
+  <section class="flex flex-col gap-3">
+    <%= poetry_tabs(label: "#{@entry.title} block", variant: :line) do |tabs| %>
+      <% tabs.with_tab("Preview", value: "preview") do %>
+        <div class="max-h-[36rem] overflow-auto rounded-lg border <%= @entry.slug == "app-shell" ? "" : "p-8" %>">
+          <%= render inline: @source %>
+        </div>
+      <% end %>
+      <% tabs.with_tab("Code", value: "code") do %>
+        <%= highlight_erb(@source) %>
+      <% end %>
+    <% end %>
+  </section>
+</div>

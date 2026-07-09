@@ -76,17 +76,37 @@ class DocsCatalog
 
     def docs = DOCS
 
+    # The blocks gallery (Blocks v1): registry-driven like components - the
+    # blocks section of poetry-ui's registry is the roster, so a new block
+    # appears in the nav, palette, and 200-gate the moment the gem ships it.
+    def blocks
+      @blocks ||= blocks_meta.map do |slug, entry|
+        Entry.new(slug: slug, title: entry["title"], section: "blocks",
+                  description: entry["description"])
+      end.sort_by(&:slug)
+    end
+
+    # The raw registry entry (template path, composed components) for one
+    # block - the block page reads the real source through it.
+    def block_meta(slug) = blocks_meta[slug]
+
     def find(section, slug)
-      list = { "charts" => charts, "demos" => demos }.fetch(section, components)
+      list = { "charts" => charts, "demos" => demos, "blocks" => blocks }.fetch(section, components)
       list.find { |entry| entry.slug == slug }
     end
 
-    def all = docs + components + charts + demos
+    def all = docs + components + charts + blocks + demos
 
     private
 
     def registry_keys(root)
       YAML.safe_load_file(root.join("config/component_registry.yml")).fetch("components").keys
+    end
+
+    def blocks_meta
+      @blocks_meta ||= YAML.safe_load_file(
+        Poetry::Ui.root.join("config/component_registry.yml")
+      )["blocks"] || {}
     end
 
     def titleize(slug)

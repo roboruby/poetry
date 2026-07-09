@@ -22,7 +22,7 @@ class DesignLintTest < ActiveSupport::TestCase
   test "the docs corpus carries no design slop" do
     by_file = Dir.glob(Rails.root.join("app/views/**/*.erb")).to_h do |path|
       relative = Pathname.new(path).relative_path_from(Rails.root).to_s
-      [relative, Poetry::Core::DesignLint.lint(File.read(path), file: relative)]
+      [ relative, Poetry::Core::DesignLint.lint(File.read(path), file: relative) ]
     end.reject { |_file, findings| findings.empty? }
 
     unexpected = by_file.reject { |file, _| DESIGN_LINT_SKIPS.key?(file) }

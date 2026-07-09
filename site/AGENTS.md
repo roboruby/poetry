@@ -37,16 +37,25 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (65 components + 13 chart components)
+## Building UI with poetry (65 components + 13 chart components + 5 blocks)
 
 - Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw
   hex/oklch colors, or off-scale arbitrary values - tokens and variants carry
   the design.
-- Machine catalog: `/poetry/llms.txt` (index) and `/poetry/llms-full.txt`
+- Starting a new SCREEN? Begin from a vetted block: `bin/rails g poetry:block
+  --list`, generate, then edit in place (boot-free: the MCP `list_blocks` /
+  `describe_block` tools return the same source). Compose atoms only for
+  what no block covers.
+- Machine catalog: `/poetry/llms.txt` (index + blocks) and `/poetry/llms-full.txt`
   (full contracts + Stimulus wiring: targets / values / actions / events).
 - Verify markup before finishing: `bin/rails poetry:check` (unknown
-  components/slots/variants/wiring, did-you-mean, `--json`; needs the
-  `herb` gem in the Gemfile).
+  components/slots/variants/wiring, icon names, enum values, typed-slot
+  props, setter arity, yield-less wrappers, did-you-mean, `--json`;
+  needs the `herb` gem in the Gemfile).
+- Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
+  `["exec", "poetry-agent"]`) serves `check`, `describe_component`, and
+  `list_components` from the live registry with no app boot - prefer its
+  `check` tool when iterating.
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
 - Design interop: `bin/rails poetry:design:export` writes this app's

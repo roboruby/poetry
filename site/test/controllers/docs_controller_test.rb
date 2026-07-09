@@ -67,12 +67,37 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "div.highlight", minimum: 7 # every recipe ships its source
   end
 
+  test "a block page renders the real gem template and its exact source" do
+    get "/blocks/data-index"
+
+    assert_response :success
+    assert_select "[data-slot=table]", 1, "the preview renders the block live"
+    assert_select "[data-slot=badge]", minimum: 4
+    assert_select "div.highlight", 1 # the code tab: the source poetry:block copies in
+    assert_select "code.font-mono", text: /bin\/rails g poetry:block data-index/
+  end
+
+  test "the blocks gallery covers every registry block" do
+    assert_equal %w[app-shell data-index destructive-panel page-header section-card],
+                 DocsCatalog.blocks.map(&:slug)
+
+    DocsCatalog.blocks.each do |entry|
+      get entry.path
+
+      assert_response :success, "#{entry.path} must render"
+    end
+  end
+
   test "an unknown slug is a 404, not a blank page" do
     get "/components/sparkles"
 
     assert_response :not_found
 
     get "/demos/sparkles"
+
+    assert_response :not_found
+
+    get "/blocks/sparkles"
 
     assert_response :not_found
   end
