@@ -457,6 +457,14 @@ module Poetry
           render(Icon::Component.new(name: :"chevron-right", class: Style.css(:sub_indicator)))
         end
       end
+
+      # The builder classes behind lambda-wrapped slot types: a
+      # lambda hides its return class from introspection, so the owner
+      # declares it and the registry walker recurses into the builder's own
+      # call surface (with_sub yields a Sub with its own items).
+      module ItemSlots
+        SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
+      end
     end
   end
 end

@@ -14,6 +14,7 @@ module Poetry
     class CheckValueContractsTest < Minitest::Test
       CRASHERS = %w[alert empty_state filter_toolbar].freeze
       GENERATED = "eval/results/2026-07-07/generated/*/poetry.html.erb"
+      REMEDIATED = "eval/results/2026-07-08/generated/*/poetry.html.erb"
       FROZEN = "eval/arms/*/poetry.html.erb"
 
       def catalog
@@ -50,6 +51,22 @@ module Poetry
       def test_the_frozen_arms_stay_error_free
         assert_empty error_templates(FROZEN),
                      "maintainer-written arms render today - new rules must not flag them"
+      end
+
+      # The composition-contract corpus: the remediation re-run's two
+      # render-crashers fail statically (yield-less wrapper misuse, slot
+      # setter arity), the three value-contract fixes stay clean.
+      def test_the_remediated_corpus_errors_on_exactly_the_two_composition_crashers
+        failures = error_templates(REMEDIATED)
+
+        assert_equal %w[app_shell menu], failures.keys.sort,
+                     "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
+        assert(failures["app_shell"].any? { |finding| finding.rule == "yieldless-block" },
+               "a block param on a yield-less wrapper must read as the app_shell crash")
+        assert(failures["menu"].any? { |finding| finding.rule == "slot-arity" },
+               "the type-as-argument convention must read as the menu crash")
+        assert(failures["menu"].any? { |finding| finding.suggestion == "with_separator" },
+               "with_item(:separator) must suggest the sibling setter")
       end
     end
   end

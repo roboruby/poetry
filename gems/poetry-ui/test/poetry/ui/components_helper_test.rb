@@ -65,6 +65,20 @@ module Poetry
         assert_includes html, 'data-component="input"'
         assert_includes html, 'type="email"'
       end
+
+      def test_wrapper_helpers_never_yield_anything_to_their_blocks
+        # The yieldless-block check rule rests on this roster
+        # invariant: no poetry_* wrapper helper passes an argument to its
+        # block (a declared block param is always nil at render - the W2r
+        # app_shell crash). A future yielding wrapper must put the yield
+        # behind a component, or extend the rule - this tripwire forces
+        # that decision consciously.
+        source = Poetry::Ui.root.join("app/helpers/poetry/ui/components_helper.rb").read
+
+        refute_match(/\byield\b/, source, "wrapper helpers must not yield")
+        assert_empty source.scan(/capture\((?!&)[^)]*\)/), "capture must take only the block, never arguments"
+        refute_match(/block\.call\(.+\)/, source, "blocks must not be called with arguments")
+      end
     end
   end
 end

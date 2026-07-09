@@ -45,7 +45,8 @@ module Poetry
             (full contracts + Stimulus wiring: targets / values / actions / events).
           - Verify markup before finishing: `bin/rails poetry:check` (unknown
             components/slots/variants/wiring, icon names, enum values, typed-slot
-            props, did-you-mean, `--json`; needs the `herb` gem in the Gemfile).
+            props, setter arity, yield-less wrappers, did-you-mean, `--json`;
+            needs the `herb` gem in the Gemfile).
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
             `["exec", "poetry-agent"]`) serves `check`, `describe_component`, and
             `list_components` from the live registry with no app boot - prefer its

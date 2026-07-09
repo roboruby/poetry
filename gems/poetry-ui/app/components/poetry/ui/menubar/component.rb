@@ -541,6 +541,18 @@ module Poetry
           render(Icon::Component.new(name: :"chevron-right", class: Style.css(:sub_indicator)))
         end
       end
+
+      # The builder classes behind lambda-wrapped slots: a lambda
+      # hides its return class from introspection, so the owners declare
+      # them and the registry walker recurses into each builder's own call
+      # surface (with_menu yields a Menu; with_sub a Sub).
+      class Component
+        SLOT_BUILDERS = { menu: Menu }.freeze
+      end
+
+      module ItemSlots
+        SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
+      end
     end
   end
 end

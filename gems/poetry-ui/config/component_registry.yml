@@ -23,6 +23,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 0
     elements:
     - item
     - header
@@ -78,6 +80,8 @@ components:
     - name: icon
       many: false
       component: poetry/ui/icon
+      setter_args:
+        icon: 1
     - name: title
       many: false
     elements:
@@ -105,6 +109,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     - name: title
       many: false
     - name: description
@@ -113,8 +119,12 @@ components:
       many: false
     - name: action
       many: false
+      setter_args:
+        action: 0
     - name: cancel
       many: false
+      setter_args:
+        cancel: 0
     elements:
     - content
     - header
@@ -195,14 +205,20 @@ components:
     slots:
     - name: media
       many: false
+      setter_args:
+        media: 0
     - name: title
       many: false
     - name: description
       many: false
     - name: actions
       many: true
+      setter_args:
+        action: 0
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     elements:
     - media
     - content
@@ -287,6 +303,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 1
     slot_extras:
     - ellipsis
     elements:
@@ -332,6 +350,8 @@ components:
     slots:
     - name: reactions
       many: false
+      setter_args:
+        reactions: 0
     elements:
     - group
     - content
@@ -544,6 +564,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 0
     elements:
     - content
     - content_horizontal
@@ -654,6 +676,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     controllers:
     - identifier: poetry--core--state
       targets:
@@ -736,6 +760,10 @@ components:
       - item
       - group
       - separator
+      setter_args:
+        item: 0
+        group: 0
+        separator: 0
     elements:
     - trigger
     - value
@@ -859,6 +887,10 @@ components:
       - item
       - group
       - separator
+      setter_args:
+        item: 0
+        group: 0
+        separator: 0
     elements:
     - input_wrapper
     - input
@@ -948,6 +980,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     slot_extras:
     - empty
     - group
@@ -1031,8 +1065,141 @@ components:
       - separator
       - group
       - sub
+      setter_args:
+        item: 0
+        checkbox_item: 0
+        radio_group: 0
+        label: 0
+        separator: 0
+        group: 0
+        sub: 0
+      builders:
+        radio_group:
+          slots:
+          - name: radio_items
+            many: true
+            setter_args:
+              radio_item: 0
+        group:
+          slots:
+          - name: items
+            many: true
+            types:
+            - item
+            - checkbox_item
+            - radio_group
+            - label
+            - separator
+            - group
+            - sub
+            setter_args:
+              item: 0
+              checkbox_item: 0
+              radio_group: 0
+              label: 0
+              separator: 0
+              group: 0
+              sub: 0
+            builders:
+              radio_group:
+                slots:
+                - name: radio_items
+                  many: true
+                  setter_args:
+                    radio_item: 0
+              sub:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+                - name: trigger
+                  many: false
+                  setter_args:
+                    trigger: 0
+        sub:
+          slots:
+          - name: items
+            many: true
+            types:
+            - item
+            - checkbox_item
+            - radio_group
+            - label
+            - separator
+            - group
+            - sub
+            setter_args:
+              item: 0
+              checkbox_item: 0
+              radio_group: 0
+              label: 0
+              separator: 0
+              group: 0
+              sub: 0
+            builders:
+              radio_group:
+                slots:
+                - name: radio_items
+                  many: true
+                  setter_args:
+                    radio_item: 0
+              group:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+          - name: trigger
+            many: false
+            setter_args:
+              trigger: 0
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     elements:
     - content
     - item
@@ -1152,6 +1319,8 @@ components:
     slots:
     - name: columns
       many: true
+      setter_args:
+        column: 1
     elements:
     - toolbar
     - container
@@ -1250,6 +1419,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     - name: title
       many: false
     - name: description
@@ -1310,6 +1481,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     - name: title
       many: false
     - name: description
@@ -1400,8 +1573,141 @@ components:
       - separator
       - group
       - sub
+      setter_args:
+        item: 0
+        checkbox_item: 0
+        radio_group: 0
+        label: 0
+        separator: 0
+        group: 0
+        sub: 0
+      builders:
+        radio_group:
+          slots:
+          - name: radio_items
+            many: true
+            setter_args:
+              radio_item: 0
+        group:
+          slots:
+          - name: items
+            many: true
+            types:
+            - item
+            - checkbox_item
+            - radio_group
+            - label
+            - separator
+            - group
+            - sub
+            setter_args:
+              item: 0
+              checkbox_item: 0
+              radio_group: 0
+              label: 0
+              separator: 0
+              group: 0
+              sub: 0
+            builders:
+              radio_group:
+                slots:
+                - name: radio_items
+                  many: true
+                  setter_args:
+                    radio_item: 0
+              sub:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+                - name: trigger
+                  many: false
+                  setter_args:
+                    trigger: 0
+        sub:
+          slots:
+          - name: items
+            many: true
+            types:
+            - item
+            - checkbox_item
+            - radio_group
+            - label
+            - separator
+            - group
+            - sub
+            setter_args:
+              item: 0
+              checkbox_item: 0
+              radio_group: 0
+              label: 0
+              separator: 0
+              group: 0
+              sub: 0
+            builders:
+              radio_group:
+                slots:
+                - name: radio_items
+                  many: true
+                  setter_args:
+                    radio_item: 0
+              group:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+          - name: trigger
+            many: false
+            setter_args:
+              trigger: 0
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     elements:
     - content
     - item
@@ -1587,6 +1893,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     elements:
     - content
     capsule: bc5dc4784bee
@@ -1928,6 +2236,8 @@ components:
     - name: icon
       many: false
       component: poetry/ui/icon
+      setter_args:
+        icon: 1
     elements:
     - icon
     - content
@@ -1956,6 +2266,156 @@ components:
     slots:
     - name: menus
       many: true
+      setter_args:
+        menu: 0
+      builders:
+        menu:
+          slots:
+          - name: items
+            many: true
+            types:
+            - item
+            - checkbox_item
+            - radio_group
+            - label
+            - separator
+            - group
+            - sub
+            setter_args:
+              item: 0
+              checkbox_item: 0
+              radio_group: 0
+              label: 0
+              separator: 0
+              group: 0
+              sub: 0
+            builders:
+              radio_group:
+                slots:
+                - name: radio_items
+                  many: true
+                  setter_args:
+                    radio_item: 0
+              group:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+                    sub:
+                      slots:
+                      - name: items
+                        many: true
+                        types:
+                        - item
+                        - checkbox_item
+                        - radio_group
+                        - label
+                        - separator
+                        - group
+                        - sub
+                        setter_args:
+                          item: 0
+                          checkbox_item: 0
+                          radio_group: 0
+                          label: 0
+                          separator: 0
+                          group: 0
+                          sub: 0
+                        builders:
+                          radio_group:
+                            slots:
+                            - name: radio_items
+                              many: true
+                              setter_args:
+                                radio_item: 0
+                      - name: trigger
+                        many: false
+                        setter_args:
+                          trigger: 0
+              sub:
+                slots:
+                - name: items
+                  many: true
+                  types:
+                  - item
+                  - checkbox_item
+                  - radio_group
+                  - label
+                  - separator
+                  - group
+                  - sub
+                  setter_args:
+                    item: 0
+                    checkbox_item: 0
+                    radio_group: 0
+                    label: 0
+                    separator: 0
+                    group: 0
+                    sub: 0
+                  builders:
+                    radio_group:
+                      slots:
+                      - name: radio_items
+                        many: true
+                        setter_args:
+                          radio_item: 0
+                    group:
+                      slots:
+                      - name: items
+                        many: true
+                        types:
+                        - item
+                        - checkbox_item
+                        - radio_group
+                        - label
+                        - separator
+                        - group
+                        - sub
+                        setter_args:
+                          item: 0
+                          checkbox_item: 0
+                          radio_group: 0
+                          label: 0
+                          separator: 0
+                          group: 0
+                          sub: 0
+                        builders:
+                          radio_group:
+                            slots:
+                            - name: radio_items
+                              many: true
+                              setter_args:
+                                radio_item: 0
+                - name: trigger
+                  many: false
+                  setter_args:
+                    trigger: 0
+          - name: trigger
+            many: false
+            setter_args:
+              trigger: 0
     elements:
     - menu
     - trigger
@@ -2209,6 +2669,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 1
     slot_extras:
     - link
     elements:
@@ -2336,8 +2798,12 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     - name: anchor
       many: false
+      setter_args:
+        anchor: 0
     - name: title
       many: false
     - name: description
@@ -2458,6 +2924,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 0
     elements:
     - item
     - indicator
@@ -2517,6 +2985,8 @@ components:
     slots:
     - name: panels
       many: true
+      setter_args:
+        panel: 0
     elements:
     - panel
     - handle
@@ -2618,6 +3088,10 @@ components:
       - item
       - group
       - separator
+      setter_args:
+        item: 0
+        group: 0
+        separator: 0
     elements:
     - trigger
     - content
@@ -2745,6 +3219,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     - name: title
       many: false
     - name: description
@@ -3090,6 +3566,8 @@ components:
     slots:
     - name: tabs
       many: true
+      setter_args:
+        tab: 1
     elements:
     - list
     - list_default
@@ -3188,6 +3666,8 @@ components:
       many: false
     - name: action
       many: false
+      setter_args:
+        action: 0
     elements:
     - icon
     - body
@@ -3362,6 +3842,8 @@ components:
     slots:
     - name: items
       many: true
+      setter_args:
+        item: 0
     elements:
     - item
     capsule: b5c1a9940c88
@@ -3429,6 +3911,8 @@ components:
     slots:
     - name: trigger
       many: false
+      setter_args:
+        trigger: 0
     elements:
     - content
     - arrow
