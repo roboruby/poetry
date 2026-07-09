@@ -18,6 +18,25 @@ module Poetry
     # the dummy's /blocks previews, and the MCP server's describe_block.
     BLOCKS_DIR = "lib/generators/poetry/block/templates"
 
+    # The usage skill's family partition (Skills v1): every
+    # component in exactly one reference file, so the skill's menu stays
+    # lean and an agent loads only the family it is composing in. The
+    # coverage gate fails on any new component until it is mapped here.
+    SKILL_FAMILIES = {
+      "forms" => %w[button button_group calendar checkbox combobox date_picker field
+                    input input_group input_otp label native_select radio_group select
+                    slider switch textarea toggle toggle_group],
+      "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
+                       dropdown_menu hover_card menubar popover sheet tooltip],
+      "data" => %w[accordion avatar badge card carousel collapsible data_table empty
+                   item table],
+      "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
+      "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
+      "foundations" => %w[icon kbd link marker separator],
+      "chat" => %w[attachment bubble message message_scroller],
+      "layout" => %w[aspect_ratio resizable scroll_area]
+    }.freeze
+
     class << self
       # Gem root (the directory containing lib/, app/, config/).
       def root
@@ -57,6 +76,26 @@ module Poetry
           blocks: registry_blocks(component_paths: component_paths),
           helper_args: registry_helper_args
         )
+      end
+
+      # The installable component-usage skill (Skills v1): a lean
+      # SKILL.md menu + per-family references, generated from the live
+      # registry - the seam the poetry:skill generator and the eval
+      # harness share (the agents_section_text pattern).
+      def skill_files
+        Poetry::Core::SkillText.new(
+          registry: registry, families: SKILL_FAMILIES, charts_registry: charts_registry
+        ).files
+      end
+
+      # Tolerant on charts, like the AGENTS.md census: a host without the
+      # gem (or with a stubbed/partial one) just drops the charts reference.
+      def charts_registry
+        return nil unless defined?(Poetry::Charts::Engine)
+
+        Poetry::Charts.registry
+      rescue StandardError
+        nil
       end
 
       # The registry "helper_args" map: max positional arity for EVERY

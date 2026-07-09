@@ -2,6 +2,7 @@
 
 require "rails/generators"
 require_relative "../agents_section"
+require_relative "../skills_section"
 
 module Poetry
   # `rails g poetry:install` - wires poetry into a host app (M8):
@@ -27,6 +28,7 @@ module Poetry
   # the Stimulus registration, and that is exactly what the flag does).
   class InstallGenerator < Rails::Generators::Base
     include Generators::AgentsSection
+    include Generators::SkillsSection
 
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
 
@@ -222,6 +224,13 @@ module Poetry
     # refreshes it in place. Standalone refresh: `rails g poetry:agents`.
     def write_agents_md
       apply_agents_section
+    end
+
+    # The Claude Code skills (Skills v1) - part of the standard
+    # install surface, like AGENTS.md. Standalone refresh:
+    # `rails g poetry:skill` (re-run after updating poetry gems).
+    def write_skills
+      apply_poetry_skills
     end
 
     private

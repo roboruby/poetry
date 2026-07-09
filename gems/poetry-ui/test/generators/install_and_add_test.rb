@@ -46,6 +46,19 @@ module Poetry
       end
     end
 
+    def test_install_writes_both_claude_code_skills
+      run_generator
+
+      assert_file ".claude/skills/poetry/SKILL.md" do |content|
+        assert_match(/^name: poetry$/, content)
+      end
+      assert_file ".claude/skills/poetry/references/forms.md"
+      assert_file ".claude/skills/poetry-design/SKILL.md" do |content|
+        assert_match(/^name: poetry-design$/, content)
+      end
+      assert_file ".claude/skills/poetry-design/references/audit.md"
+    end
+
     def test_tailwind_entry_injection_is_idempotent
       entry = File.join(destination_root, InstallGenerator::TAILWIND_ENTRY)
       FileUtils.mkdir_p(File.dirname(entry))

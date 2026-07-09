@@ -57,6 +57,10 @@ module Poetry
             `check` tool when iterating.
           - One visual theme per app (chosen at install with `--theme`); components
             read tokens, never restate them.
+          - Claude Code skills: `poetry` (component contracts by family) and
+            `poetry-design` (theme / compose / audit / study - the taste layer)
+            live under `.claude/skills/` - load them when composing or styling.
+            Install/refresh: `bin/rails g poetry:skill`.
           - Design interop: `bin/rails poetry:design:export` writes this app's
             DESIGN.md (tokens + treatment) for external design skills.
           #{END_MARKER}

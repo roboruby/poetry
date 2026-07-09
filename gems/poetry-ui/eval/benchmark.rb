@@ -54,12 +54,16 @@ module Poetry
       # runnable - bin/check plus the poetry MCP server ( remediation:
       # boot-free check/describe/list, attacking the turn-exhaustion tail
       # that cost menu/app_shell in the pre-registered run); host B has
-      # nothing to run.
+      # nothing to run. `Skill` is in BOTH belts (Skills v1): the
+      # asymmetry stays in the hosts' files - host A carries poetry's two
+      # skills, host B has none, and --setting-sources project keeps
+      # user-scoped skills out of both arms (the CLI's built-in skills
+      # remain, a symmetric substrate).
       TOOLBELTS = {
-        "poetry" => "Read,Glob,Grep,Write,Bash(bin/check:*)," \
+        "poetry" => "Read,Glob,Grep,Write,Skill,Bash(bin/check:*)," \
                     "mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components," \
                     "mcp__poetry__list_blocks,mcp__poetry__describe_block",
-        "raw_tailwind" => "Read,Glob,Grep,Write"
+        "raw_tailwind" => "Read,Glob,Grep,Write,Skill"
       }.freeze
       # CLAUDE.md is byte-identical in both hosts: the project-memory hook
       # the claude CLI auto-loads must not itself be a treatment.
@@ -112,6 +116,7 @@ module Poetry
       # the poetry surface absent - and provably absent (assert_hermetic!).
       def build_hosts!
         require "generators/poetry/agents_section"
+        require "generators/poetry/skills_section"
 
         ARM_HOSTS.each_key do |arm|
           # Reset the template's views dir: every unit gets a fresh COPY of
@@ -402,6 +407,23 @@ module Poetry
         MD
         write_bin_check(host)
         write_mcp_config(host)
+        write_skills(host)
+      end
+
+      # The two Claude Code skills, written exactly as `rails g poetry:skill`
+      # installs them (Skills v1) - host A's fourth agent surface.
+      # Host B gets none; with --setting-sources project on both arms, the
+      # project skills ARE the arm's whole non-built-in skill surface.
+      def write_skills(host)
+        design = Object.new.extend(Poetry::Generators::SkillsSection)
+        { ".claude/skills/poetry" => Poetry::Ui.skill_files,
+          ".claude/skills/poetry-design" => design.design_skill_files }.each do |dir, files|
+          files.each do |relative, content|
+            path = host.join(dir, relative)
+            FileUtils.mkdir_p(path.dirname)
+            path.write(content)
+          end
+        end
       end
 
       def write_host_b
@@ -497,6 +519,10 @@ module Poetry
           "claude", "-p", prompt, "--output-format", "json",
           "--model", @model, "--max-turns", @max_turns.to_s,
           "--allowedTools", toolbelt, *mcp_args,
+          # Skills resolve from the unit host only: without this,
+          # the operator's user-scoped skills leak into both arms (proven
+          # in the 2026-07-09 smoke test).
+          "--setting-sources", "project",
           chdir: host.to_s
         )
         # A failed run still emits an envelope on stdout (exit 1, is_error,
