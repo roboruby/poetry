@@ -24,6 +24,12 @@ module Poetry
         def first_page
           render_component(current: 1, total: 10, path: PATH)
         end
+
+        # The filled current-page treatment (Blocks v1.1): the primary
+        # Button as the active marker - the data-index block's choice.
+        def filled_current
+          render_component(current: 4, total: 10, current_variant: :filled, path: PATH)
+        end
       end
     end
   end

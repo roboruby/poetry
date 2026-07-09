@@ -8,7 +8,12 @@
   <% card.with_footer do %>
     <div class="flex w-full items-center justify-between gap-4">
       <span class="text-xs text-muted-foreground">Updated 2 days ago</span>
-      <%= poetry_link(href: "/docs/billing") { "Learn more" } %>
+      <%# The CTA reads as interactive (v1.1): always-underlined with a
+          trailing arrow - the affordance the judged card pairs kept
+          rewarding. %>
+      <%= poetry_link(href: "/docs/billing", underline: :always, class: "inline-flex items-center gap-1") do %>
+        Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+      <% end %>
     </div>
   <% end %>
   <div class="space-y-3 text-sm">

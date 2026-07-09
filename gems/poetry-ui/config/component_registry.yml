@@ -13,12 +13,21 @@ components:
       default: false
     - name: heading_level
       type: symbol
+      variants:
+      - h2
+      - h3
+      - h4
+      - h5
+      - h6
       default: h3
     - name: open
       type: list
       default: dynamic
     - name: type
       type: symbol
+      variants:
+      - single
+      - multiple
       default: single
     slots:
     - name: items
@@ -201,6 +210,12 @@ components:
     options:
     - name: state
       type: symbol
+      variants:
+      - idle
+      - uploading
+      - processing
+      - error
+      - done
       default: done
     slots:
     - name: media
@@ -249,6 +264,10 @@ components:
       type: string
     - name: size
       type: symbol
+      variants:
+      - default
+      - sm
+      - lg
       default: default
     - name: src
       type: string
@@ -282,18 +301,22 @@ components:
       - secondary
       - destructive
       - outline
+      - success
+      - warning
+      - info
       default: default
       required: true
     options: []
     slots: []
     elements: []
-    capsule: 478817760aef
+    capsule: df6d977c62f8
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
       Button for actions.
     - 'The visible text is the content block: render ... { "beta" } - there is no
       label: option.'
-    - Pick the variant by intent (destructive = error states), never by color preference.
+    - Pick the variant by intent (destructive = error states; success/warning/info
+      = record status, e.g. Fulfilled/Processing/Syncing), never by color preference.
   poetry/ui/breadcrumb:
     class_name: Poetry::Ui::Breadcrumb::Component
     identifier: poetry--ui--breadcrumb
@@ -341,11 +364,18 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - end
       default: start
     - name: href
       type: string
     - name: tag
       type: symbol
+      variants:
+      - div
+      - button
+      - a
       default: div
     slots:
     - name: reactions
@@ -406,9 +436,16 @@ components:
       default: false
     - name: tag
       type: symbol
+      variants:
+      - button
+      - a
       default: button
     - name: type
       type: symbol
+      variants:
+      - button
+      - submit
+      - reset
       default: button
     slots:
     - name: leading
@@ -523,6 +560,13 @@ components:
     options:
     - name: title_tag
       type: symbol
+      variants:
+      - h1
+      - h2
+      - h3
+      - h4
+      - h5
+      - h6
       default: h3
     slots:
     - name: title
@@ -557,6 +601,9 @@ components:
       type: string
     - name: orientation
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     - name: show_controls
       type: boolean
@@ -706,12 +753,19 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: start
     - name: avoid_collisions
       type: boolean
       default: true
     - name: dir
       type: symbol
+      variants:
+      - ltr
+      - rtl
     - name: disabled
       type: boolean
       default: false
@@ -740,6 +794,11 @@ components:
       type: string
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: bottom
     - name: side_offset
       type: integer
@@ -1037,6 +1096,9 @@ components:
     options:
     - name: dir
       type: symbol
+      variants:
+      - ltr
+      - rtl
     - name: disabled
       type: boolean
       default: false
@@ -1535,6 +1597,10 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: center
     - name: align_offset
       type: integer
@@ -1544,6 +1610,9 @@ components:
       default: true
     - name: dir
       type: symbol
+      variants:
+      - ltr
+      - rtl
     - name: disabled
       type: boolean
       default: false
@@ -1558,6 +1627,11 @@ components:
       default: false
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: bottom
     - name: side_offset
       type: integer
@@ -1797,9 +1871,19 @@ components:
     options:
     - name: media_variant
       type: symbol
+      variants:
+      - default
+      - icon
       default: default
     - name: title_tag
       type: symbol
+      variants:
+      - h1
+      - h2
+      - h3
+      - h4
+      - h5
+      - h6
       default: h3
     slots:
     - name: media
@@ -1864,6 +1948,10 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: center
     - name: align_offset
       type: integer
@@ -1886,6 +1974,11 @@ components:
       default: 700
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: bottom
     - name: side_offset
       type: integer
@@ -2116,6 +2209,10 @@ components:
     options:
     - name: media_variant
       type: symbol
+      variants:
+      - default
+      - icon
+      - image
       default: default
     - name: tag
       type: symbol
@@ -2228,6 +2325,9 @@ components:
     options:
     - name: announce
       type: symbol
+      variants:
+      - none
+      - status
       default: none
     - name: tag
       type: symbol
@@ -2256,6 +2356,9 @@ components:
     options:
     - name: dir
       type: symbol
+      variants:
+      - ltr
+      - rtl
     - name: label
       type: string
     - name: loop
@@ -2525,6 +2628,9 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - end
       default: start
     slots:
     - name: avatar
@@ -2560,6 +2666,10 @@ components:
       default: true
     - name: default_scroll_position
       type: symbol
+      variants:
+      - start
+      - end
+      - last-anchor
       default: end
     - name: id
       type: string
@@ -2640,6 +2750,9 @@ components:
       type: string
     - name: size
       type: symbol
+      variants:
+      - default
+      - sm
       default: default
     slots: []
     elements:
@@ -2737,6 +2850,12 @@ components:
     - name: current
       type: integer
       required: true
+    - name: current_variant
+      type: symbol
+      variants:
+      - outline
+      - filled
+      default: outline
     - name: label
       type: string
       default: pagination
@@ -2762,8 +2881,9 @@ components:
     - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
       list.
     - 'path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).'
-    - The current page is aria-current=page + the outline variant; the rest are ghost
-      links.
+    - 'The current page is aria-current=page; current_variant: :outline (upstream
+      parity, default) or :filled (the primary treatment - unambiguous active state);
+      the rest are ghost links.'
   poetry/ui/popover:
     class_name: Poetry::Ui::Popover::Component
     identifier: poetry--ui--popover
@@ -2772,6 +2892,10 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: center
     - name: align_offset
       type: integer
@@ -2791,6 +2915,11 @@ components:
       default: false
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: bottom
     - name: side_offset
       type: integer
@@ -2915,6 +3044,10 @@ components:
       required: true
     - name: orientation
       type: symbol
+      variants:
+      - both
+      - vertical
+      - horizontal
       default: both
     - name: required
       type: boolean
@@ -2978,6 +3111,9 @@ components:
     options:
     - name: direction
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     - name: grip
       type: boolean
@@ -3038,6 +3174,10 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: start
     - name: align_item_with_trigger
       type: boolean
@@ -3047,6 +3187,9 @@ components:
       default: true
     - name: dir
       type: symbol
+      variants:
+      - ltr
+      - rtl
     - name: disabled
       type: boolean
       default: false
@@ -3070,12 +3213,20 @@ components:
       default: false
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: bottom
     - name: side_offset
       type: integer
       default: 4
     - name: size
       type: symbol
+      variants:
+      - sm
+      - default
       default: default
     - name: value
       type: string
@@ -3188,6 +3339,9 @@ components:
       default: true
     - name: orientation
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     slots: []
     elements: []
@@ -3264,15 +3418,26 @@ components:
     options:
     - name: collapsible
       type: symbol
+      variants:
+      - offcanvas
+      - icon
+      - none
       default: offcanvas
     - name: open
       type: boolean
       default: true
     - name: side
       type: symbol
+      variants:
+      - left
+      - right
       default: left
     - name: variant
       type: symbol
+      variants:
+      - sidebar
+      - floating
+      - inset
       default: sidebar
     slots:
     - name: nav
@@ -3390,6 +3555,9 @@ components:
       required: true
     - name: orientation
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     - name: step
       type: float
@@ -3559,9 +3727,15 @@ components:
       type: string
     - name: orientation
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     - name: variant
       type: symbol
+      variants:
+      - default
+      - line
       default: default
     slots:
     - name: tabs
@@ -3658,6 +3832,9 @@ components:
       type: integer
     - name: politeness
       type: symbol
+      variants:
+      - polite
+      - assertive
       default: dynamic
     slots:
     - name: title
@@ -3827,6 +4004,9 @@ components:
       type: string
     - name: orientation
       type: symbol
+      variants:
+      - horizontal
+      - vertical
       default: horizontal
     - name: spacing
       type: integer
@@ -3890,6 +4070,10 @@ components:
     options:
     - name: align
       type: symbol
+      variants:
+      - start
+      - center
+      - end
       default: center
     - name: content_class
       type: string
@@ -3904,6 +4088,11 @@ components:
       default: false
     - name: side
       type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
       default: top
     - name: side_offset
       type: integer
@@ -4092,6 +4281,16 @@ blocks:
     - icon
     - link
     template: lib/generators/poetry/block/templates/section_card.html.erb
+  top-nav:
+    title: Top nav
+    description: 'A site navigation bar: brand mark, a products dropdown of rich title-and-description
+      links, direct destinations, and the log-in / sign-up action pair.'
+    components:
+    - button
+    - icon
+    - link
+    - navigation_menu
+    template: lib/generators/poetry/block/templates/top_nav.html.erb
 helper_args:
   poetry_accordion: 0
   poetry_alert: 0

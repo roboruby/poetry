@@ -3,16 +3,20 @@
 module Poetry
   module Ui
     module Badge
-      # The Badge - shadcn new-york-v4 parity: four variants on semantic
-      # tokens, dark destructive at /60 (the composited treatment the
-      # contrast gate models). Template-less.
+      # The Badge - shadcn new-york-v4 parity: four upstream variants on
+      # semantic tokens, dark destructive at /60 (the composited treatment
+      # the contrast gate models) - PLUS the poetry-original soft status
+      # trio (Blocks v1.1: success/warning/info on the status
+      # tokens, the muted color-coded pills the judged benchmark measured
+      # as missing). Template-less.
       class Component < Poetry::Core::Component
-        VARIANTS = %i[default secondary destructive outline].freeze
+        VARIANTS = %i[default secondary destructive outline success warning info].freeze
 
         AGENT_RULES = [
           "Badges are non-interactive status labels - never attach click handlers; use Button for actions.",
           "The visible text is the content block: render ... { \"beta\" } - there is no label: option.",
-          "Pick the variant by intent (destructive = error states), never by color preference."
+          "Pick the variant by intent (destructive = error states; success/warning/info = record " \
+          "status, e.g. Fulfilled/Processing/Syncing), never by color preference."
         ].freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS

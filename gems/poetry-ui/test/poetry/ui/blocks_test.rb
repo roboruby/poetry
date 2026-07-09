@@ -19,8 +19,8 @@ module Poetry
         ).fetch("blocks")
       end
 
-      def test_the_five_v1_blocks_ship
-        assert_equal %w[app-shell data-index destructive-panel page-header section-card],
+      def test_the_shipped_blocks_roster
+        assert_equal %w[app-shell data-index destructive-panel page-header section-card top-nav],
                      registry_blocks.keys.sort
       end
 

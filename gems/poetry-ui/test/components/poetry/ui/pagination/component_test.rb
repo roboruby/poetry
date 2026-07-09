@@ -52,6 +52,28 @@ module Poetry
           assert_equal "outline", current["data-variant"], "current = outline; the rest are ghost"
         end
 
+        # Blocks v1.1: the opt-in filled treatment - primary Button
+        # as the unambiguous active state; parity default untouched above.
+        def test_the_filled_current_variant_renders_the_primary_button
+          fragment = render_pagination(current: 4, total: 10, current_variant: :filled)
+          current = fragment.css('[aria-current="page"]').first
+
+          assert_equal "default", current["data-variant"], "filled = the primary Button treatment"
+          other = fragment.css('a[data-slot="pagination-link"]:not([aria-current])').first
+
+          assert_equal "ghost", other["data-variant"], "non-current pages stay ghost under :filled"
+        end
+
+        def test_the_current_variant_enum_is_registry_visible
+          # The inclusion validator projects into the registry (Blocks
+          # v1.1), so poetry check rejects current_variant: :solid
+          # statically - the roster's enum options are contracts, not
+          # documentation.
+          entry = Component.prop_definitions[:options].find { |option| option[:name] == :current_variant }
+
+          assert_equal %i[outline filled], entry[:variants]
+        end
+
         def test_page_links_are_real_anchors_with_the_path
           links = render_pagination(current: 4, total: 10).css('a[data-slot="pagination-link"]')
 

@@ -12,11 +12,18 @@ module Poetry
         base "cn-badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden " \
              "whitespace-nowrap [&>svg]:pointer-events-none"
 
+        # success/warning/info (Blocks v1.1): the soft status
+        # vocabulary the benchmark measured as missing - poetry-original
+        # (upstream Badge has no status variants); every theme carries the
+        # soft treatment on the new status tokens.
         variant :variant, {
           default: "cn-badge-variant-default",
           secondary: "cn-badge-variant-secondary",
           destructive: "cn-badge-variant-destructive",
-          outline: "cn-badge-variant-outline"
+          outline: "cn-badge-variant-outline",
+          success: "cn-badge-variant-success",
+          warning: "cn-badge-variant-warning",
+          info: "cn-badge-variant-info"
         }
       end
     end

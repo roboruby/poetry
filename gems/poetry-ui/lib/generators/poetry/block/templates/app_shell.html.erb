@@ -80,26 +80,26 @@
         <% end %>
       </div>
       <div class="grid gap-4 md:grid-cols-3">
-        <%= poetry_card do |card| %>
+        <%= poetry_card(title_tag: :h2) do |card| %>
           <% card.with_title { "Revenue" } %>
           <% card.with_description { "Last 30 days" } %>
           <div class="text-2xl font-semibold tabular-nums">$48,210</div>
           <p class="text-xs text-muted-foreground">+12.4% from the previous period</p>
         <% end %>
-        <%= poetry_card do |card| %>
+        <%= poetry_card(title_tag: :h2) do |card| %>
           <% card.with_title { "Open orders" } %>
           <% card.with_description { "Awaiting fulfillment" } %>
           <div class="text-2xl font-semibold tabular-nums">42</div>
           <p class="text-xs text-muted-foreground">12 due before Friday</p>
         <% end %>
-        <%= poetry_card do |card| %>
+        <%= poetry_card(title_tag: :h2) do |card| %>
           <% card.with_title { "On-time rate" } %>
           <% card.with_description { "Trailing quarter" } %>
           <div class="text-2xl font-semibold tabular-nums">98.2%</div>
           <p class="text-xs text-muted-foreground">Target is 97.5%</p>
         <% end %>
       </div>
-      <%= poetry_card do |card| %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
         <% card.with_title { "Recent activity" } %>
         <% card.with_description { "The latest changes across orders and customers." } %>
         <ul class="space-y-3 text-sm">

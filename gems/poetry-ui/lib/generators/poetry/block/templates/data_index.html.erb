@@ -42,13 +42,13 @@
         <%= poetry_table_row do %>
           <%= poetry_table_cell(class: "font-medium") { "ORD-1042" } %>
           <%= poetry_table_cell { "Northwind Traders" } %>
-          <%= poetry_table_cell { poetry_badge { "Fulfilled" } } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Fulfilled" } } %>
           <%= poetry_table_cell(class: "text-right tabular-nums") { "$1,250.00" } %>
         <% end %>
         <%= poetry_table_row do %>
           <%= poetry_table_cell(class: "font-medium") { "ORD-1041" } %>
           <%= poetry_table_cell { "Lumen Labs" } %>
-          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Processing" } } %>
+          <%= poetry_table_cell { poetry_badge(variant: :warning) { "Processing" } } %>
           <%= poetry_table_cell(class: "text-right tabular-nums") { "$482.50" } %>
         <% end %>
         <%= poetry_table_row do %>
@@ -60,13 +60,13 @@
         <%= poetry_table_row do %>
           <%= poetry_table_cell(class: "font-medium") { "ORD-1039" } %>
           <%= poetry_table_cell { "Gable & Sons" } %>
-          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Processing" } } %>
+          <%= poetry_table_cell { poetry_badge(variant: :warning) { "Processing" } } %>
           <%= poetry_table_cell(class: "text-right tabular-nums") { "$2,040.00" } %>
         <% end %>
         <%= poetry_table_row do %>
           <%= poetry_table_cell(class: "font-medium") { "ORD-1038" } %>
           <%= poetry_table_cell { "Fern & Field" } %>
-          <%= poetry_table_cell { poetry_badge { "Fulfilled" } } %>
+          <%= poetry_table_cell { poetry_badge(variant: :success) { "Fulfilled" } } %>
           <%= poetry_table_cell(class: "text-right tabular-nums") { "$318.75" } %>
         <% end %>
       <% end %>
@@ -80,6 +80,6 @@
   </div>
   <div class="flex flex-wrap items-center justify-between gap-4">
     <p class="text-sm text-muted-foreground">Showing 5 of 42 orders</p>
-    <%= poetry_pagination(current: 3, total: 9, path: ->(page) { "?page=#{page}" }) %>
+    <%= poetry_pagination(current: 3, total: 9, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
   </div>
 </section>
