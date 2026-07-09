@@ -1,0 +1,294 @@
+{
+  "schema": "results-blocks-gate-v1",
+  "headline_stands": "'s pre-registered result (raw 18 - poetry 13) and the remediation numbers are untouched; this is the Blocks v1 gate re-run the plan note pre-registered, graded against its own predictions.",
+  "gate": {
+    "covered_tasks": [
+      "table",
+      "data_table",
+      "pagination",
+      "user_directory",
+      "filter_toolbar",
+      "app_shell",
+      "site_nav",
+      "card",
+      "button",
+      "alert"
+    ],
+    "control": "raw arms frozen from the pre-registered sample (copied, never resampled)",
+    "surface": [
+      "AGENTS.md block-first bullet (65 components + 5 blocks)",
+      "llms.txt Blocks index; llms-full.txt inlines every block's source",
+      "MCP list_blocks + describe_block via .mcp.json (toolbelt extended)",
+      "bin/rails g poetry:block (not runnable inside the benchmark toolbelt by design)"
+    ]
+  },
+  "predictions": {
+    "b1": {
+      "statement": "poetry takes the composition axis on >=5 of the 10 covered briefs",
+      "baseline": "1/10 standing",
+      "observed": "3/10",
+      "pass": false
+    },
+    "b2": {
+      "statement": ">=3 overall verdicts flip to poetry vs standing",
+      "observed": "2 flips: app_shell, button",
+      "pass": false
+    },
+    "b3": {
+      "statement": "no correctness regression (gate buckets + brief_fit hold)",
+      "observed": "two render-crash regressions: data_table, site_nav - both now caught statically (helper-arity tier; icon membership reached the resolving exe)",
+      "pass": false
+    },
+    "b4": {
+      "statement": "poetry arms stay design_slop-clean",
+      "observed": "delivered-arm slop failures: app_shell (DesignLint on the same source: 0 findings - the gate/linter disagreement is itself the named finding)",
+      "pass": false
+    }
+  },
+  "subset": {
+    "table": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.6019,
+          "num_turns": 13,
+          "attempts": 1
+        }
+      }
+    },
+    "data_table": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": "ActionView::Template::Error: unknown icon :filter (not in this set)",
+        "cross_arm_score": "0/5",
+        "design_slop": false,
+        "generation": {
+          "cost_usd": 1.3636,
+          "num_turns": 29,
+          "attempts": 1
+        }
+      }
+    },
+    "pagination": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.3817,
+          "num_turns": 8,
+          "attempts": 1
+        }
+      }
+    },
+    "user_directory": {
+      "standing": {
+        "overall": "poetry",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "poetry",
+        "composition": "poetry",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.7234,
+          "num_turns": 20,
+          "attempts": 1
+        }
+      }
+    },
+    "filter_toolbar": {
+      "standing": {
+        "overall": "poetry",
+        "composition": "poetry",
+        "source": "remediated (2026-07-08)"
+      },
+      "gate": {
+        "overall": "poetry",
+        "composition": "poetry",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "4/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.8834,
+          "num_turns": 34,
+          "attempts": 1
+        }
+      }
+    },
+    "app_shell": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "remediated (2026-07-08)"
+      },
+      "gate": {
+        "overall": "poetry",
+        "composition": "raw_tailwind",
+        "swap_consistency": 0.667,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "4/5",
+        "design_slop": false,
+        "generation": {
+          "cost_usd": 0.4831,
+          "num_turns": 9,
+          "attempts": 1
+        }
+      }
+    },
+    "site_nav": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": "ActionView::Template::Error: wrong number of arguments (given 1, expected 0)",
+        "cross_arm_score": "0/6",
+        "design_slop": false,
+        "generation": {
+          "cost_usd": 0.5998,
+          "num_turns": 15,
+          "attempts": 1
+        }
+      }
+    },
+    "card": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "6/6",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.4383,
+          "num_turns": 11,
+          "attempts": 1
+        }
+      }
+    },
+    "button": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "pre-registered (2026-07-07)"
+      },
+      "gate": {
+        "overall": "poetry",
+        "composition": "poetry",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "6/6",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.5011,
+          "num_turns": 14,
+          "attempts": 1
+        }
+      }
+    },
+    "alert": {
+      "standing": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "source": "remediated (2026-07-08)"
+      },
+      "gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "delivered": true,
+        "render_error": null,
+        "cross_arm_score": "4/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.4471,
+          "num_turns": 13,
+          "attempts": 1
+        }
+      }
+    }
+  },
+  "delivery": {
+    "first_attempt": "10/10 (max 34 turns; the pre-registered run burned 3x40-turn samples on app_shell alone)",
+    "rendered": "8/10 - site_nav (helper positional-text x5) and data_table (:filter, lucide renamed it to funnel) crashed; both classes now fail poetry check statically"
+  },
+  "mechanism_audit": {
+    "describe_block_calls": {
+      "alert": 1,
+      "app_shell": 1,
+      "card": 1,
+      "data_table": 1,
+      "filter_toolbar": 1,
+      "table": 1,
+      "button": 0,
+      "pagination": 0,
+      "site_nav": 0,
+      "user_directory": 0
+    },
+    "notes": [
+      "6/10 poetry arms fetched a block via MCP; llms-full also inlines block source, so tool counts undercount consumption",
+      "app_shell's arm carries the block fingerprint (sidebar-wrapper consumer + sample content) and flipped the overall verdict after losing 4/4 prior samples",
+      "the data_table :filter PASS trace exposed the resolving-exe gap: poetry-ui's poetry-agent shadowed poetry-core's and lacked icon injection - every prior MCP check ran icon-shape-only; fixed + subprocess-tested same day"
+    ]
+  },
+  "usage": {
+    "generation": {
+      "units_recorded": 10,
+      "unit_cost_sum_usd": 6.4234,
+      "receipted_cost_usd": 6.4234
+    },
+    "judge": {
+      "judge_calls": 60,
+      "total_cost_usd": 6.2615
+    }
+  }
+}

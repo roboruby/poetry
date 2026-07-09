@@ -1,0 +1,31 @@
+<%# poetry:block title="Section card" description="A contained content section: header row with title, supporting description and a status badge, body copy with a feature list, and a footer pairing meta text with a call-to-action." %>
+<%= poetry_card(class: "max-w-md") do |card| %>
+  <% card.with_title { "Usage-based billing" } %>
+  <% card.with_description { "Meter API calls and storage, invoiced monthly." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "Beta" } %>
+  <% end %>
+  <% card.with_footer do %>
+    <div class="flex w-full items-center justify-between gap-4">
+      <span class="text-xs text-muted-foreground">Updated 2 days ago</span>
+      <%= poetry_link(href: "/docs/billing") { "Learn more" } %>
+    </div>
+  <% end %>
+  <div class="space-y-3 text-sm">
+    <p>Pay for what the workspace actually uses. Metering runs hourly and the invoice line items match the usage dashboard.</p>
+    <ul class="space-y-2">
+      <li class="flex items-center gap-2">
+        <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+        <span>Per-request API metering</span>
+      </li>
+      <li class="flex items-center gap-2">
+        <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+        <span>Storage billed by the gigabyte-hour</span>
+      </li>
+      <li class="flex items-center gap-2">
+        <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+        <span>Spend alerts before every threshold</span>
+      </li>
+    </ul>
+  </div>
+<% end %>

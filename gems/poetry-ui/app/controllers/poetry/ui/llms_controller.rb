@@ -16,9 +16,10 @@ module Poetry
       private
 
       def llms_text
-        Poetry::Core::LlmsText.new(
-          registry: Poetry::Core::Registry.new(source_root: Poetry::Ui.root)
-        )
+        # The shared builder ('s construction rule, extended): the
+        # served text uses the exact registry construction the committed
+        # file is generated from - helpers and blocks sections included.
+        Poetry::Core::LlmsText.new(registry: Poetry::Ui.registry)
       end
     end
   end

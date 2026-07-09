@@ -1,0 +1,18 @@
+<section class="max-w-xl space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="delete-account-title">
+  <div class="space-y-1">
+    <h2 id="delete-account-title" class="text-base font-semibold">Delete account</h2>
+    <p class="text-sm text-muted-foreground">Permanently remove your account and all associated data. This action cannot be undone.</p>
+  </div>
+  <%= poetry_alert(variant: :destructive) do |alert| %>
+    <% alert.with_icon(name: "triangle-alert") %>
+    <% alert.with_title { "This cannot be undone" } %>
+    All of your projects, files, and settings will be permanently deleted. You will be signed out immediately.
+  <% end %>
+  <div class="flex items-center justify-end gap-2">
+    <%= poetry_button(variant: :outline) { "Cancel" } %>
+    <%= poetry_button(variant: :destructive) do |button| %>
+      <% button.with_leading { poetry_icon(name: :trash) } %>
+      Delete account
+    <% end %>
+  </div>
+</section>

@@ -15,7 +15,15 @@ module Poetry
         base ""
 
         # The provider wrapper carries the width custom properties.
-        element :wrapper, "flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
+        # group/sidebar-wrapper ('s parked marker) returns with its
+        # first in-repo consumer: the app-shell block's topbar answers the
+        # collapsed state (group-has-data-[collapsible=icon]/sidebar-wrapper)
+        # - the upstream site-header pattern. The other two drops stay
+        # dropped: group/menu-button's upstream consumer is a collapsible
+        # menu-button composition poetry does not ship yet, and
+        # group/menu-sub-item has no consumer anywhere in the current
+        # upstream tree.
+        element :wrapper, "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
 
         # The peer group (the desktop shell; below md the mobile <dialog>
         # takes over - W5b).

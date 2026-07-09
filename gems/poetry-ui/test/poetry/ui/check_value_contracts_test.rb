@@ -15,6 +15,7 @@ module Poetry
       CRASHERS = %w[alert empty_state filter_toolbar].freeze
       GENERATED = "eval/results/2026-07-07/generated/*/poetry.html.erb"
       REMEDIATED = "eval/results/2026-07-08/generated/*/poetry.html.erb"
+      BLOCKS_GATE = "eval/results/2026-07-09/generated/*/poetry.html.erb"
       FROZEN = "eval/arms/*/poetry.html.erb"
 
       def catalog
@@ -67,6 +68,25 @@ module Poetry
                "the type-as-argument convention must read as the menu crash")
         assert(failures["menu"].any? { |finding| finding.suggestion == "with_separator" },
                "with_item(:separator) must suggest the sibling setter")
+      end
+
+      # The blocks-gate corpus (2026-07-09): the run's two render-crashers
+      # fail statically - data_table guessed lucide's renamed :filter (the
+      # icon-membership tier, catchable at generation time had the agent
+      # run check), and site_nav passed positional text to kwargs-only
+      # helpers, the class the helper-arity rule was built from. All FIVE
+      # of site_nav's arity misuses surface, not just the first crash.
+      def test_the_blocks_gate_corpus_errors_on_exactly_the_two_crashers
+        failures = error_templates(BLOCKS_GATE)
+
+        assert_equal %w[data_table site_nav], failures.keys.sort,
+                     "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
+        assert(failures["data_table"].any? { |finding| finding.rule == "unknown-icon" },
+               ":filter (lucide renamed it to funnel) must read as an icon-set miss")
+        arity = failures["site_nav"].select { |finding| finding.rule == "helper-arity" }
+
+        assert_equal 5, arity.size, "static linting sees past the first crash: poetry_link + four " \
+                                    "poetry_navigation_menu_link positional-text calls all surface"
       end
     end
   end

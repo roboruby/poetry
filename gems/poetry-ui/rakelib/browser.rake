@@ -41,7 +41,7 @@ end
 def poetry_ui_preview_pages
   require "yaml"
   registry = YAML.safe_load_file(Poetry::Ui.root.join("config/component_registry.yml"))
-  registry.fetch("components").keys.sort.flat_map do |key|
+  pages = registry.fetch("components").keys.sort.flat_map do |key|
     preview = ViewComponent::Preview.find(key)
     abort "no preview class for registry component #{key}" unless preview
 
@@ -52,6 +52,12 @@ def poetry_ui_preview_pages
     # entry that looked like animation jitter).
     component = key.delete_prefix("poetry/ui/").tr("/", "-")
     preview.examples.sort.map { |example| [component, example, "/previews/#{key}/#{example}"] }
+  end
+  # The blocks join the same walks (Blocks v1): every shipped block is held
+  # to the axe + golden gates through its /blocks/<name> preview page - the
+  # registry's blocks section is the roster, exactly like components above.
+  pages + (registry["blocks"] || {}).keys.sort.map do |name|
+    ["block-#{name}", "default", "/blocks/#{name.tr("-", "_")}"]
   end
 end
 

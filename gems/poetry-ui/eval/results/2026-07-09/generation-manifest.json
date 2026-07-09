@@ -1,0 +1,107 @@
+{
+  "units": {
+    "pagination": {
+      "poetry": {
+        "cost_usd": 0.3817,
+        "num_turns": 8,
+        "duration_s": 43.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "table": {
+      "poetry": {
+        "cost_usd": 0.6019,
+        "num_turns": 13,
+        "duration_s": 99.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "user_directory": {
+      "poetry": {
+        "cost_usd": 0.7234,
+        "num_turns": 20,
+        "duration_s": 119.7,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "app_shell": {
+      "poetry": {
+        "cost_usd": 0.4831,
+        "num_turns": 9,
+        "duration_s": 64.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "filter_toolbar": {
+      "poetry": {
+        "cost_usd": 0.8834,
+        "num_turns": 34,
+        "duration_s": 149.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "card": {
+      "poetry": {
+        "cost_usd": 0.4383,
+        "num_turns": 11,
+        "duration_s": 48.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "site_nav": {
+      "poetry": {
+        "cost_usd": 0.5998,
+        "num_turns": 15,
+        "duration_s": 102.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "button": {
+      "poetry": {
+        "cost_usd": 0.5011,
+        "num_turns": 14,
+        "duration_s": 56.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "alert": {
+      "poetry": {
+        "cost_usd": 0.4471,
+        "num_turns": 13,
+        "duration_s": 49.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "data_table": {
+      "poetry": {
+        "cost_usd": 1.3636,
+        "num_turns": 29,
+        "duration_s": 295.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Bash(bin/check:*),mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+      "raw_tailwind": "Read,Glob,Grep,Write"
+    }
+  },
+  "usage": {
+    "units_recorded": 10,
+    "unit_cost_sum_usd": 6.4234,
+    "receipted_cost_usd": 6.4234
+  }
+}

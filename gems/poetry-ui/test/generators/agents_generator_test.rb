@@ -26,6 +26,9 @@ module Poetry
         assert_match(/poetry:check/, content)
         assert_match(/poetry-agent/, content, "the MCP server is part of the documented workflow")
         assert_match(/poetry:design:export/, content, "the DESIGN.md interop surface is part of the front door")
+        assert_match(/poetry:block/, content, "blocks (Blocks v1) are part of the documented workflow")
+        assert_match(/describe_block/, content, "the boot-free block path is named")
+        assert_match(/\+ \d+ blocks\)/, content, "the block count derives from the registry")
       end
     end
 

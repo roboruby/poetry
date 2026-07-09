@@ -1,0 +1,25 @@
+<%# poetry:block title="Page header" description="The furniture a screen opens with: breadcrumb trail, page title with supporting description, and a right-aligned action group over a grounding rule." %>
+<header class="flex flex-col gap-4">
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Home", href: "/") %>
+    <% crumb.with_item("Projects", href: "/projects") %>
+    <% crumb.with_item("Atlas") %>
+  <% end %>
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Atlas</h1>
+      <p class="text-sm text-muted-foreground">Shipping schedules, owners, and release health for the Atlas program.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= poetry_button(variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :download) } %>
+        Export
+      <% end %>
+      <%= poetry_button do |button| %>
+        <% button.with_leading { poetry_icon(name: :plus) } %>
+        New project
+      <% end %>
+    </div>
+  </div>
+  <%= poetry_separator %>
+</header>

@@ -1,0 +1,21 @@
+<%# poetry:block title="Destructive panel" description="A guarded destructive action: heading and consequences in plain language, a severity-tinted alert with the blast radius, and a cancel/confirm action pair." %>
+<section class="max-w-xl space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="destructive-panel-title">
+  <div class="space-y-1">
+    <h2 id="destructive-panel-title" class="text-base font-semibold">Revoke deploy token</h2>
+    <p class="text-sm text-muted-foreground">The token stops working immediately. Three services signed their last deploy with it — their next runs will fail until a replacement is configured.</p>
+  </div>
+  <%# Icon + title only: an alert DESCRIPTION rides the destructive tint,
+      which sits at 4.49:1 on white (the standing token-retune ledger) -
+      the blast radius lives in the AA-clean muted copy above instead. %>
+  <%= poetry_alert(variant: :destructive) do |alert| %>
+    <% alert.with_icon(name: "triangle-alert") %>
+    <% alert.with_title { "This cannot be undone" } %>
+  <% end %>
+  <div class="flex items-center justify-end gap-2">
+    <%= poetry_button(variant: :outline) { "Cancel" } %>
+    <%= poetry_button(variant: :destructive) do |button| %>
+      <% button.with_leading { poetry_icon(name: :trash) } %>
+      Revoke token
+    <% end %>
+  </div>
+</section>

@@ -3312,7 +3312,7 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: dd5268afe1eb
+    capsule: 6853e758d9af
     controllers:
     - identifier: poetry--core--sidebar
       targets:
@@ -4029,3 +4029,175 @@ helpers:
   poetry_table_header: {}
   poetry_table_row: {}
   poetry_tooltip_provider: {}
+blocks:
+  app-shell:
+    title: App shell
+    description: 'The frame every screen composes into: an icon-collapsible sidebar
+      with grouped nav, badges and a user footer, plus a topbar with breadcrumb that
+      answers the collapsed state, and a stat-card content grid.'
+    components:
+    - avatar
+    - breadcrumb
+    - button
+    - card
+    - icon
+    - separator
+    - sidebar
+    template: lib/generators/poetry/block/templates/app_shell.html.erb
+  data-index:
+    title: Data index
+    description: 'A contained records screen: title bar with primary action, search-and-filter
+      toolbar, status-badged table with a totals footer, and a result count paired
+      with pagination.'
+    components:
+    - badge
+    - button
+    - button_group
+    - icon
+    - input_group
+    - label
+    - native_select
+    - pagination
+    - table
+    template: lib/generators/poetry/block/templates/data_index.html.erb
+  destructive-panel:
+    title: Destructive panel
+    description: 'A guarded destructive action: heading and consequences in plain
+      language, a severity-tinted alert with the blast radius, and a cancel/confirm
+      action pair.'
+    components:
+    - alert
+    - button
+    - icon
+    template: lib/generators/poetry/block/templates/destructive_panel.html.erb
+  page-header:
+    title: Page header
+    description: 'The furniture a screen opens with: breadcrumb trail, page title
+      with supporting description, and a right-aligned action group over a grounding
+      rule.'
+    components:
+    - breadcrumb
+    - button
+    - icon
+    - separator
+    template: lib/generators/poetry/block/templates/page_header.html.erb
+  section-card:
+    title: Section card
+    description: 'A contained content section: header row with title, supporting description
+      and a status badge, body copy with a feature list, and a footer pairing meta
+      text with a call-to-action.'
+    components:
+    - badge
+    - card
+    - icon
+    - link
+    template: lib/generators/poetry/block/templates/section_card.html.erb
+helper_args:
+  poetry_accordion: 0
+  poetry_alert: 0
+  poetry_alert_dialog: 0
+  poetry_aspect_ratio: 0
+  poetry_attachment: 0
+  poetry_attachment_group: 0
+  poetry_avatar: 0
+  poetry_avatar_group: 0
+  poetry_avatar_group_count: 0
+  poetry_badge: 0
+  poetry_breadcrumb: 0
+  poetry_bubble: 0
+  poetry_bubble_group: 0
+  poetry_button: 0
+  poetry_button_group: 0
+  poetry_button_group_separator: 0
+  poetry_button_group_text: 0
+  poetry_calendar: 0
+  poetry_card: 0
+  poetry_carousel: 0
+  poetry_checkbox: 0
+  poetry_collapsible: 0
+  poetry_combobox: 0
+  poetry_command: 0
+  poetry_command_dialog: 0
+  poetry_context_menu: 0
+  poetry_data_table: 0
+  poetry_date_picker: 0
+  poetry_deferred: 0
+  poetry_dialog: 0
+  poetry_drawer: 0
+  poetry_dropdown_menu: 0
+  poetry_empty: 0
+  poetry_field: 0
+  poetry_hover_card: 0
+  poetry_icon: 0
+  poetry_input: 0
+  poetry_input_group: 0
+  poetry_input_group_addon: 0
+  poetry_input_group_button: 0
+  poetry_input_group_input: 0
+  poetry_input_group_text: 0
+  poetry_input_group_textarea: 0
+  poetry_input_otp: 0
+  poetry_item: 0
+  poetry_item_group: 0
+  poetry_item_separator: 0
+  poetry_kbd: 0
+  poetry_label: 0
+  poetry_link: 0
+  poetry_marker: 0
+  poetry_menubar: 0
+  poetry_message: 0
+  poetry_message_group: 0
+  poetry_message_scroller: 0
+  poetry_message_scroller_item: 0
+  poetry_native_select: 0
+  poetry_native_select_optgroup: 0
+  poetry_native_select_option: 0
+  poetry_navigation_menu: 0
+  poetry_navigation_menu_link: 0
+  poetry_pagination: 0
+  poetry_popover: 0
+  poetry_progress: 0
+  poetry_radio_group: 0
+  poetry_resizable: 0
+  poetry_scroll_area: 0
+  poetry_select: 0
+  poetry_separator: 0
+  poetry_sheet: 0
+  poetry_sidebar: 0
+  poetry_sidebar_content: 0
+  poetry_sidebar_footer: 0
+  poetry_sidebar_group: 0
+  poetry_sidebar_group_content: 0
+  poetry_sidebar_group_label: 0
+  poetry_sidebar_header: 0
+  poetry_sidebar_menu: 0
+  poetry_sidebar_menu_action: 0
+  poetry_sidebar_menu_badge: 0
+  poetry_sidebar_menu_button: 0
+  poetry_sidebar_menu_item: 0
+  poetry_sidebar_menu_sub: 0
+  poetry_sidebar_menu_sub_button: 0
+  poetry_sidebar_menu_sub_item: 0
+  poetry_sidebar_rail: 0
+  poetry_sidebar_separator: 0
+  poetry_sidebar_trigger: 0
+  poetry_skeleton: 0
+  poetry_slider: 0
+  poetry_spinner: 0
+  poetry_switch: 0
+  poetry_table: 0
+  poetry_table_body: 0
+  poetry_table_caption: 0
+  poetry_table_cell: 0
+  poetry_table_footer: 0
+  poetry_table_head: 0
+  poetry_table_header: 0
+  poetry_table_row: 0
+  poetry_tabs: 0
+  poetry_textarea: 0
+  poetry_toast: 0
+  poetry_toaster: 0
+  poetry_toggle: 0
+  poetry_toggle_group: 0
+  poetry_tooltip: 0
+  poetry_tooltip_provider: 0

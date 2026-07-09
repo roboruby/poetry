@@ -1,0 +1,10 @@
+<div class="mx-auto max-w-3xl px-6 py-12">
+  <div class="space-y-2 text-center">
+    <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+    <p class="text-sm text-muted-foreground">Showing page 4 of 10</p>
+  </div>
+
+  <div class="mt-8">
+    <%= poetry_pagination(current: 4, total: 10, path: ->(p) { "/eval/pagination?page=#{p}" }) %>
+  </div>
+</div>

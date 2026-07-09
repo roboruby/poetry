@@ -1,0 +1,85 @@
+<%# poetry:block title="Data index" description="A contained records screen: title bar with primary action, search-and-filter toolbar, status-badged table with a totals footer, and a result count paired with pagination." %>
+<section class="space-y-4">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Orders</h2>
+      <p class="text-sm text-muted-foreground">Fulfillment status across every open order.</p>
+    </div>
+    <%= poetry_button do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      New order
+    <% end %>
+  </div>
+  <div class="flex flex-wrap items-center gap-3">
+    <%= poetry_label(for_id: "orders-search", class: "sr-only") { "Search orders" } %>
+    <%= poetry_input_group(class: "max-w-xs") do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "orders-search", name: "q", placeholder: "Search orders…") %>
+    <% end %>
+    <%= poetry_label(for_id: "orders-status", class: "sr-only") { "Filter by status" } %>
+    <%= poetry_native_select(name: "status", id: "orders-status",
+                             options: [["All statuses", "all"], ["Fulfilled", "fulfilled"],
+                                       ["Processing", "processing"], ["Refunded", "refunded"]]) %>
+    <%= poetry_button_group("aria-label": "Layout", class: "ml-auto") do %>
+      <%= poetry_button(variant: :outline, size: :sm, "aria-pressed": "true") { "List" } %>
+      <%= poetry_button(variant: :outline, size: :sm, "aria-pressed": "false") { "Board" } %>
+    <% end %>
+  </div>
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "Open orders with customer, status, and total." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Order" } %>
+          <%= poetry_table_head { "Customer" } %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head(class: "text-right") { "Total" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "ORD-1042" } %>
+          <%= poetry_table_cell { "Northwind Traders" } %>
+          <%= poetry_table_cell { poetry_badge { "Fulfilled" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$1,250.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "ORD-1041" } %>
+          <%= poetry_table_cell { "Lumen Labs" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Processing" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$482.50" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "ORD-1040" } %>
+          <%= poetry_table_cell { "Aperture Optics" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :outline) { "Refunded" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$96.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "ORD-1039" } %>
+          <%= poetry_table_cell { "Gable & Sons" } %>
+          <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Processing" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$2,040.00" } %>
+        <% end %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { "ORD-1038" } %>
+          <%= poetry_table_cell { "Fern & Field" } %>
+          <%= poetry_table_cell { poetry_badge { "Fulfilled" } } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$318.75" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_footer do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(colspan: 3) { "Total" } %>
+          <%= poetry_table_cell(class: "text-right tabular-nums") { "$4,187.25" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 5 of 42 orders</p>
+    <%= poetry_pagination(current: 3, total: 9, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

@@ -41,12 +41,16 @@ module Poetry
           - Compose with the `poetry_*` helpers; never hand-write `cn-*` classes, raw
             hex/oklch colors, or off-scale arbitrary values - tokens and variants carry
             the design.
-          - Machine catalog: `/poetry/llms.txt` (index) and `/poetry/llms-full.txt`
+          - Starting a new SCREEN? Begin from a vetted block: `bin/rails g poetry:block
+            --list`, generate, then edit in place (boot-free: the MCP `list_blocks` /
+            `describe_block` tools return the same source). Compose atoms only for
+            what no block covers.
+          - Machine catalog: `/poetry/llms.txt` (index + blocks) and `/poetry/llms-full.txt`
             (full contracts + Stimulus wiring: targets / values / actions / events).
           - Verify markup before finishing: `bin/rails poetry:check` (unknown
             components/slots/variants/wiring, icon names, enum values, typed-slot
-            props, setter arity, yield-less wrappers, did-you-mean, `--json`;
-            needs the `herb` gem in the Gemfile).
+            props, helper + setter arity, yield-less wrappers, did-you-mean,
+            `--json`; needs the `herb` gem in the Gemfile).
           - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
             `["exec", "poetry-agent"]`) serves `check`, `describe_component`, and
             `list_components` from the live registry with no app boot - prefer its
@@ -65,14 +69,16 @@ module Poetry
         # (the install-test stub) just drops out of the count.
         charts = defined?(Poetry::Charts::Engine) && agents_registry_size(Poetry::Charts.root)
         parts << "#{charts} chart components" if charts
+        blocks = agents_registry_size(Poetry::Ui.root, section: "blocks")
+        parts << "#{blocks} blocks" if blocks&.positive?
         parts.join(" + ")
       end
 
-      def agents_registry_size(root)
+      def agents_registry_size(root, section: "components")
         path = root.join("config/component_registry.yml")
         return nil unless File.exist?(path)
 
-        (YAML.safe_load_file(path)["components"] || {}).size
+        (YAML.safe_load_file(path)[section] || {}).size
       end
     end
   end

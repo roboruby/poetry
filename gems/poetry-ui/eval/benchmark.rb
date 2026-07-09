@@ -57,7 +57,8 @@ module Poetry
       # nothing to run.
       TOOLBELTS = {
         "poetry" => "Read,Glob,Grep,Write,Bash(bin/check:*)," \
-                    "mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components",
+                    "mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components," \
+                    "mcp__poetry__list_blocks,mcp__poetry__describe_block",
         "raw_tailwind" => "Read,Glob,Grep,Write"
       }.freeze
       # CLAUDE.md is byte-identical in both hosts: the project-memory hook
