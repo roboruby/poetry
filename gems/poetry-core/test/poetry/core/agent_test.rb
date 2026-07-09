@@ -50,8 +50,32 @@ module Poetry
         Agent::Server.new(entries: ENTRIES, catalog: catalog)
       end
 
+      BLOCKS = {
+        "data-index" => { "title" => "Data index", "description" => "A records screen.",
+                          "components" => %w[badge table], "template" => "blocks/data_index.html.erb" }
+      }.freeze
+
+      BLOCK_TEMPLATE = <<~ERB
+        <%# poetry:block title="Data index" description="A records screen." %>
+        <section><%= poetry_badge { "Fulfilled" } %></section>
+      ERB
+
+      def with_blocks_server
+        require "tmpdir"
+        Dir.mktmpdir("agent-blocks") do |dir|
+          Pathname(dir).join("blocks").mkpath
+          Pathname(dir).join("blocks/data_index.html.erb").write(BLOCK_TEMPLATE)
+          catalog = Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES)
+          yield Agent::Server.new(entries: ENTRIES, catalog: catalog, blocks: BLOCKS, root: dir)
+        end
+      end
+
       def call(name, arguments = {})
-        response = server.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
+        call_on(server, name, arguments)
+      end
+
+      def call_on(target, name, arguments = {})
+        response = target.handle("jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
                                  "params" => { "name" => name, "arguments" => arguments })
         response.dig("result", "content", 0, "text")
       end
@@ -70,8 +94,37 @@ module Poetry
         tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
-        assert_equal %w[list_components describe_component check], names
+        assert_equal %w[list_components describe_component check list_blocks describe_block], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
+      end
+
+      # --- the blocks surface (Blocks v1) ---
+
+      def test_list_blocks_teaches_the_catalog_and_empty_registries_say_so
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "list_blocks")
+
+          assert_includes text, "- data-index: Data index - A records screen. [composes: badge, table]"
+        end
+        assert_includes call("list_blocks"), "no blocks in this registry"
+      end
+
+      def test_describe_block_inlines_the_source_without_the_metadata_header
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "describe_block", "name" => "data_index")
+
+          assert_includes text, "# Data index (`data-index`)", "underscored names normalize"
+          assert_includes text, "bin/rails g poetry:block data-index"
+          assert_includes text, %(<%= poetry_badge { "Fulfilled" } %>)
+          refute_includes text, "poetry:block title=", "the metadata header is stripped"
+        end
+      end
+
+      def test_describe_block_unknown_name_points_at_list_blocks
+        with_blocks_server do |blocks_server|
+          assert_includes call_on(blocks_server, "describe_block", "name" => "nope"),
+                          "no such block"
+        end
       end
 
       def test_a_notification_gets_no_reply

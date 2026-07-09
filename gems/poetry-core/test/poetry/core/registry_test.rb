@@ -68,6 +68,19 @@ module Poetry
         refute YAML.safe_load(registry.to_yaml).key?("helpers"), "no helpers given means no helpers key"
       end
 
+      def test_blocks_section_is_emitted_when_given_and_absent_otherwise
+        blocks = {
+          "data-index" => { "title" => "Data index", "description" => "A records screen.",
+                            "components" => %w[badge table], "template" => "blocks/data_index.html.erb" }
+        }
+        with_blocks = Registry.new(components: [Poetry::Core::X::Component], blocks: blocks)
+        parsed = YAML.safe_load(with_blocks.to_yaml)
+
+        assert_equal %w[badge table], parsed.dig("blocks", "data-index", "components")
+        assert_equal "blocks/data_index.html.erb", parsed.dig("blocks", "data-index", "template")
+        refute YAML.safe_load(registry.to_yaml).key?("blocks"), "no blocks given means no blocks key"
+      end
+
       def test_committed_registry_is_in_sync_with_source
         # The CI drift gate as a unit test: default discovery filters to
         # components whose source lives in this gem, so the set is identical

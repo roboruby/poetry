@@ -55,6 +55,27 @@ module Poetry
             "required" => ["source"]
           },
           "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "list_blocks",
+          "description" => "List the vetted composed-screen blocks (name, title, composed components). " \
+                           "Start a SCREEN here: pick a block, fetch its source with describe_block, " \
+                           "adapt it in place - compose atoms only for what no block covers.",
+          "inputSchema" => { "type" => "object", "properties" => {} },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "describe_block",
+          "description" => "One block's contract AND its full ERB source, ready to adapt - the " \
+                           "boot-free equivalent of `bin/rails g poetry:block <name>`.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "name" => { "type" => "string", "description" => "block name, e.g. data-index or app-shell" }
+            },
+            "required" => ["name"]
+          },
+          "annotations" => { "readOnlyHint" => true }
         }
       ].freeze
 
@@ -70,12 +91,14 @@ module Poetry
           entries = payload.fetch("components")
           catalog = Check::Catalog.new(entries, helpers: helpers,
                                                 helper_entries: payload["helpers"], icon_names: icon_names)
-          new(entries: entries, catalog: catalog)
+          new(entries: entries, catalog: catalog, blocks: payload["blocks"] || {}, root: root)
         end
 
-        def initialize(entries:, catalog:)
+        def initialize(entries:, catalog:, blocks: {}, root: nil)
           @entries = entries
           @catalog = catalog
+          @blocks = blocks
+          @root = root
         end
 
         # A JSON-RPC 2.0 request hash -> a response hash (or nil for a
@@ -131,6 +154,8 @@ module Poetry
             when "list_components" then list_components
             when "describe_component" then describe_component(arguments)
             when "check" then check(arguments)
+            when "list_blocks" then list_blocks
+            when "describe_block" then describe_block(arguments)
             else return tool_content("unknown tool: #{name}", error: true)
             end
           tool_content(text)
@@ -166,6 +191,34 @@ module Poetry
             "- [#{finding.severity}] line #{finding.line}: #{finding.message}#{hint}"
           end
           (["#{verdict} - #{errors} error(s), #{findings.length - errors} warning(s)"] + report).join("\n")
+        end
+
+        # The blocks surface (Blocks v1): the registry carries the catalog,
+        # the gem tree carries the source - describe_block inlines it so a
+        # screen starts from the vetted composition without a Rails boot.
+
+        def list_blocks
+          return "no blocks in this registry" if @blocks.empty?
+
+          @blocks.map do |name, entry|
+            "- #{name}: #{entry["title"]} - #{entry["description"]} " \
+              "[composes: #{entry["components"].join(", ")}]"
+          end.join("\n")
+        end
+
+        def describe_block(arguments)
+          name = arguments["name"].to_s.tr("_", "-")
+          entry = @blocks[name]
+          return "no such block: #{arguments["name"].inspect} - call list_blocks" unless entry
+
+          source = Pathname.new(@root).join(entry.fetch("template")).read
+                           .sub(/\A<%#\s*poetry:block[^%]*%>\n?/, "").rstrip
+          ["# #{entry["title"]} (`#{name}`)", entry["description"],
+           "Composes: #{entry["components"].join(", ")}.",
+           "In an app: `bin/rails g poetry:block #{name}` copies this into app/views/blocks/.",
+           "", "Source (adapt freely - the sample content is meant to be replaced):", "", source].join("\n")
+        rescue StandardError => e
+          "block source unavailable: #{e.message}"
         end
 
         # --- shared projections ---

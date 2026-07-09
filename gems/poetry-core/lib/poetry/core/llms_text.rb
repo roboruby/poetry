@@ -27,18 +27,20 @@ module Poetry
         @registry = registry
       end
 
-      # The lean index: one line per component.
+      # The lean index: one line per component (+ the blocks catalog).
       def index
         lines = @registry.entries.map do |path, entry|
           "- #{title(path)}: `#{helper(path)}` - #{surface_summary(entry)}"
         end
-        "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n"
+        "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n#{blocks_index}"
       end
 
-      # The full contracts: props, slots, elements, and agent rules.
+      # The full contracts: props, slots, elements, and agent rules - plus
+      # every block's source, so an agent holding this file can start a
+      # screen from a vetted composition without another fetch.
       def full
         sections = @registry.entries.map { |path, entry| component_section(path, entry) }
-        "#{PREAMBLE}\n#{sections.join("\n")}"
+        "#{PREAMBLE}\n#{sections.join("\n")}#{blocks_full}"
       end
 
       private
@@ -117,6 +119,49 @@ module Poetry
         # A type with no tracked arity (rest-signature) is unknowable - the
         # claim only holds when every setter is known kwargs-only.
         args && slot["types"].all? { |type| args[type]&.zero? }
+      end
+
+      # The blocks catalog (Blocks v1): vetted composed screens, one
+      # altitude above components. The index teaches the decision
+      # hierarchy - start a SCREEN from a block, compose atoms for what no
+      # block covers.
+      def blocks_index
+        blocks = @registry.blocks
+        return "" if blocks.nil? || blocks.empty?
+
+        lines = blocks.map do |name, entry|
+          "- #{entry["title"]} (`#{name}`): #{entry["description"]} " \
+            "[composes: #{entry["components"].join(", ")}]"
+        end
+        <<~TEXT
+
+          ## Blocks
+
+          Start a screen from a vetted block, then edit it in place:
+          `bin/rails g poetry:block <name>` copies it into app/views/blocks/
+          as source the app owns (--list to browse); the MCP `describe_block`
+          tool returns the same source boot-free. Blocks carry the composed
+          patterns - containment, status color-coding, page furniture,
+          realistic content - so a screen starts composed, not blank.
+
+          #{lines.join("\n")}
+        TEXT
+      end
+
+      def blocks_full
+        blocks = @registry.blocks
+        return "" if blocks.nil? || blocks.empty?
+
+        sections = blocks.map do |name, entry|
+          source = @registry.source_root.join(entry.fetch("template")).read
+          ["## Block: #{entry["title"]} (`#{name}`)", "",
+           entry["description"],
+           "Composes: #{entry["components"].join(", ")}. " \
+           "Generate: `bin/rails g poetry:block #{name}`.",
+           "Source (adapt freely - the sample content is meant to be replaced):", "",
+           source.sub(/\A<%#\s*poetry:block[^%]*%>\n?/, "").rstrip].join("\n")
+        end
+        "\n#{sections.join("\n\n")}\n"
       end
     end
   end

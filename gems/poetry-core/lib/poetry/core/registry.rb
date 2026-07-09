@@ -35,14 +35,25 @@ module Poetry
       #   the MCP server) know the full valid helper set AND the value
       #   contracts runtime-enforced inside those helpers (the W2
       #   filter_toolbar crash class).
-      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil)
+      # @param blocks [Hash, nil] the gem's block catalog (Blocks v1): block
+      #   name => {"title", "description", "components", "template"} - title/
+      #   description parsed from each template's poetry:block header, the
+      #   composed components derived from its poetry_* calls, template the
+      #   gem-relative source path boot-free consumers (the MCP server) read.
+      #   Emitted as the registry's "blocks" section.
+      def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
+        @blocks = blocks
       end
 
       # The discovered component classes (the registry's working set).
       attr_reader :components
+
+      # The block catalog and the root template paths resolve against -
+      # LlmsText reads both to inline block source into llms-full.txt.
+      attr_reader :blocks, :source_root
 
       def entries
         @components.to_h { |component| [component.component_path, entry_for(component)] }
@@ -51,6 +62,7 @@ module Poetry
       def to_yaml
         payload = { "components" => entries }
         payload["helpers"] = plain(@helpers.sort.to_h) if @helpers&.any?
+        payload["blocks"] = plain(@blocks.sort.to_h) if @blocks&.any?
         HEADER + YAML.dump(payload)
       end
 
