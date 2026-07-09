@@ -28,6 +28,13 @@ components:
       required: true
     - name: type
       type: symbol
+      variants:
+      - area
+      - bar
+      - line
+      - pie
+      - radar
+      - radial
       required: true
     slots: []
     elements:
@@ -79,6 +86,9 @@ components:
       type:
     - name: offset
       type: symbol
+      variants:
+      - none
+      - expand
       default: none
     - name: sync
       type: string
@@ -198,9 +208,15 @@ components:
       type:
     - name: offset
       type: symbol
+      variants:
+      - none
+      - expand
       default: none
     - name: orientation
       type: symbol
+      variants:
+      - vertical
+      - horizontal
       default: vertical
     - name: sync
       type: string
@@ -926,6 +942,10 @@ components:
       default: false
     - name: indicator
       type: symbol
+      variants:
+      - dot
+      - line
+      - dashed
       default: dot
     - name: items
       type:
