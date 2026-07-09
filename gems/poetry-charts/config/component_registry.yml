@@ -91,24 +91,44 @@ components:
     slots:
     - name: reference_lines
       many: true
+      setter_args:
+        reference_line: 0
     - name: reference_areas
       many: true
+      setter_args:
+        reference_area: 0
     - name: reference_dots
       many: true
+      setter_args:
+        reference_dot: 0
     - name: brush
       many: false
+      setter_args:
+        brush: 0
     - name: areas
       many: true
+      setter_args:
+        area: 0
     - name: x_axis
       many: false
+      setter_args:
+        x_axis: 0
     - name: y_axis
       many: false
+      setter_args:
+        y_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -193,24 +213,44 @@ components:
     slots:
     - name: reference_lines
       many: true
+      setter_args:
+        reference_line: 0
     - name: reference_areas
       many: true
+      setter_args:
+        reference_area: 0
     - name: reference_dots
       many: true
+      setter_args:
+        reference_dot: 0
     - name: brush
       many: false
+      setter_args:
+        brush: 0
     - name: bars
       many: true
+      setter_args:
+        bar: 0
     - name: x_axis
       many: false
+      setter_args:
+        x_axis: 0
     - name: y_axis
       many: false
+      setter_args:
+        y_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -287,26 +327,48 @@ components:
     slots:
     - name: reference_lines
       many: true
+      setter_args:
+        reference_line: 0
     - name: reference_areas
       many: true
+      setter_args:
+        reference_area: 0
     - name: reference_dots
       many: true
+      setter_args:
+        reference_dot: 0
     - name: areas
       many: true
+      setter_args:
+        area: 0
     - name: bars
       many: true
+      setter_args:
+        bar: 0
     - name: lines
       many: true
+      setter_args:
+        line: 0
     - name: x_axis
       many: false
+      setter_args:
+        x_axis: 0
     - name: y_axis
       many: false
+      setter_args:
+        y_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -432,24 +494,44 @@ components:
     slots:
     - name: reference_lines
       many: true
+      setter_args:
+        reference_line: 0
     - name: reference_areas
       many: true
+      setter_args:
+        reference_area: 0
     - name: reference_dots
       many: true
+      setter_args:
+        reference_dot: 0
     - name: brush
       many: false
+      setter_args:
+        brush: 0
     - name: lines
       many: true
+      setter_args:
+        line: 0
     - name: x_axis
       many: false
+      setter_args:
+        x_axis: 0
     - name: y_axis
       many: false
+      setter_args:
+        y_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -518,12 +600,20 @@ components:
     slots:
     - name: pies
       many: true
+      setter_args:
+        pie: 0
     - name: center_label
       many: false
+      setter_args:
+        center_label: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     slot_extras:
     - py
     elements:
@@ -587,14 +677,24 @@ components:
     slots:
     - name: radars
       many: true
+      setter_args:
+        radar: 0
     - name: angle_axis
       many: false
+      setter_args:
+        angle_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -671,14 +771,24 @@ components:
     slots:
     - name: radial_bars
       many: true
+      setter_args:
+        radial_bar: 0
     - name: polar_grid
       many: false
+      setter_args:
+        polar_grid: 0
     - name: center_label
       many: false
+      setter_args:
+        center_label: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
@@ -741,24 +851,44 @@ components:
     slots:
     - name: reference_lines
       many: true
+      setter_args:
+        reference_line: 0
     - name: reference_areas
       many: true
+      setter_args:
+        reference_area: 0
     - name: reference_dots
       many: true
+      setter_args:
+        reference_dot: 0
     - name: scatters
       many: true
+      setter_args:
+        scatter: 0
     - name: x_axis
       many: false
+      setter_args:
+        x_axis: 0
     - name: y_axis
       many: false
+      setter_args:
+        y_axis: 0
     - name: z_axis
       many: false
+      setter_args:
+        z_axis: 0
     - name: grid
       many: false
+      setter_args:
+        grid: 0
     - name: legend
       many: false
+      setter_args:
+        legend: 0
     - name: tooltip
       many: false
+      setter_args:
+        tooltip: 0
     elements:
     - frame
     - svg
