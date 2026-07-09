@@ -1,0 +1,71 @@
+{
+  "units": {
+    "card": {
+      "poetry": {
+        "cost_usd": 0.3704,
+        "num_turns": 10,
+        "duration_s": 44.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "pagination": {
+      "poetry": {
+        "cost_usd": 0.426,
+        "num_turns": 10,
+        "duration_s": 47.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "table": {
+      "poetry": {
+        "cost_usd": 0.4692,
+        "num_turns": 11,
+        "duration_s": 67.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "site_nav": {
+      "poetry": {
+        "cost_usd": 0.3761,
+        "num_turns": 8,
+        "duration_s": 49.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "alert": {
+      "poetry": {
+        "cost_usd": 0.5497,
+        "num_turns": 22,
+        "duration_s": 69.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "data_table": {
+      "poetry": {
+        "cost_usd": 1.6369,
+        "num_turns": 44,
+        "duration_s": 356.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Bash(bin/check:*),mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+      "raw_tailwind": "Read,Glob,Grep,Write"
+    }
+  },
+  "usage": {
+    "units_recorded": 6,
+    "unit_cost_sum_usd": 3.8283,
+    "receipted_cost_usd": 3.8282
+  }
+}

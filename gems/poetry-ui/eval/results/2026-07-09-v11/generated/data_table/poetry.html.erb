@@ -1,0 +1,169 @@
+<%
+  invoices = [
+    { number: 1013, customer: "Northwind Traders", issued_on: Date.new(2026, 4, 2),  due_on: Date.new(2026, 5, 2),  status: :paid,    amount: 1250.00 },
+    { number: 1002, customer: "Lumen Labs",         issued_on: Date.new(2026, 4, 5),  due_on: Date.new(2026, 5, 5),  status: :pending, amount: 482.50 },
+    { number: 1019, customer: "Aperture Optics",    issued_on: Date.new(2026, 4, 6),  due_on: Date.new(2026, 4, 20), status: :overdue, amount: 96.00 },
+    { number: 1007, customer: "Gable & Sons",       issued_on: Date.new(2026, 4, 9),  due_on: Date.new(2026, 5, 9),  status: :pending, amount: 2040.00 },
+    { number: 1001, customer: "Fern & Field",       issued_on: Date.new(2026, 4, 10), due_on: Date.new(2026, 5, 10), status: :paid,    amount: 318.75 },
+    { number: 1016, customer: "Cinder Robotics",    issued_on: Date.new(2026, 4, 11), due_on: Date.new(2026, 4, 25), status: :overdue, amount: 774.20 },
+    { number: 1004, customer: "Harbor & Vine",      issued_on: Date.new(2026, 4, 12), due_on: Date.new(2026, 5, 12), status: :draft,   amount: 1600.00 },
+    { number: 1011, customer: "Northwind Traders",  issued_on: Date.new(2026, 4, 13), due_on: Date.new(2026, 5, 13), status: :paid,    amount: 540.00 },
+    { number: 1009, customer: "Slate & Pine",       issued_on: Date.new(2026, 4, 14), due_on: Date.new(2026, 5, 14), status: :pending, amount: 88.40 },
+    { number: 1015, customer: "Meridian Foods",     issued_on: Date.new(2026, 4, 15), due_on: Date.new(2026, 5, 15), status: :paid,    amount: 3120.00 },
+    { number: 1003, customer: "Lumen Labs",         issued_on: Date.new(2026, 4, 16), due_on: Date.new(2026, 5, 16), status: :paid,    amount: 212.00 },
+    { number: 1018, customer: "Cobalt Systems",     issued_on: Date.new(2026, 4, 18), due_on: Date.new(2026, 4, 30), status: :overdue, amount: 995.00 },
+    { number: 1006, customer: "Aperture Optics",    issued_on: Date.new(2026, 4, 19), due_on: Date.new(2026, 5, 19), status: :draft,   amount: 60.00 },
+    { number: 1017, customer: "Gable & Sons",       issued_on: Date.new(2026, 4, 20), due_on: Date.new(2026, 5, 20), status: :pending, amount: 1445.60 },
+    { number: 1008, customer: "Fern & Field",       issued_on: Date.new(2026, 4, 21), due_on: Date.new(2026, 5, 21), status: :paid,    amount: 275.00 },
+    { number: 1012, customer: "Harbor & Vine",      issued_on: Date.new(2026, 4, 22), due_on: Date.new(2026, 5, 22), status: :paid,    amount: 810.30 },
+    { number: 1005, customer: "Meridian Foods",     issued_on: Date.new(2026, 4, 23), due_on: Date.new(2026, 5, 23), status: :pending, amount: 128.00 },
+    { number: 1014, customer: "Slate & Pine",       issued_on: Date.new(2026, 4, 24), due_on: Date.new(2026, 5, 24), status: :draft,   amount: 940.00 },
+    { number: 1010, customer: "Cobalt Systems",     issued_on: Date.new(2026, 4, 25), due_on: Date.new(2026, 5, 25), status: :paid,    amount: 2275.00 },
+  ]
+
+  sortable_columns = %w[number customer due_on amount]
+  current_sort = sortable_columns.include?(params[:sort]) ? params[:sort] : "number"
+  current_direction = params[:direction] == "desc" ? "desc" : "asc"
+  query = params[:q].to_s.strip
+
+  filtered =
+    if query.present?
+      needle = query.downcase
+      invoices.select do |inv|
+        format("inv-%04d", inv[:number]).include?(needle) || inv[:customer].downcase.include?(needle)
+      end
+    else
+      invoices
+    end
+
+  sort_value = ->(inv) {
+    raw = inv[current_sort.to_sym]
+    raw.is_a?(String) ? raw.downcase : raw
+  }
+  sorted = filtered.sort_by(&sort_value)
+  sorted = sorted.reverse if current_direction == "desc"
+
+  per_page = 8
+  total_count = sorted.length
+  total_pages = [(total_count.to_f / per_page).ceil, 1].max
+  current_page = params[:page].to_i
+  current_page = 1 if current_page < 1
+  current_page = total_pages if current_page > total_pages
+  page_start = (current_page - 1) * per_page
+  page_invoices = sorted[page_start, per_page] || []
+
+  status_variant = { paid: :success, pending: :warning, overdue: :destructive, draft: :outline }
+  status_label = { paid: "Paid", pending: "Pending", overdue: "Overdue", draft: "Draft" }
+
+  current_params = request.query_parameters
+  build_url = ->(overrides) {
+    merged = current_params.merge(overrides).reject { |_, v| v.nil? || v == "" }
+    merged.empty? ? request.path : "#{request.path}?#{merged.to_query}"
+  }
+  next_direction_for = ->(column) {
+    next "asc" unless current_sort == column
+    current_direction == "asc" ? "desc" : "asc"
+  }
+  sort_href = ->(column) { build_url.call("sort" => column, "direction" => next_direction_for.call(column), "page" => nil) }
+  sort_icon_for = ->(column) {
+    next :"chevrons-up-down" unless current_sort == column
+    current_direction == "asc" ? :"arrow-up" : :"arrow-down"
+  }
+  aria_sort_for = ->(column) {
+    next "none" unless current_sort == column
+    current_direction == "asc" ? "ascending" : "descending"
+  }
+%>
+<section class="space-y-4">
+  <div class="space-y-1">
+    <h2 class="text-lg font-semibold tracking-tight">Invoices</h2>
+    <p class="text-sm text-muted-foreground">All invoices, sorted by invoice number.</p>
+  </div>
+
+  <form method="get" action="<%= request.path %>" class="flex flex-wrap items-end gap-3">
+    <div>
+      <%= poetry_label(for_id: "invoices-search", class: "sr-only") { "Filter invoices" } %>
+      <%= poetry_input_group(class: "w-72") do %>
+        <%= poetry_input_group_addon do %>
+          <%= poetry_icon(name: :search) %>
+        <% end %>
+        <%= poetry_input_group_input(id: "invoices-search", name: "q", placeholder: "Filter by invoice # or customer…", value: query) %>
+      <% end %>
+    </div>
+    <% if current_sort != "number" %>
+      <input type="hidden" name="sort" value="<%= current_sort %>">
+    <% end %>
+    <% if current_direction != "asc" %>
+      <input type="hidden" name="direction" value="<%= current_direction %>">
+    <% end %>
+    <%= poetry_button(variant: :secondary, size: :sm, type: :submit) { "Filter" } %>
+    <% if query.present? %>
+      <%= poetry_link(href: request.path, underline: :hover) { "Clear filter" } %>
+    <% end %>
+  </form>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "Invoices with customer, issue date, due date, status, and amount." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head("aria-sort": aria_sort_for.call("number")) do %>
+            <%= link_to sort_href.call("number"), class: "inline-flex items-center gap-1 hover:text-foreground" do %>
+              Invoice #
+              <%= poetry_icon(name: sort_icon_for.call("number")) %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head("aria-sort": aria_sort_for.call("customer")) do %>
+            <%= link_to sort_href.call("customer"), class: "inline-flex items-center gap-1 hover:text-foreground" do %>
+              Customer
+              <%= poetry_icon(name: sort_icon_for.call("customer")) %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head { "Issued" } %>
+          <%= poetry_table_head("aria-sort": aria_sort_for.call("due_on")) do %>
+            <%= link_to sort_href.call("due_on"), class: "inline-flex items-center gap-1 hover:text-foreground" do %>
+              Due
+              <%= poetry_icon(name: sort_icon_for.call("due_on")) %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head(class: "text-right", "aria-sort": aria_sort_for.call("amount")) do %>
+            <%= link_to sort_href.call("amount"), class: "inline-flex items-center justify-end gap-1 hover:text-foreground" do %>
+              Amount
+              <%= poetry_icon(name: sort_icon_for.call("amount")) %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% if page_invoices.empty? %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(colspan: 6, class: "text-center text-muted-foreground") { "No invoices match your filter." } %>
+          <% end %>
+        <% else %>
+          <% page_invoices.each do |inv| %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell(class: "font-medium") { format("INV-%04d", inv[:number]) } %>
+              <%= poetry_table_cell { inv[:customer] } %>
+              <%= poetry_table_cell(class: "text-muted-foreground") { inv[:issued_on].strftime("%b %-d, %Y") } %>
+              <%= poetry_table_cell(class: "text-muted-foreground") { inv[:due_on].strftime("%b %-d, %Y") } %>
+              <%= poetry_table_cell { poetry_badge(variant: status_variant[inv[:status]]) { status_label[inv[:status]] } } %>
+              <%= poetry_table_cell(class: "text-right tabular-nums") { number_to_currency(inv[:amount]) } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">
+      <% if total_count.zero? %>
+        Showing 0 invoices
+      <% else %>
+        Showing <%= page_start + 1 %>–<%= page_start + page_invoices.length %> of <%= total_count %> invoices
+      <% end %>
+    </p>
+    <%= poetry_pagination(current: current_page, total: total_pages, current_variant: :filled, path: ->(page) { build_url.call("page" => page) }) %>
+  </div>
+</section>

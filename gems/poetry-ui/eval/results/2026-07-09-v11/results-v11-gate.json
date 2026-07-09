@@ -1,0 +1,161 @@
+{
+  "schema": "results-v11-gate-v1",
+  "headline_stands": "// numbers untouched; this is the v1.1 vocabulary gate pre-registered in the plan note (vault 494f549) BEFORE generation.",
+  "vocabulary_adoption": {
+    "table": "3x variant: :success + 2x :warning (the status badges, unprompted)",
+    "data_table": "current_variant: :filled",
+    "pagination": "current_variant: :filled",
+    "card": "arrow-right + underline: :always (the CTA affordance)",
+    "site_nav": "4x block-form poetry_navigation_menu_link (the crash class, used correctly)",
+    "alert": "none of the new vocabulary applies to the brief"
+  },
+  "predictions": {
+    "c1": {
+      "statement": "poetry takes the composition axis on >=3 of 6 (standing 0 of 6)",
+      "observed": "1/6",
+      "pass": false
+    },
+    "c2": {
+      "statement": ">=3 of 6 overall verdicts flip to poetry (standing 0 of 6)",
+      "observed": "1 flips: data_table",
+      "pass": false
+    },
+    "c3": {
+      "statement": "zero render crashes (both prior crash classes now static tiers)",
+      "observed": "6/6 rendered",
+      "pass": true
+    },
+    "c4": {
+      "statement": "the grown axe roster stays clean with no new skips",
+      "observed": "285 preview pages clean (wcag2a+wcag2aa), the SAME 3 documented skips - status badges, filled pagination, and top-nav all AA across the walk",
+      "pass": true
+    }
+  },
+  "subset": {
+    "table": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.4692,
+          "num_turns": 11,
+          "attempts": 1
+        }
+      }
+    },
+    "data_table": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "poetry",
+        "composition": "poetry",
+        "swap_consistency": 0.667,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 1.6369,
+          "num_turns": 44,
+          "attempts": 1
+        }
+      }
+    },
+    "pagination": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "inconclusive",
+        "composition": "tied",
+        "swap_consistency": 0.0,
+        "render_error": null,
+        "cross_arm_score": "5/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.426,
+          "num_turns": 10,
+          "attempts": 1
+        }
+      }
+    },
+    "card": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "render_error": null,
+        "cross_arm_score": "6/6",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.3704,
+          "num_turns": 10,
+          "attempts": 1
+        }
+      }
+    },
+    "alert": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "render_error": null,
+        "cross_arm_score": "4/5",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.5497,
+          "num_turns": 22,
+          "attempts": 1
+        }
+      }
+    },
+    "site_nav": {
+      "standing_blocks_gate": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind"
+      },
+      "v11": {
+        "overall": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "swap_consistency": 1.0,
+        "render_error": null,
+        "cross_arm_score": "6/6",
+        "design_slop": true,
+        "generation": {
+          "cost_usd": 0.3761,
+          "num_turns": 8,
+          "attempts": 1
+        }
+      }
+    }
+  },
+  "usage": {
+    "generation": {
+      "units_recorded": 6,
+      "unit_cost_sum_usd": 3.8283,
+      "receipted_cost_usd": 3.8282
+    },
+    "judge": {
+      "judge_calls": 36,
+      "total_cost_usd": 4.1752
+    }
+  }
+}

@@ -1,0 +1,15 @@
+<%= poetry_card(class: "max-w-md") do |card| %>
+  <% card.with_title { "Growth Plan" } %>
+  <% card.with_description { "For growing teams that need more capacity and priority support." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "Beta" } %>
+  <% end %>
+  <% card.with_footer do %>
+    <%= poetry_link(href: "/plans/growth", underline: :always, class: "inline-flex items-center gap-1") do %>
+      Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+    <% end %>
+  <% end %>
+  <div class="space-y-3 text-sm">
+    <p>The Growth plan raises your workspace limits and adds priority support while it's in beta. Pricing and limits may still change before general availability, and early feedback directly shapes what ships next.</p>
+  </div>
+<% end %>

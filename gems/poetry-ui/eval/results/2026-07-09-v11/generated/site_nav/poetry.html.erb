@@ -1,0 +1,31 @@
+<header class="w-full border-b">
+  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between gap-6 px-6">
+    <%= poetry_link(href: "/", underline: :none, class: "inline-flex items-center gap-2 text-sm font-semibold") do %>
+      <%= poetry_icon(name: :"audio-waveform", class: "size-4") %> Meridian
+    <% end %>
+    <%= poetry_navigation_menu(label: "Main") do |nav| %>
+      <% nav.with_item("Products", value: "products") do %>
+        <div class="grid w-[28rem] grid-cols-2 gap-1 p-2">
+          <%= poetry_navigation_menu_link(href: "/products/orders") do %>
+            <div class="text-sm font-medium">Orders</div>
+            <p class="text-xs text-muted-foreground">Fulfillment from checkout to doorstep.</p>
+          <% end %>
+          <%= poetry_navigation_menu_link(href: "/products/customers") do %>
+            <div class="text-sm font-medium">Customers</div>
+            <p class="text-xs text-muted-foreground">Profiles, segments, and lifetime history.</p>
+          <% end %>
+          <%= poetry_navigation_menu_link(href: "/products/analytics") do %>
+            <div class="text-sm font-medium">Analytics</div>
+            <p class="text-xs text-muted-foreground">Live dashboards over every workspace event.</p>
+          <% end %>
+          <%= poetry_navigation_menu_link(href: "/products/automations") do %>
+            <div class="text-sm font-medium">Automations</div>
+            <p class="text-xs text-muted-foreground">Workflows that run while the team sleeps.</p>
+          <% end %>
+        </div>
+      <% end %>
+      <% nav.with_link("Pricing", href: "/pricing") %>
+      <% nav.with_link("Docs", href: "/docs") %>
+    <% end %>
+  </div>
+</header>
