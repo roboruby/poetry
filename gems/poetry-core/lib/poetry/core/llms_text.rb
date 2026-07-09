@@ -142,7 +142,10 @@ module Poetry
           as source the app owns (--list to browse); the MCP `describe_block`
           tool returns the same source boot-free. Blocks carry the composed
           patterns - containment, status color-coding, page furniture,
-          realistic content - so a screen starts composed, not blank.
+          realistic content - so a screen starts composed, not blank. Page
+          framing counts: a section that IS the page's subject keeps its
+          container + breathing room (the section blocks demonstrate the
+          wrapper) - a bare component at the viewport origin reads cramped.
 
           #{lines.join("\n")}
         TEXT
