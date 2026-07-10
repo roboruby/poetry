@@ -52,8 +52,18 @@ module Poetry
             }
             renders_many :chips, ->(text, tone: :gray) { { text: text, tone: tone } }
             renders_one :footer, ->(*parts) { parts }
+            # The Carousel shape: a closed keyword signature that
+            # consumes its block as content and cannot render without one.
+            renders_many :slides, lambda { |classes: nil, &block|
+              { classes: classes, block: block }
+            }
+            # The DataTable shape: the block is a renderer called WITH
+            # arguments later - declared as yielding, so not yieldless.
+            renders_many :cells, ->(label, &renderer) { { label: label, renderer: renderer } }
 
             SLOT_BUILDERS = { row: Tray }.freeze
+            SLOT_REQUIRED_CONTENT = { slide: "the slide" }.freeze
+            SLOT_BLOCK_YIELDS = { cell: "the row record" }.freeze
 
             # A hand-rolled convenience beyond the registered slots - part
             # of the consumer call surface (the NavigationMenu#with_link
@@ -151,6 +161,44 @@ module Poetry
           assert_equal({ row: 0, divider: 0 }, entries[:setter_args], "kwargs-only lambdas take zero positionals")
           assert_equal({ chip: 1 }, chips[:setter_args], "a required positional counts")
           refute footer.key?(:setter_args), "a *rest signature is unknowable - no arity claimed"
+        end
+
+        def test_closed_keyword_signatures_are_introspected_and_open_ones_stay_unclaimed
+          slots = props[:slots]
+          slides = slots.find { |slot| slot[:name] == :slides }
+
+          assert_equal({ slide: ["classes"] }, slides[:setter_kwargs])
+          refute slots.find { |slot| slot[:name] == :chips }.key?(:setter_kwargs),
+                 "a positional parameter can swallow a braceless hash - no keyword contract"
+          refute slots.find { |slot| slot[:name] == :entries }.key?(:setter_kwargs),
+                 "**rest accepts anything - no keyword contract"
+          refute slots.find { |slot| slot[:name] == :badge }.key?(:setter_kwargs),
+                 "class renderables take kwargs through the attributes hash"
+        end
+
+        def test_block_consuming_lambdas_read_as_yieldless
+          slots = props[:slots]
+
+          assert_equal [:slide], slots.find { |slot| slot[:name] == :slides }[:yieldless]
+          refute slots.find { |slot| slot[:name] == :badge }.key?(:yieldless),
+                 "a class renderable yields the component instance to the block"
+          refute slots.find { |slot| slot[:name] == :icon }.key?(:yieldless),
+                 "a bare slot has no lambda to consume the block"
+        end
+
+        def test_a_declared_block_yields_setter_is_exempt_from_yieldless
+          cells = props[:slots].find { |slot| slot[:name] == :cells }
+
+          refute cells.key?(:yieldless),
+                 "SLOT_BLOCK_YIELDS declares the block receives arguments - not yieldless"
+        end
+
+        def test_declared_required_content_is_carried_per_setter
+          slots = props[:slots]
+
+          assert_equal({ slide: "the slide" }, slots.find { |slot| slot[:name] == :slides }[:required_content])
+          refute slots.find { |slot| slot[:name] == :chips }.key?(:required_content),
+                 "no declaration means no requirement claimed"
         end
 
         def test_a_declared_builder_recurses_into_its_own_surface

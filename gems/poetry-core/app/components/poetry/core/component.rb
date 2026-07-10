@@ -93,6 +93,27 @@ module Poetry
         def component_title
           component_path.split("/").last # dot
         end
+
+        # Declares that this component cannot render without a content block,
+        # with a hint naming what the block is (Avatar: "the initials
+        # fallback"). ONE declaration feeds both enforcement layers: the
+        # component raises via #ensure_content! at render, and the registry
+        # emits `requires_content` so poetry check flags the omission
+        # statically (the floating crash class).
+        #
+        # @param hint [String] what the content block is, for the error message
+        def requires_content(hint)
+          @required_content = hint
+        end
+
+        # The declared content-block hint, inherited like other DSL state.
+        #
+        # @return [String, nil]
+        def required_content
+          return @required_content if defined?(@required_content)
+
+          superclass.respond_to?(:required_content) ? superclass.required_content : nil
+        end
       end
 
       # The self-identification markup contract (M3, the golden Button's
@@ -112,6 +133,16 @@ module Poetry
       # @return [Hash] e.g. { "data-slot" => "icon" }
       def slot_data_attributes(part)
         { "data-slot" => part.to_s }
+      end
+
+      # Enforces the class-level requires_content declaration - call from
+      # before_render. The message is built from the declaration so the
+      # runtime raise and the registry's static contract can never disagree.
+      def ensure_content!
+        return if content?
+
+        raise ArgumentError, "#{self.class.component_module.demodulize} requires a content block " \
+                             "(#{self.class.required_content})"
       end
 
       # Indicates whether this component instance is persisted.

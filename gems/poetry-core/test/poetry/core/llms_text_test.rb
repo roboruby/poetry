@@ -62,6 +62,32 @@ module Poetry
         refute_includes text.index, "## Blocks"
         refute_includes text.full, "## Block:"
       end
+
+      # The crash classes, stated in the contract text: a component
+      # that requires content says so up front; a slot states its yieldless
+      # setters, its closed keyword set, and its required content block.
+      def test_full_states_the_block_seam_contracts
+        entry = {
+          "class_name" => "Poetry::Ui::Carousel::Component", "bem_block" => "poetry-ui-carousel",
+          "identifier" => "poetry--ui--carousel",
+          "styles" => [], "options" => [],
+          "requires_content" => "the initials fallback",
+          "slots" => [
+            { "name" => "items", "many" => true,
+              "yieldless" => ["item"],
+              "setter_kwargs" => { "item" => ["classes"] },
+              "required_content" => { "item" => "the slide" } }
+          ]
+        }
+        registry = FakeRegistry.new(entries: { "poetry/ui/carousel" => entry }, blocks: nil,
+                                    source_root: Pathname("."))
+        full = LlmsText.new(registry: registry).full
+
+        assert_includes full, "Content block REQUIRED (the initials fallback) - a blockless call raises."
+        assert_includes full, "with_item yields NOTHING to the block - no |param|, write content directly"
+        assert_includes full, "with_item keywords: classes: ONLY"
+        assert_includes full, "with_item REQUIRES a content block (the slide)"
+      end
     end
   end
 end

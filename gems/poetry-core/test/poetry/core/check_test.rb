@@ -36,9 +36,27 @@ module Poetry
               { "name" => "title", "many" => false },
               { "name" => "actions", "many" => true },
               { "name" => "rows", "many" => true, "types" => %w[row divider],
-                "setter_args" => { "row" => 1, "divider" => 0 } }
+                "setter_args" => { "row" => 1, "divider" => 0 } },
+              { "name" => "badge", "many" => false, "component" => "poetry/ui/badge" }
             ],
             "slot_extras" => ["link"]
+          },
+          "poetry/ui/avatar" => {
+            "options" => [{ "name" => "src" }, { "name" => "label" }],
+            "requires_content" => "the initials fallback"
+          },
+          "poetry/ui/badge" => {
+            "styles" => [{ "name" => "variant", "variants" => %w[default success] }],
+            "requires_content" => "the visible status text"
+          },
+          "poetry/ui/carousel" => {
+            "options" => [{ "name" => "label" }],
+            "slots" => [
+              { "name" => "items", "many" => true,
+                "setter_kwargs" => { "item" => ["classes"] },
+                "yieldless" => ["item"],
+                "required_content" => { "item" => "the slide" } }
+            ]
           },
           "poetry/ui/menubar" => {
             "styles" => [], "options" => [],
@@ -305,6 +323,98 @@ module Poetry
 
       def test_a_component_block_param_is_not_yieldless
         refute_includes rules(%(<%= poetry_alert do |alert| %>x<% end %>)), "yieldless-block"
+      end
+
+      # --- the tier gaps: setter block seams, setter keywords, required content ---
+
+      def test_a_block_param_on_a_yieldless_setter_errors
+        source = <<~ERB
+          <%= poetry_carousel(label: "Art") do |carousel| %>
+            <% carousel.with_item do |item| %>
+              <% item.with_leading { "x" } %>
+            <% end %>
+          <% end %>
+        ERB
+        finding = first(source, "yieldless-block")
+
+        assert_equal :error, finding.severity
+        assert_includes finding.message, "with_item yields nothing to its block"
+        assert_includes finding.message, "the param will be nil"
+      end
+
+      def test_a_plain_block_on_a_yieldless_setter_is_fine
+        source = %(<%= poetry_carousel(label: "Art") do |carousel| %><% carousel.with_item { "x" } %><% end %>)
+
+        refute_includes rules(source), "yieldless-block"
+      end
+
+      def test_a_builder_setter_block_param_is_not_yieldless
+        source = %(<%= poetry_menubar do |menubar| %><% menubar.with_menu do |menu| %>x<% end %><% end %>)
+
+        refute_includes rules(source), "yieldless-block"
+      end
+
+      def test_an_unknown_keyword_on_a_closed_setter_errors_with_did_you_mean
+        source = %(<%= poetry_carousel(label: "Art") do |carousel| %>
+          <% carousel.with_item(class: "basis-full") { "x" } %>
+        <% end %>)
+        finding = first(source, "slot-keyword")
+
+        assert_equal :error, finding.severity
+        assert_includes finding.message, "with_item does not take class:"
+        assert_includes finding.message, "takes classes:"
+        assert_equal "classes", finding.suggestion
+      end
+
+      def test_a_declared_keyword_on_a_closed_setter_passes
+        source = %(<%= poetry_carousel(label: "Art") do |carousel| %>
+          <% carousel.with_item(classes: "basis-full") { "x" } %>
+        <% end %>)
+
+        refute_includes rules(source), "slot-keyword"
+      end
+
+      def test_setters_without_a_keyword_contract_stay_unchecked
+        source = %(<%= poetry_alert do |alert| %><% alert.with_actions(anything: "goes") { "x" } %><% end %>)
+
+        refute_includes rules(source), "slot-keyword"
+      end
+
+      def test_a_blockless_call_on_a_requires_content_component_errors
+        finding = first(%(<%= poetry_avatar(src: "x.png", label: "Nadia") %>), "missing-content-block")
+
+        assert_equal :error, finding.severity
+        assert_equal "poetry_avatar requires a content block (the initials fallback)", finding.message
+      end
+
+      def test_a_block_satisfies_requires_content
+        refute_includes rules(%(<%= poetry_avatar(label: "Nadia") do %>NA<% end %>)), "missing-content-block"
+      end
+
+      def test_chained_with_content_satisfies_requires_content
+        refute_includes rules(%(<%= poetry_avatar(label: "Nadia").with_content("NA") %>)),
+                        "missing-content-block"
+      end
+
+      def test_positional_arguments_stand_down_requires_content
+        refute_includes rules(%(<%= poetry_avatar("NA") %>)), "missing-content-block"
+      end
+
+      def test_a_setter_that_requires_content_errors_without_a_block
+        source = %(<%= poetry_carousel(label: "Art") do |carousel| %><% carousel.with_item(classes: "b") %><% end %>)
+        finding = first(source, "missing-content-block")
+
+        assert_equal "with_item requires a content block (the slide)", finding.message
+      end
+
+      def test_a_typed_slot_rendering_a_requires_content_component_errors_without_a_block
+        source = %(<%= poetry_alert do |alert| %><% alert.with_badge(variant: :success) %><% end %>)
+        finding = first(source, "missing-content-block")
+
+        assert_includes finding.message, "with_badge renders poetry_badge"
+        assert_includes finding.message, "the visible status text"
+        refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_badge { "Active" } %><% end %>)),
+                        "missing-content-block"
       end
 
       def test_a_type_symbol_passed_positionally_suggests_the_sibling_setter

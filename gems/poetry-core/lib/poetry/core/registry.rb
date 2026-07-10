@@ -141,6 +141,12 @@ module Poetry
         # Component-specific constraints agents must honor (the contract's
         # agent_rules section) - declared as an AGENT_RULES constant.
         entry["agent_rules"] = component::AGENT_RULES.dup if component.const_defined?(:AGENT_RULES)
+        # The requires_content declaration (the floating crash class):
+        # the same fact that raises at render lets poetry check flag a
+        # blockless call statically.
+        if component.respond_to?(:required_content) && (hint = component.required_content)
+          entry["requires_content"] = hint
+        end
         entry
       end
 

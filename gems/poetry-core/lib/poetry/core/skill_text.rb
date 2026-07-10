@@ -74,8 +74,10 @@ module Poetry
             when composing into an already-padded frame.
           - One visual theme per app (chosen at install); components read
             tokens, never restate them.
-          - Before finishing, the markup must pass `bin/rails poetry:check`
-            (or the poetry MCP `check` tool - instant, no app boot).
+          - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
+            `check` tool - instant, no app boot) as the FINAL action, after
+            your last edit. An edit made after your last check is unverified
+            markup - re-run check before finishing, every time.
 
           ## Find your component
 
@@ -85,8 +87,13 @@ module Poetry
 
           #{family_index}
 
-          For taste decisions - choosing a theme, shaping a page, auditing a
-          finished screen - load the `poetry-design` skill.
+          ## Composing a page? Load poetry-design
+
+          Building or restyling a full page, screen, or dashboard - not a
+          lone component? Load the `poetry-design` skill BEFORE composing:
+          theme fit, page macrostructure, hierarchy, status color, and the
+          finishing audit live there. Component contracts alone do not make
+          a composed page.
         MD
       end
 

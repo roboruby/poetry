@@ -6,6 +6,18 @@ require "tmpdir"
 module Poetry
   module Core
     class RegistryTest < Minitest::Test
+      # The requires_content shape: one declaration drives the
+      # runtime raise AND the registry's static contract.
+      module ContentProbe
+        class Component < Poetry::Core::Component
+          requires_content "the probe body"
+
+          def call
+            content_tag(:span, content)
+          end
+        end
+      end
+
       def registry
         # Explicit component list: descendant discovery inside the test suite
         # would pick up test-defined probe components.
@@ -79,6 +91,26 @@ module Poetry
         assert_equal %w[badge table], parsed.dig("blocks", "data-index", "components")
         assert_equal "blocks/data_index.html.erb", parsed.dig("blocks", "data-index", "template")
         refute YAML.safe_load(registry.to_yaml).key?("blocks"), "no blocks given means no blocks key"
+      end
+
+      def test_requires_content_is_emitted_when_declared_and_absent_otherwise
+        entries = Registry.new(components: [ContentProbe::Component, Poetry::Core::X::Component]).entries
+        probe = entries.fetch(ContentProbe::Component.component_path)
+
+        assert_equal "the probe body", probe["requires_content"]
+        refute entries.fetch("poetry/core/x").key?("requires_content"),
+               "no declaration means no requirement claimed"
+      end
+
+      def test_ensure_content_raises_the_declared_hint
+        component = ContentProbe::Component.new
+        def component.content? = false
+        error = assert_raises(ArgumentError) { component.ensure_content! }
+
+        assert_equal "ContentProbe requires a content block (the probe body)", error.message
+        def component.content? = true
+
+        assert_nil component.ensure_content!
       end
 
       def test_committed_registry_is_in_sync_with_source

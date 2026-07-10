@@ -48,7 +48,9 @@ module Poetry
           "name" => "check",
           "description" => "Lint ERB source against the poetry contracts WITHOUT rendering - unknown " \
                            "components/options/variants/wiring, raw colors, icon names, enum values, " \
-                           "typed-slot props, and helper/setter arity. Returns a verdict and findings.",
+                           "typed-slot props, helper/setter arity, yield-less blocks, setter keywords, " \
+                           "and required content blocks. Returns a verdict and findings. Run this as the " \
+                           "LAST action after the final edit - an edit after your last check is unverified.",
           "inputSchema" => {
             "type" => "object",
             "properties" => { "source" => { "type" => "string", "description" => "the ERB template source" } },
@@ -226,6 +228,7 @@ module Poetry
 
         def surface_lines(entry)
           lines = []
+          lines << "- content block REQUIRED (#{entry["requires_content"]})" if entry["requires_content"]
           (entry["styles"] + entry["options"]).each do |prop|
             facets = []
             facets << prop["variants"].join("|") if prop["variants"]
@@ -242,6 +245,17 @@ module Poetry
               facets << "types #{slot["types"].join("|")}#{convention}"
             end
             facets << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
+            # The crash seams, stated where agents read them.
+            if (yieldless = slot["yieldless"])
+              setters = yieldless.map { |name| "with_#{name}" }.join("/")
+              facets << "#{setters} #{yieldless.size == 1 ? "yields" : "yield"} NOTHING to the block - no |param|"
+            end
+            (slot["setter_kwargs"] || {}).each do |setter, keywords|
+              facets << "with_#{setter} keywords: #{keywords.map { |keyword| "#{keyword}:" }.join(", ")} ONLY"
+            end
+            (slot["required_content"] || {}).each do |setter, hint|
+              facets << "with_#{setter} REQUIRES a content block (#{hint})"
+            end
             "#{slot["name"]}#{" (#{facets.join("; ")})" if facets.any?}"
           end
           lines << "- slots: #{slots.join(", ")}" if slots.any?

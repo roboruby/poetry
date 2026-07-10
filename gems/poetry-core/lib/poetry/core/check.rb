@@ -154,6 +154,12 @@ module Poetry
           (@helper_entries.dig(helper, "options") || []).find { |option| option["name"] == key }
         end
 
+        # The component's requires_content hint (Avatar: "the initials
+        # fallback"), or nil when content is optional.
+        def requires_content(path)
+          @components.dig(path, "requires_content")
+        end
+
         def raw_color(class_string)
           class_string.scan(RAW_COLOR)
         end
@@ -206,8 +212,23 @@ module Poetry
           parsed = Prism.parse(node.content.value)
           calls = []
           collect_calls(parsed.value, calls)
-          findings = calls.flat_map { |call| call_findings(call, base_line, bindings) }
+          content_fed = content_fed_calls(parsed.value)
+          findings = calls.flat_map { |call| call_findings(call, base_line, bindings, content_fed) }
           findings + slot_findings(parsed.value, bindings, base_line)
+        end
+
+        # Receivers of a chained .with_content("...") - content arrives
+        # without a block, so the missing-content-block rule stands down.
+        def content_fed_calls(node, into = Set.new)
+          return into unless node
+
+          into << node.receiver if node.is_a?(Prism::CallNode) && node.name == :with_content && node.receiver
+          if node.respond_to?(:compact_child_nodes)
+            node.compact_child_nodes.each do |child|
+              content_fed_calls(child, into)
+            end
+          end
+          into
         end
 
         def collect_calls(node, into)
@@ -217,7 +238,7 @@ module Poetry
           node.compact_child_nodes.each { |child| collect_calls(child, into) } if node.respond_to?(:compact_child_nodes)
         end
 
-        def call_findings(call, base_line, bindings)
+        def call_findings(call, base_line, bindings, content_fed = Set.new)
           helper = call.name.to_s
           line = base_line + (call.location.start_line - 1)
 
@@ -244,7 +265,24 @@ module Poetry
             option_findings(path, key, value, base_line + kw_line - 1)
           end
           findings + missing_option_findings(path, helper_of(path), call, pairs, line) +
-            helper_arity_findings(helper, call, line)
+            helper_arity_findings(helper, call, line) +
+            content_findings(path, helper, call, line, content_fed)
+        end
+
+        # The requires_content tier (the floating crash class): a
+        # component that raises without a content block, called with none.
+        # Positional arguments or a chained .with_content may carry content
+        # invisibly - such calls are left alone.
+        def content_findings(path, helper, call, line, content_fed)
+          hint = @catalog.requires_content(path)
+          return [] unless hint
+          return [] if call.block || content_fed.include?(call)
+
+          positionals = positional_arguments(call)
+          return [] if positionals.nil? || positionals.any?
+
+          [Finding.new(rule: "missing-content-block", severity: :error,
+                       message: "#{helper} requires a content block (#{hint})", line: line)]
         end
 
         # The helper-arity rule (the blocks-gate site_nav crash class:
@@ -433,7 +471,9 @@ module Poetry
             bindings[param] = [surface, "with_#{slot_name}"]
           end
 
-          findings = arity_findings(entry, slot_name, call, line)
+          findings = arity_findings(entry, slot_name, call, line) +
+                     setter_block_findings(entry, slot_name, call, line) +
+                     setter_keyword_findings(entry, slot_name, call, base_line)
           component = entry["component"]
           return findings unless component
 
@@ -451,7 +491,51 @@ module Poetry
                                    "#{key}: (with_#{slot_name}(#{key}: ...)), not a block", line: line)
             end
           end
+          if (hint = @catalog.requires_content(component)) && call.block.nil?
+            findings << Finding.new(rule: "missing-content-block", severity: :error,
+                                    message: "with_#{slot_name} renders #{helper_of(component)}, which " \
+                                             "requires a content block (#{hint})", line: line)
+          end
           findings
+        end
+
+        # The block seam of a setter, both directions. A yieldless
+        # setter (its lambda consumes the block as content) yields nothing -
+        # a declared block param is nil at render (the menu crash:
+        # `menu.with_item do |item|`). A required_content setter crashes
+        # WITHOUT a block (Carousel with_item).
+        def setter_block_findings(entry, slot_name, call, line)
+          findings = []
+          if (entry["yieldless"] || []).include?(slot_name) && block_param_name(call)
+            findings << Finding.new(rule: "yieldless-block", severity: :error,
+                                    message: "with_#{slot_name} yields nothing to its block - the param " \
+                                             "will be nil; remove it and write the content directly",
+                                    line: line)
+          end
+          if (hint = entry.dig("required_content", slot_name)) && call.block.nil?
+            findings << Finding.new(rule: "missing-content-block", severity: :error,
+                                    message: "with_#{slot_name} requires a content block (#{hint})",
+                                    line: line)
+          end
+          findings
+        end
+
+        # Keywords a closed-signature setter does not accept (the
+        # artwork_carousel crash: `with_item(class:)` against
+        # `|classes: nil, &block|` - an ArgumentError at render, and NOT a
+        # pass-through surface, unlike component options).
+        def setter_keyword_findings(entry, slot_name, call, base_line)
+          allowed = entry.dig("setter_kwargs", slot_name)
+          return [] unless allowed
+
+          takes = "takes #{allowed.map { |name| "#{name}:" }.join(", ")}"
+          keyword_pairs(call).filter_map do |key, _value, kw_line|
+            next if allowed.include?(key)
+
+            Finding.new(rule: "slot-keyword", severity: :error,
+                        message: "with_#{slot_name} does not take #{key}: (#{takes})",
+                        line: base_line + kw_line - 1, suggestion: suggest(key, allowed))
+          end
         end
 
         # Positional args a setter does not take (the W2r menu crash:

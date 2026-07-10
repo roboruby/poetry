@@ -14,6 +14,11 @@ module Poetry
 
         DYNAMIC_DEFAULT = :dynamic
         POSITIONAL_KINDS = %i[req opt].freeze
+        # Parameter kinds that make a keyword surface open or unknowable
+        # (**rest accepts anything; a positional can swallow a braceless
+        # hash), and the kinds that ARE the keyword surface.
+        OPEN_PARAMETER_KINDS = %i[keyrest rest req opt].freeze
+        KEYWORD_PARAMETER_KINDS = %i[key keyreq].freeze
 
         class_methods do
           # The component's full prop surface.
@@ -110,11 +115,31 @@ module Poetry
         #   declares SLOT_BUILDERS = { setter => BuilderClass } and the
         #   walker recurses into the builder's own surface (cycle-guarded:
         #   sub-in-sub terminates by omission, not loop)
+        # - yieldless: a slot lambda that declares &block consumes the
+        #   consumer's block itself (poetry convention: capture(&block) with
+        #   no arguments), so a block param at the call site is nil at render
+        # (the menu crash: `menu.with_item do |item|`). A lambda that
+        #   stores the block and calls it WITH arguments later (DataTable's
+        #   per-row cell renderer) is indistinguishable by signature, so such
+        #   a class declares SLOT_BLOCK_YIELDS = { setter => what the block
+        #   receives } and the walker exempts those setters
+        # - setter_kwargs: the accepted keyword names of a closed-signature
+        #   slot lambda (`|classes: nil, &block|`) - any other keyword is an
+        # ArgumentError at render (the artwork_carousel crash:
+        #   `with_item(class:)`). Open signatures (**rest), positional-hash
+        #   signatures, and class renderables (kwargs ride the attributes
+        #   hash) are unknowable-or-open and stay unemitted.
+        # - required_content: a lambda cannot be seen raising "requires a
+        #   content block" (Carousel with_item), so a slot-owning class
+        #   declares SLOT_REQUIRED_CONTENT = { setter => hint } (the
+        #   SLOT_BUILDERS pattern) and the registry states the requirement
         class << self
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
 
             builders = declared_builders(klass)
+            required_content = declared_required_content(klass)
+            block_yields = declared_constant(klass, :SLOT_BLOCK_YIELDS)
             klass.registered_slots.map do |slot_name, config|
               definition = { name: slot_name, many: config[:collection] == true }
               renderable = config[:renderable]
@@ -122,6 +147,12 @@ module Poetry
               definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
               setter_args = setter_positional_args(slot_name, config)
               definition[:setter_args] = setter_args unless setter_args.empty?
+              setter_kwargs = setter_keyword_args(slot_name, config)
+              definition[:setter_kwargs] = setter_kwargs unless setter_kwargs.empty?
+              yieldless = yieldless_setters(slot_name, config) - block_yields.keys
+              definition[:yieldless] = yieldless unless yieldless.empty?
+              required = required_content.slice(*slot_setters(slot_name, config).map(&:to_sym))
+              definition[:required_content] = required unless required.empty?
               surfaces = builder_surfaces(slot_name, config, builders, seen + [klass])
               definition[:builders] = surfaces unless surfaces.empty?
               definition
@@ -148,7 +179,15 @@ module Poetry
           private
 
           def declared_builders(klass)
-            klass.const_defined?(:SLOT_BUILDERS) ? klass.const_get(:SLOT_BUILDERS) : {}
+            declared_constant(klass, :SLOT_BUILDERS)
+          end
+
+          def declared_required_content(klass)
+            declared_constant(klass, :SLOT_REQUIRED_CONTENT)
+          end
+
+          def declared_constant(klass, name)
+            klass.const_defined?(name) ? klass.const_get(name) : {}
           rescue NameError
             {}
           end
@@ -173,6 +212,55 @@ module Poetry
               arity = positional_arity(config[:renderable_function] || config[:renderable])
               arity ? { setter.to_sym => arity } : {}
             end
+          end
+
+          def setter_keyword_args(slot_name, config)
+            if (types = config[:renderable_hash])
+              types.filter_map do |type, definition|
+                names = keyword_names(definition[:renderable_function] || definition[:renderable])
+                [type, names] if names
+              end.to_h
+            else
+              setter = slot_setters(slot_name, config).first
+              names = keyword_names(config[:renderable_function] || config[:renderable])
+              names ? { setter.to_sym => names } : {}
+            end
+          end
+
+          def yieldless_setters(slot_name, config)
+            if (types = config[:renderable_hash])
+              types.filter_map do |type, definition|
+                type if consumes_block?(definition[:renderable_function] || definition[:renderable])
+              end
+            elsif consumes_block?(config[:renderable_function] || config[:renderable])
+              slot_setters(slot_name, config).map(&:to_sym)
+            else
+              []
+            end
+          end
+
+          # The closed keyword surface of a slot lambda, or nil when open or
+          # unknowable: class renderables take kwargs through the attributes
+          # hash, and a lambda with no keywords at all has nothing to
+          # enumerate.
+          def keyword_names(callable)
+            return nil if callable.is_a?(Class) || !callable.respond_to?(:parameters)
+
+            parameters = callable.parameters
+            return nil if parameters.any? { |kind, _name| OPEN_PARAMETER_KINDS.include?(kind) }
+
+            names = parameters.filter_map { |kind, name| name.to_s if KEYWORD_PARAMETER_KINDS.include?(kind) }
+            names.empty? ? nil : names
+          end
+
+          # A lambda declaring &block takes the consumer's block for itself -
+          # ViewComponent never renders it against a component, so a block
+          # param at the call site can only be nil. Class renderables and
+          # block-less lambdas returning components DO yield (render_in
+          # yields the component instance).
+          def consumes_block?(callable)
+            !callable.is_a?(Class) && callable.respond_to?(:parameters) &&
+              callable.parameters.any? { |kind, _name| kind == :block }
           end
 
           # Max positional argument count, or nil when unknowable (no

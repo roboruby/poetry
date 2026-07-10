@@ -62,6 +62,9 @@ module Poetry
       def component_section(path, entry)
         lines = ["## #{title(path)} (`#{helper(path)}`)", ""]
         lines << "Class: #{entry["class_name"]} - BEM block `#{entry["bem_block"]}`."
+        if (hint = entry["requires_content"])
+          lines << "Content block REQUIRED (#{hint}) - a blockless call raises."
+        end
         lines.concat(prop_lines(entry))
         slots = entry["slots"].map { |slot| slot_summary(slot) }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
@@ -102,7 +105,10 @@ module Poetry
       # forecloses). Untyped slots take blocks; many-slots say so; a
       # polymorphic slot lists its with_<type> setters - and when they are
       # all kwargs-only, says so (the W2r menu crash guessed a
-      # type-as-argument dispatch no setter has).
+      # type-as-argument dispatch no setter has). The crash classes
+      # each get their sentence: yieldless setters (no |param| - it would be
+      # nil), closed keyword signatures (the exact accepted set), and
+      # setters that cannot omit their content block.
       def slot_summary(slot)
         qualifiers = []
         qualifiers << "many" if slot["many"]
@@ -111,6 +117,17 @@ module Poetry
           qualifiers << "types #{slot["types"].join("|")}#{convention}"
         end
         qualifiers << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
+        if (yieldless = slot["yieldless"])
+          setters = yieldless.map { |name| "with_#{name}" }.join("/")
+          verb = yieldless.size == 1 ? "yields" : "yield"
+          qualifiers << "#{setters} #{verb} NOTHING to the block - no |param|, write content directly"
+        end
+        (slot["setter_kwargs"] || {}).each do |setter, keywords|
+          qualifiers << "with_#{setter} keywords: #{keywords.map { |keyword| "#{keyword}:" }.join(", ")} ONLY"
+        end
+        (slot["required_content"] || {}).each do |setter, hint|
+          qualifiers << "with_#{setter} REQUIRES a content block (#{hint})"
+        end
         "#{slot["name"]}#{" (#{qualifiers.join("; ")})" if qualifiers.any?}"
       end
 
