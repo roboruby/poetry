@@ -103,34 +103,79 @@ components:
       many: true
       setter_args:
         reference_line: 0
+      setter_kwargs:
+        reference_line:
+        - x
+        - "y"
+        - label
+        - stroke_dasharray
     - name: reference_areas
       many: true
       setter_args:
         reference_area: 0
+      setter_kwargs:
+        reference_area:
+        - x1
+        - x2
+        - y1
+        - y2
+        - label
+        - fill_opacity
     - name: reference_dots
       many: true
       setter_args:
         reference_dot: 0
+      setter_kwargs:
+        reference_dot:
+        - x
+        - "y"
+        - r
+        - label
     - name: brush
       many: false
       setter_args:
         brush: 0
+      setter_kwargs:
+        brush:
+        - height
     - name: areas
       many: true
       setter_args:
         area: 0
+      setter_kwargs:
+        area:
+        - data_key
+        - stack
+        - curve
+        - fill_opacity
+        - gradient
+        - stroke_width
     - name: x_axis
       many: false
       setter_args:
         x_axis: 0
+      setter_kwargs:
+        x_axis:
+        - data_key
+        - tick_formatter
+        - tick_margin
     - name: y_axis
       many: false
       setter_args:
         y_axis: 0
+      setter_kwargs:
+        y_axis:
+        - tick_count
+        - tick_formatter
+        - tick_margin
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - vertical
+        - horizontal
     - name: legend
       many: false
       setter_args:
@@ -231,34 +276,85 @@ components:
       many: true
       setter_args:
         reference_line: 0
+      setter_kwargs:
+        reference_line:
+        - x
+        - "y"
+        - label
+        - stroke_dasharray
     - name: reference_areas
       many: true
       setter_args:
         reference_area: 0
+      setter_kwargs:
+        reference_area:
+        - x1
+        - x2
+        - y1
+        - y2
+        - label
+        - fill_opacity
     - name: reference_dots
       many: true
       setter_args:
         reference_dot: 0
+      setter_kwargs:
+        reference_dot:
+        - x
+        - "y"
+        - r
+        - label
     - name: brush
       many: false
       setter_args:
         brush: 0
+      setter_kwargs:
+        brush:
+        - height
     - name: bars
       many: true
       setter_args:
         bar: 0
+      setter_kwargs:
+        bar:
+        - data_key
+        - stack
+        - radius
+        - labels
+        - label_key
+        - color_key
+        - cell_fill
+        - active_index
+        - stroke_width
+        - error_key
+        - error_width
     - name: x_axis
       many: false
       setter_args:
         x_axis: 0
+      setter_kwargs:
+        x_axis:
+        - data_key
+        - tick_formatter
+        - tick_margin
     - name: y_axis
       many: false
       setter_args:
         y_axis: 0
+      setter_kwargs:
+        y_axis:
+        - data_key
+        - tick_count
+        - tick_formatter
+        - tick_margin
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - vertical
+        - horizontal
     - name: legend
       many: false
       setter_args:
@@ -345,38 +441,92 @@ components:
       many: true
       setter_args:
         reference_line: 0
+      setter_kwargs:
+        reference_line:
+        - x
+        - "y"
+        - label
+        - stroke_dasharray
     - name: reference_areas
       many: true
       setter_args:
         reference_area: 0
+      setter_kwargs:
+        reference_area:
+        - x1
+        - x2
+        - y1
+        - y2
+        - label
+        - fill_opacity
     - name: reference_dots
       many: true
       setter_args:
         reference_dot: 0
+      setter_kwargs:
+        reference_dot:
+        - x
+        - "y"
+        - r
+        - label
     - name: areas
       many: true
       setter_args:
         area: 0
+      setter_kwargs:
+        area:
+        - data_key
+        - stack
+        - curve
+        - fill_opacity
+        - gradient
+        - stroke_width
     - name: bars
       many: true
       setter_args:
         bar: 0
+      setter_kwargs:
+        bar:
+        - data_key
+        - stack
+        - radius
     - name: lines
       many: true
       setter_args:
         line: 0
+      setter_kwargs:
+        line:
+        - data_key
+        - curve
+        - stroke_width
+        - dots
+        - dot_radius
     - name: x_axis
       many: false
       setter_args:
         x_axis: 0
+      setter_kwargs:
+        x_axis:
+        - data_key
+        - tick_formatter
+        - tick_margin
     - name: y_axis
       many: false
       setter_args:
         y_axis: 0
+      setter_kwargs:
+        y_axis:
+        - tick_count
+        - tick_formatter
+        - tick_margin
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - vertical
+        - horizontal
     - name: legend
       many: false
       setter_args:
@@ -512,34 +662,82 @@ components:
       many: true
       setter_args:
         reference_line: 0
+      setter_kwargs:
+        reference_line:
+        - x
+        - "y"
+        - label
+        - stroke_dasharray
     - name: reference_areas
       many: true
       setter_args:
         reference_area: 0
+      setter_kwargs:
+        reference_area:
+        - x1
+        - x2
+        - y1
+        - y2
+        - label
+        - fill_opacity
     - name: reference_dots
       many: true
       setter_args:
         reference_dot: 0
+      setter_kwargs:
+        reference_dot:
+        - x
+        - "y"
+        - r
+        - label
     - name: brush
       many: false
       setter_args:
         brush: 0
+      setter_kwargs:
+        brush:
+        - height
     - name: lines
       many: true
       setter_args:
         line: 0
+      setter_kwargs:
+        line:
+        - data_key
+        - curve
+        - stroke_width
+        - dots
+        - dot_radius
+        - dot_color_key
+        - labels
+        - error_key
+        - error_width
     - name: x_axis
       many: false
       setter_args:
         x_axis: 0
+      setter_kwargs:
+        x_axis:
+        - data_key
+        - tick_formatter
+        - tick_margin
     - name: y_axis
       many: false
       setter_args:
         y_axis: 0
+      setter_kwargs:
+        y_axis:
+        - tick_count
+        - tick_formatter
+        - tick_margin
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - vertical
+        - horizontal
     - name: legend
       many: false
       setter_args:
@@ -618,10 +816,28 @@ components:
       many: true
       setter_args:
         pie: 0
+      setter_kwargs:
+        pie:
+        - data_key
+        - data
+        - name_key
+        - inner_radius
+        - outer_radius
+        - padding_angle
+        - stroke_width
+        - color_key
+        - labels
+        - label_key
+        - active_index
+        - active_grow
     - name: center_label
       many: false
       setter_args:
         center_label: 0
+      setter_kwargs:
+        center_label:
+        - title
+        - subtitle
     - name: legend
       many: false
       setter_args:
@@ -695,14 +911,31 @@ components:
       many: true
       setter_args:
         radar: 0
+      setter_kwargs:
+        radar:
+        - data_key
+        - fill_opacity
+        - stroke_width
+        - dots
+        - dot_radius
     - name: angle_axis
       many: false
       setter_args:
         angle_axis: 0
+      setter_kwargs:
+        angle_axis:
+        - data_key
+        - tick_formatter
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - type
+        - radial_lines
+        - fill
+        - opacity
     - name: legend
       many: false
       setter_args:
@@ -789,14 +1022,33 @@ components:
       many: true
       setter_args:
         radial_bar: 0
+      setter_kwargs:
+        radial_bar:
+        - data_key
+        - stack
+        - background
+        - corner_radius
+        - color_key
+        - labels
+        - label_key
     - name: polar_grid
       many: false
       setter_args:
         polar_grid: 0
+      setter_kwargs:
+        polar_grid:
+        - radii
+        - fills
+        - radial_lines
     - name: center_label
       many: false
       setter_args:
         center_label: 0
+      setter_kwargs:
+        center_label:
+        - title
+        - subtitle
+        - compact
     - name: legend
       many: false
       setter_args:
@@ -869,34 +1121,80 @@ components:
       many: true
       setter_args:
         reference_line: 0
+      setter_kwargs:
+        reference_line:
+        - x
+        - "y"
+        - label
+        - stroke_dasharray
     - name: reference_areas
       many: true
       setter_args:
         reference_area: 0
+      setter_kwargs:
+        reference_area:
+        - x1
+        - x2
+        - y1
+        - y2
+        - label
+        - fill_opacity
     - name: reference_dots
       many: true
       setter_args:
         reference_dot: 0
+      setter_kwargs:
+        reference_dot:
+        - x
+        - "y"
+        - r
+        - label
     - name: scatters
       many: true
       setter_args:
         scatter: 0
+      setter_kwargs:
+        scatter:
+        - key
+        - data
+        - error_key
+        - error_width
     - name: x_axis
       many: false
       setter_args:
         x_axis: 0
+      setter_kwargs:
+        x_axis:
+        - data_key
+        - tick_count
+        - tick_margin
+        - name
     - name: y_axis
       many: false
       setter_args:
         y_axis: 0
+      setter_kwargs:
+        y_axis:
+        - data_key
+        - tick_count
+        - tick_margin
+        - name
     - name: z_axis
       many: false
       setter_args:
         z_axis: 0
+      setter_kwargs:
+        z_axis:
+        - data_key
+        - range
     - name: grid
       many: false
       setter_args:
         grid: 0
+      setter_kwargs:
+        grid:
+        - vertical
+        - horizontal
     - name: legend
       many: false
       setter_args:
