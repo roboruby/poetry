@@ -502,7 +502,14 @@ namespace :eval do
       generated = source.join("generated")
       captures = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_CAPTURES_DIR", "captures"))
       card = Poetry::Eval::Runner.new(arms_root: generated).scorecard(fold_judged: false)
-      judge = Poetry::Eval::Judge.new(workdir: File.join(Dir.tmpdir, "ui-eval-bench-judge"))
+      # POETRY_JUDGE_VOTES deepens the anti-bias harness (: votes per
+      # presentation order; the default 3 = 6 calls/pair, 5 = 10). Pair a
+      # non-default depth with POETRY_BENCH_VERDICTS so the canonical
+      # verdicts file stays frozen.
+      judge = Poetry::Eval::Judge.new(
+        workdir: File.join(Dir.tmpdir, "ui-eval-bench-judge"),
+        votes_per_order: Integer(ENV.fetch("POETRY_JUDGE_VOTES", Poetry::Eval::Judge::VOTES_PER_ORDER))
+      )
 
       names = poetry_bench_task_names.select do |task|
         card["tasks"].fetch(task)["arms"].size == 2 &&
@@ -561,9 +568,14 @@ namespace :eval do
       require "date"
 
       root = poetry_bench_results_root
+      # Variant folds (vote-depth re-judge): POETRY_BENCH_VERDICTS
+      # names the verdicts input and POETRY_BENCH_RESULTS the output, so a
+      # re-judge aggregates alongside the canonical results.json, never
+      # over it.
+      verdicts_path = root.join(ENV.fetch("POETRY_BENCH_VERDICTS", "benchmark-verdicts.json"))
       payload = Poetry::Eval::Benchmark.aggregate(
         scorecard: JSON.parse(root.join("generated-scorecard.json").read),
-        verdicts: JSON.parse(root.join("benchmark-verdicts.json").read),
+        verdicts: JSON.parse(verdicts_path.read),
         manifest: JSON.parse(root.join("generation-manifest.json").read),
         meta: {
           "generated_on" => ENV.fetch("POETRY_BENCH_DATE", Date.today.iso8601),
@@ -578,7 +590,7 @@ namespace :eval do
           ]
         }
       )
-      path = root.join("results.json")
+      path = root.join(ENV.fetch("POETRY_BENCH_RESULTS", "results.json"))
       path.write(JSON.pretty_generate(payload))
 
       summary = payload["summary"]
