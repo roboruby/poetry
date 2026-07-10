@@ -34,6 +34,8 @@ components:
       many: true
       setter_args:
         item: 0
+      yieldless:
+      - item
     elements:
     - item
     - header
@@ -120,6 +122,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     - name: title
       many: false
     - name: description
@@ -130,10 +134,14 @@ components:
       many: false
       setter_args:
         action: 0
+      yieldless:
+      - action
     - name: cancel
       many: false
       setter_args:
         cancel: 0
+      yieldless:
+      - cancel
     elements:
     - content
     - header
@@ -222,6 +230,11 @@ components:
       many: false
       setter_args:
         media: 0
+      setter_kwargs:
+        media:
+        - variant
+      yieldless:
+      - media
     - name: title
       many: false
     - name: description
@@ -230,10 +243,14 @@ components:
       many: true
       setter_args:
         action: 0
+      yieldless:
+      - action
     - name: trigger
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     elements:
     - media
     - content
@@ -289,6 +306,7 @@ components:
     - The badge slot is decorative (a presence dot); put the status meaning in label:,
       not in the badge.
     - Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
+    requires_content: the initials fallback
   poetry/ui/badge:
     class_name: Poetry::Ui::Badge::Component
     identifier: poetry--ui--badge
@@ -321,6 +339,7 @@ components:
       - the soft trio (+ outline for neutral) together, or the solid pair together;
       never a solid destructive pill inside a soft status column (design lint flags
       the mix).'
+    requires_content: the visible status text
   poetry/ui/breadcrumb:
     class_name: Poetry::Ui::Breadcrumb::Component
     identifier: poetry--ui--breadcrumb
@@ -386,6 +405,13 @@ components:
       many: false
       setter_args:
         reactions: 0
+      setter_kwargs:
+        reactions:
+        - label
+        - side
+        - align
+      yieldless:
+      - reactions
     elements:
     - group
     - content
@@ -492,6 +518,7 @@ components:
       unnamed by default).
     - A visual divider between members is poetry_button_group_separator, not a styled
       border.
+    requires_content: its member controls
   poetry/ui/calendar:
     class_name: Poetry::Ui::Calendar::Component
     identifier: poetry--ui--calendar
@@ -617,6 +644,13 @@ components:
       many: true
       setter_args:
         item: 0
+      setter_kwargs:
+        item:
+        - classes
+      yieldless:
+      - item
+      required_content:
+        item: the slide
     elements:
     - content
     - content_horizontal
@@ -729,6 +763,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     controllers:
     - identifier: poetry--core--state
       targets:
@@ -1045,6 +1081,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     slot_extras:
     - empty
     - group
@@ -1139,6 +1177,10 @@ components:
         separator: 0
         group: 0
         sub: 0
+      yieldless:
+      - item
+      - checkbox_item
+      - label
       builders:
         radio_group:
           slots:
@@ -1146,6 +1188,8 @@ components:
             many: true
             setter_args:
               radio_item: 0
+            yieldless:
+            - radio_item
         group:
           slots:
           - name: items
@@ -1166,6 +1210,10 @@ components:
               separator: 0
               group: 0
               sub: 0
+            yieldless:
+            - item
+            - checkbox_item
+            - label
             builders:
               radio_group:
                 slots:
@@ -1173,6 +1221,8 @@ components:
                   many: true
                   setter_args:
                     radio_item: 0
+                  yieldless:
+                  - radio_item
               sub:
                 slots:
                 - name: items
@@ -1193,6 +1243,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -1200,10 +1254,14 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
+                  yieldless:
+                  - trigger
         sub:
           slots:
           - name: items
@@ -1224,6 +1282,10 @@ components:
               separator: 0
               group: 0
               sub: 0
+            yieldless:
+            - item
+            - checkbox_item
+            - label
             builders:
               radio_group:
                 slots:
@@ -1231,6 +1293,8 @@ components:
                   many: true
                   setter_args:
                     radio_item: 0
+                  yieldless:
+                  - radio_item
               group:
                 slots:
                 - name: items
@@ -1251,6 +1315,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -1258,14 +1326,20 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
           - name: trigger
             many: false
             setter_args:
               trigger: 0
+            yieldless:
+            - trigger
     - name: trigger
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     elements:
     - content
     - item
@@ -1387,6 +1461,8 @@ components:
       many: true
       setter_args:
         column: 1
+      required_content:
+        column: the cell renderer - { |row| ... }
     elements:
     - toolbar
     - container
@@ -1487,6 +1563,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     - name: title
       many: false
     - name: description
@@ -1549,6 +1627,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     - name: title
       many: false
     - name: description
@@ -1659,6 +1739,10 @@ components:
         separator: 0
         group: 0
         sub: 0
+      yieldless:
+      - item
+      - checkbox_item
+      - label
       builders:
         radio_group:
           slots:
@@ -1666,6 +1750,8 @@ components:
             many: true
             setter_args:
               radio_item: 0
+            yieldless:
+            - radio_item
         group:
           slots:
           - name: items
@@ -1686,6 +1772,10 @@ components:
               separator: 0
               group: 0
               sub: 0
+            yieldless:
+            - item
+            - checkbox_item
+            - label
             builders:
               radio_group:
                 slots:
@@ -1693,6 +1783,8 @@ components:
                   many: true
                   setter_args:
                     radio_item: 0
+                  yieldless:
+                  - radio_item
               sub:
                 slots:
                 - name: items
@@ -1713,6 +1805,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -1720,10 +1816,14 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
+                  yieldless:
+                  - trigger
         sub:
           slots:
           - name: items
@@ -1744,6 +1844,10 @@ components:
               separator: 0
               group: 0
               sub: 0
+            yieldless:
+            - item
+            - checkbox_item
+            - label
             builders:
               radio_group:
                 slots:
@@ -1751,6 +1855,8 @@ components:
                   many: true
                   setter_args:
                     radio_item: 0
+                  yieldless:
+                  - radio_item
               group:
                 slots:
                 - name: items
@@ -1771,6 +1877,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -1778,14 +1888,20 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
           - name: trigger
             many: false
             setter_args:
               trigger: 0
+            yieldless:
+            - trigger
     - name: trigger
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     elements:
     - content
     - item
@@ -2124,6 +2240,7 @@ components:
       tiny actions.
     - The group is a surface, not a label - the control still needs its Label/Field
       pairing.
+    requires_content: its control + addons
   poetry/ui/input_otp:
     class_name: Poetry::Ui::InputOtp::Component
     identifier: poetry--ui--input_otp
@@ -2268,6 +2385,7 @@ components:
     agent_rules:
     - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
     - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
+    requires_content: the key text
   poetry/ui/label:
     class_name: Poetry::Ui::Label::Component
     identifier: poetry--ui--label
@@ -2396,6 +2514,10 @@ components:
               separator: 0
               group: 0
               sub: 0
+            yieldless:
+            - item
+            - checkbox_item
+            - label
             builders:
               radio_group:
                 slots:
@@ -2403,6 +2525,8 @@ components:
                   many: true
                   setter_args:
                     radio_item: 0
+                  yieldless:
+                  - radio_item
               group:
                 slots:
                 - name: items
@@ -2423,6 +2547,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -2430,6 +2558,8 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
                     sub:
                       slots:
                       - name: items
@@ -2450,6 +2580,10 @@ components:
                           separator: 0
                           group: 0
                           sub: 0
+                        yieldless:
+                        - item
+                        - checkbox_item
+                        - label
                         builders:
                           radio_group:
                             slots:
@@ -2457,10 +2591,14 @@ components:
                               many: true
                               setter_args:
                                 radio_item: 0
+                              yieldless:
+                              - radio_item
                       - name: trigger
                         many: false
                         setter_args:
                           trigger: 0
+                        yieldless:
+                        - trigger
               sub:
                 slots:
                 - name: items
@@ -2481,6 +2619,10 @@ components:
                     separator: 0
                     group: 0
                     sub: 0
+                  yieldless:
+                  - item
+                  - checkbox_item
+                  - label
                   builders:
                     radio_group:
                       slots:
@@ -2488,6 +2630,8 @@ components:
                         many: true
                         setter_args:
                           radio_item: 0
+                        yieldless:
+                        - radio_item
                     group:
                       slots:
                       - name: items
@@ -2508,6 +2652,10 @@ components:
                           separator: 0
                           group: 0
                           sub: 0
+                        yieldless:
+                        - item
+                        - checkbox_item
+                        - label
                         builders:
                           radio_group:
                             slots:
@@ -2515,14 +2663,20 @@ components:
                               many: true
                               setter_args:
                                 radio_item: 0
+                              yieldless:
+                              - radio_item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
+                  yieldless:
+                  - trigger
           - name: trigger
             many: false
             setter_args:
               trigger: 0
+            yieldless:
+            - trigger
     elements:
     - menu
     - trigger
@@ -2788,6 +2942,8 @@ components:
       many: true
       setter_args:
         item: 1
+      yieldless:
+      - item
     slot_extras:
     - link
     elements:
@@ -2936,10 +3092,14 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     - name: anchor
       many: false
       setter_args:
         anchor: 0
+      yieldless:
+      - anchor
     - name: title
       many: false
     - name: description
@@ -3130,6 +3290,16 @@ components:
       many: true
       setter_args:
         panel: 0
+      setter_kwargs:
+        panel:
+        - default_size
+        - min_size
+        - max_size
+        - classes
+      yieldless:
+      - panel
+      required_content:
+        panel: the panel content
     elements:
     - panel
     - handle
@@ -3173,6 +3343,7 @@ components:
       a name (role=region + aria-label).'
     - This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller
       for chat transcripts.
+    requires_content: what scrolls
   poetry/ui/select:
     class_name: Poetry::Ui::Select::Component
     identifier: poetry--ui--select
@@ -3382,6 +3553,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     - name: title
       many: false
     - name: description
@@ -3749,6 +3922,8 @@ components:
       many: true
       setter_args:
         tab: 1
+      yieldless:
+      - tab
     elements:
     - list
     - list_default
@@ -3852,6 +4027,8 @@ components:
       many: false
       setter_args:
         action: 0
+      yieldless:
+      - action
     elements:
     - icon
     - body
@@ -4031,6 +4208,8 @@ components:
       many: true
       setter_args:
         item: 0
+      yieldless:
+      - item
     elements:
     - item
     capsule: b5c1a9940c88
@@ -4109,6 +4288,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     elements:
     - content
     - arrow

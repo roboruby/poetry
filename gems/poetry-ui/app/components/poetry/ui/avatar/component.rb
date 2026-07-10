@@ -29,9 +29,12 @@ module Poetry
 
         renders_one :badge
 
+        requires_content "the initials fallback"
+
         def before_render
           raise ArgumentError, "Avatar requires label: (the person's name - its accessible name)" if label.blank?
-          raise ArgumentError, "Avatar requires a content block (the initials fallback)" unless content?
+
+          ensure_content!
         end
 
         def call

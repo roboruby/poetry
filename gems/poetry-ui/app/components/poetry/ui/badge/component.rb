@@ -26,8 +26,10 @@ module Poetry
 
         # A status label with no text is an invisible sliver (browser pass,
         # 2026-07-01 - a stray label: attribute rendered an empty pill).
+        requires_content "the visible status text"
+
         def before_render
-          raise ArgumentError, "Badge requires a content block (the visible status text)" unless content?
+          ensure_content!
         end
 
         def call

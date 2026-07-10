@@ -43,6 +43,12 @@ module Poetry
         # advances. The host response must render the same frame id.
         option :frame, :string
 
+        # The cell block is a per-row RENDERER, not captured content: it
+        # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
+        # yieldless contract), and a column cannot exist without one.
+        SLOT_BLOCK_YIELDS = { column: "the row record" }.freeze
+        SLOT_REQUIRED_CONTENT = { column: "the cell renderer - { |row| ... }" }.freeze
+
         # Columns are DECLARED here and rendered per row by the template. A
         # sortable column's key must be in the state's whitelist - catching
         # drift between the view's columns and the controller's sortable:

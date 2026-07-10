@@ -19,8 +19,10 @@ module Poetry
           "The group is a surface, not a label - the control still needs its Label/Field pairing."
         ].freeze
 
+        requires_content "its control + addons"
+
         def before_render
-          raise ArgumentError, "InputGroup requires a content block (its control + addons)" unless content?
+          ensure_content!
         end
 
         def call

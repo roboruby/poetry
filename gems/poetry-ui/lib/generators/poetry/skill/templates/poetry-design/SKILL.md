@@ -1,19 +1,24 @@
 ---
 name: poetry-design
 description: >-
-  The poetry taste layer: choose or adapt a theme, shape a page before
-  building it, audit a finished screen, or study a brand into a DESIGN.md.
-  Use when the task is about how a poetry UI should LOOK - not which
-  component to call.
+  Design guidance for building poetry UIs: theme selection, page
+  composition (macrostructure, hierarchy, containment, status color),
+  the visual audit of a finished screen, and studying a brand into a
+  DESIGN.md. Load this WHENEVER building, composing, or restyling a
+  page, screen, dashboard, or view with poetry - alongside the poetry
+  usage skill, before composing - not only when the task mentions
+  design.
 ---
 
 # poetry-design - the taste layer
 
 poetry's catalog guarantees valid, accessible components; this skill covers
 the decisions the catalog cannot make for you: which theme, what
-macrostructure, whether the finished page reads well. It works through
-tokens, variants, themes, and DESIGN.md - **never per-instance CSS** (that
-reintroduces the drift the system exists to prevent).
+macrostructure, whether the finished page reads well. Any task that builds
+a PAGE is a design task - load this before composing, not after something
+looks wrong. It works through tokens, variants, themes, and DESIGN.md -
+**never per-instance CSS** (that reintroduces the drift the system exists
+to prevent).
 
 ## Verbs
 

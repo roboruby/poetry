@@ -25,9 +25,12 @@ module Poetry
 
         option :label, :string
 
+        requires_content "what scrolls"
+
         def before_render
           raise ArgumentError, "ScrollArea requires label: (the region's accessible name)" if label.blank?
-          raise ArgumentError, "ScrollArea requires a content block (what scrolls)" unless content?
+
+          ensure_content!
         end
 
         def call

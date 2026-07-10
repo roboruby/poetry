@@ -96,6 +96,33 @@ module Poetry
         assert_match(/\A---\nname: poetry-design\n/, design)
         [usage, design].each { |manifest| assert_match(/^description: >-\n/, manifest) }
       end
+
+      # The triggering + finishing doctrine (the leads): the
+      # design skill's description must relevance-match BUILD tasks (it fired
+      # zero times in 31 brief-shaped arms when scoped to "design" asks), the
+      # usage skill must hand off to it before page composition, and both
+      # finishing surfaces must state check-LAST, not check-sometime.
+      test "the design skill triggers on build tasks and the usage skill hands off" do
+        usage = skill_files.fetch("SKILL.md")
+        design_description = DESIGN_DIR.join("SKILL.md").read[/\A---\n.*?\n---\n/m]
+
+        assert_includes design_description, "WHENEVER building",
+                        "the description must match brief-shaped build tasks"
+        refute_match(/not which\s+component to call/, design_description,
+                     "the self-scoping-out clause must never return")
+        assert_includes usage, "## Composing a page? Load poetry-design"
+        assert_includes usage, "BEFORE composing"
+      end
+
+      test "the finishing doctrine is check-LAST on every surface" do
+        usage = skill_files.fetch("SKILL.md")
+        audit_reference = DESIGN_DIR.join("references/audit.md").read
+
+        assert_includes usage, "Check comes LAST"
+        assert_includes usage, "after\n  your last edit",
+                        "the guardrail must order check after the final edit"
+        assert_includes audit_reference, "AFTER the final edit"
+      end
     end
   end
 end

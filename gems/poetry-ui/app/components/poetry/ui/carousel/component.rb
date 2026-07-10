@@ -33,6 +33,10 @@ module Poetry
 
         Slide = Data.define(:classes, :block)
 
+        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
+        # check states the same requirement statically.
+        SLOT_REQUIRED_CONTENT = { item: "the slide" }.freeze
+
         renders_many :items, lambda { |classes: nil, &block|
           raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
 

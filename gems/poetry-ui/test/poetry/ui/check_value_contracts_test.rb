@@ -16,6 +16,7 @@ module Poetry
       GENERATED = "eval/results/2026-07-07/generated/*/poetry.html.erb"
       REMEDIATED = "eval/results/2026-07-08/generated/*/poetry.html.erb"
       BLOCKS_GATE = "eval/results/2026-07-09/generated/*/poetry.html.erb"
+      REBASELINE = "eval/results/2026-07-09-rebaseline/generated/*/poetry.html.erb"
       FROZEN = "eval/arms/*/poetry.html.erb"
 
       def catalog
@@ -76,6 +77,29 @@ module Poetry
       # run check), and site_nav passed positional text to kwargs-only
       # helpers, the class the helper-arity rule was built from. All FIVE
       # of site_nav's arity misuses surface, not just the first crash.
+      # The re-baseline corpus, closed by: ALL FIVE render-
+      # crashers now fail statically. The two sequencing failures were
+      # already caught (chat_transcript's parse errors, filter_toolbar's
+      # enum); the three TIER GAPS are the new rules - menu's block param on
+      # a yieldless setter, floating's blockless Avatar (requires_content),
+      # artwork_carousel's unknown keyword on a closed setter signature.
+      # Every template that rendered stays error-free (the 26-arm FP guard).
+      def test_the_rebaseline_corpus_errors_on_exactly_the_five_crashers
+        failures = error_templates(REBASELINE)
+
+        assert_equal %w[artwork_carousel chat_transcript filter_toolbar floating menu],
+                     failures.keys.sort,
+                     "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
+        assert(failures["menu"].any? { |finding| finding.rule == "yieldless-block" },
+               "a block param on a block-consuming slot setter must read as the menu crash")
+        assert(failures["floating"].any? { |finding| finding.rule == "missing-content-block" },
+               "a blockless call on a requires_content component must read as the floating crash")
+        keyword = failures["artwork_carousel"].find { |finding| finding.rule == "slot-keyword" }
+
+        refute_nil keyword, "class: against a closed setter signature must read as the carousel crash"
+        assert_equal "classes", keyword.suggestion, "the near-miss keyword must suggest the real one"
+      end
+
       def test_the_blocks_gate_corpus_errors_on_exactly_the_two_crashers
         failures = error_templates(BLOCKS_GATE)
 

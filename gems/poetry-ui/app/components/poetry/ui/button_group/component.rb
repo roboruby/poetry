@@ -20,8 +20,10 @@ module Poetry
 
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
 
+        requires_content "its member controls"
+
         def before_render
-          raise ArgumentError, "ButtonGroup requires a content block (its member controls)" unless content?
+          ensure_content!
         end
 
         def call

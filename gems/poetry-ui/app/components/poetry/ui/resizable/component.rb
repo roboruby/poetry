@@ -33,8 +33,12 @@ module Poetry
 
         Panel = Data.define(:default_size, :min_size, :max_size, :classes, :block)
 
+        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
+        # check states the same requirement statically.
+        SLOT_REQUIRED_CONTENT = { panel: "the panel content" }.freeze
+
         renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
-          raise ArgumentError, "Resizable with_panel requires a content block" unless block
+          raise ArgumentError, "Resizable with_panel requires a content block (the panel content)" unless block
 
           panel_defs << Panel.new(default_size: default_size, min_size: min_size,
                                   max_size: max_size, classes: classes, block: block)

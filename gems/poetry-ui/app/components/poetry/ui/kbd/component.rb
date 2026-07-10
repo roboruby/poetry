@@ -11,8 +11,10 @@ module Poetry
           "For a chord (⌘+K) render one Kbd per key inside an inline-flex row."
         ].freeze
 
+        requires_content "the key text"
+
         def before_render
-          raise ArgumentError, "Kbd requires a content block (the key text)" unless content?
+          ensure_content!
         end
 
         def call
