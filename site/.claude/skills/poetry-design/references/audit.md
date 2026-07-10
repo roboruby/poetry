@@ -1,7 +1,9 @@
 # audit - review a finished screen
 
 Deterministic first, judgment second. Most AI-UI slop is mechanically
-detectable; run the machines before offering opinions.
+detectable; run the machines before offering opinions. And the machines
+also run LAST: any edit the audit produces re-opens the gate - finish
+with a clean `poetry:check` run AFTER the final edit, never before it.
 
 ## Run the linters
 

@@ -7,7 +7,7 @@ not suggestions. Options are keywords; content is the block.
 
 Class: Poetry::Ui::AlertDialog::Component - BEM block `poetry-ui-alert_dialog`.
 - `size:` (symbol) - one of default|sm, default "default", required
-Slots: trigger, title, description, media, action, cancel.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (with_action yields NOTHING to the block - no |param|, write content directly), cancel (with_cancel yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
@@ -50,7 +50,7 @@ Class: Poetry::Ui::Command::DialogComponent - BEM block `poetry-ui-command-dialo
 - `show_close_button:` (boolean) - default true
 - `title:` (string) - default "dynamic"
 - `value:` (string)
-Slots: trigger.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired window keydown listener around poetry_dialog.
@@ -68,7 +68,7 @@ Class: Poetry::Ui::ContextMenu::Component - BEM block `poetry-ui-context_menu`.
 - `long_press_delay:` (integer) - default 700
 - `modal:` (boolean) - default true
 - `open:` (boolean) - default false
-Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords), trigger.
+Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--context-menu`: values disabled, longPressDelay; actions disabledValueChanged, open, pressCancel, pressStart; events poetry:context-menu:open
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -85,7 +85,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 - `dismissible:` (boolean) - default true
-Slots: trigger, title, description, footer.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
@@ -98,7 +98,7 @@ Class: Poetry::Ui::Drawer::Component - BEM block `poetry-ui-drawer`.
 - `direction:` (symbol) - one of down|up|left|right, default "down", required
 - `dismissible:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
-Slots: trigger, title, description, footer.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey; actions backdropClose, close, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -119,7 +119,7 @@ Class: Poetry::Ui::DropdownMenu::Component - BEM block `poetry-ui-dropdown_menu`
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords), trigger.
+Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
@@ -187,7 +187,7 @@ Class: Poetry::Ui::Popover::Component - BEM block `poetry-ui-popover`.
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: trigger, anchor, title, description.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), anchor (with_anchor yields NOTHING to the block - no |param|, write content directly), title, description.
 - WIRING `poetry--core--popover`: values modal, open; actions close, open, openValueChanged, toggle; events poetry:popover:closed, poetry:popover:open
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
@@ -204,7 +204,7 @@ Class: Poetry::Ui::Sheet::Component - BEM block `poetry-ui-sheet`.
 - `side:` (symbol) - one of top|right|bottom|left, default "right", required
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
-Slots: trigger, title, description, footer.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--sheet`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open sheets with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -223,7 +223,7 @@ Class: Poetry::Ui::Tooltip::Component - BEM block `poetry-ui-tooltip`.
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "top"
 - `side_offset:` (integer) - default 0
-Slots: trigger.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - WIRING `poetry--core--tooltip`: values delayDuration, disableHoverableContent, open; actions blurClose, clickClose, focusOpen, openValueChanged, pointerDown, pointerLeave, pointerMove; events poetry:tooltip:closed, poetry:tooltip:open
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.

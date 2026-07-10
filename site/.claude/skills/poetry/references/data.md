@@ -10,7 +10,7 @@ Class: Poetry::Ui::Accordion::Component - BEM block `poetry-ui-accordion`.
 - `heading_level:` (symbol) - one of h2|h3|h4|h5|h6, default "h3"
 - `open:` (list) - default "dynamic"
 - `type:` (symbol) - one of single|multiple, default "single"
-Slots: items (many).
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--accordion`: values collapsible, type; actions toggle; events poetry--core--accordion:change
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - RULE: Items via with_item(value:, title:) { panel content } - value is the open-state key.
@@ -22,6 +22,7 @@ Slots: items (many).
 ## avatar (`poetry_avatar`)
 
 Class: Poetry::Ui::Avatar::Component - BEM block `poetry-ui-avatar`.
+Content block REQUIRED (the initials fallback) - a blockless call raises.
 - `label:` (string)
 - `size:` (symbol) - one of default|sm|lg, default "default"
 - `src:` (string)
@@ -34,6 +35,7 @@ Slots: badge.
 ## badge (`poetry_badge`)
 
 Class: Poetry::Ui::Badge::Component - BEM block `poetry-ui-badge`.
+Content block REQUIRED (the visible status text) - a blockless call raises.
 - `variant:` (symbol) - one of default|secondary|destructive|outline|success|warning|info, default "default", required
 - RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions.
 - RULE: The visible text is the content block: render ... { "beta" } - there is no label: option.
@@ -55,7 +57,7 @@ Class: Poetry::Ui::Carousel::Component - BEM block `poetry-ui-carousel`.
 - `label:` (string)
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `show_controls:` (boolean) - default true
-Slots: items (many).
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly; with_item keywords: classes: ONLY; with_item REQUIRES a content block (the slide)).
 - WIRING `poetry--core--carousel`: targets next, previous, viewport; values orientation; actions keydown, next, previous, scrollTo, scrolled; events poetry--core--carousel:select
 - RULE: label: is REQUIRED - the carousel region's accessible name.
 - RULE: Declare slides with with_item - the component stamps the slide roles (role=group + aria-roledescription=slide).
@@ -66,7 +68,7 @@ Slots: items (many).
 
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
 - `open:` (boolean) - default false
-Slots: trigger.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--state`: targets content, trigger; values state; actions close, open, toggle
 - RULE: The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
 - RULE: Server-render the initial state via open: - never toggle data-open/data-closed by hand.
@@ -83,7 +85,7 @@ Class: Poetry::Ui::DataTable::Component - BEM block `poetry-ui-data_table`.
 - `filter_name:` (string) - default "q"
 - `filter_placeholder:` (string) - default "Filter…"
 - `frame:` (string)
-Slots: columns (many).
+Slots: columns (many; with_column REQUIRES a content block (the cell renderer - { |row| ... })).
 - RULE: Build State.from_params(params, sortable: [...]) in the controller - NEVER order by raw params; the whitelist is what makes state.order_clause injection-safe.
 - RULE: Column cell blocks RETURN the cell content ({ |row| row.title }) - they must not write to the template buffer.
 - RULE: Sort/filter/page are URL state over GET links and a GET form. Row mutations (inline edit, row actions) belong to poetry-reactive components rendered inside cells - never to this component.

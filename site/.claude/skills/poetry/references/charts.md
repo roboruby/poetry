@@ -38,7 +38,7 @@ Class: Poetry::Charts::AreaChart::Component - BEM block `poetry-charts-area_char
 - `sync:` (string)
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
-Slots: reference_lines (many), reference_areas (many), reference_dots (many), brush, areas (many), x_axis, y_axis, grid, legend, tooltip.
+Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), areas (many; with_area keywords: data_key:, stack:, curve:, fill_opacity:, gradient:, stroke_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.
 - RULE: Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.
 - RULE: Colors come from the config - never set fill/stroke on an area directly.
@@ -67,7 +67,7 @@ Class: Poetry::Charts::BarChart::Component - BEM block `poetry-charts-bar_chart`
 - `sync:` (string)
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
-Slots: reference_lines (many), reference_areas (many), reference_dots (many), brush, bars (many), x_axis, y_axis, grid, legend, tooltip.
+Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), bars (many; with_bar keywords: data_key:, stack:, radius:, labels:, label_key:, color_key:, cell_fill:, active_index:, stroke_width:, error_key:, error_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: data_key:, tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.
 - RULE: radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.
 - RULE: Stack bars with the same stack: id; negatives automatically drop below the zero line.
@@ -92,7 +92,7 @@ Class: Poetry::Charts::ComposedChart::Component - BEM block `poetry-charts-compo
 - `margin:` ()
 - `sync:` (string)
 - `width:` (integer) - default 640
-Slots: reference_lines (many), reference_areas (many), reference_dots (many), areas (many), bars (many), lines (many), x_axis, y_axis, grid, legend, tooltip.
+Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), areas (many; with_area keywords: data_key:, stack:, curve:, fill_opacity:, gradient:, stroke_width: ONLY), bars (many; with_bar keywords: data_key:, stack:, radius: ONLY), lines (many; with_line keywords: data_key:, curve:, stroke_width:, dots:, dot_radius: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
 - RULE: Mix marks freely: with_area / with_bar / with_line - declaration order is paint order.
 - RULE: All marks share the x band and ONE y domain; lines and areas ride the band centers.
 - RULE: stack: ids only combine within the same mark type (a bar stack never joins an area stack).
@@ -137,7 +137,7 @@ Class: Poetry::Charts::LineChart::Component - BEM block `poetry-charts-line_char
 - `sync:` (string)
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
-Slots: reference_lines (many), reference_areas (many), reference_dots (many), brush, lines (many), x_axis, y_axis, grid, legend, tooltip.
+Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), lines (many; with_line keywords: data_key:, curve:, stroke_width:, dots:, dot_radius:, dot_color_key:, labels:, error_key:, error_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.
 - RULE: Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.
 - RULE: dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors block).
@@ -160,7 +160,7 @@ Class: Poetry::Charts::PieChart::Component - BEM block `poetry-charts-pie_chart`
 - `margin:` ()
 - `sync:` (string)
 - `width:` (integer) - default 250
-Slots: pies (many), center_label, legend, tooltip.
+Slots: pies (many; with_pie keywords: data_key:, data:, name_key:, inner_radius:, outer_radius:, padding_angle:, stroke_width:, color_key:, labels:, label_key:, active_index:, active_grow: ONLY), center_label (with_center_label keywords: title:, subtitle: ONLY), legend, tooltip.
 - RULE: Rows carry their slice color in a fill key (var(--color-<name>)); the config maps names to labels.
 - RULE: inner_radius: 60 makes the donut; with_center_label(title:, subtitle:) fills the hole.
 - RULE: Stacked pies: two with_pie slots with their own data: and non-overlapping radii.
@@ -184,7 +184,7 @@ Class: Poetry::Charts::RadarChart::Component - BEM block `poetry-charts-radar_ch
 - `outer_radius:` () - default "80%"
 - `sync:` (string)
 - `width:` (integer) - default 250
-Slots: radars (many), angle_axis, grid, legend, tooltip.
+Slots: radars (many; with_radar keywords: data_key:, fill_opacity:, stroke_width:, dots:, dot_radius: ONLY), angle_axis (with_angle_axis keywords: data_key:, tick_formatter: ONLY), grid (with_grid keywords: type:, radial_lines:, fill:, opacity: ONLY), legend, tooltip.
 - RULE: Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:) / with_legend.
 - RULE: Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width: 2.
 - RULE: with_grid type: :circle swaps polygons for circles; fill: :desktop tints every grid ring (opacity 0.2, compounding toward the center - the grid-fill look).
@@ -213,7 +213,7 @@ Class: Poetry::Charts::RadialBarChart::Component - BEM block `poetry-charts-radi
 - `start_angle:` (integer) - default 0
 - `sync:` (string)
 - `width:` (integer) - default 250
-Slots: radial_bars (many), polar_grid, center_label, legend, tooltip.
+Slots: radial_bars (many; with_radial_bar keywords: data_key:, stack:, background:, corner_radius:, color_key:, labels:, label_key: ONLY), polar_grid (with_polar_grid keywords: radii:, fills:, radial_lines: ONLY), center_label (with_center_label keywords: title:, subtitle:, compact: ONLY), legend, tooltip.
 - RULE: One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
 - RULE: background: true draws the muted track ring behind each bar (the gauge look).
 - RULE: Stack two radial bars with the same stack: id - they share the ring and stack by ANGLE.
@@ -236,7 +236,7 @@ Class: Poetry::Charts::ScatterChart::Component - BEM block `poetry-charts-scatte
 - `margin:` ()
 - `sync:` (string)
 - `width:` (integer) - default 640
-Slots: reference_lines (many), reference_areas (many), reference_dots (many), scatters (many), x_axis, y_axis, z_axis, grid, legend, tooltip.
+Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), scatters (many; with_scatter keywords: key:, data:, error_key:, error_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_count:, tick_margin:, name: ONLY), y_axis (with_y_axis keywords: data_key:, tick_count:, tick_margin:, name: ONLY), z_axis (with_z_axis keywords: data_key:, range: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
 - RULE: Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.
 - RULE: with_scatter(key:) colors points var(--color-<key>); data: gives a series its own rows.
 - RULE: with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension - the range is marker AREA in px2 (recharts ZAxis).

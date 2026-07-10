@@ -16,7 +16,7 @@ Slots: items (many).
 Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_menu`.
 - `label:` (string)
 - `viewport:` (boolean) - default false
-Slots: items (many).
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--navigation-menu`: values closeDelay, openDelay; actions cancelClose, focusLeft, keydown, scheduleClose, scheduleOpen, toggle
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: label: is REQUIRED (the nav landmark's accessible name).
@@ -60,7 +60,7 @@ Class: Poetry::Ui::Tabs::Component - BEM block `poetry-ui-tabs`.
 - `label:` (string)
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `variant:` (symbol) - one of default|line, default "default"
-Slots: tabs (many).
+Slots: tabs (many; with_tab yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - WIRING `poetry--core--tabs`: values activateOnFocus; actions activate, focusActivate, setValue; events poetry--core--tabs:change
 - RULE: Declare tabs with with_tab(title, value:) + the panel block (or defer: for a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.

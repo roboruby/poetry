@@ -15,7 +15,7 @@ Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
 Class: Poetry::Ui::Resizable::Component - BEM block `poetry-ui-resizable`.
 - `direction:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `grip:` (boolean) - default false
-Slots: panels (many).
+Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write content directly; with_panel keywords: default_size:, min_size:, max_size:, classes: ONLY; with_panel REQUIRES a content block (the panel content)).
 - WIRING `poetry--core--resizable`: values orientation; actions dragEnd, dragMove, dragStart, keydown; events poetry--core--resizable:resize
 - RULE: Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes are PERCENTAGES and the component interleaves the separator handles.
 - RULE: direction: :horizontal is side-by-side (the default); :vertical stacks.
@@ -25,6 +25,7 @@ Slots: panels (many).
 ## scroll_area (`poetry_scroll_area`)
 
 Class: Poetry::Ui::ScrollArea::Component - BEM block `poetry-ui-scroll_area`.
+Content block REQUIRED (what scrolls) - a blockless call raises.
 - `label:` (string)
 - RULE: Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the overflow.
 - RULE: label: is REQUIRED - the viewport is focusable, and a focusable region needs a name (role=region + aria-label).

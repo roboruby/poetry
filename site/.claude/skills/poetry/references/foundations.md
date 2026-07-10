@@ -15,6 +15,7 @@ Class: Poetry::Ui::Icon::Component - BEM block `poetry-ui-icon`.
 ## kbd (`poetry_kbd`)
 
 Class: Poetry::Ui::Kbd::Component - BEM block `poetry-ui-kbd`.
+Content block REQUIRED (the key text) - a blockless call raises.
 - RULE: Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
 - RULE: For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
 

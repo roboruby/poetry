@@ -26,6 +26,7 @@ Slots: leading, trailing.
 ## button_group (`poetry_button_group`)
 
 Class: Poetry::Ui::ButtonGroup::Component - BEM block `poetry-ui-button_group`.
+Content block REQUIRED (its member controls) - a blockless call raises.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
 - RULE: Members go in the content block - the group's selectors join ANY data-slot children (buttons, inputs, select triggers); never hand-round the inner corners.
 - RULE: Give the group an aria-label when the page has more than one (role=group is unnamed by default).
@@ -136,6 +137,7 @@ Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 ## input_group (`poetry_input_group`)
 
 Class: Poetry::Ui::InputGroup::Component - BEM block `poetry-ui-input_group`.
+Content block REQUIRED (its control + addons) - a blockless call raises.
 - RULE: The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input keeps its own border+ring and double-chromes the group.
 - RULE: Addons are poetry_input_group_addon(align:) wrapping icons/text/buttons; use poetry_input_group_text for muted captions and poetry_input_group_button for tiny actions.
 - RULE: The group is a surface, not a label - the control still needs its Label/Field pairing.
@@ -321,7 +323,7 @@ Class: Poetry::Ui::ToggleGroup::Component - BEM block `poetry-ui-toggle_group`.
 - `type:` (symbol) - default "single"
 - `value:` (string)
 - `values:` (list) - default "dynamic"
-Slots: items (many).
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - WIRING `poetry--core--toggle-group`: values type; actions setValue, toggle; events poetry:toggle-group:change
 - RULE: Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity logic.

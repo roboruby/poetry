@@ -9,7 +9,7 @@ Class: Poetry::Ui::Attachment::Component - BEM block `poetry-ui-attachment`.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
 - `size:` (symbol) - one of default|sm|xs, default "default", required
 - `state:` (symbol) - one of idle|uploading|processing|error|done, default "done"
-Slots: media, title, description, actions (many), trigger.
+Slots: media (with_media yields NOTHING to the block - no |param|, write content directly; with_media keywords: variant: ONLY), title, description, actions (many; with_action yields NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - RULE: State is server-owned: render data-upload-state and flip it by Turbo Stream replace - never toggle it in JS.
 - RULE: with_media(variant: :image) wraps the caller's <img>; file names and URLs are user content - never render them html_safe.
 - RULE: Actions are with_action(...) poetry Buttons (ghost/icon-xs defaults) - each needs label: (icon-only).
@@ -23,7 +23,7 @@ Class: Poetry::Ui::Bubble::Component - BEM block `poetry-ui-bubble`.
 - `align:` (symbol) - one of start|end, default "start"
 - `href:` (string)
 - `tag:` (symbol) - one of div|button|a, default "div"
-Slots: reactions.
+Slots: reactions (with_reactions yields NOTHING to the block - no |param|, write content directly; with_reactions keywords: label:, side:, align: ONLY).
 - RULE: One Bubble per message; stack a sender's run inside poetry_bubble_group.
 - RULE: Quick replies are tag: :button (with the caller's data-action) or tag: :a + href: - never a click handler on a div.
 - RULE: ghost is for tool output / system text flowing full-width - not a visual preference.
