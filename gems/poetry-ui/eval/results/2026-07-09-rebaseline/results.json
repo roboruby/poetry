@@ -1,0 +1,3449 @@
+{
+  "schema": "results-v1",
+  "meta": {
+    "generated_on": "2026-07-09-rebaseline",
+    "generation": {
+      "model": "claude-sonnet-5",
+      "max_turns": 40,
+      "toolbelts": {
+        "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+        "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+      },
+      "units_recorded": 31,
+      "unit_cost_sum_usd": 23.3985,
+      "receipted_cost_usd": 23.3986
+    },
+    "protocol_notes": [
+      "hermetic generation: claude CLI cwd'd into twin tmp hosts; host B tree+prompt asserted free of the house name (HermeticityError aborts the run)",
+      "one identical generation prompt for both arms; the treatment lives in host files",
+      "symmetric no-<script> rule; native HTML capabilities allowed on both arms",
+      "capture stylesheet compiled with the generated arms as a Tailwind source (no purge bias)"
+    ]
+  },
+  "tasks": {
+    "alert": {
+      "brief": "A destructive alert 'Payment failed' with a description and a warning icon",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.4659,
+          "num_turns": 16,
+          "duration_s": 72.0,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "assertive_announcement": true,
+          "icon_decorative": true,
+          "title_and_body": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "assertive_announcement": true,
+          "icon_decorative": true,
+          "title_and_body": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "app_shell": {
+      "brief": "An application shell: a collapsible sidebar with a Platform nav group (Dashboard active) and a main content area with a collapse toggle",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.5322,
+          "num_turns": 9,
+          "duration_s": 70.3,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "content_is_a_main_landmark": true,
+          "nav_items_are_real_links": true,
+          "collapse_is_coordinated_state": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "content_is_a_main_landmark": true,
+          "nav_items_are_real_links": true,
+          "collapse_is_coordinated_state": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "raw_tailwind",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "artwork_carousel": {
+      "brief": "A three-slide artwork carousel with previous/next controls",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8188,
+          "num_turns": 22,
+          "duration_s": 143.4,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "carousel_region_semantics": false,
+          "slides_reachable_without_js": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "carousel_region_semantics": true,
+          "slides_reachable_without_js": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "button": {
+      "brief": "A destructive 'Delete account' button with a leading trash icon",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.574,
+          "num_turns": 11,
+          "duration_s": 40.8,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "accessible_name": true,
+          "explicit_type": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "accessible_name": true,
+          "explicit_type": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "card": {
+      "brief": "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.499,
+          "num_turns": 18,
+          "duration_s": 69.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "heading_semantics": true,
+          "real_link": true,
+          "links_have_accessible_names": true,
+          "badge_not_interactive": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "heading_semantics": true,
+          "real_link": true,
+          "links_have_accessible_names": true,
+          "badge_not_interactive": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "chat_transcript": {
+      "brief": "A chat transcript: date divider, assistant message with an attachment and a quick reply, and a live 'thinking' status",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.9952,
+          "num_turns": 35,
+          "duration_s": 150.8,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "attachment_described": false,
+          "quick_replies_are_real_controls": false,
+          "live_status_announced": false,
+          "decorative_icons_hidden": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "attachment_described": false,
+          "quick_replies_are_real_controls": false,
+          "live_status_announced": true,
+          "decorative_icons_hidden": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "command_palette": {
+      "brief": "A command palette: a search box filtering a grouped list of app commands (Suggestions: Calendar, Search Emoji, Calculator; Settings: Profile, Billing, Settings - with ⌘ shortcut hints), keyboard-first filter-then-activate",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8201,
+          "num_turns": 25,
+          "duration_s": 115.0,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "combobox_input": true,
+          "input_controls_a_listbox": true,
+          "listbox_named": true,
+          "options_are_options": true,
+          "options_carry_stable_ids": true,
+          "options_never_focusable": true,
+          "groups_labelled": true,
+          "no_inline_handlers": true,
+          "content_complete": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "combobox_input": false,
+          "input_controls_a_listbox": false,
+          "listbox_named": false,
+          "options_are_options": false,
+          "options_carry_stable_ids": false,
+          "options_never_focusable": true,
+          "groups_labelled": false,
+          "no_inline_handlers": true,
+          "content_complete": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "data_table": {
+      "brief": "A sortable, filterable invoices table: sorted by invoice number ascending, with a filter box and pagination",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.3057,
+          "num_turns": 37,
+          "duration_s": 264.7,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "sorted_column_announces": true,
+          "sorting_is_real_navigation": true,
+          "filter_is_labelled": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "sorted_column_announces": true,
+          "sorting_is_real_navigation": true,
+          "filter_is_labelled": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "date_field": {
+      "brief": "A due-date field: a button showing the selected date that opens a calendar of selectable days",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.6386,
+          "num_turns": 13,
+          "duration_s": 58.2,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "date_posts_a_real_value": true,
+          "days_are_real_buttons": true,
+          "selection_announced": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "date_posts_a_real_value": true,
+          "days_are_real_buttons": false,
+          "selection_announced": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "deferred_region": {
+      "brief": "A dashboard activity panel that loads only when scrolled into view, with a visible retry affordance when the fetch fails",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.4577,
+          "num_turns": 18,
+          "duration_s": 90.4,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "defers_via_lazy_frame": true,
+          "failure_is_visible_and_retryable": true,
+          "loading_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "defers_via_lazy_frame": false,
+          "failure_is_visible_and_retryable": false,
+          "loading_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "dialog": {
+      "brief": "A settings dialog opened by a button, with a description and a confirm action",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.7048,
+          "num_turns": 15,
+          "duration_s": 102.3,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "modal_semantics": true,
+          "labelled_overlay": true,
+          "trigger_present": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "modal_semantics": true,
+          "labelled_overlay": false,
+          "trigger_present": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "disclosure": {
+      "brief": "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.6164,
+          "num_turns": 18,
+          "duration_s": 123.1,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "triggers_are_real_buttons": true,
+          "expansion_state_exposed": true,
+          "panels_wired": true,
+          "headings_present": true,
+          "content_complete": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "triggers_are_real_buttons": false,
+          "expansion_state_exposed": false,
+          "panels_wired": false,
+          "headings_present": true,
+          "content_complete": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "tied",
+        "composition": "raw_tailwind",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "empty_state": {
+      "brief": "A 'no projects yet' empty state: an icon tile, a title, a description, and create/import actions",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.4823,
+          "num_turns": 18,
+          "duration_s": 68.2,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "title_is_a_real_heading": true,
+          "actions_are_focusable": true,
+          "actions_are_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "title_is_a_real_heading": true,
+          "actions_are_focusable": true,
+          "actions_are_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "tied",
+        "composition": "poetry",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "filter_toolbar": {
+      "brief": "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort dropdown, and a List/Grid view switch",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8563,
+          "num_turns": 25,
+          "duration_s": 103.3,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "controls_are_labelled": false,
+          "composites_are_groups": false,
+          "sort_is_a_real_select": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "controls_are_labelled": false,
+          "composites_are_groups": false,
+          "sort_is_a_real_select": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "floating": {
+      "brief": "The popper-consumer trio end-to-end: a 'Dimensions' popover behind an 'Open popover' button hosting a small form, an icon-only 'Add to library' control with a tooltip, and an '@nextjs' link enriched with a profile hover-card whose content lives at the link's destination",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.0204,
+          "num_turns": 29,
+          "duration_s": 133.6,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "popover_dialog_semantics": false,
+          "tooltip_semantics": false,
+          "tooltip_never_interactive": false,
+          "icon_controls_named": false,
+          "hover_trigger_is_a_real_link": false,
+          "hover_preview_not_interactive": false,
+          "trigger_advertises_the_popup": false,
+          "expansion_state_exposed": false,
+          "dialog_named": false,
+          "triggers_are_real_buttons": false,
+          "form_labels_wired": false,
+          "focus_visible_treatment": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "popover_dialog_semantics": false,
+          "tooltip_semantics": true,
+          "tooltip_never_interactive": true,
+          "icon_controls_named": true,
+          "hover_trigger_is_a_real_link": true,
+          "hover_preview_not_interactive": false,
+          "trigger_advertises_the_popup": false,
+          "expansion_state_exposed": false,
+          "dialog_named": true,
+          "triggers_are_real_buttons": true,
+          "form_labels_wired": false,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "form_controls": {
+      "brief": "A notification settings panel: an 'Accept terms' checkbox staged for submit, an instant-effect 'Email alerts' switch, a bookmark toggle, an exclusive list/grid view switcher, a submitting digest-frequency choice, an 'Alert volume' slider, an 'Unsubscribe note' textarea, and a 6-digit 'Confirmation code' entry",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.0246,
+          "num_turns": 27,
+          "duration_s": 165.6,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "checkbox_participates_in_the_form": true,
+          "switch_semantics": true,
+          "pressed_state_exposed": true,
+          "exclusive_choice_wears_radio_semantics": true,
+          "slider_wears_the_apg_surface": true,
+          "code_entry_is_one_autofillable_input": true,
+          "textarea_labelled_not_placeholdered": true,
+          "controls_named": true,
+          "content_complete": false,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "checkbox_participates_in_the_form": true,
+          "switch_semantics": true,
+          "pressed_state_exposed": false,
+          "exclusive_choice_wears_radio_semantics": true,
+          "slider_wears_the_apg_surface": true,
+          "code_entry_is_one_autofillable_input": false,
+          "textarea_labelled_not_placeholdered": true,
+          "controls_named": false,
+          "content_complete": false,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "inconclusive",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 0.0
+    },
+    "form_field": {
+      "brief": "An email field labeled 'Work email', required, with a hint and the error 'can't be blank'",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.5898,
+          "num_turns": 17,
+          "duration_s": 64.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "label_wired": true,
+          "error_associated": true,
+          "invalid_marked": true,
+          "required_signalled": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "label_wired": true,
+          "error_associated": true,
+          "invalid_marked": true,
+          "required_signalled": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "inconclusive",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "menu": {
+      "brief": "The menus family end-to-end: an app menubar (File/View), a row-actions dropdown menu behind an 'Options' button (account items, a checkbox preference, a destructive delete), and a right-click context menu on the row itself",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.7889,
+          "num_turns": 46,
+          "duration_s": 370.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "trigger_is_a_real_button": false,
+          "expansion_state_exposed": false,
+          "menu_semantics": false,
+          "menu_wired_to_trigger": false,
+          "toggle_state_accessible": false,
+          "content_complete": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "trigger_is_a_real_button": true,
+          "expansion_state_exposed": false,
+          "menu_semantics": true,
+          "menu_wired_to_trigger": false,
+          "toggle_state_accessible": true,
+          "content_complete": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "mobile_sheet": {
+      "brief": "A bottom drawer for setting a daily activity goal: trigger, title, description, a Submit action, and a swipe handle",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8507,
+          "num_turns": 16,
+          "duration_s": 99.6,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "modal_semantics": true,
+          "labelled_overlay": true,
+          "dismissal_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "modal_semantics": true,
+          "labelled_overlay": true,
+          "dismissal_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "overlay": {
+      "brief": "A destructive 'Delete API key' confirmation that must be answered (alert dialog), plus a 'Filter results' panel sliding in from the right edge (sheet)",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.0644,
+          "num_turns": 12,
+          "duration_s": 169.0,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "two_modal_surfaces": true,
+          "confirm_has_alertdialog_semantics": true,
+          "surfaces_labelled": true,
+          "confirmation_described": true,
+          "explicit_choice_controls": false,
+          "triggers_are_real_buttons": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "two_modal_surfaces": true,
+          "confirm_has_alertdialog_semantics": true,
+          "surfaces_labelled": true,
+          "confirmation_described": true,
+          "explicit_choice_controls": false,
+          "triggers_are_real_buttons": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "pagination": {
+      "brief": "Pagination for page 4 of 10, with a current-page marker",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.2857,
+          "num_turns": 9,
+          "duration_s": 20.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "navigation_landmark": true,
+          "current_page_marked": true,
+          "pages_are_real_links": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "navigation_landmark": true,
+          "current_page_marked": true,
+          "pages_are_real_links": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "primitives": {
+      "brief": "A loading state: a labelled spinner, a skeleton row, a separator, and a ⌘K hint",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.3897,
+          "num_turns": 12,
+          "duration_s": 39.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "spinner_announces_loading": true,
+          "shortcut_keys_are_real_kbd": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "spinner_announces_loading": true,
+          "shortcut_keys_are_real_kbd": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "inconclusive",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "scrollable_tags": {
+      "brief": "A bounded, scrollable list of 20 version tags in a 12rem box",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.9631,
+          "num_turns": 30,
+          "duration_s": 125.3,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "scroll_region_is_keyboard_reachable": true,
+          "scroll_region_is_named": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "scroll_region_is_keyboard_reachable": false,
+          "scroll_region_is_named": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "raw_tailwind",
+        "clarity": "tied",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "searchable_select": {
+      "brief": "A labelled framework picker: a combobox-role control with a hidden form serialization opening a type-to-filter popup over Next.js/SvelteKit/Nuxt.js/Remix/Astro options",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.7381,
+          "num_turns": 20,
+          "duration_s": 91.7,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "combobox_role_control": true,
+          "combobox_controls_a_listbox": true,
+          "options_are_options": true,
+          "filter_input_wears_list_autocomplete": true,
+          "combobox_named": true,
+          "options_never_focusable": true,
+          "no_inline_handlers": true,
+          "content_complete": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "combobox_role_control": true,
+          "combobox_controls_a_listbox": true,
+          "options_are_options": false,
+          "filter_input_wears_list_autocomplete": false,
+          "combobox_named": false,
+          "options_never_focusable": true,
+          "no_inline_handlers": true,
+          "content_complete": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "settings_tabs": {
+      "brief": "Account settings tabs (Account / Password / Notifications) with the first tab active and its panel visible",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8867,
+          "num_turns": 20,
+          "duration_s": 84.3,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "tablist_semantics": true,
+          "selection_announced_and_wired": true,
+          "switching_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "tablist_semantics": false,
+          "selection_announced_and_wired": false,
+          "switching_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "tied",
+        "composition": "tied",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 0.833
+    },
+    "site_nav": {
+      "brief": "A site navigation bar: a Products dropdown of links, plus Pricing and Docs destinations",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.4192,
+          "num_turns": 9,
+          "duration_s": 27.6,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "nav_landmark": true,
+          "disclosure_announces": true,
+          "reachable_without_hover": true,
+          "no_menu_role_abuse": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "nav_landmark": true,
+          "disclosure_announces": false,
+          "reachable_without_hover": true,
+          "no_menu_role_abuse": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "split_editor": {
+      "brief": "A two-pane resizable split (Files | Editor) with a draggable divider",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.7986,
+          "num_turns": 20,
+          "duration_s": 172.7,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "splitter_wears_the_apg_surface": true,
+          "resize_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "splitter_wears_the_apg_surface": false,
+          "resize_is_real_wiring": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 0.667
+    },
+    "table": {
+      "brief": "An invoices table with a caption, column headers, and a footer total",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.5873,
+          "num_turns": 15,
+          "duration_s": 106.9,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "real_table": true,
+          "column_headers_are_th": true,
+          "caption_present": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "real_table": true,
+          "column_headers_are_th": true,
+          "caption_present": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "toast": {
+      "brief": "A notifications region hosting a 'Saved' success toast and a destructive 'Payment failed' toast with a 'Retry' action",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.6374,
+          "num_turns": 20,
+          "duration_s": 92.9,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "region_labelled": true,
+          "announced_to_at": true,
+          "retry_is_a_real_button": true,
+          "no_focus_steal": true,
+          "content_complete": true,
+          "dismissal_is_real_wiring": true,
+          "focus_visible_treatment": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "region_labelled": false,
+          "announced_to_at": true,
+          "retry_is_a_real_button": true,
+          "no_focus_steal": true,
+          "content_complete": true,
+          "dismissal_is_real_wiring": true,
+          "focus_visible_treatment": false,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "upload_progress": {
+      "brief": "A determinate upload progress bar at 60%, with a visible label and value",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.759,
+          "num_turns": 26,
+          "duration_s": 90.5,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "progressbar_announces": true,
+          "progressbar_named": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "progressbar_announces": true,
+          "progressbar_named": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "user_directory": {
+      "brief": "A team directory: a breadcrumb trail (Home / Team / Directory), then a list of member rows - avatar, name, description, and a Message action",
+      "generation": {
+        "poetry": {
+          "cost_usd": 0.8279,
+          "num_turns": 19,
+          "duration_s": 71.9,
+          "attempts": 1,
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "breadcrumb_is_a_landmark_with_current": true,
+          "members_are_a_list": true,
+          "avatars_have_accessible_names": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "breadcrumb_is_a_landmark_with_current": true,
+          "members_are_a_list": true,
+          "avatars_have_accessible_names": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "tied",
+        "composition": "raw_tailwind",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    }
+  },
+  "incomplete": [],
+  "summary": {
+    "overall": {
+      "raw_tailwind": 16,
+      "poetry": 12,
+      "inconclusive": 3
+    },
+    "win_rate": {
+      "poetry_headline": {
+        "n": 12,
+        "of": 31,
+        "rate": 0.387
+      },
+      "poetry_decided": {
+        "n": 12,
+        "of": 28,
+        "rate": 0.429
+      }
+    },
+    "axes": {
+      "hierarchy": {
+        "poetry": 6,
+        "raw_tailwind": 21,
+        "tied": 4
+      },
+      "composition": {
+        "poetry": 5,
+        "raw_tailwind": 25,
+        "tied": 1
+      },
+      "clarity": {
+        "poetry": 7,
+        "raw_tailwind": 23,
+        "tied": 1
+      },
+      "brief_fit": {
+        "poetry": 18,
+        "raw_tailwind": 13,
+        "tied": 0
+      }
+    },
+    "gate_pass_rates": {
+      "poetry": {
+        "accessible_name": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "actions_are_focusable": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "actions_are_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "announced_to_at": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "assertive_announcement": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "attachment_described": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "avatars_have_accessible_names": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "badge_not_interactive": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "breadcrumb_is_a_landmark_with_current": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "caption_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "carousel_region_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "checkbox_participates_in_the_form": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "code_entry_is_one_autofillable_input": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "collapse_is_coordinated_state": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "column_headers_are_th": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_controls_a_listbox": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_input": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_role_control": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "composites_are_groups": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "confirm_has_alertdialog_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "confirmation_described": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "content_complete": {
+          "n": 3,
+          "of": 6,
+          "rate": 0.5
+        },
+        "content_is_a_main_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "controls_are_labelled": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "controls_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "current_page_marked": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "date_posts_a_real_value": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "days_are_real_buttons": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "decorative_icons_hidden": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "defers_via_lazy_frame": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "design_slop": {
+          "n": 23,
+          "of": 31,
+          "rate": 0.742
+        },
+        "dialog_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "disclosure_announces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "dismissal_is_real_wiring": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "error_associated": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "exclusive_choice_wears_radio_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "expansion_state_exposed": {
+          "n": 1,
+          "of": 3,
+          "rate": 0.333
+        },
+        "explicit_choice_controls": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "explicit_type": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "failure_is_visible_and_retryable": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "filter_input_wears_list_autocomplete": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "filter_is_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "focus_visible_treatment": {
+          "n": 5,
+          "of": 6,
+          "rate": 0.833
+        },
+        "form_labels_wired": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "groups_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "heading_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "headings_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "hover_preview_not_interactive": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "hover_trigger_is_a_real_link": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "icon_controls_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "icon_decorative": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "input_controls_a_listbox": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "invalid_marked": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "label_wired": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "labelled_overlay": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "links_have_accessible_names": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "listbox_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "live_status_announced": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "loading_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "members_are_a_list": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "menu_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "menu_wired_to_trigger": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "modal_semantics": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "nav_items_are_real_links": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "nav_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "navigation_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_focus_steal": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_inline_handlers": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "no_menu_role_abuse": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_raw_colors": {
+          "n": 26,
+          "of": 31,
+          "rate": 0.839
+        },
+        "options_are_options": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "options_carry_stable_ids": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "options_never_focusable": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "pages_are_real_links": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "panels_wired": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "popover_dialog_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "pressed_state_exposed": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "progressbar_announces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "progressbar_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "quick_replies_are_real_controls": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "reachable_without_hover": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "real_link": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "real_table": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "region_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "renders": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "required_signalled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "resize_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "retry_is_a_real_button": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "scroll_region_is_keyboard_reachable": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "scroll_region_is_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "selection_announced": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "selection_announced_and_wired": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "shortcut_keys_are_real_kbd": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "slider_wears_the_apg_surface": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "slides_reachable_without_js": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "sort_is_a_real_select": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "sorted_column_announces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "sorting_is_real_navigation": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "spinner_announces_loading": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "splitter_wears_the_apg_surface": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "surfaces_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "switch_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "switching_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "tablist_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "textarea_labelled_not_placeholdered": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "title_and_body": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "title_is_a_real_heading": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "toggle_state_accessible": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "tooltip_never_interactive": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "tooltip_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "trigger_advertises_the_popup": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "trigger_is_a_real_button": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "trigger_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "triggers_are_real_buttons": {
+          "n": 2,
+          "of": 3,
+          "rate": 0.667
+        },
+        "two_modal_surfaces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        }
+      },
+      "raw_tailwind": {
+        "accessible_name": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "actions_are_focusable": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "actions_are_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "announced_to_at": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "assertive_announcement": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "attachment_described": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "avatars_have_accessible_names": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "badge_not_interactive": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "breadcrumb_is_a_landmark_with_current": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "caption_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "carousel_region_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "checkbox_participates_in_the_form": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "code_entry_is_one_autofillable_input": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "collapse_is_coordinated_state": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "column_headers_are_th": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_controls_a_listbox": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "combobox_input": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "combobox_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "combobox_role_control": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "composites_are_groups": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "confirm_has_alertdialog_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "confirmation_described": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "content_complete": {
+          "n": 3,
+          "of": 6,
+          "rate": 0.5
+        },
+        "content_is_a_main_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "controls_are_labelled": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "controls_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "current_page_marked": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "date_posts_a_real_value": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "days_are_real_buttons": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "decorative_icons_hidden": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "defers_via_lazy_frame": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "design_slop": {
+          "n": 15,
+          "of": 31,
+          "rate": 0.484
+        },
+        "dialog_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "disclosure_announces": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "dismissal_is_real_wiring": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "error_associated": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "exclusive_choice_wears_radio_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "expansion_state_exposed": {
+          "n": 0,
+          "of": 3,
+          "rate": 0.0
+        },
+        "explicit_choice_controls": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "explicit_type": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "failure_is_visible_and_retryable": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "filter_input_wears_list_autocomplete": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "filter_is_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "focus_visible_treatment": {
+          "n": 5,
+          "of": 6,
+          "rate": 0.833
+        },
+        "form_labels_wired": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "groups_labelled": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "heading_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "headings_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "hover_preview_not_interactive": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "hover_trigger_is_a_real_link": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "icon_controls_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "icon_decorative": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "input_controls_a_listbox": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "invalid_marked": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "label_wired": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "labelled_overlay": {
+          "n": 1,
+          "of": 2,
+          "rate": 0.5
+        },
+        "links_have_accessible_names": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "listbox_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "live_status_announced": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "loading_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "members_are_a_list": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "menu_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "menu_wired_to_trigger": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "modal_semantics": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "nav_items_are_real_links": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "nav_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "navigation_landmark": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_focus_steal": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_inline_handlers": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "no_menu_role_abuse": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "no_raw_colors": {
+          "n": 31,
+          "of": 31,
+          "rate": 1.0
+        },
+        "options_are_options": {
+          "n": 0,
+          "of": 2,
+          "rate": 0.0
+        },
+        "options_carry_stable_ids": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "options_never_focusable": {
+          "n": 2,
+          "of": 2,
+          "rate": 1.0
+        },
+        "pages_are_real_links": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "panels_wired": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "popover_dialog_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "pressed_state_exposed": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "progressbar_announces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "progressbar_named": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "quick_replies_are_real_controls": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "reachable_without_hover": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "real_link": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "real_table": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "region_labelled": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "renders": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "required_signalled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "resize_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "retry_is_a_real_button": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "scroll_region_is_keyboard_reachable": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "scroll_region_is_named": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "selection_announced": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "selection_announced_and_wired": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "shortcut_keys_are_real_kbd": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "slider_wears_the_apg_surface": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "slides_reachable_without_js": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "sort_is_a_real_select": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "sorted_column_announces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "sorting_is_real_navigation": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "spinner_announces_loading": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "splitter_wears_the_apg_surface": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "surfaces_labelled": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "switch_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "switching_is_real_wiring": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "tablist_semantics": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "textarea_labelled_not_placeholdered": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "title_and_body": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "title_is_a_real_heading": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "toggle_state_accessible": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "tooltip_never_interactive": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "tooltip_semantics": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "trigger_advertises_the_popup": {
+          "n": 0,
+          "of": 1,
+          "rate": 0.0
+        },
+        "trigger_is_a_real_button": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "trigger_present": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        },
+        "triggers_are_real_buttons": {
+          "n": 2,
+          "of": 3,
+          "rate": 0.667
+        },
+        "two_modal_surfaces": {
+          "n": 1,
+          "of": 1,
+          "rate": 1.0
+        }
+      }
+    },
+    "gate_deltas_ranked": [
+      {
+        "gate": "avatars_have_accessible_names",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "code_entry_is_one_autofillable_input",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "collapse_is_coordinated_state",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "combobox_input",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "combobox_named",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "controls_named",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "days_are_real_buttons",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "defers_via_lazy_frame",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "disclosure_announces",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "failure_is_visible_and_retryable",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "filter_input_wears_list_autocomplete",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "groups_labelled",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "input_controls_a_listbox",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "listbox_named",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "options_are_options",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 2
+      },
+      {
+        "gate": "options_carry_stable_ids",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "panels_wired",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "pressed_state_exposed",
+        "bucket": "structure",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "region_labelled",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "scroll_region_is_keyboard_reachable",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "scroll_region_is_named",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "selection_announced",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "selection_announced_and_wired",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "splitter_wears_the_apg_surface",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "tablist_semantics",
+        "bucket": "a11y",
+        "delta": 1.0,
+        "runs": 1
+      },
+      {
+        "gate": "labelled_overlay",
+        "bucket": "a11y",
+        "delta": 0.5,
+        "runs": 2
+      },
+      {
+        "gate": "expansion_state_exposed",
+        "bucket": "structure",
+        "delta": 0.333,
+        "runs": 3
+      },
+      {
+        "gate": "design_slop",
+        "bucket": "slop",
+        "delta": 0.258,
+        "runs": 31
+      },
+      {
+        "gate": "accessible_name",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "actions_are_focusable",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "actions_are_real_wiring",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "announced_to_at",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "assertive_announcement",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "attachment_described",
+        "bucket": "content",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "badge_not_interactive",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "breadcrumb_is_a_landmark_with_current",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "caption_present",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "checkbox_participates_in_the_form",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "column_headers_are_th",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "combobox_controls_a_listbox",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "combobox_role_control",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "composites_are_groups",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "confirm_has_alertdialog_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "confirmation_described",
+        "bucket": "content",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "content_complete",
+        "bucket": "content",
+        "delta": 0.0,
+        "runs": 6
+      },
+      {
+        "gate": "content_is_a_main_landmark",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "controls_are_labelled",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "current_page_marked",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "date_posts_a_real_value",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "decorative_icons_hidden",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "dismissal_is_real_wiring",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 2
+      },
+      {
+        "gate": "error_associated",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "exclusive_choice_wears_radio_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "explicit_choice_controls",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "explicit_type",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "filter_is_labelled",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "focus_visible_treatment",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 6
+      },
+      {
+        "gate": "form_labels_wired",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "heading_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "headings_present",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "hover_preview_not_interactive",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "icon_decorative",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "invalid_marked",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "label_wired",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "links_have_accessible_names",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "loading_is_real_wiring",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "members_are_a_list",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "menu_wired_to_trigger",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "modal_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 2
+      },
+      {
+        "gate": "nav_items_are_real_links",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "nav_landmark",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "navigation_landmark",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "no_focus_steal",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "no_inline_handlers",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 2
+      },
+      {
+        "gate": "no_menu_role_abuse",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "options_never_focusable",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 2
+      },
+      {
+        "gate": "pages_are_real_links",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "popover_dialog_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "progressbar_announces",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "progressbar_named",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "quick_replies_are_real_controls",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "reachable_without_hover",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "real_link",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "real_table",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "renders",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "required_signalled",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "resize_is_real_wiring",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "retry_is_a_real_button",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "shortcut_keys_are_real_kbd",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "slider_wears_the_apg_surface",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "sort_is_a_real_select",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "sorted_column_announces",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "sorting_is_real_navigation",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "spinner_announces_loading",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "surfaces_labelled",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "switch_semantics",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "switching_is_real_wiring",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "textarea_labelled_not_placeholdered",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "title_and_body",
+        "bucket": "content",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "title_is_a_real_heading",
+        "bucket": "a11y",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "trigger_advertises_the_popup",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "trigger_present",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "triggers_are_real_buttons",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 3
+      },
+      {
+        "gate": "two_modal_surfaces",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 1
+      },
+      {
+        "gate": "no_raw_colors",
+        "bucket": "slop",
+        "delta": -0.161,
+        "runs": 31
+      },
+      {
+        "gate": "carousel_region_semantics",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "dialog_named",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "hover_trigger_is_a_real_link",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "icon_controls_named",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "live_status_announced",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "menu_semantics",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "slides_reachable_without_js",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "toggle_state_accessible",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "tooltip_never_interactive",
+        "bucket": "structure",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "tooltip_semantics",
+        "bucket": "a11y",
+        "delta": -1.0,
+        "runs": 1
+      },
+      {
+        "gate": "trigger_is_a_real_button",
+        "bucket": "structure",
+        "delta": -1.0,
+        "runs": 1
+      }
+    ],
+    "bucket_deltas": {
+      "structure": 0.207,
+      "a11y": 0.075,
+      "slop": 0.048,
+      "content": 0.0
+    },
+    "failure_taxonomy": {
+      "poetry": {
+        "design_slop": [
+          "artwork_carousel",
+          "chat_transcript",
+          "disclosure",
+          "filter_toolbar",
+          "floating",
+          "form_controls",
+          "menu",
+          "split_editor"
+        ],
+        "no_raw_colors": [
+          "artwork_carousel",
+          "chat_transcript",
+          "filter_toolbar",
+          "floating",
+          "menu"
+        ],
+        "content_complete": [
+          "disclosure",
+          "form_controls",
+          "menu"
+        ],
+        "expansion_state_exposed": [
+          "floating",
+          "menu"
+        ],
+        "icon_controls_named": [
+          "floating"
+        ],
+        "hover_trigger_is_a_real_link": [
+          "floating"
+        ],
+        "hover_preview_not_interactive": [
+          "floating"
+        ],
+        "trigger_advertises_the_popup": [
+          "floating"
+        ],
+        "dialog_named": [
+          "floating"
+        ],
+        "triggers_are_real_buttons": [
+          "floating"
+        ],
+        "form_labels_wired": [
+          "floating"
+        ],
+        "focus_visible_treatment": [
+          "floating"
+        ],
+        "trigger_is_a_real_button": [
+          "menu"
+        ],
+        "menu_semantics": [
+          "menu"
+        ],
+        "menu_wired_to_trigger": [
+          "menu"
+        ],
+        "toggle_state_accessible": [
+          "menu"
+        ],
+        "explicit_choice_controls": [
+          "overlay"
+        ],
+        "tooltip_never_interactive": [
+          "floating"
+        ],
+        "tooltip_semantics": [
+          "floating"
+        ],
+        "popover_dialog_semantics": [
+          "floating"
+        ],
+        "sort_is_a_real_select": [
+          "filter_toolbar"
+        ],
+        "composites_are_groups": [
+          "filter_toolbar"
+        ],
+        "controls_are_labelled": [
+          "filter_toolbar"
+        ],
+        "decorative_icons_hidden": [
+          "chat_transcript"
+        ],
+        "live_status_announced": [
+          "chat_transcript"
+        ],
+        "quick_replies_are_real_controls": [
+          "chat_transcript"
+        ],
+        "attachment_described": [
+          "chat_transcript"
+        ],
+        "slides_reachable_without_js": [
+          "artwork_carousel"
+        ],
+        "carousel_region_semantics": [
+          "artwork_carousel"
+        ],
+        "title_and_body": [
+          "alert"
+        ]
+      },
+      "raw_tailwind": {
+        "design_slop": [
+          "alert",
+          "artwork_carousel",
+          "chat_transcript",
+          "command_palette",
+          "deferred_region",
+          "dialog",
+          "empty_state",
+          "filter_toolbar",
+          "form_controls",
+          "form_field",
+          "menu",
+          "mobile_sheet",
+          "primitives",
+          "settings_tabs",
+          "split_editor",
+          "toast"
+        ],
+        "content_complete": [
+          "disclosure",
+          "form_controls",
+          "menu"
+        ],
+        "expansion_state_exposed": [
+          "disclosure",
+          "floating",
+          "menu"
+        ],
+        "options_are_options": [
+          "command_palette",
+          "searchable_select"
+        ],
+        "popover_dialog_semantics": [
+          "floating"
+        ],
+        "hover_preview_not_interactive": [
+          "floating"
+        ],
+        "trigger_advertises_the_popup": [
+          "floating"
+        ],
+        "form_labels_wired": [
+          "floating"
+        ],
+        "pressed_state_exposed": [
+          "form_controls"
+        ],
+        "code_entry_is_one_autofillable_input": [
+          "form_controls"
+        ],
+        "controls_named": [
+          "form_controls"
+        ],
+        "menu_wired_to_trigger": [
+          "menu"
+        ],
+        "explicit_choice_controls": [
+          "overlay"
+        ],
+        "scroll_region_is_keyboard_reachable": [
+          "scrollable_tags"
+        ],
+        "scroll_region_is_named": [
+          "scrollable_tags"
+        ],
+        "filter_input_wears_list_autocomplete": [
+          "searchable_select"
+        ],
+        "combobox_named": [
+          "searchable_select"
+        ],
+        "tablist_semantics": [
+          "settings_tabs"
+        ],
+        "selection_announced_and_wired": [
+          "settings_tabs"
+        ],
+        "disclosure_announces": [
+          "site_nav"
+        ],
+        "splitter_wears_the_apg_surface": [
+          "split_editor"
+        ],
+        "region_labelled": [
+          "toast"
+        ],
+        "focus_visible_treatment": [
+          "toast"
+        ],
+        "avatars_have_accessible_names": [
+          "user_directory"
+        ],
+        "title_and_body": [
+          "alert"
+        ],
+        "collapse_is_coordinated_state": [
+          "app_shell"
+        ],
+        "attachment_described": [
+          "chat_transcript"
+        ],
+        "quick_replies_are_real_controls": [
+          "chat_transcript"
+        ],
+        "decorative_icons_hidden": [
+          "chat_transcript"
+        ],
+        "combobox_input": [
+          "command_palette"
+        ],
+        "input_controls_a_listbox": [
+          "command_palette"
+        ],
+        "listbox_named": [
+          "command_palette"
+        ],
+        "options_carry_stable_ids": [
+          "command_palette"
+        ],
+        "groups_labelled": [
+          "command_palette"
+        ],
+        "days_are_real_buttons": [
+          "date_field"
+        ],
+        "selection_announced": [
+          "date_field"
+        ],
+        "defers_via_lazy_frame": [
+          "deferred_region"
+        ],
+        "failure_is_visible_and_retryable": [
+          "deferred_region"
+        ],
+        "labelled_overlay": [
+          "dialog"
+        ],
+        "triggers_are_real_buttons": [
+          "disclosure"
+        ],
+        "panels_wired": [
+          "disclosure"
+        ],
+        "controls_are_labelled": [
+          "filter_toolbar"
+        ],
+        "composites_are_groups": [
+          "filter_toolbar"
+        ],
+        "sort_is_a_real_select": [
+          "filter_toolbar"
+        ]
+      }
+    }
+  },
+  "predictions": {
+    "p1_overall": {
+      "registered": "poetry wins overall >= 70%",
+      "observed": {
+        "n": 12,
+        "of": 31,
+        "rate": 0.387
+      },
+      "held": false
+    },
+    "p2_widest_gaps": {
+      "registered": "gate pass-rate gap widest on a11y + design-slop",
+      "observed_bucket_deltas": {
+        "structure": 0.207,
+        "a11y": 0.075,
+        "slop": 0.048,
+        "content": 0.0
+      },
+      "held": false
+    },
+    "p3_blocks_signal": {
+      "registered": "raw_tailwind winning any composition axis is the Blocks signal ",
+      "tasks_where_raw_won_composition": [
+        "alert",
+        "app_shell",
+        "artwork_carousel",
+        "card",
+        "chat_transcript",
+        "command_palette",
+        "data_table",
+        "date_field",
+        "dialog",
+        "disclosure",
+        "filter_toolbar",
+        "floating",
+        "form_controls",
+        "form_field",
+        "menu",
+        "mobile_sheet",
+        "overlay",
+        "pagination",
+        "primitives",
+        "scrollable_tags",
+        "split_editor",
+        "table",
+        "toast",
+        "upload_progress",
+        "user_directory"
+      ],
+      "triggered": true
+    }
+  }
+}

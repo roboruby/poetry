@@ -1,0 +1,62 @@
+<section class="mx-auto max-w-4xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Featured Artwork</h1>
+    <p class="text-muted-foreground">Three pieces from this week's curated collection.</p>
+  </div>
+
+  <%= poetry_carousel(label: "Featured artwork") do |carousel| %>
+    <% carousel.with_item(class: "basis-full") do %>
+      <div class="space-y-4 p-1">
+        <%= poetry_aspect_ratio(ratio: "4/3") do %>
+          <div class="flex size-full items-center justify-center rounded-lg bg-primary">
+            <%= poetry_icon(name: :image, label: "The Starry Night artwork", class: "size-16 text-primary-foreground/85") %>
+          </div>
+        <% end %>
+        <div class="space-y-1.5">
+          <div class="flex items-start justify-between gap-3">
+            <h2 class="text-lg font-medium">The Starry Night</h2>
+            <%= poetry_badge(variant: :outline) { "Oil on canvas" } %>
+          </div>
+          <p class="text-sm text-muted-foreground">Vincent van Gogh &middot; 1889</p>
+          <p class="text-sm text-muted-foreground">A swirling night sky over a quiet village, painted from memory during van Gogh's stay at Saint-Rémy.</p>
+        </div>
+      </div>
+    <% end %>
+
+    <% carousel.with_item(class: "basis-full") do %>
+      <div class="space-y-4 p-1">
+        <%= poetry_aspect_ratio(ratio: "4/3") do %>
+          <div class="flex size-full items-center justify-center rounded-lg bg-secondary">
+            <%= poetry_icon(name: :image, label: "The Great Wave off Kanagawa artwork", class: "size-16 text-secondary-foreground/85") %>
+          </div>
+        <% end %>
+        <div class="space-y-1.5">
+          <div class="flex items-start justify-between gap-3">
+            <h2 class="text-lg font-medium">The Great Wave off Kanagawa</h2>
+            <%= poetry_badge(variant: :outline) { "Woodblock print" } %>
+          </div>
+          <p class="text-sm text-muted-foreground">Katsushika Hokusai &middot; c. 1831</p>
+          <p class="text-sm text-muted-foreground">A towering wave looms over boats off the coast, with Mount Fuji framed in the distance.</p>
+        </div>
+      </div>
+    <% end %>
+
+    <% carousel.with_item(class: "basis-full") do %>
+      <div class="space-y-4 p-1">
+        <%= poetry_aspect_ratio(ratio: "4/3") do %>
+          <div class="flex size-full items-center justify-center rounded-lg bg-accent">
+            <%= poetry_icon(name: :image, label: "Girl with a Pearl Earring artwork", class: "size-16 text-accent-foreground/85") %>
+          </div>
+        <% end %>
+        <div class="space-y-1.5">
+          <div class="flex items-start justify-between gap-3">
+            <h2 class="text-lg font-medium">Girl with a Pearl Earring</h2>
+            <%= poetry_badge(variant: :outline) { "Oil on canvas" } %>
+          </div>
+          <p class="text-sm text-muted-foreground">Johannes Vermeer &middot; c. 1665</p>
+          <p class="text-sm text-muted-foreground">Often called the "Mona Lisa of the North," this tronie captures a fleeting glance over the shoulder.</p>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</section>

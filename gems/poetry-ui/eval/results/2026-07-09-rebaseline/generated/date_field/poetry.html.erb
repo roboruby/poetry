@@ -1,0 +1,14 @@
+<div class="mx-auto max-w-md px-4 py-16">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Task details" } %>
+    <% card.with_description { "Set when this task needs to be finished." } %>
+
+    <%= poetry_date_picker(
+      name: "task[due_date]",
+      label: "Due date",
+      placeholder: "Pick a due date",
+      value: Date.current,
+      min: Date.current
+    ) %>
+  <% end %>
+</div>

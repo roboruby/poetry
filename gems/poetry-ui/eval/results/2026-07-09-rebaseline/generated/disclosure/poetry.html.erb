@@ -1,0 +1,70 @@
+<section class="mx-auto max-w-3xl p-6 space-y-10">
+  <div class="space-y-2">
+    <h1 class="text-2xl font-semibold tracking-tight">Frequently asked questions</h1>
+    <p class="text-muted-foreground">
+      Answers to the questions we hear most often about accounts, billing, and data.
+    </p>
+  </div>
+
+  <%= poetry_accordion(type: :single, collapsible: true, heading_level: :h3, open: %w[password]) do |accordion| %>
+    <% accordion.with_item(value: "password", title: "How do I reset my password?") do %>
+      <p>
+        Go to the sign-in page and select "Forgot password." We'll email you a
+        secure link that lets you choose a new password. The link expires
+        after 30 minutes for your security.
+      </p>
+    <% end %>
+
+    <% accordion.with_item(value: "billing", title: "Can I change my billing cycle?") do %>
+      <p>
+        Yes. Open Settings &rarr; Billing and choose between monthly and
+        annual billing. Switching to annual applies immediately; switching to
+        monthly takes effect at the start of your next renewal.
+      </p>
+    <% end %>
+
+    <% accordion.with_item(value: "export", title: "How do I export my data?") do %>
+      <p>
+        From Settings &rarr; Data, request an export. We'll package your
+        account data as a downloadable archive and email you a link when it's
+        ready, usually within a few minutes.
+      </p>
+    <% end %>
+
+    <% accordion.with_item(value: "cancel", title: "What happens if I cancel my subscription?") do %>
+      <p>
+        Your plan stays active until the end of the current billing period.
+        After that, your account moves to the free tier and your data is
+        retained for 90 days before deletion.
+      </p>
+    <% end %>
+
+    <% accordion.with_item(value: "support", title: "How do I contact support?") do %>
+      <p>
+        Email support@example.com or use the chat bubble in the bottom
+        corner of any page. Our team typically responds within one business
+        day.
+      </p>
+    <% end %>
+  <% end %>
+
+  <%= poetry_separator %>
+
+  <div>
+    <%= poetry_collapsible(open: false) do |c| %>
+      <% c.with_trigger { "Show advanced options" } %>
+
+      <div class="mt-4 space-y-6">
+        <%= poetry_field(id: "advanced-timeout", label_text: "Session timeout", hint: "How long you can be idle before you're signed out.") do |field| %>
+          <%= poetry_native_select(**field.control_attributes, options: [["15 minutes", "15"], ["30 minutes", "30"], ["1 hour", "60"], ["4 hours", "240"]], selected: "30") %>
+        <% end %>
+
+        <%= poetry_field(id: "advanced-webhook", label_text: "Webhook URL", hint: "We'll POST account events to this URL.") do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "url", placeholder: "https://example.com/webhooks/account") %>
+        <% end %>
+
+        <%= poetry_switch(label: "Enable two-factor authentication reminders", name: "advanced_two_factor_reminders", checked: true) %>
+      </div>
+    <% end %>
+  </div>
+</section>

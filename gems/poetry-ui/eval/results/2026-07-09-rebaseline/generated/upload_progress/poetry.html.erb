@@ -1,0 +1,17 @@
+<div class="mx-auto max-w-xl py-10">
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Uploading file" } %>
+    <% card.with_description { "Hang tight - this closes automatically when the upload finishes." } %>
+
+    <div class="flex flex-col gap-4">
+      <%= poetry_attachment(orientation: :horizontal, state: :uploading) do |attachment| %>
+        <% attachment.with_media(variant: :icon) { poetry_icon(name: :"file-text") } %>
+        <% attachment.with_title { "quarterly-report.pdf" } %>
+        <% attachment.with_description { "12.4 MB of 20.7 MB" } %>
+        <% attachment.with_action(label: "Cancel upload") { poetry_icon(name: :x) } %>
+      <% end %>
+
+      <%= poetry_progress(label: "Uploading quarterly-report.pdf", value: 60, show_value: true) %>
+    </div>
+  <% end %>
+</div>

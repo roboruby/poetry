@@ -1,0 +1,125 @@
+<div class="mx-auto max-w-md p-6">
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Version tags" } %>
+    <% card.with_description { "20 most recent releases, newest first." } %>
+
+    <%= poetry_scroll_area(label: "Version tags", class: "h-48 w-full rounded-md border") do %>
+      <%= poetry_item_group(class: "p-1") do %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.14.0", class: "font-mono") } %>
+          <% item.with_description { "Jul 2, 2026" } %>
+          <% item.with_actions { poetry_badge(variant: :secondary) { "Latest" } } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.13.2", class: "font-mono") } %>
+          <% item.with_description { "Jun 24, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.13.1", class: "font-mono") } %>
+          <% item.with_description { "Jun 18, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.13.0", class: "font-mono") } %>
+          <% item.with_description { "Jun 9, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.12.0", class: "font-mono") } %>
+          <% item.with_description { "May 28, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.11.3", class: "font-mono") } %>
+          <% item.with_description { "May 14, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.11.2", class: "font-mono") } %>
+          <% item.with_description { "May 6, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.11.1", class: "font-mono") } %>
+          <% item.with_description { "Apr 29, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.11.0", class: "font-mono") } %>
+          <% item.with_description { "Apr 15, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.10.0", class: "font-mono") } %>
+          <% item.with_description { "Apr 1, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.9.1", class: "font-mono") } %>
+          <% item.with_description { "Mar 20, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.9.0", class: "font-mono") } %>
+          <% item.with_description { "Mar 11, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.8.0", class: "font-mono") } %>
+          <% item.with_description { "Feb 25, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.7.2", class: "font-mono") } %>
+          <% item.with_description { "Feb 12, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.7.1", class: "font-mono") } %>
+          <% item.with_description { "Feb 4, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.7.0", class: "font-mono") } %>
+          <% item.with_description { "Jan 22, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.6.0", class: "font-mono") } %>
+          <% item.with_description { "Jan 8, 2026" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.5.1", class: "font-mono") } %>
+          <% item.with_description { "Dec 18, 2025" } %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(size: :sm, media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :tag) } %>
+          <% item.with_title { content_tag(:span, "v2.5.0", class: "font-mono") } %>
+          <% item.with_description { "Dec 3, 2025" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
