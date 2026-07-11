@@ -6,6 +6,7 @@ not suggestions. Options are keywords; content is the block.
 ## button (`poetry_button`)
 
 Class: Poetry::Ui::Button::Component - BEM block `poetry-ui-button`.
+REQUIRED - one of a content block / with_leading / with_trailing / loading: (nothing visible renders without one - label: is only the accessible name); a call satisfying none raises.
 - `size:` (symbol) - one of default|xs|sm|lg|icon|icon-xs|icon-sm|icon-lg, default "default", required
 - `variant:` (symbol) - one of default|destructive|outline|secondary|ghost|link, default "default", required
 - `disabled:` (boolean) - default false

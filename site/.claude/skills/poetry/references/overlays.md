@@ -11,7 +11,7 @@ Slot REQUIRED: with_description (the alertdialog must explain itself) - a call w
 Slot REQUIRED: with_action (the confirming choice) - a call without it raises.
 Slot REQUIRED: with_cancel (the safe way out) - a call without it raises.
 - `size:` (symbol) - one of default|sm, default "default", required
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (with_action yields NOTHING to the block - no |param|, write content directly), cancel (with_cancel yields NOTHING to the block - no |param|, write content directly).
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly), cancel (takes poetry_button props, not a block; with_cancel yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
@@ -22,6 +22,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## command (`poetry_command`)
 
 Class: Poetry::Ui::Command::Component - BEM block `poetry-ui-command`.
+REQUIRED - one of id: / aria-label: / aria-labelledby: / aria: (the input's accessible name); a call satisfying none raises.
 - `disabled:` (boolean) - default false
 - `filter:` (boolean) - default true
 - `id:` (string)
@@ -92,7 +93,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
@@ -106,7 +107,7 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `direction:` (symbol) - one of down|up|left|right, default "down", required
 - `dismissible:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey; actions backdropClose, close, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -129,7 +130,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
@@ -200,7 +201,7 @@ Slot REQUIRED: with_trigger (the panel's control) - a call without it raises.
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), anchor (with_anchor yields NOTHING to the block - no |param|, write content directly), title, description.
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), anchor (with_anchor yields NOTHING to the block - no |param|, write content directly), title, description.
 - WIRING `poetry--core--popover`: values modal, open; actions close, open, openValueChanged, toggle; events poetry:popover:closed, poetry:popover:open
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
@@ -218,7 +219,7 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "right", required
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--sheet`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open sheets with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -238,7 +239,7 @@ Slot REQUIRED: with_trigger (the described control) - a call without it raises.
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "top"
 - `side_offset:` (integer) - default 0
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - WIRING `poetry--core--tooltip`: values delayDuration, disableHoverableContent, open; actions blurClose, clickClose, focusOpen, openValueChanged, pointerDown, pointerLeave, pointerMove; events poetry:tooltip:closed, poetry:tooltip:open
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.

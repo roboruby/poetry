@@ -54,7 +54,7 @@ Slot REQUIRED: with_title (the message) - a call without it raises.
 - `closable:` (boolean) - default true
 - `duration:` (integer)
 - `politeness:` (symbol) - one of polite|assertive, default "dynamic"
-Slots: title, description, action (with_action yields NOTHING to the block - no |param|, write content directly).
+Slots: title, description, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--toast`: targets action, close; values duration, politeness; actions dismiss, pause, resume; events poetry:toast:dismiss, poetry:toast:show
 - RULE: Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never hand-append into #poetry-toaster.
 - RULE: Undo/consequence toasts MUST carry an action slot - action-bearing toasts default to persistent (duration nil); give an explicit duration only when missing the action is safe.
