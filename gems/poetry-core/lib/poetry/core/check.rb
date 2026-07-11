@@ -422,7 +422,10 @@ module Poetry
         # Required-with-no-default options that a literal call omits (a
         # **splat may carry anything - such calls are left alone).
         def missing_option_findings(path, owner, call, pairs, line)
-          return [] if splatted?(call)
+          # A receiver'd call owns its contract (a form builder's
+          # poetry_date_picker supplies name: itself) - same stand-down as
+          # helper arity.
+          return [] if splatted?(call) || call.receiver
 
           (@catalog.required_options(path) - pairs.map(&:first)).map do |key|
             Finding.new(rule: "missing-option", severity: :error,
