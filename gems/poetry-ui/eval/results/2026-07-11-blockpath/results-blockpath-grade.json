@@ -1,0 +1,150 @@
+{
+  "assembled_from": [
+    "results.json",
+    "generated-scorecard.json",
+    "generation-manifest.json",
+    "mechanism-audit.json",
+    "poetry-ui/eval/results/2026-07-10-designfire/results.json (baseline; raw controls frozen from 2026-07-07)"
+  ],
+  "headline": {
+    "raw_tailwind": 17,
+    "poetry": 11,
+    "inconclusive": 3
+  },
+  "prior_baselines": {
+    "dd78_designfire": {
+      "raw_tailwind": 19,
+      "inconclusive": 1,
+      "poetry": 11
+    },
+    "dd75_depth_confirmed": {
+      "raw_tailwind": 16,
+      "poetry": 12
+    },
+    "dd70_full": {
+      "raw_tailwind": 18,
+      "poetry": 13
+    }
+  },
+  "axes": {
+    "hierarchy": {
+      "poetry": 9,
+      "raw_tailwind": 21
+    },
+    "composition": {
+      "poetry": 8,
+      "raw_tailwind": 20
+    },
+    "clarity": {
+      "poetry": 9,
+      "raw_tailwind": 21
+    },
+    "brief_fit": {
+      "poetry": 16,
+      "raw_tailwind": 14
+    }
+  },
+  "verdict_changes_vs_dd78": {
+    "app_shell": "raw_tailwind -> poetry",
+    "button": "raw_tailwind -> poetry",
+    "chat_transcript": "inconclusive -> raw_tailwind",
+    "data_table": "raw_tailwind -> inconclusive",
+    "scrollable_tags": "poetry -> inconclusive",
+    "split_editor": "poetry -> inconclusive"
+  },
+  "mechanism_audit": {
+    "arms": 31,
+    "blocks_surface": 31,
+    "compose_called": 31,
+    "poetry_skill": 29,
+    "design_skill": 22,
+    "ran_check": 31,
+    "check_last": 28
+  },
+  "block_descent": {
+    "app_shell": {
+      "block": "app-shell",
+      "verbatim": "67/67",
+      "descent": true
+    },
+    "site_nav": {
+      "block": "top-nav",
+      "verbatim": "25/25",
+      "descent": true
+    },
+    "table": {
+      "block": "data-index",
+      "verbatim": "18/52",
+      "descent": true
+    },
+    "card": {
+      "block": "section-card",
+      "verbatim": "6/24",
+      "descent": true
+    },
+    "data_table": {
+      "block": "data-index",
+      "verbatim": "11/52",
+      "descent": true
+    },
+    "filter_toolbar": {
+      "block": "data-index",
+      "verbatim": "3/52",
+      "descent": false
+    },
+    "form_controls": {
+      "block": "section-card",
+      "verbatim": "1/24",
+      "descent": false
+    },
+    "settings_tabs": {
+      "block": "section-card",
+      "verbatim": "1/24",
+      "descent": false
+    },
+    "user_directory": {
+      "block": "data-index",
+      "verbatim": "0/52",
+      "descent": false
+    }
+  },
+  "crash_adjudication": {
+    "command_palette": {
+      "error": "Command requires an accessible name for its input",
+      "class": "open class: accessible-name contract (lead 3)"
+    },
+    "toast": {
+      "error": "Button renders nothing visible (icon-only without label path)",
+      "class": "open class: conditional content (lead 3)"
+    }
+  },
+  "generation_usage": {
+    "units_recorded": 31,
+    "unit_cost_sum_usd": 18.6101,
+    "receipted_cost_usd": 18.61
+  },
+  "predictions": {
+    "d1": {
+      "statement": "blocks-surface adoption >= 15/31 (3/31); recorded: compose >= 12",
+      "observed": "blocks surface 31/31, compose 31/31, check 31/31, check-last 28/31",
+      "pass": true
+    },
+    "d2": {
+      "statement": "composition-axis tally >= 10/31 (5;: 6; raw won 21-9)",
+      "observed": "8/31",
+      "pass": false
+    },
+    "d3": {
+      "statement": "poetry overall >= 14/31 (11)",
+      "observed": "11/31 ({\"raw_tailwind\" => 17, \"poetry\" => 11, \"inconclusive\" => 3})",
+      "pass": false
+    },
+    "d4": {
+      "statement": "31/31 delivery, zero render crashes, zero pairs lost",
+      "observed": "delivery 31/31; crashes: command_palette, toast",
+      "pass": false
+    }
+  },
+  "grade": "1/4 pre-registered predictions pass",
+  "decision_rule": "this tally SUPERSEDES raw 19 - poetry 11 - inc 1 as the standing headline (pre-registered)"
+}

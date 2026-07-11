@@ -1,0 +1,34 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_dialog do |dialog| %>
+    <% dialog.with_trigger do %>
+      <%= poetry_button { "Settings" } %>
+    <% end %>
+
+    <% dialog.with_title { "Settings" } %>
+    <% dialog.with_description { "Manage your account preferences. Changes take effect immediately after you confirm." } %>
+
+    <div class="grid gap-4">
+      <%= poetry_field id: "display_name", label_text: "Display name" do |field| %>
+        <%= poetry_input(**field.control_attributes, name: "display_name", value: "Matt Solt", placeholder: "Your name") %>
+      <% end %>
+
+      <%= poetry_field id: "email_notifications", label_text: "Email notifications", hint: "Get notified about account activity and updates." do |field| %>
+        <%= poetry_switch(**field.control_attributes, name: "email_notifications", checked: true) %>
+      <% end %>
+
+      <%= poetry_field id: "time_zone", label_text: "Time zone" do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "time_zone") do %>
+          <option value="pacific">Pacific Time</option>
+          <option value="mountain">Mountain Time</option>
+          <option value="central">Central Time</option>
+          <option value="eastern">Eastern Time</option>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% dialog.with_footer do %>
+      <%= poetry_button(variant: :outline) { "Cancel" } %>
+      <%= poetry_button(variant: :default) { "Save changes" } %>
+    <% end %>
+  <% end %>
+</div>

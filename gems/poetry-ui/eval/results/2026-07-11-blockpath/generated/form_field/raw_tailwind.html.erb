@@ -1,0 +1,32 @@
+<div class="min-h-screen bg-gray-50 px-6 py-12">
+  <div class="mx-auto max-w-xl">
+    <div class="rounded-lg bg-white p-8 shadow-sm ring-1 ring-gray-200">
+      <div class="mb-2">
+        <label for="work_email" class="block text-sm font-medium text-gray-900">
+          Work email <span class="text-red-600" aria-hidden="true">*</span>
+        </label>
+      </div>
+
+      <input
+        type="email"
+        name="work_email"
+        id="work_email"
+        required
+        aria-required="true"
+        aria-invalid="true"
+        aria-describedby="work_email_hint work_email_error"
+        placeholder="you@company.com"
+        value=""
+        class="block w-full rounded-md border border-red-400 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-red-500 focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-red-500"
+      >
+
+      <p id="work_email_hint" class="mt-2 text-sm text-gray-500">
+        Use your company email address, not a personal one.
+      </p>
+
+      <p id="work_email_error" class="mt-2 text-sm text-red-600">
+        Work email can't be blank
+      </p>
+    </div>
+  </div>
+</div>

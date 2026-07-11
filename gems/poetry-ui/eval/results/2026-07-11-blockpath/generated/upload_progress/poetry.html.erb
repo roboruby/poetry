@@ -1,0 +1,19 @@
+<div class="mx-auto max-w-2xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Upload progress</h1>
+    <p class="text-sm text-muted-foreground">Keep this tab open until the upload finishes.</p>
+  </div>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "quarterly-report-2026.pdf" } %>
+    <% card.with_description { "4.8 MB · Shared Drive / Finance" } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :info) { "Uploading" } %>
+    <% end %>
+
+    <div class="space-y-2">
+      <%= poetry_progress(label: "Upload progress", value: 60, max: 100, show_value: true) %>
+      <p class="text-sm text-muted-foreground">2.9 MB of 4.8 MB uploaded</p>
+    </div>
+  <% end %>
+</div>

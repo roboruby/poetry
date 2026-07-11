@@ -1,0 +1,27 @@
+<section class="mx-auto max-w-6xl p-6">
+  <div class="flex flex-wrap items-center gap-3">
+    <%= poetry_label(for_id: "toolbar-search", class: "sr-only") { "Search" } %>
+    <%= poetry_input_group(class: "max-w-sm") do %>
+      <%= poetry_input_group_addon do %>
+        <%= poetry_icon(name: :search) %>
+      <% end %>
+      <%= poetry_input_group_input(id: "toolbar-search", name: "q", placeholder: "Search…") %>
+      <%= poetry_input_group_addon(align: :"inline-end") do %>
+        <span class="inline-flex items-center gap-0.5">
+          <%= poetry_kbd { "⌘" } %>
+          <%= poetry_kbd { "K" } %>
+        </span>
+      <% end %>
+    <% end %>
+
+    <%= poetry_label(for_id: "toolbar-sort", class: "sr-only") { "Sort by" } %>
+    <%= poetry_native_select(name: "sort", id: "toolbar-sort",
+                             options: [["Newest first", "newest"], ["Oldest first", "oldest"],
+                                       ["Name (A–Z)", "name_asc"], ["Name (Z–A)", "name_desc"]]) %>
+
+    <%= poetry_toggle_group(type: :single, value: "list", label: "View", class: "ml-auto") do |group| %>
+      <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list) } %>
+      <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
+    <% end %>
+  </div>
+</section>

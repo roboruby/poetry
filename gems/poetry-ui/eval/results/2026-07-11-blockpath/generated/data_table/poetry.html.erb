@@ -1,0 +1,90 @@
+<%
+  invoices = [
+    { number: "INV-1001", customer: "Northwind Traders", status: :paid,    due_date: "Jun 30, 2026", amount: 1240.00 },
+    { number: "INV-1002", customer: "Lumen Labs",         status: :pending, due_date: "Jul 05, 2026", amount: 482.50 },
+    { number: "INV-1003", customer: "Aperture Optics",    status: :overdue, due_date: "Jun 18, 2026", amount: 96.00 },
+    { number: "INV-1004", customer: "Gable & Sons",       status: :pending, due_date: "Jul 12, 2026", amount: 2040.00 },
+    { number: "INV-1005", customer: "Fern & Field",       status: :paid,    due_date: "Jul 02, 2026", amount: 318.75 },
+    { number: "INV-1006", customer: "Aperture Optics",    status: :paid,    due_date: "Jul 20, 2026", amount: 754.20 },
+    { number: "INV-1007", customer: "Northwind Traders",  status: :overdue, due_date: "Jun 25, 2026", amount: 1580.00 },
+    { number: "INV-1008", customer: "Lumen Labs",         status: :pending, due_date: "Jul 22, 2026", amount: 610.40 },
+  ]
+  status_variant = { paid: :success, pending: :info, overdue: :warning }
+  status_label   = { paid: "Paid", pending: "Pending", overdue: "Overdue" }
+%>
+<section class="mx-auto max-w-6xl space-y-4 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Invoices</h2>
+      <p class="text-sm text-muted-foreground">Every invoice, sorted by invoice number.</p>
+    </div>
+    <%= poetry_button do |button| %>
+      <% button.with_leading { poetry_icon(name: :plus) } %>
+      New invoice
+    <% end %>
+  </div>
+
+  <%= form_tag "", method: :get, class: "flex flex-wrap items-end gap-3" do %>
+    <div class="space-y-1.5">
+      <%= poetry_label(for_id: "invoices-filter") { "Filter invoices" } %>
+      <%= poetry_input_group(class: "w-72") do %>
+        <%= poetry_input_group_addon do %>
+          <%= poetry_icon(name: :search) %>
+        <% end %>
+        <%= poetry_input_group_input(id: "invoices-filter", name: "q", placeholder: "Filter by invoice # or customer…") %>
+      <% end %>
+    </div>
+    <%= poetry_button(type: :submit, variant: :secondary) { "Filter" } %>
+  <% end %>
+
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_table do %>
+      <%= poetry_table_caption(class: "sr-only") { "Invoices with customer, status, due date, and amount, sorted by invoice number ascending." } %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head do %>
+            <%= poetry_link(href: "?sort=number&dir=desc", underline: :none, class: "inline-flex items-center gap-1 font-medium text-foreground") do %>
+              Invoice #
+              <%= poetry_icon(name: :"arrow-up", label: "Sorted ascending") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head do %>
+            <%= poetry_link(href: "?sort=customer&dir=asc", underline: :none, class: "inline-flex items-center gap-1 font-medium text-foreground") do %>
+              Customer
+              <%= poetry_icon(name: :"chevrons-up-down", class: "text-muted-foreground") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head { "Status" } %>
+          <%= poetry_table_head do %>
+            <%= poetry_link(href: "?sort=due_date&dir=asc", underline: :none, class: "inline-flex items-center gap-1 font-medium text-foreground") do %>
+              Due date
+              <%= poetry_icon(name: :"chevrons-up-down", class: "text-muted-foreground") %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_head(class: "text-right") do %>
+            <%= poetry_link(href: "?sort=amount&dir=asc", underline: :none, class: "inline-flex items-center justify-end gap-1 font-medium text-foreground") do %>
+              Amount
+              <%= poetry_icon(name: :"chevrons-up-down", class: "text-muted-foreground") %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% invoices.each do |invoice| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { invoice[:number] } %>
+            <%= poetry_table_cell { invoice[:customer] } %>
+            <%= poetry_table_cell { poetry_badge(variant: status_variant.fetch(invoice[:status])) { status_label.fetch(invoice[:status]) } } %>
+            <%= poetry_table_cell { invoice[:due_date] } %>
+            <%= poetry_table_cell(class: "text-right tabular-nums") { number_to_currency(invoice[:amount]) } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 1–8 of 24 invoices</p>
+    <%= poetry_pagination(current: 1, total: 3, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

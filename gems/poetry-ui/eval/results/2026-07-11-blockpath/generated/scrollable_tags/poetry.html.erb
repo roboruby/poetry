@@ -1,0 +1,21 @@
+<% version_tags = [
+  "v2.14.0", "v2.13.2", "v2.13.1", "v2.13.0", "v2.12.4",
+  "v2.12.3", "v2.12.2", "v2.12.1", "v2.12.0", "v2.11.0",
+  "v2.10.1", "v2.10.0", "v2.9.3", "v2.9.2", "v2.9.1",
+  "v2.9.0", "v2.8.1", "v2.8.0", "v2.7.1", "v2.7.0"
+] %>
+
+<div class="mx-auto max-w-sm p-6">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Version tags" } %>
+    <% card.with_description { "#{version_tags.size} releases, newest first" } %>
+
+    <%= poetry_scroll_area(label: "Version tags", classes: "h-48 w-full rounded-md border p-3") do %>
+      <ul class="flex flex-col gap-2">
+        <% version_tags.each do |tag| %>
+          <li><%= poetry_badge(variant: :secondary) { tag } %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>

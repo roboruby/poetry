@@ -1,0 +1,183 @@
+<section class="mx-auto max-w-5xl px-6 py-10">
+  <div class="flex items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-900">API keys</h1>
+      <p class="mt-1 text-sm text-gray-500">Manage the keys used to authenticate requests to your account.</p>
+    </div>
+
+    <button type="button" popovertarget="filter-results-sheet" popovertargetaction="show"
+      class="inline-flex shrink-0 items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">
+      <svg viewBox="0 0 20 20" fill="currentColor" class="size-4 text-gray-400" aria-hidden="true">
+        <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
+      </svg>
+      Filter results
+    </button>
+  </div>
+
+  <div class="mt-8 overflow-hidden rounded-lg border border-gray-200 shadow-sm">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Name</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Key</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Created</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Last used</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
+            <span class="sr-only">Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200 bg-white">
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-sm font-medium text-gray-900">Production server</td>
+          <td class="px-6 py-4 text-sm text-gray-500"><code class="font-mono">sk_live_••••••••3f2a</code></td>
+          <td class="px-6 py-4 text-sm text-gray-500">Jan 12, 2026</td>
+          <td class="px-6 py-4 text-sm text-gray-500">2 hours ago</td>
+          <td class="px-6 py-4 text-right text-sm">
+            <button type="button" popovertarget="delete-key-1" popovertargetaction="show"
+              class="font-medium text-red-600 hover:text-red-500 focus:outline-none focus-visible:underline">Delete</button>
+          </td>
+        </tr>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-sm font-medium text-gray-900">CI pipeline</td>
+          <td class="px-6 py-4 text-sm text-gray-500"><code class="font-mono">sk_live_••••••••7c11</code></td>
+          <td class="px-6 py-4 text-sm text-gray-500">Feb 3, 2026</td>
+          <td class="px-6 py-4 text-sm text-gray-500">1 day ago</td>
+          <td class="px-6 py-4 text-right text-sm">
+            <button type="button" popovertarget="delete-key-2" popovertargetaction="show"
+              class="font-medium text-red-600 hover:text-red-500 focus:outline-none focus-visible:underline">Delete</button>
+          </td>
+        </tr>
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 text-sm font-medium text-gray-900">Local development</td>
+          <td class="px-6 py-4 text-sm text-gray-500"><code class="font-mono">sk_test_••••••••90ad</code></td>
+          <td class="px-6 py-4 text-sm text-gray-500">Mar 21, 2026</td>
+          <td class="px-6 py-4 text-sm text-gray-500">3 weeks ago</td>
+          <td class="px-6 py-4 text-right text-sm">
+            <button type="button" popovertarget="delete-key-3" popovertargetaction="show"
+              class="font-medium text-red-600 hover:text-red-500 focus:outline-none focus-visible:underline">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Delete confirmation alert dialogs: manual popovers ignore outside clicks and Escape, so they can only be answered via the explicit Cancel/Delete buttons below. -->
+  <div id="delete-key-1" popover="manual" role="alertdialog" aria-labelledby="delete-key-1-title" aria-describedby="delete-key-1-desc" aria-modal="true"
+    class="m-auto w-full max-w-sm scale-95 rounded-lg border border-gray-200 bg-white p-6 opacity-0 shadow-2xl transition-[transform,opacity,overlay,display] duration-150 ease-out transition-discrete backdrop:bg-gray-900/50 [&:popover-open]:scale-100 [&:popover-open]:opacity-100 starting:[&:popover-open]:scale-95 starting:[&:popover-open]:opacity-0">
+    <h2 id="delete-key-1-title" class="text-base font-semibold text-gray-900">Delete “Production server” key?</h2>
+    <p id="delete-key-1-desc" class="mt-2 text-sm text-gray-500">This key will stop working immediately and any integration using it will break. This action cannot be undone.</p>
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" popovertarget="delete-key-1" popovertargetaction="hide" autofocus
+        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Cancel</button>
+      <button type="button" popovertarget="delete-key-1" popovertargetaction="hide"
+        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2">Delete key</button>
+    </div>
+  </div>
+
+  <div id="delete-key-2" popover="manual" role="alertdialog" aria-labelledby="delete-key-2-title" aria-describedby="delete-key-2-desc" aria-modal="true"
+    class="m-auto w-full max-w-sm scale-95 rounded-lg border border-gray-200 bg-white p-6 opacity-0 shadow-2xl transition-[transform,opacity,overlay,display] duration-150 ease-out transition-discrete backdrop:bg-gray-900/50 [&:popover-open]:scale-100 [&:popover-open]:opacity-100 starting:[&:popover-open]:scale-95 starting:[&:popover-open]:opacity-0">
+    <h2 id="delete-key-2-title" class="text-base font-semibold text-gray-900">Delete “CI pipeline” key?</h2>
+    <p id="delete-key-2-desc" class="mt-2 text-sm text-gray-500">This key will stop working immediately and any integration using it will break. This action cannot be undone.</p>
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" popovertarget="delete-key-2" popovertargetaction="hide" autofocus
+        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Cancel</button>
+      <button type="button" popovertarget="delete-key-2" popovertargetaction="hide"
+        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2">Delete key</button>
+    </div>
+  </div>
+
+  <div id="delete-key-3" popover="manual" role="alertdialog" aria-labelledby="delete-key-3-title" aria-describedby="delete-key-3-desc" aria-modal="true"
+    class="m-auto w-full max-w-sm scale-95 rounded-lg border border-gray-200 bg-white p-6 opacity-0 shadow-2xl transition-[transform,opacity,overlay,display] duration-150 ease-out transition-discrete backdrop:bg-gray-900/50 [&:popover-open]:scale-100 [&:popover-open]:opacity-100 starting:[&:popover-open]:scale-95 starting:[&:popover-open]:opacity-0">
+    <h2 id="delete-key-3-title" class="text-base font-semibold text-gray-900">Delete “Local development” key?</h2>
+    <p id="delete-key-3-desc" class="mt-2 text-sm text-gray-500">This key will stop working immediately and any integration using it will break. This action cannot be undone.</p>
+    <div class="mt-6 flex justify-end gap-3">
+      <button type="button" popovertarget="delete-key-3" popovertargetaction="hide" autofocus
+        class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Cancel</button>
+      <button type="button" popovertarget="delete-key-3" popovertargetaction="hide"
+        class="rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-600 focus-visible:ring-offset-2">Delete key</button>
+    </div>
+  </div>
+
+  <!-- Filter results sheet: auto popover pinned to the right edge, slides in via @starting-style. -->
+  <div id="filter-results-sheet" popover="auto" role="dialog" aria-labelledby="filter-results-title"
+    class="fixed inset-y-0 right-0 left-auto m-0 h-full w-full max-w-sm translate-x-full border-0 border-l border-gray-200 bg-white p-0 shadow-2xl transition-[transform,overlay,display] duration-300 ease-out transition-discrete backdrop:bg-gray-900/30 [&:popover-open]:translate-x-0 starting:[&:popover-open]:translate-x-full">
+    <form class="flex h-full flex-col">
+      <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+        <h2 id="filter-results-title" class="text-lg font-semibold text-gray-900">Filter results</h2>
+        <button type="button" popovertarget="filter-results-sheet" popovertargetaction="hide" aria-label="Close filter panel"
+          class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+          <svg viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex-1 space-y-6 overflow-y-auto px-6 py-6">
+        <div>
+          <label for="filter-name" class="block text-sm font-medium text-gray-700">Name</label>
+          <input type="search" id="filter-name" name="filter[name]" autofocus placeholder="Search by key name"
+            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500">
+        </div>
+
+        <fieldset>
+          <legend class="text-sm font-medium text-gray-700">Status</legend>
+          <div class="mt-2 space-y-2">
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="checkbox" name="filter[status][]" value="active" checked class="size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              Active
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="checkbox" name="filter[status][]" value="revoked" class="size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              Revoked
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="checkbox" name="filter[status][]" value="expired" class="size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              Expired
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend class="text-sm font-medium text-gray-700">Environment</legend>
+          <div class="mt-2 space-y-2">
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="radio" name="filter[environment]" value="all" checked class="size-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              All environments
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="radio" name="filter[environment]" value="live" class="size-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              Live
+            </label>
+            <label class="flex items-center gap-2 text-sm text-gray-600">
+              <input type="radio" name="filter[environment]" value="test" class="size-4 border-gray-300 text-indigo-600 focus:ring-indigo-500">
+              Test
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <span class="text-sm font-medium text-gray-700">Created</span>
+          <div class="mt-2 grid grid-cols-2 gap-3">
+            <div>
+              <label for="filter-created-from" class="block text-xs text-gray-500">From</label>
+              <input type="date" id="filter-created-from" name="filter[created_from]"
+                class="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+            </div>
+            <div>
+              <label for="filter-created-to" class="block text-xs text-gray-500">To</label>
+              <input type="date" id="filter-created-to" name="filter[created_to]"
+                class="mt-1 block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4">
+        <button type="reset" class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2">Reset</button>
+        <button type="button" popovertarget="filter-results-sheet" popovertargetaction="hide"
+          class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 focus-visible:ring-offset-2">Apply filters</button>
+      </div>
+    </form>
+  </div>
+</section>

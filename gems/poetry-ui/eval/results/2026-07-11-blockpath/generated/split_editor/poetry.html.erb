@@ -1,0 +1,87 @@
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Split editor</h1>
+    <p class="text-sm text-muted-foreground">Browse the project tree on the left and edit the selected file on the right. Drag the divider to resize either pane.</p>
+  </div>
+
+  <div class="h-[640px] overflow-hidden rounded-lg border">
+    <%= poetry_resizable(direction: :horizontal, grip: true) do |r| %>
+      <% r.with_panel(default_size: 24, min_size: 16, max_size: 45, classes: "flex h-full flex-col overflow-hidden") do %>
+        <div class="flex shrink-0 items-center justify-between border-b px-3 py-2.5">
+          <span class="text-sm font-semibold">Files</span>
+          <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "New file") do |b| %>
+            <% b.with_leading { poetry_icon(name: :plus) } %>
+          <% end %>
+        </div>
+        <%= poetry_scroll_area(label: "File list", class: "flex-1") do %>
+          <div class="space-y-1 p-2">
+            <%= poetry_collapsible(open: true) do |c| %>
+              <% c.with_trigger do %>
+                <span class="flex items-center gap-2"><%= poetry_icon(name: :"folder-open") %>app/models</span>
+              <% end %>
+              <div class="ml-4 space-y-1 border-l pl-2">
+                <%= poetry_item_group do %>
+                  <%= poetry_item(size: :sm, variant: :muted, media_variant: :icon, tag: :a, href: "#", role: "listitem") do |item| %>
+                    <% item.with_media { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "order.rb" } %>
+                  <% end %>
+                  <%= poetry_item(size: :sm, tag: :a, href: "#", role: "listitem") do |item| %>
+                    <% item.with_media(variant: :icon) { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "customer.rb" } %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+
+            <%= poetry_collapsible(open: true) do |c| %>
+              <% c.with_trigger do %>
+                <span class="flex items-center gap-2"><%= poetry_icon(name: :"folder-open") %>app/controllers</span>
+              <% end %>
+              <div class="ml-4 space-y-1 border-l pl-2">
+                <%= poetry_item_group do %>
+                  <%= poetry_item(size: :sm, tag: :a, href: "#", role: "listitem") do |item| %>
+                    <% item.with_media(variant: :icon) { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "orders_controller.rb" } %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+
+            <%= poetry_collapsible(open: false) do |c| %>
+              <% c.with_trigger do %>
+                <span class="flex items-center gap-2"><%= poetry_icon(name: :folder) %>config</span>
+              <% end %>
+              <div class="ml-4 space-y-1 border-l pl-2">
+                <%= poetry_item_group do %>
+                  <%= poetry_item(size: :sm, tag: :a, href: "#", role: "listitem") do |item| %>
+                    <% item.with_media(variant: :icon) { poetry_icon(name: :"file-code") } %>
+                    <% item.with_title { "routes.rb" } %>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% r.with_panel(default_size: 76, min_size: 40, classes: "flex h-full flex-col overflow-hidden") do %>
+        <div class="flex shrink-0 items-center justify-between border-b px-4 py-2">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :"file-code") %>
+            <span class="text-sm font-medium">app/models/order.rb</span>
+            <%= poetry_badge(variant: :secondary) { "Ruby" } %>
+          </div>
+          <%= poetry_button(variant: :outline, size: :sm) { "Save" } %>
+        </div>
+        <div class="min-h-0 flex-1">
+          <%= poetry_textarea(
+                name: "content",
+                rows: 28,
+                class: "h-full w-full resize-none rounded-none border-0 font-mono text-sm shadow-none focus-visible:ring-0",
+                value: "class Order < ApplicationRecord\n  belongs_to :customer\n  has_many :line_items, dependent: :destroy\n\n  enum status: { pending: 0, fulfilled: 1, cancelled: 2 }\n\n  validates :number, presence: true, uniqueness: true\n\n  def total\n    line_items.sum(&:subtotal)\n  end\nend\n"
+              ) %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,65 @@
+<section class="mx-auto max-w-4xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold tracking-tight">Team Members</h1>
+    <p class="text-sm text-muted-foreground">App menu, row options, and right-click actions.</p>
+  </div>
+
+  <%= poetry_menubar(label: "Main menu") do |menubar| %>
+    <% menubar.with_menu do |menu| %>
+      <% menu.with_trigger { "File" } %>
+      <% menu.with_item(shortcut: "⌘N") { "New File" } %>
+      <% menu.with_item(shortcut: "⌘O") { "Open…" } %>
+      <% menu.with_separator %>
+      <% menu.with_item(shortcut: "⌘S") { "Save" } %>
+      <% menu.with_item { "Save As…" } %>
+      <% menu.with_separator %>
+      <% menu.with_item(shortcut: "⌘W") { "Close Window" } %>
+    <% end %>
+    <% menubar.with_menu do |menu| %>
+      <% menu.with_trigger { "View" } %>
+      <% menu.with_checkbox_item(checked: true) { "Show Toolbar" } %>
+      <% menu.with_checkbox_item(checked: true) { "Show Sidebar" } %>
+      <% menu.with_checkbox_item { "Show Status Bar" } %>
+      <% menu.with_separator %>
+      <% menu.with_item(shortcut: "⌘+") { "Zoom In" } %>
+      <% menu.with_item(shortcut: "⌘-") { "Zoom Out" } %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_item_group(label: "Team members") do %>
+    <% [
+         { name: "Jordan Ellis", meta: "jordan.ellis@example.com · Editor" },
+         { name: "Priya Nair", meta: "priya.nair@example.com · Admin" },
+         { name: "Sam Okafor", meta: "sam.okafor@example.com · Viewer" },
+       ].each do |member| %>
+      <%= poetry_context_menu do |cm| %>
+        <% cm.with_trigger do %>
+          <%= poetry_item(size: :default, variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+            <% item.with_media { poetry_icon(name: :"circle-user") } %>
+            <% item.with_title { member[:name] } %>
+            <% item.with_description { member[:meta] } %>
+            <% item.with_actions do %>
+              <%= poetry_dropdown_menu(align: :end) do |menu| %>
+                <% menu.with_trigger { poetry_button(variant: :outline, size: :sm) { "Options" } } %>
+                <% menu.with_label { member[:name] } %>
+                <% menu.with_item { "View Account" } %>
+                <% menu.with_item { "Copy Email" } %>
+                <% menu.with_separator %>
+                <% menu.with_checkbox_item(checked: true) { "Admin Access" } %>
+                <% menu.with_separator %>
+                <% menu.with_item(variant: :destructive) { "Delete Member" } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% cm.with_label { member[:name] } %>
+        <% cm.with_item { "Open Profile" } %>
+        <% cm.with_item { "Copy Email" } %>
+        <% cm.with_separator %>
+        <% cm.with_checkbox_item(checked: true) { "Pin to Top" } %>
+        <% cm.with_separator %>
+        <% cm.with_item(variant: :destructive) { "Delete Member" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>

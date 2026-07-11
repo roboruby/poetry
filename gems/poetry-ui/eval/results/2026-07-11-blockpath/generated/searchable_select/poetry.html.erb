@@ -1,0 +1,25 @@
+<section class="mx-auto max-w-md p-10">
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Project setup" } %>
+    <% card.with_description { "Choose the framework this project will be built on." } %>
+
+    <%= poetry_field id: "framework-picker", label_text: "Framework", hint: "Type to filter frameworks." do |field| %>
+      <%= poetry_combobox id: field.id,
+                           name: "framework",
+                           placeholder: "Select a framework...",
+                           search_placeholder: "Search frameworks...",
+                           width: "w-full" do |combobox| %>
+        <% combobox.with_item(value: "nextjs") { "Next.js" } %>
+        <% combobox.with_item(value: "sveltekit") { "SvelteKit" } %>
+        <% combobox.with_item(value: "nuxtjs") { "Nuxt.js" } %>
+        <% combobox.with_item(value: "remix") { "Remix" } %>
+        <% combobox.with_item(value: "astro") { "Astro" } %>
+        <% combobox.with_empty { "No framework found." } %>
+      <% end %>
+    <% end %>
+
+    <% card.with_footer do %>
+      <p class="text-sm text-muted-foreground">This choice sets the starter template and default deploy config.</p>
+    <% end %>
+  <% end %>
+</section>

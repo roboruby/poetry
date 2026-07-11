@@ -1,0 +1,84 @@
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Notification settings</h1>
+      <p class="text-sm text-muted-foreground">Control how notifications reach you and how the notification list is organized.</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <%= poetry_toggle(variant: :outline, size: :default, label: "Bookmark") do %>
+        <%= poetry_icon(name: :bookmark, class: "size-4") %>
+      <% end %>
+      <%= poetry_toggle_group(type: :single, value: "list", label: "Notification list layout") do |group| %>
+        <% group.with_item(value: "list", label: "List view") do %>
+          <%= poetry_icon(name: :list, class: "size-4") %>
+        <% end %>
+        <% group.with_item(value: "grid", label: "Grid view") do %>
+          <%= poetry_icon(name: :"layout-grid", class: "size-4") %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_with url: "#", method: :patch, class: "contents" do %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "General preferences" } %>
+      <% card.with_description { "Review these settings, then save your changes." } %>
+      <% card.with_footer do %>
+        <div class="flex w-full justify-end">
+          <%= poetry_button(type: :submit) { "Save changes" } %>
+        </div>
+      <% end %>
+
+      <div class="space-y-6">
+        <%= poetry_checkbox(name: "accept_terms", label: "I accept the notification terms and conditions", required: true) %>
+
+        <div class="space-y-3">
+          <%= poetry_slider(name: "alert_volume", label: "Alert volume", min: 0, max: 100, step: 5, value: 60, value_text: "60%") %>
+          <p class="text-sm text-muted-foreground">How loud notification sounds play on this device.</p>
+        </div>
+
+        <%= poetry_field(id: "unsubscribe_note", label_text: "Unsubscribe note", hint: "Optional — tell us why, so we can keep improving.") do |field| %>
+          <%= poetry_textarea(name: "unsubscribe_note", placeholder: "Let us know why you're leaving this list…", rows: 4, **field.control_attributes) %>
+        <% end %>
+
+        <%= poetry_field(id: "confirmation_code", label_text: "Confirmation code", hint: "Enter the 6-digit code we texted you to confirm these changes.") do |field| %>
+          <%= poetry_input_otp(name: "confirmation_code", length: 6, **field.control_attributes) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Quick settings" } %>
+    <% card.with_description { "These apply as soon as you confirm — no need to save the form above." } %>
+
+    <div class="space-y-6">
+      <%= form_with url: "#", method: :patch, class: "flex items-center justify-between gap-4" do %>
+        <div class="space-y-0.5">
+          <p class="text-sm font-medium">Email alerts</p>
+          <p class="text-sm text-muted-foreground">Get an email the moment a new notification arrives.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <%= poetry_switch(name: "email_alerts", checked: true, label: "Email alerts") %>
+          <%= poetry_button(type: :submit, variant: :outline, size: :sm) { "Apply" } %>
+        </div>
+      <% end %>
+
+      <%= poetry_separator %>
+
+      <%= form_with url: "#", method: :patch, class: "flex items-end justify-between gap-4" do %>
+        <div class="flex-1">
+          <%= poetry_field(id: "digest_frequency", label_text: "Digest frequency", hint: "Choosing a new frequency submits right away.") do |field| %>
+            <%= poetry_select(name: "digest_frequency", value: "daily", placeholder: "Choose a frequency", **field.control_attributes) do |select| %>
+              <% select.with_item(value: "realtime", label: "Real-time") %>
+              <% select.with_item(value: "daily", label: "Daily digest") %>
+              <% select.with_item(value: "weekly", label: "Weekly digest") %>
+              <% select.with_item(value: "never", label: "Never") %>
+            <% end %>
+          <% end %>
+        </div>
+        <%= poetry_button(type: :submit, variant: :outline, size: :sm) { "Update" } %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

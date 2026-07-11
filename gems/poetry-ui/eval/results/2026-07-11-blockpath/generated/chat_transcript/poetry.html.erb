@@ -1,0 +1,44 @@
+<div class="mx-auto max-w-2xl p-6">
+  <%= poetry_message_scroller(id: "chat-transcript") do %>
+
+    <%= poetry_message_scroller_item(id: "divider-today") do %>
+      <%= poetry_marker(variant: :separator) do %>
+        Today
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "message-1") do %>
+      <%= poetry_message(align: :start) do |m| %>
+        <% m.with_avatar do %>
+          <%= poetry_avatar(label: "Assistant") do %>AI<% end %>
+        <% end %>
+        <% m.with_header do %>Assistant<% end %>
+
+        <%= poetry_bubble_group do %>
+          <%= poetry_bubble(variant: :muted) do %>
+            <p>I pulled the numbers together &mdash; here's the file.</p>
+            <%= poetry_attachment(orientation: :horizontal, size: :default, state: :done) do |a| %>
+              <% a.with_title do %>quarterly-report.pdf<% end %>
+              <% a.with_description do %>2.4 MB<% end %>
+              <% a.with_action(label: "Download") do %>
+                <%= poetry_icon(name: :download) %>
+              <% end %>
+            <% end %>
+          <% end %>
+
+          <%= poetry_bubble(variant: :outline, tag: :button) do %>Looks good, thanks!<% end %>
+        <% end %>
+
+        <% m.with_footer do %>2:14 PM<% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "status-thinking") do %>
+      <%= poetry_marker(announce: :status) do |m| %>
+        <% m.with_icon(name: :"loader-circle") %>
+        Assistant is thinking&hellip;
+      <% end %>
+    <% end %>
+
+  <% end %>
+</div>
