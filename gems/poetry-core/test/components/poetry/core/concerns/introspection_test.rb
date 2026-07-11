@@ -24,6 +24,10 @@ module Poetry
           class Tray < ViewComponent::Base
             renders_one :handle, ->(**options, &block) { { options: options, block: block } }
 
+            # The Menubar::Menu shape one fact further: the builder
+            # declares which of its own setters a call cannot omit.
+            REQUIRED_SLOTS = { handle: "the grip" }.freeze
+
             def with_grip(text)
               with_handle { text }
             end
@@ -64,6 +68,9 @@ module Poetry
             SLOT_BUILDERS = { row: Tray }.freeze
             SLOT_REQUIRED_CONTENT = { slide: "the slide" }.freeze
             SLOT_BLOCK_YIELDS = { cell: "the row record" }.freeze
+            # Keyed by setter: a renders_one name and a polymorphic type
+            # both resolve.
+            REQUIRED_SLOTS = { icon: "the leading glyph", row: "at least one row" }.freeze
 
             # A hand-rolled convenience beyond the registered slots - part
             # of the consumer call surface (the NavigationMenu#with_link
@@ -216,6 +223,32 @@ module Poetry
 
           assert_equal %i[color mode shape size], styles.map { |s| s[:name] }.sort
           assert(styles.all? { |s| s[:required] })
+        end
+
+        # --- REQUIRED_SLOTS (the menu crash class) ---
+
+        def test_declared_required_slots_are_validated_and_carried
+          assert_equal({ "icon" => "the leading glyph", "row" => "at least one row" },
+                       props[:required_slots])
+        end
+
+        def test_builder_surfaces_carry_their_own_required_slots
+          surface = props[:slots].find { |slot| slot[:name] == :entries }[:builders].fetch(:row)
+
+          assert_equal({ "handle" => "the grip" }, surface[:required_slots])
+        end
+
+        def test_an_unresolvable_required_slots_key_fails_loudly
+          orphan = Class.new(Poetry::Core::Component) do
+            renders_one :icon
+            const_set(:REQUIRED_SLOTS, { titel: "a typo" }.freeze)
+          end
+
+          error = assert_raises(Poetry::Core::Error) do
+            Introspection.required_slots_surface(orphan, Introspection.slot_surface(orphan))
+          end
+          assert_includes error.message, ":titel"
+          assert_includes error.message, "matches no slot setter"
         end
       end
     end

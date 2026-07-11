@@ -25,11 +25,13 @@ module Poetry
           #
           # @return [Hash] { styles: [...], options: [...], slots: [...] }
           def prop_definitions
+            slots = slot_definitions
             {
               styles: style_attributes.map { |name| style_definition(name) },
               options: option_attributes.map { |name| option_definition(name) },
-              slots: slot_definitions,
-              slot_extras: slot_extras
+              slots: slots,
+              slot_extras: slot_extras,
+              required_slots: Introspection.required_slots_surface(self, slots)
             }
           end
 
@@ -133,6 +135,18 @@ module Poetry
         #   content block" (Carousel with_item), so a slot-owning class
         #   declares SLOT_REQUIRED_CONTENT = { setter => hint } (the
         #   SLOT_BUILDERS pattern) and the registry states the requirement
+        # - required_slots: a before_render raise ("Menubar menu requires
+        # with_trigger" - the menu crash rendered FOUR truthful
+        #   checks silent) cannot be introspected, so a slot-owning class
+        #   declares REQUIRED_SLOTS = { setter => hint } and the registry
+        #   states which setters a call cannot omit. Keys must resolve to a
+        #   declared setter (name / singular / type) - an unresolvable key
+        #   fails registry generation rather than shipping a rule no
+        #   template could ever satisfy. Only declared where satisfaction
+        #   is exactly derivable: a requirement satisfiable through a
+        #   hand-rolled alias (NavigationMenu's with_item-or-with_link)
+        #   stays undeclared - a false "missing slot" on a legitimate
+        #   template is worse than a silent gap.
         class << self
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
@@ -156,6 +170,22 @@ module Poetry
               surfaces = builder_surfaces(slot_name, config, builders, seen + [klass])
               definition[:builders] = surfaces unless surfaces.empty?
               definition
+            end
+          end
+
+          # The validated REQUIRED_SLOTS declaration of a slot-owning class:
+          # each key must name a setter the given slot definitions actually
+          # generate (the slot itself, a collection's singular, or a
+          # polymorphic type).
+          def required_slots_surface(klass, definitions)
+            declared_constant(klass, :REQUIRED_SLOTS).to_h do |key, hint|
+              name = key.to_s
+              unless definitions.any? { |slot| resolves_setter?(slot, name) }
+                raise Poetry::Core::Error,
+                      "#{klass}::REQUIRED_SLOTS key #{key.inspect} matches no slot setter"
+              end
+
+              [name, hint]
             end
           end
 
@@ -190,6 +220,15 @@ module Poetry
             klass.const_defined?(name) ? klass.const_get(name) : {}
           rescue NameError
             {}
+          end
+
+          # Does a slot definition generate this setter name? Mirrors the
+          # checker's slot_entry resolution: exact name, a collection's
+          # singular, or a polymorphic type.
+          def resolves_setter?(slot, name)
+            slot[:name].to_s == name ||
+              (slot[:many] && slot[:name].to_s == "#{name}s") ||
+              (slot[:types] || []).map(&:to_s).include?(name)
           end
 
           # The per-item setter suffixes a slot generates (the plural batch
@@ -291,6 +330,8 @@ module Poetry
 
               surface = { slots: slots }
               surface[:slot_extras] = extras unless extras.empty?
+              required = required_slots_surface(builder, slots)
+              surface[:required_slots] = required unless required.empty?
               [setter.to_sym, surface]
             end.to_h
           end

@@ -147,6 +147,10 @@ module Poetry
         if component.respond_to?(:required_content) && (hint = component.required_content)
           entry["requires_content"] = hint
         end
+        # The REQUIRED_SLOTS declaration (the menu crash class): the
+        # same fact that raises in before_render lets poetry check flag a
+        # call that never sets the slot, statically.
+        entry["required_slots"] = plain(props[:required_slots]) if props[:required_slots]&.any?
         entry
       end
 

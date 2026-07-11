@@ -65,12 +65,33 @@ module Poetry
         if (hint = entry["requires_content"])
           lines << "Content block REQUIRED (#{hint}) - a blockless call raises."
         end
+        (entry["required_slots"] || {}).each do |setter, hint|
+          lines << "Slot REQUIRED: with_#{setter} (#{hint}) - a call without it raises."
+        end
         lines.concat(prop_lines(entry))
         slots = entry["slots"].map { |slot| slot_summary(slot) }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
+        # The block back-reference: the arrow points UP at the
+        # surface agents actually read - a screen containing this component
+        # should start from the vetted composition, not from scratch.
+        if (blocks = blocks_composing(title(path))).any?
+          lines << "In blocks: #{blocks.join(", ")} - for a screen, start from the block " \
+                   "(MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch."
+        end
         lines.concat(wiring_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
+      end
+
+      # Block names composing a component (inverted from the blocks
+      # catalog), or [] for a registry without blocks.
+      def blocks_composing(component_title)
+        @blocks_composing ||= (@registry.blocks || {}).each_with_object(Hash.new do |h, k|
+          h[k] = []
+        end) do |(name, entry), map|
+          entry["components"].each { |component| map[component] << "`#{name}`" }
+        end
+        @blocks_composing[component_title]
       end
 
       # The Stimulus wiring surface (N7 W3): the controllers a component
@@ -128,6 +149,13 @@ module Poetry
         (slot["required_content"] || {}).each do |setter, hint|
           qualifiers << "with_#{setter} REQUIRES a content block (#{hint})"
         end
+        # The nested requirement seam (the menu crash: with_menu
+        # without with_trigger raises - stated where agents read).
+        (slot["builders"] || {}).each do |setter, surface|
+          (surface["required_slots"] || {}).each do |required, hint|
+            qualifiers << "each with_#{setter} REQUIRES with_#{required} inside its block (#{hint})"
+          end
+        end
         "#{slot["name"]}#{" (#{qualifiers.join("; ")})" if qualifiers.any?}"
       end
 
@@ -154,15 +182,17 @@ module Poetry
 
           ## Blocks
 
-          Start a screen from a vetted block, then edit it in place:
-          `bin/rails g poetry:block <name>` copies it into app/views/blocks/
-          as source the app owns (--list to browse); the MCP `describe_block`
-          tool returns the same source boot-free. Blocks carry the composed
-          patterns - containment, status color-coding, page furniture,
-          realistic content - so a screen starts composed, not blank. Page
-          framing counts: a section that IS the page's subject keeps its
-          container + breathing room (the section blocks demonstrate the
-          wrapper) - a bare component at the viewport origin reads cramped.
+          Blocks are the DEFAULT starting point, not a fallback: route every
+          brief through the MCP `compose` tool first - it returns the
+          matching block's source ready to adapt, or the component path when
+          nothing matches. Without MCP: `bin/rails g poetry:block <name>`
+          copies a block into app/views/blocks/ as source the app owns
+          (--list to browse). Blocks carry the composed patterns -
+          containment, status color-coding, page furniture, realistic
+          content - so a screen starts composed, not blank. Page framing
+          counts: a section that IS the page's subject keeps its container +
+          breathing room (the section blocks demonstrate the wrapper) - a
+          bare component at the viewport origin reads cramped.
 
           #{lines.join("\n")}
         TEXT

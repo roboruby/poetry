@@ -160,6 +160,26 @@ module Poetry
           @components.dig(path, "requires_content")
         end
 
+        # Setters an owner's call cannot omit (the menu crash class:
+        # Menubar's menu without with_trigger raises at render) - setter
+        # name => hint, at every depth the slot queries work at.
+        def required_slots(owner)
+          (owner.is_a?(Hash) ? owner["required_slots"] : @components.dig(owner, "required_slots")) || {}
+        end
+
+        # The setter names that satisfy one required-slot key: the slot's
+        # own name, a collection's singular, and every polymorphic type
+        # ("at least one item" is satisfied by any member of the union -
+        # exactly the runtime items? predicate).
+        def satisfying_setters(owner, key)
+          slot = slot_entry(owner, key)
+          return [key] unless slot
+
+          names = [slot["name"]]
+          names << slot["name"].delete_suffix("s") if slot["many"]
+          names + (slot["types"] || [])
+        end
+
         def raw_color(class_string)
           class_string.scan(RAW_COLOR)
         end
@@ -182,19 +202,28 @@ module Poetry
         def lint(source)
           require "herb"
           require "prism"
+          # Every block-param binding this lint opens, in document order -
+          # each accumulates the setters actually called on it so the
+          # required-slot accounting can run once the whole template has
+          # been walked (a with_trigger in the last chunk satisfies a
+          # requirement opened in the first). Reset per lint: the Runner
+          # reuses one Linter across files.
+          @instances = []
           document = Herb.parse(source)
           findings = document.errors.map do |error|
             Finding.new(rule: "parse-error", severity: :error, message: error.message,
                         line: error.location&.start&.line)
           end
-          # Block-param name -> component path, accumulated in document order
-          # (the `do |alert|` chunk precedes the `alert.with_icon` chunk), so
-          # slot calls resolve across ERB tag boundaries.
+          # Block-param name -> instance (owner + accounting), accumulated in
+          # document order (the `do |alert|` chunk precedes the
+          # `alert.with_icon` chunk), so slot calls resolve across ERB tag
+          # boundaries.
           bindings = {}
           walk(document.value) do |node|
             findings.concat(ruby_findings(node, bindings)) if erb?(node)
             findings.concat(attribute_findings(node)) if node.is_a?(Herb::AST::HTMLAttributeNode)
           end
+          findings.concat(missing_slot_findings)
           findings.sort_by { |finding| [finding.line || 0, finding.rule] }
         end
 
@@ -214,7 +243,9 @@ module Poetry
           collect_calls(parsed.value, calls)
           content_fed = content_fed_calls(parsed.value)
           findings = calls.flat_map { |call| call_findings(call, base_line, bindings, content_fed) }
-          findings + slot_findings(parsed.value, bindings, base_line)
+          findings += slot_findings(parsed.value, bindings, base_line)
+          mark_escaped_bindings(parsed.value, bindings)
+          findings
         end
 
         # Receivers of a chained .with_content("...") - content arrives
@@ -259,14 +290,15 @@ module Poetry
                    helper_arity_findings(helper, call, line)
           end
 
-          record_binding(call, path, bindings)
+          record_binding(call, path, bindings, line)
           pairs = keyword_pairs(call)
           findings = pairs.flat_map do |key, value, kw_line|
             option_findings(path, key, value, base_line + kw_line - 1)
           end
           findings + missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
-            content_findings(path, helper, call, line, content_fed)
+            content_findings(path, helper, call, line, content_fed) +
+            blockless_slot_findings(path, helper, call, pairs, line)
         end
 
         # The requires_content tier (the floating crash class): a
@@ -405,12 +437,18 @@ module Poetry
         # A poetry_* call opening a block binds its param name to the
         # component (poetry_alert do |alert| -> alert), so later chunks can
         # validate alert.with_icon(...) against the alert slot surface.
-        # Bindings map param name -> [owner, label]: owner is a component
-        # path or a nested builder surface, label names the owner in
-        # messages.
-        def record_binding(call, path, bindings)
+        # Bindings map param name -> instance: owner is a component path or
+        # a nested builder surface, label names the owner in
+        # messages, and called/escaped carry the required-slot accounting.
+        def record_binding(call, path, bindings, line)
           name = block_param_name(call)
-          bindings[name] = [path, helper_of(path)] if name
+          bindings[name] = track_instance(owner: path, label: helper_of(path), line: line) if name
+        end
+
+        def track_instance(owner:, label:, line:)
+          instance = { owner: owner, label: label, line: line, called: Set.new, escaped: false }
+          @instances << instance
+          instance
         end
 
         def block_param_name(call)
@@ -425,8 +463,8 @@ module Poetry
           slot_calls = []
           collect_slot_calls(root, slot_calls)
           slot_calls.flat_map do |call|
-            owner, label = bindings[receiver_name(call)]
-            owner ? slot_call_findings(call, owner, label, base_line, bindings) : []
+            instance = bindings[receiver_name(call)]
+            instance ? slot_call_findings(call, instance, base_line, bindings) : []
           end
         end
 
@@ -452,8 +490,11 @@ module Poetry
           end
         end
 
-        def slot_call_findings(call, owner, label, base_line, bindings)
+        def slot_call_findings(call, instance, base_line, bindings)
+          owner = instance[:owner]
+          label = instance[:label]
           slot_name = call.name.to_s.delete_prefix("with_")
+          instance[:called] << slot_name
           line = base_line + (call.location.start_line - 1)
           entry = @catalog.slot_entry(owner, slot_name)
           unless entry
@@ -468,7 +509,7 @@ module Poetry
           # nested surface (menubar.with_menu do |menu| - menu's own items
           # then lint at this same depth).
           if (surface = entry.dig("builders", slot_name)) && (param = block_param_name(call))
-            bindings[param] = [surface, "with_#{slot_name}"]
+            bindings[param] = track_instance(owner: surface, label: "with_#{slot_name}", line: line)
           end
 
           findings = arity_findings(entry, slot_name, call, line) +
@@ -497,6 +538,92 @@ module Poetry
                                              "requires a content block (#{hint})", line: line)
           end
           findings
+        end
+
+        # --- the required-slot tier (the menu crash class) ---
+
+        # A required-slot component called with NO block cannot set the
+        # slot at all (the setters live on the block param) - the blockless
+        # sibling of the bound-block accounting below. Positional arguments
+        # or a same-named keyword may carry the requirement invisibly, and
+        # a receiver'd call (a form builder's poetry_select) owns its own
+        # contract - all of those stand down.
+        def blockless_slot_findings(path, helper, call, pairs, line)
+          return [] if call.block || call.receiver
+
+          required = @catalog.required_slots(path)
+          return [] if required.empty?
+
+          positionals = positional_arguments(call)
+          return [] if positionals.nil? || positionals.any? || splatted?(call)
+
+          keys = pairs.map(&:first)
+          required.filter_map do |key, hint|
+            next if keys.include?(key)
+
+            Finding.new(rule: "missing-slot", severity: :error,
+                        message: "#{helper} requires with_#{key} (#{hint}) - open a block: " \
+                                 "#{helper}(...) do |c| ... c.with_#{key} ... end", line: line)
+          end
+        end
+
+        # A bound block param that travels anywhere except a with_* receiver
+        # position (a partial's locals, a helper argument, a non-setter
+        # method) may set slots where this lint cannot see - required-slot
+        # accounting stands down for that instance rather than guess.
+        def mark_escaped_bindings(root, bindings)
+          return if bindings.empty?
+
+          receivers = Set.new
+          walk_prism(root) do |node|
+            next unless node.is_a?(Prism::CallNode) && node.name.to_s.start_with?("with_")
+
+            receivers << node.receiver.object_id if node.receiver
+          end
+          walk_prism(root) do |node|
+            name = variable_read_name(node)
+            next unless name && (instance = bindings[name])
+
+            instance[:escaped] = true unless receivers.include?(node.object_id)
+          end
+        end
+
+        # A read of a bound name: a local variable in the binding chunk, a
+        # bare argless call in later chunks (the receiver_name duality).
+        def variable_read_name(node)
+          case node
+          when Prism::LocalVariableReadNode then node.name.to_s
+          when Prism::CallNode
+            node.name.to_s if node.receiver.nil? && node.arguments.nil? && node.block.nil?
+          end
+        end
+
+        # The end-of-template accounting: every non-escaped binding must
+        # have called each required setter of its owner (satisfied by the
+        # slot's own setter, a collection's singular, or any polymorphic
+        # type - the runtime predicate, textually). The menu arm ran
+        # FOUR truthful checks and crashed on exactly this omission.
+        def missing_slot_findings
+          @instances.flat_map do |instance|
+            next [] if instance[:escaped]
+
+            @catalog.required_slots(instance[:owner]).filter_map do |key, hint|
+              next if @catalog.satisfying_setters(instance[:owner], key).intersect?(instance[:called].to_a)
+
+              Finding.new(rule: "missing-slot", severity: :error,
+                          message: "#{instance[:label]} requires with_#{key} (#{hint})",
+                          line: instance[:line])
+            end
+          end
+        end
+
+        def walk_prism(node, &block)
+          return unless node
+
+          yield node
+          return unless node.respond_to?(:compact_child_nodes)
+
+          node.compact_child_nodes.each { |child| walk_prism(child, &block) }
         end
 
         # The block seam of a setter, both directions. A yieldless

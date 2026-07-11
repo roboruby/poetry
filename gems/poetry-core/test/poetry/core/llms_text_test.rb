@@ -39,8 +39,24 @@ module Poetry
           index = LlmsText.new(registry: registry).index
 
           assert_includes index, "## Blocks"
-          assert_includes index, "Start a screen from a vetted block"
+          assert_includes index, "Blocks are the DEFAULT starting point, not a fallback"
+          assert_includes index, "route every\nbrief through the MCP `compose` tool first"
           assert_includes index, "- Data index (`data-index`): A records screen. [composes: badge]"
+        end
+      end
+
+      # The block back-reference: the component section points UP at
+      # the blocks composing it, so wherever an agent enters the catalog
+      # the arrow to the vetted composition is in view.
+      def test_component_sections_carry_the_block_back_reference
+        with_registry do |registry|
+          entry = { "class_name" => "Poetry::Ui::Badge::Component", "bem_block" => "poetry-ui-badge",
+                    "styles" => [], "options" => [], "slots" => [] }
+          full = LlmsText.new(registry: FakeRegistry.new(entries: { "poetry/ui/badge" => entry },
+                                                         blocks: registry.blocks,
+                                                         source_root: registry.source_root)).full
+
+          assert_includes full, "In blocks: `data-index` - for a screen, start from the block"
         end
       end
 
@@ -87,6 +103,31 @@ module Poetry
         assert_includes full, "with_item yields NOTHING to the block - no |param|, write content directly"
         assert_includes full, "with_item keywords: classes: ONLY"
         assert_includes full, "with_item REQUIRES a content block (the slide)"
+      end
+
+      # The crash class, stated in the contract text: a
+      # required slot speaks at the component level AND at the nested
+      # builder seam where the menu crash actually lived.
+      def test_full_states_the_required_slot_contracts
+        entry = {
+          "class_name" => "Poetry::Ui::Menubar::Component", "bem_block" => "poetry-ui-menubar",
+          "identifier" => "poetry--ui--menubar",
+          "styles" => [], "options" => [],
+          "required_slots" => { "menu" => "at least one menu" },
+          "slots" => [
+            { "name" => "menus", "many" => true,
+              "builders" => { "menu" => {
+                "required_slots" => { "trigger" => "the top-level menu button" }, "slots" => []
+              } } }
+          ]
+        }
+        registry = FakeRegistry.new(entries: { "poetry/ui/menubar" => entry }, blocks: nil,
+                                    source_root: Pathname("."))
+        full = LlmsText.new(registry: registry).full
+
+        assert_includes full, "Slot REQUIRED: with_menu (at least one menu) - a call without it raises."
+        assert_includes full,
+                        "each with_menu REQUIRES with_trigger inside its block (the top-level menu button)"
       end
     end
   end

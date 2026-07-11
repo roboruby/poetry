@@ -60,10 +60,13 @@ module Poetry
           },
           "poetry/ui/menubar" => {
             "styles" => [], "options" => [],
+            "required_slots" => { "menu" => "at least one menu" },
             "slots" => [
               { "name" => "menus", "many" => true, "setter_args" => { "menu" => 0 },
                 "builders" => {
                   "menu" => {
+                    "required_slots" => { "trigger" => "the top-level menu button",
+                                          "item" => "at least one item" },
                     "slots" => [
                       { "name" => "trigger", "many" => false, "setter_args" => { "trigger" => 0 } },
                       { "name" => "items", "many" => true, "types" => %w[item separator checkbox_item],
@@ -415,6 +418,105 @@ module Poetry
         assert_includes finding.message, "the visible status text"
         refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_badge { "Active" } %><% end %>)),
                         "missing-content-block"
+      end
+
+      # --- the required-slot tier (the menu crash class) ---
+
+      def test_a_bound_block_that_never_sets_a_required_slot_errors
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_item { "New Tab" } %>
+            <% end %>
+          <% end %>
+        ERB
+        finding = first(source, "missing-slot")
+
+        assert_equal :error, finding.severity
+        assert_equal "with_menu requires with_trigger (the top-level menu button)", finding.message
+      end
+
+      def test_a_component_block_that_never_opens_the_required_collection_errors
+        source = %(<%= poetry_menubar do |menubar| %>static<% end %>)
+        finding = first(source, "missing-slot")
+
+        assert_equal "poetry_menubar requires with_menu (at least one menu)", finding.message
+      end
+
+      def test_any_type_of_a_polymorphic_slot_satisfies_the_requirement
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <% menu.with_trigger { "File" } %>
+              <% menu.with_checkbox_item { "Show sidebar" } %>
+            <% end %>
+          <% end %>
+        ERB
+
+        refute_includes rules(source), "missing-slot"
+      end
+
+      def test_a_satisfied_requirement_across_erb_chunks_is_clean
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <% menubar.with_menu do |menu| %>
+              <div class="px-2">
+                <% menu.with_trigger { "File" } %>
+              </div>
+              <% menu.with_item { "New" } %>
+            <% end %>
+          <% end %>
+        ERB
+
+        refute_includes rules(source), "missing-slot"
+      end
+
+      def test_a_blockless_call_on_a_required_slot_component_errors
+        finding = first(%(<%= poetry_menubar %>), "missing-slot")
+
+        assert_includes finding.message, "poetry_menubar requires with_menu (at least one menu)"
+        assert_includes finding.message, "open a block"
+      end
+
+      def test_blockless_stand_downs_for_required_slots
+        assert_empty rules(%(<%= poetry_menubar(menu: prebuilt) %>)),
+                     "a same-named keyword may carry the requirement invisibly"
+        assert_empty rules(%(<%= poetry_menubar("File") %>)),
+                     "positional arguments are an unknowable content path"
+        assert_empty rules(%(<%= poetry_menubar(**options) %>)),
+                     "a splat may set anything statically invisible"
+        assert_empty rules(%(<%= form.poetry_menubar %>)),
+                     "a receiver'd call owns its own contract"
+      end
+
+      def test_an_escaped_block_param_stands_down_the_accounting
+        source = <<~ERB
+          <%= poetry_menubar do |menubar| %>
+            <%= render "shared/menus", bar: menubar %>
+          <% end %>
+        ERB
+
+        refute_includes rules(source), "missing-slot"
+      end
+
+      def test_rebinding_a_param_name_accounts_each_instance_separately
+        source = <<~ERB
+          <%= poetry_menubar do |bar| %>
+            <% bar.with_menu do |menu| %>
+              <% menu.with_item { "Orphan" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_menubar do |bar| %>
+            <% bar.with_menu do |menu| %>
+              <% menu.with_trigger { "File" } %>
+              <% menu.with_item { "New" } %>
+            <% end %>
+          <% end %>
+        ERB
+        findings = lint(source).select { |finding| finding.rule == "missing-slot" }
+
+        assert_equal 1, findings.size, -> { findings.join("\n") }
+        assert_equal 2, findings.first.line
       end
 
       def test_a_type_symbol_passed_positionally_suggests_the_sibling_setter

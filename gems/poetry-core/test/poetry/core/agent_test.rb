@@ -52,7 +52,9 @@ module Poetry
 
       BLOCKS = {
         "data-index" => { "title" => "Data index", "description" => "A records screen.",
-                          "components" => %w[badge table], "template" => "blocks/data_index.html.erb" }
+                          "components" => %w[badge button table],
+                          "keywords" => %w[records invoices listing],
+                          "template" => "blocks/data_index.html.erb" }
       }.freeze
 
       BLOCK_TEMPLATE = <<~ERB
@@ -90,12 +92,73 @@ module Poetry
         assert result.dig("capabilities", "tools")
       end
 
-      def test_tools_list_advertises_the_read_only_tools
+      def test_tools_list_advertises_the_read_only_tools_compose_first
         tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
-        assert_equal %w[list_components describe_component check list_blocks describe_block], names
+        assert_equal %w[compose list_components describe_component check list_blocks describe_block], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
+        compose = tools.first
+
+        assert_includes compose["description"], "CALL THIS FIRST"
+        assert_includes compose["description"], "known losing path"
+      end
+
+      # --- compose (the unconditional first move) ---
+
+      def test_compose_routes_a_page_brief_into_the_matching_block_with_source
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "compose",
+                         "brief" => "An invoices table listing records with totals")
+
+          assert_includes text, "STRONG BLOCK MATCH"
+          assert_includes text, "start from `data-index` and adapt it in place"
+          assert_includes text, %(<%= poetry_badge { "Fulfilled" } %>), "the source is inline"
+          refute_includes text, "poetry:block title=", "the metadata header is stripped"
+          assert_includes text, "check tool as the LAST action"
+        end
+      end
+
+      def test_compose_routes_a_component_brief_to_components_with_the_catalog_visible
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "compose", "brief" => "A destructive delete button with an icon")
+
+          assert_includes text, "No block covers this brief"
+          assert_includes text, "button (`poetry_button`)"
+          assert_includes text, "icon (`poetry_icon`)"
+          assert_includes text, "- data-index: Data index", "the catalog stays visible for scale changes"
+          assert_includes text, "check tool as the LAST action"
+        end
+      end
+
+      def test_compose_without_a_brief_asks_for_one_and_lists_the_blocks
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "compose")
+
+          assert_includes text, "compose needs the brief text"
+          assert_includes text, "data-index"
+        end
+      end
+
+      def test_compose_scoring_is_stem_deduplicated
+        with_blocks_server do |blocks_server|
+          # "records record" is ONE stem: 2 points, under the threshold -
+          # repetition and plural variants are not signal.
+          text = call_on(blocks_server, "compose", "brief" => "records record")
+
+          assert_includes text, "No block covers this brief"
+        end
+      end
+
+      def test_describe_component_carries_the_block_back_reference
+        with_blocks_server do |blocks_server|
+          text = call_on(blocks_server, "describe_component", "name" => "button")
+
+          assert_includes text, "in blocks: data-index"
+          assert_includes text, "start there (describe_block), not from scratch"
+        end
+        refute_includes call("describe_component", "name" => "button"), "in blocks:",
+                        "a blockless registry adds no back-reference"
       end
 
       # --- the blocks surface (Blocks v1) ---
@@ -104,7 +167,7 @@ module Poetry
         with_blocks_server do |blocks_server|
           text = call_on(blocks_server, "list_blocks")
 
-          assert_includes text, "- data-index: Data index - A records screen. [composes: badge, table]"
+          assert_includes text, "- data-index: Data index - A records screen. [composes: badge, button, table]"
         end
         assert_includes call("list_blocks"), "no blocks in this registry"
       end

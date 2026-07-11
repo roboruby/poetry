@@ -67,6 +67,23 @@ module Poetry
         end
       end
 
+      # The first-move doctrine: compose is unconditional and leads
+      # the guardrails - the lesson that a conditional trigger
+      # ("starting a new SCREEN?") never fires because agents see
+      # components in the brief, not screens.
+      def test_skill_md_leads_with_the_unconditional_compose_first_move
+        with_registry do |registry|
+          menu = skill(registry).files.fetch("SKILL.md")
+          guardrails = menu[/## Guardrails.*?## Find your component/m]
+
+          assert_match(/\A## Guardrails\s+- FIRST MOVE, for every brief/, guardrails)
+          assert_includes guardrails, "`compose` tool"
+          assert_includes guardrails, "known losing path"
+          refute_includes menu, "Starting a new SCREEN?", "the conditional trigger is retired"
+          assert_includes menu, "start the page from\n`compose`'s block match"
+        end
+      end
+
       def test_family_reference_carries_the_component_contract
         with_registry do |registry|
           reference = skill(registry).files.fetch("references/data.md")
@@ -84,6 +101,8 @@ module Poetry
           assert_includes reference, "## Block: Data index (`data-index`)"
           assert_includes reference, %(<%= poetry_badge { "Fulfilled" } %>)
           refute_includes reference, "poetry:block title="
+          assert_includes reference, "DEFAULT starting point"
+          assert_includes reference, "`compose` tool routes a brief"
         end
       end
 
