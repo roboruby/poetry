@@ -167,6 +167,13 @@ module Poetry
           (owner.is_a?(Hash) ? owner["required_slots"] : @components.dig(owner, "required_slots")) || {}
         end
 
+        # The conditional any-of contracts: groups of alternatives
+        # (content / slots / options) of which a call must satisfy at least
+        # one - Button's visible-content rule, Command's accessible name.
+        def requires_any(path)
+          @components.dig(path, "requires_any") || []
+        end
+
         # The setter names that satisfy one required-slot key: the slot's
         # own name, a collection's singular, and every polymorphic type
         # ("at least one item" is satisfied by any member of the union -
@@ -298,7 +305,8 @@ module Poetry
           findings + missing_option_findings(path, helper_of(path), call, pairs, line) +
             helper_arity_findings(helper, call, line) +
             content_findings(path, helper, call, line, content_fed) +
-            blockless_slot_findings(path, helper, call, pairs, line)
+            blockless_slot_findings(path, helper, call, pairs, line) +
+            requires_any_findings(path, call, pairs, line, content_fed)
         end
 
         # The requires_content tier (the floating crash class): a
@@ -537,6 +545,26 @@ module Poetry
                                     message: "with_#{slot_name} renders #{helper_of(component)}, which " \
                                              "requires a content block (#{hint})", line: line)
           end
+          # The any-of contracts ride the component fact too (: the
+          # toast crash was with_action(label:) - a Button through a
+          # forwarding lambda, nothing visible). At a slot site the block
+          # IS the content; sub-slot alternatives are unreachable and drop
+          # out of the satisfiable set.
+          unless splatted?(call) || positional_arguments(call).nil? || positional_arguments(call).any?
+            keys = pairs.map(&:first)
+            @catalog.requires_any(component).each do |group|
+              next if call.block && group["content"]
+              next if (group["options"] || []).intersect?(keys)
+
+              # Sub-slot alternatives are unreachable through a slot call -
+              # the phrase names only what THIS site can still do.
+              reachable = group.slice("hint", "content", "options")
+              reachable = group unless reachable["content"] || reachable["options"]
+              findings << Finding.new(rule: "requires-any", severity: :error,
+                                      message: "with_#{slot_name} renders #{helper_of(component)}, which " \
+                                               "requires #{any_of_phrase(reachable)}", line: line)
+            end
+          end
           findings
         end
 
@@ -565,6 +593,39 @@ module Poetry
                         message: "#{helper} requires with_#{key} (#{hint}) - open a block: " \
                                  "#{helper}(...) do |c| ... c.with_#{key} ... end", line: line)
           end
+        end
+
+        # The conditional any-of tier (: the two crash classes that
+        # survived every single-fact tier). A group passes when ANY listed
+        # alternative is satisfied or possibly satisfied: a block counts
+        # for content AND for slot alternatives (the setters may be called
+        # inside), a listed option key counts by presence (a literal-false
+        # loading: is the runtime's to catch), and receiver'd calls,
+        # splats, and positionals stand the whole rule down.
+        def requires_any_findings(path, call, pairs, line, content_fed)
+          groups = @catalog.requires_any(path)
+          return [] if groups.empty? || call.receiver || splatted?(call)
+
+          positionals = positional_arguments(call)
+          return [] if positionals.nil? || positionals.any?
+
+          keys = pairs.map(&:first)
+          groups.filter_map do |group|
+            next if call.block && (group["content"] || (group["slots"] || []).any?)
+            next if content_fed.include?(call) && group["content"]
+            next if (group["options"] || []).intersect?(keys)
+
+            Finding.new(rule: "requires-any", severity: :error,
+                        message: "#{helper_of(path)} requires #{any_of_phrase(group)}", line: line)
+          end
+        end
+
+        def any_of_phrase(group)
+          parts = []
+          parts << "a content block" if group["content"]
+          parts.concat((group["slots"] || []).map { |name| "with_#{name}" })
+          parts.concat((group["options"] || []).map { |key| "#{key}:" })
+          "one of #{parts.join(" / ")} (#{group["hint"]})"
         end
 
         # A bound block param that travels anywhere except a with_* receiver

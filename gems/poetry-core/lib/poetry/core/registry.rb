@@ -151,6 +151,9 @@ module Poetry
         # same fact that raises in before_render lets poetry check flag a
         # call that never sets the slot, statically.
         entry["required_slots"] = plain(props[:required_slots]) if props[:required_slots]&.any?
+        # The REQUIRES_ANY declaration (, the conditional any-of crash
+        # classes): the before_render disjunction, stated statically.
+        entry["requires_any"] = plain(props[:requires_any]) if props[:requires_any]&.any?
         entry
       end
 

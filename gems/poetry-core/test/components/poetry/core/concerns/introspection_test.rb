@@ -65,12 +65,23 @@ module Poetry
             # arguments later - declared as yielding, so not yieldless.
             renders_many :cells, ->(label, &renderer) { { label: label, renderer: renderer } }
 
+            # The Toast shape: a lambda purely forwarding to one
+            # component hides it - SLOT_RENDERS restores the fact.
+            renders_one :pane, ->(**options, &block) { Glyph.new(**options, &block) }
+
             SLOT_BUILDERS = { row: Tray }.freeze
             SLOT_REQUIRED_CONTENT = { slide: "the slide" }.freeze
             SLOT_BLOCK_YIELDS = { cell: "the row record" }.freeze
+            SLOT_RENDERS = { pane: Glyph }.freeze
             # Keyed by setter: a renders_one name and a polymorphic type
             # both resolve.
             REQUIRED_SLOTS = { icon: "the leading glyph", row: "at least one row" }.freeze
+            # The Button/Command shape: the before_render
+            # disjunction, one group per contract.
+            REQUIRES_ANY = [
+              { hint: "nothing visible renders without one",
+                content: true, slots: %w[icon], options: %w[label] }
+            ].freeze
 
             # A hand-rolled convenience beyond the registered slots - part
             # of the consumer call surface (the NavigationMenu#with_link
@@ -249,6 +260,54 @@ module Poetry
           end
           assert_includes error.message, ":titel"
           assert_includes error.message, "matches no slot setter"
+        end
+
+        # --- REQUIRES_ANY + SLOT_RENDERS (the any-of crash classes) ---
+
+        def test_declared_requires_any_is_validated_and_carried
+          assert_equal [{ "hint" => "nothing visible renders without one",
+                          "content" => true, "slots" => ["icon"], "options" => ["label"] }],
+                       props[:requires_any]
+        end
+
+        def test_a_requires_any_group_without_alternatives_fails_loudly
+          hollow = Class.new(Poetry::Core::Component) do
+            const_set(:REQUIRES_ANY, [{ hint: "nothing satisfiable" }].freeze)
+          end
+
+          error = assert_raises(Poetry::Core::Error) do
+            Introspection.requires_any_surface(hollow, Introspection.slot_surface(hollow))
+          end
+          assert_includes error.message, "at least one alternative"
+        end
+
+        def test_a_requires_any_slot_alternative_must_resolve
+          orphan = Class.new(Poetry::Core::Component) do
+            renders_one :icon
+            const_set(:REQUIRES_ANY, [{ hint: "x", slots: %w[nonexistent] }].freeze)
+          end
+
+          error = assert_raises(Poetry::Core::Error) do
+            Introspection.requires_any_surface(orphan, Introspection.slot_surface(orphan))
+          end
+          assert_includes error.message, "matches no slot setter"
+        end
+
+        def test_slot_renders_restores_the_component_fact_a_lambda_hides
+          pane = props[:slots].find { |slot| slot[:name] == :pane }
+
+          assert_equal Probe::Glyph.component_path, pane[:component],
+                       "the declared class projects its component_path"
+        end
+
+        def test_slot_renders_must_name_a_component_class
+          liar = Class.new(Poetry::Core::Component) do
+            renders_one :pane, ->(**options) { options }
+            const_set(:SLOT_RENDERS, { pane: String }.freeze)
+          end
+
+          error = assert_raises(Poetry::Core::Error) { Introspection.slot_surface(liar) }
+          assert_includes error.message, "must be a poetry component class"
         end
       end
     end

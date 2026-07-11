@@ -19,10 +19,21 @@ module Poetry
       CATALOG = Check::Catalog.new(
         {
           "poetry/ui/button" => {
-            "options" => [{ "name" => "loading" }, { "name" => "type" }],
+            "options" => [{ "name" => "loading" }, { "name" => "type" }, { "name" => "label" }],
             "styles" => [
               { "name" => "variant", "variants" => %w[default destructive outline ghost] },
               { "name" => "size", "variants" => %w[default sm lg] }
+            ],
+            "requires_any" => [
+              { "hint" => "nothing visible renders without one", "content" => true,
+                "slots" => %w[leading trailing], "options" => %w[loading] }
+            ]
+          },
+          "poetry/ui/command" => {
+            "options" => [{ "name" => "placeholder" }], "styles" => [],
+            "requires_any" => [
+              { "hint" => "the input's accessible name",
+                "options" => %w[id aria-label aria-labelledby aria] }
             ]
           },
           "poetry/ui/select" => { "options" => [{ "name" => "name" },
@@ -37,7 +48,8 @@ module Poetry
               { "name" => "actions", "many" => true },
               { "name" => "rows", "many" => true, "types" => %w[row divider],
                 "setter_args" => { "row" => 1, "divider" => 0 } },
-              { "name" => "badge", "many" => false, "component" => "poetry/ui/badge" }
+              { "name" => "badge", "many" => false, "component" => "poetry/ui/badge" },
+              { "name" => "confirm", "many" => false, "component" => "poetry/ui/button" }
             ],
             "slot_extras" => ["link"]
           },
@@ -418,6 +430,60 @@ module Poetry
         assert_includes finding.message, "the visible status text"
         refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_badge { "Active" } %><% end %>)),
                         "missing-content-block"
+      end
+
+      # --- the any-of contract tier (the crash classes) ---
+
+      def test_a_button_satisfying_no_alternative_errors
+        finding = first(%(<%= poetry_button(variant: :destructive, label: "Delete account") %>),
+                        "requires-any")
+
+        assert_equal :error, finding.severity
+        assert_equal "poetry_button requires one of a content block / with_leading / " \
+                     "with_trailing / loading: (nothing visible renders without one)", finding.message
+      end
+
+      def test_any_alternative_satisfies_the_button_contract
+        assert_empty rules(%(<%= poetry_button(variant: :outline) { "Save" } %>))
+        refute_includes rules(%(<%= poetry_button(loading: true) %>)), "requires-any"
+        refute_includes rules(%(<%= poetry_button(loading: false) %>)), "requires-any",
+                        "presence counts statically - a literal-false loading is the runtime's to catch"
+        refute_includes rules(%(<%= poetry_button do |button| %>x<% end %>)), "requires-any",
+                        "a block param may feed with_leading inside - the block stands the rule down"
+      end
+
+      def test_an_options_only_group_is_not_satisfied_by_a_block
+        source = %(<%= poetry_command do |command| %><% end %>)
+        finding = first(source, "requires-any")
+
+        assert_includes finding.message, "poetry_command requires one of id: / aria-label: / " \
+                                         "aria-labelledby: / aria: (the input's accessible name)"
+        refute_includes rules(%(<%= poetry_command("aria-label": "Commands") do |c| %><% end %>)),
+                        "requires-any"
+        refute_includes rules(%(<%= poetry_command(id: "palette") do |c| %><% end %>)), "requires-any"
+        refute_includes rules(%(<%= poetry_command(aria: { label: "Commands" }) do |c| %><% end %>)),
+                        "requires-any"
+      end
+
+      def test_requires_any_stand_downs
+        refute_includes rules(%(<%= form.poetry_button %>)), "requires-any"
+        refute_includes rules(%(<%= poetry_button(**options) %>)), "requires-any"
+        refute_includes rules(%(<%= poetry_button "Save" %>)), "requires-any",
+                        "positionals are an unknowable content path (helper-arity owns that call)"
+      end
+
+      def test_a_typed_slot_rendering_an_any_of_component_errors_without_content
+        source = %(<%= poetry_alert do |alert| %><% alert.with_confirm(label: "Retry") %><% end %>)
+        finding = first(source, "requires-any")
+
+        assert_includes finding.message, "with_confirm renders poetry_button"
+        assert_includes finding.message, "one of a content block / loading:"
+        refute_includes finding.message, "with_leading",
+                        "sub-slot alternatives are unreachable through a slot call"
+        refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_confirm { "Retry" } %><% end %>)),
+                        "requires-any"
+        refute_includes rules(%(<%= poetry_alert do |alert| %><% alert.with_confirm(loading: true) %><% end %>)),
+                        "requires-any"
       end
 
       # --- the required-slot tier (the menu crash class) ---

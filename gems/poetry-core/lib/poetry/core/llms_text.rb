@@ -68,6 +68,9 @@ module Poetry
         (entry["required_slots"] || {}).each do |setter, hint|
           lines << "Slot REQUIRED: with_#{setter} (#{hint}) - a call without it raises."
         end
+        (entry["requires_any"] || []).each do |group|
+          lines << "REQUIRED - #{any_of_phrase(group)}; a call satisfying none raises."
+        end
         lines.concat(prop_lines(entry))
         slots = entry["slots"].map { |slot| slot_summary(slot) }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
@@ -81,6 +84,16 @@ module Poetry
         lines.concat(wiring_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
+      end
+
+      # The any-of contract, phrased once: "one of a content block
+      # / with_leading / loading: (hint)".
+      def any_of_phrase(group)
+        parts = []
+        parts << "a content block" if group["content"]
+        parts.concat((group["slots"] || []).map { |name| "with_#{name}" })
+        parts.concat((group["options"] || []).map { |key| "#{key}:" })
+        "one of #{parts.join(" / ")} (#{group["hint"]})"
       end
 
       # Block names composing a component (inverted from the blocks

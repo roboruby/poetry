@@ -31,7 +31,8 @@ module Poetry
               options: option_attributes.map { |name| option_definition(name) },
               slots: slots,
               slot_extras: slot_extras,
-              required_slots: Introspection.required_slots_surface(self, slots)
+              required_slots: Introspection.required_slots_surface(self, slots),
+              requires_any: Introspection.requires_any_surface(self, slots)
             }
           end
 
@@ -147,6 +148,23 @@ module Poetry
         #   hand-rolled alias (NavigationMenu's with_item-or-with_link)
         #   stays undeclared - a false "missing slot" on a legitimate
         #   template is worse than a silent gap.
+        # - requires_any: the conditional any-of contracts ( - the two
+        #   crash classes that survived every single-fact tier: Button's
+        #   "content OR icon slot OR loading:", Command's "id OR
+        #   aria-label"). A class declares REQUIRES_ANY = [{ hint:,
+        #   content: true, slots: [...], options: [...] }, ...] mirroring
+        #   its before_render predicate; a call satisfying NO listed
+        #   alternative fails poetry check statically. Slot names must
+        #   resolve; each group needs a hint and at least one alternative.
+        # - SLOT_RENDERS = { setter => ComponentClass }: a lambda-wrapped
+        #   slot that purely forwards **options/&block to one component
+        #   (Toast's with_action -> Button) hides that component from
+        #   introspection exactly like SLOT_BUILDERS hides builder classes
+        #   - the declaration restores the slot's "component" fact so the
+        #   whole typed-slot rule family (option values, requires_content,
+        #   requires_any) applies to its callers. Declare ONLY pure
+        #   forwarders - a lambda that intercepts caller keys would make
+        #   the projected contract a lie.
         class << self
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
@@ -154,10 +172,23 @@ module Poetry
             builders = declared_builders(klass)
             required_content = declared_required_content(klass)
             block_yields = declared_constant(klass, :SLOT_BLOCK_YIELDS)
+            renders = declared_constant(klass, :SLOT_RENDERS)
             klass.registered_slots.map do |slot_name, config|
               definition = { name: slot_name, many: config[:collection] == true }
               renderable = config[:renderable]
               definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
+              # A declared pure-forwarding lambda (SLOT_RENDERS) restores
+              # the component fact a wrapping lambda hides.
+              # Polymorphic slots stay out - their types are their contract.
+              if config[:renderable_hash].nil? &&
+                 (declared = renders[slot_setters(slot_name, config).first&.to_sym])
+                unless declared.respond_to?(:component_path)
+                  raise Poetry::Core::Error,
+                        "#{klass}::SLOT_RENDERS[#{slot_name}] must be a poetry component class"
+                end
+
+                definition[:component] ||= declared.component_path
+              end
               definition[:types] = config[:renderable_hash].keys if config[:renderable_hash]
               setter_args = setter_positional_args(slot_name, config)
               definition[:setter_args] = setter_args unless setter_args.empty?
@@ -186,6 +217,33 @@ module Poetry
               end
 
               [name, hint]
+            end
+          end
+
+          # The validated REQUIRES_ANY declaration: each group needs
+          # a hint plus at least one alternative, and slot alternatives must
+          # name setters the definitions actually generate.
+          def requires_any_surface(klass, definitions)
+            declared_constant(klass, :REQUIRES_ANY).map do |group|
+              group = group.transform_keys(&:to_s)
+              slots = (group["slots"] || []).map(&:to_s)
+              options = (group["options"] || []).map(&:to_s)
+              unless group["hint"] && (group["content"] || slots.any? || options.any?)
+                raise Poetry::Core::Error,
+                      "#{klass}::REQUIRES_ANY group needs a hint and at least one alternative"
+              end
+
+              slots.each do |name|
+                next if definitions.any? { |slot| resolves_setter?(slot, name) }
+
+                raise Poetry::Core::Error,
+                      "#{klass}::REQUIRES_ANY slot #{name.inspect} matches no slot setter"
+              end
+              emitted = { "hint" => group["hint"] }
+              emitted["content"] = true if group["content"]
+              emitted["slots"] = slots if slots.any?
+              emitted["options"] = options if options.any?
+              emitted
             end
           end
 

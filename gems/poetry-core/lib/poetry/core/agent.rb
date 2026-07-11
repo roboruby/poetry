@@ -67,7 +67,8 @@ module Poetry
           "description" => "Lint ERB source against the poetry contracts WITHOUT rendering - unknown " \
                            "components/options/variants/wiring, raw colors, icon names, enum values, " \
                            "typed-slot props, helper/setter arity, yield-less blocks, setter keywords, " \
-                           "required content blocks, and required slots a call never set. Returns a " \
+                           "required content blocks, required slots a call never set, and any-of " \
+                           "contracts (Button's visible content, Command's accessible name). Returns a " \
                            "verdict and findings. Run this as the LAST action after the final edit - " \
                            "an edit after your last check is unverified.",
           "inputSchema" => {
@@ -370,6 +371,13 @@ module Poetry
           lines << "- content block REQUIRED (#{entry["requires_content"]})" if entry["requires_content"]
           (entry["required_slots"] || {}).each do |setter, hint|
             lines << "- slot REQUIRED: with_#{setter} (#{hint}) - a call without it raises"
+          end
+          (entry["requires_any"] || []).each do |group|
+            parts = []
+            parts << "a content block" if group["content"]
+            parts.concat((group["slots"] || []).map { |name| "with_#{name}" })
+            parts.concat((group["options"] || []).map { |key| "#{key}:" })
+            lines << "- REQUIRED - one of #{parts.join(" / ")} (#{group["hint"]})"
           end
           (entry["styles"] + entry["options"]).each do |prop|
             facets = []

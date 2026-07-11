@@ -129,6 +129,27 @@ module Poetry
         assert_includes full,
                         "each with_menu REQUIRES with_trigger inside its block (the top-level menu button)"
       end
+
+      # The any-of contracts, stated in the contract text: the
+      # disjunction reads as one line naming every alternative.
+      def test_full_states_the_any_of_contracts
+        entry = {
+          "class_name" => "Poetry::Ui::Button::Component", "bem_block" => "poetry-ui-button",
+          "identifier" => "poetry--ui--button",
+          "styles" => [], "options" => [], "slots" => [],
+          "requires_any" => [
+            { "hint" => "nothing visible renders without one", "content" => true,
+              "slots" => %w[leading trailing], "options" => %w[loading] }
+          ]
+        }
+        registry = FakeRegistry.new(entries: { "poetry/ui/button" => entry }, blocks: nil,
+                                    source_root: Pathname("."))
+        full = LlmsText.new(registry: registry).full
+
+        assert_includes full, "REQUIRED - one of a content block / with_leading / with_trailing / " \
+                              "loading: (nothing visible renders without one); a call satisfying " \
+                              "none raises."
+      end
     end
   end
 end
