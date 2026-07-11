@@ -1,0 +1,112 @@
+{
+  "assembled_from": [
+    "results.json",
+    "generated-scorecard.json",
+    "generation-manifest.json",
+    "fresh-arm-sweep.json",
+    "poetry-ui/eval/results/2026-07-11-blockpath/results.json (baseline; raw controls frozen from 2026-07-07)"
+  ],
+  "headline": {
+    "raw_tailwind": 15,
+    "poetry": 15,
+    "inconclusive": 1
+  },
+  "prior_baselines": {
+    "dd79_blockpath": {
+      "raw_tailwind": 17,
+      "poetry": 11,
+      "inconclusive": 3
+    },
+    "dd78_designfire": {
+      "raw_tailwind": 19,
+      "poetry": 11
+    },
+    "dd70_full": {
+      "raw_tailwind": 18,
+      "poetry": 13
+    }
+  },
+  "axes": {
+    "hierarchy": {
+      "poetry": 9,
+      "raw_tailwind": 19
+    },
+    "composition": {
+      "poetry": 8,
+      "raw_tailwind": 21
+    },
+    "clarity": {
+      "poetry": 11,
+      "raw_tailwind": 17
+    },
+    "brief_fit": {
+      "poetry": 23,
+      "raw_tailwind": 7
+    }
+  },
+  "composition_recorded_not_gated": "8/31 (closed the surface ledger)",
+  "verdict_changes_vs_dd79": {
+    "button": "poetry -> raw_tailwind",
+    "command_palette": "raw_tailwind -> poetry",
+    "data_table": "inconclusive -> poetry",
+    "empty_state": "raw_tailwind -> poetry",
+    "mobile_sheet": "raw_tailwind -> inconclusive",
+    "scrollable_tags": "inconclusive -> poetry",
+    "split_editor": "inconclusive -> raw_tailwind",
+    "toast": "raw_tailwind -> poetry"
+  },
+  "remediated_tasks": {
+    "command_palette": {
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "tied",
+        "brief_fit": "poetry"
+      },
+      "contested": true
+    },
+    "toast": {
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "tied",
+        "clarity": "tied",
+        "brief_fit": "poetry"
+      },
+      "contested": true
+    }
+  },
+  "generation_usage": {
+    "units_recorded": 31,
+    "unit_cost_sum_usd": 20.4592,
+    "receipted_cost_usd": 20.4592
+  },
+  "predictions": {
+    "d1": {
+      "statement": "31/31 delivery, ZERO render crashes, zero pairs lost",
+      "observed": "delivery 31/31; crashes: floating",
+      "pass": false
+    },
+    "d2": {
+      "statement": "poetry overall >= 12/31 (11 - both crashed arms lost 4-0)",
+      "observed": "15/31 ({\"raw_tailwind\" => 15, \"poetry\" => 15, \"inconclusive\" => 1})",
+      "pass": true
+    },
+    "d3": {
+      "statement": "command_palette and toast are no longer 4-0 raw sweeps",
+      "observed": {
+        "command_palette": "poetry {\"raw_tailwind\" => 2, \"tied\" => 1, \"poetry\" => 1}",
+        "toast": "poetry {\"raw_tailwind\" => 1, \"tied\" => 2, \"poetry\" => 1}"
+      },
+      "pass": true
+    },
+    "d4": {
+      "statement": "zero requires-any findings on fresh arms that render",
+      "observed": "zero requires-any findings on 31 fresh arms - agents wrote compliant calls (the contract text steered at write time); the one crash (floating) is a DIFFERENT class, correctly not flagged by this tier",
+      "pass": true
+    }
+  },
+  "grade": "3/4 pre-registered predictions pass",
+  "decision_rule": "this tally SUPERSEDES raw 17 - poetry 11 - inc 3 as the standing headline (pre-registered); no composition outcome reopens the closure"
+}
