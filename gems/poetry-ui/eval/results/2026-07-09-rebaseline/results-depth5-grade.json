@@ -1,0 +1,46 @@
+{
+  "assembled_from": [
+    "benchmark-verdicts.json (depth 3, canonical)",
+    "benchmark-verdicts-depth5.json (this re-judge)"
+  ],
+  "usage_note": "the first 27 pairs' spend is ESTIMATED (270 calls at the $0.1333/call rate): the run was externally killed and its in-memory receipts were lost; only the 4-pair resume is receipted exactly",
+  "depth5_tally": {
+    "inconclusive": 3,
+    "poetry": 12,
+    "raw_tailwind": 16
+  },
+  "verdict_changes_depth3_to_depth5": {
+    "alert": "raw_tailwind -> inconclusive",
+    "primitives": "inconclusive -> raw_tailwind"
+  },
+  "arm_flips": {},
+  "swap_consistency_mean": 0.974,
+  "usage": {
+    "judge_calls": 310,
+    "total_cost_usd": 41.1009
+  },
+  "predictions": {
+    "d1": {
+      "statement": ">= 27 of 31 verdicts identical to depth-3",
+      "observed": "29/31 identical; changes: {\"alert\" => \"raw_tailwind -> inconclusive\", \"primitives\" => \"inconclusive -> raw_tailwind\"}",
+      "pass": true
+    },
+    "d2": {
+      "statement": "zero poetry<->raw arm flips between depths",
+      "observed": "none",
+      "pass": true
+    },
+    "d3": {
+      "statement": "form_controls stays inconclusive; at most one of form_field/primitives decides",
+      "observed": "{\"form_controls\" => \"inconclusive\", \"form_field\" => \"inconclusive\", \"primitives\" => \"raw_tailwind\"}",
+      "pass": true
+    },
+    "d4": {
+      "statement": "~310 calls <= $55; mean swap >= 0.90; zero pairs lost",
+      "observed": "calls 310, $41.1009, swap 0.974, error pairs []",
+      "pass": true
+    }
+  },
+  "grade": "4/4 pre-registered predictions pass",
+  "decision_rule_outcome": "depth-3 headline STANDS as canonical (raw 16 - poetry 12 - inc 3) with depth-5 confirmation; votes_per_order stays 3 for future runs"
+}
