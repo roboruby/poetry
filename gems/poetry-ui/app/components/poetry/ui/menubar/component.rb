@@ -170,7 +170,10 @@ module Poetry
           "family contract."
         ].freeze
 
-        option :label, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :label, :string, required: true
         option :loop, :boolean, default: false
         option :value, :string
         option :dir, :symbol

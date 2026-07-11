@@ -1,0 +1,150 @@
+<section class="mx-auto max-w-2xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Version Tags</h1>
+    <p class="text-sm text-muted-foreground">Release tags for this repository, newest first.</p>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Release tags" } %>
+    <% card.with_description { "20 most recent tags." } %>
+
+    <%= poetry_scroll_area(label: "Version tags", class: "h-48 w-full") do %>
+      <div class="flex flex-col divide-y divide-border">
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.14.0</span>
+            <%= poetry_badge(variant: :success) { "Latest" } %>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">2 days ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.13.2</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">6 days ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.13.1</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">9 days ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.13.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">2 weeks ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.12.4</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">3 weeks ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.12.3</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">3 weeks ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.12.2</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">1 month ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.12.1</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">1 month ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.12.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">1 month ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.11.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">2 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.10.3</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">2 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.10.2</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">2 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.10.1</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">3 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.10.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">3 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.9.1</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">3 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.9.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">4 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.8.2</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">4 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.8.1</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">5 months ago</span>
+        </div>
+        <div class="flex items-center justify-between gap-4 py-2 first:pt-0 last:pb-0">
+          <div class="flex items-center gap-2">
+            <%= poetry_icon(name: :tag, class: "size-3.5 text-muted-foreground") %>
+            <span class="font-mono text-sm">v2.8.0</span>
+          </div>
+          <span class="text-xs text-muted-foreground tabular-nums">6 months ago</span>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</section>

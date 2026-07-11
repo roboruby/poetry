@@ -1,0 +1,33 @@
+<div class="mx-auto max-w-xl p-6">
+  <%= poetry_drawer(direction: :down, show_swipe_handle: true) do |drawer| %>
+    <% drawer.with_trigger(variant: :default) do %>
+      <%= poetry_icon(name: :target) %>
+      Set daily goal
+    <% end %>
+
+    <% drawer.with_title { "Set your daily activity goal" } %>
+    <% drawer.with_description { "Pick an activity and a target to hit every day. You can change this anytime from your profile." } %>
+
+    <form id="daily-goal-form" class="space-y-4 px-4 pb-2">
+      <%= poetry_field(id: "daily_goal_activity", label_text: "Activity") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "daily_goal[activity]",
+                                  options: [["Steps", "steps"], ["Active minutes", "minutes"],
+                                            ["Workouts", "workouts"], ["Water (glasses)", "water"]],
+                                  selected: "steps") %>
+      <% end %>
+
+      <%= poetry_field(id: "daily_goal_target", label_text: "Daily target", hint: "The number to hit each day") do |field| %>
+        <%= poetry_input(**field.control_attributes, name: "daily_goal[target]", type: "number", placeholder: "10000") %>
+      <% end %>
+
+      <%= poetry_field(id: "daily_goal_note", label_text: "Reminder note", hint: "Optional - shown with your daily reminder") do |field| %>
+        <%= poetry_textarea(**field.control_attributes, name: "daily_goal[note]", rows: 2, placeholder: "e.g. Take the stairs today") %>
+      <% end %>
+    </form>
+
+    <% drawer.with_footer do %>
+      <%= poetry_button(variant: :outline) { "Cancel" } %>
+      <%= poetry_button(variant: :default, type: :submit, form: "daily-goal-form") { "Save goal" } %>
+    <% end %>
+  <% end %>
+</div>

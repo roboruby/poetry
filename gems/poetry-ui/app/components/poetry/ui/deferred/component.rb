@@ -28,7 +28,10 @@ module Poetry
           "error card automatically - never hand-wire loading or error states around it."
         ].freeze
 
-        option :src, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :src, :string, required: true
         option :loading, :symbol, default: :lazy
 
         def before_render

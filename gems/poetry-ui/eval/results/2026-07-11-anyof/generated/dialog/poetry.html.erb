@@ -1,0 +1,29 @@
+<div class="mx-auto max-w-2xl p-6">
+  <div class="flex items-center justify-between gap-4">
+    <div>
+      <h1 class="text-lg font-semibold">Account settings</h1>
+      <p class="text-sm text-muted-foreground">Manage preferences and account-wide options.</p>
+    </div>
+
+    <%= poetry_dialog do |d| %>
+      <% d.with_trigger(variant: :default) { "Open settings" } %>
+      <% d.with_title { "Settings" } %>
+      <% d.with_description { "Update your account settings below. These changes apply once you confirm." } %>
+
+      <div class="grid gap-4 py-2">
+        <div class="grid gap-1.5">
+          <%= poetry_label(for_id: "settings_display_name") { "Display name" } %>
+          <%= poetry_input(id: "settings_display_name", name: "display_name", value: "Matt Solt") %>
+        </div>
+
+        <%= poetry_checkbox(name: "email_notifications", checked: true, label: "Email notifications") %>
+        <%= poetry_checkbox(name: "product_updates", checked: false, label: "Product update announcements") %>
+      </div>
+
+      <% d.with_footer do %>
+        <%= poetry_button(variant: :outline) { "Cancel" } %>
+        <%= poetry_button(variant: :default) { "Confirm" } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -16,7 +16,10 @@ module Poetry
 
         option :value, :integer, required: true
         option :max, :integer, default: 100
-        option :label, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :label, :string, required: true
         option :show_value, :boolean, default: true
 
         def before_render

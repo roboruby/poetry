@@ -289,6 +289,7 @@ components:
     options:
     - name: label
       type: string
+      required: true
     - name: size
       type: symbol
       variants:
@@ -650,6 +651,7 @@ components:
     options:
     - name: label
       type: string
+      required: true
     - name: orientation
       type: symbol
       variants:
@@ -1587,6 +1589,7 @@ components:
       default: lazy
     - name: src
       type: string
+      required: true
     slots: []
     controllers:
     - identifier: poetry--core--deferred
@@ -2573,6 +2576,7 @@ components:
       - rtl
     - name: label
       type: string
+      required: true
     - name: loop
       type: boolean
       default: false
@@ -3049,6 +3053,7 @@ components:
     options:
     - name: label
       type: string
+      required: true
     - name: viewport
       type: boolean
       default: false
@@ -3285,6 +3290,7 @@ components:
     options:
     - name: label
       type: string
+      required: true
     - name: max
       type: integer
       default: 100
@@ -3454,6 +3460,7 @@ components:
     options:
     - name: label
       type: string
+      required: true
     slots: []
     elements:
     - viewport

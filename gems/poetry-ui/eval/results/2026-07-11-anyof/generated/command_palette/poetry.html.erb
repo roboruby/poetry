@@ -1,0 +1,72 @@
+<div class="mx-auto max-w-xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-lg font-semibold">Command Palette</h1>
+    <p class="text-sm text-muted-foreground">Search for commands, jump to settings, or launch a tool instantly.</p>
+  </div>
+
+  <%= poetry_command("aria-label": "Command palette", placeholder: "Type a command or search...", loop: true) do |c| %>
+    <% c.with_empty do %>
+      <p class="p-6 text-center text-sm text-muted-foreground">No results found.</p>
+    <% end %>
+
+    <% c.with_group(heading: "Suggestions") do |g| %>
+      <% g.with_item(value: "calendar", filter_value: "Calendar") do %>
+        <%= poetry_icon(name: :calendar, class: "size-4") %>
+        <span>Calendar</span>
+      <% end %>
+      <% g.with_item(value: "search-emoji", filter_value: "Search Emoji") do %>
+        <%= poetry_icon(name: :smile, class: "size-4") %>
+        <span>Search Emoji</span>
+      <% end %>
+      <% g.with_item(value: "calculator", filter_value: "Calculator") do %>
+        <%= poetry_icon(name: :calculator, class: "size-4") %>
+        <span>Calculator</span>
+      <% end %>
+    <% end %>
+
+    <% c.with_separator %>
+
+    <% c.with_group(heading: "Settings") do |g| %>
+      <% g.with_item(value: "profile", filter_value: "Profile") do %>
+        <%= poetry_icon(name: :user, class: "size-4") %>
+        <span>Profile</span>
+        <span class="ml-auto inline-flex items-center gap-0.5">
+          <%= poetry_kbd { "⌘" } %>
+          <%= poetry_kbd { "P" } %>
+        </span>
+      <% end %>
+      <% g.with_item(value: "billing", filter_value: "Billing") do %>
+        <%= poetry_icon(name: :"credit-card", class: "size-4") %>
+        <span>Billing</span>
+        <span class="ml-auto inline-flex items-center gap-0.5">
+          <%= poetry_kbd { "⌘" } %>
+          <%= poetry_kbd { "B" } %>
+        </span>
+      <% end %>
+      <% g.with_item(value: "settings", filter_value: "Settings") do %>
+        <%= poetry_icon(name: :settings, class: "size-4") %>
+        <span>Settings</span>
+        <span class="ml-auto inline-flex items-center gap-0.5">
+          <%= poetry_kbd { "⌘" } %>
+          <%= poetry_kbd { "S" } %>
+        </span>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <div class="flex items-center justify-center gap-4 text-xs text-muted-foreground">
+    <span class="inline-flex items-center gap-1">
+      <%= poetry_kbd { "↑" } %>
+      <%= poetry_kbd { "↓" } %>
+      to navigate
+    </span>
+    <span class="inline-flex items-center gap-1">
+      <%= poetry_kbd { "↵" } %>
+      to select
+    </span>
+    <span class="inline-flex items-center gap-1">
+      <%= poetry_kbd { "esc" } %>
+      to close
+    </span>
+  </div>
+</div>

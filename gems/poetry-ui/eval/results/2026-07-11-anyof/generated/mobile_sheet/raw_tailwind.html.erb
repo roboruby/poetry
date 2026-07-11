@@ -1,0 +1,61 @@
+<section class="flex min-h-screen items-center justify-center bg-slate-100 p-8">
+  <div class="text-center">
+    <h1 class="text-2xl font-semibold text-slate-900">Today's Activity</h1>
+    <p class="mt-1 text-slate-500">You haven't set a step goal for today yet.</p>
+
+    <button
+      type="button"
+      popovertarget="daily-goal-sheet"
+      class="mt-6 inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+    >
+      Set Daily Goal
+    </button>
+  </div>
+
+  <div
+    id="daily-goal-sheet"
+    popover
+    role="dialog"
+    aria-labelledby="daily-goal-title"
+    aria-describedby="daily-goal-description"
+    class="inset-x-0 top-auto bottom-0 m-0 w-full max-w-full overflow-visible border-0 bg-transparent p-0 backdrop:bg-slate-900/50"
+  >
+    <form method="post" class="mx-auto w-full max-w-md rounded-t-3xl bg-white px-6 pt-3 pb-8 shadow-2xl ring-1 ring-black/5">
+      <button
+        type="button"
+        popovertarget="daily-goal-sheet"
+        popovertargetaction="hide"
+        aria-label="Close"
+        class="flex w-full cursor-pointer justify-center pt-1 pb-4"
+      >
+        <span aria-hidden="true" class="h-1.5 w-12 rounded-full bg-slate-300"></span>
+      </button>
+
+      <h2 id="daily-goal-title" class="text-lg font-semibold text-slate-900">Set Daily Activity Goal</h2>
+      <p id="daily-goal-description" class="mt-1 text-sm text-slate-500">
+        Choose a step target you can hit consistently. You can raise it later once it feels easy.
+      </p>
+
+      <div class="mt-5">
+        <label for="goal-steps" class="block text-sm font-medium text-slate-700">Daily step goal</label>
+        <input
+          type="number"
+          id="goal-steps"
+          name="goal_steps"
+          min="1000"
+          step="500"
+          value="8000"
+          inputmode="numeric"
+          class="mt-1.5 block w-full rounded-lg border border-slate-300 px-3 py-2.5 text-base text-slate-900 shadow-sm focus:border-emerald-600 focus:outline-none focus:ring-1 focus:ring-emerald-600"
+        />
+      </div>
+
+      <button
+        type="submit"
+        class="mt-6 w-full rounded-full bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+</section>

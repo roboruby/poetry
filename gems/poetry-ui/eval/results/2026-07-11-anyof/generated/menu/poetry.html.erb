@@ -1,0 +1,96 @@
+<div class="mx-auto max-w-5xl p-6 space-y-8">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Menus</h1>
+    <p class="text-sm text-muted-foreground">
+      An app menubar, a row-actions dropdown behind an Options button, and a right-click context menu on the row itself.
+    </p>
+  </div>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-medium">Application menu</h2>
+    <div class="rounded-lg border bg-card p-2">
+      <%= poetry_menubar(label: "Application") do |menubar| %>
+        <% menubar.with_menu do |menu| %>
+          <% menu.with_trigger { "File" } %>
+          <% menu.with_item(shortcut: "⌘N") { "New File" } %>
+          <% menu.with_item(shortcut: "⌘O") { "Open…" } %>
+          <% menu.with_item(shortcut: "⌘S") { "Save" } %>
+          <% menu.with_separator %>
+          <% menu.with_item(shortcut: "⌘P") { "Print…" } %>
+          <% menu.with_separator %>
+          <% menu.with_item(variant: :destructive) { "Exit" } %>
+        <% end %>
+        <% menubar.with_menu do |menu| %>
+          <% menu.with_trigger { "View" } %>
+          <% menu.with_checkbox_item(checked: true) { "Sidebar" } %>
+          <% menu.with_checkbox_item(checked: true) { "Status Bar" } %>
+          <% menu.with_separator %>
+          <% menu.with_item { "Enter Full Screen" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="text-lg font-medium">Team members</h2>
+    <div class="rounded-lg border bg-card">
+      <%= poetry_item_group do %>
+        <% [
+             { name: "Jordan Ellis", meta: "jordan.ellis@example.com · Editor", admin: true },
+             { name: "Priya Nair", meta: "priya.nair@example.com · Viewer", admin: false },
+             { name: "Sam Okafor", meta: "sam.okafor@example.com · Editor", admin: false },
+           ].each_with_index do |member, index| %>
+          <% if index.positive? %>
+            <%= poetry_item_separator %>
+          <% end %>
+          <%= poetry_context_menu(label: "Row actions for #{member[:name]}", role: "listitem") do |cm| %>
+            <% cm.with_trigger do %>
+              <%= poetry_item(role: nil) do |item| %>
+                <% item.with_media(variant: :icon) { poetry_icon(name: :user) } %>
+                <% item.with_title { member[:name] } %>
+                <% item.with_description { member[:meta] } %>
+                <% item.with_actions do %>
+                  <%= poetry_dropdown_menu(align: :end) do |dd| %>
+                    <% dd.with_trigger(variant: :ghost, size: :"icon-sm", label: "Options for #{member[:name]}") do %>
+                      <%= poetry_icon(name: :ellipsis) %>
+                    <% end %>
+                    <% dd.with_label { "Account" } %>
+                    <% dd.with_group do |group| %>
+                      <% group.with_item do %>
+                        <%= poetry_icon(name: :"user-round") %> View profile
+                      <% end %>
+                      <% group.with_item do %>
+                        <%= poetry_icon(name: :"message-square") %> Message
+                      <% end %>
+                    <% end %>
+                    <% dd.with_separator %>
+                    <% dd.with_checkbox_item(checked: member[:admin]) { "Admin access" } %>
+                    <% dd.with_separator %>
+                    <% dd.with_item(variant: :destructive) do %>
+                      <%= poetry_icon(name: :trash) %> Remove member
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <% cm.with_label { "Account" } %>
+            <% cm.with_group do |group| %>
+              <% group.with_item do %>
+                <%= poetry_icon(name: :"user-round") %> View profile
+              <% end %>
+              <% group.with_item do %>
+                <%= poetry_icon(name: :"message-square") %> Message
+              <% end %>
+            <% end %>
+            <% cm.with_separator %>
+            <% cm.with_checkbox_item(checked: member[:admin]) { "Admin access" } %>
+            <% cm.with_separator %>
+            <% cm.with_item(variant: :destructive) do %>
+              <%= poetry_icon(name: :trash) %> Remove member
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</div>

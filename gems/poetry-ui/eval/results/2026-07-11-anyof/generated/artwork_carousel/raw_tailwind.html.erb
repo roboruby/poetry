@@ -1,0 +1,149 @@
+<section class="mx-auto max-w-4xl px-6 py-16" aria-label="Featured artwork carousel">
+  <div class="mb-8 text-center">
+    <h2 class="text-3xl font-semibold tracking-tight text-neutral-900">Featured Artwork</h2>
+    <p class="mt-2 text-sm text-neutral-500">Browse three highlights from the current collection.</p>
+  </div>
+
+  <div class="relative" role="group" aria-roledescription="carousel" aria-label="Artwork slides">
+    <!-- Slide controllers (visually hidden, drive the carousel via :checked) -->
+    <input type="radio" name="artwork-slide" id="artwork-slide-1" class="peer/s1 sr-only" checked aria-label="Slide 1 of 3: Sunset Over the Bay">
+    <input type="radio" name="artwork-slide" id="artwork-slide-2" class="peer/s2 sr-only" aria-label="Slide 2 of 3: Cerulean Drift">
+    <input type="radio" name="artwork-slide" id="artwork-slide-3" class="peer/s3 sr-only" aria-label="Slide 3 of 3: Verdant Study No. 4">
+
+    <!-- Slide 1 -->
+    <figure
+      class="hidden peer-checked/s1:flex relative min-h-[380px] flex-col gap-8 rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:min-h-[420px] sm:flex-row sm:items-center sm:gap-10 sm:p-12"
+      aria-roledescription="slide"
+      aria-label="1 of 3"
+    >
+      <div class="w-full overflow-hidden rounded-xl ring-1 ring-neutral-200 sm:w-1/2">
+        <div class="aspect-[4/3]">
+          <svg viewBox="0 0 400 300" preserveAspectRatio="none" class="h-full w-full" role="img" aria-label="Abstract painting of a sun setting over a harbor in warm orange and pink tones">
+            <defs>
+              <linearGradient id="sunset-sky" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fde68a"/>
+                <stop offset="45%" stop-color="#fb923c"/>
+                <stop offset="100%" stop-color="#be123c"/>
+              </linearGradient>
+              <linearGradient id="sunset-water" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#f97316"/>
+                <stop offset="100%" stop-color="#7c2d12"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="180" fill="url(#sunset-sky)"/>
+            <circle cx="200" cy="160" r="55" fill="#fef3c7" opacity="0.9"/>
+            <rect y="180" width="400" height="120" fill="url(#sunset-water)"/>
+            <path d="M0 190 Q50 180 100 190 T200 190 T300 190 T400 190 V300 H0 Z" fill="#9a3412" opacity="0.5"/>
+          </svg>
+        </div>
+      </div>
+      <figcaption class="w-full space-y-3 sm:w-1/2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-neutral-400">Slide 1 of 3</p>
+        <h3 class="text-2xl font-semibold text-neutral-900">Sunset Over the Bay</h3>
+        <p class="text-sm font-medium text-neutral-600">Elena Marchetti &middot; 2018 &middot; Oil on canvas</p>
+        <p class="text-sm leading-relaxed text-neutral-500">Warm gradients wash over a quiet harbor as the last light of day settles across the water.</p>
+      </figcaption>
+
+      <label for="artwork-slide-3" class="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:left-4" aria-label="Previous slide: Verdant Study No. 4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </label>
+      <label for="artwork-slide-2" class="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:right-4" aria-label="Next slide: Cerulean Drift">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </label>
+    </figure>
+
+    <!-- Slide 2 -->
+    <figure
+      class="hidden peer-checked/s2:flex relative min-h-[380px] flex-col gap-8 rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:min-h-[420px] sm:flex-row sm:items-center sm:gap-10 sm:p-12"
+      aria-roledescription="slide"
+      aria-label="2 of 3"
+    >
+      <div class="w-full overflow-hidden rounded-xl ring-1 ring-neutral-200 sm:w-1/2">
+        <div class="aspect-[4/3]">
+          <svg viewBox="0 0 400 300" preserveAspectRatio="none" class="h-full w-full" role="img" aria-label="Abstract painting of deep blue ocean currents with a pale moon">
+            <defs>
+              <linearGradient id="ocean-bg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#0ea5e9"/>
+                <stop offset="100%" stop-color="#0f172a"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="300" fill="url(#ocean-bg)"/>
+            <path d="M0 80 Q100 40 200 80 T400 80 V0 H0 Z" fill="#38bdf8" opacity="0.5"/>
+            <path d="M0 160 Q120 200 240 160 T400 170 V300 H0 Z" fill="#0284c7" opacity="0.6"/>
+            <circle cx="320" cy="70" r="30" fill="#e0f2fe" opacity="0.8"/>
+          </svg>
+        </div>
+      </div>
+      <figcaption class="w-full space-y-3 sm:w-1/2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-neutral-400">Slide 2 of 3</p>
+        <h3 class="text-2xl font-semibold text-neutral-900">Cerulean Drift</h3>
+        <p class="text-sm font-medium text-neutral-600">Priya Nakamura &middot; 2021 &middot; Acrylic on panel</p>
+        <p class="text-sm leading-relaxed text-neutral-500">Layered currents of blue drift beneath a pale moon, evoking the slow pull of the tide.</p>
+      </figcaption>
+
+      <label for="artwork-slide-1" class="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:left-4" aria-label="Previous slide: Sunset Over the Bay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </label>
+      <label for="artwork-slide-3" class="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:right-4" aria-label="Next slide: Verdant Study No. 4">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </label>
+    </figure>
+
+    <!-- Slide 3 -->
+    <figure
+      class="hidden peer-checked/s3:flex relative min-h-[380px] flex-col gap-8 rounded-2xl border border-neutral-200 bg-white p-8 shadow-sm sm:min-h-[420px] sm:flex-row sm:items-center sm:gap-10 sm:p-12"
+      aria-roledescription="slide"
+      aria-label="3 of 3"
+    >
+      <div class="w-full overflow-hidden rounded-xl ring-1 ring-neutral-200 sm:w-1/2">
+        <div class="aspect-[4/3]">
+          <svg viewBox="0 0 400 300" preserveAspectRatio="none" class="h-full w-full" role="img" aria-label="Abstract painting of layered green forest ridges beneath a pale sun">
+            <defs>
+              <linearGradient id="forest-bg" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#166534"/>
+                <stop offset="100%" stop-color="#84cc16"/>
+              </linearGradient>
+            </defs>
+            <rect width="400" height="300" fill="url(#forest-bg)"/>
+            <polygon points="0,300 80,120 160,300" fill="#14532d" opacity="0.7"/>
+            <polygon points="120,300 220,80 320,300" fill="#166534" opacity="0.6"/>
+            <polygon points="260,300 340,150 400,300" fill="#3f6212" opacity="0.7"/>
+            <circle cx="330" cy="60" r="24" fill="#ecfccb" opacity="0.9"/>
+          </svg>
+        </div>
+      </div>
+      <figcaption class="w-full space-y-3 sm:w-1/2">
+        <p class="text-xs font-semibold uppercase tracking-wide text-neutral-400">Slide 3 of 3</p>
+        <h3 class="text-2xl font-semibold text-neutral-900">Verdant Study No. 4</h3>
+        <p class="text-sm font-medium text-neutral-600">Owen Baptiste &middot; 2019 &middot; Gouache on paper</p>
+        <p class="text-sm leading-relaxed text-neutral-500">Overlapping ridgelines in green build a quiet rhythm, cresting toward a pale winter sun.</p>
+      </figcaption>
+
+      <label for="artwork-slide-2" class="absolute left-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:left-4" aria-label="Previous slide: Cerulean Drift">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </label>
+      <label for="artwork-slide-1" class="absolute right-2 top-1/2 inline-flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full border border-neutral-200 bg-white text-neutral-600 shadow-sm transition hover:bg-neutral-100 hover:text-neutral-900 sm:right-4" aria-label="Next slide: Sunset Over the Bay">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5" aria-hidden="true">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+        </svg>
+      </label>
+    </figure>
+
+    <!-- Dot indicators -->
+    <div class="mt-6 flex items-center justify-center gap-2" role="group" aria-label="Slide navigation">
+      <label for="artwork-slide-1" class="h-2.5 w-2.5 cursor-pointer rounded-full bg-neutral-300 transition-all peer-checked/s1:w-6 peer-checked/s1:bg-neutral-900" aria-label="Show slide 1 of 3: Sunset Over the Bay"></label>
+      <label for="artwork-slide-2" class="h-2.5 w-2.5 cursor-pointer rounded-full bg-neutral-300 transition-all peer-checked/s2:w-6 peer-checked/s2:bg-neutral-900" aria-label="Show slide 2 of 3: Cerulean Drift"></label>
+      <label for="artwork-slide-3" class="h-2.5 w-2.5 cursor-pointer rounded-full bg-neutral-300 transition-all peer-checked/s3:w-6 peer-checked/s3:bg-neutral-900" aria-label="Show slide 3 of 3: Verdant Study No. 4"></label>
+    </div>
+  </div>
+</section>

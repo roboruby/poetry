@@ -1,0 +1,87 @@
+<div class="w-full border-b border-gray-200 bg-white px-6 py-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <%# Search %>
+    <div class="relative min-w-[240px] flex-1 sm:max-w-sm">
+      <span class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" stroke-linecap="round" stroke-linejoin="round" />
+          <path d="M17 17l-3.5-3.5" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </span>
+
+      <label for="toolbar-search" class="sr-only">Search</label>
+      <input
+        type="search"
+        id="toolbar-search"
+        name="q"
+        placeholder="Search…"
+        class="block w-full rounded-md border border-gray-300 bg-white py-2 pl-9 pr-12 text-sm text-gray-900 placeholder:text-gray-400 shadow-sm focus:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+      >
+
+      <span class="pointer-events-none absolute inset-y-0 right-2 flex items-center gap-0.5 rounded border border-gray-200 bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-400" aria-hidden="true">
+        <span>&#8984;</span><span>K</span>
+      </span>
+    </div>
+
+    <div class="ml-auto flex items-center gap-3">
+      <%# Sort dropdown %>
+      <details class="group relative">
+        <summary class="flex list-none items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-900/10 [&::-webkit-details-marker]:hidden">
+          <svg class="h-4 w-4 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M6 5h8M6 10h5M6 15h2" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span>Sort: <span class="font-semibold text-gray-900">Newest</span></span>
+          <svg class="h-4 w-4 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M5 7.5l5 5 5-5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </summary>
+
+        <div class="absolute right-0 z-10 mt-2 w-48 overflow-hidden rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          <fieldset>
+            <legend class="sr-only">Sort by</legend>
+            <label class="flex cursor-pointer items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <span>Newest</span>
+              <input type="radio" name="sort" value="newest" checked class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900/20">
+            </label>
+            <label class="flex cursor-pointer items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <span>Oldest</span>
+              <input type="radio" name="sort" value="oldest" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900/20">
+            </label>
+            <label class="flex cursor-pointer items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <span>Name (A–Z)</span>
+              <input type="radio" name="sort" value="name_asc" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900/20">
+            </label>
+            <label class="flex cursor-pointer items-center justify-between px-3 py-2 text-sm text-gray-700 hover:bg-gray-50">
+              <span>Last updated</span>
+              <input type="radio" name="sort" value="updated" class="h-4 w-4 border-gray-300 text-gray-900 focus:ring-gray-900/20">
+            </label>
+          </fieldset>
+        </div>
+      </details>
+
+      <%# List / Grid view switch %>
+      <fieldset class="flex items-center rounded-md border border-gray-300 bg-gray-50 p-0.5">
+        <legend class="sr-only">View</legend>
+
+        <label class="cursor-pointer rounded px-2.5 py-1.5 text-gray-500 has-[:checked]:bg-white has-[:checked]:text-gray-900 has-[:checked]:shadow-sm">
+          <input type="radio" name="view" value="list" checked class="sr-only">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <path d="M4 6h12M4 10h12M4 14h12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          <span class="sr-only">List view</span>
+        </label>
+
+        <label class="cursor-pointer rounded px-2.5 py-1.5 text-gray-500 has-[:checked]:bg-white has-[:checked]:text-gray-900 has-[:checked]:shadow-sm">
+          <input type="radio" name="view" value="grid" class="sr-only">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+            <rect x="4" y="4" width="5" height="5" rx="1" />
+            <rect x="11" y="4" width="5" height="5" rx="1" />
+            <rect x="4" y="11" width="5" height="5" rx="1" />
+            <rect x="11" y="11" width="5" height="5" rx="1" />
+          </svg>
+          <span class="sr-only">Grid view</span>
+        </label>
+      </fieldset>
+    </div>
+  </div>
+</div>

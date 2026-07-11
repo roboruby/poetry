@@ -25,7 +25,10 @@ module Poetry
 
         CONTROLLER = %i[poetry core carousel].freeze
 
-        option :label, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :label, :string, required: true
         option :orientation, :symbol, default: :horizontal
         option :show_controls, :boolean, default: true
 

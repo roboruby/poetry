@@ -1,0 +1,15 @@
+<div class="mx-auto max-w-md p-6">
+  <h1 class="text-lg font-semibold">Due date</h1>
+  <p class="mt-1 text-sm text-muted-foreground">
+    Choose when this task is due.
+  </p>
+
+  <div class="mt-6">
+    <%= poetry_date_picker(
+          name: "task[due_date]",
+          label: "Due date",
+          value: "2026-07-18",
+          placeholder: "Pick a date"
+        ) %>
+  </div>
+</div>

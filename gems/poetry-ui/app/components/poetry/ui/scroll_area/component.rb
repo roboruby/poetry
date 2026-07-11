@@ -23,7 +23,10 @@ module Poetry
           "use MessageScroller for chat transcripts."
         ].freeze
 
-        option :label, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :label, :string, required: true
 
         requires_content "what scrolls"
 

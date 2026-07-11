@@ -1,0 +1,6 @@
+{
+  "summary": "requires-any findings on 0/31 fresh arms",
+  "findings": {},
+  "false_positives": [],
+  "note": "false_positives filled after render adjudication"
+}

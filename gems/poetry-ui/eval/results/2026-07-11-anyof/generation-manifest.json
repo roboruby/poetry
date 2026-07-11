@@ -1,0 +1,296 @@
+{
+  "units": {
+    "button": {
+      "poetry": {
+        "cost_usd": 0.2714,
+        "num_turns": 10,
+        "duration_s": 26.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "card": {
+      "poetry": {
+        "cost_usd": 0.1926,
+        "num_turns": 8,
+        "duration_s": 23.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "app_shell": {
+      "poetry": {
+        "cost_usd": 0.2944,
+        "num_turns": 10,
+        "duration_s": 51.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "alert": {
+      "poetry": {
+        "cost_usd": 0.4375,
+        "num_turns": 20,
+        "duration_s": 72.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "artwork_carousel": {
+      "poetry": {
+        "cost_usd": 0.7838,
+        "num_turns": 29,
+        "duration_s": 137.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "command_palette": {
+      "poetry": {
+        "cost_usd": 0.6776,
+        "num_turns": 21,
+        "duration_s": 107.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "date_field": {
+      "poetry": {
+        "cost_usd": 0.4398,
+        "num_turns": 17,
+        "duration_s": 56.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "chat_transcript": {
+      "poetry": {
+        "cost_usd": 0.7402,
+        "num_turns": 30,
+        "duration_s": 159.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "deferred_region": {
+      "poetry": {
+        "cost_usd": 0.7952,
+        "num_turns": 23,
+        "duration_s": 117.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "dialog": {
+      "poetry": {
+        "cost_usd": 0.586,
+        "num_turns": 27,
+        "duration_s": 83.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "empty_state": {
+      "poetry": {
+        "cost_usd": 0.2321,
+        "num_turns": 14,
+        "duration_s": 25.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "disclosure": {
+      "poetry": {
+        "cost_usd": 0.7084,
+        "num_turns": 25,
+        "duration_s": 109.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "filter_toolbar": {
+      "poetry": {
+        "cost_usd": 0.5442,
+        "num_turns": 26,
+        "duration_s": 91.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "data_table": {
+      "poetry": {
+        "cost_usd": 1.3863,
+        "num_turns": 41,
+        "duration_s": 317.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "form_field": {
+      "poetry": {
+        "cost_usd": 0.438,
+        "num_turns": 16,
+        "duration_s": 45.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "floating": {
+      "poetry": {
+        "cost_usd": 1.3483,
+        "num_turns": 45,
+        "duration_s": 217.7,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "form_controls": {
+      "poetry": {
+        "cost_usd": 1.0255,
+        "num_turns": 37,
+        "duration_s": 218.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "mobile_sheet": {
+      "poetry": {
+        "cost_usd": 1.0099,
+        "num_turns": 33,
+        "duration_s": 135.2,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "pagination": {
+      "poetry": {
+        "cost_usd": 0.2133,
+        "num_turns": 10,
+        "duration_s": 30.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "primitives": {
+      "poetry": {
+        "cost_usd": 0.4657,
+        "num_turns": 24,
+        "duration_s": 70.6,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "menu": {
+      "poetry": {
+        "cost_usd": 1.1185,
+        "num_turns": 38,
+        "duration_s": 245.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "overlay": {
+      "poetry": {
+        "cost_usd": 1.0618,
+        "num_turns": 28,
+        "duration_s": 178.5,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "scrollable_tags": {
+      "poetry": {
+        "cost_usd": 0.8112,
+        "num_turns": 32,
+        "duration_s": 151.7,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "searchable_select": {
+      "poetry": {
+        "cost_usd": 0.6538,
+        "num_turns": 24,
+        "duration_s": 100.3,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "site_nav": {
+      "poetry": {
+        "cost_usd": 0.3021,
+        "num_turns": 9,
+        "duration_s": 33.7,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "settings_tabs": {
+      "poetry": {
+        "cost_usd": 0.8114,
+        "num_turns": 35,
+        "duration_s": 128.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "table": {
+      "poetry": {
+        "cost_usd": 0.2725,
+        "num_turns": 9,
+        "duration_s": 43.4,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "toast": {
+      "poetry": {
+        "cost_usd": 0.3303,
+        "num_turns": 14,
+        "duration_s": 58.1,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "upload_progress": {
+      "poetry": {
+        "cost_usd": 0.2117,
+        "num_turns": 11,
+        "duration_s": 26.0,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "user_directory": {
+      "poetry": {
+        "cost_usd": 0.7002,
+        "num_turns": 26,
+        "duration_s": 123.9,
+        "attempts": 1,
+        "artifact": true
+      }
+    },
+    "split_editor": {
+      "poetry": {
+        "cost_usd": 1.5955,
+        "num_turns": 49,
+        "duration_s": 320.8,
+        "attempts": 1,
+        "artifact": true
+      }
+    }
+  },
+  "config": {
+    "model": "claude-sonnet-5",
+    "max_turns": 40,
+    "toolbelts": {
+      "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__compose,mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
+      "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+    }
+  },
+  "usage": {
+    "units_recorded": 31,
+    "unit_cost_sum_usd": 20.4592,
+    "receipted_cost_usd": 20.4592
+  }
+}

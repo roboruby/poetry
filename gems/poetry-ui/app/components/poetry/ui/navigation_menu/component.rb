@@ -32,7 +32,10 @@ module Poetry
         CONTROLLER = %i[poetry core navigation_menu].freeze
         POPPER = %i[poetry core popper].freeze
 
-        option :label, :string
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (: the floating
+        # crash - a required option the static tier could not see).
+        option :label, :string, required: true
         # The morphing shared viewport: panels adopt into one
         # positioned popup that morphs size/position between triggers. false
         # (the default) keeps the per-item popovers - also the no-JS shape.

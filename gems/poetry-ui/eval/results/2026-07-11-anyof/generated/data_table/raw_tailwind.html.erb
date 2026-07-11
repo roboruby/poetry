@@ -1,0 +1,198 @@
+<%
+  invoices = [
+    { number: "INV-1001", customer: "Acme Corp",           date: "2026-01-05", amount: 1250.00, status: "Paid"    },
+    { number: "INV-1002", customer: "Bluebird Logistics",  date: "2026-01-08", amount:  480.50,  status: "Pending" },
+    { number: "INV-1003", customer: "Cascade Analytics",   date: "2026-01-12", amount: 3120.75,  status: "Overdue" },
+    { number: "INV-1004", customer: "Dune Retail Group",   date: "2026-01-15", amount:  215.00,  status: "Draft"   },
+    { number: "INV-1005", customer: "Everline Studios",    date: "2026-01-18", amount:  980.00,  status: "Paid"    },
+    { number: "INV-1006", customer: "Fenwick & Co",        date: "2026-01-21", amount: 1755.20,  status: "Pending" },
+    { number: "INV-1007", customer: "Granite Health",      date: "2026-01-24", amount:  640.00,  status: "Paid"    },
+    { number: "INV-1008", customer: "Harbor Freight Ltd",  date: "2026-01-27", amount: 2990.10,  status: "Overdue" },
+    { number: "INV-1009", customer: "Ironwood Systems",    date: "2026-01-30", amount:  125.00,  status: "Draft"   },
+    { number: "INV-1010", customer: "Juniper Media",       date: "2026-02-02", amount:  875.60,  status: "Paid"    },
+    { number: "INV-1011", customer: "Kestrel Partners",    date: "2026-02-05", amount: 4310.00,  status: "Pending" },
+    { number: "INV-1012", customer: "Lighthouse Foods",    date: "2026-02-08", amount:  360.25,  status: "Paid"    },
+    { number: "INV-1013", customer: "Meridian Bank",       date: "2026-02-11", amount: 1990.00,  status: "Overdue" },
+    { number: "INV-1014", customer: "Northgate Realty",    date: "2026-02-14", amount:  720.90,  status: "Paid"    },
+    { number: "INV-1015", customer: "Oakhollow Farms",     date: "2026-02-17", amount:  455.00,  status: "Draft"   },
+    { number: "INV-1016", customer: "Pinecrest Energy",    date: "2026-02-20", amount: 5120.40,  status: "Pending" },
+    { number: "INV-1017", customer: "Quarryside Mining",   date: "2026-02-23", amount:  890.00,  status: "Paid"    },
+    { number: "INV-1018", customer: "Redwood Transit",     date: "2026-02-26", amount: 1340.75,  status: "Overdue" },
+    { number: "INV-1019", customer: "Silverline Insurance", date: "2026-03-01", amount:  260.00, status: "Paid"    },
+    { number: "INV-1020", customer: "Timberline Goods",    date: "2026-03-04", amount:  975.30,  status: "Draft"   },
+    { number: "INV-1021", customer: "Union Square Cafe",   date: "2026-03-07", amount:  150.00,  status: "Paid"    },
+    { number: "INV-1022", customer: "Vantage Robotics",    date: "2026-03-10", amount: 6200.00,  status: "Pending" },
+    { number: "INV-1023", customer: "Westfield Supply",    date: "2026-03-13", amount:  530.45,  status: "Paid"    },
+    { number: "INV-1024", customer: "Xylo Networks",       date: "2026-03-16", amount: 2100.00,  status: "Overdue" },
+    { number: "INV-1025", customer: "Yellowstone Tours",   date: "2026-03-19", amount:  410.00,  status: "Paid"    },
+    { number: "INV-1026", customer: "Zenith Materials",    date: "2026-03-22", amount: 1580.60,  status: "Draft"   },
+    { number: "INV-1027", customer: "Acme Corp",           date: "2026-03-25", amount:  305.00,  status: "Pending" },
+  ]
+
+  sortable_fields = %w[number customer date amount status]
+  q         = params[:q].to_s.strip
+  sort      = sortable_fields.include?(params[:sort]) ? params[:sort] : "number"
+  direction = params[:direction] == "desc" ? "desc" : "asc"
+  per_page  = 10
+
+  filtered =
+    if q.blank?
+      invoices
+    else
+      needle = q.downcase
+      invoices.select do |inv|
+        inv[:number].downcase.include?(needle) ||
+          inv[:customer].downcase.include?(needle) ||
+          inv[:status].downcase.include?(needle)
+      end
+    end
+
+  sorted = filtered.sort_by { |inv| inv[sort.to_sym] }
+  sorted = sorted.reverse if direction == "desc"
+
+  total       = sorted.size
+  total_pages = [(total.to_f / per_page).ceil, 1].max
+  page        = params[:page].to_i
+  page        = 1 if page < 1
+  page        = total_pages if page > total_pages
+
+  paginated  = sorted.each_slice(per_page).to_a[page - 1] || []
+  start_index = total.zero? ? 0 : (page - 1) * per_page + 1
+  end_index   = [page * per_page, total].min
+
+  query_for = ->(overrides = {}) do
+    { q: q, sort: sort, direction: direction, page: page }.merge(overrides).to_query
+  end
+
+  next_direction = ->(field) { (sort == field && direction == "asc") ? "desc" : "asc" }
+
+  aria_sort_for = ->(field) do
+    next "none" unless sort == field
+    direction == "asc" ? "ascending" : "descending"
+  end
+
+  sort_indicator = ->(field) do
+    next "" unless sort == field
+    direction == "asc" ? "▲" : "▼"
+  end
+
+  status_classes = {
+    "Paid"    => "bg-green-50 text-green-700 ring-green-600/20",
+    "Pending" => "bg-amber-50 text-amber-700 ring-amber-600/20",
+    "Overdue" => "bg-red-50 text-red-700 ring-red-600/20",
+    "Draft"   => "bg-gray-50 text-gray-600 ring-gray-500/20",
+  }
+
+  column_labels = { "number" => "Invoice #", "customer" => "Customer", "date" => "Date", "amount" => "Amount", "status" => "Status" }
+%>
+
+<section class="mx-auto max-w-5xl px-6 py-10">
+  <div class="mb-6 flex items-end justify-between gap-4">
+    <div>
+      <h1 class="text-xl font-semibold text-gray-900">Invoices</h1>
+      <p class="mt-1 text-sm text-gray-500">Browse, search, and sort billing activity across all customers.</p>
+    </div>
+  </div>
+
+  <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 bg-gray-50 px-4 py-3 sm:px-6">
+      <form method="get" class="flex flex-wrap items-center gap-3">
+        <input type="hidden" name="sort" value="<%= sort %>">
+        <input type="hidden" name="direction" value="<%= direction %>">
+        <label for="invoice-search" class="sr-only">Search invoices</label>
+        <div class="relative w-full max-w-xs">
+          <svg class="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 10.5a6.5 6.5 0 11-13 0 6.5 6.5 0 0113 0z" />
+          </svg>
+          <input
+            type="search"
+            id="invoice-search"
+            name="q"
+            value="<%= q %>"
+            placeholder="Search by number, customer, or status"
+            class="w-full rounded-md border border-gray-300 py-1.5 pl-8 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+        </div>
+        <button type="submit" class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1">
+          Filter
+        </button>
+        <% if q.present? %>
+          <a href="?<%= query_for.call(q: nil, page: 1) %>" class="text-sm font-medium text-gray-500 hover:text-gray-700">
+            Clear filter
+          </a>
+        <% end %>
+      </form>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200">
+      <caption class="sr-only">Invoices sorted by <%= column_labels[sort] %> <%= direction == "asc" ? "ascending" : "descending" %></caption>
+      <thead class="bg-gray-50">
+        <tr>
+          <% column_labels.each do |field, label| %>
+            <th scope="col" aria-sort="<%= aria_sort_for.call(field) %>" class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 sm:px-6">
+              <a href="?<%= query_for.call(sort: field, direction: next_direction.call(field), page: 1) %>" class="inline-flex items-center gap-1 hover:text-gray-800">
+                <%= label %>
+                <span class="text-gray-400" aria-hidden="true"><%= sort_indicator.call(field) %></span>
+              </a>
+            </th>
+          <% end %>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100 bg-white">
+        <% if paginated.empty? %>
+          <tr>
+            <td colspan="<%= column_labels.size %>" class="px-4 py-10 text-center text-sm text-gray-500 sm:px-6">
+              No invoices match "<%= q %>".
+            </td>
+          </tr>
+        <% else %>
+          <% paginated.each do |inv| %>
+            <tr class="hover:bg-gray-50">
+              <td class="whitespace-nowrap px-4 py-3 text-sm font-medium text-gray-900 sm:px-6"><%= inv[:number] %></td>
+              <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-700 sm:px-6"><%= inv[:customer] %></td>
+              <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-500 sm:px-6"><%= inv[:date] %></td>
+              <td class="whitespace-nowrap px-4 py-3 text-sm text-gray-700 sm:px-6"><%= number_to_currency(inv[:amount]) %></td>
+              <td class="whitespace-nowrap px-4 py-3 sm:px-6">
+                <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset <%= status_classes[inv[:status]] %>">
+                  <%= inv[:status] %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+
+    <div class="flex flex-wrap items-center justify-between gap-3 border-t border-gray-200 px-4 py-3 sm:px-6">
+      <p class="text-sm text-gray-500">
+        <% if total.zero? %>
+          Showing 0 of 0 invoices
+        <% else %>
+          Showing <span class="font-medium text-gray-700"><%= start_index %></span>&ndash;<span class="font-medium text-gray-700"><%= end_index %></span> of <span class="font-medium text-gray-700"><%= total %></span> invoices
+        <% end %>
+      </p>
+
+      <nav aria-label="Pagination" class="flex items-center gap-1">
+        <% if page > 1 %>
+          <a href="?<%= query_for.call(page: page - 1) %>" class="rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100">Previous</a>
+        <% else %>
+          <span class="cursor-not-allowed rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-300">Previous</span>
+        <% end %>
+
+        <% (1..total_pages).each do |n| %>
+          <% if n == page %>
+            <span aria-current="page" class="rounded-md bg-indigo-600 px-2.5 py-1.5 text-sm font-semibold text-white"><%= n %></span>
+          <% else %>
+            <a href="?<%= query_for.call(page: n) %>" class="rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100"><%= n %></a>
+          <% end %>
+        <% end %>
+
+        <% if page < total_pages %>
+          <a href="?<%= query_for.call(page: page + 1) %>" class="rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-100">Next</a>
+        <% else %>
+          <span class="cursor-not-allowed rounded-md px-2.5 py-1.5 text-sm font-medium text-gray-300">Next</span>
+        <% end %>
+      </nav>
+    </div>
+  </div>
+</section>
