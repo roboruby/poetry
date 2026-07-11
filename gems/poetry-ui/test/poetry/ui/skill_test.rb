@@ -123,6 +123,34 @@ module Poetry
                         "the guardrail must order check after the final edit"
         assert_includes audit_reference, "AFTER the final edit"
       end
+
+      # The default-path doctrine (the lead): compose is the
+      # UNCONDITIONAL first move on every surface - measured the
+      # conditional form ("starting a new SCREEN?") at 3/31 blocks-surface
+      # adoption while the unconditional check-LAST doctrine hit 26/31.
+      test "compose is the unconditional first move on every text surface" do
+        usage = skill_files.fetch("SKILL.md")
+        compose_reference = DESIGN_DIR.join("references/compose.md").read
+        agents = Class.new { include Poetry::Generators::AgentsSection }.new.agents_section
+
+        assert_match(/## Guardrails\s+- FIRST MOVE, for every brief/, usage,
+                     "the compose first-move rule must LEAD the guardrails")
+        refute_includes usage, "Starting a new SCREEN?",
+                        "the conditional trigger that never fired is retired"
+        assert_includes agents, "FIRST MOVE on any UI brief"
+        assert_includes agents, "required slots"
+        assert_includes compose_reference, "## Step 1 is a tool call, not a decision"
+        assert_includes compose_reference, "START FROM THAT SOURCE"
+      end
+
+      test "block headers carry the compose routing keywords" do
+        Poetry::Ui.registry.blocks.each do |name, entry|
+          assert_kind_of Array, entry["keywords"],
+                         "#{name} needs keywords= in its poetry:block header - compose routes by them"
+          assert_operator entry["keywords"].size, :>=, 2,
+                          "#{name} keywords are the routing surface, not decoration"
+        end
+      end
     end
   end
 end

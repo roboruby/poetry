@@ -78,6 +78,11 @@ module Poetry
           Button::Component.new(**wiring, **options, &block)
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the described control" }.freeze
+
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?
         end

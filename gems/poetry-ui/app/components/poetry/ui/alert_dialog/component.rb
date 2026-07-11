@@ -57,6 +57,14 @@ module Poetry
           Button::Component.new(variant: :outline, autofocus: true, **options, &block)
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = {
+          title: "the accessible name", description: "the alertdialog must explain itself",
+          action: "the confirming choice", cancel: "the safe way out"
+        }.freeze
+
         def before_render
           raise ArgumentError, "AlertDialog requires with_title (the accessible name)" unless title?
           unless description?

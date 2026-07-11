@@ -32,6 +32,11 @@ module Poetry
           content_tag(:button, attrs, &block)
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the disclosure control" }.freeze
+
         def before_render
           raise ArgumentError, "Collapsible requires with_trigger (the disclosure control)" unless trigger?
         end

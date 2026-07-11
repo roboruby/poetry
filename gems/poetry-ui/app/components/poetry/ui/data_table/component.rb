@@ -72,6 +72,11 @@ module Poetry
           @column_defs ||= []
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { column: "at least one column" }.freeze
+
         def before_render
           raise ArgumentError, "DataTable requires at least one with_column" unless columns?
         end

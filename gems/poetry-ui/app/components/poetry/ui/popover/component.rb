@@ -95,6 +95,11 @@ module Poetry
         # Supporting text - presence wires the content's aria-describedby.
         renders_one :description
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the panel's control" }.freeze
+
         def before_render
           raise ArgumentError, "Popover requires with_trigger (the panel's control)" unless trigger?
 

@@ -65,6 +65,11 @@ module Poetry
           Button::Component.new(variant: :outline, size: :sm, **wiring, **options, &block)
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { title: "the message" }.freeze
+
         def before_render
           raise ArgumentError, "Toast requires with_title (the message)" unless title?
         end

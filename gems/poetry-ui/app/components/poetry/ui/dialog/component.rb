@@ -34,6 +34,11 @@ module Poetry
         renders_one :description
         renders_one :footer
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { title: "the accessible name" }.freeze
+
         def before_render
           raise ArgumentError, "Dialog requires with_title (the accessible name)" unless title?
         end

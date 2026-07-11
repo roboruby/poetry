@@ -74,6 +74,8 @@ components:
     - 'heading_level: fits the page outline (h3 default) - the trigger button lives
       inside it.'
     - The chevron is built in - never add another indicator icon to the trigger.
+    required_slots:
+      item: at least one item
   poetry/ui/alert:
     class_name: Poetry::Ui::Alert::Component
     identifier: poetry--ui--alert
@@ -179,6 +181,11 @@ components:
       action.
     - No extra form fields inside an AlertDialog - if input is needed, use a Dialog.
     - 'Cancel keeps variant: :outline; do not make cancel visually primary.'
+    required_slots:
+      title: the accessible name
+      description: the alertdialog must explain itself
+      action: the confirming choice
+      cancel: the safe way out
   poetry/ui/aspect_ratio:
     class_name: Poetry::Ui::AspectRatio::Component
     identifier: poetry--ui--aspect_ratio
@@ -367,6 +374,8 @@ components:
     - 'The current page is the item WITHOUT href: (it renders aria-current=page, not
       a link).'
     - Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
+    required_slots:
+      item: at least one item
   poetry/ui/bubble:
     class_name: Poetry::Ui::Bubble::Component
     identifier: poetry--ui--bubble
@@ -690,6 +699,8 @@ components:
     - 'Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard
       even before JS - never gate content behind the buttons alone.'
     - Size slides with item classes (basis-full default; basis-1/3 for a strip).
+    required_slots:
+      item: at least one slide
   poetry/ui/checkbox:
     class_name: Poetry::Ui::Checkbox::Component
     identifier: poetry--ui--checkbox
@@ -785,6 +796,8 @@ components:
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
       markup serves both.'
+    required_slots:
+      trigger: the disclosure control
   poetry/ui/combobox:
     class_name: Poetry::Ui::Combobox::Component
     identifier: poetry--ui--combobox
@@ -951,6 +964,8 @@ components:
       unit).
     - Deselection is include_blank (a visible blank option), never a re-click toggle
       - committing the already-selected value closes without change.
+    required_slots:
+      item: at least one item
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
     identifier: poetry--ui--command
@@ -1190,6 +1205,8 @@ components:
               radio_item: 0
             yieldless:
             - radio_item
+          required_slots:
+            radio_item: at least one radio item
         group:
           slots:
           - name: items
@@ -1223,6 +1240,8 @@ components:
                     radio_item: 0
                   yieldless:
                   - radio_item
+                required_slots:
+                  radio_item: at least one radio item
               sub:
                 slots:
                 - name: items
@@ -1256,12 +1275,19 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
                   yieldless:
                   - trigger
+                required_slots:
+                  trigger: the sub-menu item
+                  item: at least one item
+          required_slots:
+            item: at least one item
         sub:
           slots:
           - name: items
@@ -1295,6 +1321,8 @@ components:
                     radio_item: 0
                   yieldless:
                   - radio_item
+                required_slots:
+                  radio_item: at least one radio item
               group:
                 slots:
                 - name: items
@@ -1328,12 +1356,19 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
+                required_slots:
+                  item: at least one item
           - name: trigger
             many: false
             setter_args:
               trigger: 0
             yieldless:
             - trigger
+          required_slots:
+            trigger: the sub-menu item
+            item: at least one item
     - name: trigger
       many: false
       setter_args:
@@ -1431,6 +1466,9 @@ components:
     - 'shortcut: is a visual hint only - it does NOT bind the key.'
     - Do not nest a ContextMenu trigger surface inside another ContextMenu trigger
       surface.
+    required_slots:
+      trigger: the right-click surface
+      item: at least one item
   poetry/ui/data_table:
     class_name: Poetry::Ui::DataTable::Component
     identifier: poetry--ui--data_table
@@ -1478,6 +1516,8 @@ components:
       (inline edit, row actions) belong to poetry-reactive components rendered inside
       cells - never to this component.
     - 'Give the table a caption: - it is the table''s accessible purpose.'
+    required_slots:
+      column: at least one column
   poetry/ui/date_picker:
     class_name: Poetry::Ui::DatePicker::Component
     identifier: poetry--ui--date_picker
@@ -1601,6 +1641,8 @@ components:
     - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
       stop closing).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
+    required_slots:
+      title: the accessible name
   poetry/ui/drawer:
     class_name: Poetry::Ui::Drawer::Component
     identifier: poetry--ui--drawer
@@ -1673,6 +1715,8 @@ components:
       the gesture is discoverable.'
     - Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition,
       never the only way out.
+    required_slots:
+      title: the accessible name
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
     identifier: poetry--ui--dropdown_menu
@@ -1752,6 +1796,8 @@ components:
               radio_item: 0
             yieldless:
             - radio_item
+          required_slots:
+            radio_item: at least one radio item
         group:
           slots:
           - name: items
@@ -1785,6 +1831,8 @@ components:
                     radio_item: 0
                   yieldless:
                   - radio_item
+                required_slots:
+                  radio_item: at least one radio item
               sub:
                 slots:
                 - name: items
@@ -1818,12 +1866,19 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
                   yieldless:
                   - trigger
+                required_slots:
+                  trigger: the sub-menu item
+                  item: at least one item
+          required_slots:
+            item: at least one item
         sub:
           slots:
           - name: items
@@ -1857,6 +1912,8 @@ components:
                     radio_item: 0
                   yieldless:
                   - radio_item
+                required_slots:
+                  radio_item: at least one radio item
               group:
                 slots:
                 - name: items
@@ -1890,12 +1947,19 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
+                required_slots:
+                  item: at least one item
           - name: trigger
             many: false
             setter_args:
               trigger: 0
             yieldless:
             - trigger
+          required_slots:
+            trigger: the sub-menu item
+            item: at least one item
     - name: trigger
       many: false
       setter_args:
@@ -1983,6 +2047,9 @@ components:
     - Keep submenus <= 2 levels; prefer grouping + separators over deep nesting.
     - Critical actions must exist somewhere reachable without JS (menus are JS-required
       interaction).
+    required_slots:
+      trigger: the menu button
+      item: at least one item
   poetry/ui/empty:
     class_name: Poetry::Ui::Empty::Component
     identifier: poetry--ui--empty
@@ -2163,6 +2230,8 @@ components:
     - Never use HoverCard for hints (Tooltip) or for content users act on (Popover).
     - 'Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first
       open.'
+    required_slots:
+      trigger: the enriched link
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -2527,6 +2596,8 @@ components:
                     radio_item: 0
                   yieldless:
                   - radio_item
+                required_slots:
+                  radio_item: at least one radio item
               group:
                 slots:
                 - name: items
@@ -2560,6 +2631,8 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
                     sub:
                       slots:
                       - name: items
@@ -2593,12 +2666,19 @@ components:
                                 radio_item: 0
                               yieldless:
                               - radio_item
+                            required_slots:
+                              radio_item: at least one radio item
                       - name: trigger
                         many: false
                         setter_args:
                           trigger: 0
                         yieldless:
                         - trigger
+                      required_slots:
+                        trigger: the sub-menu item
+                        item: at least one item
+                required_slots:
+                  item: at least one item
               sub:
                 slots:
                 - name: items
@@ -2632,6 +2712,8 @@ components:
                           radio_item: 0
                         yieldless:
                         - radio_item
+                      required_slots:
+                        radio_item: at least one radio item
                     group:
                       slots:
                       - name: items
@@ -2665,18 +2747,28 @@ components:
                                 radio_item: 0
                               yieldless:
                               - radio_item
+                            required_slots:
+                              radio_item: at least one radio item
+                      required_slots:
+                        item: at least one item
                 - name: trigger
                   many: false
                   setter_args:
                     trigger: 0
                   yieldless:
                   - trigger
+                required_slots:
+                  trigger: the sub-menu item
+                  item: at least one item
           - name: trigger
             many: false
             setter_args:
               trigger: 0
             yieldless:
             - trigger
+          required_slots:
+            trigger: the top-level menu button
+            item: at least one item
     elements:
     - menu
     - trigger
@@ -2778,6 +2870,8 @@ components:
       one is open (the gated-hover rule).
     - In-menu item rules (destructive variant, inset, checkbox/radio) follow the DropdownMenu
       family contract.
+    required_slots:
+      menu: at least one menu
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
@@ -3159,6 +3253,8 @@ components:
       open: true) - popovers are JS-required interaction.'
     - Do not nest a Popover inside a Popover - restructure (the layer stack allows
       it; comprehension does not).
+    required_slots:
+      trigger: the panel's control
   poetry/ui/progress:
     class_name: Poetry::Ui::Progress::Component
     identifier: poetry--ui--progress
@@ -3270,6 +3366,8 @@ components:
     - '7+ options: use Select instead.'
     - 'Wire errors through Field/FormBuilder (invalid: + describedby on the root)
       - never a bare red ring.'
+    required_slots:
+      item: at least one radio item
   poetry/ui/resizable:
     class_name: Poetry::Ui::Resizable::Component
     identifier: poetry--ui--resizable
@@ -3324,6 +3422,8 @@ components:
     - Handles are keyboard splitters (arrows step, Home/End jump) - never replace
       them with styled divs.
     - Nest a group inside a panel for two-axis layouts - groups self-scope.
+    required_slots:
+      panel: at least two panels
   poetry/ui/scroll_area:
     class_name: Poetry::Ui::ScrollArea::Component
     identifier: poetry--ui--scroll_area
@@ -3506,6 +3606,8 @@ components:
       or Capybara selectors (drive the combobox like a user).
     - 'Positioning is popper-only: poetry Select drops below the trigger (shadcn''s
       item-aligned overlay mode is not ported - a documented parity delta).'
+    required_slots:
+      item: at least one item
   poetry/ui/separator:
     class_name: Poetry::Ui::Separator::Component
     identifier: poetry--ui--separator
@@ -3590,6 +3692,8 @@ components:
     - 'Pick side by content: navigation left, detail/edit right, pickers bottom.'
     - Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
+    required_slots:
+      title: the accessible name
   poetry/ui/sidebar:
     class_name: Poetry::Ui::Sidebar::Component
     identifier: poetry--ui--sidebar
@@ -3689,6 +3793,8 @@ components:
       it fully away; :none is a static column.'
     - 'Menu entries are poetry_sidebar_menu_button(href:) links (active: marks the
       current route) - navigation navigates.'
+    required_slots:
+      nav: the sidebar column
   poetry/ui/skeleton:
     class_name: Poetry::Ui::Skeleton::Component
     identifier: poetry--ui--skeleton
@@ -3961,6 +4067,8 @@ components:
       tab sets.'
     - Tabs switch VIEWS of one context; use navigation (links) when the URL should
       change.
+    required_slots:
+      tab: at least one tab
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -4062,6 +4170,8 @@ components:
       ASSERTIVELY); do not use it for styling.'
     - Never put required interactions in a toast (toasts are missable) - that is AlertDialog.
     - 'Toasts are supplementary: never the only place an outcome is recorded.'
+    required_slots:
+      title: the message
   poetry/ui/toaster:
     class_name: Poetry::Ui::Toaster::Component
     identifier: poetry--ui--toaster
@@ -4248,6 +4358,8 @@ components:
       - the controller enforces it; agents patching DOM must too.'
     - single deselects to empty by re-press (Radix-exact) - if your UI needs always-one-selected,
       handle the empty change in the host.
+    required_slots:
+      item: at least one item
   poetry/ui/tooltip:
     class_name: Poetry::Ui::Tooltip::Component
     identifier: poetry--ui--tooltip
@@ -4344,6 +4456,8 @@ components:
       the row feel continuous.
     - 'Rich visual content needs label: (the plain-text announcement).'
     - Do not pin tooltips open as onboarding callouts - that is a Popover.
+    required_slots:
+      trigger: the described control
 helpers:
   poetry_attachment_group: {}
   poetry_avatar_group: {}
@@ -4421,6 +4535,17 @@ blocks:
     - separator
     - sidebar
     template: lib/generators/poetry/block/templates/app_shell.html.erb
+    keywords:
+    - dashboard
+    - shell
+    - layout
+    - sidebar
+    - workspace
+    - admin
+    - console
+    - overview
+    - stats
+    - chrome
   data-index:
     title: Data index
     description: 'A contained records screen: title bar with primary action, search-and-filter
@@ -4437,6 +4562,18 @@ blocks:
     - pagination
     - table
     template: lib/generators/poetry/block/templates/data_index.html.erb
+    keywords:
+    - index
+    - list
+    - listing
+    - table
+    - records
+    - directory
+    - filter
+    - pagination
+    - management
+    - browse
+    - catalog
   destructive-panel:
     title: Destructive panel
     description: 'A guarded destructive action: heading and consequences in plain
@@ -4447,6 +4584,11 @@ blocks:
     - button
     - icon
     template: lib/generators/poetry/block/templates/destructive_panel.html.erb
+    keywords:
+    - deletion
+    - deactivate
+    - irreversible
+    - permanently
   page-header:
     title: Page header
     description: 'The furniture a screen opens with: breadcrumb trail, page title
@@ -4458,6 +4600,9 @@ blocks:
     - icon
     - separator
     template: lib/generators/poetry/block/templates/page_header.html.erb
+    keywords:
+    - header
+    - breadcrumb
   section-card:
     title: Section card
     description: 'A contained content section: header row with title, supporting description
@@ -4469,6 +4614,14 @@ blocks:
     - icon
     - link
     template: lib/generators/poetry/block/templates/section_card.html.erb
+    keywords:
+    - settings
+    - section
+    - panel
+    - account
+    - detail
+    - summary
+    - form
   top-nav:
     title: Top nav
     description: 'A site navigation bar: brand mark, a products dropdown of rich title-and-description
@@ -4479,6 +4632,13 @@ blocks:
     - link
     - navigation_menu
     template: lib/generators/poetry/block/templates/top_nav.html.erb
+    keywords:
+    - navigation
+    - navbar
+    - topbar
+    - site
+    - marketing
+    - links
 helper_args:
   poetry_accordion: 0
   poetry_alert: 0

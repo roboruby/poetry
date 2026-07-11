@@ -545,9 +545,29 @@ module Poetry
       # The builder classes behind lambda-wrapped slots: a lambda
       # hides its return class from introspection, so the owners declare
       # them and the registry walker recurses into each builder's own call
-      # surface (with_menu yields a Menu; with_sub a Sub).
+      # surface (with_menu yields a Menu; with_sub a Sub). REQUIRED_SLOTS
+      # states the same facts the before_render raises enforce, so
+      # poetry check flags the omission without rendering (the menu
+      # crash: with_trigger left out, four truthful checks silent).
       class Component
         SLOT_BUILDERS = { menu: Menu }.freeze
+        REQUIRED_SLOTS = { menu: "at least one menu" }.freeze
+      end
+
+      class Menu
+        REQUIRED_SLOTS = { trigger: "the top-level menu button", item: "at least one item" }.freeze
+      end
+
+      class Group
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+      end
+
+      class RadioGroup
+        REQUIRED_SLOTS = { radio_item: "at least one radio item" }.freeze
+      end
+
+      class Sub
+        REQUIRED_SLOTS = { trigger: "the sub-menu item", item: "at least one item" }.freeze
       end
 
       module ItemSlots

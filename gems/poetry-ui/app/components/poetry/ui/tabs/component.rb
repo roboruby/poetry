@@ -53,6 +53,11 @@ module Poetry
           @tab_defs ||= []
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
+
         def before_render
           raise ArgumentError, "Tabs requires at least one with_tab" unless tabs?
 

@@ -49,6 +49,11 @@ module Poetry
           @panel_defs ||= []
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { panel: "at least two panels" }.freeze
+
         def before_render
           # panels? forces the render block (the slot-predicate rule -
           # panel_defs is empty until it runs).

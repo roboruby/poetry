@@ -237,6 +237,11 @@ module Poetry
           @trigger_aria = extract_trigger_aria!
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+
         def before_render
           raise ArgumentError, "Select requires at least one item (with_item / with_group)" unless items?
 

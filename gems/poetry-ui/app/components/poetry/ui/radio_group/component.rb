@@ -86,6 +86,11 @@ module Poetry
           end
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
+
         def before_render
           raise ArgumentError, "RadioGroup requires at least one with_item" unless items?
 

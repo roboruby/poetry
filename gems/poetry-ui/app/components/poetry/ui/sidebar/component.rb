@@ -57,6 +57,11 @@ module Poetry
         renders_one :nav
         renders_one :inset
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
+
         def before_render
           raise ArgumentError, "Sidebar requires with_nav (the sidebar column)" unless nav?
         end

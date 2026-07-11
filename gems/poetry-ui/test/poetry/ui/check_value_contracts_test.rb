@@ -17,6 +17,7 @@ module Poetry
       REMEDIATED = "eval/results/2026-07-08/generated/*/poetry.html.erb"
       BLOCKS_GATE = "eval/results/2026-07-09/generated/*/poetry.html.erb"
       REBASELINE = "eval/results/2026-07-09-rebaseline/generated/*/poetry.html.erb"
+      DESIGNFIRE = "eval/results/2026-07-10-designfire/generated/*/poetry.html.erb"
       FROZEN = "eval/arms/*/poetry.html.erb"
 
       def catalog
@@ -98,6 +99,33 @@ module Poetry
 
         refute_nil keyword, "class: against a closed setter signature must read as the carousel crash"
         assert_equal "classes", keyword.suggestion, "the near-miss keyword must suggest the real one"
+        assert(failures["menu"].any? { |finding| finding.rule == "missing-slot" },
+               " exposes the arm's SECOND defect: both menubar menus also omit with_trigger " \
+               "(the yieldless crash got there first at render)")
+      end
+
+      # The design-fire corpus, closed by: menu's required-SLOT
+      # omission (with_trigger left out of both menubar menus - the arm ran
+      # FOUR truthful checks and the contract was silent) now fails
+      # statically. app_shell is the never-checked sequencing crash
+      # (parse-error, the tier that always caught it). split_editor
+      # RENDERED - its parse errors are herb heredoc strictness on sample
+      # content, pinned here so any corpus drift is loud. command_palette
+      # (accessible-name), toast (conditional content) and pagination
+      # (invented host route helper) remain outside the static surface -
+      # the leads 3-4.
+      def test_the_designfire_corpus_errors_close_the_required_slot_class
+        failures = error_templates(DESIGNFIRE)
+
+        assert_equal %w[app_shell menu split_editor], failures.keys.sort,
+                     "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
+        missing = failures["menu"].select { |finding| finding.rule == "missing-slot" }
+
+        assert_equal 2, missing.size, "both trigger-less menus surface, not just the first"
+        assert(missing.all? { |finding| finding.message.include?("with_menu requires with_trigger") })
+        assert(failures["app_shell"].any? { |finding| finding.rule == "parse-error" })
+        assert_equal ["parse-error"], failures["split_editor"].map(&:rule).uniq,
+                     "split_editor rendered - only herb's heredoc strictness, no contract errors"
       end
 
       def test_the_blocks_gate_corpus_errors_on_exactly_the_two_crashers

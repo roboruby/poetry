@@ -126,22 +126,26 @@ module Poetry
       end
 
       # The registry "blocks" section (Blocks v1): every block template's
-      # metadata, all source-derived - title/description from the mandatory
-      # poetry:block header, the composed component list from the template's
-      # own poetry_* calls (longest-prefix fold: sidebar_menu_button counts
-      # as sidebar), the gem-relative template path for boot-free source
-      # reads. No hand-authored catalog to drift.
+      # metadata, all source-derived - title/description/keywords from the
+      # mandatory poetry:block header (keywords power the MCP compose
+      # tool's brief routing), the composed component list from the
+      # template's own poetry_* calls (longest-prefix fold:
+      # sidebar_menu_button counts as sidebar), the gem-relative template
+      # path for boot-free source reads. No hand-authored catalog to drift.
       def registry_blocks(component_paths:)
         titles = component_paths.map { |path| path.delete_prefix("poetry/ui/").tr("/", "_") }
         Dir.glob(root.join(BLOCKS_DIR, "*.html.erb").to_s).to_h do |file|
           source = File.read(file)
-          header = source.match(/\A<%#\s*poetry:block\s+title="([^"]*)"\s+description="([^"]*)"\s*%>/)
+          header = source.match(
+            /\A<%#\s*poetry:block\s+title="([^"]*)"\s+description="([^"]*)"(?:\s+keywords="([^"]*)")?\s*%>/
+          )
           raise Poetry::Core::Error, "#{file} is missing its poetry:block header" unless header
 
-          [File.basename(file, ".html.erb").tr("_", "-"),
-           { "title" => header[1], "description" => header[2],
-             "components" => block_components(source, titles: titles),
-             "template" => "#{BLOCKS_DIR}/#{File.basename(file)}" }]
+          entry = { "title" => header[1], "description" => header[2],
+                    "components" => block_components(source, titles: titles),
+                    "template" => "#{BLOCKS_DIR}/#{File.basename(file)}" }
+          entry["keywords"] = header[3].split(",").map(&:strip) if header[3]
+          [File.basename(file, ".html.erb").tr("_", "-"), entry]
         end
       end
 

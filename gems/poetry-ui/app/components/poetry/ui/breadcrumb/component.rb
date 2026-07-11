@@ -38,6 +38,11 @@ module Poetry
           @entries ||= []
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+
         def before_render
           # items? is the SLOT predicate: it forces the render block (which
           # populates entries) - reading @entries directly here would run

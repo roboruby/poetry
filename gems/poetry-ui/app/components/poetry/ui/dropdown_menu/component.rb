@@ -462,8 +462,27 @@ module Poetry
       # lambda hides its return class from introspection, so the owner
       # declares it and the registry walker recurses into the builder's own
       # call surface (with_sub yields a Sub with its own items).
+      # REQUIRED_SLOTS states the same facts the before_render
+      # raises enforce, so poetry check flags the omission without
+      # rendering (the menu crash class).
       module ItemSlots
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
+      end
+
+      class Component
+        REQUIRED_SLOTS = { trigger: "the menu button", item: "at least one item" }.freeze
+      end
+
+      class Group
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+      end
+
+      class RadioGroup
+        REQUIRED_SLOTS = { radio_item: "at least one radio item" }.freeze
+      end
+
+      class Sub
+        REQUIRED_SLOTS = { trigger: "the sub-menu item", item: "at least one item" }.freeze
       end
     end
   end

@@ -48,6 +48,11 @@ module Poetry
           @slides ||= []
         end
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one slide" }.freeze
+
         def before_render
           raise ArgumentError, "Carousel requires label: (the region's accessible name)" if label.blank?
           raise ArgumentError, "Carousel requires at least one with_item" unless items?

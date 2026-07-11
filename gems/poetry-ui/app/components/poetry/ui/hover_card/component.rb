@@ -80,6 +80,11 @@ module Poetry
           Trigger.new(tag_name: tag, attributes: attrs.merge(options))
         }
 
+        # The same facts the before_render raise enforces, stated statically
+        #: poetry check flags the omission without rendering (the
+        # menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
+
         def before_render
           raise ArgumentError, "HoverCard requires with_trigger (the enriched link)" unless trigger?
 
