@@ -1,0 +1,120 @@
+{
+  "assembled_from": [
+    "results.json",
+    "generated-scorecard.json",
+    "generation-manifest.json",
+    "poetry-ui/eval/results/2026-07-09-rebaseline/results.json (baseline; raw controls frozen from 2026-07-07)"
+  ],
+  "headline": {
+    "raw_tailwind": 19,
+    "inconclusive": 1,
+    "poetry": 11
+  },
+  "prior_baselines": {
+    "dd75_depth3_and_depth5_confirmed": {
+      "raw_tailwind": 16,
+      "poetry": 12,
+      "inconclusive": 3
+    },
+    "dd70_full": {
+      "raw_tailwind": 18,
+      "poetry": 13
+    }
+  },
+  "axes": {
+    "hierarchy": {
+      "poetry": 9,
+      "raw_tailwind": 20
+    },
+    "composition": {
+      "poetry": 6,
+      "raw_tailwind": 20
+    },
+    "clarity": {
+      "poetry": 8,
+      "raw_tailwind": 21
+    },
+    "brief_fit": {
+      "poetry": 14,
+      "raw_tailwind": 14
+    }
+  },
+  "verdict_changes_vs_dd75": {
+    "app_shell": "poetry -> raw_tailwind",
+    "button": "poetry -> raw_tailwind",
+    "chat_transcript": "raw_tailwind -> inconclusive",
+    "command_palette": "poetry -> raw_tailwind",
+    "empty_state": "poetry -> raw_tailwind",
+    "filter_toolbar": "raw_tailwind -> poetry",
+    "form_controls": "inconclusive -> poetry",
+    "form_field": "inconclusive -> raw_tailwind",
+    "primitives": "inconclusive -> poetry",
+    "split_editor": "raw_tailwind -> poetry",
+    "toast": "poetry -> raw_tailwind"
+  },
+  "skill_adoption": {
+    "poetry_skill_arms": 31,
+    "poetry_design_arms": 24,
+    "design_non_adopters": [
+      "button",
+      "filter_toolbar",
+      "menu",
+      "mobile_sheet",
+      "pagination",
+      "searchable_select",
+      "table"
+    ],
+    "ran_a_check": 26
+  },
+  "crash_adjudication": {
+    "app_shell": {
+      "check": "flagged (parse-error)",
+      "class": "sequencing - never ran check"
+    },
+    "menu": {
+      "check": "silent (4 checks, check-last honored)",
+      "class": "tier gap: required SLOT omitted (Menubar with_trigger)"
+    },
+    "command_palette": {
+      "check": "silent (checked 3x, edited after)",
+      "class": "tier gap: accessible-name contract (Command input aria)"
+    },
+    "toast": {
+      "check": "silent (1 check, check-last honored)",
+      "class": "tier gap: conditional content (Button renders nothing visible)"
+    },
+    "pagination": {
+      "check": "silent - and never ran check",
+      "class": "uncheckable: invented host route helper (eval_pagination_path)"
+    }
+  },
+  "generation_usage": {
+    "units_recorded": 31,
+    "unit_cost_sum_usd": 20.3133,
+    "receipted_cost_usd": 20.3132
+  },
+  "predictions": {
+    "d1": {
+      "statement": "poetry-design fires >= 20/31 (was 0) AND usage skill >= 27/31",
+      "observed": "design 24/31, usage 31/31",
+      "pass": true
+    },
+    "d2": {
+      "statement": "composition-axis tally >= 10 of 31 (5;: 9)",
+      "observed": "6/31",
+      "pass": false
+    },
+    "d3": {
+      "statement": "poetry overall >= 14 of 31 (12)",
+      "observed": "11/31 ({\"raw_tailwind\" => 19, \"inconclusive\" => 1, \"poetry\" => 11})",
+      "pass": false
+    },
+    "d4": {
+      "statement": "31/31 delivery, zero render crashes, zero pairs lost",
+      "observed": "delivery 31/31; crashes: app_shell, command_palette, menu, pagination, toast",
+      "pass": false
+    }
+  },
+  "grade": "1/4 pre-registered predictions pass",
+  "decision_rule": "this tally SUPERSEDES 16-12-3 as the standing headline (pre-registered)"
+}

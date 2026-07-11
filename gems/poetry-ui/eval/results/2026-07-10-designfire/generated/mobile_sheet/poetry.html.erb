@@ -1,0 +1,25 @@
+<section class="mx-auto max-w-2xl p-6">
+  <h1 class="cn-text-lg cn-font-semibold">Activity</h1>
+  <p class="cn-text-sm cn-text-muted-foreground mt-1">
+    Set a daily movement target and we'll track your progress toward it.
+  </p>
+
+  <div class="mt-4">
+    <%= poetry_drawer(direction: :down, show_swipe_handle: true) do |drawer| %>
+      <% drawer.with_trigger do %>
+        <%= poetry_button { "Set daily goal" } %>
+      <% end %>
+
+      <% drawer.with_title { "Set your daily activity goal" } %>
+      <% drawer.with_description { "Pick a target you can hit most days. You can change it anytime." } %>
+
+      <%= form_with url: "#", method: :patch, class: "grid gap-4 px-4 pb-4" do %>
+        <%= poetry_field(id: "daily_goal_steps", label_text: "Daily step goal", hint: "Recommended range: 6,000-10,000 steps") do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "number", name: "daily_goal[steps]", value: "8000", placeholder: "e.g. 8000") %>
+        <% end %>
+
+        <%= poetry_button(type: :submit) { "Save goal" } %>
+      <% end %>
+    <% end %>
+  </div>
+</section>

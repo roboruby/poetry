@@ -1,0 +1,83 @@
+<div class="mx-auto max-w-3xl space-y-8 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Anchored overlays</h1>
+    <p class="text-sm text-muted-foreground">
+      Three popper-driven patterns side by side: a small form tucked behind a button, an
+      icon-only action that still names itself, and a profile preview riding a real link.
+    </p>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Popper patterns" } %>
+    <% card.with_description { "Popover, Tooltip, and Hover Card, each anchored to its trigger." } %>
+
+    <div class="grid grid-cols-1 gap-8 sm:grid-cols-3">
+      <div class="space-y-3">
+        <div class="space-y-1">
+          <h3 class="text-sm font-medium">Popover</h3>
+          <p class="text-sm text-muted-foreground">A small form the user fills in without leaving the page.</p>
+        </div>
+
+        <%= poetry_popover(content_class: "w-72") do |popover| %>
+          <% popover.with_trigger do %>
+            <%= poetry_button(variant: :outline) { "Open popover" } %>
+          <% end %>
+          <% popover.with_title { "Dimensions" } %>
+          <% popover.with_description { "Set the exact size for the layer." } %>
+
+          <%= form_with url: "#", method: :get, class: "mt-4 space-y-4" do %>
+            <div class="grid grid-cols-2 gap-3">
+              <%= poetry_field(id: "dimensions-width", label_text: "Width", hint: "px") do |field| %>
+                <%= poetry_input(**field.control_attributes, name: "width", value: "100") %>
+              <% end %>
+              <%= poetry_field(id: "dimensions-height", label_text: "Height", hint: "px") do |field| %>
+                <%= poetry_input(**field.control_attributes, name: "height", value: "25") %>
+              <% end %>
+            </div>
+            <div class="flex justify-end">
+              <%= poetry_button(type: :submit, size: :sm) { "Save changes" } %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+      <div class="space-y-3">
+        <div class="space-y-1">
+          <h3 class="text-sm font-medium">Tooltip</h3>
+          <p class="text-sm text-muted-foreground">An icon-only control that still names itself on hover.</p>
+        </div>
+
+        <%= poetry_tooltip(side: :top) do |tooltip| %>
+          <% tooltip.with_trigger do %>
+            <%= poetry_button(variant: :outline, size: :icon, label: "Add to library") do %>
+              <%= poetry_icon(name: :bookmark) %>
+            <% end %>
+          <% end %>
+          Add to library
+        <% end %>
+      </div>
+
+      <div class="space-y-3">
+        <div class="space-y-1">
+          <h3 class="text-sm font-medium">Hover card</h3>
+          <p class="text-sm text-muted-foreground">Pointer-only enrichment for a link that already stands on its own.</p>
+        </div>
+
+        <%= poetry_hover_card do |hover_card| %>
+          <% hover_card.with_trigger do %>
+            <%= poetry_link(href: "https://nextjs.org", external: true) { "@nextjs" } %>
+          <% end %>
+
+          <div class="flex gap-3">
+            <%= poetry_avatar(label: "Next.js", size: :lg) { "N" } %>
+            <div class="space-y-1">
+              <p class="text-sm font-medium">Next.js</p>
+              <p class="text-sm text-muted-foreground">@nextjs</p>
+              <p class="text-sm text-muted-foreground">The React Framework for the Web, built by Vercel.</p>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,92 @@
+<section class="mx-auto max-w-3xl px-6 py-12">
+  <div class="flex items-center justify-between gap-4 border-b border-slate-200 pb-6">
+    <div>
+      <h1 class="text-lg font-semibold text-slate-900">Account settings</h1>
+      <p class="mt-1 text-sm text-slate-500">Manage how your workspace notifies and represents you.</p>
+    </div>
+
+    <button
+      type="button"
+      command="show-modal"
+      commandfor="settings-dialog"
+      class="inline-flex items-center gap-2 rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2"
+    >
+      <svg class="size-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M11.078 2.25c-.917 0-1.699.663-1.85 1.567l-.091.549a.798.798 0 0 1-.517.608 7.45 7.45 0 0 0-.478.198.798.798 0 0 1-.796-.064l-.453-.324a1.875 1.875 0 0 0-2.416.2l-.243.243a1.875 1.875 0 0 0-.2 2.416l.324.453a.798.798 0 0 1 .064.796 7.448 7.448 0 0 0-.198.478.798.798 0 0 1-.608.517l-.549.091A1.875 1.875 0 0 0 2.25 11.078v.344c0 .917.663 1.699 1.567 1.85l.549.091c.281.047.508.256.608.517.06.162.127.321.198.478a.798.798 0 0 1-.064.796l-.324.453a1.875 1.875 0 0 0 .2 2.416l.243.243c.648.648 1.67.712 2.416.2l.453-.324a.798.798 0 0 1 .796-.064c.157.071.316.138.478.198.261.1.47.327.517.608l.091.549a1.875 1.875 0 0 0 1.85 1.567h.344c.917 0 1.699-.663 1.85-1.567l.091-.549a.798.798 0 0 1 .517-.608 7.52 7.52 0 0 0 .478-.198.798.798 0 0 1 .796.064l.453.324a1.875 1.875 0 0 0 2.416-.2l.243-.243c.648-.648.712-1.67.2-2.416l-.324-.453a.798.798 0 0 1-.064-.796c.071-.157.138-.316.198-.478.1-.261.327-.47.608-.517l.549-.091a1.875 1.875 0 0 0 1.567-1.85v-.344c0-.917-.663-1.699-1.567-1.85l-.549-.091a.798.798 0 0 1-.608-.517 7.507 7.507 0 0 0-.198-.478.798.798 0 0 1 .064-.796l.324-.453a1.875 1.875 0 0 0-.2-2.416l-.243-.243a1.875 1.875 0 0 0-2.416-.2l-.453.324a.798.798 0 0 1-.796.064 7.462 7.462 0 0 0-.478-.198.798.798 0 0 1-.517-.608l-.091-.549a1.875 1.875 0 0 0-1.85-1.567h-.344ZM12 15.75a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5Z" clip-rule="evenodd" />
+      </svg>
+      Open settings
+    </button>
+  </div>
+
+  <p class="mt-6 text-sm text-slate-500">
+    Use the button above to review notification and visibility preferences before confirming changes to your account.
+  </p>
+
+  <dialog
+    id="settings-dialog"
+    class="m-auto w-full max-w-md rounded-xl bg-white p-0 shadow-xl ring-1 ring-slate-900/10 backdrop:bg-slate-900/50 open:flex open:flex-col"
+  >
+    <form method="dialog">
+      <div class="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-4">
+        <div>
+          <h2 class="text-base font-semibold text-slate-900">Settings</h2>
+          <p class="mt-1 text-sm text-slate-500">
+            Update your workspace preferences. Changes apply immediately after you confirm.
+          </p>
+        </div>
+        <button
+          type="submit"
+          value="cancel"
+          aria-label="Close dialog"
+          class="-m-1 rounded-md p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+        >
+          <svg class="size-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="space-y-5 px-6 py-5">
+        <fieldset>
+          <legend class="text-sm font-medium text-slate-700">Notifications</legend>
+          <div class="mt-2 space-y-2">
+            <label class="flex items-center gap-2 text-sm text-slate-600">
+              <input type="checkbox" name="notify_email" checked class="size-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900">
+              Email me about account activity
+            </label>
+            <label class="flex items-center gap-2 text-sm text-slate-600">
+              <input type="checkbox" name="notify_product" class="size-4 rounded border-slate-300 text-slate-900 focus:ring-slate-900">
+              Send product announcements
+            </label>
+          </div>
+        </fieldset>
+
+        <div>
+          <label for="profile_visibility" class="block text-sm font-medium text-slate-700">Profile visibility</label>
+          <select id="profile_visibility" name="profile_visibility" class="mt-2 block w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-1 focus:ring-slate-500">
+            <option>Everyone</option>
+            <option selected>Team members only</option>
+            <option>Only me</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end gap-3 border-t border-slate-200 px-6 py-4">
+        <button
+          type="submit"
+          value="cancel"
+          class="rounded-md px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          value="confirm"
+          class="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-900 focus-visible:ring-offset-2"
+        >
+          Confirm changes
+        </button>
+      </div>
+    </form>
+  </dialog>
+</section>

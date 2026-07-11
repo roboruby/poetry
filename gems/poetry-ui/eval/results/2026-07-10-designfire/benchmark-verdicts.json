@@ -1,0 +1,3034 @@
+{
+  "schema": "judge-v1",
+  "context": "generated-arm benchmark (N15 W2) - agent output, unknown intended winner; no calibration key by design (the frozen-arm judge-verdicts.json carries it)",
+  "generated_on": "2026-07-10-designfire",
+  "model": "claude-sonnet-5",
+  "votes_per_order": 3,
+  "axes": [
+    "hierarchy",
+    "composition",
+    "clarity",
+    "brief_fit"
+  ],
+  "tasks": {
+    "alert": {
+      "brief": "A destructive alert 'Payment failed' with a description and a warning icon",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads as a complete, properly contained alert card with clear title/body/action hierarchy and explicit next-step affordances, while first's border oddly wraps only the title, leaving the description floating outside the alert surface; but first passes more deterministic gates (only title_and_body fails vs. second's title_and_body + design_slop), giving it the edge on strict brief fulfillment.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a filled destructive surface, clear title/body/action grouping, and actionable CTAs (Update payment method/Dismiss), giving stronger hierarchy and clarity than first's bare white box with no actions; both fail title_and_body but second's design_slop fail is a minor ledger ding versus first's much thinner communication.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second groups icon, title, description, and actions inside one cohesive tinted container with clear type/weight contrast, while first's border only wraps the title and leaves the description floating outside the box; but first has one fewer gate failure (no design_slop hit), so it edges out on strict brief conformance.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First presents a cohesive alert card with icon, title, description, and clear action buttons all contained and styled consistently; second's description text floats disconnected below the bordered box with no visible actions, reading as a broken/incomplete composition.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as one cohesive, well-aligned alert card with a clear title/body/action structure and explicit CTAs, while second's description text floats disconnected below the bordered box with no visible action, breaking hierarchy and composition; second only edges ahead on brief_fit since it passes the design_slop gate that first fails.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First is a cohesive card with icon, title, description, and clear primary/secondary actions, while second's description escapes the bordered alert entirely and no action buttons exist at all, leaving users without any way to act. First's tighter integration of description into the alert body also satisfies the brief's 'description' requirement more convincingly despite both failing the same automated gate.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "app_shell": {
+      "brief": "An application shell: a collapsible sidebar with a Platform nav group (Dashboard active) and a main content area with a collapse toggle",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500), while SECOND delivers a clean, working app shell with clear nav hierarchy, grouped dashboard content, and passing gates on landmarks, links, colors, and slop.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only an HTTP 500 error page with no UI at all, while SECOND delivers a fully working, well-composed app shell with sidebar nav, active state, and dashboard content matching the gate results.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser HTTP 500 error page with no shell at all, while SECOND delivers a complete, well-organized sidebar/dashboard shell with clear grouping and active-state styling; the gate ledger confirms SECOND passes nearly every check FIRST fails.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second fails to render entirely (HTTP 500 error page), while first delivers a fully composed sidebar, active Dashboard nav item, and dashboard content with clear hierarchy. Gate results confirm first passes nearly all checks while second fails all of them.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND is a broken 500 error page, rendering nothing of the brief; FIRST delivers a fully realized sidebar/nav/dashboard shell with clear hierarchy and passes nearly every gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page with no app content, while FIRST delivers a complete, well-organized dashboard shell with clear sidebar nav, active-state highlighting, and legible content hierarchy.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "artwork_carousel": {
+      "brief": "A three-slide artwork carousel with previous/next controls",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second shows actual artwork, a 'SLIDE 1 OF 3' counter, and dot indicators that make position and content legible at a glance, while first is a placeholder-image layout with no progress indicator at all. Second's side-by-side composition (image, title, metadata, description) reads with clearer hierarchy and better balance than first's stacked, sparse layout.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second renders actual artwork with a slide counter, dot pagination, and descriptive text, giving clear multi-slide affordance and richer hierarchy; first shows only a broken image placeholder with no progress indicator, leaving the carousel's structure and content invisible.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second renders actual artwork with a clear image/text split, slide counter, description, and dot indicators, while first shows only an empty gray placeholder with no position indicator or descriptive text. Second's composition and labeling communicate the carousel's state and purpose far more completely.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First shows an actual illustrated artwork with a clear slide-count indicator, dot pagination, and balanced two-column layout, while second renders only a placeholder image icon with no visible slide position indicator, leaving the artwork itself unrepresented and the layout top-heavy/empty below the fold.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First renders an actual illustrated artwork with slide counter, dot indicators, and descriptive copy, while second shows only a broken image placeholder icon with no progress indicator or description, leaving its carousel content effectively empty. First's tighter grouping and centered layout also reads as more deliberately composed than second's left-aligned, top-heavy layout with a mostly empty gray box.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First renders an actual artwork thumbnail with title/metadata/description alongside a clear 'SLIDE 1 OF 3' counter and dot pagination, all balanced within a tidy card; second shows only a broken placeholder icon in a large empty box with no slide counter or dots, leaving the carousel state illegible.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "button": {
+      "brief": "A destructive 'Delete account' button with a leading trash icon",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second surrounds the destructive button with a warning card (heading, cautionary copy, tinted container) that clarifies stakes and shows a real interaction state, while first is a bare isolated button with no supporting context. Both buttons themselves are near-identical, but second's composition and hierarchy communicate destructiveness far more completely.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second surrounds the button with a warning card that states the destructive consequence in plain language, giving clear hierarchy and context the bare button in first lacks; both render the same trash-icon button, but second communicates the brief's intent more completely.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second wraps the destructive button in a warning card with heading and explicit consequence copy, giving clear hierarchy and context; first is a bare button floating with no framing or explanation of the danger.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST presents the destructive button inside a clearly composed warning card with heading and consequence text, giving strong hierarchy and clarity; SECOND is a bare button floating in empty space with no surrounding context or response to the click.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First surfaces a clear warning panel (title, consequence copy, red-tinted card) around the destructive button, giving strong hierarchy and context, while second shows only an isolated button with no supporting explanation or state change.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST shows a full warning card (title, explanatory copy, and destructive button) that responded to the trigger click with a confirmation context, while SECOND is just an isolated button with no surrounding structure and no visible reaction to the click. FIRST's composition and hierarchy clearly communicate the destructive consequence; SECOND offers no such affordance.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "card": {
+      "brief": "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a divider to separate description from body copy and gives the Learn more link clear color+arrow affordance, while first's link is unstyled black text easily mistaken for plain content. Second's spacing and type scale also carry the structure more distinctly.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a divider to separate description from body copy and styles 'Learn more' as a distinct colored link with an arrow, giving clearer grouping and affordance than first's plain black text link and undifferentiated spacing.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a divider to separate description from body, a distinctly colored link with a directional arrow, and a softer card treatment (radius/shadow) that reads as more composed. First's 'Learn more' is the same color as body text with a harsh black border, making the link affordance and hierarchy weaker.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a divider to separate header from body, more generous spacing, and a colored 'Learn more' link with an arrow icon that reads as a clear affordance; second's 'Learn more' is unstyled plain text indistinguishable from body copy, weakening clarity and hierarchy.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a divider to separate header from body and a colored 'Learn more' link with an arrow icon, giving clear structure and affordance; second's 'Learn more' renders as plain black text indistinguishable from body copy, weakening clarity despite passing the same gates.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a divider, muted description color, and a colored arrow-link to clearly separate title/description/body/CTA, while second's focus outline bleeds into the entire card border and its unstyled black 'Learn more' text is indistinguishable from body copy. First's composition (shadow, rounded corners, spacing) also reads more polished and intentional.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "chat_transcript": {
+      "brief": "A chat transcript: date divider, assistant message with an attachment and a quick reply, and a live 'thinking' status",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First is the cleaner, more restrained system (typographic hierarchy, no slop) and passes 4/6 gates vs second's 2/6; second only wins clarity because its pill-shaped quick-reply chip visually reads as an actionable suggestion, whereas first's reply is indistinguishable from a normal message bubble.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads as a coherent, complete chat product—consistent avatar/name pattern, a distinctly-styled quick-reply chip, and an input bar—while first's stray 'AI' avatar next to the quick-reply bubble confuses message attribution and it lacks any compose affordance; but first's gate ledger is cleaner (passes decorative-icon-hiding and avoids design-slop, which second fails), so first wins brief_fit.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First uses a restrained, high-contrast hierarchy (dark assistant bubble, clear 'Aria is thinking...' status) and passes every gate SECOND fails (decorative_icons_hidden, design_slop), while SECOND's fuller chat chrome comes wrapped in flagged generic/slop styling and exposed decorative icons. Both fail attachment description and real quick-reply controls equally, so FIRST's cleaner unique failure profile wins brief_fit and overall.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First keeps consistent avatar-based attribution and shows a genuine quick-reply chip fulfilling the brief's affordances, while Second's reply bubble is confusingly mislabeled with the assistant's avatar, hurting attribution clarity; Second still wins brief_fit on the gate ledger (passes decorative_icons_hidden and design_slop, which First fails).",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses a clearer type scale (bold title/metadata/high-contrast message bubble) and spells out the live status as explicit text ('Aria is thinking...') rather than bare dots, and it also passes decorative-icon-hiding and avoids design-slop patterns that first exhibits (generic gradient avatars, template pill styling). Gate ledger reinforces this: second passes 4/6 checks versus first's 2/6, with identical failures only on attachment description and quick-reply semantics.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as a complete, bounded chat widget with a persistent header, visible input bar, and a consistently attributed avatar/pill quick-reply, while second leaves a large empty void, has no compose bar, and mislabels the human reply with an 'AI' avatar; second only wins on brief_fit since it passes more of the deterministic gates (decorative_icons_hidden, design_slop).",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "inconclusive",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "command_palette": {
+      "brief": "A command palette: a search box filtering a grouped list of app commands (Suggestions: Calendar, Search Emoji, Calculator; Settings: Profile, Billing, Settings - with ⌘ shortcut hints), keyboard-first filter-then-activate",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all, showing only a browser HTTP 500 error page, while SECOND displays a fully composed command palette with clear grouping, icons, shortcut hints, and footer affordances matching the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser HTTP 500 error page, meaning its trigger produced nothing usable, while SECOND shows a fully composed command palette with grouped suggestions/settings, icons, descriptions, shortcut hints, and a navigation legend matching the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST's trigger produced only a browser HTTP 500 error page — no palette rendered at all. SECOND shows a complete, well-composed command palette with grouped sections, icons, descriptions, and shortcut hints fulfilling the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page with no UI at all, while FIRST fully implements the command palette with clear grouped sections, icons, descriptions, and ⌘ shortcut hints matching the brief.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page, showing no command palette UI at all, while FIRST fully implements the grouped, keyboard-navigable palette with icons, descriptions, and ⌘-shortcut hints per the brief.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page, showing no palette at all, while FIRST renders a complete, well-grouped command palette with icons, shortcut hints, and a footer legend matching the brief.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "data_table": {
+      "brief": "A sortable, filterable invoices table: sorted by invoice number ascending, with a filter box and pagination",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second's shaded uppercase header band, unified card grouping (search+table+pagination in one container), and more descriptive search placeholder give it clearer structure and affordances; it also correctly announces the sorted column where first fails that gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second groups filter bar, banded header, and pagination into one cohesive bordered card with tighter alignment, while first's pagination floats disconnected below the table; second also passes the sorted-column-announces gate that first fails.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second passes the sorted-column-announces gate while first fails it, and visually second reinforces that with a distinct grey/uppercase header band, consistent column alignment, a more descriptive search placeholder, and a semantically clearer red 'Overdue' badge versus first's large dead whitespace below the pagination.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST ties a single purple accent across the sort arrow, filter button, and active page number, and its pagination bar is integrated into the same bordered container for a tighter composition, while SECOND leaves dead whitespace below the rows and fails the sorted-column-announces gate despite its visual arrow. FIRST's status pills are also uniformly styled versus SECOND's inconsistent outlined Draft pill.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First unifies search, table, and pagination in one cohesive bordered card with consistent filled-pill status badges, while second leaves an orphaned whitespace gap below a shorter table and mixes plain-text vs. outlined status styles; second also fails the sorted-column-announces gate despite looking sorted.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST integrates a shaded toolbar and header row into one cohesive card, fills the viewport with 10 well-spaced rows, and its single truthful sort-arrow passes the announcement gate; SECOND shows sort chevrons on every column (a false-affordance ambiguity) yet fails sorted_column_announces, and its sparse 8-row table leaves a large dead void beneath the pager.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "date_field": {
+      "brief": "A due-date field: a button showing the selected date that opens a calendar of selectable days",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND actually renders an open calendar with a clear month header, weekday row, day grid, and visible selected/today states, delivering the brief's core ask; FIRST's identical trigger click produced no visible calendar at all, just a static input plus generic Cancel/Save copy that also tripped its own design_slop gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second actually renders a well-structured calendar (month header, weekday grid, today/selected states, status footer) demonstrating clear hierarchy and composition, while first's screenshot shows no calendar opened at all despite the click; but first's DOM passes the core interactive/accessibility gates (real day buttons, selection announced) that second fails, so first wins brief_fit on the ledger.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second renders a visually polished, well-organized calendar grid, but its days aren't real interactive buttons and selections aren't announced — core brief requirements it fails outright; first passes those functional/a11y gates even though its screenshot doesn't show the opened calendar state.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Clicking the trigger actually opens a full calendar grid with clear month header, weekday labels, and selected/today states in FIRST, while the identical click on SECOND produced no visible calendar at all — just a static date field and Cancel/Save buttons. A due-date picker that doesn't visibly show selectable days fails the brief regardless of underlying DOM semantics.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First actually renders a well-composed calendar popover with clear month/weekday/day hierarchy and visible today/selected states, while second's identical trigger click produced no visible calendar at all in its screenshot; second only edges ahead on brief_fit because its gates confirm real selectable-day buttons with announced selection, which first's DOM fails despite looking better.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First's click reveals an actual calendar grid with clear month header, weekday labels, and distinct selected/today states, fully realizing the brief visually; second's identical click produced no visible calendar at all, leaving only a static field and Cancel/Save buttons with no way to see or pick a day.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 5,
+      "swap_consistency": 0.833,
+      "malformed_votes": 0
+    },
+    "deferred_region": {
+      "brief": "A dashboard activity panel that loads only when scrolled into view, with a visible retry affordance when the fetch fails",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First delivers a complete, well-aligned dashboard with a genuine skeleton loading state for the deferred panel, backed by gates passing on lazy-loading and retry visibility. Second is an isolated card floating on an otherwise blank page with an always-visible Retry button and failed gates for lazy-frame deferral, retry-on-failure, and design slop.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First presents a complete, well-aligned dashboard with a properly wired skeleton-loading activity panel and Live badge, while second is an isolated card adrift in mostly empty viewport whose retry affordance fails the lazy-load and failure-visibility gates outright.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST integrates the activity panel into a fully composed dashboard with a genuine skeleton-loading state and passes every gate; SECOND is an isolated card floating in an otherwise empty viewport whose retry affordance and lazy-load are decorative per the failed gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second sits in a fully composed dashboard with real type-scale hierarchy and shows a genuine lazy-load skeleton state, while first is an isolated card whose always-visible Retry button and boilerplate helper text read as decorative rather than failure-tied (confirmed by the gate fails on lazy-frame deferral, retryability, and design_slop). Second also clears every deterministic gate, directly fulfilling the brief's core requirements.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's skeleton-loading activity panel actually defers via a lazy frame and has a real, gate-confirmed retry affordance embedded in a coherent multi-section dashboard hierarchy; first's isolated card looks explanatory but its Retry button and 'loads on scroll' claims fail the deterministic gates (fake/non-functional affordance, no real lazy defer), and it floats in a poorly balanced whitespace-heavy layout.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second is a fully composed dashboard with strong type/spacing hierarchy and passes every gate (real lazy-load, wired retry, no slop), while first is an isolated floating card whose always-visible 'Retry' button is a fake affordance that fails both the lazy-defer and retry-wiring checks plus design_slop.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "dialog": {
+      "brief": "A settings dialog opened by a button, with a description and a confirm action",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second's trigger click actually opened a well-structured dialog with title, description, grouped controls, and a clear Cancel/Confirm action pair; first's trigger produced no visible dialog at all, just a flat card with an unexplained black glyph, which is a fundamental brief failure despite its clean gate sheet.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First's trigger produced no visible dialog at all, so there's no settings surface, description, or confirm action to evaluate; second renders a fully structured dialog with title, description, grouped controls, and a clear confirm action, which outweighs its labelled_overlay/design_slop gate fails.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST's trigger produced no visible dialog at all — just the static settings page — so it fails the core brief regardless of its passing gates; SECOND actually renders a well-structured modal with title, description, grouped controls, and a clear Cancel/Confirm action pair despite its labelling and slop gate failures.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a complete, well-organized settings dialog with title, description, grouped controls, and clear cancel/confirm actions, while SECOND's screenshot shows the trigger producing only a small black glitch square with no visible dialog, description, or confirm action. Regardless of DOM-level gate passes, the visible failure to render a functional dialog is a severe brief_fit and clarity failure for SECOND.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST shows a fully rendered dialog with title, description, grouped controls, and clear cancel/confirm actions, while SECOND's screenshot shows the trigger clicked but no visible dialog content — just a stray black square, so the settings/description/confirm affordance never actually appears on screen.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a complete, well-organized settings dialog with grouped controls, labels, and clear confirm/cancel actions; SECOND's trigger produced no dialog at all, just a broken black square, so it fails the brief entirely.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "disclosure": {
+      "brief": "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's screenshot shows zero visual change despite the trigger click, matching its gate failures on real buttons/expansion state/panel wiring, while first shows a working expanded panel with answer text and a distinct advanced-options control. Second's card is tidier in isolation, but a non-functional accordion undercuts hierarchy, clarity, and brief fit.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First's accordion demonstrably works (expanded panel with real content, visible chevron state change) and adds a search bar plus section heading for clearer structure; second's card grouping looks tidy but the gate ledger and screenshot agree its triggers, ARIA state, and panel wiring are all non-functional, so nothing opened despite being clicked.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST demonstrably expands on click with a rotated chevron and rendered answer text, while SECOND's trigger did nothing (confirmed by failing triggers/expansion-state/panels-wired gates) leaving all items inert. FIRST also has clearer hierarchy with a distinct 'Common questions' section and functioning advanced-options toggle.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First looks cleaner as a static card (uniform rows, aligned chevrons, tidy grouping) but its accordion is dead — triggers, expansion state, and panel wiring all fail, and the click did nothing. Second is visually rougher (table-like dividers, a plain-text advanced-options link) but its accordion demonstrably works, showing a real expanded panel and passing every wiring gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second demonstrably works — a real button expands a panel with visible answer text and a flipped chevron, matching the deterministic gates (triggers/expansion/panels all pass vs. all fail on first). First is a tidier static card, but its accordion and advanced-options triggers do nothing when clicked, so it fails the core brief.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's accordion actually opens on click and its triggers pass all wiring/state gates, while first's advanced-options control did nothing when clicked, failing triggers/expansion/panels; second also has cleaner grouping with a search bar and section heading.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "composition": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "empty_state": {
+      "brief": "A 'no projects yet' empty state: an icon tile, a title, a description, and create/import actions",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads slightly more polished with its colored icon tile and iconed primary button, but it fails the design_slop gate (generic purple-gradient SaaS template look) while first passes all five gates with a clean, restrained layout.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads better as a system: the icon tile's indigo echoes the primary button, description copy wraps evenly, and icon-labeled buttons make the two actions unmistakable, while first has an awkward orphan line break and no button icons; but second trips the design_slop gate, so first is the more correct/complete brief execution.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "SECOND's icon-in-button affordances and tighter two-line copy edge out clarity and composition, but its design_slop gate failure signals over-decorated, generic styling that FIRST's restrained monochrome hierarchy avoids while passing every gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First pairs a cohesive indigo accent across icon and primary button with icon-labeled actions and a cleanly wrapped two-line description, giving clearer hierarchy and tighter composition than second, whose paragraph shows an odd stray-indent line break and unlabeled buttons; but second is the only one to clear the design_slop gate, so it wins brief_fit.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First has stronger visual hierarchy via a color-matched icon/button pair and cleanly wrapped two-line copy, while second's description wraps awkwardly with a stray-indented final line; second wins brief_fit only because it passed the design_slop gate that first failed.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads cleaner with balanced two-line copy, a color-accented icon/button pairing that anchors hierarchy, and an icon inside the primary CTA for extra affordance; second's copy has an awkward three-line wrap with a stray leading space, though it alone clears the design_slop gate.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 4,
+      "swap_consistency": 0.667,
+      "malformed_votes": 0
+    },
+    "filter_toolbar": {
+      "brief": "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort dropdown, and a List/Grid view switch",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST groups the list/grid switch into a clear pill and shows a working sort select, while SECOND fails composites_are_groups, sort_is_a_real_select, and design_slop and shows an unresponsive trigger (cursor stuck in the search box instead of an opened menu). FIRST's spacing and alignment (divider, padded controls) also read as more deliberate than SECOND's tighter, ungrouped layout.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First groups controls into clean pill containers with clear labels and passes every gate but one, while second fails composites_are_groups, sort_is_a_real_select, and design_slop, showing an ungrouped view switch and a non-native sort trigger with a stray full-width divider line.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST has a cleanly grouped sort control with clear divider and a properly grouped list/grid toggle with visible active state, while SECOND's click left only a stray text cursor with no menu (consistent with its sort_is_a_real_select and composites_are_groups failures). FIRST also passes nearly every gate check while SECOND fails four of five.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second passes composites_are_groups, sort_is_a_real_select, and design_slop while first fails all three, and it also reads cleaner visually with a labeled 'Sort by / Newest first' hierarchy and a bold filled active-state toggle versus first's cramped ⌘K badge and subtler pressed state.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses a real select-backed sort control and properly grouped composites, plus cleaner keycap treatment for the ⌘K hint, while first's badge visually collides with the search field border and fails most structural gates (grouping, real select, design_slop).",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second has a cleaner sort control (labeled 'Sort by' with a divider, real select semantics) and a properly grouped list/grid toggle, while first shows a glitchy ⌘K badge clipping the search box border and fails the select/group/slop gates.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "floating": {
+      "brief": "The popper-consumer trio end-to-end: a 'Dimensions' popover behind an 'Open popover' button hosting a small form, an icon-only 'Add to library' control with a tooltip, and an '@nextjs' link enriched with a profile hover-card whose content lives at the link's destination",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second visibly delivers all three patterns working — an open popover with a labeled Width/Height form and a fully rendered Next.js hover-card profile — while first's identical click left the popover closed and its icon triggers render as unlabeled black squares, a bigger practical breach of the brief than second's dialog-semantics gate misses.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First's static layout has a cleaner grid/card hierarchy, but its popover trigger produced no visible effect on click, leaving the form, and thus the brief's central deliverable, undemonstrated; second actually renders the Dimensions form with labeled Width/Height fields and clear Cancel/Apply actions and passes icon-naming, even though its popover fails several ARIA semantics checks.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as a cleaner, more intentional three-column system with a bordered card and rich descriptive copy, and its gate ledger is far stronger (11 pass/3 fail vs 9/5, including the core popover-dialog and expanded-state semantics that second fails outright). Second demonstrates a more legible open-dialog state and correctly names its icon button, but its popover overlaps page content awkwardly and fails the very semantics the brief is testing.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST visibly demonstrates the full popover form, icon control, and expanded hover-card content with clear typographic hierarchy, while SECOND's identical trigger click produced no visible popover and left ambiguous black-square artifacts next to both triggers, undermining clarity and actual brief fulfillment despite SECOND's stronger raw ARIA gate count.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First shows a fully realized, well-composed popover dialog and hover card with clear typographic hierarchy, while Second's trigger produced no visible popover/tooltip and shows unexplained broken-icon boxes; but Second's DOM passes the core popover semantic gates (dialog role, trigger advertising, expansion state) that First fails outright.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads as one clean, aligned three-column system (Popover/Tooltip/Hover card) while first's opened hover-card detaches its Follow button 500px from the profile it belongs to, breaking composition; but first's populated dialog and hover-card content are easier to read as demonstrating the actual pattern, and second's mystery black squares plus a failed icon_controls_named hurt clarity. Gates tip brief_fit to second (3 fails vs 5, including the core popover_dialog_semantics/trigger_advertises_the_popup/expansion_state_exposed that first fails outright).",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "form_controls": {
+      "brief": "A notification settings panel: an 'Accept terms' checkbox staged for submit, an instant-effect 'Email alerts' switch, a bookmark toggle, an exclusive list/grid view switcher, a submitting digest-frequency choice, an 'Alert volume' slider, an 'Unsubscribe note' textarea, and a 6-digit 'Confirmation code' entry",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First cleanly separates instant vs. staged preferences with consistent labeling and only one failing gate (content_complete), while second contradicts itself (digest frequency claims to 'save right away' yet has a manual Save button) and fails five gates including controls_named, pressed_state_exposed, and design_slop. First's list/grid selector also visibly shows its selected state, whereas second's segmented control gives no visual cue which view is active.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First cleanly separates instant vs. staged controls into two labeled cards with consistent alignment and only one gate failure, while second crowds controls into an uneven row and fails five gates including pressed-state exposure and design slop.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First cleanly separates instant-effect controls from submit-gated ones with clear card grouping, proper radio/slider/OTP semantics, and named controls, while second fails pressed-state on its bookmark toggle, splits OTP into non-autofillable inputs, and has unnamed controls plus visible slop. The gate ledger (11/12 vs 7/12 passing) confirms first is both cleaner and more functionally correct.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second cleanly separates instant-effect controls (email alerts, list/grid) from submit-staged ones (terms checkbox, radio-based frequency, slider, textarea, code) in two well-labeled cards, while first crams bookmark/view-switcher into the toggle row and bolts an oddly-worded terms checkbox onto the end. Gate ledger confirms it: second only fails content_complete, whereas first also fails pressed-state, single-input code entry, control naming, and design-slop checks.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second groups controls under explicit 'Instant preferences' vs 'Notification preferences' headers that map cleanly to the brief's mixed instant/submit semantics, while first confusingly splits saves (a separate 'Save frequency' button mid-form plus a bottom 'Save settings'); the gate ledger also shows second passing all but one check versus five failures on first.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second groups controls into clearly-labeled 'instant' vs 'submit' cards with explicit timing subtext, radio buttons and a numeric readout on the slider, and passes 11/12 gates versus first's 7/12 (missing pressed-state, autofillable code entry, control names, and tripping design-slop).",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "form_field": {
+      "brief": "An email field labeled 'Work email', required, with a hint and the error 'can't be blank'",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's card container, required asterisk, and field-named error message ('Work email can't be blank') give clearer hierarchy, composition, and communication than first's flat, unstyled layout, but its design_slop gate failure while first passed all six gates makes first the stronger brief fulfillment.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's card container, required asterisk, and field-specific error message ('Work email can't be blank') create clearer hierarchy and composition than first's bare, unstyled layout, but first passes all deterministic gates including design_slop while second fails it.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's card wrapper, required asterisk, and field-specific error text read as more polished, but it fails the design_slop gate while first passes every gate cleanly, so first wins on brief fulfillment and overall.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First's card container, bold label+asterisk, and fully-worded error ('Work email can't be blank') give it clearer hierarchy, composition, and clarity, but its design_slop gate failure (unneeded card chrome) versus second's clean, gate-passing minimal layout tips brief_fit to second.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as a cleanly composed card with clear grouping, a visible required asterisk, and an error that restates the field name, while second floats unstyled with an awkwardly wrapped hint and a bare 'can't be blank' error; but the design_slop gate flips brief_fit to second since first alone fails it.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First's card container, bold label, and red asterisk give clearer grouping and hierarchy than second's ungrouped, left-stranded fields; second wins brief_fit only because the design_slop gate flags first's card/shadow treatment as templated.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 5,
+      "swap_consistency": 0.833,
+      "malformed_votes": 0
+    },
+    "menu": {
+      "brief": "The menus family end-to-end: an app menubar (File/View), a row-actions dropdown menu behind an 'Options' button (account items, a checkbox preference, a destructive delete), and a right-click context menu on the row itself",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser error page (HTTP 500), showing no UI at all; SECOND renders a complete, well-organized menubar, row list, and options dropdown with grouped account actions, a checkbox, and a destructive delete item.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500 error page), while SECOND shows a working menubar, row list, and dropdown with account actions, a checkbox, and a clearly styled destructive delete.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser 500 error page with no UI at all, while SECOND shows a fully working menubar, row-actions dropdown with grouped account actions, a checkbox preference, and a styled destructive delete item. SECOND clearly and correctly fulfills the brief; FIRST fulfills none of it.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render entirely (HTTP 500 crash page), while FIRST shows a working menubar, row list, and a fully composed Options dropdown with account actions, a checked preference, and a destructive delete item.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a fully working menubar, options dropdown, and clear list hierarchy with proper grouping and states; SECOND is a broken HTTP 500 error page showing no UI at all.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render at all (HTTP 500 error page), while FIRST shows a complete, well-composed UI with menubar, options dropdown containing account actions, a checked preference, and a styled destructive delete item.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "mobile_sheet": {
+      "brief": "A bottom drawer for setting a daily activity goal: trigger, title, description, a Submit action, and a swipe handle",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND visibly renders a complete, well-organized bottom drawer with title, description, labeled input, swipe handle, and a prominent Submit button, while FIRST's screenshot shows no drawer at all — just a broken trigger row with an overlapping black artifact and no visible surface despite the same click. Passing DOM gates doesn't help FIRST when the actual on-screen result fails to communicate or fulfill the brief at all.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST's trigger produced no working drawer, just overlapping broken elements (a stray black square and clipped pill button) with no visible input or swipe handle; SECOND renders a complete, well-composed sheet with title, description, labeled input, swipe handle, and a clear Submit action despite failing the design_slop gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second renders a complete, well-organized sheet with backdrop, handle, title, description, labeled input, and Submit; first's trigger click produced a broken, overlapping layout with no visible drawer, title, description, or submit control despite passing gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a complete, well-composed bottom drawer with title, description, input, submit, and handle; SECOND's trigger produced no functioning drawer at all, just a broken/empty page with a stray curved line.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a complete, well-composed bottom sheet with clear title/description/input/Submit hierarchy; SECOND's trigger produced a broken layout with a stray artifact and no visible drawer content, failing the brief and the design_slop gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a complete, legible bottom drawer with title, description, input, and submit; SECOND's trigger produced no drawer at all, just a broken layout with a stray shape.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "overlay": {
+      "brief": "A destructive 'Delete API key' confirmation that must be answered (alert dialog), plus a 'Filter results' panel sliding in from the right edge (sheet)",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First's screenshot shows the click producing no visible alert dialog and a broken/black icon glyph marring the table, while second renders a fully composed, well-labelled destructive-confirm dialog with clear title/description/button hierarchy; but first cleanly passes every deterministic gate (9/9) versus second's explicit_choice_controls failure, so first wins strict brief_fit.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second actually renders the alert dialog with clear title/description/action hierarchy and a properly weighted destructive red button, while first's identical trigger click produced no dialog at all and shows broken icon glyphs in the actions column. A confirmation that doesn't appear when triggered fails the brief's core requirement regardless of passing static DOM gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Clicking the delete trigger produced a fully-formed, clearly hierarchical alert dialog on SECOND (title, consequence text, labeled Cancel/Delete key buttons) while the identical trigger on FIRST produced no visible dialog at all and left unlabeled black-square icon buttons in its place. Despite SECOND's single explicit_choice_controls gate failure, its demonstrated working confirmation flow fulfills the brief far more convincingly than FIRST's non-responsive, unclear controls.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST visibly delivers the required alert dialog with clear title/description hierarchy and a properly weighted destructive red button, while SECOND's screenshot shows the trigger produced no dialog at all and has broken black-square icons (actions column, near Filter results) that undermine clarity and composition.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST actually renders a clean, well-composed alert dialog with clear title/description/button hierarchy when triggered, while SECOND's screenshot shows the same trigger produced no visible dialog and the table itself has broken unrendered icon/button elements (solid black boxes) undermining clarity and composition.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST's clicked trigger actually opens a well-structured alert dialog with clear title, consequence text, and labeled Cancel/Delete actions; SECOND's identical click produced no dialog at all and instead reveals broken solid-black icon glyphs marring the toolbar and actions column.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "pagination": {
+      "brief": "Pagination for page 4 of 10, with a current-page marker",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser HTTP 500 error page with no pagination UI at all, while SECOND shows a clean, fully functional pagination bar with real links, ellipses, and a clearly marked current page 4, passing every gate check.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser HTTP 500 error page with no pagination UI at all, while SECOND shows a fully working, well-composed pagination bar with clear current-page highlighting, ellipsis truncation, and labeled prev/next controls.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser 500 error page with no pagination UI at all, while SECOND delivers a clean, correctly structured pagination bar with clear current-page marking and passes every gate check.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND failed to render entirely (HTTP 500 error page, no pagination UI), while FIRST delivers a clean, well-organized pagination bar with a clear current-page marker, ellipses, and prev/next controls.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders a clean, working pagination bar with a clearly highlighted current page (4), proper prev/next affordances, and truncated numbered links; SECOND shows only a browser HTTP 500 error page with no pagination UI at all, matching its across-the-board gate failures.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page with no pagination UI at all, while FIRST shows a clean, correctly composed pagination bar with a clearly marked current page and passing gates across the board.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "primitives": {
+      "brief": "A loading state: a labelled spinner, a skeleton row, a separator, and a ⌘K hint",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First is a clean, self-contained card with a clear bold heading, tidy skeleton row, and crisp kbd-styled shortcut hint, while second has a stray floating 'Loading state' label sitting outside the card that muddies composition and also fails the design_slop gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST pairs a bold heading with a clean, single-bordered skeleton row and descriptive ⌘K copy, giving tighter hierarchy and composition, while SECOND's extra unbriefed skeleton chip and disconnected outer label likely explain its design_slop gate failure.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First pairs a bold card heading with a clean, purposeful skeleton row and passes every gate including design_slop, while second's unexplained floating skeleton pill breaks composition/clarity and its design_slop failure directly hurts brief fulfillment.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses a bolder title, a distinct label above the spinner, and a double-bordered skeleton row that reads as a clear grouped structure, plus its ⌘K hint adds helpful context text; it also passes the design_slop gate while first fails it.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second has a bolder title, cleaner label-to-content spacing, a distinct bordered skeleton row, and a more descriptive kbd hint, while also passing the design_slop gate that first fails.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads as more deliberately designed (bold heading, crisp borders, fuller hint copy) and clears the design_slop gate that first fails, while first's softer generic card only edges out on composition thanks to its balanced right-aligned skeleton element.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "clarity": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "scrollable_tags": {
+      "brief": "A bounded, scrollable list of 20 version tags in a 12rem box",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First presents all 20 tags in a clearly bounded, well-composed card with consistent pill styling, right-aligned timestamps, and a labeled scroll region that is keyboard-reachable and named; second's box abruptly truncates mid-row with no visible scroll affordance and fails both scroll-region accessibility gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First shows a fully scrolled 12rem box with clear tag pills, timestamps, and a keyboard-reachable, named scroll region, while second's box is unlabeled, not keyboard-reachable, and abruptly clips its last row mid-item with no visible scroll affordance.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST is a properly bounded, labeled scroll region showing all 20 tags with clear hierarchy and consistent pill styling, while SECOND abruptly clips mid-row with no visible scroll affordance and fails both keyboard-reachability and naming gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First is a genuinely bounded ~12rem box with a row visibly clipped at the bottom, proving real scroll containment despite missing keyboard/name affordances; second's box balloons to ~700px showing all 20 tags unclipped, which defeats the '12rem bounded scrollable box' brief regardless of its passing DOM gates. First's compact card also reads cleaner (single heading, clear Latest/Release distinction) versus second's redundant double heading (\"Version Tags\" + \"Tags\").",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "SECOND's scroll region is actually keyboard-reachable and accessibly named (both gates pass vs. both failing on FIRST), and its rows add clarifying relative-time detail plus an explicit '20 most recent releases' count; FIRST is tighter and less redundant in layout but its scrollable region is neither keyboard-operable nor labeled, a core failure for a brief centered on a scrollable list.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second nests a page header inside a panel header for richer type escalation, but its box renders all 20 tags unclipped at ~700px tall — nowhere near a 12rem bound, breaking proportion and giving no scroll affordance at all; first's compact card stays true to the 12rem constraint with a visibly cut-off last row signaling scrollability, even though its scroll region isn't keyboard-reachable or named.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 4,
+          "raw_tailwind": 2
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 4,
+          "raw_tailwind": 2
+        },
+        "brief_fit": {
+          "poetry": 4,
+          "raw_tailwind": 2
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 4,
+      "swap_consistency": 0.667,
+      "malformed_votes": 0
+    },
+    "searchable_select": {
+      "brief": "A labelled framework picker: a combobox-role control with a hidden form serialization opening a type-to-filter popup over Next.js/SvelteKit/Nuxt.js/Remix/Astro options",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST sits in a fuller page context (heading, description, labeled search icon) and passes every gate, while SECOND floats alone and fails three brief-critical checks (options not real options, filter input missing listbox autocomplete wiring, combobox unnamed).",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First nails the combobox pattern (all gates pass, includes a search icon affordance) while second fails three brief-critical gates (options_are_options, filter_input_wears_list_autocomplete, combobox_named); first also embeds the control in a fuller page hierarchy (title, description, labeled field) versus second's isolated label+control.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Both render nearly identical popups, but FIRST sits in a fuller page context (title, description, label) giving clearer hierarchy and composition, while SECOND fails three semantic gates (options_are_options, filter_input_wears_list_autocomplete, combobox_named) showing its combobox isn't properly wired despite looking similar.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second passes all combobox/listbox/autocomplete/naming gates and shows a clearer search affordance (icon) plus a highlighted keyboard-focus option, while first fails three structural gates (options_are_options, filter_input_wears_list_autocomplete, combobox_named). Second's page title/subtitle also give the control stronger contextual hierarchy than first's bare label-plus-field.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second adds page-level context (title/description), a search icon, and a highlighted active option, giving clearer structure and affordances than first's bare combobox. Gate results also confirm second passes all semantic/ARIA checks (options-as-options, listbox autocomplete, combobox naming) that first fails.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second adds a page title/description and search-icon affordance with a highlighted active option, producing clearer structure and states, while first is a bare label with an undifferentiated list. The gate ledger also confirms second correctly implements listbox options, autocomplete wiring, and combobox naming where first fails all three.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "settings_tabs": {
+      "brief": "Account settings tabs (Account / Password / Notifications) with the first tab active and its panel visible",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second looks more decorated (icons, avatar, indigo accents) but that surface polish is exactly what its design_slop and tablist_semantics/aria-selected failures flag as hollow/inaccessible, while first achieves clear hierarchy and a consistent, balanced layout with fully passing gates.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's richer type scale, icon+underline tab treatment, and grouped/right-aligned layout read as more polished, but it fails tablist_semantics, selection_announced_and_wired, and design_slop while first passes every gate — a real tab component beats a good-looking broken one.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second looks more polished (icons, avatar, two-column grouping, clear active-tab color+underline), but it fails tablist semantics and selection-announcement plus trips the design-slop check, meaning its tabs aren't actually correct accessible tabs. First is plainer but delivers a genuinely working, semantically correct tablist, so it wins on brief fulfillment and overall.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First is more visually developed (icons, two-column form, richer content) but its tabs fail actual tablist semantics and selection announcement — a core failure for a brief that's specifically about tabs — and it trips the design_slop check too; second's plainer tabs are the ones that actually work as tabs and read cleanly on all gates.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First has richer visual hierarchy, denser well-composed form layout, and a clearer active-tab indicator (icons, underline, color) even though it fails the accessibility gates; second is barebones and content-thin but passes all wiring/semantics gates, so it wins brief_fit while first wins the visual axes and overall on strength of execution.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First has richer visual polish (icons, avatar, full form, underline indicator) but fails semantics/ARIA gates; second is sparser but passes every accessibility/wiring gate, making it the more correct implementation despite thinner content.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "composition": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "clarity": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 4,
+      "swap_consistency": 0.667,
+      "malformed_votes": 0
+    },
+    "site_nav": {
+      "brief": "A site navigation bar: a Products dropdown of links, plus Pricing and Docs destinations",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Both dropdowns are clean, but SECOND fails disclosure_announces (state not exposed to assistive tech), undermining its visible-states clarity and brief fulfillment; FIRST also uses a balanced 2x2 grid that reads with clearer grouping than SECOND's single narrow column.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Both render an open dropdown, but FIRST passes disclosure_announces while SECOND fails it, and FIRST's two-column grid layout with balanced item pairing edges out SECOND's single-column list plus a visually disconnected \"View all products\" link.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First's balanced 2x2 grid gives stronger hierarchy and composition, and it passes every gate including proper disclosure state announcement, whereas second's dropdown fails disclosure_announces despite its cleaner 'View all products' affordance edging it out on clarity.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's two-column grid uses the available width more confidently and correctly announces the disclosure state, while first compensates with a clearer three-tier hierarchy (items + divider + 'View all products') and a slightly more complete affordance set.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's dropdown uses a balanced two-column grid with a branded logo mark and passes the disclosure-announces gate, while first's otherwise clean single-column list (with a nice 'View all products' CTA) fails that accessibility check, making second the more complete and correctly-implemented candidate overall.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's two-column grid balances better and reads as an intentional mega-menu, plus it passes disclosure_announces (proper ARIA) while first fails that gate; first's cramped single column with a thin divider is functional but plainer.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "split_editor": {
+      "brief": "A two-pane resizable split (Files | Editor) with a draggable divider",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First implements the divider as a true APG-compliant separator with clean, aligned chrome, while second fails the splitter-surface and design-slop gates and relies on a text label plus a stray corner resize icon that doesn't align with the actual pane edge, undermining its otherwise nicer syntax-highlighted hierarchy.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as a coherent, well-proportioned app with clear title/section hierarchy, grouped file tree, and legible status affordances, and it clears all four gates including proper splitter semantics; second fails the APG splitter-surface check and trips design_slop, and its dense IDE-chrome (breadcrumb, saved-state, branch tag, status bar, literal 'drag to resize' label) reads as clutter rather than clarity.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST passes every gate (proper APG separator semantics, no slop) and pairs a clear typographic hierarchy with clean grouped file sections, while SECOND's VS Code-style chrome fails both the splitter-surface and design-slop checks despite its informative status bar.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as a genuine IDE — syntax highlighting, breadcrumb, status bar with cursor position, and an explicit 'DRAG EDGE TO RESIZE' label — while second wastes vertical space with unstyled code and a generic dashboard header; but the gate ledger shows first's splitter fails proper APG semantics and trips design_slop, so second fulfills the brief's divider requirement more correctly.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST reads as a genuine, richly detailed code editor (breadcrumbs, syntax highlighting, status bar, explicit resize label) while SECOND is a plainer generic card-panel layout with no syntax coloring; but SECOND's divider passes the APG separator and design_slop gates that FIRST fails, so it fulfills the brief's technical requirements more correctly.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First reads as the more polished IDE at a glance (syntax highlighting, explicit 'drag edge to resize' label, aligned full-bleed panes) versus second's plain unhighlighted text and mismatched panel heights, but the deterministic gates show first's splitter fails the actual APG separator pattern and trips design_slop while second passes every check, so second is the more correct implementation of the brief's core divider requirement.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 4,
+      "swap_consistency": 0.667,
+      "malformed_votes": 0
+    },
+    "table": {
+      "brief": "An invoices table with a caption, column headers, and a footer total",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a clear card container with uppercase tracked headers that visually separate from body rows, while first's header row blends into the body and adds a redundant caption-like line beneath the total that duplicates the top caption. Second's status pills and right-aligned total are also more consistently composed.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a distinct uppercase header band, a consistently styled badge set (including pending/overdue), and a tighter, right-balanced total row inside a clean card, whereas first's outline-only 'Draft' pill breaks its badge pattern and its total row leaves an awkward gap between label and amount.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second's card container, shaded header row, and uppercase tracked column labels give it much stronger hierarchy and composition, with a cleanly right-aligned total matching the amount column. First's status pills are inconsistent (unstyled 'Draft' outline vs colored fills) and it has a confusing duplicate caption below the total that muddies clarity.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First unifies title, table, and footer in one polished card with a shaded header row, shaded total row, and color-coded status pills, giving clear structure end to end. Second uses a harsh black border, leaves the header row unstyled like body rows, and adds a redundant caption line duplicating the subtitle text, muddying both composition and clarity.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First reads as one polished unit — bordered card, shaded header row, pill-shaped status badges, and a visually set-off total row — while second uses flat borders, plain outline badges, and confusingly duplicates the descriptive caption both above the table and again below the total row. First's uppercase tracked column labels and consistent spacing give clearer hierarchy and composition than second's redundant, less differentiated layout.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a cohesive card with shaded header/footer rows and consistent pill styling for status, producing clearer grouping and hierarchy. Second duplicates the descriptive text (subtitle at top, redundant caption at bottom) and has an inconsistent status pill (outlined 'Draft' vs filled others), muddying clarity and composition.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "toast": {
+      "brief": "A notifications region hosting a 'Saved' success toast and a destructive 'Payment failed' toast with a 'Retry' action",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First renders only a browser HTTP 500 error page with no notification UI at all, while second shows two well-composed, clearly labeled toasts with a working Retry button, matching its far stronger gate results.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST renders only a browser HTTP 500 error page with no toast content at all, while SECOND fully implements both toasts with clear icons, text hierarchy, and a working Retry button, passing nearly every gate check FIRST fails outright.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500 error page), while SECOND shows a complete, well-composed toast stack with clear iconography, labels, and a functional Retry button, backed by passing gates on nearly every axis.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render entirely (HTTP 500 error page), while FIRST shows a complete, well-composed toast stack with clear icon/title/body hierarchy and a visible Retry action.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page, showing no notification UI at all, while FIRST fully implements a clearly labeled success toast and a destructive payment-failed toast with a visible Retry button.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second failed to render entirely (HTTP 500 error page), while first shows a fully composed toast stack with clear icons, labels, and a working Retry button.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "upload_progress": {
+      "brief": "A determinate upload progress bar at 60%, with a visible label and value",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second unifies the label and 60% value into one coherent block with a single progress bar, while first awkwardly duplicates the filename and status across two stacked mini-cards (file row + separate progress row) that read as redundant. Second's blue fill also reads as a clearer active-state affordance than first's flat black bar.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second is one cohesive block (title+value, colored fill bar, single detail line) while first stacks a file-card header and a separate progress row that redundantly repeats the filename. Second's blue fill also reads as a clearer 'in-progress' affordance than first's black-on-gray bar.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND presents one focused card where the label and 60% value sit directly beside the bar with a color-coded fill, while FIRST buries the actual progress control under a redundant page title and a separate file-metadata row that repeats the filename and duplicates a status badge. SECOND's cleaner single-purpose composition better matches the brief's simple ask for a labeled determinate bar.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses a clear page title plus a distinct file card/status pill and a separately labeled progress row, giving cleaner grouping and stronger hierarchy; first crams title, meta text, percentage, and detail line into one dense block with less separation.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST states the label and 60% value once, cleanly paired above the bar with a redundant text-only recap below; SECOND duplicates the filename/percent across a card header, status pill, and a second labeled row, muddying which element is the actual progress readout.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second establishes a page-level title, then a file card with status pill plus a clearly separated progress row (label, bar, %), giving richer layered hierarchy than first's single flat card. Both meet the gate checks, but second's grouping (file metadata vs. progress) and stronger type contrast communicate state more clearly.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "brief_fit": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 4,
+      "swap_consistency": 0.667,
+      "malformed_votes": 0
+    },
+    "user_directory": {
+      "brief": "A team directory: a breadcrumb trail (Home / Team / Directory), then a list of member rows - avatar, name, description, and a Message action",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First pairs richer role/description copy with neutral avatars and an icon-labeled Message button, keeping name and purpose primary, while Second's saturated avatars compete for attention and its Message buttons lack accessible names, a real brief violation the gate confirms.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First pairs calm neutral avatars with genuine role descriptions that fulfill the brief's 'description' requirement and passes every accessibility gate, while second only shows a job title and fails the avatar accessible-name check. Second's bordered card container gives it a slight edge in overall composition/grouping.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First pairs each row with a fuller role+description sentence and an icon-labeled Message button, while its avatars pass the accessible-name check that second's fail. Second's colorful avatars and bordered card give it a slight edge in composition/grouping, but that doesn't offset the accessibility gate failure and thinner per-row content.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second passes every gate (including accessible avatar names, where first fails) and pairs the Message action with an icon plus fuller role+description text, while its neutral avatars let type weight/spacing carry row structure; first only edges ahead on composition thanks to its bordered card container.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses fuller row padding, richer role/description text, and an icon-labeled Message button, reading as more considered; first's colorful avatars are missing accessible names, a concrete brief failure.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second passes all gates including accessible avatar names and pairs the Message button with an icon for a clearer affordance, plus its department·detail descriptions read as fuller directory copy; first's colorful avatars give it a slight edge in scannable visual hierarchy but it fails the accessibility gate.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "composition": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    }
+  },
+  "summary": {
+    "verdicts": {
+      "raw_tailwind": 19,
+      "poetry": 11,
+      "inconclusive": 1
+    },
+    "mean_swap_consistency": 0.936,
+    "usage": {
+      "judge_calls": 186,
+      "total_cost_usd": 25.8104
+    }
+  }
+}

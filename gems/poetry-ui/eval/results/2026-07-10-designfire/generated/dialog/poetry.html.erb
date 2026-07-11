@@ -1,0 +1,60 @@
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Workspace settings</h1>
+    <p class="text-sm text-muted-foreground">
+      Manage how this workspace behaves for everyone on your team.
+    </p>
+  </div>
+
+  <div class="rounded-lg border p-6 flex items-center justify-between gap-4">
+    <div class="space-y-1">
+      <h2 class="text-sm font-medium">Notification preferences</h2>
+      <p class="text-sm text-muted-foreground">
+        Control which emails and alerts your team receives.
+      </p>
+    </div>
+
+    <%= poetry_dialog do |d| %>
+      <% d.with_trigger do %>
+        <%= poetry_button(variant: :outline) { "Open settings" } %>
+      <% end %>
+
+      <% d.with_title { "Notification settings" } %>
+      <% d.with_description do %>
+        Choose what your team gets notified about. Changes apply to every
+        member of this workspace immediately after you confirm.
+      <% end %>
+
+      <div class="space-y-5 py-2">
+        <div class="flex items-center justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Email updates</p>
+            <p class="text-sm text-muted-foreground">Weekly digest of activity and mentions.</p>
+          </div>
+          <%= poetry_switch(name: "settings[email_updates]", checked: true, label: "Email updates") %>
+        </div>
+
+        <div class="flex items-center justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Security alerts</p>
+            <p class="text-sm text-muted-foreground">Sign-in attempts and access changes.</p>
+          </div>
+          <%= poetry_switch(name: "settings[security_alerts]", checked: true, label: "Security alerts") %>
+        </div>
+
+        <div class="flex items-center justify-between gap-4">
+          <div class="space-y-0.5">
+            <p class="text-sm font-medium leading-none">Product news</p>
+            <p class="text-sm text-muted-foreground">Occasional updates about new features.</p>
+          </div>
+          <%= poetry_switch(name: "settings[product_news]", checked: false, label: "Product news") %>
+        </div>
+      </div>
+
+      <% d.with_footer do %>
+        <%= poetry_button(variant: :outline, data: { action: "poetry--core--dialog#close" }) { "Cancel" } %>
+        <%= poetry_button(data: { action: "poetry--core--dialog#close" }) { "Save changes" } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

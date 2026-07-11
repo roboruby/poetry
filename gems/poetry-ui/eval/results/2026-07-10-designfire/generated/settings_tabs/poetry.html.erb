@@ -1,0 +1,80 @@
+<div class="mx-auto max-w-3xl p-6 space-y-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Settings</h1>
+    <p class="text-sm text-muted-foreground">Manage your account details, password, and notification preferences.</p>
+  </header>
+
+  <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
+    <% tabs.with_tab("Account", value: "account") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Profile" } %>
+        <% card.with_description { "This information appears across the workspace." } %>
+        <div class="space-y-4">
+          <%= poetry_field(id: "account-name", label_text: "Name") do |field| %>
+            <%= poetry_input(**field.control_attributes, name: "name", value: "Jamie Rivera") %>
+          <% end %>
+          <%= poetry_field(id: "account-email", label_text: "Email", hint: "Used for sign-in and receipts.") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "email", name: "email", value: "jamie@example.com") %>
+          <% end %>
+        </div>
+        <% card.with_footer do %>
+          <%= poetry_button { "Save changes" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Password", value: "password") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Password" } %>
+        <% card.with_description { "Choose a strong password you don't use elsewhere." } %>
+        <div class="space-y-4">
+          <%= poetry_field(id: "password-current", label_text: "Current password") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "password", name: "current_password") %>
+          <% end %>
+          <%= poetry_field(id: "password-new", label_text: "New password", hint: "At least 8 characters.") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "password", name: "new_password") %>
+          <% end %>
+          <%= poetry_field(id: "password-confirm", label_text: "Confirm new password") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "password", name: "new_password_confirmation") %>
+          <% end %>
+        </div>
+        <% card.with_footer do %>
+          <%= poetry_button { "Update password" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% tabs.with_tab("Notifications", value: "notifications") do %>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Notifications" } %>
+        <% card.with_description { "Choose what you want to hear about." } %>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Product updates</p>
+              <p class="text-sm text-muted-foreground">New features and improvements.</p>
+            </div>
+            <%= poetry_switch(name: "notify_product_updates", checked: true, label: "Product updates") %>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Security alerts</p>
+              <p class="text-sm text-muted-foreground">Sign-ins from new devices and suspicious activity.</p>
+            </div>
+            <%= poetry_switch(name: "notify_security_alerts", checked: true, label: "Security alerts") %>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <div class="space-y-0.5">
+              <p class="text-sm font-medium">Weekly digest</p>
+              <p class="text-sm text-muted-foreground">A summary of activity every Monday.</p>
+            </div>
+            <%= poetry_switch(name: "notify_weekly_digest", checked: false, label: "Weekly digest") %>
+          </div>
+        </div>
+        <% card.with_footer do %>
+          <%= poetry_button { "Save preferences" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

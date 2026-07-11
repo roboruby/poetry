@@ -1,0 +1,1056 @@
+{
+  "generated_note": "GENERATED arms (N15 W2 benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
+  "tasks": {
+    "button": {
+      "description": "A destructive 'Delete account' button with a leading trash icon",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "accessible_name": true,
+            "explicit_type": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "accessible_name": true,
+            "explicit_type": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6"
+        }
+      }
+    },
+    "dialog": {
+      "description": "A settings dialog opened by a button, with a description and a confirm action",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": true,
+            "trigger_present": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": false,
+            "trigger_present": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/6"
+        }
+      }
+    },
+    "form_field": {
+      "description": "An email field labeled 'Work email', required, with a hint and the error 'can't be blank'",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "label_wired": true,
+            "error_associated": true,
+            "invalid_marked": true,
+            "required_signalled": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "label_wired": true,
+            "error_associated": true,
+            "invalid_marked": true,
+            "required_signalled": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "5/6"
+        }
+      }
+    },
+    "form_controls": {
+      "description": "A notification settings panel: an 'Accept terms' checkbox staged for submit, an instant-effect 'Email alerts' switch, a bookmark toggle, an exclusive list/grid view switcher, a submitting digest-frequency choice, an 'Alert volume' slider, an 'Unsubscribe note' textarea, and a 6-digit 'Confirmation code' entry",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "checkbox_participates_in_the_form": true,
+            "switch_semantics": true,
+            "pressed_state_exposed": true,
+            "exclusive_choice_wears_radio_semantics": true,
+            "slider_wears_the_apg_surface": true,
+            "code_entry_is_one_autofillable_input": true,
+            "textarea_labelled_not_placeholdered": true,
+            "controls_named": true,
+            "content_complete": false,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "11/12",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "checkbox_participates_in_the_form": true,
+            "switch_semantics": true,
+            "pressed_state_exposed": false,
+            "exclusive_choice_wears_radio_semantics": true,
+            "slider_wears_the_apg_surface": true,
+            "code_entry_is_one_autofillable_input": false,
+            "textarea_labelled_not_placeholdered": true,
+            "controls_named": false,
+            "content_complete": false,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "7/12"
+        }
+      }
+    },
+    "alert": {
+      "description": "A destructive alert 'Payment failed' with a description and a warning icon",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "assertive_announcement": true,
+            "icon_decorative": true,
+            "title_and_body": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "assertive_announcement": true,
+            "icon_decorative": true,
+            "title_and_body": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/5"
+        }
+      }
+    },
+    "chat_transcript": {
+      "description": "A chat transcript: date divider, assistant message with an attachment and a quick reply, and a live 'thinking' status",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "attachment_described": false,
+            "quick_replies_are_real_controls": false,
+            "live_status_announced": true,
+            "decorative_icons_hidden": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "attachment_described": false,
+            "quick_replies_are_real_controls": false,
+            "live_status_announced": true,
+            "decorative_icons_hidden": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "2/6"
+        }
+      }
+    },
+    "disclosure": {
+      "description": "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "triggers_are_real_buttons": true,
+            "expansion_state_exposed": true,
+            "panels_wired": true,
+            "headings_present": true,
+            "content_complete": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/7",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "triggers_are_real_buttons": false,
+            "expansion_state_exposed": false,
+            "panels_wired": false,
+            "headings_present": true,
+            "content_complete": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "3/7"
+        }
+      }
+    },
+    "menu": {
+      "description": "The menus family end-to-end: an app menubar (File/View), a row-actions dropdown menu behind an 'Options' button (account items, a checkbox preference, a destructive delete), and a right-click context menu on the row itself",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "trigger_is_a_real_button": false,
+            "expansion_state_exposed": false,
+            "menu_semantics": false,
+            "menu_wired_to_trigger": false,
+            "toggle_state_accessible": false,
+            "content_complete": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/8",
+          "render_error": "ActionView::Template::Error: Menubar menu requires with_trigger (the top-level menu button)"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "trigger_is_a_real_button": true,
+            "expansion_state_exposed": false,
+            "menu_semantics": true,
+            "menu_wired_to_trigger": false,
+            "toggle_state_accessible": true,
+            "content_complete": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/8"
+        }
+      }
+    },
+    "command_palette": {
+      "description": "A command palette: a search box filtering a grouped list of app commands (Suggestions: Calendar, Search Emoji, Calculator; Settings: Profile, Billing, Settings - with ⌘ shortcut hints), keyboard-first filter-then-activate",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "combobox_input": false,
+            "input_controls_a_listbox": false,
+            "listbox_named": false,
+            "options_are_options": false,
+            "options_carry_stable_ids": false,
+            "options_never_focusable": false,
+            "groups_labelled": false,
+            "no_inline_handlers": false,
+            "content_complete": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/11",
+          "render_error": "ActionView::Template::Error: Command requires an accessible name for its input - pass 'aria-label' (or id: plus a visible label[for: \"<id>-input\"])"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "combobox_input": false,
+            "input_controls_a_listbox": false,
+            "listbox_named": false,
+            "options_are_options": false,
+            "options_carry_stable_ids": false,
+            "options_never_focusable": true,
+            "groups_labelled": false,
+            "no_inline_handlers": true,
+            "content_complete": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/11"
+        }
+      }
+    },
+    "searchable_select": {
+      "description": "A labelled framework picker: a combobox-role control with a hidden form serialization opening a type-to-filter popup over Next.js/SvelteKit/Nuxt.js/Remix/Astro options",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "combobox_role_control": true,
+            "combobox_controls_a_listbox": true,
+            "options_are_options": true,
+            "filter_input_wears_list_autocomplete": true,
+            "combobox_named": true,
+            "options_never_focusable": true,
+            "no_inline_handlers": true,
+            "content_complete": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "10/10",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "hidden_native_select_serializes": false,
+            "twin_write_pair_present": false,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "combobox_role_control": true,
+            "combobox_controls_a_listbox": true,
+            "options_are_options": false,
+            "filter_input_wears_list_autocomplete": false,
+            "combobox_named": false,
+            "options_never_focusable": true,
+            "no_inline_handlers": true,
+            "content_complete": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "7/10"
+        }
+      }
+    },
+    "overlay": {
+      "description": "A destructive 'Delete API key' confirmation that must be answered (alert dialog), plus a 'Filter results' panel sliding in from the right edge (sheet)",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "two_modal_surfaces": true,
+            "confirm_has_alertdialog_semantics": true,
+            "surfaces_labelled": true,
+            "confirmation_described": true,
+            "explicit_choice_controls": true,
+            "triggers_are_real_buttons": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "9/9",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "two_modal_surfaces": true,
+            "confirm_has_alertdialog_semantics": true,
+            "surfaces_labelled": true,
+            "confirmation_described": true,
+            "explicit_choice_controls": false,
+            "triggers_are_real_buttons": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "8/9"
+        }
+      }
+    },
+    "floating": {
+      "description": "The popper-consumer trio end-to-end: a 'Dimensions' popover behind an 'Open popover' button hosting a small form, an icon-only 'Add to library' control with a tooltip, and an '@nextjs' link enriched with a profile hover-card whose content lives at the link's destination",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "popover_dialog_semantics": true,
+            "tooltip_semantics": true,
+            "tooltip_never_interactive": true,
+            "icon_controls_named": false,
+            "hover_trigger_is_a_real_link": true,
+            "hover_preview_not_interactive": false,
+            "trigger_advertises_the_popup": true,
+            "expansion_state_exposed": true,
+            "dialog_named": true,
+            "triggers_are_real_buttons": true,
+            "form_labels_wired": false,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "11/14",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "popover_dialog_semantics": false,
+            "tooltip_semantics": true,
+            "tooltip_never_interactive": true,
+            "icon_controls_named": true,
+            "hover_trigger_is_a_real_link": true,
+            "hover_preview_not_interactive": false,
+            "trigger_advertises_the_popup": false,
+            "expansion_state_exposed": false,
+            "dialog_named": true,
+            "triggers_are_real_buttons": true,
+            "form_labels_wired": false,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "9/14"
+        }
+      }
+    },
+    "toast": {
+      "description": "A notifications region hosting a 'Saved' success toast and a destructive 'Payment failed' toast with a 'Retry' action",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "region_labelled": false,
+            "announced_to_at": false,
+            "retry_is_a_real_button": false,
+            "no_focus_steal": false,
+            "content_complete": false,
+            "dismissal_is_real_wiring": false,
+            "focus_visible_treatment": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/9",
+          "render_error": "ActionView::Template::Error: Button renders nothing visible: pass a content block (the visible text), an icon slot (with_leading/with_trailing), or loading: - label: is only the accessible name"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "region_labelled": false,
+            "announced_to_at": true,
+            "retry_is_a_real_button": true,
+            "no_focus_steal": true,
+            "content_complete": true,
+            "dismissal_is_real_wiring": true,
+            "focus_visible_treatment": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "6/9"
+        }
+      }
+    },
+    "primitives": {
+      "description": "A loading state: a labelled spinner, a skeleton row, a separator, and a ⌘K hint",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "spinner_announces_loading": true,
+            "shortcut_keys_are_real_kbd": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "spinner_announces_loading": true,
+            "shortcut_keys_are_real_kbd": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "pagination": {
+      "description": "Pagination for page 4 of 10, with a current-page marker",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "navigation_landmark": false,
+            "current_page_marked": false,
+            "pages_are_real_links": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/5",
+          "render_error": "ActionView::Template::Error: undefined method 'eval_pagination_path' for an instance of #<Class:0x00000001232e6c28>"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "navigation_landmark": true,
+            "current_page_marked": true,
+            "pages_are_real_links": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5"
+        }
+      }
+    },
+    "empty_state": {
+      "description": "A 'no projects yet' empty state: an icon tile, a title, a description, and create/import actions",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "title_is_a_real_heading": true,
+            "actions_are_focusable": true,
+            "actions_are_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "title_is_a_real_heading": true,
+            "actions_are_focusable": true,
+            "actions_are_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "app_shell": {
+      "description": "An application shell: a collapsible sidebar with a Platform nav group (Dashboard active) and a main content area with a collapse toggle",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "content_is_a_main_landmark": false,
+            "nav_items_are_real_links": false,
+            "collapse_is_coordinated_state": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/5",
+          "render_error": "ActionView::SyntaxErrorInTemplate: Encountered a syntax error while rendering template: check <%= poetry_sidebar(collapsible: :icon, open: cookies[:sidebar_state] != \"false\") do |shell| %>\n  <% shell.with_nav do %>\n    <%= poetry_sidebar_header do %>\n      <div class=\"flex items-center gap-2 px-2 py-1.5\">\n        <%= poetry_icon(name"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "content_is_a_main_landmark": true,
+            "nav_items_are_real_links": true,
+            "collapse_is_coordinated_state": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "date_field": {
+      "description": "A due-date field: a button showing the selected date that opens a calendar of selectable days",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "date_posts_a_real_value": true,
+            "days_are_real_buttons": true,
+            "selection_announced": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "date_posts_a_real_value": true,
+            "days_are_real_buttons": false,
+            "selection_announced": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "3/5"
+        }
+      }
+    },
+    "site_nav": {
+      "description": "A site navigation bar: a Products dropdown of links, plus Pricing and Docs destinations",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "nav_landmark": true,
+            "disclosure_announces": true,
+            "reachable_without_hover": true,
+            "no_menu_role_abuse": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "nav_landmark": true,
+            "disclosure_announces": false,
+            "reachable_without_hover": true,
+            "no_menu_role_abuse": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/6"
+        }
+      }
+    },
+    "artwork_carousel": {
+      "description": "A three-slide artwork carousel with previous/next controls",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "carousel_region_semantics": true,
+            "slides_reachable_without_js": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "carousel_region_semantics": true,
+            "slides_reachable_without_js": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "split_editor": {
+      "description": "A two-pane resizable split (Files | Editor) with a draggable divider",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "splitter_wears_the_apg_surface": true,
+            "resize_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": false
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "splitter_wears_the_apg_surface": false,
+            "resize_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "2/4"
+        }
+      }
+    },
+    "mobile_sheet": {
+      "description": "A bottom drawer for setting a daily activity goal: trigger, title, description, a Submit action, and a swipe handle",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": true,
+            "dismissal_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": true,
+            "dismissal_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "deferred_region": {
+      "description": "A dashboard activity panel that loads only when scrolled into view, with a visible retry affordance when the fetch fails",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "defers_via_lazy_frame": true,
+            "failure_is_visible_and_retryable": true,
+            "loading_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "defers_via_lazy_frame": false,
+            "failure_is_visible_and_retryable": false,
+            "loading_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "2/5"
+        }
+      }
+    },
+    "scrollable_tags": {
+      "description": "A bounded, scrollable list of 20 version tags in a 12rem box",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "scroll_region_is_keyboard_reachable": true,
+            "scroll_region_is_named": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "scroll_region_is_keyboard_reachable": false,
+            "scroll_region_is_named": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "2/4"
+        }
+      }
+    },
+    "settings_tabs": {
+      "description": "Account settings tabs (Account / Password / Notifications) with the first tab active and its panel visible",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "tablist_semantics": true,
+            "selection_announced_and_wired": true,
+            "switching_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "tablist_semantics": false,
+            "selection_announced_and_wired": false,
+            "switching_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "2/5"
+        }
+      }
+    },
+    "filter_toolbar": {
+      "description": "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort dropdown, and a List/Grid view switch",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "controls_are_labelled": false,
+            "composites_are_groups": true,
+            "sort_is_a_real_select": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "controls_are_labelled": false,
+            "composites_are_groups": false,
+            "sort_is_a_real_select": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "1/5"
+        }
+      }
+    },
+    "user_directory": {
+      "description": "A team directory: a breadcrumb trail (Home / Team / Directory), then a list of member rows - avatar, name, description, and a Message action",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "breadcrumb_is_a_landmark_with_current": true,
+            "members_are_a_list": true,
+            "avatars_have_accessible_names": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "breadcrumb_is_a_landmark_with_current": true,
+            "members_are_a_list": true,
+            "avatars_have_accessible_names": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "upload_progress": {
+      "description": "A determinate upload progress bar at 60%, with a visible label and value",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "progressbar_announces": true,
+            "progressbar_named": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "progressbar_announces": true,
+            "progressbar_named": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4"
+        }
+      }
+    },
+    "data_table": {
+      "description": "A sortable, filterable invoices table: sorted by invoice number ascending, with a filter box and pagination",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "sorted_column_announces": false,
+            "sorting_is_real_navigation": true,
+            "filter_is_labelled": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "sorted_column_announces": true,
+            "sorting_is_real_navigation": true,
+            "filter_is_labelled": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5"
+        }
+      }
+    },
+    "table": {
+      "description": "An invoices table with a caption, column headers, and a footer total",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "real_table": true,
+            "column_headers_are_th": true,
+            "caption_present": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "real_table": true,
+            "column_headers_are_th": true,
+            "caption_present": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5"
+        }
+      }
+    },
+    "card": {
+      "description": "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "heading_semantics": true,
+            "real_link": true,
+            "links_have_accessible_names": true,
+            "badge_not_interactive": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "heading_semantics": true,
+            "real_link": true,
+            "links_have_accessible_names": true,
+            "badge_not_interactive": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6"
+        }
+      }
+    }
+  },
+  "components_exercised": [
+    "accordion",
+    "alert",
+    "alert_dialog",
+    "aspect_ratio",
+    "attachment",
+    "avatar",
+    "badge",
+    "breadcrumb",
+    "bubble",
+    "button",
+    "calendar",
+    "card",
+    "carousel",
+    "checkbox",
+    "collapsible",
+    "combobox",
+    "date_picker",
+    "deferred",
+    "dialog",
+    "drawer",
+    "empty",
+    "field",
+    "hover_card",
+    "icon",
+    "input",
+    "input_group",
+    "input_otp",
+    "item",
+    "kbd",
+    "label",
+    "link",
+    "marker",
+    "message",
+    "message_scroller",
+    "native_select",
+    "navigation_menu",
+    "pagination",
+    "popover",
+    "progress",
+    "radio_group",
+    "resizable",
+    "scroll_area",
+    "select",
+    "separator",
+    "sheet",
+    "skeleton",
+    "slider",
+    "spinner",
+    "switch",
+    "table",
+    "tabs",
+    "textarea",
+    "toggle",
+    "toggle_group",
+    "tooltip"
+  ]
+}

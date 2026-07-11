@@ -1,0 +1,79 @@
+<div class="mx-auto max-w-5xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Dashboard</h1>
+      <p class="text-sm text-muted-foreground">Today across the workspace.</p>
+    </div>
+    <%= poetry_button(variant: :outline) do |button| %>
+      <% button.with_leading { poetry_icon(name: :download) } %>
+      Export
+    <% end %>
+  </div>
+
+  <%= poetry_alert(variant: :default) do |alert| %>
+    <% alert.with_icon(name: :info) %>
+    <% alert.with_title { "Scheduled maintenance" } %>
+    Billing exports will pause for 15 minutes starting at 2:00 PM UTC.
+  <% end %>
+
+  <div class="grid gap-4 md:grid-cols-3">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Active users" } %>
+      <% card.with_description { "Last 24 hours" } %>
+      <div class="text-2xl font-semibold tabular-nums">1,284</div>
+      <p class="text-xs text-muted-foreground">+6.1% from yesterday</p>
+    <% end %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Open tickets" } %>
+      <% card.with_description { "Needing a response" } %>
+      <div class="text-2xl font-semibold tabular-nums">37</div>
+      <p class="text-xs text-muted-foreground">9 past SLA</p>
+    <% end %>
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Uptime" } %>
+      <% card.with_description { "Trailing 30 days" } %>
+      <div class="text-2xl font-semibold tabular-nums">99.95%</div>
+      <p class="text-xs text-muted-foreground">2 incidents resolved this month</p>
+    <% end %>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Service health" } %>
+    <% card.with_description { "Live status across core services" } %>
+    <div class="space-y-4">
+      <%= poetry_progress(label: "API", value: 98) %>
+      <%= poetry_progress(label: "Worker queue", value: 100) %>
+      <%= poetry_progress(label: "Web", value: 92) %>
+    </div>
+  <% end %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Recent activity" } %>
+    <% card.with_description { "The latest changes across orders, customers, and support." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :info) { "Live" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-between gap-4">
+        <span class="text-xs text-muted-foreground">Updates as events happen</span>
+        <%= poetry_link(href: "/activity", underline: :always, class: "inline-flex items-center gap-1") do %>
+          View all activity <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <%= poetry_deferred(src: "/dashboard/activity_feed", loading: :lazy) do %>
+      <div class="space-y-4" aria-busy="true">
+        <% 4.times do %>
+          <div class="flex items-center gap-3">
+            <%= poetry_skeleton(class: "size-9 shrink-0 rounded-full") %>
+            <div class="flex-1 space-y-2">
+              <%= poetry_skeleton(class: "h-4 w-2/3") %>
+              <%= poetry_skeleton(class: "h-3 w-1/3") %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

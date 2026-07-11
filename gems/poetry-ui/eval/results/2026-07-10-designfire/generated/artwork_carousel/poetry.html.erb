@@ -1,0 +1,44 @@
+<section class="mx-auto max-w-4xl p-6 space-y-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Featured Artwork</h1>
+    <p class="text-muted-foreground">Three pieces from this month's collection.</p>
+  </div>
+
+  <%= poetry_carousel(label: "Featured artwork") do |carousel| %>
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Windswept Coast" } %>
+        <% card.with_description { "Elena Marsh · Oil on canvas, 2021" } %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, label: "Artwork preview") %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Quiet Interior" } %>
+        <% card.with_description { "Dominic Ruiz · Watercolor, 2019" } %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, label: "Artwork preview") %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% carousel.with_item(classes: "basis-full") do %>
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Fractured Light" } %>
+        <% card.with_description { "Priya Nandakumar · Mixed media, 2023" } %>
+        <%= poetry_aspect_ratio(ratio: "16/9") do %>
+          <div class="flex size-full items-center justify-center rounded-md bg-muted">
+            <%= poetry_icon(name: :image, label: "Artwork preview") %>
+          </div>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</section>

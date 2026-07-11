@@ -1,0 +1,143 @@
+<section class="mx-auto max-w-3xl space-y-6 p-6">
+  <div class="overflow-hidden rounded-lg border">
+    <%= poetry_menubar(label: "Application") do |bar| %>
+      <% bar.with_menu(label: "File") do |menu| %>
+        <% menu.with_item(shortcut: "⌘N") { "New account" } %>
+        <% menu.with_item { "Import accounts…" } %>
+        <% menu.with_item { "Export accounts…" } %>
+        <% menu.with_separator %>
+        <% menu.with_item(shortcut: "⌘P") { "Print list" } %>
+      <% end %>
+      <% bar.with_menu(label: "View") do |menu| %>
+        <% menu.with_checkbox_item(checked: true) { "Show avatars" } %>
+        <% menu.with_checkbox_item(checked: true) { "Show email addresses" } %>
+        <% menu.with_separator %>
+        <% menu.with_checkbox_item(checked: false) { "Show status bar" } %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-lg font-semibold tracking-tight">Team accounts</h1>
+      <p class="text-sm text-muted-foreground">Right-click a row, or use Options, to manage a member.</p>
+    </div>
+  </div>
+
+  <%= poetry_item_group(class: "rounded-lg border") do %>
+    <%= poetry_context_menu(label: "Priya Patel account actions") do |cm| %>
+      <% cm.with_trigger do %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :user) } %>
+          <% item.with_title { "Priya Patel" } %>
+          <% item.with_description { "priya@acme.com" } %>
+          <%= poetry_badge(variant: :outline) { "Admin" } %>
+          <% item.with_actions do %>
+            <%= poetry_dropdown_menu(align: :end) do |dd| %>
+              <% dd.with_trigger do %>
+                <%= poetry_button(variant: :outline, size: :sm) do |b| %>
+                  Options
+                  <% b.with_trailing { poetry_icon(name: :"chevron-down") } %>
+                <% end %>
+              <% end %>
+              <% dd.with_label { "Account" } %>
+              <% dd.with_item { "View profile" } %>
+              <% dd.with_item(shortcut: "⌘E") { "Edit account" } %>
+              <% dd.with_item { "Reset password" } %>
+              <% dd.with_separator %>
+              <% dd.with_checkbox_item(checked: true) { "Email notifications" } %>
+              <% dd.with_separator %>
+              <% dd.with_item(variant: :destructive) { "Remove account" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% cm.with_label { "Account" } %>
+      <% cm.with_item { "View profile" } %>
+      <% cm.with_item(shortcut: "⌘E") { "Edit account" } %>
+      <% cm.with_item { "Reset password" } %>
+      <% cm.with_separator %>
+      <% cm.with_checkbox_item(checked: true) { "Email notifications" } %>
+      <% cm.with_separator %>
+      <% cm.with_item(variant: :destructive) { "Remove account" } %>
+    <% end %>
+
+    <%= poetry_item_separator %>
+
+    <%= poetry_context_menu(label: "Marcus Chen account actions") do |cm| %>
+      <% cm.with_trigger do %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :user) } %>
+          <% item.with_title { "Marcus Chen" } %>
+          <% item.with_description { "marcus@acme.com" } %>
+          <%= poetry_badge(variant: :secondary) { "Member" } %>
+          <% item.with_actions do %>
+            <%= poetry_dropdown_menu(align: :end) do |dd| %>
+              <% dd.with_trigger do %>
+                <%= poetry_button(variant: :outline, size: :sm) do |b| %>
+                  Options
+                  <% b.with_trailing { poetry_icon(name: :"chevron-down") } %>
+                <% end %>
+              <% end %>
+              <% dd.with_label { "Account" } %>
+              <% dd.with_item { "View profile" } %>
+              <% dd.with_item(shortcut: "⌘E") { "Edit account" } %>
+              <% dd.with_item { "Reset password" } %>
+              <% dd.with_separator %>
+              <% dd.with_checkbox_item(checked: false) { "Email notifications" } %>
+              <% dd.with_separator %>
+              <% dd.with_item(variant: :destructive) { "Remove account" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% cm.with_label { "Account" } %>
+      <% cm.with_item { "View profile" } %>
+      <% cm.with_item(shortcut: "⌘E") { "Edit account" } %>
+      <% cm.with_item { "Reset password" } %>
+      <% cm.with_separator %>
+      <% cm.with_checkbox_item(checked: false) { "Email notifications" } %>
+      <% cm.with_separator %>
+      <% cm.with_item(variant: :destructive) { "Remove account" } %>
+    <% end %>
+
+    <%= poetry_item_separator %>
+
+    <%= poetry_context_menu(label: "Elena Rossi account actions") do |cm| %>
+      <% cm.with_trigger do %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :user) } %>
+          <% item.with_title { "Elena Rossi" } %>
+          <% item.with_description { "elena@acme.com" } %>
+          <%= poetry_badge(variant: :secondary) { "Member" } %>
+          <% item.with_actions do %>
+            <%= poetry_dropdown_menu(align: :end) do |dd| %>
+              <% dd.with_trigger do %>
+                <%= poetry_button(variant: :outline, size: :sm) do |b| %>
+                  Options
+                  <% b.with_trailing { poetry_icon(name: :"chevron-down") } %>
+                <% end %>
+              <% end %>
+              <% dd.with_label { "Account" } %>
+              <% dd.with_item { "View profile" } %>
+              <% dd.with_item(shortcut: "⌘E") { "Edit account" } %>
+              <% dd.with_item { "Reset password" } %>
+              <% dd.with_separator %>
+              <% dd.with_checkbox_item(checked: true) { "Email notifications" } %>
+              <% dd.with_separator %>
+              <% dd.with_item(variant: :destructive) { "Remove account" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <% cm.with_label { "Account" } %>
+      <% cm.with_item { "View profile" } %>
+      <% cm.with_item(shortcut: "⌘E") { "Edit account" } %>
+      <% cm.with_item { "Reset password" } %>
+      <% cm.with_separator %>
+      <% cm.with_checkbox_item(checked: true) { "Email notifications" } %>
+      <% cm.with_separator %>
+      <% cm.with_item(variant: :destructive) { "Remove account" } %>
+    <% end %>
+  <% end %>
+</section>

@@ -1,0 +1,73 @@
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Notification settings</h1>
+      <p class="text-sm text-muted-foreground">Control how and when Aurora sends you alerts, digests, and account notices.</p>
+    </div>
+    <%= poetry_toggle(label: "Bookmark", variant: :outline) { poetry_icon(name: :bookmark, class: "size-4") } %>
+  </header>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Instant preferences" } %>
+    <% card.with_description { "These apply immediately - there's nothing to save." } %>
+    <div class="space-y-5">
+      <div class="flex items-center justify-between gap-4">
+        <div class="space-y-0.5">
+          <p class="text-sm font-medium">Email alerts</p>
+          <p class="text-sm text-muted-foreground">Get an email the moment a new alert fires.</p>
+        </div>
+        <%= poetry_switch(label: "Email alerts", name: "email_alerts", checked: true) %>
+      </div>
+      <%= poetry_separator %>
+      <div class="flex items-center justify-between gap-4">
+        <div class="space-y-0.5">
+          <p class="text-sm font-medium">Alert list layout</p>
+          <p class="text-sm text-muted-foreground">Switch between a compact list and a card grid.</p>
+        </div>
+        <%= poetry_toggle_group(type: :single, value: "list", label: "Alert list layout", size: :sm) do |group| %>
+          <% group.with_item(value: "list", label: "List view") { poetry_icon(name: :list, class: "size-4") } %>
+          <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid", class: "size-4") } %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Notification preferences" } %>
+    <% card.with_description { "Review and save - these changes apply once you submit." } %>
+    <form action="#" method="post" class="space-y-6">
+      <div class="space-y-1.5">
+        <%= poetry_checkbox(label: "I accept the notification terms", name: "accept_terms", value: "1", required: true) %>
+        <p class="pl-6 text-sm text-muted-foreground">Required before we can send any digest or alert email.</p>
+      </div>
+
+      <%= poetry_radio_group(name: "digest_frequency", label: "Digest frequency", value: "weekly", orientation: :vertical) do |group| %>
+        <% group.with_item(value: "daily", label: "Daily") %>
+        <% group.with_item(value: "weekly", label: "Weekly") %>
+        <% group.with_item(value: "monthly", label: "Monthly") %>
+        <% group.with_item(value: "never", label: "Never") %>
+      <% end %>
+
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <span id="alert-volume-label" class="text-sm font-medium">Alert volume</span>
+          <span class="text-sm text-muted-foreground tabular-nums">70%</span>
+        </div>
+        <%= poetry_slider(name: "alert_volume", labelled_by: "alert-volume-label", min: 0, max: 100, step: 5, value: 70, value_text: "70%") %>
+      </div>
+
+      <%= poetry_field(id: "unsubscribe-note", label_text: "Unsubscribe note", hint: "Optional - tell us why, in case you ever opt out.") do |field| %>
+        <%= poetry_textarea(**field.control_attributes, name: "unsubscribe_note", placeholder: "Add a note for our team…", rows: 3) %>
+      <% end %>
+
+      <%= poetry_field(id: "confirmation-code", label_text: "Confirmation code", hint: "Enter the 6-digit code we emailed to confirm these changes.") do |field| %>
+        <%= poetry_input_otp(**field.control_attributes, name: "confirmation_code", length: 6) %>
+      <% end %>
+
+      <div class="flex items-center justify-end gap-2 pt-2">
+        <%= poetry_button(variant: :outline, type: :button) { "Cancel" } %>
+        <%= poetry_button(type: :submit) { "Save changes" } %>
+      </div>
+    </form>
+  <% end %>
+</div>

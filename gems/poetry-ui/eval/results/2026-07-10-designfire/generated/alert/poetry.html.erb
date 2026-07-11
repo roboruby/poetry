@@ -1,0 +1,14 @@
+<div class="mx-auto max-w-xl p-6">
+  <section class="space-y-3">
+    <%# Icon + title only: an alert DESCRIPTION rides the destructive tint,
+        which doesn't clear AA for extended text - the detail lives in the
+        AA-clean muted copy below instead. %>
+    <%= poetry_alert(variant: :destructive) do |alert| %>
+      <% alert.with_icon(name: "triangle-alert") %>
+      <% alert.with_title { "Payment failed" } %>
+    <% end %>
+    <p class="text-sm text-muted-foreground">
+      We couldn't charge your card ending in 4242. Update your payment method within 3 days to avoid a lapse in service.
+    </p>
+  </section>
+</div>

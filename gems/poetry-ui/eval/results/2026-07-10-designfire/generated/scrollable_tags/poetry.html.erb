@@ -1,0 +1,43 @@
+<div class="mx-auto max-w-md p-6">
+  <header class="mb-6">
+    <h1 class="text-2xl font-semibold tracking-tight">Version Tags</h1>
+    <p class="text-sm text-muted-foreground">Release history for this repository.</p>
+  </header>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Tags" } %>
+    <% card.with_description { "20 most recent releases" } %>
+
+    <%= poetry_scroll_area(label: "Version tag history", classes: "h-48") do %>
+      <ul class="flex flex-col gap-2 pr-4">
+        <% [
+             ["v3.4.2", "2 hours ago"],
+             ["v3.4.1", "3 days ago"],
+             ["v3.4.0", "1 week ago"],
+             ["v3.3.5", "2 weeks ago"],
+             ["v3.3.4", "3 weeks ago"],
+             ["v3.3.3", "4 weeks ago"],
+             ["v3.3.2", "5 weeks ago"],
+             ["v3.3.1", "6 weeks ago"],
+             ["v3.3.0", "2 months ago"],
+             ["v3.2.1", "10 weeks ago"],
+             ["v3.2.0", "3 months ago"],
+             ["v3.1.3", "14 weeks ago"],
+             ["v3.1.2", "4 months ago"],
+             ["v3.1.1", "18 weeks ago"],
+             ["v3.1.0", "5 months ago"],
+             ["v3.0.1", "22 weeks ago"],
+             ["v3.0.0", "6 months ago"],
+             ["v2.9.4", "7 months ago"],
+             ["v2.9.3", "8 months ago"],
+             ["v2.9.2", "9 months ago"],
+           ].each_with_index do |(tag, released_at), index| %>
+          <li class="flex items-center justify-between gap-4">
+            <%= poetry_badge(variant: index.zero? ? :success : :outline) { tag } %>
+            <span class="text-xs text-muted-foreground"><%= released_at %></span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</div>
