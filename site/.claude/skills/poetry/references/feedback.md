@@ -16,7 +16,7 @@ In blocks: `destructive-panel` - for a screen, start from the block (MCP compose
 
 Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
 - `loading:` (symbol) - default "lazy"
-- `src:` (string)
+- `src:` (string) - required
 - WIRING `poetry--core--deferred`: targets error, placeholder; values src; actions retry
 - RULE: Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled fetch.
 - RULE: loading: :lazy (the default) fetches on visibility: a deferred region inside a hidden Tabs panel (with_tab defer:) or HoverCard (defer:) loads on first reveal for free.
@@ -25,7 +25,7 @@ Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
 ## progress (`poetry_progress`)
 
 Class: Poetry::Ui::Progress::Component - BEM block `poetry-ui-progress`.
-- `label:` (string)
+- `label:` (string) - required
 - `max:` (integer) - default 100
 - `show_value:` (boolean) - default true
 - `value:` (integer) - required

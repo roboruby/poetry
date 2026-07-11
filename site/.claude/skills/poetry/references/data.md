@@ -24,7 +24,7 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 
 Class: Poetry::Ui::Avatar::Component - BEM block `poetry-ui-avatar`.
 Content block REQUIRED (the initials fallback) - a blockless call raises.
-- `label:` (string)
+- `label:` (string) - required
 - `size:` (symbol) - one of default|sm|lg, default "default"
 - `src:` (string)
 Slots: badge.
@@ -59,7 +59,7 @@ In blocks: `app-shell`, `section-card` - for a screen, start from the block (MCP
 
 Class: Poetry::Ui::Carousel::Component - BEM block `poetry-ui-carousel`.
 Slot REQUIRED: with_item (at least one slide) - a call without it raises.
-- `label:` (string)
+- `label:` (string) - required
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `show_controls:` (boolean) - default true
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly; with_item keywords: classes: ONLY; with_item REQUIRES a content block (the slide)).

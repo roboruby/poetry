@@ -27,7 +27,7 @@ Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write 
 
 Class: Poetry::Ui::ScrollArea::Component - BEM block `poetry-ui-scroll_area`.
 Content block REQUIRED (what scrolls) - a blockless call raises.
-- `label:` (string)
+- `label:` (string) - required
 - RULE: Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the overflow.
 - RULE: label: is REQUIRED - the viewport is focusable, and a focusable region needs a name (role=region + aria-label).
 - RULE: This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller for chat transcripts.

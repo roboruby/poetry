@@ -173,7 +173,7 @@ Slots: trigger.
 Class: Poetry::Ui::Menubar::Component - BEM block `poetry-ui-menubar`.
 Slot REQUIRED: with_menu (at least one menu) - a call without it raises.
 - `dir:` (symbol) - one of ltr|rtl
-- `label:` (string)
+- `label:` (string) - required
 - `loop:` (boolean) - default false
 - `value:` (string)
 Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the top-level menu button); each with_menu REQUIRES with_item inside its block (at least one item)).

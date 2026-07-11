@@ -16,7 +16,7 @@ In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP 
 ## navigation_menu (`poetry_navigation_menu`)
 
 Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_menu`.
-- `label:` (string)
+- `label:` (string) - required
 - `viewport:` (boolean) - default false
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
 In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
