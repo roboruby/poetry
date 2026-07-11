@@ -1,11 +1,13 @@
 # poetry blocks - vetted composed screens
 
-Start a SCREEN from a block, then edit it in place:
-`bin/rails g poetry:block <name>` copies it into app/views/blocks/
-as source the app owns. Blocks carry the composed patterns -
-containment, status color-coding, page furniture, realistic
-content - so a screen starts composed, not blank. The sample
-content is meant to be replaced.
+Blocks are the DEFAULT starting point for a screen, not a
+fallback: the MCP `compose` tool routes a brief to the right one
+automatically (call it first); this file carries the same catalog
+with full source. `bin/rails g poetry:block <name>` copies one
+into app/views/blocks/ as source the app owns. Blocks carry the
+composed patterns - containment, status color-coding, page
+furniture, realistic content - so a screen starts composed, not
+blank. The sample content is meant to be replaced.
 
 ## Block: App shell (`app-shell`)
 

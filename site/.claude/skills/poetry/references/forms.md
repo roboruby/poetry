@@ -15,6 +15,7 @@ Class: Poetry::Ui::Button::Component - BEM block `poetry-ui-button`.
 - `tag:` (symbol) - one of button|a, default "button"
 - `type:` (symbol) - one of button|submit|reset, default "button"
 Slots: leading, trailing.
+In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Use poetry_button - never a raw <button> with hand-written Tailwind.
 - RULE: The visible text is the content block: poetry_button { "Save" }. label: is ONLY the accessible name.
 - RULE: Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).
@@ -28,6 +29,7 @@ Slots: leading, trailing.
 Class: Poetry::Ui::ButtonGroup::Component - BEM block `poetry-ui-button_group`.
 Content block REQUIRED (its member controls) - a blockless call raises.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Members go in the content block - the group's selectors join ANY data-slot children (buttons, inputs, select triggers); never hand-round the inner corners.
 - RULE: Give the group an aria-label when the page has more than one (role=group is unnamed by default).
 - RULE: A visual divider between members is poetry_button_group_separator, not a styled border.
@@ -67,6 +69,7 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 ## combobox (`poetry_combobox`)
 
 Class: Poetry::Ui::Combobox::Component - BEM block `poetry-ui-combobox`.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "start"
 - `avoid_collisions:` (boolean) - default true
 - `dir:` (symbol) - one of ltr|rtl
@@ -138,6 +141,7 @@ Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 
 Class: Poetry::Ui::InputGroup::Component - BEM block `poetry-ui-input_group`.
 Content block REQUIRED (its control + addons) - a blockless call raises.
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input keeps its own border+ring and double-chromes the group.
 - RULE: Addons are poetry_input_group_addon(align:) wrapping icons/text/buttons; use poetry_input_group_text for muted captions and poetry_input_group_button for tiny actions.
 - RULE: The group is a surface, not a label - the control still needs its Label/Field pairing.
@@ -166,6 +170,7 @@ Class: Poetry::Ui::InputOtp::Component - BEM block `poetry-ui-input_otp`.
 
 Class: Poetry::Ui::Label::Component - BEM block `poetry-ui-label`.
 - `for_id:` (string)
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Every control gets a Label wired via for_id - placeholder text is never the label.
 
 ## native_select (`poetry_native_select`)
@@ -177,6 +182,7 @@ Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`
 - `label:` (string)
 - `name:` (string)
 - `size:` (symbol) - one of default|sm, default "default"
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: This is a REAL <select> - use it for plain picking; the JS Select is for styled options.
 - RULE: Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.
 - RULE: The fast path is options: [[label, value], ...] + selected:; a content block overrides it.
@@ -184,6 +190,7 @@ Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`
 ## radio_group (`poetry_radio_group`)
 
 Class: Poetry::Ui::RadioGroup::Component - BEM block `poetry-ui-radio_group`.
+Slot REQUIRED: with_item (at least one radio item) - a call without it raises.
 - `disabled:` (boolean) - default false
 - `invalid:` (boolean) - default false
 - `label:` (string)
@@ -207,6 +214,7 @@ Slots: items (many).
 ## select (`poetry_select`)
 
 Class: Poetry::Ui::Select::Component - BEM block `poetry-ui-select`.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "start"
 - `align_item_with_trigger:` (boolean) - default false
 - `avoid_collisions:` (boolean) - default true
@@ -314,6 +322,7 @@ Class: Poetry::Ui::Toggle::Component - BEM block `poetry-ui-toggle`.
 ## toggle_group (`poetry_toggle_group`)
 
 Class: Poetry::Ui::ToggleGroup::Component - BEM block `poetry-ui-toggle_group`.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `size:` (symbol) - one of default|sm|lg, default "default", required
 - `variant:` (symbol) - one of default|outline, default "default", required
 - `disabled:` (boolean) - default false

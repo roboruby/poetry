@@ -6,6 +6,10 @@ not suggestions. Options are keywords; content is the block.
 ## alert_dialog (`poetry_alert_dialog`)
 
 Class: Poetry::Ui::AlertDialog::Component - BEM block `poetry-ui-alert_dialog`.
+Slot REQUIRED: with_title (the accessible name) - a call without it raises.
+Slot REQUIRED: with_description (the alertdialog must explain itself) - a call without it raises.
+Slot REQUIRED: with_action (the confirming choice) - a call without it raises.
+Slot REQUIRED: with_cancel (the safe way out) - a call without it raises.
 - `size:` (symbol) - one of default|sm, default "default", required
 Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (with_action yields NOTHING to the block - no |param|, write content directly), cancel (with_cancel yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
@@ -61,6 +65,8 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## context_menu (`poetry_context_menu`)
 
 Class: Poetry::Ui::ContextMenu::Component - BEM block `poetry-ui-context_menu`.
+Slot REQUIRED: with_trigger (the right-click surface) - a call without it raises.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `dir:` (symbol) - one of ltr|rtl
 - `disabled:` (boolean) - default false
 - `focusable_surface:` (boolean) - default false
@@ -68,7 +74,7 @@ Class: Poetry::Ui::ContextMenu::Component - BEM block `poetry-ui-context_menu`.
 - `long_press_delay:` (integer) - default 700
 - `modal:` (boolean) - default true
 - `open:` (boolean) - default false
-Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--context-menu`: values disabled, longPressDelay; actions disabledValueChanged, open, pressCancel, pressStart; events poetry:context-menu:open
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -84,6 +90,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 ## dialog (`poetry_dialog`)
 
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
+Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
 Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
@@ -95,6 +102,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## drawer (`poetry_drawer`)
 
 Class: Poetry::Ui::Drawer::Component - BEM block `poetry-ui-drawer`.
+Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `direction:` (symbol) - one of down|up|left|right, default "down", required
 - `dismissible:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
@@ -109,6 +117,8 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## dropdown_menu (`poetry_dropdown_menu`)
 
 Class: Poetry::Ui::DropdownMenu::Component - BEM block `poetry-ui-dropdown_menu`.
+Slot REQUIRED: with_trigger (the menu button) - a call without it raises.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
 - `align_offset:` (integer) - default 0
 - `avoid_collisions:` (boolean) - default true
@@ -119,7 +129,7 @@ Class: Poetry::Ui::DropdownMenu::Component - BEM block `poetry-ui-dropdown_menu`
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
@@ -135,6 +145,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 ## hover_card (`poetry_hover_card`)
 
 Class: Poetry::Ui::HoverCard::Component - BEM block `poetry-ui-hover_card`.
+Slot REQUIRED: with_trigger (the enriched link) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
 - `align_offset:` (integer) - default 0
 - `avoid_collisions:` (boolean) - default true
@@ -159,11 +170,12 @@ Slots: trigger.
 ## menubar (`poetry_menubar`)
 
 Class: Poetry::Ui::Menubar::Component - BEM block `poetry-ui-menubar`.
+Slot REQUIRED: with_menu (at least one menu) - a call without it raises.
 - `dir:` (symbol) - one of ltr|rtl
 - `label:` (string)
 - `loop:` (boolean) - default false
 - `value:` (string)
-Slots: menus (many).
+Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the top-level menu button); each with_menu REQUIRES with_item inside its block (at least one item)).
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--menubar`: values loop, value; actions hoverSlide, onMenuClosed, slideAdjacent, toggle, triggerKeydown, valueValueChanged; events poetry:menubar:value-changed
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -178,6 +190,7 @@ Slots: menus (many).
 ## popover (`poetry_popover`)
 
 Class: Poetry::Ui::Popover::Component - BEM block `poetry-ui-popover`.
+Slot REQUIRED: with_trigger (the panel's control) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
 - `align_offset:` (integer) - default 0
 - `avoid_collisions:` (boolean) - default true
@@ -201,6 +214,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## sheet (`poetry_sheet`)
 
 Class: Poetry::Ui::Sheet::Component - BEM block `poetry-ui-sheet`.
+Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "right", required
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
@@ -215,6 +229,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## tooltip (`poetry_tooltip`)
 
 Class: Poetry::Ui::Tooltip::Component - BEM block `poetry-ui-tooltip`.
+Slot REQUIRED: with_trigger (the described control) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
 - `content_class:` (string)
 - `delay_duration:` (integer)

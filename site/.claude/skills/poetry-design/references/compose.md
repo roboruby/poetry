@@ -5,12 +5,16 @@ composed region-by-region from a stated shape consistently beat screens
 grown element-by-element. The five mechanics below are distilled from
 judged head-to-head runs - they are where composed pages win.
 
-## Start from a block
+## Step 1 is a tool call, not a decision
 
-If a vetted block covers the screen's archetype, START THERE and edit in
-place: `bin/rails g poetry:block --list` (contracts and source in the
-`poetry` skill's `references/blocks.md`). Blocks arrive with the mechanics
-below already composed; a blank file arrives with none of them.
+Route the brief through the poetry MCP `compose` tool FIRST (no MCP:
+`bin/rails g poetry:block --list` + the `poetry` skill's
+`references/blocks.md`). If it returns a block, START FROM THAT SOURCE and
+edit in place - do not re-derive the layout from the checklist below.
+Blocks arrive with the five mechanics already composed; a blank file
+arrives with none of them, and reading this checklist does not transfer
+them (measured: screens built from scratch after reading it composed no
+better than screens built without it).
 
 ## The five mechanics
 

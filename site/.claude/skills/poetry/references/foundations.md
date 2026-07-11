@@ -9,6 +9,7 @@ Class: Poetry::Ui::Icon::Component - BEM block `poetry-ui-icon`.
 - `label:` (string)
 - `library:` (symbol)
 - `name:` (symbol) - required, format: icon-name
+In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `section-card`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.
 - RULE: Never inline raw <svg> markup where an icon exists - use poetry_icon.
 
@@ -26,6 +27,7 @@ Class: Poetry::Ui::Link::Component - BEM block `poetry-ui-link`.
 - `current:` (boolean) - default false
 - `external:` (boolean) - default false
 - `href:` (string) - required
+In blocks: `section-card`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Use poetry_link for navigation - poetry_button for actions (never an <a> styled by hand).
 - RULE: Mark the active nav item with current: true (aria-current), never with a bespoke class.
 - RULE: external: true handles target/rel safely - never hand-write target=_blank.
@@ -47,6 +49,7 @@ Slots: icon (takes poetry_icon props, not a block).
 Class: Poetry::Ui::Separator::Component - BEM block `poetry-ui-separator`.
 - `decorative:` (boolean) - default true
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
+In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: A purely visual divider stays decorative (the default): aria-hidden, role absent.
 - RULE: Set decorative: false only when the divide is semantically meaningful (role=separator).
 

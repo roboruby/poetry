@@ -13,6 +13,7 @@ Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
 ## resizable (`poetry_resizable`)
 
 Class: Poetry::Ui::Resizable::Component - BEM block `poetry-ui-resizable`.
+Slot REQUIRED: with_panel (at least two panels) - a call without it raises.
 - `direction:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `grip:` (boolean) - default false
 Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write content directly; with_panel keywords: default_size:, min_size:, max_size:, classes: ONLY; with_panel REQUIRES a content block (the panel content)).

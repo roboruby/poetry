@@ -6,6 +6,7 @@ not suggestions. Options are keywords; content is the block.
 ## accordion (`poetry_accordion`)
 
 Class: Poetry::Ui::Accordion::Component - BEM block `poetry-ui-accordion`.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `collapsible:` (boolean) - default false
 - `heading_level:` (symbol) - one of h2|h3|h4|h5|h6, default "h3"
 - `open:` (list) - default "dynamic"
@@ -27,6 +28,7 @@ Content block REQUIRED (the initials fallback) - a blockless call raises.
 - `size:` (symbol) - one of default|sm|lg, default "default"
 - `src:` (string)
 Slots: badge.
+In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: label: (the person's name) is REQUIRED - it is the avatar's accessible name (role=img).
 - RULE: The content block is the fallback (initials) and is also required - it is what shows while the image loads or when it fails.
 - RULE: The badge slot is decorative (a presence dot); put the status meaning in label:, not in the badge.
@@ -37,6 +39,7 @@ Slots: badge.
 Class: Poetry::Ui::Badge::Component - BEM block `poetry-ui-badge`.
 Content block REQUIRED (the visible status text) - a blockless call raises.
 - `variant:` (symbol) - one of default|secondary|destructive|outline|success|warning|info, default "default", required
+In blocks: `data-index`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions.
 - RULE: The visible text is the content block: render ... { "beta" } - there is no label: option.
 - RULE: Pick the variant by intent (destructive = error states; success/warning/info = record status, e.g. Fulfilled/Processing/Syncing), never by color preference.
@@ -47,6 +50,7 @@ Content block REQUIRED (the visible status text) - a blockless call raises.
 Class: Poetry::Ui::Card::Component - BEM block `poetry-ui-card`.
 - `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
 Slots: title, description, action, footer.
+In blocks: `app-shell`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Compose with the slots (title/description/action/footer) - never rebuild the header grid by hand.
 - RULE: The card body is the content block; use CardAction for the header-corner control.
 - RULE: The title renders as a real heading (h3 default) - set title_tag: to fit the page outline.
@@ -54,6 +58,7 @@ Slots: title, description, action, footer.
 ## carousel (`poetry_carousel`)
 
 Class: Poetry::Ui::Carousel::Component - BEM block `poetry-ui-carousel`.
+Slot REQUIRED: with_item (at least one slide) - a call without it raises.
 - `label:` (string)
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `show_controls:` (boolean) - default true
@@ -67,6 +72,7 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 ## collapsible (`poetry_collapsible`)
 
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
+Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
 - `open:` (boolean) - default false
 Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - WIRING `poetry--core--state`: targets content, trigger; values state; actions close, open, toggle
@@ -78,6 +84,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 ## data_table (`poetry_data_table`)
 
 Class: Poetry::Ui::DataTable::Component - BEM block `poetry-ui-data_table`.
+Slot REQUIRED: with_column (at least one column) - a call without it raises.
 - `caption:` (string)
 - `empty_text:` (string) - default "No results."
 - `filter:` (boolean) - default true
@@ -119,6 +126,7 @@ Slots: media, title, description, actions, header, footer.
 ## table (`poetry_table`)
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
 - RULE: A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).
 - RULE: Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.

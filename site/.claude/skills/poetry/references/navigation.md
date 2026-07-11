@@ -6,7 +6,9 @@ not suggestions. Options are keywords; content is the block.
 ## breadcrumb (`poetry_breadcrumb`)
 
 Class: Poetry::Ui::Breadcrumb::Component - BEM block `poetry-ui-breadcrumb`.
+Slot REQUIRED: with_item (at least one item) - a call without it raises.
 Slots: items (many).
+In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Declare the trail with with_item(label, href:) - never hand-build the nav/ol/li chain.
 - RULE: The current page is the item WITHOUT href: (it renders aria-current=page, not a link).
 - RULE: Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
@@ -17,6 +19,7 @@ Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_m
 - `label:` (string)
 - `viewport:` (boolean) - default false
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING `poetry--core--navigation-menu`: values closeDelay, openDelay; actions cancelClose, focusLeft, keydown, scheduleClose, scheduleOpen, toggle
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: label: is REQUIRED (the nav landmark's accessible name).
@@ -35,6 +38,7 @@ Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
 - `previous_label:` (string) - default "Previous"
 - `siblings:` (integer) - default 1
 - `total:` (integer) - required
+In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.
 - RULE: path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).
 - RULE: The current page is aria-current=page; current_variant: :outline (upstream parity, default) or :filled (the primary treatment - unambiguous active state); the rest are ghost links.
@@ -42,11 +46,13 @@ Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
 ## sidebar (`poetry_sidebar`)
 
 Class: Poetry::Ui::Sidebar::Component - BEM block `poetry-ui-sidebar`.
+Slot REQUIRED: with_nav (the sidebar column) - a call without it raises.
 - `collapsible:` (symbol) - one of offcanvas|icon|none, default "offcanvas"
 - `open:` (boolean) - default true
 - `side:` (symbol) - one of left|right, default "left"
 - `variant:` (symbol) - one of sidebar|floating|inset, default "sidebar"
 Slots: nav, inset.
+In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING `poetry--core--sidebar`: targets inner, mobileDialog, mobileInner, sidebar; values collapsible, cookieMaxAge, cookieName, open, shortcut; actions close, closeMobile, mobileBackdropClose, open, toggle; events poetry--core--sidebar:mobile-toggle, poetry--core--sidebar:toggle
 - RULE: Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page area (the trigger lives in the inset).
 - RULE: Read the persisted state server-side - open: cookies[:sidebar_state] != "false" - so the first paint has no collapse flash.
@@ -56,6 +62,7 @@ Slots: nav, inset.
 ## tabs (`poetry_tabs`)
 
 Class: Poetry::Ui::Tabs::Component - BEM block `poetry-ui-tabs`.
+Slot REQUIRED: with_tab (at least one tab) - a call without it raises.
 - `default:` (string)
 - `label:` (string)
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"

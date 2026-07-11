@@ -8,6 +8,7 @@ not suggestions. Options are keywords; content is the block.
 Class: Poetry::Ui::Alert::Component - BEM block `poetry-ui-alert`.
 - `variant:` (symbol) - one of default|destructive, default "default", required
 Slots: icon (takes poetry_icon props, not a block), title.
+In blocks: `destructive-panel` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Use poetry_alert for inline callouts - it carries role/aria-live; never a hand-rolled div.
 - RULE: destructive announces assertively (role=alert) - reserve it for errors, not emphasis.
 
@@ -48,6 +49,7 @@ Class: Poetry::Ui::Spinner::Component - BEM block `poetry-ui-spinner`.
 ## toast (`poetry_toast`)
 
 Class: Poetry::Ui::Toast::Component - BEM block `poetry-ui-toast`.
+Slot REQUIRED: with_title (the message) - a call without it raises.
 - `variant:` (symbol) - one of default|success|info|warning|destructive, default "default", required
 - `closable:` (boolean) - default true
 - `duration:` (integer)

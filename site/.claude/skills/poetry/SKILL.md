@@ -14,12 +14,16 @@ poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
 
+- FIRST MOVE, for every brief: call the poetry MCP `compose` tool
+  with the task text, before writing any ERB. It routes you to the
+  matching vetted block (source included, adapt in place - the
+  known winning path for screens) or to the right components for
+  single-component work. No MCP? Open `references/blocks.md` and
+  `bin/rails g poetry:block --list`. Composing a screen from
+  scratch when a block matched is the known losing path.
 - Compose with the `poetry_<name>` helpers; never hand-write `cn-*`
   classes, raw hex/oklch colors, or off-scale arbitrary values -
   tokens and variants carry the design.
-- Starting a new SCREEN? Begin from a vetted block
-  (`references/blocks.md`, or `bin/rails g poetry:block --list`) and
-  edit it in place; compose atoms only for what no block covers.
 - Options are keywords; content is the block. Helpers take at most
   the positional arguments their contract lists - most take none.
 - A typed slot renders another component: the call takes THAT
@@ -63,4 +67,6 @@ Building or restyling a full page, screen, or dashboard - not a
 lone component? Load the `poetry-design` skill BEFORE composing:
 theme fit, page macrostructure, hierarchy, status color, and the
 finishing audit live there. Component contracts alone do not make
-a composed page.
+a composed page - and neither does guidance: start the page from
+`compose`'s block match and adapt, don't rebuild its advice from
+a blank file.
