@@ -208,6 +208,10 @@ module Poetry
           Button::Component.new(**wiring, **options, &block)
         }
 
+        # The forwarding-lambda component fact: with_trigger renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
         def before_render
           raise ArgumentError, "DropdownMenu requires with_trigger (the menu button)" unless trigger?
           raise ArgumentError, "DropdownMenu requires at least one item" unless items?

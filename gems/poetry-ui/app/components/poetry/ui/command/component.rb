@@ -277,6 +277,13 @@ module Poetry
           @input_aria = extract_input_aria!
         end
 
+        # The named? disjunction, stated statically: the
+        # command_palette crash class - id-or-aria, checkable at write time.
+        REQUIRES_ANY = [
+          { hint: "the input's accessible name",
+            options: %w[id aria-label aria-labelledby aria] }
+        ].freeze
+
         def before_render
           return if named?
 

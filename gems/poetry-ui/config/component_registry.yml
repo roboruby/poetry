@@ -122,6 +122,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -134,12 +135,14 @@ components:
       many: false
     - name: action
       many: false
+      component: poetry/ui/button
       setter_args:
         action: 0
       yieldless:
       - action
     - name: cancel
       many: false
+      component: poetry/ui/button
       setter_args:
         cancel: 0
       yieldless:
@@ -502,6 +505,14 @@ components:
     - 'Loading via loading: - never a manual disabled + spinner.'
     - Never nest an interactive element inside a Button.
     - Pick the variant by intent; one primary (default) action per view.
+    requires_any:
+    - hint: 'nothing visible renders without one - label: is only the accessible name'
+      content: true
+      slots:
+      - leading
+      - trailing
+      options:
+      - loading
   poetry/ui/button_group:
     class_name: Poetry::Ui::ButtonGroup::Component
     identifier: poetry--ui--button_group
@@ -1057,6 +1068,13 @@ components:
       5,000 items and hope.'
     - 'Icon-rich labels: set filter_value:/keywords: rather than stuffing hidden text
       into items.'
+    requires_any:
+    - hint: the input's accessible name
+      options:
+      - id
+      - aria-label
+      - aria-labelledby
+      - aria
   poetry/ui/command/dialog:
     class_name: Poetry::Ui::Command::DialogComponent
     identifier: poetry--ui--command--dialog
@@ -1601,6 +1619,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -1667,6 +1686,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -1962,6 +1982,7 @@ components:
             item: at least one item
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -3184,6 +3205,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -3653,6 +3675,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:
@@ -4133,6 +4156,7 @@ components:
       many: false
     - name: action
       many: false
+      component: poetry/ui/button
       setter_args:
         action: 0
       yieldless:
@@ -4398,6 +4422,7 @@ components:
     slots:
     - name: trigger
       many: false
+      component: poetry/ui/button
       setter_args:
         trigger: 0
       yieldless:

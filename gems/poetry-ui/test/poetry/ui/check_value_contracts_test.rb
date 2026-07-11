@@ -18,6 +18,7 @@ module Poetry
       BLOCKS_GATE = "eval/results/2026-07-09/generated/*/poetry.html.erb"
       REBASELINE = "eval/results/2026-07-09-rebaseline/generated/*/poetry.html.erb"
       DESIGNFIRE = "eval/results/2026-07-10-designfire/generated/*/poetry.html.erb"
+      BLOCKPATH = "eval/results/2026-07-11-blockpath/generated/*/poetry.html.erb"
       FROZEN = "eval/arms/*/poetry.html.erb"
 
       def catalog
@@ -104,20 +105,19 @@ module Poetry
                "(the yieldless crash got there first at render)")
       end
 
-      # The design-fire corpus, closed by: menu's required-SLOT
-      # omission (with_trigger left out of both menubar menus - the arm ran
-      # FOUR truthful checks and the contract was silent) now fails
-      # statically. app_shell is the never-checked sequencing crash
+      # The design-fire corpus, closed across +: menu's
+      # required-SLOT omission (tier), command_palette's accessible
+      # name and toast's invisible Button (any-of tier) all fail
+      # statically now - four of the run's five crashers; pagination's
+      # invented host route helper stays outside any static surface, by
+      # nature. app_shell is the never-checked sequencing crash
       # (parse-error, the tier that always caught it). split_editor
       # RENDERED - its parse errors are herb heredoc strictness on sample
-      # content, pinned here so any corpus drift is loud. command_palette
-      # (accessible-name), toast (conditional content) and pagination
-      # (invented host route helper) remain outside the static surface -
-      # the leads 3-4.
+      # content, pinned here so any corpus drift is loud.
       def test_the_designfire_corpus_errors_close_the_required_slot_class
         failures = error_templates(DESIGNFIRE)
 
-        assert_equal %w[app_shell menu split_editor], failures.keys.sort,
+        assert_equal %w[app_shell command_palette menu split_editor toast], failures.keys.sort,
                      "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
         missing = failures["menu"].select { |finding| finding.rule == "missing-slot" }
 
@@ -126,6 +126,28 @@ module Poetry
         assert(failures["app_shell"].any? { |finding| finding.rule == "parse-error" })
         assert_equal ["parse-error"], failures["split_editor"].map(&:rule).uniq,
                      "split_editor rendered - only herb's heredoc strictness, no contract errors"
+        assert(failures["command_palette"].any? { |finding| finding.rule == "requires-any" })
+        assert(failures["toast"].any? { |finding| finding.rule == "requires-any" })
+      end
+
+      # The block-path corpus, closed by: the run's two render
+      # crashers - both EXACT recurrences of the classes pre-named as
+      # open - now fail statically, and nothing else does (the 29-arm FP
+      # guard). command_palette omitted every accessible-name path; toast
+      # built a Button from label: alone (nothing visible renders).
+      def test_the_blockpath_corpus_errors_on_exactly_the_two_any_of_crashers
+        failures = error_templates(BLOCKPATH)
+
+        assert_equal %w[command_palette toast], failures.keys.sort,
+                     "got: #{failures.transform_values { |findings| findings.map(&:rule).uniq }}"
+        palette = failures["command_palette"].find { |finding| finding.rule == "requires-any" }
+
+        refute_nil palette
+        assert_includes palette.message, "poetry_command requires one of id: / aria-label:"
+        toast = failures["toast"].find { |finding| finding.rule == "requires-any" }
+
+        refute_nil toast
+        assert_includes toast.message, "poetry_button requires one of a content block"
       end
 
       def test_the_blocks_gate_corpus_errors_on_exactly_the_two_crashers

@@ -55,6 +55,14 @@ module Poetry
         # An empty button ships nothing a user can see - the browser pass
         # showed label:-only usage silently rendering blank squares (label:
         # is the accessible name, not visible text).
+        # The before_render disjunction, stated statically: poetry
+        # check flags a call satisfying no alternative without rendering
+        # (the toast crash class).
+        REQUIRES_ANY = [
+          { hint: "nothing visible renders without one - label: is only the accessible name",
+            content: true, slots: %w[leading trailing], options: %w[loading] }
+        ].freeze
+
         def before_render
           return if content? || leading? || trailing? || loading
 

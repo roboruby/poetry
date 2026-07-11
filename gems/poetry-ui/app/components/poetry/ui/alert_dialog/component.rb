@@ -65,6 +65,10 @@ module Poetry
           action: "the confirming choice", cancel: "the safe way out"
         }.freeze
 
+        # The forwarding-lambda component fact: with_trigger renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
+
         def before_render
           raise ArgumentError, "AlertDialog requires with_title (the accessible name)" unless title?
           unless description?

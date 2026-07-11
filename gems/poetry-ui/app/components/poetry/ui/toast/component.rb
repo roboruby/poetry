@@ -70,6 +70,10 @@ module Poetry
         # menu crash class - required slots the contract kept silent).
         REQUIRED_SLOTS = { title: "the message" }.freeze
 
+        # The forwarding-lambda component fact: with_action renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { action: Button::Component }.freeze
+
         def before_render
           raise ArgumentError, "Toast requires with_title (the message)" unless title?
         end

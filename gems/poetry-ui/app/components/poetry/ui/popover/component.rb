@@ -100,6 +100,10 @@ module Poetry
         # menu crash class - required slots the contract kept silent).
         REQUIRED_SLOTS = { trigger: "the panel's control" }.freeze
 
+        # The forwarding-lambda component fact: with_trigger renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
         def before_render
           raise ArgumentError, "Popover requires with_trigger (the panel's control)" unless trigger?
 
