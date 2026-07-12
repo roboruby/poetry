@@ -2,8 +2,14 @@
   <% popover.with_trigger(variant: :outline) { "Open popover" } %>
   <% popover.with_title { "Dimensions" } %>
   <% popover.with_description { "Set the dimensions for the layer." } %>
-  <%= poetry_label(for_id: "popover-demo-width") { "Width" } %>
-  <%= poetry_input(name: "width", value: "100%", id: "popover-demo-width") %>
-  <%= poetry_label(for_id: "popover-demo-height") { "Height" } %>
-  <%= poetry_input(name: "height", value: "25px", id: "popover-demo-height") %>
+  <div class="grid gap-2">
+    <div class="grid grid-cols-3 items-center gap-4">
+      <%= poetry_label(for_id: "popover-demo-width") { "Width" } %>
+      <%= poetry_input(name: "width", value: "100%", id: "popover-demo-width", class: "col-span-2 h-8") %>
+    </div>
+    <div class="grid grid-cols-3 items-center gap-4">
+      <%= poetry_label(for_id: "popover-demo-height") { "Height" } %>
+      <%= poetry_input(name: "height", value: "25px", id: "popover-demo-height", class: "col-span-2 h-8") %>
+    </div>
+  </div>
 <% end %>
