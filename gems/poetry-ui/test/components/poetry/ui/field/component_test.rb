@@ -22,7 +22,9 @@ module Poetry
           root = doc(render_field).at_css("[data-slot=field]")
 
           assert_equal "vertical", root["data-orientation"]
-          assert_includes root["class"], "cn-field-orientation-vertical"
+          # Vertical is the base state - it emits no orientation class
+          # (the empty-variant precedent; cn-field itself IS the stack).
+          refute_includes root["class"].to_s, "cn-field-orientation"
         end
 
         def test_horizontal_reorders_the_grid_around_a_boolean_control

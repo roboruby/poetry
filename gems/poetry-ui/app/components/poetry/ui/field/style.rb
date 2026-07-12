@@ -11,15 +11,15 @@ module Poetry
       class Style < Poetry::Core::Style
         base "cn-field grid"
 
-        # The layout is structural, so it rides the dictionary exactly like
-        # upstream's cva (fieldVariants carries these as utilities, not
-        # theme design). Horizontal: control auto-places into the first
-        # column, label pins to column 2 row 1, hint/error stack under it -
-        # DOM order stays label-first (the for= association), the grid
-        # reorders visually.
+        # The grid re-flow is structural and rides the dictionary like
+        # upstream's cva (control auto-places into column 1, label pins to
+        # column 2 row 1, hint/error stack under it - DOM stays label-first
+        # for the for= association); the COLUMN GAP is design and lives
+        # theme-side under the cn name. Vertical is the base state and
+        # emits nothing (the marker/core-X empty-variant precedent).
         variant :orientation, {
-          vertical: "cn-field-orientation-vertical",
-          horizontal: "cn-field-orientation-horizontal grid-cols-[auto_1fr] items-center gap-x-3 " \
+          vertical: "",
+          horizontal: "cn-field-orientation-horizontal grid-cols-[auto_1fr] items-center " \
                       "[&>[data-slot=label]]:col-start-2 [&>[data-slot=label]]:row-start-1 " \
                       "[&>[data-slot=field-hint]]:col-start-2 [&>[data-slot=field-error]]:col-start-2"
         }

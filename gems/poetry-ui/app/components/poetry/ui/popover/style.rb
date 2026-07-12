@@ -8,6 +8,10 @@ module Poetry
       # origin class binds through the tokens/aliases.css alias to popper's
       # generic var and stays inline as mechanism.
       class Style < Poetry::Core::Style
+        # The panel's DISPLAY + header/body gap are THEME-owned (every N12
+        # port ships its own flex-col gap-*; lyra/nova deliberately run
+        # tighter at 2.5) - closed panels stay hidden regardless because
+        # preflight's [hidden] rule is !important.
         element :content, "cn-popover-content z-50 w-72 " \
                           "origin-(--radix-popover-content-transform-origin) outline-hidden"
 
