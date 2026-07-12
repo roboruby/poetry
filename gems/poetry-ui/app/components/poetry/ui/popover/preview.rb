@@ -9,14 +9,16 @@ module Poetry
       # the server-rendered open state.
       class Preview < Poetry::Core::Preview::Base
         # The popover-demo port: outline Button trigger, titled/described
-        # panel, a small dimensions form, the demo's w-80 class override.
+        # panel, the dimensions form in upstream's grid rows (the sidecar
+        # preview.html.erb - herb-scanned, so the layout classes reach the
+        # safelist), the demo's w-80 class override.
         def default
-          dimensions_example
+          render_with(component: Component.new(content_class: "w-80"))
         end
 
         # modal: true - focus-scope trapped + the dismissable scrim.
         def modal
-          dimensions_example(modal: true)
+          render_with(component: Component.new(content_class: "w-80", modal: true))
         end
 
         # The anchor part takes the popper anchor target: the panel
@@ -56,20 +58,6 @@ module Poetry
             popover.with_trigger(variant: :outline) { "Open above" }
             popover.with_title { "Placement" }
             "side: :top, align: :start"
-          end
-        end
-
-        private
-
-        def dimensions_example(**options)
-          render_component(content_class: "w-80", **options) do |popover|
-            popover.with_trigger(variant: :outline) { "Open popover" }
-            popover.with_title { "Dimensions" }
-            popover.with_description { "Set the dimensions for the layer." }
-            embed(Poetry::Ui::Label::Component.new(for_id: "popover-demo-width").with_content("Width")) +
-              embed(Poetry::Ui::Input::Component.new(name: "width", value: "100%", id: "popover-demo-width")) +
-              embed(Poetry::Ui::Label::Component.new(for_id: "popover-demo-height").with_content("Height")) +
-              embed(Poetry::Ui::Input::Component.new(name: "height", value: "25px", id: "popover-demo-height"))
           end
         end
       end

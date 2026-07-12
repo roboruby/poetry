@@ -16,6 +16,7 @@ gap-4
 gap-6
 grid
 grid-cols-2
+grid-cols-3
 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
 h-14
 h-96
