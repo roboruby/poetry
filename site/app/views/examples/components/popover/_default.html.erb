@@ -1,3 +1,6 @@
+<%# pb reserves the opened panel's area (168px + popper gap) inside the
+    preview card - the fixed-position layer adds no layout height. %>
+<div class="pb-44">
 <%= poetry_popover(content_class: "w-80") do |popover| %>
   <% popover.with_trigger(variant: :outline) { "Open popover" } %>
   <% popover.with_title { "Dimensions" } %>
@@ -13,3 +16,4 @@
     </div>
   </div>
 <% end %>
+</div>
