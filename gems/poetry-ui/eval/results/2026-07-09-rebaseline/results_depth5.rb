@@ -22,8 +22,9 @@ changes = tasks.filter_map do |task|
   [task, "#{from} -> #{to}"] if from != to
 end.to_h
 identical = tasks.size - changes.size
+arm_names = %w[poetry raw_tailwind]
 arm_flips = changes.select do |_task, change|
-  %w[poetry raw_tailwind].all? { |arm| change.include?(arm) }
+  arm_names.all? { |arm| change.include?(arm) }
 end
 
 tally = tasks.map { |task| depth5.dig(task, "verdict") }.tally
@@ -57,10 +58,10 @@ predictions = {
 d1_holds = predictions["d1"]["pass"] && predictions["d2"]["pass"]
 decision = if d1_holds
              "depth-3 headline STANDS as canonical (raw 16 - poetry 12 - inc 3) with depth-5 " \
-             "confirmation; votes_per_order stays 3 for future runs"
+               "confirmation; votes_per_order stays 3 for future runs"
            else
              "depth-5 tally SUPERSEDES as the standing headline; POETRY_JUDGE_VOTES=5 becomes " \
-             "the default for future benchmark runs"
+               "the default for future benchmark runs"
            end
 
 payload = {
