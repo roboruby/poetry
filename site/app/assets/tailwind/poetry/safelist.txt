@@ -317,7 +317,6 @@ cn-field
 cn-field-description
 cn-field-error
 cn-field-orientation-horizontal
-cn-field-orientation-vertical
 cn-font-heading
 cn-hover-card-content
 cn-input
@@ -619,10 +618,10 @@ gap-3
 gap-4
 gap-6
 gap-[--spacing(var(--gap))]
-gap-x-3
 gap-x-6
 grid
 grid-cols-2
+grid-cols-3
 grid-cols-[auto_1fr]
 grid-rows-[auto_1fr]
 grid-rows-[auto_auto]

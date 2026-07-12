@@ -191,6 +191,18 @@
   @apply border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground;
 }
 
+.cn-badge-variant-success {
+  @apply bg-success/10 [a]:hover:bg-success/20 focus-visible:ring-success/20 dark:focus-visible:ring-success/40 text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success dark:bg-success/20;
+}
+
+.cn-badge-variant-warning {
+  @apply bg-warning/10 [a]:hover:bg-warning/20 focus-visible:ring-warning/20 dark:focus-visible:ring-warning/40 text-[oklch(from_var(--warning)_calc(l*0.85)_c_h)] dark:text-warning dark:bg-warning/20;
+}
+
+.cn-badge-variant-info {
+  @apply bg-info/10 [a]:hover:bg-info/20 focus-visible:ring-info/20 dark:focus-visible:ring-info/40 text-[oklch(from_var(--info)_calc(l*0.85)_c_h)] dark:text-info dark:bg-info/20;
+}
+
 /* MARK: Breadcrumb */
 .cn-breadcrumb-list {
   @apply text-muted-foreground gap-1.5 text-sm;
@@ -653,6 +665,10 @@
 
 .cn-field-error {
   @apply text-destructive text-sm;
+}
+
+.cn-field-orientation-horizontal {
+  @apply gap-x-3;
 }
 
 /* MARK: HoverCard */
