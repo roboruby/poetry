@@ -28,6 +28,13 @@ module Poetry
       initializer "poetry_ui.previews" do |app|
         app.config.view_component.previews.paths << "#{Poetry::Ui.root}/app/components"
       end
+
+      # Lookbook is a dev-only dependency; guard so the engine never crashes
+      # a production (or lean test) host that does not load it (the
+      # poetry-core pattern).
+      initializer "poetry_ui.setup_lookbook" do |app|
+        app.config.lookbook.preview_paths << "#{Poetry::Ui.root}/app/components" if defined?(Lookbook)
+      end
     end
   end
 end

@@ -8,6 +8,7 @@ require "action_controller/railtie"
 require "action_view/railtie"
 
 require "view_component"
+require "lookbook" # the preview browser (mounted at /lookbook; engines feed it their preview paths)
 require "poetry/core"
 require "poetry/ui"
 require "poetry/lucide"
@@ -31,5 +32,9 @@ module Dummy
 
     # Serve the generated static assets (rake browser:assets) from public/.
     config.public_file_server.enabled = true
+
+    # The Lookbook browser over the same preview corpus (mounted at
+    # /lookbook in routes.rb) - the engines feed it their preview paths.
+    config.lookbook.project_name = "poetry" if defined?(Lookbook)
   end
 end

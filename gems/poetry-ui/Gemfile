@@ -20,6 +20,7 @@ gem "rubocop-rake", require: false
 
 gem "bundler-audit", require: false
 gem "herb" # template-class scan in poetry:install (build-time, optional in hosts)
+gem "lookbook", "~> 2.3" # the preview browser over the sidecar preview corpus - dev-only, never a runtime dep
 gem "nokogiri"
 gem "simplecov", require: false
 gem "tailwindcss-ruby" # compiled-CSS verify gate (rake css:verify_compiled)
