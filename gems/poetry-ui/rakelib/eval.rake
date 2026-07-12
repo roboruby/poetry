@@ -76,7 +76,9 @@ def poetry_ui_eval_capture_all(runner, captures_root, tolerant: false, only: nil
 
   session = poetry_ui_browser_session
   count = 0
-  Poetry::Eval::Runner::TASKS.keys.sort.each do |task|
+  # The runner's OWN task set (: the page-scale companion gate's
+  # tasks are not Runner::TASKS).
+  runner.tasks.keys.sort.each do |task|
     arms = runner.arms(task)
     arms = arms.slice(*only) if only
     next if arms.empty?
@@ -378,7 +380,7 @@ namespace :eval do
             end
             entry = begin
               bench.generate_unit(task: task, arm: arm,
-                                  brief: Poetry::Eval::Runner::TASKS.fetch(task)["description"])
+                                  brief: poetry_bench_spec_tasks.fetch(task)["description"])
             rescue Poetry::Eval::Benchmark::HermeticityError
               raise # experiment-invalidating - the join re-raises and kills the run
             rescue Poetry::Eval::Benchmark::Error => e
@@ -416,7 +418,8 @@ namespace :eval do
       require_relative "../eval/runner"
       require "json"
 
-      card = Poetry::Eval::Runner.new(arms_root: poetry_bench_results_root.join("generated"))
+      card = Poetry::Eval::Runner.new(arms_root: poetry_bench_results_root.join("generated"),
+                                      tasks: poetry_bench_spec_tasks)
                                  .scorecard(fold_judged: false)
       card["generated_note"] = "GENERATED arms (N15 W2 benchmark run), deterministic gates. " \
                                "cross_arm gates are the only comparable numbers; poetry_only " \
@@ -448,8 +451,10 @@ namespace :eval do
       File.write(poetry_ui_dummy_assets_dir.join("poetry.css"),
                  poetry_ui_compile_tailwind(extra_sources: [generated]))
       ENV["POETRY_EVAL_ARMS_ROOT"] = generated.to_s
-      count = poetry_ui_eval_capture_all(Poetry::Eval::Runner.new(arms_root: generated),
-                                         poetry_bench_results_root.join("captures"), tolerant: true)
+      count = poetry_ui_eval_capture_all(
+        Poetry::Eval::Runner.new(arms_root: generated, tasks: poetry_bench_spec_tasks),
+        poetry_bench_results_root.join("captures"), tolerant: true
+      )
       puts "benchmark capture: #{count} screenshots in #{poetry_bench_results_root.join("captures")}"
     end
 
@@ -501,7 +506,8 @@ namespace :eval do
       source = Pathname(ENV.fetch("POETRY_BENCH_SOURCE", poetry_bench_results_root.to_s))
       generated = source.join("generated")
       captures = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_CAPTURES_DIR", "captures"))
-      card = Poetry::Eval::Runner.new(arms_root: generated).scorecard(fold_judged: false)
+      card = Poetry::Eval::Runner.new(arms_root: generated, tasks: poetry_bench_spec_tasks)
+                                 .scorecard(fold_judged: false)
       # POETRY_JUDGE_VOTES deepens the anti-bias harness (: votes per
       # presentation order; the default 3 = 6 calls/pair, 5 = 10). Pair a
       # non-default depth with POETRY_BENCH_VERDICTS so the canonical
@@ -621,11 +627,27 @@ def poetry_bench_results_root
   Poetry::Ui.root.join("eval/results", ENV.fetch("POETRY_BENCH_DATE", Date.today.iso8601))
 end
 
+# The benchmark's task-spec source: the standing 31-brief set by
+# default; POETRY_BENCH_SPEC=pagescale runs the page-scale companion gate
+# through the identical machinery. The companion gate NEVER replaces the
+# standing headline (pre-registered, permanent).
+def poetry_bench_spec_tasks
+  case (spec = ENV.fetch("POETRY_BENCH_SPEC", "standing"))
+  when "standing" then Poetry::Eval::Runner::TASKS
+  when "pagescale"
+    require_relative "../eval/pagescale"
+    Poetry::Eval::Pagescale::TASKS
+  else
+    abort "unknown POETRY_BENCH_SPEC #{spec.inspect} (standing | pagescale)"
+  end
+end
+
 def poetry_bench_task_names
-  names = Poetry::Eval::Runner::TASKS.keys.sort
+  tasks = poetry_bench_spec_tasks
+  names = tasks.keys.sort
   if (filter = ENV.fetch("POETRY_BENCH_TASKS", nil))
     names = filter.split(",").map(&:strip)
-    unknown = names - Poetry::Eval::Runner::TASKS.keys
+    unknown = names - tasks.keys
     abort "unknown POETRY_BENCH_TASKS: #{unknown.join(", ")}" unless unknown.empty?
   end
   names

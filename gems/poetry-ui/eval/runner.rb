@@ -754,10 +754,15 @@ module Poetry
 
       # arms_root swaps the corpus under the same tasks/gates/scoring: the
       # frozen arms by default, a benchmark run's generated arms (N15 W2)
-      # when pointed at eval/results/<date>/generated.
-      def initialize(arms_root: Poetry::Ui.root.join("eval/arms"))
+      # when pointed at eval/results/<date>/generated. tasks swaps the
+      # task-spec source (: the page-scale companion gate runs its
+      # own briefs through the identical machinery).
+      def initialize(arms_root: Poetry::Ui.root.join("eval/arms"), tasks: TASKS)
         @arms_root = Pathname(arms_root)
+        @tasks = tasks
       end
+
+      attr_reader :tasks
 
       def arms(task)
         Dir.glob(@arms_root.join("#{task}/*.html.erb").to_s).to_h do |path|
@@ -770,7 +775,7 @@ module Poetry
       # results.json instead).
       def scorecard(fold_judged: true)
         exercised = []
-        tasks = TASKS.to_h do |task, spec|
+        tasks = @tasks.to_h do |task, spec|
           results = arms(task).to_h { |arm, erb| [arm, score_arm(task, arm, erb, exercised)] }
           [task, { "description" => spec["description"], "arms" => results }]
         end
@@ -814,7 +819,7 @@ module Poetry
       private
 
       def score_arm(task, arm, erb, exercised)
-        gates = TASKS.fetch(task)["gates"] + UNIVERSAL
+        gates = @tasks.fetch(task)["gates"] + UNIVERSAL
         html = render(erb)
         doc = Nokogiri::HTML5.fragment(html)
         cross = gates.to_h { |gate| gate.run(doc, html) }
@@ -823,7 +828,7 @@ module Poetry
           "cross_arm_score" => "#{cross.values.count(true)}/#{cross.size}"
         }
         if arm.include?("poetry")
-          diagnostics = POETRY_ONLY + TASKS.fetch(task).fetch("poetry_gates", [])
+          diagnostics = POETRY_ONLY + @tasks.fetch(task).fetch("poetry_gates", [])
           result["poetry_only_diagnostics"] = diagnostics.to_h { |gate| gate.run(doc, html) }
           # poetry check: the mechanical gate on the SOURCE - the
           # poetry arm's ERB must lint clean (no error-severity findings)
