@@ -21,6 +21,13 @@ module Poetry
         end
       end
 
+      # Lookbook is a dev-only dependency; guard so the engine never crashes
+      # a production (or lean test) host that does not load it (the
+      # poetry-core pattern).
+      initializer "poetry_charts.setup_lookbook" do |app|
+        app.config.lookbook.preview_paths << "#{Poetry::Charts.root}/app/components" if defined?(Lookbook)
+      end
+
       # Make the client chrome + the motion stylesheet servable by Propshaft.
       initializer "poetry_charts.assets" do |app|
         if app.config.respond_to?(:assets)
