@@ -117,6 +117,7 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 ## field (`poetry_field`)
 
 Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical", required
 - `error:` (string)
 - `group:` (boolean) - default false
 - `hint:` (string)
@@ -125,6 +126,7 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - `required:` (boolean) - default false
 - RULE: Wire the control with field.control_attributes - never hand-write aria-describedby.
 - RULE: Error text arrives via error: (from model errors upstream) - never a bare red <p>.
+- RULE: orientation: :horizontal is the boolean-control layout (checkbox/switch left, label + hint stacked right) - text inputs and groups stay vertical.
 
 ## input (`poetry_input`)
 

@@ -2,7 +2,8 @@
     aria-describedby, and aria-required on the checkbox button. %>
 <% field = Poetry::Ui::Field::Component.new(
      id: "checkbox-newsletter", label_text: "Email newsletter",
-     hint: "Sent weekly. Unsubscribe anytime.", required: true
+     hint: "Sent weekly. Unsubscribe anytime.", required: true,
+     orientation: :horizontal
    ) %>
 <div class="w-80">
   <%= render field do %>

@@ -2,7 +2,7 @@
     and aria-describedby on the switch button. %>
 <% field = Poetry::Ui::Field::Component.new(
      id: "switch-notifications", label_text: "Notifications",
-     hint: "Applied the moment it flips."
+     hint: "Applied the moment it flips.", orientation: :horizontal
    ) %>
 <div class="w-80">
   <%= render field do %>
