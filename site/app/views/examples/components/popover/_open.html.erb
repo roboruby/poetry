@@ -1,6 +1,11 @@
-<%= poetry_popover(open: true) do |popover| %>
-  <% popover.with_trigger(variant: :outline) { "Open popover" } %>
-  <% popover.with_title { "Server-opened" } %>
-  <% popover.with_description { "Rendered open - fully usable before (or without) JS." } %>
-  Static content.
-<% end %>
+<%# The wrapper reserves the open panel's area inside the preview card:
+    the popper-positioned content contributes no layout height, so without
+    it the panel floats over the next section (z-50). %>
+<div class="pb-40">
+  <%= poetry_popover(open: true) do |popover| %>
+    <% popover.with_trigger(variant: :outline) { "Open popover" } %>
+    <% popover.with_title { "Server-opened" } %>
+    <% popover.with_description { "Rendered open - fully usable before (or without) JS." } %>
+    Static content.
+  <% end %>
+</div>
