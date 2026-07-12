@@ -15,6 +15,13 @@ Rails.application.routes.draw do
   get "deferred" => "docs#deferred", as: :deferred
   get "deferred/fragment" => "docs#deferred_fragment", as: :deferred_fragment
 
+  # The official registry (Ecosystem v1) - shadcn-schema items
+  # served live from the gem registries; literal routes before the catch.
+  get "r/registry.json" => "registry#index", as: :registry_index
+  get "r/registries.json" => "registry#directory", as: :registry_directory
+  get "r/:name" => "registry#show", as: :registry_item, format: false,
+                   constraints: { name: /[a-z0-9.-]+\.json/ }
+
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block
