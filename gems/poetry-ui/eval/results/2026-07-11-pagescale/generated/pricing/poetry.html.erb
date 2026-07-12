@@ -1,0 +1,191 @@
+<div class="mx-auto max-w-6xl space-y-16 p-6">
+  <header class="mx-auto max-w-2xl space-y-3 text-center">
+    <h1 class="text-3xl font-semibold tracking-tight">Simple, transparent pricing</h1>
+    <p class="text-muted-foreground">
+      Pick the plan that fits your team today. Upgrade, downgrade, or cancel anytime -
+      no long-term contracts.
+    </p>
+  </header>
+
+  <section aria-labelledby="plans-heading">
+    <h2 id="plans-heading" class="sr-only">Pricing plans</h2>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <%= poetry_card(class: "flex flex-col") do |card| %>
+        <% card.with_title { "Starter" } %>
+        <% card.with_description { "For solo builders trying things out." } %>
+        <% card.with_footer do %>
+          <%= poetry_button(variant: :outline, class: "w-full") { "Choose Starter" } %>
+        <% end %>
+
+        <div class="flex flex-1 flex-col gap-6">
+          <p>
+            <span class="text-4xl font-semibold tracking-tight">$19</span>
+            <span class="text-muted-foreground">/month</span>
+          </p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Up to 3 projects</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>5 GB storage</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Community support</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Basic analytics</span>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= poetry_card(class: "relative flex flex-col border-primary shadow-lg") do |card| %>
+        <% card.with_title { "Team" } %>
+        <% card.with_description { "For growing teams that ship every week." } %>
+        <% card.with_action do %>
+          <%= poetry_badge(variant: :default) { "Most popular" } %>
+        <% end %>
+        <% card.with_footer do %>
+          <%= poetry_button(variant: :default, class: "w-full") { "Choose Team" } %>
+        <% end %>
+
+        <div class="flex flex-1 flex-col gap-6">
+          <p>
+            <span class="text-4xl font-semibold tracking-tight">$49</span>
+            <span class="text-muted-foreground">/month</span>
+          </p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Unlimited projects</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>50 GB storage</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Priority email support</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Advanced analytics</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Team collaboration tools</span>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+
+      <%= poetry_card(class: "flex flex-col") do |card| %>
+        <% card.with_title { "Business" } %>
+        <% card.with_description { "For scaling companies with compliance needs." } %>
+        <% card.with_footer do %>
+          <%= poetry_button(variant: :outline, class: "w-full") { "Choose Business" } %>
+        <% end %>
+
+        <div class="flex flex-1 flex-col gap-6">
+          <p>
+            <span class="text-4xl font-semibold tracking-tight">$99</span>
+            <span class="text-muted-foreground">/month</span>
+          </p>
+          <ul class="space-y-2 text-sm">
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Unlimited projects</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>500 GB storage</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>24/5 priority support</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Advanced analytics with exports</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+              <span>Single sign-on (SAML)</span>
+            </li>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section aria-labelledby="enterprise-heading">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Enterprise" } %>
+      <% card.with_description { "Custom limits, security, and support for large organizations." } %>
+      <% card.with_footer do %>
+        <div class="flex w-full flex-wrap items-center justify-between gap-4">
+          <span class="text-xs text-muted-foreground">Custom pricing, billed annually.</span>
+          <%= poetry_button(variant: :outline, tag: :a, href: "mailto:sales@example.com") do |button| %>
+            <% button.with_trailing { poetry_icon(name: :"arrow-right", class: "size-3.5") } %>
+            Contact sales
+          <% end %>
+        </div>
+      <% end %>
+
+      <ul class="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
+        <li class="flex items-center gap-2">
+          <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+          <span>Unlimited everything</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+          <span>Dedicated account manager</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+          <span>Custom contracts &amp; SLAs</span>
+        </li>
+        <li class="flex items-center gap-2">
+          <%= poetry_icon(name: :check, class: "size-4 text-muted-foreground") %>
+          <span>SSO/SAML &amp; audit logs</span>
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="faq-heading" class="mx-auto max-w-2xl">
+    <h2 id="faq-heading" class="mb-4 text-xl font-semibold tracking-tight">Billing questions</h2>
+
+    <%= poetry_accordion(type: :single, collapsible: true, heading_level: :h3) do |accordion| %>
+      <% accordion.with_item(value: "switch-plans", title: "Can I switch plans later?") do %>
+        <p class="text-sm text-muted-foreground">
+          Yes. Upgrade or downgrade at any time from your billing settings - changes are
+          prorated and reflected on your next invoice.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "annual-billing", title: "Do you offer annual billing?") do %>
+        <p class="text-sm text-muted-foreground">
+          Yes. Paying annually saves 20% compared to monthly billing on the Starter, Team,
+          and Business plans. Switch billing cycles anytime.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "payment-methods", title: "What payment methods do you accept?") do %>
+        <p class="text-sm text-muted-foreground">
+          We accept all major credit cards. Annual Business and Enterprise plans can also
+          be paid by bank transfer against an invoice.
+        </p>
+      <% end %>
+      <% accordion.with_item(value: "free-trial", title: "Is there a free trial?") do %>
+        <p class="text-sm text-muted-foreground">
+          Every paid plan includes a 14-day free trial with full features. No credit card
+          is required to start.
+        </p>
+      <% end %>
+    <% end %>
+  </section>
+</div>

@@ -1,0 +1,54 @@
+<div class="flex min-h-screen flex-col items-center justify-center bg-muted/50 p-6">
+  <div class="w-full max-w-sm space-y-6">
+    <div class="flex flex-col items-center gap-2 text-center">
+      <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <%= poetry_icon(name: :building, label: "Meridian") %>
+      </span>
+      <span class="text-lg font-semibold tracking-tight">Meridian</span>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title(title_tag: :h1) { "Sign in" } %>
+      <% card.with_description { "Enter your email and password to access your workspace." } %>
+
+      <form action="#" method="post" class="space-y-4">
+        <%= poetry_field(id: "email", label_text: "Email", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "email", placeholder: "you@company.com") %>
+        <% end %>
+
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <%= poetry_label(for_id: "password") { "Password" } %>
+            <%= poetry_link(href: "#", underline: :hover) { "Forgot password?" } %>
+          </div>
+          <%= poetry_field(id: "password", required: true) do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "password", name: "password", placeholder: "••••••••") %>
+          <% end %>
+        </div>
+
+        <%= poetry_button(type: :submit, class: "w-full") { "Sign in" } %>
+
+        <div class="relative py-1">
+          <div class="absolute inset-0 flex items-center">
+            <%= poetry_separator %>
+          </div>
+          <div class="relative flex justify-center">
+            <span class="bg-card px-2 text-xs uppercase text-muted-foreground">Or continue with</span>
+          </div>
+        </div>
+
+        <%= poetry_button(variant: :outline, class: "w-full") do |button| %>
+          <% button.with_leading { poetry_icon(name: :"key-round") } %>
+          Continue with SSO
+        <% end %>
+      </form>
+
+      <% card.with_footer do %>
+        <p class="w-full text-center text-sm text-muted-foreground">
+          New to Meridian?
+          <%= poetry_link(href: "#") { "Request access" } %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

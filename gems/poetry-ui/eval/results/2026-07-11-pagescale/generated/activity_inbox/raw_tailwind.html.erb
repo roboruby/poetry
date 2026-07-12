@@ -1,0 +1,378 @@
+<section
+  class="
+    mx-auto max-w-3xl
+    [&:has(#filter-mention:checked)_[data-type='assignment']]:hidden
+    [&:has(#filter-mention:checked)_[data-type='status_change']]:hidden
+    [&:has(#filter-assignment:checked)_[data-type='mention']]:hidden
+    [&:has(#filter-assignment:checked)_[data-type='status_change']]:hidden
+    [&:has(#filter-status:checked)_[data-type='mention']]:hidden
+    [&:has(#filter-status:checked)_[data-type='assignment']]:hidden
+  "
+  aria-label="Activity inbox"
+>
+  <div class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+    <!-- Header -->
+    <header class="flex items-center justify-between gap-4 border-b border-slate-200 px-5 py-4">
+      <div>
+        <h1 class="text-lg font-semibold text-slate-900">Activity</h1>
+        <p class="mt-0.5 text-sm text-slate-500">Mentions, assignments, and status changes across your work</p>
+      </div>
+      <span class="inline-flex flex-shrink-0 items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-200">
+        <span class="h-1.5 w-1.5 rounded-full bg-indigo-600"></span>
+        4 unread
+      </span>
+    </header>
+
+    <!-- Filter by type -->
+    <div class="flex flex-wrap items-center gap-2 border-b border-slate-200 bg-slate-50/60 px-5 py-3">
+      <input type="radio" name="activity-filter" id="filter-all" class="peer/all sr-only" checked>
+      <label
+        for="filter-all"
+        class="cursor-pointer select-none rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-white peer-checked/all:bg-slate-900 peer-checked/all:text-white peer-checked/all:ring-slate-900"
+      >
+        All <span class="opacity-70">7</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-mention" class="peer/mention sr-only">
+      <label
+        for="filter-mention"
+        class="cursor-pointer select-none rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-white peer-checked/mention:bg-indigo-600 peer-checked/mention:text-white peer-checked/mention:ring-indigo-600"
+      >
+        Mentions <span class="opacity-70">3</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-assignment" class="peer/assignment sr-only">
+      <label
+        for="filter-assignment"
+        class="cursor-pointer select-none rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-white peer-checked/assignment:bg-amber-600 peer-checked/assignment:text-white peer-checked/assignment:ring-amber-600"
+      >
+        Assignments <span class="opacity-70">2</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-status" class="peer/status sr-only">
+      <label
+        for="filter-status"
+        class="cursor-pointer select-none rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-white peer-checked/status:bg-violet-600 peer-checked/status:text-white peer-checked/status:ring-violet-600"
+      >
+        Status changes <span class="opacity-70">2</span>
+      </label>
+    </div>
+
+    <!-- Stream -->
+    <ul class="flex flex-col">
+
+      <!-- 1: Mention, unread -->
+      <li class="group/item relative border-b border-slate-200" data-type="mention">
+        <input type="checkbox" id="read-1" class="peer/read sr-only">
+        <div class="flex gap-4 bg-indigo-50/40 px-5 py-4 transition-colors group-has-[#read-1:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">JL</div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white group-has-[#read-1:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-1:checked]/item:font-normal font-semibold">
+                <span class="font-semibold">Jordan Lee</span> mentioned you in <span class="font-medium">Q3 Roadmap Review</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">2h ago</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">"...cc <span class="font-medium text-indigo-600">@you</span> can you confirm the timeline before Friday's planning sync?"</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>"Great progress on the roadmap draft — cc @you can you confirm the timeline before Friday's planning sync? Want to make sure engineering is aligned before we share externally."</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700">Go to comment thread &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">Mention</span>
+              <label for="read-1" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-1:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-1:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 2: Assignment, unread -->
+      <li class="group/item relative border-b border-slate-200" data-type="assignment">
+        <input type="checkbox" id="read-2" class="peer/read sr-only">
+        <div class="flex gap-4 bg-amber-50/40 px-5 py-4 transition-colors group-has-[#read-2:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 text-sm font-semibold text-amber-700">PN</div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-amber-600 ring-2 ring-white group-has-[#read-2:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-2:checked]/item:font-normal font-semibold">
+                <span class="font-semibold">Priya Nandakumar</span> assigned you <span class="font-medium">Design review: checkout flow</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">4h ago</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">Due Friday. Please review the new checkout layout against the a11y checklist before it ships.</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>Task: <span class="font-medium">Design review: checkout flow</span> &middot; Due Friday, Jul 17 &middot; Priority: High</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-amber-700 hover:text-amber-800">Go to task &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200">Assignment</span>
+              <label for="read-2" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-2:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-2:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 3: Status change, unread -->
+      <li class="group/item relative border-b border-slate-200" data-type="status_change">
+        <input type="checkbox" id="read-3" class="peer/read sr-only">
+        <div class="flex gap-4 bg-violet-50/40 px-5 py-4 transition-colors group-has-[#read-3:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-11.25a.75.75 0 00-1.5 0v4c0 .2.08.39.22.53l2.5 2.5a.75.75 0 101.06-1.06l-2.28-2.28V6.75z" clip-rule="evenodd" /></svg>
+            </div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-violet-600 ring-2 ring-white group-has-[#read-3:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-3:checked]/item:font-normal font-semibold">
+                Build <span class="font-medium">api-gateway</span> changed status to
+                <span class="font-semibold text-rose-600">Failed</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">6h ago</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">Pipeline #4821 failed at the integration-test stage on branch <span class="font-mono text-slate-700">release/2026-07</span>.</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-violet-700 hover:text-violet-800 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>Pipeline #4821 &middot; Stage: integration-test &middot; Branch: release/2026-07 &middot; Triggered by CI</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-violet-700 hover:text-violet-800">View build logs &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200">Status change</span>
+              <label for="read-3" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-3:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-3:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 4: Mention, unread -->
+      <li class="group/item relative border-b border-slate-200" data-type="mention">
+        <input type="checkbox" id="read-4" class="peer/read sr-only">
+        <div class="flex gap-4 bg-indigo-50/40 px-5 py-4 transition-colors group-has-[#read-4:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">SO</div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white group-has-[#read-4:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-4:checked]/item:font-normal font-semibold">
+                <span class="font-semibold">Sam Ortiz</span> mentioned you in <span class="font-medium">Support ticket #4821</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">Yesterday</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">"Looping in @you since this customer's issue matches the bug we discussed last week."</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>"Looping in @you since this customer's issue matches the bug we discussed last week. Can you take a look at the attached trace when you get a chance?"</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700">Go to ticket &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">Mention</span>
+              <label for="read-4" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-4:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-4:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 5: Assignment, read -->
+      <li class="group/item relative border-b border-slate-200" data-type="assignment">
+        <input type="checkbox" id="read-5" class="peer/read sr-only" checked>
+        <div class="flex gap-4 bg-indigo-50/40 px-5 py-4 transition-colors group-has-[#read-5:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">CK</div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-amber-600 ring-2 ring-white group-has-[#read-5:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-5:checked]/item:font-normal font-semibold">
+                <span class="font-semibold">Casey Kim</span> assigned you <span class="font-medium">Update onboarding docs</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">Yesterday</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">Docs are out of date since the new signup flow shipped. No hard deadline.</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-amber-700 hover:text-amber-800 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>Task: <span class="font-medium">Update onboarding docs</span> &middot; No due date &middot; Priority: Low</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-amber-700 hover:text-amber-800">Go to task &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-200">Assignment</span>
+              <label for="read-5" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-5:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-5:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 6: Status change, read -->
+      <li class="group/item relative border-b border-slate-200" data-type="status_change">
+        <input type="checkbox" id="read-6" class="peer/read sr-only" checked>
+        <div class="flex gap-4 bg-indigo-50/40 px-5 py-4 transition-colors group-has-[#read-6:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+              <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" /></svg>
+            </div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-violet-600 ring-2 ring-white group-has-[#read-6:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-6:checked]/item:font-normal font-semibold">
+                PR <span class="font-medium">#482 Refactor auth middleware</span> changed status to
+                <span class="font-semibold text-emerald-600">Merged</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">2 days ago</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">Merged into <span class="font-mono text-slate-700">main</span> by Riley Chen after 2 approvals.</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-violet-700 hover:text-violet-800 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>PR #482 &middot; Branch: refactor/auth-middleware &middot; Merged by Riley Chen &middot; 2 approvals</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-violet-700 hover:text-violet-800">View pull request &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-violet-50 px-2 py-0.5 text-xs font-medium text-violet-700 ring-1 ring-inset ring-violet-200">Status change</span>
+              <label for="read-6" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-6:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-6:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+
+      <!-- 7: Mention, read -->
+      <li class="group/item relative" data-type="mention">
+        <input type="checkbox" id="read-7" class="peer/read sr-only" checked>
+        <div class="flex gap-4 bg-indigo-50/40 px-5 py-4 transition-colors group-has-[#read-7:checked]/item:bg-white">
+          <div class="relative flex-shrink-0">
+            <div class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-600">WD</div>
+            <span class="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full bg-indigo-600 ring-2 ring-white group-has-[#read-7:checked]/item:hidden"></span>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <p class="text-sm text-slate-900 group-has-[#read-7:checked]/item:font-normal font-semibold">
+                <span class="font-semibold">Weekly digest</span> mentioned you in <span class="font-medium">Weekly summary</span>
+              </p>
+              <span class="flex-shrink-0 text-xs text-slate-400">3 days ago</span>
+            </div>
+            <p class="mt-1 line-clamp-2 text-sm text-slate-600">You were mentioned in 3 threads and closed 5 tasks this week. See the full recap.</p>
+
+            <details class="group/details mt-2">
+              <summary class="inline-flex cursor-pointer list-none items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-700 [&::-webkit-details-marker]:hidden">
+                Open
+                <svg class="h-3.5 w-3.5 transition-transform group-open/details:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.08 1.04l-4.25 4.65a.75.75 0 01-1.08 0l-4.25-4.65a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                </svg>
+              </summary>
+              <div class="mt-2 rounded-md border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
+                <p>Weekly summary &middot; Jul 5 &ndash; Jul 11 &middot; 3 mentions &middot; 5 tasks closed &middot; 2 reviews completed</p>
+                <a href="#" class="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700">View full recap &rarr;</a>
+              </div>
+            </details>
+
+            <div class="mt-2 flex items-center gap-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-200">Mention</span>
+              <label for="read-7" class="cursor-pointer text-xs font-medium text-slate-500 hover:text-slate-700 group-has-[#read-7:checked]/item:hidden">Mark as read</label>
+              <span class="hidden items-center gap-1 text-xs font-medium text-emerald-600 group-has-[#read-7:checked]/item:inline-flex">
+                <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" /></svg>
+                Read
+              </span>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+
+    <!-- All caught up -->
+    <div class="flex flex-col items-center gap-2 border-t border-slate-200 px-5 py-10 text-center">
+      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <svg class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <p class="text-sm font-semibold text-slate-900">You're all caught up</p>
+      <p class="max-w-sm text-sm text-slate-500">Nothing more to review right now. New mentions, assignments, and status changes will show up here.</p>
+    </div>
+
+  </div>
+</section>

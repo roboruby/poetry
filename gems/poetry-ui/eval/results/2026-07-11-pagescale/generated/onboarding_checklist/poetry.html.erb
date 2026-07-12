@@ -1,0 +1,67 @@
+<div class="mx-auto max-w-2xl space-y-8 p-6">
+  <div class="space-y-2 text-center">
+    <div class="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10">
+      <%= poetry_icon(name: :sparkles, class: "size-6 text-primary") %>
+    </div>
+    <h1 class="text-2xl font-semibold tracking-tight">Welcome to your new workspace</h1>
+    <p class="text-sm text-muted-foreground">
+      You're all set up. Finish a few quick steps to get your team working here.
+    </p>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Setup checklist" } %>
+    <% card.with_description { "1 of 3 steps complete" } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :secondary) { "1/3 done" } %>
+    <% end %>
+
+    <%= poetry_progress(label: "Setup progress", value: 1, max: 3, class: "mb-2") %>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :"circle-check", class: "size-5 text-success", label: "Complete") } %>
+        <% item.with_title { "Connect a repository" } %>
+        <% item.with_description { "Link your first Git repository so code starts syncing." } %>
+        <% item.with_actions do %>
+          <%= poetry_badge(variant: :success) { "Complete" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :circle, class: "size-5 text-muted-foreground", label: "Not started") } %>
+        <% item.with_title { "Invite the team" } %>
+        <% item.with_description { "Bring in teammates so work doesn't stall on just you." } %>
+        <% item.with_actions do %>
+          <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+            <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+            Invite
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :circle, class: "size-5 text-muted-foreground", label: "Not started") } %>
+        <% item.with_title { "Create your first project" } %>
+        <% item.with_description { "Set up a project so there's somewhere for the work to live." } %>
+        <% item.with_actions do %>
+          <%= poetry_button(variant: :outline, size: :sm) do |button| %>
+            <% button.with_leading { poetry_icon(name: :"folder-plus") } %>
+            Create project
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-between gap-4">
+        <span class="text-xs text-muted-foreground">You can pick these back up anytime from Settings.</span>
+        <%= poetry_link(href: "/dashboard", underline: :hover) { "Skip for now" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

@@ -1,0 +1,567 @@
+<div class="mx-auto max-w-7xl px-6 py-8">
+
+  <!-- Header -->
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-gray-900">Audit log</h1>
+      <p class="mt-1 text-sm text-gray-500">
+        Security-relevant activity for <span class="font-medium text-gray-700">Acme Robotics</span> &middot;
+        showing the last 15 events across 3 days
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <div class="hidden items-center gap-3 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs text-gray-600 sm:flex">
+        <span class="inline-flex items-center gap-1.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> 4 critical
+        </span>
+        <span class="h-3 w-px bg-gray-200"></span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> 4 warning
+        </span>
+        <span class="h-3 w-px bg-gray-200"></span>
+        <span class="inline-flex items-center gap-1.5">
+          <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> 7 info
+        </span>
+      </div>
+
+      <details class="group relative">
+        <summary class="flex list-none cursor-pointer items-center gap-2 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+          <svg class="h-4 w-4 text-gray-500" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M10 3a.75.75 0 01.75.75v7.19l2.22-2.22a.75.75 0 111.06 1.06l-3.5 3.5a.75.75 0 01-1.06 0l-3.5-3.5a.75.75 0 111.06-1.06l2.22 2.22V3.75A.75.75 0 0110 3zM4.5 15a.75.75 0 000 1.5h11a.75.75 0 000-1.5h-11z" clip-rule="evenodd" />
+          </svg>
+          Export
+          <svg class="h-3.5 w-3.5 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+          </svg>
+        </summary>
+        <div class="absolute right-0 z-10 mt-2 w-52 rounded-md border border-gray-200 bg-white py-1 shadow-lg">
+          <a href="?format=csv" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export as CSV</a>
+          <a href="?format=json" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export as JSON</a>
+          <a href="?format=pdf" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">Export summary as PDF</a>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <form method="get" class="mt-6 rounded-lg border border-gray-200 bg-white p-4">
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-6">
+      <div class="lg:col-span-2">
+        <label for="q" class="block text-xs font-medium text-gray-500">Search</label>
+        <input type="text" name="q" id="q" placeholder="Actor, action, IP address&hellip;"
+               class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-1.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+      </div>
+
+      <div>
+        <label for="event_type" class="block text-xs font-medium text-gray-500">Event type</label>
+        <select id="event_type" name="event_type"
+                class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option>All activity</option>
+          <option>Authentication</option>
+          <option>Permissions &amp; roles</option>
+          <option>Members</option>
+          <option>API keys &amp; webhooks</option>
+          <option>Data export</option>
+          <option>Billing</option>
+          <option>Workspace settings</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="severity" class="block text-xs font-medium text-gray-500">Severity</label>
+        <select id="severity" name="severity"
+                class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option>All severities</option>
+          <option>Critical</option>
+          <option>Warning</option>
+          <option>Info</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="actor" class="block text-xs font-medium text-gray-500">Actor</label>
+        <select id="actor" name="actor"
+                class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <option>All members</option>
+          <option>Maya Chen</option>
+          <option>Priya Nandakumar</option>
+          <option>Devon Park</option>
+          <option>Sam Ortiz</option>
+          <option>jordan@acme.io</option>
+          <option>System</option>
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-medium text-gray-500">Date range</label>
+        <div class="mt-1 flex items-center gap-1.5">
+          <input type="date" name="from" aria-label="From date" value="2026-07-09"
+                 class="block w-full min-w-0 rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+          <span class="text-gray-400">&ndash;</span>
+          <input type="date" name="to" aria-label="To date" value="2026-07-11"
+                 class="block w-full min-w-0 rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-4 flex items-center gap-2 border-t border-gray-100 pt-4">
+      <button type="submit"
+              class="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+        Apply filters
+      </button>
+      <button type="reset"
+              class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500">
+        Reset
+      </button>
+      <span class="ml-auto text-xs text-gray-400">Click any row below to see full event details</span>
+    </div>
+  </form>
+
+  <!-- Grouped event list -->
+  <div class="mt-8 space-y-8">
+
+    <!-- Today -->
+    <section>
+      <h2 class="mb-2 flex items-baseline gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Today <span class="font-normal normal-case text-gray-400">&middot; July 11, 2026</span>
+      </h2>
+      <ul class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200 bg-white">
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">15:42</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Maya Chen</span> disabled two-factor authentication for the workspace
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Austin, US &middot; 203.0.113.45</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Maya Chen (maya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">203.0.113.45</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">Austin, TX, US</dd></div>
+                <div><dt class="text-gray-500">Session</dt><dd class="font-mono text-gray-900">sess_9f2a1c88</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">14:20</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                5 failed login attempts for <span class="font-medium">jordan@acme.io</span>
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Unknown location &middot; 198.51.100.23</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">jordan@acme.io</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">198.51.100.23</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">Unresolved (VPN suspected)</dd></div>
+                <div><dt class="text-gray-500">Attempts</dt><dd class="text-gray-900">5 in 3 minutes</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 &middot; Edge 125.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">13:05</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Priya Nandakumar</span> signed in via SSO
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.10</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Priya Nandakumar (priya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.10</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">San Francisco, CA, US</dd></div>
+                <div><dt class="text-gray-500">Provider</dt><dd class="text-gray-900">Okta SSO</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Safari 17.4</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">11:47</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Devon Park</span> changed role for sam@acme.io from Member to Admin
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.11</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Devon Park (devon@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.11</dd></div>
+                <div><dt class="text-gray-500">Target</dt><dd class="text-gray-900">sam@acme.io</dd></div>
+                <div><dt class="text-gray-500">Change</dt><dd class="text-gray-900">Member &rarr; Admin</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">09:30</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">System</span> completed scheduled nightly data export
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Internal job &middot; &mdash;</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">System (scheduled job)</dd></div>
+                <div><dt class="text-gray-500">Job ID</dt><dd class="font-mono text-gray-900">export_2607a3</dd></div>
+                <div><dt class="text-gray-500">Records</dt><dd class="text-gray-900">48,220 rows</dd></div>
+                <div><dt class="text-gray-500">Destination</dt><dd class="text-gray-900">s3://acme-backups</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">Triggered by: recurring schedule (daily at 09:30 UTC)</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">08:12</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                API key <span class="font-medium">&ldquo;prod-billing&rdquo;</span> was revoked by Maya Chen
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Austin, US &middot; 203.0.113.45</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Maya Chen (maya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">203.0.113.45</dd></div>
+                <div><dt class="text-gray-500">Key ID</dt><dd class="font-mono text-gray-900">key_prod_bill_88a1</dd></div>
+                <div><dt class="text-gray-500">Scope</dt><dd class="text-gray-900">billing:write</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- Yesterday -->
+    <section>
+      <h2 class="mb-2 flex items-baseline gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        Yesterday <span class="font-normal normal-case text-gray-400">&middot; July 10, 2026</span>
+      </h2>
+      <ul class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200 bg-white">
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">22:14</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Sam Ortiz</span> signed out
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.15</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Sam Ortiz (sam@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.15</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">San Francisco, CA, US</dd></div>
+                <div><dt class="text-gray-500">Session</dt><dd class="font-mono text-gray-900">sess_44de210b</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) &middot; Mobile Safari</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">19:03</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Devon Park</span> updated IP allow-list, removed 2 entries
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.11</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Devon Park (devon@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.11</dd></div>
+                <div><dt class="text-gray-500">Removed entries</dt><dd class="font-mono text-gray-900">198.51.100.0/24, 203.0.113.9</dd></div>
+                <div><dt class="text-gray-500">Remaining entries</dt><dd class="text-gray-900">6</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">16:40</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                Attempt to delete workspace <span class="font-medium">&ldquo;Acme Robotics&rdquo;</span> blocked (insufficient permissions)
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Bucharest, RO &middot; 45.33.12.9</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">jordan@acme.io</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">45.33.12.9</dd></div>
+                <div><dt class="text-gray-500">Required role</dt><dd class="text-gray-900">Owner</dd></div>
+                <div><dt class="text-gray-500">Actor role</dt><dd class="text-gray-900">Admin</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 &middot; Chrome 125.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">12:22</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Priya Nandakumar</span> invited new member taylor@acme.io
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.10</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Priya Nandakumar (priya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.10</dd></div>
+                <div><dt class="text-gray-500">Invitee</dt><dd class="text-gray-900">taylor@acme.io</dd></div>
+                <div><dt class="text-gray-500">Assigned role</dt><dd class="text-gray-900">Member</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Safari 17.4</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">10:05</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Maya Chen</span> rotated webhook secret for &ldquo;stripe-sync&rdquo;
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Austin, US &middot; 203.0.113.45</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Maya Chen (maya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">203.0.113.45</dd></div>
+                <div><dt class="text-gray-500">Webhook</dt><dd class="text-gray-900">stripe-sync</dd></div>
+                <div><dt class="text-gray-500">Endpoint</dt><dd class="font-mono text-gray-900">/hooks/stripe-sync</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- Two days ago -->
+    <section>
+      <h2 class="mb-2 flex items-baseline gap-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-500">
+        July 9, 2026
+      </h2>
+      <ul class="divide-y divide-gray-100 overflow-hidden rounded-lg border border-gray-200 bg-white">
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">20:11</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Maya Chen</span> downgraded billing plan from Business to Starter
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Austin, US &middot; 203.0.113.45</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Maya Chen (maya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">203.0.113.45</dd></div>
+                <div><dt class="text-gray-500">Previous plan</dt><dd class="text-gray-900">Business</dd></div>
+                <div><dt class="text-gray-500">New plan</dt><dd class="text-gray-900">Starter</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">17:48</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Devon Park</span> removed member alex@acme.io
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.11</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Devon Park (devon@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.11</dd></div>
+                <div><dt class="text-gray-500">Removed member</dt><dd class="text-gray-900">alex@acme.io</dd></div>
+                <div><dt class="text-gray-500">Prior role</dt><dd class="text-gray-900">Member</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Chrome 126.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">09:15</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                Login from new device flagged as suspicious; session terminated for <span class="font-medium">jordan@acme.io</span>
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">Bucharest, RO &middot; 45.33.12.9</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">jordan@acme.io</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">45.33.12.9</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">Bucharest, RO (new country)</dd></div>
+                <div><dt class="text-gray-500">Action taken</dt><dd class="text-gray-900">Session terminated, MFA re-challenge sent</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 &middot; Chrome 124.0</p>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="flex cursor-pointer list-none items-center gap-4 px-4 py-3 hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-indigo-500">
+              <span class="w-14 shrink-0 text-xs tabular-nums text-gray-500">08:02</span>
+              <span class="inline-flex w-20 shrink-0 items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Info
+              </span>
+              <span class="min-w-0 flex-1 truncate text-sm text-gray-900">
+                <span class="font-medium">Priya Nandakumar</span> signed in
+              </span>
+              <span class="hidden w-56 shrink-0 truncate text-xs text-gray-500 lg:block">San Francisco, US &middot; 192.0.2.10</span>
+              <svg class="h-4 w-4 shrink-0 text-gray-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+              </svg>
+            </summary>
+            <div class="border-t border-gray-100 bg-gray-50 px-4 py-3">
+              <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-xs sm:grid-cols-4">
+                <div><dt class="text-gray-500">Actor</dt><dd class="text-gray-900">Priya Nandakumar (priya@acme.io)</dd></div>
+                <div><dt class="text-gray-500">IP address</dt><dd class="font-mono text-gray-900">192.0.2.10</dd></div>
+                <div><dt class="text-gray-500">Location</dt><dd class="text-gray-900">San Francisco, CA, US</dd></div>
+                <div><dt class="text-gray-500">Session</dt><dd class="font-mono text-gray-900">sess_71bc04e2</dd></div>
+              </dl>
+              <p class="mt-3 text-xs text-gray-500">User agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 &middot; Safari 17.4</p>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="mt-6 flex items-center justify-between border-t border-gray-100 pt-4 text-xs text-gray-500">
+    <span>Events are retained for 90 days and cannot be edited or deleted.</span>
+    <a href="?before=2026-07-09" class="font-medium text-indigo-600 hover:text-indigo-500">View older activity &rarr;</a>
+  </div>
+
+</div>

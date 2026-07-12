@@ -1,0 +1,232 @@
+<div class="mx-auto max-w-5xl space-y-8 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Team members</h1>
+    <p class="text-sm text-muted-foreground">Manage who has access to the Northwind Traders workspace.</p>
+  </div>
+
+  <%= poetry_separator %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Invite a teammate" } %>
+    <% card.with_description { "Send an email invite with a starting role. They can accept it to join the workspace." } %>
+
+    <%= form_tag("#", method: :post, class: "flex flex-wrap items-end gap-4") do %>
+      <div class="min-w-64 flex-1">
+        <%= poetry_field(id: "invite-email", label_text: "Email address", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "email", placeholder: "teammate@company.com") %>
+        <% end %>
+      </div>
+      <div class="w-44">
+        <%= poetry_field(id: "invite-role", label_text: "Role") do |field| %>
+          <%= poetry_native_select(**field.control_attributes, name: "role",
+                options: [["Admin", "admin"], ["Member", "member"], ["Viewer", "viewer"]], selected: "member") %>
+        <% end %>
+      </div>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+        Send invite
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Members" } %>
+    <% card.with_description { "6 people have access to this workspace." } %>
+
+    <div class="space-y-4">
+      <%= form_tag("#", method: :get, class: "flex flex-wrap items-center gap-3") do %>
+        <%= poetry_label(for_id: "members-search", class: "sr-only") { "Search members" } %>
+        <%= poetry_input_group(class: "max-w-xs") do %>
+          <%= poetry_input_group_addon do %>
+            <%= poetry_icon(name: :search) %>
+          <% end %>
+          <%= poetry_input_group_input(id: "members-search", name: "q", placeholder: "Search by name or email…") %>
+        <% end %>
+        <%= poetry_label(for_id: "members-role-filter", class: "sr-only") { "Filter by role" } %>
+        <%= poetry_native_select(id: "members-role-filter", name: "role", size: :sm,
+              options: [["All roles", "all"], ["Owner", "owner"], ["Admin", "admin"], ["Member", "member"], ["Viewer", "viewer"]]) %>
+        <%= poetry_button(type: :submit, variant: :outline, size: :sm, class: "ml-auto") { "Search" } %>
+      <% end %>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+          <% item.with_title { "Priya Nair" } %>
+          <% item.with_description { "priya@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Owner" } %>
+            <span class="text-xs text-muted-foreground">Active 5 minutes ago</span>
+          </div>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Marcus Bell", size: :sm) { "MB" } } %>
+          <% item.with_title { "Marcus Bell" } %>
+          <% item.with_description { "marcus.bell@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Admin" } %>
+            <span class="text-xs text-muted-foreground">Active 2 hours ago</span>
+          </div>
+          <% item.with_actions do %>
+            <%= poetry_alert_dialog(size: :sm) do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :sm) { "Remove" } %>
+              <% ad.with_title { "Remove Marcus Bell from the workspace?" } %>
+              <% ad.with_description { "They'll immediately lose access to Northwind Traders. They would need a new invite to rejoin." } %>
+              <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Remove member" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Sofia Reyes", size: :sm) { "SR" } } %>
+          <% item.with_title { "Sofia Reyes" } %>
+          <% item.with_description { "sofia.reyes@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Member" } %>
+            <span class="text-xs text-muted-foreground">Active yesterday</span>
+          </div>
+          <% item.with_actions do %>
+            <%= poetry_alert_dialog(size: :sm) do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :sm) { "Remove" } %>
+              <% ad.with_title { "Remove Sofia Reyes from the workspace?" } %>
+              <% ad.with_description { "They'll immediately lose access to Northwind Traders. They would need a new invite to rejoin." } %>
+              <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Remove member" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Owen Fitzgerald", size: :sm) { "OF" } } %>
+          <% item.with_title { "Owen Fitzgerald" } %>
+          <% item.with_description { "owen.f@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Member" } %>
+            <span class="text-xs text-muted-foreground">Active 3 days ago</span>
+          </div>
+          <% item.with_actions do %>
+            <%= poetry_alert_dialog(size: :sm) do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :sm) { "Remove" } %>
+              <% ad.with_title { "Remove Owen Fitzgerald from the workspace?" } %>
+              <% ad.with_description { "They'll immediately lose access to Northwind Traders. They would need a new invite to rejoin." } %>
+              <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Remove member" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Dana Whitfield", size: :sm) { "DW" } } %>
+          <% item.with_title { "Dana Whitfield" } %>
+          <% item.with_description { "dana.whitfield@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Viewer" } %>
+            <span class="text-xs text-muted-foreground">Active 2 weeks ago</span>
+          </div>
+          <% item.with_actions do %>
+            <%= poetry_alert_dialog(size: :sm) do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :sm) { "Remove" } %>
+              <% ad.with_title { "Remove Dana Whitfield from the workspace?" } %>
+              <% ad.with_description { "They'll immediately lose access to Northwind Traders. They would need a new invite to rejoin." } %>
+              <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Remove member" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Callum Ortiz", size: :sm) { "CO" } } %>
+          <% item.with_title { "Callum Ortiz" } %>
+          <% item.with_description { "callum.ortiz@northwindtraders.com" } %>
+          <div class="flex items-center gap-3">
+            <%= poetry_badge(variant: :secondary) { "Member" } %>
+            <span class="text-xs text-muted-foreground">Active 6 weeks ago</span>
+          </div>
+          <% item.with_actions do %>
+            <%= poetry_alert_dialog(size: :sm) do |ad| %>
+              <% ad.with_trigger(variant: :ghost, size: :sm) { "Remove" } %>
+              <% ad.with_title { "Remove Callum Ortiz from the workspace?" } %>
+              <% ad.with_description { "They'll immediately lose access to Northwind Traders. They would need a new invite to rejoin." } %>
+              <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+              <% ad.with_action(variant: :destructive) { "Remove member" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Pending invitations" } %>
+    <% card.with_description { "3 invites are waiting to be accepted." } %>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :mail) } %>
+        <% item.with_title { "jordan.kwan@northwindtraders.com" } %>
+        <% item.with_description { "Invited as Admin by Priya Nair · 2 days ago" } %>
+        <% item.with_actions do %>
+          <%= form_tag("#", method: :post, class: "inline-flex") do %>
+            <%= poetry_button(type: :submit, variant: :outline, size: :sm) do |button| %>
+              <% button.with_leading { poetry_icon(name: :send) } %>
+              Resend
+            <% end %>
+          <% end %>
+          <%= poetry_alert_dialog(size: :sm) do |ad| %>
+            <% ad.with_trigger(variant: :ghost, size: :sm) { "Revoke" } %>
+            <% ad.with_title { "Revoke this invitation?" } %>
+            <% ad.with_description { "jordan.kwan@northwindtraders.com will no longer be able to accept this invite." } %>
+            <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+            <% ad.with_action(variant: :destructive) { "Revoke invite" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :mail) } %>
+        <% item.with_title { "lena.abara@northwindtraders.com" } %>
+        <% item.with_description { "Invited as Member by Marcus Bell · 5 days ago" } %>
+        <% item.with_actions do %>
+          <%= form_tag("#", method: :post, class: "inline-flex") do %>
+            <%= poetry_button(type: :submit, variant: :outline, size: :sm) do |button| %>
+              <% button.with_leading { poetry_icon(name: :send) } %>
+              Resend
+            <% end %>
+          <% end %>
+          <%= poetry_alert_dialog(size: :sm) do |ad| %>
+            <% ad.with_trigger(variant: :ghost, size: :sm) { "Revoke" } %>
+            <% ad.with_title { "Revoke this invitation?" } %>
+            <% ad.with_description { "lena.abara@northwindtraders.com will no longer be able to accept this invite." } %>
+            <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+            <% ad.with_action(variant: :destructive) { "Revoke invite" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_item_separator %>
+      <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :mail) } %>
+        <% item.with_title { "tomas.rivera@northwindtraders.com" } %>
+        <% item.with_description { "Invited as Member by Priya Nair · 3 weeks ago" } %>
+        <div>
+          <%= poetry_badge(variant: :warning) { "Expiring soon" } %>
+        </div>
+        <% item.with_actions do %>
+          <%= form_tag("#", method: :post, class: "inline-flex") do %>
+            <%= poetry_button(type: :submit, variant: :outline, size: :sm) do |button| %>
+              <% button.with_leading { poetry_icon(name: :send) } %>
+              Resend
+            <% end %>
+          <% end %>
+          <%= poetry_alert_dialog(size: :sm) do |ad| %>
+            <% ad.with_trigger(variant: :ghost, size: :sm) { "Revoke" } %>
+            <% ad.with_title { "Revoke this invitation?" } %>
+            <% ad.with_description { "tomas.rivera@northwindtraders.com will no longer be able to accept this invite." } %>
+            <% ad.with_cancel(variant: :outline) { "Cancel" } %>
+            <% ad.with_action(variant: :destructive) { "Revoke invite" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

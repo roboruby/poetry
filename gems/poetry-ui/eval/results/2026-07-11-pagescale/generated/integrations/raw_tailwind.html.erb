@@ -1,0 +1,301 @@
+<div class="mx-auto max-w-6xl px-6 py-10">
+  <header class="border-b border-slate-200 pb-6">
+    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Integrations</h1>
+    <p class="mt-1 max-w-2xl text-sm text-slate-500">
+      Connect the tools your team already uses. Manage what's active and browse the catalog for more.
+    </p>
+  </header>
+
+  <!-- Connected integrations -->
+  <section aria-labelledby="connected-heading" class="mt-10">
+    <div class="flex items-center justify-between">
+      <h2 id="connected-heading" class="text-lg font-semibold text-slate-900">Connected</h2>
+      <span class="text-sm text-slate-500">4 active</span>
+    </div>
+
+    <ul role="list" class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Slack -->
+      <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-sm font-semibold text-violet-700">SL</span>
+            <div>
+              <p class="font-medium text-slate-900">Slack</p>
+              <p class="text-xs text-slate-500">Team messaging</p>
+            </div>
+          </div>
+          <details class="relative">
+            <summary class="flex size-8 list-none items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 [&::-webkit-details-marker]:hidden" aria-label="Manage Slack">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                <path d="M10 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM10 19a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+              </svg>
+            </summary>
+            <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+              <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+            </div>
+          </details>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="size-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+          <span class="text-sm font-medium text-emerald-700">Healthy</span>
+          <span class="text-xs text-slate-400">&middot; synced 2 minutes ago</span>
+        </div>
+      </li>
+
+      <!-- Stripe -->
+      <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">ST</span>
+            <div>
+              <p class="font-medium text-slate-900">Stripe</p>
+              <p class="text-xs text-slate-500">Payments</p>
+            </div>
+          </div>
+          <details class="relative">
+            <summary class="flex size-8 list-none items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 [&::-webkit-details-marker]:hidden" aria-label="Manage Stripe">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                <path d="M10 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM10 19a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+              </svg>
+            </summary>
+            <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+              <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+            </div>
+          </details>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="size-2 rounded-full bg-amber-500" aria-hidden="true"></span>
+          <span class="text-sm font-medium text-amber-700">Degraded</span>
+          <span class="text-xs text-slate-400">&middot; webhook delivery delayed</span>
+        </div>
+      </li>
+
+      <!-- GitHub -->
+      <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">GH</span>
+            <div>
+              <p class="font-medium text-slate-900">GitHub</p>
+              <p class="text-xs text-slate-500">Source control</p>
+            </div>
+          </div>
+          <details class="relative">
+            <summary class="flex size-8 list-none items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 [&::-webkit-details-marker]:hidden" aria-label="Manage GitHub">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                <path d="M10 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM10 19a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+              </svg>
+            </summary>
+            <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+              <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+            </div>
+          </details>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="size-2 rounded-full bg-emerald-500" aria-hidden="true"></span>
+          <span class="text-sm font-medium text-emerald-700">Healthy</span>
+          <span class="text-xs text-slate-400">&middot; synced 14 minutes ago</span>
+        </div>
+      </li>
+
+      <!-- Google Analytics -->
+      <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">GA</span>
+            <div>
+              <p class="font-medium text-slate-900">Google Analytics</p>
+              <p class="text-xs text-slate-500">Web analytics</p>
+            </div>
+          </div>
+          <details class="relative">
+            <summary class="flex size-8 list-none items-center justify-center rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 [&::-webkit-details-marker]:hidden" aria-label="Manage Google Analytics">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="size-5" aria-hidden="true">
+                <path d="M10 4a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Zm0 7.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3ZM10 19a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3Z" />
+              </svg>
+            </summary>
+            <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Reconnect</a>
+              <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+              <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+            </div>
+          </details>
+        </div>
+        <div class="mt-4 flex items-center gap-2">
+          <span class="size-2 rounded-full bg-red-500" aria-hidden="true"></span>
+          <span class="text-sm font-medium text-red-700">Error</span>
+          <span class="text-xs text-slate-400">&middot; authentication expired</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Catalog -->
+  <section aria-labelledby="catalog-heading" class="mt-12">
+    <h2 id="catalog-heading" class="text-lg font-semibold text-slate-900">Available integrations</h2>
+    <p class="mt-1 text-sm text-slate-500">Browse by category and connect new tools to your workspace.</p>
+
+    <div class="mt-6 space-y-10">
+      <!-- Communication -->
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Communication</h3>
+        <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-sky-100 text-sm font-semibold text-sky-700">MT</span>
+              <p class="font-medium text-slate-900">Microsoft Teams</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Bring notifications and approvals into Teams channels.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">DC</span>
+              <p class="font-medium text-slate-900">Discord</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Post alerts and updates to your community server.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-rose-100 text-sm font-semibold text-rose-700">TW</span>
+              <p class="font-medium text-slate-900">Twilio SMS</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Send text alerts and two-factor codes to customers.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payments & Billing -->
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Payments &amp; billing</h3>
+        <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">PP</span>
+              <p class="font-medium text-slate-900">PayPal</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Accept payments and payouts through PayPal accounts.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-teal-100 text-sm font-semibold text-teal-700">CB</span>
+              <p class="font-medium text-slate-900">Chargebee</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Sync subscriptions and invoices with your billing plans.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">SQ</span>
+              <p class="font-medium text-slate-900">Square</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Reconcile in-person and online transactions automatically.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Analytics -->
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Analytics</h3>
+        <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-fuchsia-100 text-sm font-semibold text-fuchsia-700">MP</span>
+              <p class="font-medium text-slate-900">Mixpanel</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Track product events and build funnels from user actions.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-lime-100 text-sm font-semibold text-lime-700">SG</span>
+              <p class="font-medium text-slate-900">Segment</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Route customer data to every downstream tool from one source.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-cyan-100 text-sm font-semibold text-cyan-700">AM</span>
+              <p class="font-medium text-slate-900">Amplitude</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Analyze retention and engagement across your product.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Developer Tools -->
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Developer tools</h3>
+        <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">GL</span>
+              <p class="font-medium text-slate-900">GitLab</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Trigger deploys and track merge requests from one place.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">JR</span>
+              <p class="font-medium text-slate-900">Jira</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Link issues and keep sprint status in sync automatically.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-red-100 text-sm font-semibold text-red-700">SN</span>
+              <p class="font-medium text-slate-900">Sentry</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Surface application errors and stack traces in real time.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Productivity -->
+      <div>
+        <h3 class="text-sm font-semibold uppercase tracking-wide text-slate-500">Productivity</h3>
+        <div class="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">NT</span>
+              <p class="font-medium text-slate-900">Notion</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Sync docs and databases with your workspace pages.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-pink-100 text-sm font-semibold text-pink-700">AS</span>
+              <p class="font-medium text-slate-900">Asana</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Turn conversations into tracked tasks and projects.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+          <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div class="flex items-center gap-3">
+              <span class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-sm font-semibold text-amber-700">ZP</span>
+              <p class="font-medium text-slate-900">Zapier</p>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-slate-500">Automate handoffs between this app and thousands of others.</p>
+            <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Connect</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
