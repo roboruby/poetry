@@ -3,6 +3,7 @@ animate-spin
 border
 border-b
 border-destructive/50
+contents
 flex
 flex-col
 flex-wrap

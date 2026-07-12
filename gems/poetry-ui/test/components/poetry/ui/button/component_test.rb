@@ -25,7 +25,20 @@ module Poetry
           # carries bg-primary / the focus-visible ring under these names.
           assert_includes html, "cn-button "
           assert_includes html, "cn-button-variant-default"
-          assert_includes html, %(<span data-slot="label">Save</span>)
+          assert_includes html, %(<span data-slot="label" class="contents">Save</span>)
+        end
+
+        def test_mixed_content_stays_flex_aligned
+          # The docs-search regression: an icon passed IN the content (not
+          # the leading slot) must become a flex item of the button, not
+          # inline flow inside the label span - preflight makes svg
+          # display:block, which would force a line break there. The
+          # contents class flattens the span so items-center/gap apply.
+          html = render_inline(Component.new(variant: :outline)) do
+            %(<svg class="size-3.5"></svg><span>Search docs</span><kbd>K</kbd>).html_safe
+          end.to_html
+
+          assert_includes html, %(<span data-slot="label" class="contents">)
         end
 
         def test_a_button_with_nothing_visible_refuses_to_render

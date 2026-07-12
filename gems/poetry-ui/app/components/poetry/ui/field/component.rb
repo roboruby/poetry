@@ -13,8 +13,19 @@ module Poetry
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Wire the control with field.control_attributes - never hand-write aria-describedby.",
-          "Error text arrives via error: (from model errors upstream) - never a bare red <p>."
+          "Error text arrives via error: (from model errors upstream) - never a bare red <p>.",
+          "orientation: :horizontal is the boolean-control layout (checkbox/switch left, " \
+          "label + hint stacked right) - text inputs and groups stay vertical."
         ].freeze
+
+        ORIENTATIONS = %i[vertical horizontal].freeze
+
+        # Upstream fieldVariants' orientation axis. Horizontal is the
+        # boolean-control pattern: the control lands in the first grid
+        # column, label + hint/error stack in the second, the control
+        # row-centers against the label line (upstream approximates the
+        # same with items-start + mt-px).
+        style :orientation, default: :vertical, required: true, variants: ORIENTATIONS
 
         option :id, :string, required: true
         option :label_text, :string
@@ -51,7 +62,8 @@ module Poetry
 
         def root_attributes
           html_attributes.merge_if_not_set(
-            { "data-slot" => "field", "data-invalid" => invalid? }.merge(component_data_attributes)
+            { "data-slot" => "field", "data-invalid" => invalid?,
+              "data-orientation" => orientation }.merge(component_data_attributes)
           )
         end
       end

@@ -27,6 +27,16 @@ module Poetry
                                                required: true),
                       input_options: { type: "email", name: "work_email" })
         end
+
+        # The boolean-control layout: control left, label + hint stacked
+        # right, box centered on the label line (the checkbox/switch field
+        # pattern upstream demos with orientation=horizontal).
+        def horizontal_with_checkbox
+          render_with(component: Component.new(id: "field-newsletter", label_text: "Email newsletter",
+                                               hint: "Sent weekly. Unsubscribe anytime.",
+                                               orientation: :horizontal),
+                      checkbox_options: { name: "newsletter", checked: true })
+        end
       end
     end
   end

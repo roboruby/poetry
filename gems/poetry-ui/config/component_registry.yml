@@ -2125,7 +2125,14 @@ components:
     class_name: Poetry::Ui::Field::Component
     identifier: poetry--ui--field
     bem_block: poetry-ui-field
-    styles: []
+    styles:
+    - name: orientation
+      type: symbol
+      variants:
+      - vertical
+      - horizontal
+      default: vertical
+      required: true
     options:
     - name: error
       type: string
@@ -2146,11 +2153,13 @@ components:
     elements:
     - hint
     - error
-    capsule: 5f7366b0e1f1
+    capsule: 40b0aa008802
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
       <p>.'
+    - 'orientation: :horizontal is the boolean-control layout (checkbox/switch left,
+      label + hint stacked right) - text inputs and groups stay vertical.'
   poetry/ui/hover_card:
     class_name: Poetry::Ui::HoverCard::Component
     identifier: poetry--ui--hover_card
