@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "poetry/core"
+require "yaml"
 require_relative "charts/version"
 require_relative "charts/config"
 require_relative "charts/theme_style"
@@ -39,6 +40,16 @@ module Poetry
       # per-helper fact and never a convention.
       def registry
         Poetry::Core::Registry.new(source_root: root, helper_args: registry_helper_args)
+      end
+
+      # The shadcn-interop item projection (Ecosystem v1), boot-free
+      # from the COMMITTED registry - the docs site aggregates this with
+      # poetry-ui's for /r/*.json.
+      def registry_items
+        Poetry::Core::RegistryItems.new(
+          registry: YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH)),
+          root: root, gem_name: "poetry-charts", gem_version: VERSION
+        )
       end
 
       POSITIONAL_PARAM_KINDS = %i[req opt].freeze
