@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "poetry/core"
+require "yaml"
 require_relative "ui/version"
 require_relative "ui/themes"
 
@@ -22,6 +23,21 @@ module Poetry
     # component in exactly one reference file, so the skill's menu stays
     # lean and an agent loads only the family it is composing in. The
     # coverage gate fails on any new component until it is mapped here.
+    # Curated composition edges: which components a copy-in of X also needs
+    # locally. Single-sourced here since Ecosystem v1 - the add
+    # generator's recursive copy AND every registry item's
+    # registryDependencies read this one map. (Replaced by registry-carried
+    # anatomy when the contract's anatomy section lands.)
+    COMPONENT_DEPENDENCIES = {
+      "button" => %w[icon],
+      "dialog" => %w[button icon],
+      "sheet" => %w[dialog button icon], # subclasses Dialog::Component (shared dialog controller)
+      "alert_dialog" => %w[dialog button], # shares the dialog controller + posture
+      "field" => %w[label input],
+      "alert" => %w[icon],
+      "select" => %w[icon] # chevrons + check; Field is an optional pairing, not a hard edge
+    }.freeze
+
     SKILL_FAMILIES = {
       "forms" => %w[button button_group calendar checkbox combobox date_picker field
                     input input_group input_otp label native_select radio_group select
@@ -75,6 +91,18 @@ module Poetry
           helpers: registry_helpers(component_paths: component_paths),
           blocks: registry_blocks(component_paths: component_paths),
           helper_args: registry_helper_args
+        )
+      end
+
+      # The shadcn-interop item projection (Ecosystem v1), boot-free
+      # from the COMMITTED registry - the docs site serves /r/*.json from
+      # this, and the add generator matches gem-satisfied dependencies
+      # against its names.
+      def registry_items
+        Poetry::Core::RegistryItems.new(
+          registry: YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH)),
+          root: root, gem_name: "poetry-ui", gem_version: VERSION,
+          dependencies: COMPONENT_DEPENDENCIES
         )
       end
 
