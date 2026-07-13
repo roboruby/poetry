@@ -56,6 +56,46 @@ module Poetry
         # should fill the span (the stacked block's full half-ring).
         option :max_value, ActiveModel::Type::Value.new
 
+        part "chart-svg", "The chart canvas (<svg>) - the aria-label surface, the tooltip's " \
+                          "focus/keyboard surface (role=application when it attaches), and " \
+                          "the motion rig's mount",
+             states: {
+               "data-animate" => "when animate (the default) - the entrance tier's flag the " \
+                                 "motion stylesheet and controller key off",
+               "data-motion" => { condition: "runtime, when animate - the motion engine's lifecycle stamp",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-delay" => "the motion rig's entrance delay (animation_begin)",
+               "--poetry-motion-duration" => "the motion rig's entrance duration (animation_duration)",
+               "--poetry-motion-easing" => "the motion rig's easing keyword (animation_easing)"
+             }
+        part "chart-polar-grid", "The polar grid (<g>, aria-hidden) - ring and spoke linework " \
+                                 "behind the series"
+        part "chart-radial-series", "One series' ring group (<g>)",
+             states: { "data-key" => "always - the series key" }
+        part "chart-radial-background", "The muted track ring (<path>) behind a bar, rendered " \
+                                        "when background: true"
+        part "chart-radial-bar", "One angular bar (<path>) - a ring per data row, sweep " \
+                                 "proportional to value",
+             states: {
+               "data-key" => "always - the series key",
+               "data-index" => "on the first series' bars - the datum index the tooltip walks",
+               "data-active" => "the hovered/arrow-keyed bar - the tooltip controller reflects " \
+                                "the active index here at runtime",
+               "data-motion-group" => "when animate - the motion rig's sweep group (one per ring)",
+               "data-motion-sector" => "when animate - the motion rig's server-computed sector params " \
+                                       "for the fan-out sweep"
+             }
+        part "chart-labels", "A series' value labels (<g> of <text>, aria-hidden), rendered when " \
+                             "the series opts into labels",
+             states: { "data-key" => "always - the series key" }
+        part "chart-center-label", "The center text (<text>) - title tspan plus optional subtitle " \
+                                   "filling the chart's middle"
+        part "chart-coordinates", "The embedded JSON payload (<script>) the tooltip controller " \
+                                  "reads - per-category anchors and pre-formatted values, zero " \
+                                  "chart math in the browser"
+
         renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
                                             color_key: :fill, labels: nil, label_key: nil|
           (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,

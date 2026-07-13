@@ -50,6 +50,67 @@ module Poetry
         option :bar_gap, :integer, default: 4
         option :bar_category_gap, :string, default: "10%"
 
+        part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
+                          "role=img, or the focusable role=application accessibilityLayer when the " \
+                          "tooltip attaches",
+             states: {
+               "data-animate" => "present when animate (the default) - the motion stylesheet and " \
+                                 "controller key the entrance off it",
+               "data-motion" => { condition: "runtime - the motion rig stamps the animation " \
+                                             "lifecycle (entrance/morph, then settled)",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-duration" => "the entrance/morph duration (animation_duration, ms)",
+               "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
+               "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
+             }
+        part "chart-motion-reveal", "The entrance clipPath rect (recharts' area reveal) - the " \
+                                    "motion stylesheet scales it 0 -> 1; only when animate"
+        part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
+                           "across the plot"
+        part "chart-cursor", "The hover cursor, hidden until the tooltip controller positions " \
+                             "and reveals it at the active index - a vertical rule or a " \
+                             "translucent band rect (bar charts)"
+        part "chart-areas", "The area-mark group - a fill path plus top-curve stroke per series, " \
+                            "clipped by the reveal rect while animating"
+        part "chart-area", "One series' fill path (var(--color-<key>) or its gradient)",
+             states: { "data-key" => "the series key" }
+        part "chart-area-stroke", "One series' top-curve stroke path (recharts strokes the " \
+                                  "curve, never the area outline)",
+             states: { "data-key" => "the series key" }
+        part "chart-bar-series", "One series' bar group",
+             states: { "data-key" => "the series key" }
+        part "chart-bar", "One bar cell (a per-corner rounded-rect path)",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the datum index",
+               "data-active" => "runtime - the tooltip controller marks the hovered index",
+               "data-motion-origin" => { condition: "when animate - the zero edge the entrance " \
+                                                    "grows from",
+                                         values: %w[bottom top] }
+             }
+        part "chart-lines", "The line-mark group - each series' curve plus its companion marks"
+        part "chart-line", "One series' stroked curve - pathLength=1 when animating so the " \
+                           "dash draw-in needs no measurement",
+             states: { "data-key" => "the series key" }
+        part "chart-dots", "One series' point-dot group (dots: true)",
+             states: { "data-key" => "the series key" }
+        part "chart-dot", "One point dot (<circle>)"
+        part "chart-active-dots", "The hover-marker group (with_tooltip) - pre-rendered hidden " \
+                                  "circles for every series x index"
+        part "chart-active-dot", "One hover marker - display=none until the tooltip controller " \
+                                 "reveals the active index's dot",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the datum index",
+               "data-active" => "runtime - rides the marker while its index is the active one"
+             }
+        part "chart-x-axis", "The x-axis tick-label group (with_x_axis)"
+        part "chart-coordinates", "The embedded per-index geometry payload " \
+                                  "(<script type=application/json>) the tooltip controller " \
+                                  "reads - zero chart math in the browser"
+
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           push_series(:area, key: data_key, stack: stack && "area-#{stack}",

@@ -25,6 +25,16 @@ module Poetry
         # dictionary's variant classes (the N9 W1a learning).
         style :align, default: :bottom, required: true, variants: %i[top bottom]
 
+        part "chart-legend-content", "The legend row (<div>) - centered swatch + label pairs"
+        part "chart-legend-item", "One legend entry (<div>; a <button> in toggle mode)",
+             states: {
+               "data-key" => "in toggle mode - the series key the button toggles",
+               "data-hidden" => "in toggle mode - the item's series is toggled off (the live " \
+                                "controller stamps it at runtime; the item dims)"
+             }
+        part "chart-legend-swatch", "The color swatch (<div>) - inline background-color carries " \
+                                    "the entry's color; omitted with hide_icon or colorless entries"
+
         def chart_config
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end

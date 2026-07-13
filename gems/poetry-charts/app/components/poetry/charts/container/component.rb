@@ -20,6 +20,17 @@ module Poetry
         option :config, ActiveModel::Type::Value.new, required: true
         option :id, :string
 
+        part "chart", "The chart frame (<div>) - the aspect-video chrome, the tooltip layer's " \
+                      "positioning anchor, and the id scope the per-series colors are emitted for",
+             states: {
+               "data-chart" => "always - the chart instance id (explicit id: or unique per " \
+                               "render); the scoped color emission keys off it"
+             },
+             vars: {
+               "--color-*" => "per-series color, one entry per series key - the frame's " \
+                              "<style> block emits them for [data-chart=<id>] in both themes"
+             }
+
         def chart_config
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end

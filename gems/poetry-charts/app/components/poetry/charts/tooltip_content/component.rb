@@ -30,6 +30,23 @@ module Poetry
 
         validates :indicator, inclusion: { in: %i[dot line dashed] }
 
+        part "chart-tooltip-content", "The tooltip box (<div>) - the styled chrome the chart's " \
+                                      "tooltip controller positions and text-swaps"
+        part "chart-tooltip-label", "The category label (<div>) - above the rows, or nested " \
+                                    "inside the single row for line/dashed indicators"
+        part "chart-tooltip-item", "One series row (<div>) - indicator + name + value",
+             states: { "data-key" => "always - the series key the controller matches values by" }
+        part "chart-tooltip-indicator", "The row's swatch (<div>) - dot/line/dashed per " \
+                                        "indicator:, hidden with hide_indicator",
+             vars: {
+               "--color-bg" => "the swatch fill - carries the row's series color (inline; polar " \
+                               "charts retint it to the hovered slice's color at runtime)",
+               "--color-border" => "the swatch border - the same series color as the fill"
+             }
+        part "chart-tooltip-name", "The series name (<span>) - resolved through the chart config"
+        part "chart-tooltip-value", "The formatted value (<span>) - the mono tabular column, " \
+                                    "numbers delimited"
+
         def chart_config
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end

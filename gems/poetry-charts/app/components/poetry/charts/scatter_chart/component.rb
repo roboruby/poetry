@@ -49,6 +49,42 @@ module Poetry
 
         motion_options(duration: 400, easing: :linear)
 
+        part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
+                          "role=img, or the focusable role=application accessibilityLayer when the " \
+                          "tooltip attaches",
+             states: {
+               "data-animate" => "present when animate (the default) - the motion stylesheet and " \
+                                 "controller key the entrance off it",
+               "data-motion" => { condition: "runtime - the motion rig stamps the animation " \
+                                             "lifecycle (entrance/morph, then settled)",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-duration" => "the entrance/morph duration (animation_duration, ms)",
+               "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
+               "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
+             }
+        part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
+                           "across the plot"
+        part "chart-scatters", "The scatter-mark group - every series' points flattened with " \
+                               "a global index"
+        part "chart-scatter-point", "One data point (<circle>) - r carries the z-axis area sizing",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the point's global index across every series",
+               "data-active" => "runtime - the tooltip controller marks the hovered point"
+             }
+        part "chart-error-bars", "One series' error-whisker group (error_key:) - cap-stem-cap " \
+                                 "paths in the foreground color",
+             states: { "data-key" => "the series key" }
+        part "chart-reference", "The reference-mark group (with_reference_line/_area/_dot), " \
+                                "painted above the series"
+        part "chart-x-axis", "The x-axis tick-label group (with_x_axis)"
+        part "chart-y-axis", "The y-axis tick-label group (with_y_axis)"
+        part "chart-coordinates", "The embedded per-index geometry payload " \
+                                  "(<script type=application/json>) the tooltip controller " \
+                                  "reads - zero chart math in the browser"
+
         renders_many :scatters, lambda { |key:, data: nil, error_key: nil, error_width: 5|
           (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
                                                  error_key: error_key&.to_s, error_width:)

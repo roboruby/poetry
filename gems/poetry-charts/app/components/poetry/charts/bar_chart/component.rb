@@ -62,6 +62,47 @@ module Poetry
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
         validates :orientation, inclusion: { in: Cartesian::LAYOUTS }
 
+        part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
+                          "role=img, or the focusable role=application accessibilityLayer when the " \
+                          "tooltip attaches",
+             states: {
+               "data-animate" => "present when animate (the default) - the motion stylesheet and " \
+                                 "controller key the entrance off it",
+               "data-motion" => { condition: "runtime - the motion rig stamps the animation " \
+                                             "lifecycle (entrance/morph, then settled)",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-duration" => "the entrance/morph duration (animation_duration, ms)",
+               "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
+               "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
+             }
+        part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
+                           "across the plot"
+        part "chart-cursor", "The hover cursor, hidden until the tooltip controller positions " \
+                             "and reveals it at the active index - a vertical rule or a " \
+                             "translucent band rect (bar charts)"
+        part "chart-bars", "The bar-mark group wrapping every series"
+        part "chart-bar-series", "One series' bar group",
+             states: { "data-key" => "the series key" }
+        part "chart-bar", "One bar cell (a per-corner rounded-rect path)",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the datum index",
+               "data-active" => "the highlighted cell - server-rendered from active_index:, " \
+                                "and the tooltip controller marks the hovered index at runtime",
+               "data-motion-origin" => { condition: "when animate - the zero edge the entrance " \
+                                                    "grows from",
+                                         values: %w[bottom top left right] }
+             }
+        part "chart-labels", "One series' value-label group (labels: true)",
+             states: { "data-key" => "the series key" }
+        part "chart-x-axis", "The x-axis tick-label group (with_x_axis)"
+        part "chart-y-axis", "The y-axis tick-label group (with_y_axis)"
+        part "chart-coordinates", "The embedded per-index geometry payload " \
+                                  "(<script type=application/json>) the tooltip controller " \
+                                  "reads - zero chart math in the browser"
+
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
                                       color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2,
                                       error_key: nil, error_width: 5|

@@ -30,6 +30,11 @@ module Poetry
 
         validates :type, inclusion: { in: Spec::TYPES }
 
+        # No part contract yet: adapter_chart has no preview, so the
+        # tier cannot DOM-verify a declaration (the tooltip_layer rule -
+        # declare only what verifies). Add previews first, then declare
+        # chart-adapter-mount + chart-spec.
+
         # Built (and validated) server-side - a bad series/axis key raises
         # at render, never in the browser.
         def spec

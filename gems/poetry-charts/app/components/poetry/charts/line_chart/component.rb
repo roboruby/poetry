@@ -50,6 +50,54 @@ module Poetry
         motion_options
         live_option
 
+        part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
+                          "role=img, or the focusable role=application accessibilityLayer when the " \
+                          "tooltip attaches",
+             states: {
+               "data-animate" => "present when animate (the default) - the motion stylesheet and " \
+                                 "controller key the entrance off it",
+               "data-motion" => { condition: "runtime - the motion rig stamps the animation " \
+                                             "lifecycle (entrance/morph, then settled)",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-duration" => "the entrance/morph duration (animation_duration, ms)",
+               "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
+               "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
+             }
+        part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
+                           "across the plot"
+        part "chart-cursor", "The hover cursor, hidden until the tooltip controller positions " \
+                             "and reveals it at the active index - a vertical rule or a " \
+                             "translucent band rect (bar charts)"
+        part "chart-lines", "The line-mark group - each series' curve plus its companion marks"
+        part "chart-line", "One series' stroked curve - pathLength=1 when animating so the " \
+                           "dash draw-in needs no measurement",
+             states: { "data-key" => "the series key" }
+        part "chart-dots", "One series' point-dot group (dots: true)",
+             states: { "data-key" => "the series key" }
+        part "chart-dot", "One point dot (<circle>)"
+        part "chart-error-bars", "One series' error-whisker group (error_key:) - cap-stem-cap " \
+                                 "paths in the foreground color",
+             states: { "data-key" => "the series key" }
+        part "chart-labels", "One series' value-label group (labels: true)",
+             states: { "data-key" => "the series key" }
+        part "chart-reference", "The reference-mark group (with_reference_line/_area/_dot), " \
+                                "painted above the series"
+        part "chart-active-dots", "The hover-marker group (with_tooltip) - pre-rendered hidden " \
+                                  "circles for every series x index"
+        part "chart-active-dot", "One hover marker - display=none until the tooltip controller " \
+                                 "reveals the active index's dot",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the datum index",
+               "data-active" => "runtime - rides the marker while its index is the active one"
+             }
+        part "chart-x-axis", "The x-axis tick-label group (with_x_axis)"
+        part "chart-coordinates", "The embedded per-index geometry payload " \
+                                  "(<script type=application/json>) the tooltip controller " \
+                                  "reads - zero chart math in the browser"
+
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false, error_key: nil, error_width: 5|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)

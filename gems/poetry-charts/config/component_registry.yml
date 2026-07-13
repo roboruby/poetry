@@ -209,6 +209,73 @@ components:
     - Charts render complete on the server; the tooltip layer attaches separately.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - server-computed geometry in a fixed
+        viewBox; role=img, or the focusable role=application accessibilityLayer when
+        the tooltip attaches
+      states:
+      - attr: data-animate
+        condition: present when animate (the default) - the motion stylesheet and
+          controller key the entrance off it
+      - attr: data-motion
+        condition: runtime - the motion rig stamps the animation lifecycle (entrance/morph,
+          then settled)
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-duration"
+        description: the entrance/morph duration (animation_duration, ms)
+      - name: "--poetry-motion-easing"
+        description: the animation easing keyword (animation_easing)
+      - name: "--poetry-motion-delay"
+        description: the pre-animation hold (animation_begin, ms)
+    - name: chart-motion-reveal
+      description: The entrance clipPath rect (recharts' area reveal) - the motion
+        stylesheet scales it 0 -> 1; only when animate
+    - name: chart-grid
+      description: The gridline group (with_grid) - horizontal and/or vertical rules
+        across the plot
+    - name: chart-cursor
+      description: The hover cursor, hidden until the tooltip controller positions
+        and reveals it at the active index - a vertical rule or a translucent band
+        rect (bar charts)
+    - name: chart-areas
+      description: The area-mark group - a fill path plus top-curve stroke per series,
+        clipped by the reveal rect while animating
+    - name: chart-area
+      description: One series' fill path (var(--color-<key>) or its gradient)
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-area-stroke
+      description: One series' top-curve stroke path (recharts strokes the curve,
+        never the area outline)
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-active-dots
+      description: The hover-marker group (with_tooltip) - pre-rendered hidden circles
+        for every series x index
+    - name: chart-active-dot
+      description: One hover marker - display=none until the tooltip controller reveals
+        the active index's dot
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the datum index
+      - attr: data-active
+        condition: runtime - rides the marker while its index is the active one
+    - name: chart-x-axis
+      description: The x-axis tick-label group (with_x_axis)
+    - name: chart-y-axis
+      description: The y-axis tick-label group (with_y_axis)
+    - name: chart-coordinates
+      description: The embedded per-index geometry payload (<script type=application/json>)
+        the tooltip controller reads - zero chart math in the browser
   poetry/charts/bar_chart:
     class_name: Poetry::Charts::BarChart::Component
     identifier: poetry--charts--bar_chart
@@ -392,6 +459,72 @@ components:
       block look).'
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - server-computed geometry in a fixed
+        viewBox; role=img, or the focusable role=application accessibilityLayer when
+        the tooltip attaches
+      states:
+      - attr: data-animate
+        condition: present when animate (the default) - the motion stylesheet and
+          controller key the entrance off it
+      - attr: data-motion
+        condition: runtime - the motion rig stamps the animation lifecycle (entrance/morph,
+          then settled)
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-duration"
+        description: the entrance/morph duration (animation_duration, ms)
+      - name: "--poetry-motion-easing"
+        description: the animation easing keyword (animation_easing)
+      - name: "--poetry-motion-delay"
+        description: the pre-animation hold (animation_begin, ms)
+    - name: chart-grid
+      description: The gridline group (with_grid) - horizontal and/or vertical rules
+        across the plot
+    - name: chart-cursor
+      description: The hover cursor, hidden until the tooltip controller positions
+        and reveals it at the active index - a vertical rule or a translucent band
+        rect (bar charts)
+    - name: chart-bars
+      description: The bar-mark group wrapping every series
+    - name: chart-bar-series
+      description: One series' bar group
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-bar
+      description: One bar cell (a per-corner rounded-rect path)
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the datum index
+      - attr: data-active
+        condition: the highlighted cell - server-rendered from active_index:, and
+          the tooltip controller marks the hovered index at runtime
+      - attr: data-motion-origin
+        condition: when animate - the zero edge the entrance grows from
+        values:
+        - bottom
+        - top
+        - left
+        - right
+    - name: chart-labels
+      description: 'One series'' value-label group (labels: true)'
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-x-axis
+      description: The x-axis tick-label group (with_x_axis)
+    - name: chart-y-axis
+      description: The y-axis tick-label group (with_y_axis)
+    - name: chart-coordinates
+      description: The embedded per-index geometry payload (<script type=application/json>)
+        the tooltip controller reads - zero chart math in the browser
   poetry/charts/composed_chart:
     class_name: Poetry::Charts::ComposedChart::Component
     identifier: poetry--charts--composed_chart
@@ -555,6 +688,105 @@ components:
       an area stack).'
     - Colors come from the config - never set fill/stroke on a mark directly.
     - Entrance animation is on by default; each mark uses its own recharts mechanism.
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - server-computed geometry in a fixed
+        viewBox; role=img, or the focusable role=application accessibilityLayer when
+        the tooltip attaches
+      states:
+      - attr: data-animate
+        condition: present when animate (the default) - the motion stylesheet and
+          controller key the entrance off it
+      - attr: data-motion
+        condition: runtime - the motion rig stamps the animation lifecycle (entrance/morph,
+          then settled)
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-duration"
+        description: the entrance/morph duration (animation_duration, ms)
+      - name: "--poetry-motion-easing"
+        description: the animation easing keyword (animation_easing)
+      - name: "--poetry-motion-delay"
+        description: the pre-animation hold (animation_begin, ms)
+    - name: chart-motion-reveal
+      description: The entrance clipPath rect (recharts' area reveal) - the motion
+        stylesheet scales it 0 -> 1; only when animate
+    - name: chart-grid
+      description: The gridline group (with_grid) - horizontal and/or vertical rules
+        across the plot
+    - name: chart-cursor
+      description: The hover cursor, hidden until the tooltip controller positions
+        and reveals it at the active index - a vertical rule or a translucent band
+        rect (bar charts)
+    - name: chart-areas
+      description: The area-mark group - a fill path plus top-curve stroke per series,
+        clipped by the reveal rect while animating
+    - name: chart-area
+      description: One series' fill path (var(--color-<key>) or its gradient)
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-area-stroke
+      description: One series' top-curve stroke path (recharts strokes the curve,
+        never the area outline)
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-bar-series
+      description: One series' bar group
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-bar
+      description: One bar cell (a per-corner rounded-rect path)
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the datum index
+      - attr: data-active
+        condition: runtime - the tooltip controller marks the hovered index
+      - attr: data-motion-origin
+        condition: when animate - the zero edge the entrance grows from
+        values:
+        - bottom
+        - top
+    - name: chart-lines
+      description: The line-mark group - each series' curve plus its companion marks
+    - name: chart-line
+      description: One series' stroked curve - pathLength=1 when animating so the
+        dash draw-in needs no measurement
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-dots
+      description: 'One series'' point-dot group (dots: true)'
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-dot
+      description: One point dot (<circle>)
+    - name: chart-active-dots
+      description: The hover-marker group (with_tooltip) - pre-rendered hidden circles
+        for every series x index
+    - name: chart-active-dot
+      description: One hover marker - display=none until the tooltip controller reveals
+        the active index's dot
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the datum index
+      - attr: data-active
+        condition: runtime - rides the marker while its index is the active one
+    - name: chart-x-axis
+      description: The x-axis tick-label group (with_x_axis)
+    - name: chart-coordinates
+      description: The embedded per-index geometry payload (<script type=application/json>)
+        the tooltip controller reads - zero chart math in the browser
   poetry/charts/container:
     class_name: Poetry::Charts::Container::Component
     identifier: poetry--charts--container
@@ -578,6 +810,19 @@ components:
       dark: } maps.'
     - 'Give charts an explicit id: when the page renders more than one of the same
       chart.'
+    parts:
+    - name: chart
+      description: The chart frame (<div>) - the aspect-video chrome, the tooltip
+        layer's positioning anchor, and the id scope the per-series colors are emitted
+        for
+      states:
+      - attr: data-chart
+        condition: 'always - the chart instance id (explicit id: or unique per render);
+          the scoped color emission keys off it'
+      vars:
+      - name: "--color-*"
+        description: per-series color, one entry per series key - the frame's <style>
+          block emits them for [data-chart=<id>] in both themes
   poetry/charts/legend_content:
     class_name: Poetry::Charts::LegendContent::Component
     identifier: poetry--charts--legend_content
@@ -613,6 +858,20 @@ components:
       differ from series.'
     - 'align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching
       the chart edge it sits on.'
+    parts:
+    - name: chart-legend-content
+      description: The legend row (<div>) - centered swatch + label pairs
+    - name: chart-legend-item
+      description: One legend entry (<div>; a <button> in toggle mode)
+      states:
+      - attr: data-key
+        condition: in toggle mode - the series key the button toggles
+      - attr: data-hidden
+        condition: in toggle mode - the item's series is toggled off (the live controller
+          stamps it at runtime; the item dims)
+    - name: chart-legend-swatch
+      description: The color swatch (<div>) - inline background-color carries the
+        entry's color; omitted with hide_icon or colorless entries
   poetry/charts/line_chart:
     class_name: Poetry::Charts::LineChart::Component
     identifier: poetry--charts--line_chart
@@ -774,6 +1033,83 @@ components:
     - Colors come from the config - never set stroke on a line directly.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - server-computed geometry in a fixed
+        viewBox; role=img, or the focusable role=application accessibilityLayer when
+        the tooltip attaches
+      states:
+      - attr: data-animate
+        condition: present when animate (the default) - the motion stylesheet and
+          controller key the entrance off it
+      - attr: data-motion
+        condition: runtime - the motion rig stamps the animation lifecycle (entrance/morph,
+          then settled)
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-duration"
+        description: the entrance/morph duration (animation_duration, ms)
+      - name: "--poetry-motion-easing"
+        description: the animation easing keyword (animation_easing)
+      - name: "--poetry-motion-delay"
+        description: the pre-animation hold (animation_begin, ms)
+    - name: chart-grid
+      description: The gridline group (with_grid) - horizontal and/or vertical rules
+        across the plot
+    - name: chart-cursor
+      description: The hover cursor, hidden until the tooltip controller positions
+        and reveals it at the active index - a vertical rule or a translucent band
+        rect (bar charts)
+    - name: chart-lines
+      description: The line-mark group - each series' curve plus its companion marks
+    - name: chart-line
+      description: One series' stroked curve - pathLength=1 when animating so the
+        dash draw-in needs no measurement
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-dots
+      description: 'One series'' point-dot group (dots: true)'
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-dot
+      description: One point dot (<circle>)
+    - name: chart-error-bars
+      description: One series' error-whisker group (error_key:) - cap-stem-cap paths
+        in the foreground color
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-labels
+      description: 'One series'' value-label group (labels: true)'
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-reference
+      description: The reference-mark group (with_reference_line/_area/_dot), painted
+        above the series
+    - name: chart-active-dots
+      description: The hover-marker group (with_tooltip) - pre-rendered hidden circles
+        for every series x index
+    - name: chart-active-dot
+      description: One hover marker - display=none until the tooltip controller reveals
+        the active index's dot
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the datum index
+      - attr: data-active
+        condition: runtime - rides the marker while its index is the active one
+    - name: chart-x-axis
+      description: The x-axis tick-label group (with_x_axis)
+    - name: chart-coordinates
+      description: The embedded per-index geometry payload (<script type=application/json>)
+        the tooltip controller reads - zero chart math in the browser
   poetry/charts/pie_chart:
     class_name: Poetry::Charts::PieChart::Component
     identifier: poetry--charts--pie_chart
@@ -865,6 +1201,61 @@ components:
     - The tooltip walks slices by hover AND arrow keys (role=application when attached).
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
+        focus/keyboard surface (role=application when it attaches), and the motion
+        rig's mount
+      states:
+      - attr: data-animate
+        condition: when animate (the default) - the entrance tier's flag the motion
+          stylesheet and controller key off
+      - attr: data-motion
+        condition: runtime, when animate - the motion engine's lifecycle stamp
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-delay"
+        description: the motion rig's entrance delay (animation_begin)
+      - name: "--poetry-motion-duration"
+        description: the motion rig's entrance duration (animation_duration)
+      - name: "--poetry-motion-easing"
+        description: the motion rig's easing keyword (animation_easing)
+    - name: chart-pie
+      description: One pie's slice group (<g>) - a ring per with_pie slot
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-pie-sector
+      description: One slice (<path>) - fill from its row's color, popped out when
+        active
+      states:
+      - attr: data-key
+        condition: always - the series key
+      - attr: data-index
+        condition: on the first pie's slices - the datum index the tooltip walks
+      - attr: data-active
+        condition: the active slice - server-rendered via active_index:, and reflected
+          onto the hovered/arrow-keyed index by the tooltip controller at runtime
+      - attr: data-motion-group
+        condition: when animate - the motion rig's sweep group (one per ring)
+      - attr: data-motion-sector
+        condition: when animate - the motion rig's server-computed sector params for
+          the fan-out sweep
+    - name: chart-labels
+      description: A series' value labels (<g> of <text>, aria-hidden), rendered when
+        the series opts into labels
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-center-label
+      description: The center text (<text>) - title tspan plus optional subtitle filling
+        the chart's middle
+    - name: chart-coordinates
+      description: The embedded JSON payload (<script>) the tooltip controller reads
+        - per-category anchors and pre-formatted values, zero chart math in the browser
   poetry/charts/radar_chart:
     class_name: Poetry::Charts::RadarChart::Component
     identifier: poetry--charts--radar_chart
@@ -962,6 +1353,65 @@ components:
     - Colors come from the config - never set fill/stroke on a radar directly.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
+        focus/keyboard surface (role=application when it attaches), and the motion
+        rig's mount
+      states:
+      - attr: data-animate
+        condition: when animate (the default) - the entrance tier's flag the motion
+          stylesheet and controller key off
+      - attr: data-motion
+        condition: runtime, when animate - the motion engine's lifecycle stamp
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-delay"
+        description: the motion rig's entrance delay (animation_begin)
+      - name: "--poetry-motion-duration"
+        description: the motion rig's entrance duration (animation_duration)
+      - name: "--poetry-motion-easing"
+        description: the motion rig's easing keyword (animation_easing)
+      - name: "--poetry-motion-center"
+        description: the polar center the CSS entrance scales the series from
+    - name: chart-polar-grid
+      description: The polar grid (<g>, aria-hidden) - ring and spoke linework behind
+        the series
+    - name: chart-radars
+      description: The series layer (<g>) - every radar polygon renders here; the
+        CSS entrance scales this group from the polar center
+    - name: chart-radar
+      description: One series' closed polygon (<path>) - config color, 0.6 fill by
+        default
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-dots
+      description: 'A series'' vertex dots (<g>), rendered when dots: true'
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-dot
+      description: One vertex dot (<circle>) - solid, at the series color
+    - name: chart-angle-axis
+      description: The category labels around the rim (<g> of <text>)
+    - name: chart-hit-wedges
+      description: The tooltip's hit layer (<g>), rendered when the tooltip attaches
+    - name: chart-hit-wedge
+      description: One per-category hit wedge (<path>, transparent but painted so
+        it hit-tests) - the tooltip's hover target
+      states:
+      - attr: data-index
+        condition: always - the datum index
+      - attr: data-active
+        condition: the hovered/arrow-keyed category - the tooltip controller reflects
+          the active index here at runtime
+    - name: chart-coordinates
+      description: The embedded JSON payload (<script>) the tooltip controller reads
+        - per-category anchors and pre-formatted values, zero chart math in the browser
   poetry/charts/radial_bar_chart:
     class_name: Poetry::Charts::RadialBarChart::Component
     identifier: poetry--charts--radial_bar_chart
@@ -1079,6 +1529,67 @@ components:
       fills the middle.
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
+        focus/keyboard surface (role=application when it attaches), and the motion
+        rig's mount
+      states:
+      - attr: data-animate
+        condition: when animate (the default) - the entrance tier's flag the motion
+          stylesheet and controller key off
+      - attr: data-motion
+        condition: runtime, when animate - the motion engine's lifecycle stamp
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-delay"
+        description: the motion rig's entrance delay (animation_begin)
+      - name: "--poetry-motion-duration"
+        description: the motion rig's entrance duration (animation_duration)
+      - name: "--poetry-motion-easing"
+        description: the motion rig's easing keyword (animation_easing)
+    - name: chart-polar-grid
+      description: The polar grid (<g>, aria-hidden) - ring and spoke linework behind
+        the series
+    - name: chart-radial-series
+      description: One series' ring group (<g>)
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-radial-background
+      description: 'The muted track ring (<path>) behind a bar, rendered when background:
+        true'
+    - name: chart-radial-bar
+      description: One angular bar (<path>) - a ring per data row, sweep proportional
+        to value
+      states:
+      - attr: data-key
+        condition: always - the series key
+      - attr: data-index
+        condition: on the first series' bars - the datum index the tooltip walks
+      - attr: data-active
+        condition: the hovered/arrow-keyed bar - the tooltip controller reflects the
+          active index here at runtime
+      - attr: data-motion-group
+        condition: when animate - the motion rig's sweep group (one per ring)
+      - attr: data-motion-sector
+        condition: when animate - the motion rig's server-computed sector params for
+          the fan-out sweep
+    - name: chart-labels
+      description: A series' value labels (<g> of <text>, aria-hidden), rendered when
+        the series opts into labels
+      states:
+      - attr: data-key
+        condition: always - the series key
+    - name: chart-center-label
+      description: The center text (<text>) - title tspan plus optional subtitle filling
+        the chart's middle
+    - name: chart-coordinates
+      description: The embedded JSON payload (<script>) the tooltip controller reads
+        - per-category anchors and pre-formatted values, zero chart math in the browser
   poetry/charts/scatter_chart:
     class_name: Poetry::Charts::ScatterChart::Component
     identifier: poetry--charts--scatter_chart
@@ -1223,6 +1734,60 @@ components:
     - The tooltip hits per point and shows the x/y(/z) values with the series color.
     - 'Entrance animation is on by default (recharts Scatter: 400ms linear); animate:
       false for a static chart.'
+    parts:
+    - name: chart-svg
+      description: The chart canvas (<svg>) - server-computed geometry in a fixed
+        viewBox; role=img, or the focusable role=application accessibilityLayer when
+        the tooltip attaches
+      states:
+      - attr: data-animate
+        condition: present when animate (the default) - the motion stylesheet and
+          controller key the entrance off it
+      - attr: data-motion
+        condition: runtime - the motion rig stamps the animation lifecycle (entrance/morph,
+          then settled)
+        values:
+        - entrance
+        - morph
+        - settled
+      vars:
+      - name: "--poetry-motion-duration"
+        description: the entrance/morph duration (animation_duration, ms)
+      - name: "--poetry-motion-easing"
+        description: the animation easing keyword (animation_easing)
+      - name: "--poetry-motion-delay"
+        description: the pre-animation hold (animation_begin, ms)
+    - name: chart-grid
+      description: The gridline group (with_grid) - horizontal and/or vertical rules
+        across the plot
+    - name: chart-scatters
+      description: The scatter-mark group - every series' points flattened with a
+        global index
+    - name: chart-scatter-point
+      description: One data point (<circle>) - r carries the z-axis area sizing
+      states:
+      - attr: data-key
+        condition: the series key
+      - attr: data-index
+        condition: the point's global index across every series
+      - attr: data-active
+        condition: runtime - the tooltip controller marks the hovered point
+    - name: chart-error-bars
+      description: One series' error-whisker group (error_key:) - cap-stem-cap paths
+        in the foreground color
+      states:
+      - attr: data-key
+        condition: the series key
+    - name: chart-reference
+      description: The reference-mark group (with_reference_line/_area/_dot), painted
+        above the series
+    - name: chart-x-axis
+      description: The x-axis tick-label group (with_x_axis)
+    - name: chart-y-axis
+      description: The y-axis tick-label group (with_y_axis)
+    - name: chart-coordinates
+      description: The embedded per-index geometry payload (<script type=application/json>)
+        the tooltip controller reads - zero chart math in the browser
   poetry/charts/tooltip_content:
     class_name: Poetry::Charts::TooltipContent::Component
     identifier: poetry--charts--tooltip_content
@@ -1272,6 +1837,32 @@ components:
       a display string.
     - 'indicator: :dot (default) | :line | :dashed matches the shadcn variants.'
     - Numeric values render delimited (1,234) in the mono tabular column automatically.
+    parts:
+    - name: chart-tooltip-content
+      description: The tooltip box (<div>) - the styled chrome the chart's tooltip
+        controller positions and text-swaps
+    - name: chart-tooltip-label
+      description: The category label (<div>) - above the rows, or nested inside the
+        single row for line/dashed indicators
+    - name: chart-tooltip-item
+      description: One series row (<div>) - indicator + name + value
+      states:
+      - attr: data-key
+        condition: always - the series key the controller matches values by
+    - name: chart-tooltip-indicator
+      description: The row's swatch (<div>) - dot/line/dashed per indicator:, hidden
+        with hide_indicator
+      vars:
+      - name: "--color-bg"
+        description: the swatch fill - carries the row's series color (inline; polar
+          charts retint it to the hovered slice's color at runtime)
+      - name: "--color-border"
+        description: the swatch border - the same series color as the fill
+    - name: chart-tooltip-name
+      description: The series name (<span>) - resolved through the chart config
+    - name: chart-tooltip-value
+      description: The formatted value (<span>) - the mono tabular column, numbers
+        delimited
   poetry/charts/tooltip_layer:
     class_name: Poetry::Charts::TooltipLayer::Component
     identifier: poetry--charts--tooltip_layer

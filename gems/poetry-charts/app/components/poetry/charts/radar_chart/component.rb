@@ -51,6 +51,43 @@ module Poetry
         motion_options
         option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
 
+        part "chart-svg", "The chart canvas (<svg>) - the aria-label surface, the tooltip's " \
+                          "focus/keyboard surface (role=application when it attaches), and " \
+                          "the motion rig's mount",
+             states: {
+               "data-animate" => "when animate (the default) - the entrance tier's flag the " \
+                                 "motion stylesheet and controller key off",
+               "data-motion" => { condition: "runtime, when animate - the motion engine's lifecycle stamp",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-delay" => "the motion rig's entrance delay (animation_begin)",
+               "--poetry-motion-duration" => "the motion rig's entrance duration (animation_duration)",
+               "--poetry-motion-easing" => "the motion rig's easing keyword (animation_easing)",
+               "--poetry-motion-center" => "the polar center the CSS entrance scales the series from"
+             }
+        part "chart-polar-grid", "The polar grid (<g>, aria-hidden) - ring and spoke linework " \
+                                 "behind the series"
+        part "chart-radars", "The series layer (<g>) - every radar polygon renders here; the " \
+                             "CSS entrance scales this group from the polar center"
+        part "chart-radar", "One series' closed polygon (<path>) - config color, 0.6 fill by default",
+             states: { "data-key" => "always - the series key" }
+        part "chart-dots", "A series' vertex dots (<g>), rendered when dots: true",
+             states: { "data-key" => "always - the series key" }
+        part "chart-dot", "One vertex dot (<circle>) - solid, at the series color"
+        part "chart-angle-axis", "The category labels around the rim (<g> of <text>)"
+        part "chart-hit-wedges", "The tooltip's hit layer (<g>), rendered when the tooltip attaches"
+        part "chart-hit-wedge", "One per-category hit wedge (<path>, transparent but painted so " \
+                                "it hit-tests) - the tooltip's hover target",
+             states: {
+               "data-index" => "always - the datum index",
+               "data-active" => "the hovered/arrow-keyed category - the tooltip controller " \
+                                "reflects the active index here at runtime"
+             }
+        part "chart-coordinates", "The embedded JSON payload (<script>) the tooltip controller " \
+                                  "reads - per-category anchors and pre-formatted values, zero " \
+                                  "chart math in the browser"
+
         renders_many :radars, lambda { |data_key:, fill_opacity: 0.6, stroke_width: 0, dots: false, dot_radius: 4|
           (@series_entries ||= []) << Series.new(data_key: data_key.to_s, fill_opacity:, stroke_width:,
                                                  dots:, dot_radius:)

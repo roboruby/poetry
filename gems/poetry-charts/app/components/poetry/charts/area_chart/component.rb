@@ -54,6 +54,50 @@ module Poetry
 
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
 
+        part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
+                          "role=img, or the focusable role=application accessibilityLayer when the " \
+                          "tooltip attaches",
+             states: {
+               "data-animate" => "present when animate (the default) - the motion stylesheet and " \
+                                 "controller key the entrance off it",
+               "data-motion" => { condition: "runtime - the motion rig stamps the animation " \
+                                             "lifecycle (entrance/morph, then settled)",
+                                  values: %w[entrance morph settled] }
+             },
+             vars: {
+               "--poetry-motion-duration" => "the entrance/morph duration (animation_duration, ms)",
+               "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
+               "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
+             }
+        part "chart-motion-reveal", "The entrance clipPath rect (recharts' area reveal) - the " \
+                                    "motion stylesheet scales it 0 -> 1; only when animate"
+        part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
+                           "across the plot"
+        part "chart-cursor", "The hover cursor, hidden until the tooltip controller positions " \
+                             "and reveals it at the active index - a vertical rule or a " \
+                             "translucent band rect (bar charts)"
+        part "chart-areas", "The area-mark group - a fill path plus top-curve stroke per series, " \
+                            "clipped by the reveal rect while animating"
+        part "chart-area", "One series' fill path (var(--color-<key>) or its gradient)",
+             states: { "data-key" => "the series key" }
+        part "chart-area-stroke", "One series' top-curve stroke path (recharts strokes the " \
+                                  "curve, never the area outline)",
+             states: { "data-key" => "the series key" }
+        part "chart-active-dots", "The hover-marker group (with_tooltip) - pre-rendered hidden " \
+                                  "circles for every series x index"
+        part "chart-active-dot", "One hover marker - display=none until the tooltip controller " \
+                                 "reveals the active index's dot",
+             states: {
+               "data-key" => "the series key",
+               "data-index" => "the datum index",
+               "data-active" => "runtime - rides the marker while its index is the active one"
+             }
+        part "chart-x-axis", "The x-axis tick-label group (with_x_axis)"
+        part "chart-y-axis", "The y-axis tick-label group (with_y_axis)"
+        part "chart-coordinates", "The embedded per-index geometry payload " \
+                                  "(<script type=application/json>) the tooltip controller " \
+                                  "reads - zero chart math in the browser"
+
         # Lambda slots accumulate config into ivars and return nil (the
         # breadcrumb pattern - slot wrappers do not delegate to lambda
         # return values); readers force evaluation via the slot predicate
