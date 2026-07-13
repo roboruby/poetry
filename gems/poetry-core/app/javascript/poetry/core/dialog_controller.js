@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
+import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
+import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
 
 // The native-dialog primitive: borrow the PLATFORM overlay -
 // showModal() gives the focus trap, Esc handling, top-layer stacking, and
@@ -75,34 +77,28 @@ export default class extends Controller {
     if (!inside) this.close()
   }
 
-  // "meta+k" / "ctrl+shift+p" style descriptors: '+'-separated modifiers
-  // plus one final key token, matched exactly (unlisted modifiers must be
-  // up, so plain typing never triggers).
+  // The descriptor grammar lives in helpers/hotkey.js (shared with the
+  // generic hotkey controller since an upstream review).
   #matchesHotkey(event) {
-    const tokens = this.hotkeyValue.toLowerCase().split("+").map((token) => token.trim())
-    const key = tokens.pop()
-
-    if ((event.key ?? "").toLowerCase() !== key) return false
-
-    const meta = tokens.includes("meta") ? (event.metaKey || event.ctrlKey) : true
-    const ctrl = tokens.includes("ctrl") ? event.ctrlKey : true
-    const shift = tokens.includes("shift") === event.shiftKey
-    const alt = tokens.includes("alt") === event.altKey
-    const noStray = tokens.includes("meta") || tokens.includes("ctrl") ||
-      (!event.metaKey && !event.ctrlKey)
-
-    return meta && ctrl && shift && alt && noStray
+    return matchesHotkey(event, this.hotkeyValue)
   }
 
+  // Shared refcounted lock with scrollbar-gutter compensation - subclasses
+  // (sheet/drawer/sidebar) inherit these entry points unchanged; the
+  // instance flag keeps double-unlocks (disconnect after close) balanced.
   lockScroll() {
-    this.previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    if (this.#locked) return
+
+    this.#locked = true
+    lockScroll()
   }
 
   unlockScroll() {
-    if (this.previousOverflow === undefined) return
+    if (!this.#locked) return
 
-    document.body.style.overflow = this.previousOverflow
-    this.previousOverflow = undefined
+    this.#locked = false
+    unlockScroll()
   }
+
+  #locked = false
 }

@@ -1,0 +1,42 @@
+// Body scroll-lock with scrollbar-gutter compensation (an upstream review
+// finding, 2026-07-12): bare `overflow: hidden` shifts the whole layout by
+// the scrollbar width the moment an overlay opens on a scrollable page.
+// The gap is measured BEFORE locking and paid back as body padding-right.
+// Refcounted so stacked overlays (a dialog opened from a sheet) lock once
+// and restore only when the LAST one closes - per-instance saved values
+// break on out-of-order closes.
+let locks = 0
+let previous = null
+
+export function lockScroll() {
+  locks += 1
+  if (locks > 1) return
+
+  const gap = window.innerWidth - document.documentElement.clientWidth
+  previous = {
+    overflow: document.body.style.overflow,
+    paddingRight: document.body.style.paddingRight
+  }
+  if (gap > 0) {
+    const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0
+    document.body.style.paddingRight = `${current + gap}px`
+  }
+  document.body.style.overflow = "hidden"
+}
+
+export function unlockScroll() {
+  if (locks === 0) return
+
+  locks -= 1
+  if (locks > 0) return
+
+  document.body.style.overflow = previous.overflow
+  document.body.style.paddingRight = previous.paddingRight
+  previous = null
+}
+
+// Test seam: vitest suites run many overlays in one document.
+export function resetScrollLock() {
+  locks = 0
+  previous = null
+}

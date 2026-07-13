@@ -1,12 +1,14 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
+import { resetScrollLock } from "@poetry/controllers/helpers/scroll_lock"
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 
 async function mount(dismissible = true) {
   // application.stop() does not disconnect live controllers, so a prior
   // test's scroll lock would leak into this one's lockScroll capture.
+  resetScrollLock()
   document.body.style.overflow = ""
   document.body.innerHTML = `
     <div id="root" data-controller="poetry--core--dialog"

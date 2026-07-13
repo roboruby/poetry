@@ -370,6 +370,23 @@
       "poetry--core--focus-scope:unmount-auto-focus"
     ]
   },
+  "poetry--core--hotkey": {
+    "targets": [],
+    "values": {
+      "keys": {
+        "type": "String",
+        "default": ""
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry--core--hotkey:pressed"
+    ]
+  },
   "poetry--core--hover-card": {
     "targets": [],
     "values": {
@@ -745,6 +762,26 @@
     ],
     "events": [
       "poetry--core--roving-focus:entry"
+    ]
+  },
+  "poetry--core--scroll-spy": {
+    "targets": [
+      "link"
+    ],
+    "values": {
+      "offset": {
+        "type": "Number",
+        "default": 96
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "refresh"
+    ],
+    "events": [
+      "poetry--core--scroll-spy:changed"
     ]
   },
   "poetry--core--select": {
