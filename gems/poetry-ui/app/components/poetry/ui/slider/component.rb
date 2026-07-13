@@ -155,7 +155,8 @@ module Poetry
 
         def anchor_attributes(index)
           anchor = range? && index.zero? ? :anchor_start : :anchor_end
-          { class: classnames(css(:anchor), css(anchor)), "data-orientation" => orientation }
+          { class: classnames(css(:anchor), css(anchor)), "data-slot" => "slider-anchor",
+            "data-orientation" => orientation }
         end
 
         def thumb_attributes(index)

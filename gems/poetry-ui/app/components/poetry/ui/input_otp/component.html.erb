@@ -10,7 +10,7 @@
     <div data-slot="input-otp-group" aria-hidden="true" class="<%= css(:group) %>">
       <% group_size.times do %>
         <% cell += 1 %>
-        <%= content_tag(:div, **slot_attributes(cell)) do %><%= char_at(cell) %><div data-otp-caret hidden class="<%= css(:caret) %>"><div class="<%= css(:caret_bar) %>"></div></div><% end %>
+        <%= content_tag(:div, **slot_attributes(cell)) do %><%= char_at(cell) %><div data-slot="input-otp-caret" hidden class="<%= css(:caret) %>"><div class="<%= css(:caret_bar) %>"></div></div><% end %>
       <% end %>
     </div>
     <% if separator && group_index < group_sizes.size - 1 %>

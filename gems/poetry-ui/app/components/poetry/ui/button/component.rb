@@ -40,6 +40,20 @@ module Poetry
         validates :type, inclusion: { in: TYPES }
         validates :tag, inclusion: { in: %i[button a] }
 
+        part "button", "The rendered control itself (<button>, or <a> when tag: :a) - " \
+                       "every visual state rides here",
+             states: {
+               "data-variant" => { condition: "always - the resolved variant",
+                                   values: VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "always - the resolved size", values: SIZES.map(&:to_s) },
+               "data-loading" => "loading: is set (aria-busy rides along)"
+             }
+        part "icon", "Wrapper span around leading/trailing slot content - sizes and centers " \
+                     "whatever it holds"
+        part "label", "The content block's span (display: contents - children join the root's " \
+                      "flex row directly)"
+        part "spinner", "The loading indicator, swapped in for the leading icon while loading:"
+
         renders_one :leading
         renders_one :trailing
 

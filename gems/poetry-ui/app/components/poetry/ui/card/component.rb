@@ -21,6 +21,15 @@ module Poetry
 
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
 
+        part "card", "Root container - the vertical flex stack"
+        part "card-header", "The title row grid - gains a trailing auto column when " \
+                            "card-action is present"
+        part "card-title", "The heading (title_tag, h3 by default)"
+        part "card-description", "Muted one-liner under the title"
+        part "card-action", "The header's trailing corner control"
+        part "card-content", "The body - the content block renders here"
+        part "card-footer", "The bottom row (actions/meta)"
+
         renders_one :title
         renders_one :description
         renders_one :action

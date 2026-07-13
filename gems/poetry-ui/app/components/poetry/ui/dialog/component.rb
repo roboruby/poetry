@@ -24,6 +24,18 @@ module Poetry
 
         option :dismissible, :boolean, default: true
 
+        part "dialog", "Root wrapper around the trigger and the <dialog> element"
+        part "dialog-content", "The <dialog> panel - positioning, animation, and the open " \
+                               "state ride here",
+             states: {
+               "data-open" => "panel is open (the controller flips the pair at runtime)",
+               "data-closed" => "panel is closed or animating out (the server-rendered state)"
+             }
+        part "dialog-header", "Title block at the top of the panel"
+        part "dialog-title", "The heading - the dialog's accessible name (required slot)"
+        part "dialog-description", "Muted copy under the title, wired to aria-describedby"
+        part "dialog-footer", "Action row at the bottom of the panel"
+
         # The trigger is a poetry Button wired to open the dialog - agents
         # pass Button props: with_trigger(variant: :outline) { "Open" }.
         renders_one :trigger, lambda { |**options, &block|
