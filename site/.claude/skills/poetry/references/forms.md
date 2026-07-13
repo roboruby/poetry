@@ -97,6 +97,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `id:` (string)
 - `loop:` (boolean) - default false
 - `modal:` (boolean) - default false
+- `multiple:` (boolean) - default false
 - `name:` (string)
 - `open:` (boolean) - default false
 - `placeholder:` (string)
@@ -115,7 +116,7 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)
 - PART `command-input-wrapper` - The input row - search icon + filter input above the list
 - PART `command-search-icon` - Decorative search glyph beside the input
-- PART `command-input` - The popup's filter input (role=combobox, its own accessible name) - the typing session and aria-activedescendant live here
+- PART `command-input` - The filter input (role=combobox) - the typing session and aria-activedescendant live here. Single: in the popup with its own accessible name; multiple: INLINE in the chips frame (Base UI's input-inside layout), where the field label reaches it | states: data-popup-open (multiple: the popup is open (bare while open, absent while closed - the input carries the flip; single's trigger owns it))
 - PART `command-list` - THE role=listbox - the aria-controls target of both combobox roles
 - PART `command-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items
 - PART `command-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out
@@ -125,7 +126,10 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it
 - PART `command-separator` - role=separator divider - hidden by the engine whenever the query is non-empty
 - PART `command-status` - The engine's sr-only polite result-count live region | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
-- WIRING `poetry--core--combobox`: values modal, open, value; actions close, nativeChanged, open, openValueChanged, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
+- PART `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip | states: data-placeholder (the selection is empty (bare; the controller flips it on every commit - the toolbar role departs with it)); data-disabled (disabled: is set - every chip mutation is gated); data-remove-label (always - the localized chip-remove template (a literal label placeholder the controller interpolates for client-built chips))
+- PART `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button | states: data-value (always - the chip's committed value (the native <option> twin)); data-disabled (disabled: is set (chip focus is blocked entirely))
+- PART `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press
+- WIRING `poetry--core--combobox`: values modal, multiple, open, value; actions chipKeydown, chipsPointerdown, close, inputKeydown, nativeChanged, open, openValueChanged, removeChip, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
@@ -133,9 +137,9 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - RULE: Every Combobox MUST be named (Field label via id: or aria-label) - a nameless bare combobox fails at render.
 - RULE: NEVER write aria-selected from highlight logic (position is data-highlighted + aria-activedescendant); NEVER write the display without the native select first - the commit pipeline does all of it; agents patching DOM must too.
 - RULE: Async options: filter: false + the Turbo-frame ?q= recipe - AND the frame must render the twin native <option> for every committable item (the recipe's one hard rule).
-- RULE: In forms, always f.poetry_combobox; multiple: raises - multi-select/chips is not shipped (do not fake it with hidden inputs).
+- RULE: multiple: true is the multi-select/chips mode: value: takes an ARRAY, the native <select multiple> posts name[] (the [] is appended for you), selection TOGGLES with the popup staying open, and chips replace the trigger - never fake multi with hidden inputs.
 - RULE: Do not put interactive elements inside options (an option IS the interactive unit).
-- RULE: Deselection is include_blank (a visible blank option), never a re-click toggle - committing the already-selected value closes without change.
+- RULE: Deselection in single mode is include_blank (a visible blank option), never a re-click toggle - committing the already-selected value closes without change. In multiple, re-committing IS the deselect gesture (chip-remove is its pointer twin).
 
 ## date_picker (`poetry_date_picker`)
 
@@ -174,13 +178,16 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 - `disabled:` (boolean) - default false
 - `invalid:` (boolean) - default false
+- `mask:` (string)
 - `name:` (string)
 - `placeholder:` (string)
 - `type:` (string) - default "text"
 - `value:` (string)
-- PART `input` - The <input> element itself - no inner anatomy; error state is aria-invalid (set by Field/FormBuilder), never a parallel class
+- PART `input` - The <input> element itself - no inner anatomy; error state is aria-invalid (set by Field/FormBuilder), never a parallel class | states: data-raw (mask: is set - the unmasked value, kept live by the mask controller (the masked text is what submits))
+- WIRING `poetry--core--mask`: values alwaysShowMask, autoClear, mask, showMaskOnFocus, slotChar, upcase; events poetry:mask:change, poetry:mask:complete
 - RULE: Inside a form, never render Input directly - use the FormBuilder's field (it wires ids, errors, and aria).
 - RULE: Error styling comes from aria-invalid, set from model errors - never hand-toggle error classes.
+- RULE: mask: formats as the user types ('(999) 999-9999'; 9=digit, a=letter, A=upper, *=alnum, #=sign/digit, \\ escapes, ? makes the rest optional) - the MASKED text submits; read data-raw for the bare value.
 
 ## input_group (`poetry_input_group`)
 
@@ -244,6 +251,38 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: This is a REAL <select> - use it for plain picking; the JS Select is for styled options.
 - RULE: Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.
 - RULE: The fast path is options: [[label, value], ...] + selected:; a content block overrides it.
+
+## number_field (`poetry_number_field`)
+
+Class: Poetry::Ui::NumberField::Component - BEM block `poetry-ui-number_field`.
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `format:` ()
+- `id:` (string)
+- `invalid:` (boolean) - default false
+- `large_step:` (float) - default 10.0
+- `locale:` (string)
+- `max:` (float)
+- `min:` (float)
+- `name:` (string) - required
+- `placeholder:` (string)
+- `readonly:` (boolean) - default false
+- `required:` (boolean) - default false
+- `small_step:` (float) - default 0.1
+- `snap:` (boolean) - default false
+- `step:` (float) - default 1.0
+- `value:` ()
+- `wheel:` (boolean) - default false
+- PART `number-field` - Root wrapper - the controller, disabled/invalid/filled state, and the two-input pair ride here | states: data-disabled (disabled: is set (steppers disable, the group chrome dims)); data-invalid (invalid: is set (the group wears the destructive ring via the control's aria-invalid)); data-filled (the value is non-null (the controller keeps it live))
+- PART `number-field-group` - The bordered field surface - wears InputGroup's chrome (cn-input-group), focus ring keyed on the control inside
+- PART `input-group-addon` - The two stepper cells - InputGroup's addon vocabulary, reused so the group paddings compose | states: data-align=inline-start|inline-end (always - inline-start holds the decrement, inline-end the increment)
+- PART `input-group-control` - The visible formatted <input type=text> - InputGroup's control slot (the themes' focus-ring hook); aria-roledescription "Number field", never a spinbutton
+- WIRING `poetry--core--number-field`: targets decrement, hidden, increment, input; values format, largeStep, locale, max, min, smallStep, snap, step, wheel; actions blur, focus, hiddenChanged, input, keydown, leave, press, tap; events poetry:number-field:change, poetry:number-field:commit
+- RULE: Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare input type=number.
+- RULE: The server reads params[<name>] as the raw number string - display formatting (format:) never changes what submits.
+- RULE: Steppers are mouse/touch affordances (tabindex -1); keyboard users step with ArrowUp/Down (Shift = large_step, Alt = small_step) on the input itself.
+- RULE: Pair it with a Label/Field for the accessible name - the component ships none.
+- RULE: format: takes Intl.NumberFormatOptions as a Hash ({ style: "currency", currency: "USD" }); pick locale: to pin parsing separators.
 
 ## radio_group (`poetry_radio_group`)
 

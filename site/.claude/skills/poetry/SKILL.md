@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (65 components + 13 chart components + 6 blocks). After updating
+Generated from the poetry registry (66 components + 13 chart components + 6 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -50,7 +50,7 @@ Load the reference for the family you are composing in - each file
 carries the full contracts (options, variants, slots, wiring, RULE
 lines) for its components:
 
-- **forms** (`references/forms.md`): button, button_group, calendar, checkbox, combobox, date_picker, field, input, input_group, input_otp, label, native_select, radio_group, select, slider, switch, textarea, toggle, toggle_group
+- **forms** (`references/forms.md`): button, button_group, calendar, checkbox, combobox, date_picker, field, input, input_group, input_otp, label, native_select, number_field, radio_group, select, slider, switch, textarea, toggle, toggle_group
 - **overlays** (`references/overlays.md`): alert_dialog, command, command_dialog, context_menu, dialog, drawer, dropdown_menu, hover_card, menubar, popover, sheet, tooltip
 - **data** (`references/data.md`): accordion, avatar, badge, card, carousel, collapsible, data_table, empty, item, table
 - **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toaster
