@@ -97,10 +97,35 @@ class DocsCatalog
 
     def all = docs + components + charts + blocks + demos
 
+    # The DOM-verified part contract for a gallery page, or nil -
+    # feeds the Styling tables on component and chart pages.
+    def parts_for(section, slug)
+      case section
+      when "components" then component_parts[slug]
+      when "charts" then chart_parts[slug]
+      end
+    end
+
     private
 
+    def component_parts
+      @component_parts ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
+        [key.split("/")[2..].join("-").tr("_", "-"), entry["parts"]]
+      end
+    end
+
+    def chart_parts
+      @chart_parts ||= registry_components(Poetry::Charts.root).to_h do |key, entry|
+        [key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["parts"]]
+      end
+    end
+
     def registry_keys(root)
-      YAML.safe_load_file(root.join("config/component_registry.yml")).fetch("components").keys
+      registry_components(root).keys
+    end
+
+    def registry_components(root)
+      YAML.safe_load_file(root.join("config/component_registry.yml")).fetch("components")
     end
 
     def blocks_meta

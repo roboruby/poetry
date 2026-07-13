@@ -1,0 +1,92 @@
+<%# The Styles-API tables (the upstream library borrow poetry verifies):
+    the registry-published part contract - parts, state attributes, var
+    seams - rendered straight from component_registry.yml. The gems'
+    part-contract tier reconciles every row against rendered DOM in CI,
+    so nothing on this page can drift from the real anatomy. %>
+<% states = parts.flat_map { |part| (part["states"] || []).map { |state| [part["name"], state] } } %>
+<% vars = parts.flat_map { |part| (part["vars"] || []).map { |var| [part["name"], var] } } %>
+<section id="styling" class="flex flex-col gap-6">
+  <header class="flex flex-col gap-2">
+    <h2 class="text-2xl font-semibold tracking-tight">Styling</h2>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Every part carries a stable <code class="font-mono">data-slot</code> attribute — target
+      <code class="font-mono">[data-slot=…]</code> from your own CSS to restyle it. State rides
+      data attributes on the parts below. This contract is verified against rendered DOM in CI.
+    </p>
+  </header>
+
+  <div class="overflow-x-auto">
+    <%= poetry_table do %>
+      <%= poetry_table_header do %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_head { "Part" } %>
+          <%= poetry_table_head { "Description" } %>
+        <% end %>
+      <% end %>
+      <%= poetry_table_body do %>
+        <% parts.each do |part| %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "[data-slot=#{part["name"]}]" } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { part["description"] } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <% if states.any? %>
+    <div class="flex flex-col gap-3">
+      <h3 class="text-lg font-medium">State attributes</h3>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Part" } %>
+              <%= poetry_table_head { "Attribute" } %>
+              <%= poetry_table_head { "Condition" } %>
+              <%= poetry_table_head { "Values" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% states.each do |part_name, state| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { part_name } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { state["attr"] } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { state["condition"] } %>
+                <%= poetry_table_cell(class: "font-mono text-xs text-muted-foreground") do %>
+                  <%= state["values"] ? state["values"].join(" · ") : "—" %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <% if vars.any? %>
+    <div class="flex flex-col gap-3">
+      <h3 class="text-lg font-medium">CSS variables</h3>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Part" } %>
+              <%= poetry_table_head { "Variable" } %>
+              <%= poetry_table_head { "Description" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% vars.each do |part_name, var| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { part_name } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { var["name"] } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { var["description"] } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</section>

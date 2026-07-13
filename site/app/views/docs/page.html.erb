@@ -28,4 +28,8 @@
       <% end %>
     <% end %>
   <% end %>
+
+  <% if (parts = DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
+    <%= render "docs/styling", parts: parts %>
+  <% end %>
 </div>
