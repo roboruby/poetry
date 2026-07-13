@@ -421,8 +421,26 @@ module Poetry
           lines = (entry["controllers"] || []).map do |controller|
             "- wiring #{controller["identifier"]}: actions #{(controller["actions"] || []).join(", ")}"
           end
+          # The styling contract: every data-slot part with its
+          # state attributes and var seams, DOM-verified by the
+          # part-contract tier - restyle via [data-slot=...], never by
+          # guessing at internal markup.
+          (entry["parts"] || []).each { |part| lines << part_line(part) }
           (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
           lines
+        end
+
+        def part_line(part)
+          facets = []
+          states = (part["states"] || []).map do |state|
+            values = state["values"] ? "=#{state["values"].join("|")}" : ""
+            "#{state["attr"]}#{values} (#{state["condition"]})"
+          end
+          facets << "states: #{states.join("; ")}" if states.any?
+          vars = (part["vars"] || []).map { |var| "#{var["name"]} (#{var["description"]})" }
+          facets << "vars: #{vars.join("; ")}" if vars.any?
+          "- part [data-slot=#{part["name"]}] - #{part["description"]}" \
+            "#{" | #{facets.join(" | ")}" if facets.any?}"
         end
 
         def summary(entry)

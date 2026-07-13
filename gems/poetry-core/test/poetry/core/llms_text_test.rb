@@ -105,6 +105,31 @@ module Poetry
         assert_includes full, "with_item REQUIRES a content block (the slide)"
       end
 
+      # The styling contract, stated where agents read: every part
+      # with its state attributes (enum values inline) and var seams.
+      def test_full_states_the_part_contract
+        entry = {
+          "class_name" => "Poetry::Ui::Dialog::Component", "bem_block" => "poetry-ui-dialog",
+          "identifier" => "poetry--ui--dialog",
+          "styles" => [], "options" => [], "slots" => [],
+          "parts" => [
+            { "name" => "dialog-content", "description" => "The panel",
+              "states" => [
+                { "attr" => "data-open", "condition" => "panel is open" },
+                { "attr" => "data-side", "condition" => "resolved side", "values" => %w[top bottom] }
+              ],
+              "vars" => [{ "name" => "--transform-origin", "description" => "popper origin" }] }
+          ]
+        }
+        registry = FakeRegistry.new(entries: { "poetry/ui/dialog" => entry }, blocks: nil,
+                                    source_root: Pathname("."))
+        full = LlmsText.new(registry: registry).full
+
+        assert_includes full,
+                        "- PART `dialog-content` - The panel | states: data-open (panel is open); " \
+                        "data-side=top|bottom (resolved side) | vars: --transform-origin (popper origin)"
+      end
+
       # The crash class, stated in the contract text: a
       # required slot speaks at the component level AND at the nested
       # builder seam where the menu crash actually lived.

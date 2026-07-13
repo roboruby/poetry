@@ -45,6 +45,8 @@ module Poetry
           round
         ]
 
+        part "icon", "The demo SVG itself - the whole component is one part"
+
         def call
           content_tag(:svg, **svg_attributes.to_attributes) do
             tag.path(d: "M4 4l6 6m0-6l-6 6")

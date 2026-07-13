@@ -102,9 +102,17 @@ module Poetry
           "title" => name.tr("-", " ").capitalize,
           "files" => component_files(path),
           "registryDependencies" => (@dependencies[name.tr("-", "_")] || []).map { |dep| dep.tr("_", "-") },
-          "meta" => { "gem" => @gem_name, "gem_version" => @gem_version, "provided" => "runtime-gem",
-                      "class_name" => entry["class_name"], "identifier" => entry["identifier"] }
+          "meta" => component_meta(entry)
         }
+      end
+
+      # The part contract rides meta so /r consumers see the
+      # DOM-verified styling surface without fetching the source.
+      def component_meta(entry)
+        meta = { "gem" => @gem_name, "gem_version" => @gem_version, "provided" => "runtime-gem",
+                 "class_name" => entry["class_name"], "identifier" => entry["identifier"] }
+        meta["parts"] = entry["parts"] if entry["parts"]
+        meta
       end
 
       # The component's whole source dir (component.rb, style.rb, template,

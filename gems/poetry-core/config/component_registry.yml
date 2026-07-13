@@ -67,3 +67,6 @@ components:
     slots: []
     elements: []
     capsule: 02e59d06f424
+    parts:
+    - name: icon
+      description: The demo SVG itself - the whole component is one part

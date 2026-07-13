@@ -74,6 +74,7 @@ module Poetry
         lines.concat(prop_lines(entry))
         slots = entry["slots"].map { |slot| slot_summary(slot) }
         lines << "Slots: #{slots.join(", ")}." if slots.any?
+        lines.concat(part_lines(entry))
         # The block back-reference: the arrow points UP at the
         # surface agents actually read - a screen containing this component
         # should start from the vetted composition, not from scratch.
@@ -84,6 +85,27 @@ module Poetry
         lines.concat(wiring_lines(entry))
         (entry["agent_rules"] || []).each { |rule| lines << "- RULE: #{rule}" }
         "#{lines.join("\n")}\n"
+      end
+
+      # The styling contract: every data-slot part with its state
+      # attributes and var seams - DOM-verified by the part-contract tier,
+      # so a restyling instruction can only target selectors that provably
+      # exist. Restyle via `[data-slot=<part>]` (+ state selectors); never
+      # guess at internal markup.
+      def part_lines(entry)
+        (entry["parts"] || []).map do |part|
+          facets = []
+          states = (part["states"] || []).map { |state| state_phrase(state) }
+          facets << "states: #{states.join("; ")}" if states.any?
+          vars = (part["vars"] || []).map { |var| "#{var["name"]} (#{var["description"]})" }
+          facets << "vars: #{vars.join("; ")}" if vars.any?
+          "- PART `#{part["name"]}` - #{part["description"]}#{" | #{facets.join(" | ")}" if facets.any?}"
+        end
+      end
+
+      def state_phrase(state)
+        values = state["values"] ? "=#{state["values"].join("|")}" : ""
+        "#{state["attr"]}#{values} (#{state["condition"]})"
       end
 
       # The any-of contract, phrased once: "one of a content block

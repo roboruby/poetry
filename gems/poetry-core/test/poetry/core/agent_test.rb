@@ -15,6 +15,10 @@ module Poetry
           "styles" => [{ "name" => "variant", "type" => "symbol", "variants" => %w[default destructive ghost] }],
           "options" => [{ "name" => "loading", "type" => "boolean" }],
           "slots" => [],
+          "parts" => [
+            { "name" => "button", "description" => "The control itself",
+              "states" => [{ "attr" => "data-loading", "condition" => "loading: is set" }] }
+          ],
           "agent_rules" => ["Use poetry_button - never a raw <button>."]
         },
         "poetry/ui/command/dialog" => {
@@ -232,6 +236,15 @@ module Poetry
         text = call("describe_component", "name" => "command_dialog", "detail" => "full")
 
         assert_includes text, "wiring poetry--core--dialog: actions open, close, toggle"
+      end
+
+      # The styling contract at full detail: parts with their state
+      # attributes, phrased as the selector agents actually target.
+      def test_describe_full_adds_the_part_contract
+        text = call("describe_component", "name" => "button", "detail" => "full")
+
+        assert_includes text,
+                        "part [data-slot=button] - The control itself | states: data-loading (loading: is set)"
       end
 
       def test_describe_full_carries_agent_rules

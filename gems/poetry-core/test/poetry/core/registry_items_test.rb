@@ -24,6 +24,9 @@ module Poetry
         assert_equal "poetry-core", item.dig("meta", "gem")
         assert_equal "runtime-gem", item.dig("meta", "provided")
         assert_equal "Poetry::Core::X::Component", item.dig("meta", "class_name")
+        # The part contract rides meta - /r consumers see the
+        # DOM-verified styling surface without fetching source.
+        assert_equal "icon", item.dig("meta", "parts", 0, "name")
       end
 
       def test_component_files_carry_real_source_with_mirrored_targets
