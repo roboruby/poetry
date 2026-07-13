@@ -12,6 +12,12 @@ Slot REQUIRED: with_action (the confirming choice) - a call without it raises.
 Slot REQUIRED: with_cancel (the safe way out) - a call without it raises.
 - `size:` (symbol) - one of default|sm, default "default", required
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly), cancel (takes poetry_button props, not a block; with_cancel yields NOTHING to the block - no |param|, write content directly).
+- PART `alert-dialog` - Root wrapper around the trigger and the <dialog> element
+- PART `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here | states: data-open (panel is open (the shared dialog controller flips the pair at runtime)); data-closed (panel is closed (the server-rendered state)); data-size=default|sm (always - the resolved size)
+- PART `alert-dialog-header` - Title block - holds the optional media well, the title, and the description
+- PART `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)
+- PART `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)
+- PART `alert-dialog-footer` - The choice row - cancel then action
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
@@ -31,6 +37,20 @@ REQUIRED - one of id: / aria-label: / aria-labelledby: / aria: (the input's acce
 - `placeholder:` (string)
 - `value:` (string)
 Slots: empty, loading, items (many; types item|group|separator - one with_<type> setter each, options as keywords).
+- PART `command` - Root of the palette - the input row over the listbox, carrying the engine controller
+- PART `command-input-wrapper` - The input row - search icon + filter input above the list
+- PART `command-search-icon` - Decorative search glyph beside the input
+- PART `command-input` - The role=combobox filter input - real focus stays pinned here for the whole session; the highlight rides aria-activedescendant
+- PART `command-list` - The role=listbox holding empty/loading/items - the input's aria-controls target
+- PART `command-empty` - Zero-matches message - rendered hidden; the controller unhides it when the filter pass leaves no visible items
+- PART `command-loading` - Pending affordance (role=status) - rendered hidden; the HOST toggles it (Turbo frame events), Command never does
+- PART `command-group` - role=group labelled by its heading - hidden by the controller when every member item is filtered out | states: data-always-render (always_render: is set - the group survives every filter pass)
+- PART `command-group-heading` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)
+- PART `command-item` - One role=option action row - highlight, filtering, and disablement ride here (never aria-selected in a bare Command) | states: data-value (always - the item's unique value (its server-stable id follows registration order)); data-highlighted (the item holds the highlight (bare; the controller twin-writes it with the input's aria-activedescendant)); data-disabled (disabled: is set (aria-disabled rides along)); data-keywords (keywords: given - extra filter terms beyond the label); data-always-render (always_render: is set - the item survives every filter pass); data-hidden (the filter scored the item zero (the controller pairs it with hidden; never rendered server-side))
+- PART `command-item-text` - The item's label span - the filter/typematch text source (shortcuts and icons excluded)
+- PART `command-shortcut` - Presentational keyboard hint - excluded from the filter text; Command never binds the hinted key
+- PART `command-separator` - Decorative divider (aria-hidden) - hidden by the controller whenever the query is non-empty
+- PART `command-status` - The sr-only polite result-count live region - the controller writes the debounced count from the localized templates | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - RULE: Use poetry_command - never hand-roll a filterable listbox with an input + a list and ad-hoc JS.
 - RULE: Command items DO things; they carry no form value. Picking a value for a form is Combobox (which wraps this) - never bind a hidden input to a bare Command.
@@ -56,6 +76,11 @@ Class: Poetry::Ui::Command::DialogComponent - BEM block `poetry-ui-command-dialo
 - `title:` (string) - default "dynamic"
 - `value:` (string)
 Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+- PART `command-dialog` - Root wrapper around the trigger and the <dialog> - the palette's own chrome; the embedded Command inside carries its own part contract
+- PART `dialog-content` - The <dialog> panel (Dialog's chrome retuned to overflow-hidden p-0) - positioning, animation, and the open state ride here | states: data-open (panel is open (the dialog controller flips the pair at runtime)); data-closed (panel is closed or animating out (the server-rendered state))
+- PART `dialog-header` - Dialog's title block, sr-only here - the palette owns the visible surface
+- PART `dialog-title` - The sr-only heading - the dialog's accessible name (defaults to the source string)
+- PART `dialog-description` - The sr-only description wired to aria-describedby
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired window keydown listener around poetry_dialog.
@@ -76,6 +101,20 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `modal:` (boolean) - default true
 - `open:` (boolean) - default false
 Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+- PART `context-menu` - Root wrapper hosting the context-menu + menu + popper controllers around the surface and content
+- PART `context-menu-trigger` - The right-click/long-press SURFACE wrapping the logical object - not a widget: no role, no aria-haspopup | states: data-popup-open (the menu is open (absence is the closed state - no aria-expanded on a role-less surface)); data-disabled (the surface is inert (disabled: true))
+- PART `context-menu-content` - The role=menu popup panel - anchored at the pointer via popper's virtual-anchor mode; open state and animation ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (forced right initially; popper re-writes it after collision flips)); data-align=start|center|end (the alignment (forced start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the anchor rect's measured width); --anchor-height (popper: the anchor rect's measured height)
+- PART `context-menu-label` - Non-interactive heading for a run of items
+- PART `context-menu-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
+- PART `context-menu-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
+- PART `context-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
+- PART `context-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `context-menu-separator` - role=separator rule between groups
+- PART `context-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
+- PART `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
+- PART `context-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state)); data-inset (indented to align with checkbox/radio item text (inset: true))
+- PART `context-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
 - WIRING `poetry--core--context-menu`: values disabled, longPressDelay; actions disabledValueChanged, open, pressCancel, pressStart; events poetry:context-menu:open
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -94,6 +133,12 @@ Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+- PART `dialog` - Root wrapper around the trigger and the <dialog> element
+- PART `dialog-content` - The <dialog> panel - positioning, animation, and the open state ride here | states: data-open (panel is open (the controller flips the pair at runtime)); data-closed (panel is closed or animating out (the server-rendered state))
+- PART `dialog-header` - Title block at the top of the panel
+- PART `dialog-title` - The heading - the dialog's accessible name (required slot)
+- PART `dialog-description` - Muted copy under the title, wired to aria-describedby
+- PART `dialog-footer` - Action row at the bottom of the panel
 - WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
@@ -108,6 +153,14 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+- PART `drawer` - Root wrapper around the trigger and the <dialog> element
+- PART `drawer-content` - The <dialog> popup - the edge chrome, presence animation, and the swipe contract all ride here (::backdrop inherits the swipe vars, so the overlay fade rides along) | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-swipe-direction=down|up|left|right (always - the dismiss direction); data-swiping (a pointer drag is tracking (transitions go duration-0 - the drawer follows the finger)); data-starting-style (the enter transition's first frame (the presence helper's two-frame trick)); data-ending-style (held through the exit transition before the native close()) | vars: --drawer-swipe-movement-x (px dragged toward a left/right dismissal (controller-written during swipes)); --drawer-swipe-movement-y (px dragged toward an up/down dismissal (controller-written during swipes)); --drawer-swipe-progress (0..1 fraction of the dismiss travel (the backdrop fade rides it)); --drawer-swipe-strength (remaining-travel factor set on release - scales the exit duration so a mostly-swiped drawer closes fast)
+- PART `drawer-swipe-handle` - The grab pill (show_swipe_handle: true, aria-hidden) - a drag may always start on it
+- PART `drawer-header` - Title block at the top of the popup
+- PART `drawer-title` - The heading - the drawer's accessible name (required slot)
+- PART `drawer-description` - Muted copy under the title, wired to aria-describedby
+- PART `drawer-body` - The scrollable content region between header and footer
+- PART `drawer-footer` - Action row pinned to the bottom of the popup
 - WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey; actions backdropClose, close, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -131,6 +184,20 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
 Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|sub - one with_<type> setter each, options as keywords; with_item/with_checkbox_item/with_label yield NOTHING to the block - no |param|, write content directly; each with_radio_group REQUIRES with_radio_item inside its block (at least one radio item); each with_group REQUIRES with_item inside its block (at least one item); each with_sub REQUIRES with_trigger inside its block (the sub-menu item); each with_sub REQUIRES with_item inside its block (at least one item)), trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
+- PART `dropdown-menu` - Root wrapper hosting the menu + popper controllers around the trigger and content
+- PART `dropdown-menu-content` - The role=menu popup panel - positioning, animation, and the open state ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (popper re-writes it after collision flips)); data-align=start|center|end (the alignment against the trigger (popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the trigger's measured width); --anchor-height (popper: the trigger's measured height)
+- PART `dropdown-menu-group` - role=group semantic grouping between separators
+- PART `dropdown-menu-label` - Non-interactive heading for a run of items | states: data-inset (indented to align with checkbox/radio item text (inset: true))
+- PART `dropdown-menu-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `dropdown-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
+- PART `dropdown-menu-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
+- PART `dropdown-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
+- PART `dropdown-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `dropdown-menu-separator` - role=separator rule between groups
+- PART `dropdown-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
+- PART `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
+- PART `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
+- PART `dropdown-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
@@ -158,6 +225,9 @@ Slot REQUIRED: with_trigger (the enriched link) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
 Slots: trigger.
+- PART `hover-card` - Root wrapper around the trigger link and the panel
+- PART `hover-card-trigger` - The enriched link itself - simultaneously the no-JS fallback, the touch path, and the keyboard path | states: data-popup-open (bare while the card is open; absent while closed (Base UI absence-is-the-state))
+- PART `hover-card-content` - The role-less preview panel (invisible to AT on purpose) - positioning, animation, and the open state ride here | states: data-open (card is open (the controller flips the pair at runtime)); data-closed (card is closed (the server-rendered state; hidden rides along)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the panel (popper, post-flip)); --available-height (viewport space left for the panel (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
 - WIRING `poetry--core--hover-card`: values closeDelay, open, openDelay; actions blurClose, focusOpen, openValueChanged, pointerEnter, pointerLeave, touchGuard; events poetry:hover-card:closed, poetry:hover-card:open
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
@@ -177,6 +247,20 @@ Slot REQUIRED: with_menu (at least one menu) - a call without it raises.
 - `loop:` (boolean) - default false
 - `value:` (string)
 Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the top-level menu button); each with_menu REQUIRES with_item inside its block (at least one item)).
+- PART `menubar` - The role=menubar bar - one horizontal roving tab stop across the triggers | states: data-open (some menu is open (value present; the coordinator flips the pair)); data-closed (no menu is open)
+- PART `menubar-menu` - One logical menu - a display:contents wrapper hosting the trigger + content pair's menu and popper controllers
+- PART `menubar-trigger` - The top-level menu button - a role=menuitem INSIDE the bar | states: data-value (the menu's value - the coordinator's open/close key); data-popup-open (its menu is open (written with aria-expanded; absence is the closed state)); data-disabled (trigger is disabled (written together with the disabled property))
+- PART `menubar-content` - The role=menu popup panel - positioning, animation, and the open state ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (bottom initially; popper re-writes it after collision flips)); data-align=start|center|end (the alignment against the trigger (start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the trigger's measured width); --anchor-height (popper: the trigger's measured height)
+- PART `menubar-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
+- PART `menubar-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
+- PART `menubar-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
+- PART `menubar-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
+- PART `menubar-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
+- PART `menubar-separator` - role=separator rule between groups
+- PART `menubar-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
+- PART `menubar-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
+- PART `menubar-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
+- PART `menubar-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
 - WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
 - WIRING `poetry--core--menubar`: values loop, value; actions hoverSlide, onMenuClosed, slideAdjacent, toggle, triggerKeydown, valueValueChanged; events poetry:menubar:value-changed
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -202,6 +286,12 @@ Slot REQUIRED: with_trigger (the panel's control) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), anchor (with_anchor yields NOTHING to the block - no |param|, write content directly), title, description.
+- PART `popover` - Root wrapper around the trigger, the optional anchor, and the panel
+- PART `popover-anchor` - Optional alternate popper anchor (Radix PopoverAnchor) - when present the panel positions against it instead of the trigger
+- PART `popover-content` - The role=dialog panel - positioning, animation, and the open state ride here | states: data-open (panel is open (the controller flips the pair at runtime)); data-closed (panel is closed (the server-rendered state; hidden rides along)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the panel (popper, post-flip)); --available-height (viewport space left for the panel (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
+- PART `popover-header` - Title block wrapping the title and description (renders only when either is present)
+- PART `popover-title` - The heading - the panel's accessible name via aria-labelledby
+- PART `popover-description` - Muted copy under the title, wired to aria-describedby
 - WIRING `poetry--core--popover`: values modal, open; actions close, open, openValueChanged, toggle; events poetry:popover:closed, poetry:popover:open
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
@@ -220,6 +310,12 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
+- PART `sheet` - Root wrapper around the trigger and the <dialog> element
+- PART `sheet-content` - The <dialog> panel, anchored to a screen edge - the slide animation and the open state ride here | states: data-open (panel is open (the controller flips the pair at runtime)); data-closed (panel is closed or animating out (the server-rendered state; the presence-hold close rides the closed slide-out)); data-side=top|right|bottom|left (always - the edge the sheet slides in from)
+- PART `sheet-header` - Title block at the top of the panel
+- PART `sheet-title` - The heading - the sheet's accessible name (required slot)
+- PART `sheet-description` - Muted copy under the title, wired to aria-describedby
+- PART `sheet-footer` - Action row pinned to the bottom of the panel
 - WIRING `poetry--core--sheet`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
 - RULE: Open sheets with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
@@ -240,6 +336,9 @@ Slot REQUIRED: with_trigger (the described control) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "top"
 - `side_offset:` (integer) - default 0
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly).
+- PART `tooltip` - Root wrapper around the trigger and the bubble
+- PART `tooltip-content` - The role=tooltip bubble - positioning, animation, and the open state ride here | states: data-open (bubble is open (the controller flips the pair at runtime)); data-closed (bubble is closed (the server-rendered state; hidden rides along)); data-instant=delay|focus (the open skipped the delay - warm-grace/programmatic or keyboard focus (runtime-only; absent on a delayed open)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the bubble (popper, post-flip)); --available-height (viewport space left for the bubble (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
+- PART `tooltip-arrow` - The arrow wrapper (aria-hidden) - popper pins it to the bubble's anchor-facing edge and rotates it toward the anchor | states: data-side=top|right|bottom|left (written by popper alongside the content's - the resolved side, for per-side restyling)
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - WIRING `poetry--core--tooltip`: values delayDuration, disableHoverableContent, open; actions blurClose, clickClose, focusOpen, openValueChanged, pointerDown, pointerLeave, pointerMove; events poetry:tooltip:closed, poetry:tooltip:open
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.

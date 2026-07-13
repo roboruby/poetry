@@ -16,6 +16,10 @@ REQUIRED - one of a content block / with_leading / with_trailing / loading: (not
 - `tag:` (symbol) - one of button|a, default "button"
 - `type:` (symbol) - one of button|submit|reset, default "button"
 Slots: leading, trailing.
+- PART `button` - The rendered control itself (<button>, or <a> when tag: :a) - every visual state rides here | states: data-variant=default|destructive|outline|secondary|ghost|link (always - the resolved variant); data-size=default|xs|sm|lg|icon|icon-xs|icon-sm|icon-lg (always - the resolved size); data-loading (loading: is set (aria-busy rides along))
+- PART `icon` - Wrapper span around leading/trailing slot content - sizes and centers whatever it holds
+- PART `label` - The content block's span (display: contents - children join the root's flex row directly)
+- PART `spinner` - The loading indicator, swapped in for the leading icon while loading:
 In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Use poetry_button - never a raw <button> with hand-written Tailwind.
 - RULE: The visible text is the content block: poetry_button { "Save" }. label: is ONLY the accessible name.
@@ -30,6 +34,8 @@ In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `top-n
 Class: Poetry::Ui::ButtonGroup::Component - BEM block `poetry-ui-button_group`.
 Content block REQUIRED (its member controls) - a blockless call raises.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
+- PART `button-group` - The role=group root - its selectors join ANY data-slot children into the segmented unit | states: data-orientation=horizontal|vertical (the join axis)
+- PART `button-group-text` - A non-button member (the poetry_button_group_text helper's div) - a text affix joined like a button
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Members go in the content block - the group's selectors join ANY data-slot children (buttons, inputs, select triggers); never hand-round the inner corners.
 - RULE: Give the group an aria-label when the page has more than one (role=group is unnamed by default).
@@ -41,6 +47,16 @@ Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
 - `mode:` (symbol) - default "single"
 - `name:` (string)
 - `week_start:` (integer) - default 0
+- PART `calendar` - Root wrapper - the calendar controller (navigation, selection, roving arrow keys) rides here
+- PART `calendar-nav` - The header row - previous/next month Buttons around the caption
+- PART `calendar-caption` - The month label ('July 2026') - the controller rewrites it on navigation from the localized month names
+- PART `calendar-grid` - The role=grid - the weekday header row plus six week rows (42 cells, always full weeks)
+- PART `calendar-weekdays` - The role=row of weekday column headers
+- PART `calendar-weekday` - One role=columnheader two-letter day label
+- PART `calendar-week` - One role=row of seven day cells
+- PART `calendar-day-cell` - The role=gridcell wrapper - aria-selected lives HERE (the ARIA grid contract; it is not valid on the button)
+- PART `calendar-day` - One day <button> - the selection vocabulary and the roving tab stop ride here | states: data-date (always - the day's ISO date (the controller's selection key)); data-selected (the day is the single-mode pick, or a start-only range pick (bare; a complete range wears the range-* trio instead)); data-range-start (the day starts a COMPLETE range); data-range-end (the day ends a COMPLETE range); data-range-middle (the day sits strictly inside a complete range); data-today (the day is today (aria-current=date rides along)); data-outside (the day belongs to a neighbouring month (leading/trailing fill))
+- PART `calendar-day-label` - The day-number span inside the button
 - WIRING `poetry--core--calendar`: targets caption, day, endInput, grid, input, startInput; values max, min, mode, month, monthNames, rangeEnd, rangeStart, selected, weekStart; actions keydown, nextMonth, previousMonth, select; events poetry--core--calendar:change
 - RULE: name: makes it a form control (the chosen date posts as an ISO string in a hidden input; range mode posts name[start] + name[end]).
 - RULE: month:/selected:/today accept a Date or an ISO string; min:/max: bound the selectable range.
@@ -58,6 +74,8 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - `required:` (boolean) - default false
 - `unchecked_value:` (string) - default "0"
 - `value:` (string) - default "1"
+- PART `checkbox` - The visual button[role=checkbox] - reflects the hidden input via aria-checked plus the checked triple | states: data-checked (checked (the controller reflects every toggle here, aria-checked in step)); data-unchecked (unchecked - the indicator goes invisible); data-indeterminate (checked: :indeterminate (server/programmatic only; the first toggle resolves it to checked))
+- PART `checkbox-indicator` - Centering span around the check glyph (minus when indeterminate) - CSS-hidden while unchecked, never unmounted | states: data-checked (mirrors the control (the controller reflects state on every part wearing the triple)); data-unchecked (mirrors the control - the indicator is invisible); data-indeterminate (mirrors the control - the glyph swaps to minus)
 - WIRING `poetry--core--checked`: values inputId; actions check, set, toggle, uncheck; events poetry--core--checked:change
 - RULE: Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with hand-written Tailwind, and never a hand-rolled button[role=checkbox].
 - RULE: Always give it a name: in forms - a checkbox without one submits nothing (visual-only mode is for controlled UI like DataTable row selection ONLY).
@@ -89,6 +107,24 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `value:` (string)
 - `width:` (string) - default "w-50"
 Slots: trigger, empty, items (many; types item|group|separator - one with_<type> setter each, options as keywords).
+- PART `combobox` - Root wrapper carrying both controllers (combobox + popper) and the optional dir attribute
+- PART `combobox-native` - The visually-hidden native <select> - the serialization truth (Select's decision verbatim); plumbing, never styled or targeted
+- PART `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside | states: data-placeholder (no option is committed (bare; the controller toggles it on every commit)); data-popup-open (the popup is open (bare while open, absent while closed - the controller flips it with the open state))
+- PART `combobox-value` - The value display span - the selected option's label, or the placeholder | states: data-placeholder (placeholder: is given - carries the placeholder text so the controller can restore it)
+- PART `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side - server-rendered from side:, rewritten to the resolved side by popper on open); data-align=start|center|end (the placement alignment - server-rendered from align:, rewritten by popper on open) | vars: --transform-origin (popper - the animation origin matching the resolved placement); --available-width (popper - viewport space available to the popup post-flip); --available-height (popper - viewport space available to the popup post-flip); --anchor-width (popper - the trigger's measured width (the popup width tracks it - one knob, two surfaces)); --anchor-height (popper - the trigger's measured height)
+- PART `command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)
+- PART `command-input-wrapper` - The input row - search icon + filter input above the list
+- PART `command-search-icon` - Decorative search glyph beside the input
+- PART `command-input` - The popup's filter input (role=combobox, its own accessible name) - the typing session and aria-activedescendant live here
+- PART `command-list` - THE role=listbox - the aria-controls target of both combobox roles
+- PART `command-empty` - Zero-matches message - rendered hidden; the engine unhides it when the filter pass leaves no visible items
+- PART `command-group` - role=group labelled by its heading - hidden by the engine when every member item is filtered out
+- PART `command-group-heading` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)
+- PART `command-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface | states: data-value (always - the option's committable value (the native <option> twin)); data-selected (the option is committed (bare; absent while unselected - the controller twin-writes it with aria-selected)); data-highlighted (the item holds the activedescendant highlight (the server seeds it; the engine moves it with the input's aria-activedescendant)); data-disabled (disabled: is set (aria-disabled rides along)); data-hidden (the filter scored the item zero (the engine pairs it with hidden; never rendered server-side))
+- PART `command-item-text` - The option's label span - the filter/typematch text source
+- PART `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it
+- PART `command-separator` - role=separator divider - hidden by the engine whenever the query is non-empty
+- PART `command-status` - The engine's sr-only polite result-count live region | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
 - WIRING `poetry--core--combobox`: values modal, open, value; actions close, nativeChanged, open, openValueChanged, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
@@ -108,6 +144,7 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - `mode:` (symbol) - default "single"
 - `name:` (string) - required
 - `placeholder:` (string) - default "Pick a date"
+- PART `date-picker` - Root wrapper - the glue controller (formats the trigger label, closes on pick) around the composed Popover + Calendar
 - WIRING `poetry--core--date-picker`: targets label; values locale, mode, placeholder; actions picked
 - RULE: name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).
 - RULE: value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.
@@ -124,6 +161,10 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - `id:` (string) - required
 - `label_text:` (string)
 - `required:` (boolean) - default false
+- PART `field` - The quartet's grid root - label, control, hint, and error stack inside | states: data-invalid=true|false (always - true when error: is present, else false); data-orientation=vertical|horizontal (always - the resolved orientation (horizontal is the boolean-control layout))
+- PART `field-hint` - The hint <p> - its id lands in the control's aria-describedby
+- PART `field-error` - The error <p> - present only when error: is set; its id leads the control's aria-describedby
+- PART `checkbox-input` - A nested Checkbox's hidden native input - the toggle renders as a wrapper-free fragment, so its sibling form store sits directly in the field's DOM (the horizontal boolean-control layout)
 - RULE: Wire the control with field.control_attributes - never hand-write aria-describedby.
 - RULE: Error text arrives via error: (from model errors upstream) - never a bare red <p>.
 - RULE: orientation: :horizontal is the boolean-control layout (checkbox/switch left, label + hint stacked right) - text inputs and groups stay vertical.
@@ -137,6 +178,7 @@ Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 - `placeholder:` (string)
 - `type:` (string) - default "text"
 - `value:` (string)
+- PART `input` - The <input> element itself - no inner anatomy; error state is aria-invalid (set by Field/FormBuilder), never a parallel class
 - RULE: Inside a form, never render Input directly - use the FormBuilder's field (it wires ids, errors, and aria).
 - RULE: Error styling comes from aria-invalid, set from model errors - never hand-toggle error classes.
 
@@ -144,6 +186,8 @@ Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 
 Class: Poetry::Ui::InputGroup::Component - BEM block `poetry-ui-input_group`.
 Content block REQUIRED (its control + addons) - a blockless call raises.
+- PART `input-group` - The bordered group surface (role=group) - wears the border, the focus-within ring, and the invalid ring for the borderless control inside
+- PART `input-group-addon` - One addon cell (icons, text, kbd hints, tiny buttons) rendered by poetry_input_group_addon around the control | states: data-align=inline-start|inline-end|block-start|block-end (always - the addon's align: axis (inline rides the row, block takes a full-width row))
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input keeps its own border+ring and double-chromes the group.
 - RULE: Addons are poetry_input_group_addon(align:) wrapping icons/text/buttons; use poetry_input_group_text for muted captions and poetry_input_group_button for tiny actions.
@@ -161,6 +205,12 @@ Class: Poetry::Ui::InputOtp::Component - BEM block `poetry-ui-input_otp`.
 - `required:` (boolean) - default false
 - `separator:` (boolean) - default true
 - `value:` (string)
+- PART `input-otp-container` - Root row (forced dir=ltr - slot order equals string index order even on RTL pages) wrapping the real input and the mirror cells
+- PART `input-otp` - THE real native <input> (autocomplete one-time-code) stretched invisibly over the row - the only AT and serialization surface
+- PART `input-otp-group` - One aria-hidden cluster of mirror cells (groups: clustering)
+- PART `input-otp-slot` - One presentational mirror cell - paints its char and the active-cell ring | states: data-active=true|false ("true" while the native caret sits on this cell (the controller projects selectionStart while the input is focused; the server renders "false"))
+- PART `input-otp-caret` - The fake-caret overlay - hidden server-side; the controller unhides it on the active EMPTY cell
+- PART `input-otp-separator` - The between-groups dash - role=separator kept for parity but aria-hidden (a recorded divergence)
 - WIRING `poetry--core--otp`: targets input, slot; values length, pattern; actions focusInput, paste, sync; events poetry:otp:change, poetry:otp:complete
 - RULE: Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops, broken paste, broken SMS autofill, unnameable cells).
 - RULE: Label via Field always ('Verification code'); put the length in the hint.
@@ -173,6 +223,7 @@ Class: Poetry::Ui::InputOtp::Component - BEM block `poetry-ui-input_otp`.
 
 Class: Poetry::Ui::Label::Component - BEM block `poetry-ui-label`.
 - `for_id:` (string)
+- PART `label` - The <label> element itself - for= rides it (dropped in group mode, where the group names itself via aria-labelledby at this label's id)
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Every control gets a Label wired via for_id - placeholder text is never the label.
 
@@ -185,6 +236,10 @@ Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`
 - `label:` (string)
 - `name:` (string)
 - `size:` (symbol) - one of default|sm, default "default"
+- PART `native-select-wrapper` - Relative shell around the select and the chevron - dims the pair when the select is disabled | states: data-size=default|sm (always - the resolved size)
+- PART `native-select` - The real <select> - appearance-none (the chevron replaces the native arrow); platform picker and form submission stay native | states: data-size=default|sm (always - the resolved size (mirrors the wrapper))
+- PART `native-select-icon` - The decorative chevron wrapper - absolutely pinned, aria-hidden
+- PART `native-select-option` - An <option> from the options: fast path (or poetry_native_select_option) - Canvas system colors keep the native dropdown legible
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: This is a REAL <select> - use it for plain picking; the JS Select is for styled options.
 - RULE: Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.
@@ -203,6 +258,9 @@ Slot REQUIRED: with_item (at least one radio item) - a call without it raises.
 - `required:` (boolean) - default false
 - `value:` (string)
 Slots: items (many).
+- PART `radio-group` - The role=radiogroup root - one Tab stop; items (and their label-pairing rows) render as direct children | states: data-disabled (disabled: is set on the root - every item disables with it)
+- PART `radio-group-item` - A button[role=radio] per item - carries its own hidden native radio as a sibling | states: data-checked (the checked item (the controller writes the pair and aria-checked together on every item)); data-unchecked (every other item); data-disabled (the item (or the whole group) is disabled - also the roving-focus collection filter); data-value (always - the item's value (keys the checked-value machine))
+- PART `radio-group-indicator` - Centering span holding the checked dot - hidden (the native attribute, toggled by the controller) while unchecked
 - WIRING `poetry--core--radio-group`: targets input; values value; actions check, entryCheck, setValue, valueValueChanged; events poetry:radio-group:change
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - RULE: Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
@@ -235,6 +293,20 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `size:` (symbol) - one of sm|default, default "default"
 - `value:` (string)
 Slots: trigger, items (many; types item|group|separator - one with_<type> setter each, options as keywords).
+- PART `select` - Root wrapper carrying both controllers (select + popper) and the optional dir attribute
+- PART `select-native` - The visually-hidden native <select> - the serialization truth (name/required/disabled + every option); plumbing, never styled or targeted
+- PART `select-trigger` - The role=combobox button the field label reaches - the value display and chevron ride inside | states: data-size=sm|default (always - the resolved size variant); data-placeholder (no option is committed (bare; the controller toggles it on every commit)); data-popup-open (the popup is open (bare while open, absent while closed - the controller flips it with the open state))
+- PART `select-value` - The value display span - the selected option's label, or the placeholder | states: data-placeholder (placeholder: is given - carries the placeholder text so a later clear can restore it)
+- PART `select-content` - The popper-positioned popup shell (scroll buttons + viewport) - open/closed and the resolved placement ride here | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side - server-rendered from side:, rewritten to the resolved side by popper on open); data-align=start|center|end (the placement alignment - server-rendered from align:, rewritten by popper on open) | vars: --transform-origin (popper - the animation origin matching the resolved placement); --available-width (popper - viewport space available to the popup post-flip); --available-height (popper - viewport space available to the popup post-flip); --anchor-width (popper - the trigger's measured width); --anchor-height (popper - the trigger's measured height); --radix-select-trigger-width (the select controller measures the trigger on open - the viewport's min-width binding); --radix-select-trigger-height (the select controller measures the trigger on open - the viewport's height binding)
+- PART `select-scroll-up-button` - Hover-scroll affordance above the viewport - rendered always but hidden; the controller unhides it per scroll extremes (aria-hidden)
+- PART `select-scroll-down-button` - Hover-scroll affordance below the viewport (the same contract as the up button)
+- PART `select-viewport` - The role=listbox scroll container - the options' actual parent, labelled from the trigger
+- PART `select-group` - role=group wrapper labelled by its select-label heading
+- PART `select-label` - The group heading - styled, no ARIA role (the group points at it via aria-labelledby)
+- PART `select-item` - One role=option div - selection, disablement, and the committable value ride here | states: data-value (always - the option's committable value (the native <option> twin)); data-selected (the option is committed (bare; absent while unselected - the controller twin-writes it with aria-selected)); data-disabled (disabled: is set (aria-disabled rides along))
+- PART `select-item-indicator` - The check gutter - server-rendered always; the parent item's data-selected absence hides it
+- PART `select-item-text` - The option's label span - the value display copies from it
+- PART `select-separator` - Decorative divider between options (aria-hidden)
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - WIRING `poetry--core--select`: values alignItemWithTrigger, loop, modal, open, typeaheadTimeout, value; actions close, commit, keydown, nativeChanged, open, openValueChanged, scrollHoldStart, scrollHoldStop, setValue, syncScrollButtons, toggle, triggerKeydown, valueValueChanged; events poetry:select:change, poetry:select:closed, poetry:select:open, poetry:select:select
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
@@ -264,6 +336,11 @@ Class: Poetry::Ui::Slider::Component - BEM block `poetry-ui-slider`.
 - `value:` ()
 - `value_text:` ()
 - `values:` ()
+- PART `slider` - Root - the controller, the geometry vars, and pointer capture ride here | states: data-orientation=horizontal|vertical (always - the axis); data-disabled (disabled: is set (the control is inert; the hidden inputs still submit)); data-dragging (a pointer drag is in flight (the controller sets it for the gesture; never rendered server-side)) | vars: --slider-start (the filled range's start edge as a percentage - server-rendered (no first-paint jump), rewritten by the controller on every move); --slider-end (the filled range's end edge as a percentage (the single-thumb value rides here))
+- PART `slider-track` - The full-length rail the range paints over | states: data-orientation=horizontal|vertical (always - mirrors the root)
+- PART `slider-range` - The filled span between --slider-start and --slider-end | states: data-orientation=horizontal|vertical (always - mirrors the root)
+- PART `slider-anchor` - Absolutely positioned thumb wrapper (one per thumb, with its hidden input alongside) seated on the geometry vars | states: data-orientation=horizontal|vertical (always - mirrors the root)
+- PART `slider-thumb` - The role=slider handle - its own Tab stop, carrying the aria-value* surface (bounds neighbor-clamped in range mode) | states: data-orientation=horizontal|vertical (always - mirrors the root); data-disabled (disabled: is set (tabindex drops to -1)); data-dragging (this thumb is the one being dragged (the controller pairs it with the root's))
 - WIRING `poetry--core--slider`: targets input, range, thumb, track; values inverted, max, min, minStepsBetweenThumbs, orientation, step, value; actions keydown, pointerdown, setValue, valueValueChanged; events poetry:slider:change, poetry:slider:commit
 - RULE: Use poetry_slider / form.slider - never hand-roll a draggable div.
 - RULE: Every thumb MUST have a distinct accessible name (label: - array of two for ranges). ArgumentError otherwise.
@@ -284,6 +361,8 @@ Class: Poetry::Ui::Switch::Component - BEM block `poetry-ui-switch`.
 - `required:` (boolean) - default false
 - `unchecked_value:` (string) - default "0"
 - `value:` (string) - default "1"
+- PART `switch` - The visual button[role=switch] - reflects the hidden input via aria-checked plus the checked pair (never indeterminate) | states: data-checked (on (the shared checked controller reflects every toggle here, aria-checked in step)); data-unchecked (off (the server-rendered default)); data-size=default|sm (always - the resolved size (the thumb reads it via group/switch selectors))
+- PART `switch-thumb` - The sliding knob - travel is pure CSS off the checked pair | states: data-checked (mirrors the control (the controller reflects state on every part wearing the pair)); data-unchecked (mirrors the control - the thumb sits at the start)
 - WIRING `poetry--core--checked`: values inputId; actions check, set, toggle, uncheck; events poetry--core--checked:change
 - RULE: Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces on/off; that's the point).
 - RULE: Switch = instant effect; Checkbox = staged for submit. If nothing happens until a Save button, use Checkbox.
@@ -301,6 +380,7 @@ Class: Poetry::Ui::Textarea::Component - BEM block `poetry-ui-textarea`.
 - `placeholder:` (string)
 - `rows:` (integer)
 - `value:` (string)
+- PART `textarea` - The <textarea> element itself - value renders as content; auto-grow is the field-sizing-content CSS property, zero JS
 - RULE: Wire through Field/FormBuilder (control_attributes) - never hand-write the aria plumbing.
 - RULE: Placeholder is NOT a label - pair with Label/Field always.
 - RULE: Use Textarea for free text; Input for single-line; do not bolt a JS autosizer on (auto-grow is CSS).
@@ -314,6 +394,7 @@ Class: Poetry::Ui::Toggle::Component - BEM block `poetry-ui-toggle`.
 - `disabled:` (boolean) - default false
 - `label:` (string)
 - `pressed:` (boolean) - default false
+- PART `toggle` - The pressed-state <button> - the whole component; aria-pressed carries the state and the controller flips both together | states: data-pressed (pressed (bare presence boolean - absent when unpressed, never data-pressed=false)); data-disabled (disabled (rendered alongside native disabled for styling-hook parity)); data-variant=default|outline (the visual variant); data-size=default|sm|lg (the size)
 - WIRING `poetry--core--pressed`: actions press, set, toggle, unpress; events poetry:toggle:change
 - RULE: Use poetry_toggle - never a Button with hand-managed aria-pressed.
 - RULE: Toggle is UI state, NOT form data: never try to submit it. Form value -> Checkbox; instant setting -> Switch; exclusive/grouped -> ToggleGroup.
@@ -336,6 +417,8 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `value:` (string)
 - `values:` (list) - default "dynamic"
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- PART `toggle-group` - The role=radiogroup (single) / role=toolbar (multiple) root - the value-set machine and roving focus ride here; the axes cascade to items | states: data-variant=default|outline (the shared Toggle variant (root wins)); data-size=default|sm|lg (the shared Toggle size (root wins)); data-spacing (the gap step - 0 is the segmented chain (joined corners), >0 free-standing); data-orientation=horizontal|vertical (the roving axis); data-disabled (the whole group is disabled (disables every item)) | vars: --gap (the item gap, set inline from spacing: - the root's gap utility consumes it)
+- PART `toggle-group-item` - One dumb <button> under the group machine - Toggle-styled, no per-item controller | states: data-pressed (pressed (bare presence boolean - absent when off; the controller rederives the type-correct aria attribute from it)); data-disabled (the item (or the whole group) is disabled - the roving-focus collection filter); data-value (the item's key in the value set (always present, unique)); data-variant=default|outline (cascaded from the root); data-size=default|sm|lg (cascaded from the root); data-spacing (cascaded from the root - keys the segmented corner/border chain)
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - WIRING `poetry--core--toggle-group`: values type; actions setValue, toggle; events poetry:toggle-group:change
 - RULE: Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity logic.

@@ -7,6 +7,7 @@ not suggestions. Options are keywords; content is the block.
 
 Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
 - `ratio:` (string) - required
+- PART `aspect-ratio` - The ratio-locked box - the content block fills it | vars: --ratio (always - the ratio: fraction verbatim ('16/9'), consumed by the theme's aspect-ratio rule)
 - RULE: Pass ratio: as a string fraction ('16/9', '1/1') - Ruby's 16/9 is integer division (1).
 - RULE: The child fills the box itself (size-full object-cover on an image).
 
@@ -17,6 +18,9 @@ Slot REQUIRED: with_panel (at least two panels) - a call without it raises.
 - `direction:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `grip:` (boolean) - default false
 Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write content directly; with_panel keywords: default_size:, min_size:, max_size:, classes: ONLY; with_panel REQUIRES a content block (the panel content)).
+- PART `resizable-panel-group` - The flex group root - the splitter controller rides here | states: data-orientation=horizontal|vertical (the group axis)
+- PART `resizable-panel` - One flex child whose flex-grow IS its percentage - the controller rewrites the inline flex on every resize | states: data-min-size (the panel's minimum percentage, rendered when with_panel passes min_size: (the controller's clamp floor)); data-max-size (the panel's maximum percentage, rendered when with_panel passes max_size: (the controller's clamp ceiling))
+- PART `resizable-handle` - The role=separator splitter between panels - drag and keyboard resizing live here; its aria-valuenow tracks the preceding panel
 - WIRING `poetry--core--resizable`: values orientation; actions dragEnd, dragMove, dragStart, keydown; events poetry--core--resizable:resize
 - RULE: Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes are PERCENTAGES and the component interleaves the separator handles.
 - RULE: direction: :horizontal is side-by-side (the default); :vertical stacks.
@@ -28,6 +32,8 @@ Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write 
 Class: Poetry::Ui::ScrollArea::Component - BEM block `poetry-ui-scroll_area`.
 Content block REQUIRED (what scrolls) - a blockless call raises.
 - `label:` (string) - required
+- PART `scroll-area` - The bounding wrapper - size it with classes; content decides the overflow
+- PART `scroll-area-viewport` - The focusable native scroll region (role=region + tabindex=0) with themed platform scrollbars - zero JS
 - RULE: Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the overflow.
 - RULE: label: is REQUIRED - the viewport is focusable, and a focusable region needs a name (role=region + aria-label).
 - RULE: This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller for chat transcripts.
