@@ -33,6 +33,14 @@ module Poetry
     class Degradation < Benchmark
       SCHEMA = "degradation-v1"
       PLACEHOLDER = "<%# generation produced no artifact %>\n"
+
+      # The benchmark belts plus Edit, BOTH arms (symmetric): one-shot
+      # generation only ever Writes, but a follow-up's natural move is an
+      # in-place Edit - attempt 1 of the run shipped without it and every
+      # follow-up stalled on a permission prompt (caught by transcript
+      # audit; the probes captured unchanged files). The prompts say
+      # "edit in place"; the belt must allow what the prompt instructs.
+      TOOLBELTS = Benchmark::TOOLBELTS.transform_values { |belt| "Edit,#{belt}" }.freeze
       PROBES = %w[p0 p1 p2].freeze
       JUDGED_PROBES = %w[p0 p2].freeze # p1 is mechanical-only (pre-registered; bounds judge cost)
 

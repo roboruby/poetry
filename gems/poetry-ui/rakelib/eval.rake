@@ -705,16 +705,19 @@ namespace :eval do
 
     desc "Score all three probes through the benchmark score stage"
     task :score do
+      require_relative "../eval/degradation"
       poetry_degradation_stage("score", Poetry::Eval::Degradation::PROBES)
     end
 
     desc "Capture the judged probes (p0, p2) through the benchmark capture stage"
     task :capture do
+      require_relative "../eval/degradation"
       poetry_degradation_stage("capture", Poetry::Eval::Degradation::JUDGED_PROBES)
     end
 
     desc "Judge the p0 and p2 pairs through the benchmark judge stage"
     task :judge do
+      require_relative "../eval/degradation"
       poetry_degradation_stage("judge", Poetry::Eval::Degradation::JUDGED_PROBES)
     end
 
@@ -843,6 +846,7 @@ end
 # Run one UNCHANGED eval:benchmark stage once per probe dir: the probe
 # dirs are benchmark-run shaped exactly so these stages need no variants.
 def poetry_degradation_stage(stage, probes)
+  poetry_ui_boot!
   require_relative "../eval/degradation"
   prefix = poetry_degradation_root.basename.to_s
   probes.each do |probe|

@@ -66,6 +66,16 @@ module Poetry
         assert_equal "<%# generation produced no artifact %>\n", DEG::PLACEHOLDER
       end
 
+      def test_both_toolbelts_allow_edit_and_stay_symmetric_over_the_benchmark_belts
+        # Attempt 1's lesson: the prompts say "edit in place", so the belt
+        # must carry Edit - on BOTH arms, added identically.
+        DEG::TOOLBELTS.each do |arm, belt|
+          assert belt.start_with?("Edit,"), "#{arm}: follow-ups need Edit"
+          assert_equal Poetry::Eval::Benchmark::TOOLBELTS.fetch(arm), belt.delete_prefix("Edit,"),
+                       "#{arm}: the degradation belt is the benchmark belt plus Edit, nothing else"
+        end
+      end
+
       def test_the_holdout_stratum_shape_and_doctrine
         tasks = Poetry::Eval::Holdout::TASKS
 
