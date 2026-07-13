@@ -44,6 +44,7 @@ module Poetry
       include Poetry::Core::Concerns::Options
       include Poetry::Core::Concerns::Stimulus
       include Poetry::Core::Concerns::Introspection
+      include Poetry::Core::Concerns::Parts
 
       class << self
         # Returns the current Poetry::Core configuration.

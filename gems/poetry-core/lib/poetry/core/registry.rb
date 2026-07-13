@@ -154,6 +154,12 @@ module Poetry
         # The REQUIRES_ANY declaration (, the conditional any-of crash
         # classes): the before_render disjunction, stated statically.
         entry["requires_any"] = plain(props[:requires_any]) if props[:requires_any]&.any?
+        # The part contract (the upstream library styles-api borrow): the
+        # styling surface - data-slot parts, state attributes per part,
+        # CSS var seams - hand-authored prose that PartContract.verify
+        # holds to the rendered DOM of every preview.
+        parts = component.part_definitions
+        entry["parts"] = plain(parts) if parts.any?
         entry
       end
 

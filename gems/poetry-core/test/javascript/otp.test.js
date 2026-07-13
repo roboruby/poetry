@@ -20,7 +20,7 @@ const markup = ({ length = 6, groups = null, pattern = "\\d", value = "", disabl
     <div data-slot="input-otp-group" class="flex items-center" aria-hidden="true">
       ${Array.from({ length: size }, () => `
         <div id="slot-${index}" data-slot="input-otp-slot" data-poetry--core--otp-target="slot"
-             data-active="false">${chars[index++] ?? ""}<div data-otp-caret hidden><div></div></div></div>`).join("")}
+             data-active="false">${chars[index++] ?? ""}<div data-slot="input-otp-caret" hidden><div></div></div></div>`).join("")}
     </div>
     ${g < clusters.length - 1 ? '<div data-slot="input-otp-separator" role="separator" aria-hidden="true"></div>' : ""}`)
 
@@ -70,7 +70,7 @@ const painted = () =>
 const actives = () =>
   Array.from(document.querySelectorAll("[data-slot=input-otp-slot]")).map((slot) => slot.dataset.active)
 
-const caretVisible = (index) => !el(`slot-${index}`).querySelector("[data-otp-caret]").hidden
+const caretVisible = (index) => !el(`slot-${index}`).querySelector("[data-slot=input-otp-caret]").hidden
 
 describe("poetry--core--otp", () => {
   let application

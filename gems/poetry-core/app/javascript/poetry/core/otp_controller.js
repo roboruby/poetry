@@ -165,7 +165,7 @@ export default class OtpController extends Controller {
 
       slot.setAttribute("data-active", String(isActive))
 
-      const caret = slot.querySelector("[data-otp-caret]")
+      const caret = slot.querySelector("[data-slot=input-otp-caret]")
 
       if (caret) caret.hidden = !(isActive && (value[index] ?? "") === "")
     })
