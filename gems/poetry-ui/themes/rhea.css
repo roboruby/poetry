@@ -451,6 +451,25 @@
   @apply pointer-events-none absolute right-2 flex size-4 items-center justify-center;
 }
 
+/* The chips FIELD (multiple:) - rhea's tinted borderless field (the
+ * tinted-surface playbook: chips lift as background pills, never
+ * muted-on-tint). */
+.cn-combobox-chips {
+  @apply min-h-8 gap-1.5 rounded-2xl border border-transparent bg-input/50 px-2.5 py-1 text-sm transition-[color,box-shadow] duration-200 focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 has-data-[slot=combobox-chip]:px-1.5;
+}
+
+.cn-combobox-chip {
+  @apply h-5.5 gap-1 rounded-2xl bg-background px-2 text-xs font-medium shadow-2xs focus-visible:ring-2 focus-visible:ring-ring/30;
+}
+
+.cn-combobox-chip-remove {
+  @apply -ml-1 rounded-2xl opacity-50 hover:opacity-100 focus-visible:opacity-100;
+}
+
+.cn-combobox-chip-input {
+  @apply min-w-16 placeholder:text-[oklch(from_var(--muted-foreground)_calc(l*0.85)_c_h)] dark:placeholder:text-muted-foreground;
+}
+
 /* MARK: ContextMenu */
 .cn-context-menu-content {
   @apply data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/5 dark:ring-foreground/10 bg-popover text-popover-foreground min-w-36 rounded-2xl p-1 shadow-lg ring-1 duration-100;

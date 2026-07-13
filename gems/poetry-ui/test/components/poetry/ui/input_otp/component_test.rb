@@ -88,7 +88,7 @@ module Poetry
           assert_equal(["1", "2", "", "", "", ""], slots.map { |slot| slot.children.first&.text.to_s.strip })
           # The caret element ships hidden (the controller reveals it on
           # the active EMPTY cell only).
-          assert(slots.all? { |slot| slot.css("[data-otp-caret]").first.key?("hidden") })
+          assert(slots.all? { |slot| slot.css("[data-slot=input-otp-caret]").first.key?("hidden") })
         end
 
         def test_a_long_value_truncates_to_length
@@ -165,7 +165,7 @@ module Poetry
           %w[cn-input-otp-slot relative data-[active=true]:z-10].each do |token|
             assert_includes slot_class, token
           end
-          caret_bar = fragment.css("[data-otp-caret] div").first
+          caret_bar = fragment.css("[data-slot=input-otp-caret] div").first
 
           %w[cn-input-otp-caret-line animate-caret-blink duration-1000].each do |token|
             assert_includes caret_bar["class"], token

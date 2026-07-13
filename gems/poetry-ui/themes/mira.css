@@ -452,6 +452,24 @@
   @apply pointer-events-none absolute right-2 flex items-center justify-center;
 }
 
+/* The chips FIELD (multiple:) - mira's compact field; micro chips on
+ * the badge's full-round micro type. */
+.cn-combobox-chips {
+  @apply min-h-7 gap-1 rounded-md border border-input bg-input/20 px-2 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1;
+}
+
+.cn-combobox-chip {
+  @apply h-4.5 gap-1 rounded-full bg-muted px-1.5 text-[0.625rem] font-medium focus-visible:ring-2 focus-visible:ring-ring/30;
+}
+
+.cn-combobox-chip-remove {
+  @apply -ml-1 rounded-full opacity-50 hover:opacity-100 focus-visible:opacity-100;
+}
+
+.cn-combobox-chip-input {
+  @apply min-w-16 placeholder:text-muted-foreground;
+}
+
 /* MARK: ContextMenu */
 .cn-context-menu-content {
   @apply data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground min-w-32 rounded-lg p-1 shadow-md ring-1 duration-100;

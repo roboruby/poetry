@@ -24,6 +24,11 @@ module Poetry
           render_component(type: "email", name: "email", value: "not-an-email", invalid: true,
                            "aria-label" => "Email")
         end
+
+        def masked
+          render_component(type: "tel", name: "phone", mask: "(999) 999-9999",
+                           placeholder: "(555) 000-0000", "aria-label" => "Phone")
+        end
       end
     end
   end

@@ -5,6 +5,7 @@ en:
     combobox:
       empty: "No results found."
       filter_label: "Filter options"
+      remove: "Remove %{label}"
     command:
       empty: "No results found."
       loading: "Loading…"
@@ -19,6 +20,10 @@ en:
     deferred:
       failed: "This section failed to load."
       retry: "Retry"
+    number_field:
+      roledescription: "Number field"
+      increment: "Increase"
+      decrement: "Decrease"
     dialog:
       close: "Close"
     sheet:

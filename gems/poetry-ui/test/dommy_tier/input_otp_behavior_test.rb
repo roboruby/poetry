@@ -38,7 +38,7 @@ module DommyTier
           return [
             slots.map((slot) => (slot.firstChild && slot.firstChild.nodeType === 3) ? slot.firstChild.data : "").join(""),
             slots.map((slot) => slot.getAttribute("data-active")).join(","),
-            slots.map((slot) => slot.querySelector("[data-otp-caret]").hidden ? 0 : 1).join(",")
+            slots.map((slot) => slot.querySelector("[data-slot=input-otp-caret]").hidden ? 0 : 1).join(",")
           ];
         })()
       JS

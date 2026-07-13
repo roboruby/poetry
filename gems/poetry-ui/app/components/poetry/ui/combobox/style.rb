@@ -44,10 +44,30 @@ module Poetry
         # never display:none - autofill heuristics skip unpainted controls).
         element :native, "sr-only"
 
+        # The chips FIELD frame (multiple: - replaces the trigger): the
+        # flex-wrap mechanism stays inline; the input-frame chrome (border,
+        # ring, paddings, min-height, the chips-present padding tighten)
+        # rides themes/*.css. The disabled plumbing mirrors the trigger's.
+        element :chips, "cn-combobox-chips flex flex-wrap items-center " \
+                        "data-disabled:pointer-events-none data-disabled:opacity-50"
+
+        # One chip: real-focus surface (:focus-visible ring is theme-side).
+        element :chip, "cn-combobox-chip flex shrink-0 items-center outline-none"
+
+        # ChipRemove: the ghost icon-button mechanism; the dim/hover/size
+        # treatment is theme-side.
+        element :chip_remove, "cn-combobox-chip-remove inline-flex shrink-0 items-center " \
+                              "justify-center outline-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
+
+        # The inline filter input: bare (the FRAME is the visual field) -
+        # min-width and placeholder color are theme-side.
+        element :chip_input, "cn-combobox-chip-input flex-1 bg-transparent outline-none"
+
         # The source's inline lucide icon classes, named per part. The
         # double chevron is the combobox tell (Select wears chevron-down).
         element :trigger_icon, "size-4 opacity-50"
         element :indicator_check, "size-4"
+        element :chip_remove_icon, "size-3"
       end
     end
   end

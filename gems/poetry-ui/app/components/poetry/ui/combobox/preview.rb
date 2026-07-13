@@ -114,6 +114,39 @@ module Poetry
             combobox.with_item(value: "jst") { "Japan Standard Time (JST)" }
           end
         end
+
+        # ## Multiple
+
+        # multiple: true - the chips FIELD replaces the trigger (Base UI's
+        # input-inside layout): value: takes an array, one chip per
+        # committed value in value order, the filter input rides inline,
+        # selection TOGGLES with the popup staying open, and the native
+        # <select multiple> posts frameworks[].
+        def multiple
+          render_component(name: "frameworks", multiple: true, value: %w[sveltekit remix],
+                           placeholder: "Select frameworks...", "aria-label": "Frameworks") do |combobox|
+            FRAMEWORKS.each { |value, label| combobox.with_item(value: value) { label } }
+          end
+        end
+
+        # Empty selection: no toolbar role, data-placeholder on the frame,
+        # the placeholder text riding the inline input.
+        def multiple_empty
+          render_component(name: "frameworks", multiple: true,
+                           placeholder: "Select frameworks...", "aria-label": "Frameworks") do |combobox|
+            FRAMEWORKS.each { |value, label| combobox.with_item(value: value) { label } }
+          end
+        end
+
+        # Disabled: the frame dims (data-disabled), chips carry
+        # data-disabled (focus is blocked entirely), the input and native
+        # select disable together.
+        def multiple_disabled
+          render_component(name: "frameworks", multiple: true, disabled: true, value: %w[astro],
+                           placeholder: "Select frameworks...", "aria-label": "Frameworks") do |combobox|
+            FRAMEWORKS.each { |value, label| combobox.with_item(value: value) { label } }
+          end
+        end
       end
     end
   end

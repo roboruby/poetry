@@ -175,7 +175,7 @@ module Poetry
         def test_source_exact_classes_land_on_the_content
           html = render_popover
 
-          assert_includes html, "origin-(--radix-popover-content-transform-origin)"
+          assert_includes html, "origin-(--transform-origin)"
           assert_includes html, "w-72"
           # Panel chrome + the animate/slide chains ride the theme rule.
           assert_includes html, "cn-popover-content"

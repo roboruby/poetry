@@ -466,6 +466,26 @@
   @apply size-4;
 }
 
+/* The chips FIELD (multiple:) - the input frame per the shadcn source
+ * (combobox.tsx): chip padding tighten via has-data, chip = the muted
+ * mini-badge; the chip focus ring is poetry's a11y addition (Base UI
+ * styles chip highlight as real :focus-visible). */
+.cn-combobox-chips {
+  @apply min-h-9 gap-1.5 rounded-md border border-input px-2.5 py-1.5 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-data-[slot=combobox-chip]:px-1.5;
+}
+
+.cn-combobox-chip {
+  @apply h-5.5 gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-combobox-chip-remove {
+  @apply -ml-1 rounded-sm opacity-50 hover:opacity-100 focus-visible:opacity-100;
+}
+
+.cn-combobox-chip-input {
+  @apply min-w-16 placeholder:text-muted-foreground;
+}
+
 /* MARK: ContextMenu */
 .cn-context-menu-content {
   @apply min-w-[8rem] rounded-md border bg-popover p-1 text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;

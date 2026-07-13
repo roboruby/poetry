@@ -313,8 +313,8 @@ module Poetry
             end
           end
 
-          assert_includes html, "max-h-(--radix-context-menu-content-available-height)"
-          assert_includes html, "origin-(--radix-context-menu-content-transform-origin)"
+          assert_includes html, "max-h-(--available-height)"
+          assert_includes html, "origin-(--transform-origin)"
           # The context deltas vs the dropdown dictionary now live in the
           # theme rules (label adds text-foreground; the sub-trigger omits
           # gap-2) - the names prove the family split:

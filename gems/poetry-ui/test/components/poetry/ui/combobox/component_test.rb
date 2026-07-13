@@ -400,8 +400,17 @@ module Poetry
           end
         end
 
-        def test_multiple_raises
-          assert_raises(ArgumentError) { Component.new(multiple: true, "aria-label": "Framework") }
+        def test_multiple_makes_value_list_capable
+          component = Component.new(multiple: true, value: %w[b a b], "aria-label": "Framework")
+
+          assert_predicate component, :multiple
+          assert_equal %w[b a], component.selected_values, "stringified, deduped, value order preserved"
+          assert_equal %w[b a], component.selected_value,
+                       "downstream selection tests flip to array inclusion"
+
+          scalar = Component.new(multiple: true, value: "solo", "aria-label": "Framework")
+
+          assert_equal %w[solo], scalar.selected_values, "a scalar adopts as a one-element list (List-cast)"
         end
 
         def test_a_nameless_bare_combobox_fails_the_render

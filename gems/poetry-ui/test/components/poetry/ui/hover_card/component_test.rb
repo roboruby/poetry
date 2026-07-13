@@ -123,7 +123,7 @@ module Poetry
           content = doc(render_card).css('[data-slot="hover-card-content"]').first
           classes = content["class"].split
 
-          assert_includes classes, "origin-(--radix-hover-card-content-transform-origin)"
+          assert_includes classes, "origin-(--transform-origin)"
           # Panel chrome + width + the animate/slide chains ride the theme
           # rule (width moved theme-side at N12 W2 - mira/rhea widen it).
           assert_includes classes, "cn-hover-card-content"

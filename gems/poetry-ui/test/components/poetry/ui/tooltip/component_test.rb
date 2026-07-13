@@ -149,7 +149,7 @@ module Poetry
           assert_includes classes, "cn-tooltip-content"
           assert_includes classes, "bg-foreground"
           assert_includes classes, "text-background"
-          assert_includes classes, "origin-(--radix-tooltip-content-transform-origin)"
+          assert_includes classes, "origin-(--transform-origin)"
         end
 
         def test_content_class_merges_over_the_source_classes

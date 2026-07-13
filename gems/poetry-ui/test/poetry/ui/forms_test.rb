@@ -532,19 +532,29 @@ module Poetry
         assert_equal "Germany", fragment.css('[data-slot="combobox-value"]').first.text
       end
 
-      def test_poetry_combobox_rejects_multiple
-        # The controller renderer wraps render-time raises in Template::Error.
-        error = assert_raises(ActionView::Template::Error, ArgumentError) do
-          ApplicationController.renderer.render(
-            inline: <<~ERB, locals: { model: Ticket.new }, layout: false
-              <%= form_with(model: model, url: "/tickets", builder: Poetry::Ui::FormBuilder) do |form| %>
-                <%= form.poetry_combobox(:department, %w[eng design], multiple: true) %>
-              <% end %>
-            ERB
-          )
-        end
+      def test_poetry_combobox_multiple_reads_the_array_and_posts_the_rails_array_convention
+        html = ApplicationController.renderer.render(
+          inline: <<~ERB, locals: { model: Ticket.new(department: %w[design eng]) }, layout: false
+            <%= form_with(model: model, url: "/tickets", builder: Poetry::Ui::FormBuilder) do |form| %>
+              <%= form.poetry_combobox(:department, %w[eng design ops], multiple: true) %>
+            <% end %>
+          ERB
+        )
+        fragment = Nokogiri::HTML5.fragment(html)
+        native = fragment.css('[data-slot="combobox-native"]').first
 
-        assert_includes error.message, "multiple"
+        assert_equal "poetry_ui_forms_test_ticket[department][]", native["name"],
+                     "field_name(multiple:) posts the [] convention"
+        assert native.key?("multiple")
+        assert_equal %w[design eng],
+                     fragment.css('[data-slot="combobox-chips"] > [data-slot="combobox-chip"]')
+                             .map { |chip| chip["data-value"] },
+                     "one chip per model value IN VALUE ORDER"
+        # The control_attributes land on the INLINE INPUT (no trigger exists).
+        input = fragment.css('[data-slot="command-input"]').first
+
+        assert_equal "poetry_ui_forms_test_ticket_department", input["id"]
+        assert_equal fragment.css("label").first["for"], input["id"]
       end
 
       def test_labels_come_from_i18n

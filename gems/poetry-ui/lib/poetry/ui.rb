@@ -35,13 +35,14 @@ module Poetry
       "alert_dialog" => %w[dialog button], # shares the dialog controller + posture
       "field" => %w[label input],
       "alert" => %w[icon],
-      "select" => %w[icon] # chevrons + check; Field is an optional pairing, not a hard edge
+      "select" => %w[icon], # chevrons + check; Field is an optional pairing, not a hard edge
+      "number_field" => %w[input input_group button icon] # composes their chrome
     }.freeze
 
     SKILL_FAMILIES = {
       "forms" => %w[button button_group calendar checkbox combobox date_picker field
-                    input input_group input_otp label native_select radio_group select
-                    slider switch textarea toggle toggle_group],
+                    input input_group input_otp label native_select number_field radio_group
+                    select slider switch textarea toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel collapsible data_table empty

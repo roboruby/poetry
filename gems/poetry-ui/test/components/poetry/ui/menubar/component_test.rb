@@ -320,7 +320,7 @@ module Poetry
             assert_includes bar["class"].split, token
           end
           assert_includes content["class"], "cn-menubar-content"
-          assert_includes content["class"], "origin-(--radix-menubar-content-transform-origin)"
+          assert_includes content["class"], "origin-(--transform-origin)"
           # The source's own quirks now live verbatim in the theme rules
           # (content omits data-closed:animate-out; checkbox rounds with
           # rounded-xs). Inline quirk still visible here:

@@ -58,14 +58,14 @@ module Poetry
 
       def component_sources(component)
         dir = Poetry::Ui.root.join("app/components", component.component_path)
-        Dir.glob("#{dir}/**/*.{rb,erb}").sort.map { |file| File.read(file) }.join("\n")
+        Dir.glob("#{dir}/**/*.{rb,erb}").map { |file| File.read(file) }.join("\n")
       end
 
       # The second source for JS-applied states and vars (all poetry
       # controllers live in poetry-core).
       def js_corpus
-        @js_corpus ||= Dir.glob("#{Poetry::Core.root.join('app/javascript')}/**/*.js")
-                          .sort.map { |file| File.read(file) }.join("\n")
+        @js_corpus ||= Dir.glob("#{Poetry::Core.root.join("app/javascript")}/**/*.js")
+                          .map { |file| File.read(file) }.join("\n")
       end
 
       def format_finding(component, finding)

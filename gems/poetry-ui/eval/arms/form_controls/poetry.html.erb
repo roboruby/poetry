@@ -53,4 +53,10 @@
         stay native; never per-cell inputs. %>
     <%= poetry_input_otp(name: "settings[code]", length: 6, groups: [3, 3], id: "settings-code") %>
   </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-seats") { "Seats" } %>
+    <%# The two-input number field: the hidden type=number submits the raw
+        value; steppers are pointer affordances, arrows step on the input. %>
+    <%= poetry_number_field(name: "settings[seats]", id: "settings-seats", value: 5, min: 1, max: 50) %>
+  </div>
 </div>

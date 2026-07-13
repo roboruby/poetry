@@ -236,5 +236,91 @@ module DommyTier
       assert_empty harness.evaluate("window.__events")
       assert_equal "", input_value(harness)
     end
+
+    # --- multiple (the chips field) ---
+
+    def render_multiple_combobox(values: %w[sveltekit remix])
+      render_in_dommy(Poetry::Ui::Combobox::Component.new(
+                        name: "post[frameworks]", multiple: true, value: values,
+                        placeholder: "Select frameworks...", "aria-label": "Frameworks"
+                      )) do |combobox|
+        combobox.with_item(value: "next.js") { "Next.js" }
+        combobox.with_item(value: "sveltekit") { "SvelteKit" }
+        combobox.with_item(value: "nuxt.js") { "Nuxt.js" }
+        combobox.with_item(value: "remix") { "Remix" }
+      end
+    end
+
+    def chip_values(harness)
+      harness.evaluate(<<~JS)
+        Array.from(document.querySelectorAll('[data-slot="combobox-chip"]'))
+          .filter((chip) => !chip.closest("template"))
+          .map((chip) => chip.dataset.value)
+      JS
+    end
+
+    def test_multiple_renders_chips_in_value_order_inside_the_toolbar_frame
+      harness = render_multiple_combobox
+
+      assert_no_js_errors harness
+      assert_equal %w[sveltekit remix], chip_values(harness),
+                   "one chip per committed value IN VALUE ORDER"
+
+      role, placeholder, native_name, native_multiple, selected = harness.evaluate(<<~JS)
+        (() => {
+          const chips = document.querySelector('[data-slot="combobox-chips"]');
+          const native = document.querySelector('[data-slot="combobox-native"]');
+          return [chips.getAttribute("role"), chips.hasAttribute("data-placeholder"),
+                  native.getAttribute("name"), native.multiple,
+                  Array.from(native.querySelectorAll("option"))
+                    .filter((option) => option.selected).map((option) => option.value)];
+        })()
+      JS
+
+      assert_equal "toolbar", role, "role=toolbar rides the frame while it holds chips"
+      refute placeholder
+      assert_equal "post[frameworks][]", native_name, "the [] Rails array convention is derived"
+      assert native_multiple, "the native select is the multiple serialization truth"
+      assert_equal %w[sveltekit remix], selected
+    end
+
+    def test_multiple_toggle_commits_without_closing_the_popup
+      harness = render_multiple_combobox
+      record_events(harness)
+
+      # Mousedown anywhere in the chips frame focuses the input and opens.
+      harness.execute(<<~JS)
+        const chips = document.querySelector('[data-slot="combobox-chips"]');
+        chips.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+      JS
+      harness.pump(rounds: 10)
+
+      assert_no_js_errors harness
+      assert_equal "command-input",
+                   harness.evaluate("document.activeElement.getAttribute('data-slot')"),
+                   "a chips-area press focuses the INLINE input"
+
+      harness.execute(<<~JS)
+        document.querySelector('[data-slot="command-item"][data-value="next.js"]')
+          .dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      JS
+      harness.pump(rounds: 10)
+
+      assert_no_js_errors harness
+      assert_equal %w[sveltekit remix next.js], chip_values(harness),
+                   "selection TOGGLES - appended at the value-order end"
+
+      state, hidden = harness.evaluate(<<~JS)
+        (() => {
+          const content = document.querySelector('[data-slot="combobox-content"]');
+          return [content.hasAttribute("data-open") ? "open" : "closed", content.hidden];
+        })()
+      JS
+
+      assert_equal ["open", false], [state, hidden], "the popup STAYS OPEN on select (Base UI multiple)"
+      assert_equal %w[native-change poetry-change],
+                   harness.evaluate("window.__events.map((entry) => entry[0])"),
+                   "a REAL bubbling change fires on the native select FIRST, then poetry:combobox:change"
+    end
   end
 end

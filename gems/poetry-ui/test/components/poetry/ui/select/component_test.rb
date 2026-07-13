@@ -342,8 +342,8 @@ module Poetry
         def test_source_exact_classes_land_on_the_parts
           html = render_select
 
-          assert_includes html, "max-h-(--radix-select-content-available-height)"
-          assert_includes html, "origin-(--radix-select-content-transform-origin)"
+          assert_includes html, "max-h-(--available-height)"
+          assert_includes html, "origin-(--transform-origin)"
           assert_includes html, "min-w-[var(--radix-select-trigger-width)]"
           # The field chrome (placeholder dim, size heights) and the baked-in
           # popper translate nudges ride the theme rules.

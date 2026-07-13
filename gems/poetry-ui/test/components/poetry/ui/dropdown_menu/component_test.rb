@@ -309,8 +309,8 @@ module Poetry
         def test_source_exact_classes_land_on_content_and_item
           html = render_menu
 
-          assert_includes html, "max-h-(--radix-dropdown-menu-content-available-height)"
-          assert_includes html, "origin-(--radix-dropdown-menu-content-transform-origin)"
+          assert_includes html, "max-h-(--available-height)"
+          assert_includes html, "origin-(--transform-origin)"
           # The destructive focus treatment rides .cn-dropdown-menu-item.
           assert_includes html, "cn-dropdown-menu-item"
         end

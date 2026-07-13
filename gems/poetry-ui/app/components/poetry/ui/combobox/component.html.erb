@@ -9,8 +9,18 @@
 <% end %>
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
   <%= native_select %>
-  <%= trigger_button %>
+  <%= multiple ? chips_frame : trigger_button %>
   <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
+    <% if multiple %>
+      <%# MULTIPLE: the popup holds ONLY the listbox (the input lives
+          inline in the chips frame; the command engine rides the ROOT so
+          it scopes over both - no command part in here). %>
+      <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
+        <%= empty_part %>
+        <%= list_body %>
+      <% end %>
+      <%= status_part %>
+    <% else %>
     <%# The EMBEDDED Command anatomy (Command::Style + the engine
         controller reused verbatim; chrome flattened - rounded/border ride
         the content). %>
@@ -24,6 +34,7 @@
         <%= list_body %>
       <% end %>
       <%= status_part %>
+    <% end %>
     <% end %>
   <% end %>
 <% end %>

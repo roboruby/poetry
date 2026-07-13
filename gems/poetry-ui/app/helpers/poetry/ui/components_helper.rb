@@ -448,6 +448,13 @@ module Poetry
         render(Poetry::Ui::Label::Component.new(**), &)
       end
 
+      # Base UI's number-field pattern: a formatted text input
+      # over a hidden type=number that submits the raw value; steppers
+      # with press-and-hold; ArrowUp/Down (Shift/Alt sizes) on the input.
+      def poetry_number_field(**)
+        render(Poetry::Ui::NumberField::Component.new(**))
+      end
+
       def poetry_field(**, &)
         render(Poetry::Ui::Field::Component.new(**), &)
       end

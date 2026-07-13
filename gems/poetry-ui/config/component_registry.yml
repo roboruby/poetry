@@ -1227,6 +1227,9 @@ components:
     - name: modal
       type: boolean
       default: false
+    - name: multiple
+      type: boolean
+      default: false
     - name: name
       type: string
     - name: open
@@ -1278,21 +1281,31 @@ components:
     - item_indicator
     - item_indicator_state
     - native
+    - chips
+    - chip
+    - chip_remove
+    - chip_input
     - trigger_icon
     - indicator_check
-    capsule: 7eb8581783a3
+    - chip_remove_icon
+    capsule: b0f3a227d2a2
     controllers:
     - identifier: poetry--core--combobox
       targets: []
       values:
       - modal
+      - multiple
       - open
       - value
       actions:
+      - chipKeydown
+      - chipsPointerdown
       - close
+      - inputKeydown
       - nativeChanged
       - open
       - openValueChanged
+      - removeChip
       - setValue
       - toggle
       - triggerKeydown
@@ -1352,12 +1365,16 @@ components:
     - 'Async options: filter: false + the Turbo-frame ?q= recipe - AND the frame must
       render the twin native <option> for every committable item (the recipe''s one
       hard rule).'
-    - 'In forms, always f.poetry_combobox; multiple: raises - multi-select/chips is
-      not shipped (do not fake it with hidden inputs).'
+    - 'multiple: true is the multi-select/chips mode: value: takes an ARRAY, the native
+      <select multiple> posts name[] (the [] is appended for you), selection TOGGLES
+      with the popup staying open, and chips replace the trigger - never fake multi
+      with hidden inputs.'
     - Do not put interactive elements inside options (an option IS the interactive
       unit).
-    - Deselection is include_blank (a visible blank option), never a re-click toggle
-      - committing the already-selected value closes without change.
+    - Deselection in single mode is include_blank (a visible blank option), never
+      a re-click toggle - committing the already-selected value closes without change.
+      In multiple, re-committing IS the deselect gesture (chip-remove is its pointer
+      twin).
     required_slots:
       item: at least one item
     parts:
@@ -1426,8 +1443,14 @@ components:
     - name: command-search-icon
       description: Decorative search glyph beside the input
     - name: command-input
-      description: The popup's filter input (role=combobox, its own accessible name)
-        - the typing session and aria-activedescendant live here
+      description: 'The filter input (role=combobox) - the typing session and aria-activedescendant
+        live here. Single: in the popup with its own accessible name; multiple: INLINE
+        in the chips frame (Base UI''s input-inside layout), where the field label
+        reaches it'
+      states:
+      - attr: data-popup-open
+        condition: 'multiple: the popup is open (bare while open, absent while closed
+          - the input carries the flip; single''s trigger owns it)'
     - name: command-list
       description: THE role=listbox - the aria-controls target of both combobox roles
     - name: command-empty
@@ -1474,6 +1497,31 @@ components:
       - attr: data-other
         condition: always - the localized many-results template (a literal count placeholder
           the controller interpolates)
+    - name: combobox-chips
+      description: 'The chips FIELD frame (multiple: only) - the popper anchor replacing
+        the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides
+        it only while it holds >=1 chip'
+      states:
+      - attr: data-placeholder
+        condition: the selection is empty (bare; the controller flips it on every
+          commit - the toolbar role departs with it)
+      - attr: data-disabled
+        condition: 'disabled: is set - every chip mutation is gated'
+      - attr: data-remove-label
+        condition: always - the localized chip-remove template (a literal label placeholder
+          the controller interpolates for client-built chips)
+    - name: combobox-chip
+      description: 'One committed value (multiple: only) - a div taking REAL focus
+        (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted),
+        named by its value text, holding the remove button'
+      states:
+      - attr: data-value
+        condition: always - the chip's committed value (the native <option> twin)
+      - attr: data-disabled
+        condition: 'disabled: is set (chip focus is blocked entirely)'
+    - name: combobox-chip-remove
+      description: The chip's native remove button (tabindex=-1, labelled 'Remove
+        <label>') - a press removes the value and is never a chips-area press
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
     identifier: poetry--ui--command
@@ -3334,6 +3382,8 @@ components:
     - name: invalid
       type: boolean
       default: false
+    - name: mask
+      type: string
     - name: name
       type: string
     - name: placeholder
@@ -3346,15 +3396,36 @@ components:
     slots: []
     elements: []
     capsule: 64b28e72ead3
+    controllers:
+    - identifier: poetry--core--mask
+      targets: []
+      values:
+      - alwaysShowMask
+      - autoClear
+      - mask
+      - showMaskOnFocus
+      - slotChar
+      - upcase
+      actions: []
+      events:
+      - poetry:mask:change
+      - poetry:mask:complete
     agent_rules:
     - Inside a form, never render Input directly - use the FormBuilder's field (it
       wires ids, errors, and aria).
     - Error styling comes from aria-invalid, set from model errors - never hand-toggle
       error classes.
+    - 'mask: formats as the user types (''(999) 999-9999''; 9=digit, a=letter, A=upper,
+      *=alnum, #=sign/digit, \\ escapes, ? makes the rest optional) - the MASKED text
+      submits; read data-raw for the bare value.'
     parts:
     - name: input
       description: The <input> element itself - no inner anatomy; error state is aria-invalid
         (set by Field/FormBuilder), never a parallel class
+      states:
+      - attr: data-raw
+        condition: 'mask: is set - the unmasked value, kept live by the mask controller
+          (the masked text is what submits)'
   poetry/ui/input_group:
     class_name: Poetry::Ui::InputGroup::Component
     identifier: poetry--ui--input_group
@@ -4568,6 +4639,130 @@ components:
       states:
       - attr: data-active
         condition: 'the current page (active: true)'
+  poetry/ui/number_field:
+    class_name: Poetry::Ui::NumberField::Component
+    identifier: poetry--ui--number_field
+    bem_block: poetry-ui-number_field
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: format
+      type:
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: large_step
+      type: float
+      default: 10.0
+    - name: locale
+      type: string
+    - name: max
+      type: float
+    - name: min
+      type: float
+    - name: name
+      type: string
+      required: true
+    - name: placeholder
+      type: string
+    - name: readonly
+      type: boolean
+      default: false
+    - name: required
+      type: boolean
+      default: false
+    - name: small_step
+      type: float
+      default: 0.1
+    - name: snap
+      type: boolean
+      default: false
+    - name: step
+      type: float
+      default: 1.0
+    - name: value
+      type:
+    - name: wheel
+      type: boolean
+      default: false
+    slots: []
+    elements: []
+    capsule: 992ce89b2903
+    controllers:
+    - identifier: poetry--core--number-field
+      targets:
+      - decrement
+      - hidden
+      - increment
+      - input
+      values:
+      - format
+      - largeStep
+      - locale
+      - max
+      - min
+      - smallStep
+      - snap
+      - step
+      - wheel
+      actions:
+      - blur
+      - focus
+      - hiddenChanged
+      - input
+      - keydown
+      - leave
+      - press
+      - tap
+      events:
+      - poetry:number-field:change
+      - poetry:number-field:commit
+    agent_rules:
+    - Use poetry_number_field / form.number_field - never a hand-rolled spinner or
+      a bare input type=number.
+    - The server reads params[<name>] as the raw number string - display formatting
+      (format:) never changes what submits.
+    - Steppers are mouse/touch affordances (tabindex -1); keyboard users step with
+      ArrowUp/Down (Shift = large_step, Alt = small_step) on the input itself.
+    - Pair it with a Label/Field for the accessible name - the component ships none.
+    - 'format: takes Intl.NumberFormatOptions as a Hash ({ style: "currency", currency:
+      "USD" }); pick locale: to pin parsing separators.'
+    parts:
+    - name: number-field
+      description: Root wrapper - the controller, disabled/invalid/filled state, and
+        the two-input pair ride here
+      states:
+      - attr: data-disabled
+        condition: 'disabled: is set (steppers disable, the group chrome dims)'
+      - attr: data-invalid
+        condition: 'invalid: is set (the group wears the destructive ring via the
+          control''s aria-invalid)'
+      - attr: data-filled
+        condition: the value is non-null (the controller keeps it live)
+    - name: number-field-group
+      description: The bordered field surface - wears InputGroup's chrome (cn-input-group),
+        focus ring keyed on the control inside
+    - name: input-group-addon
+      description: The two stepper cells - InputGroup's addon vocabulary, reused so
+        the group paddings compose
+      states:
+      - attr: data-align
+        condition: always - inline-start holds the decrement, inline-end the increment
+        values:
+        - inline-start
+        - inline-end
+    - name: input-group-control
+      description: The visible formatted <input type=text> - InputGroup's control
+        slot (the themes' focus-ring hook); aria-roledescription "Number field", never
+        a spinbutton
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination
@@ -6872,6 +7067,7 @@ helper_args:
   poetry_native_select_option: 0
   poetry_navigation_menu: 0
   poetry_navigation_menu_link: 0
+  poetry_number_field: 0
   poetry_pagination: 0
   poetry_popover: 0
   poetry_progress: 0

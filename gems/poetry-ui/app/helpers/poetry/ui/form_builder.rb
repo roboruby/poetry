@@ -133,6 +133,26 @@ module Poetry
         end
       end
 
+      # form.number_field(:quantity, min: 0, max: 100) - a Field wrapping
+      # a NumberField, label/error/required from the object. The
+      # hidden <input type=number> submits the raw value; format: only
+      # shapes the display.
+      def number_field(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render NumberField::Component.new(
+            name: field_name(method),
+            value: object.public_send(method),
+            required: required?(method),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
       # The FormBuilder#select-equivalent (the listbox capstone): a
       # Field wrapping a Select, everything derived from the object. The
       # hidden native <select> is the serialization truth (name/value/
@@ -183,16 +203,18 @@ module Poetry
       # include_blank: "Choose..." doubles as the placeholder text (the
       # blank option posts "" and fails native required validation -
       # deselection is a form affordance, never a re-click toggle).
+      #
+      # multiple: true is the chips mode: the value is the model's ARRAY
+      # (params post name[] - Rails' own convention, the [] derived for
+      # you) and the control_attributes land on the INLINE INPUT (the
+      # chips field has no trigger); include_blank has no meaning there.
       def poetry_combobox(method, choices = nil, include_blank: nil, hint: nil, **options, &block)
-        if options.key?(:multiple)
-          raise ArgumentError, "poetry_combobox does not support multiple: - multi-select/chips is not shipped"
-        end
-
+        multiple = options[:multiple]
         field_component = field_for(method, hint: hint)
         placeholder = include_blank.is_a?(String) ? include_blank : options.delete(:placeholder)
         combobox_options = {
-          name: field_name(method),
-          value: object.public_send(method).presence&.to_s,
+          name: field_name(method, multiple: multiple),
+          value: multiple ? Array(object.public_send(method)).map(&:to_s) : object.public_send(method).presence&.to_s,
           placeholder: placeholder,
           required: required?(method),
           **options.transform_keys(&:to_sym),
