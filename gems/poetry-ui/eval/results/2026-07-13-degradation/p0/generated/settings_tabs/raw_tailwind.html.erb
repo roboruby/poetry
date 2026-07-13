@@ -1,0 +1,178 @@
+<div class="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+  <div class="mb-8">
+    <h1 class="text-2xl font-semibold text-gray-900">Settings</h1>
+    <p class="mt-1 text-sm text-gray-500">Manage your account details, security, and notification preferences.</p>
+  </div>
+
+  <fieldset class="group">
+    <legend class="sr-only">Settings sections</legend>
+
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex gap-6" aria-label="Settings tabs">
+        <div>
+          <input type="radio" id="tab-account" name="settings-tab" class="peer/account sr-only" checked>
+          <label
+            for="tab-account"
+            class="inline-flex cursor-pointer border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 peer-checked/account:border-indigo-600 peer-checked/account:text-indigo-600 peer-focus-visible/account:outline peer-focus-visible/account:outline-2 peer-focus-visible/account:outline-offset-2 peer-focus-visible/account:outline-indigo-600"
+          >Account</label>
+        </div>
+        <div>
+          <input type="radio" id="tab-password" name="settings-tab" class="peer/password sr-only">
+          <label
+            for="tab-password"
+            class="inline-flex cursor-pointer border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 peer-checked/password:border-indigo-600 peer-checked/password:text-indigo-600 peer-focus-visible/password:outline peer-focus-visible/password:outline-2 peer-focus-visible/password:outline-offset-2 peer-focus-visible/password:outline-indigo-600"
+          >Password</label>
+        </div>
+        <div>
+          <input type="radio" id="tab-notifications" name="settings-tab" class="peer/notifications sr-only">
+          <label
+            for="tab-notifications"
+            class="inline-flex cursor-pointer border-b-2 border-transparent px-1 py-4 text-sm font-medium text-gray-500 hover:border-gray-300 hover:text-gray-700 peer-checked/notifications:border-indigo-600 peer-checked/notifications:text-indigo-600 peer-focus-visible/notifications:outline peer-focus-visible/notifications:outline-2 peer-focus-visible/notifications:outline-offset-2 peer-focus-visible/notifications:outline-indigo-600"
+          >Notifications</label>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Account panel -->
+    <div id="panel-account" role="tabpanel" aria-labelledby="tab-account" class="hidden py-8 group-has-[#tab-account:checked]:block">
+      <form class="space-y-8">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Profile</h2>
+          <p class="mt-1 text-sm text-gray-500">This information will be displayed publicly, so be careful what you share.</p>
+        </div>
+
+        <div class="flex items-center gap-x-6">
+          <span class="inline-flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 text-lg font-medium text-gray-500">MS</span>
+          <div>
+            <button type="button" class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">Change avatar</button>
+            <p class="mt-1 text-xs text-gray-500">JPG, GIF or PNG. 1MB max.</p>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+          <div class="sm:col-span-3">
+            <label for="first-name" class="block text-sm font-medium text-gray-700">First name</label>
+            <input type="text" id="first-name" name="first-name" value="Matt" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+          </div>
+          <div class="sm:col-span-3">
+            <label for="last-name" class="block text-sm font-medium text-gray-700">Last name</label>
+            <input type="text" id="last-name" name="last-name" value="Solt" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+          </div>
+          <div class="sm:col-span-4">
+            <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+            <input type="email" id="email" name="email" value="mattsolt@gmail.com" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+          </div>
+          <div class="sm:col-span-4">
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <div class="mt-2 flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600">
+              <span class="flex select-none items-center pl-3 text-gray-500 sm:text-sm">app.example.com/</span>
+              <input type="text" id="username" name="username" value="mattsolt" class="block w-full rounded-md border-0 py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm">
+            </div>
+          </div>
+          <div class="sm:col-span-6">
+            <label for="bio" class="block text-sm font-medium text-gray-700">Bio</label>
+            <textarea id="bio" name="bio" rows="3" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">Product engineer building things on the web.</textarea>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-x-3 border-t border-gray-200 pt-6">
+          <button type="button" class="rounded-md px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Cancel</button>
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Password panel -->
+    <div id="panel-password" role="tabpanel" aria-labelledby="tab-password" class="hidden py-8 group-has-[#tab-password:checked]:block">
+      <form class="space-y-8">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Password</h2>
+          <p class="mt-1 text-sm text-gray-500">Update your password. Use at least 8 characters, mixing letters and numbers.</p>
+        </div>
+
+        <div class="grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6">
+          <div class="sm:col-span-4">
+            <label for="current-password" class="block text-sm font-medium text-gray-700">Current password</label>
+            <input type="password" id="current-password" name="current-password" autocomplete="current-password" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+          </div>
+          <div class="sm:col-span-4">
+            <label for="new-password" class="block text-sm font-medium text-gray-700">New password</label>
+            <input type="password" id="new-password" name="new-password" autocomplete="new-password" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+            <p class="mt-1 text-xs text-gray-500">Must be at least 8 characters.</p>
+          </div>
+          <div class="sm:col-span-4">
+            <label for="confirm-password" class="block text-sm font-medium text-gray-700">Confirm new password</label>
+            <input type="password" id="confirm-password" name="confirm-password" autocomplete="new-password" class="mt-2 block w-full rounded-md border-0 px-3 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm">
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-x-3 border-t border-gray-200 pt-6">
+          <button type="button" class="rounded-md px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Cancel</button>
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Update password</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Notifications panel -->
+    <div id="panel-notifications" role="tabpanel" aria-labelledby="tab-notifications" class="hidden py-8 group-has-[#tab-notifications:checked]:block">
+      <form class="space-y-8">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900">Notifications</h2>
+          <p class="mt-1 text-sm text-gray-500">Choose how you want to be notified about activity on your account.</p>
+        </div>
+
+        <ul class="divide-y divide-gray-200 border-t border-gray-200">
+          <li class="flex items-center justify-between py-4">
+            <div class="pr-6">
+              <p class="text-sm font-medium text-gray-900">Email notifications</p>
+              <p class="text-sm text-gray-500">Get a summary of activity delivered to your inbox.</p>
+            </div>
+            <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+              <input type="checkbox" name="notify-email" class="peer sr-only" checked>
+              <span class="h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-indigo-600 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-indigo-600"></span>
+              <span class="pointer-events-none absolute left-1 top-1 h-4 w-4 translate-x-0 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+            </label>
+          </li>
+          <li class="flex items-center justify-between py-4">
+            <div class="pr-6">
+              <p class="text-sm font-medium text-gray-900">Push notifications</p>
+              <p class="text-sm text-gray-500">Receive push notifications on your devices.</p>
+            </div>
+            <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+              <input type="checkbox" name="notify-push" class="peer sr-only">
+              <span class="h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-indigo-600 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-indigo-600"></span>
+              <span class="pointer-events-none absolute left-1 top-1 h-4 w-4 translate-x-0 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+            </label>
+          </li>
+          <li class="flex items-center justify-between py-4">
+            <div class="pr-6">
+              <p class="text-sm font-medium text-gray-900">Security alerts</p>
+              <p class="text-sm text-gray-500">Get notified about new sign-ins and security events.</p>
+            </div>
+            <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+              <input type="checkbox" name="notify-security" class="peer sr-only" checked>
+              <span class="h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-indigo-600 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-indigo-600"></span>
+              <span class="pointer-events-none absolute left-1 top-1 h-4 w-4 translate-x-0 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+            </label>
+          </li>
+          <li class="flex items-center justify-between py-4">
+            <div class="pr-6">
+              <p class="text-sm font-medium text-gray-900">Marketing emails</p>
+              <p class="text-sm text-gray-500">Occasional product updates and announcements.</p>
+            </div>
+            <label class="relative inline-flex shrink-0 cursor-pointer items-center">
+              <input type="checkbox" name="notify-marketing" class="peer sr-only">
+              <span class="h-6 w-11 rounded-full bg-gray-200 transition-colors peer-checked:bg-indigo-600 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-indigo-600"></span>
+              <span class="pointer-events-none absolute left-1 top-1 h-4 w-4 translate-x-0 rounded-full bg-white shadow transition-transform peer-checked:translate-x-5"></span>
+            </label>
+          </li>
+        </ul>
+
+        <div class="flex justify-end gap-x-3 border-t border-gray-200 pt-6">
+          <button type="button" class="rounded-md px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-50">Cancel</button>
+          <button type="submit" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">Save preferences</button>
+        </div>
+      </form>
+    </div>
+  </fieldset>
+</div>

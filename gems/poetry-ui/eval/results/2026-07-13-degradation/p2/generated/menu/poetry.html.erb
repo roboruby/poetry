@@ -1,0 +1,73 @@
+<%
+  members = [
+    { name: "Priya Nandan", email: "priya@northwind.co", role: "Owner", notify: true },
+    { name: "Owen Castellano", email: "owen@northwind.co", role: "Editor", notify: true },
+    { name: "Farrah Deschamps", email: "farrah@northwind.co", role: "Viewer", notify: false },
+  ]
+%>
+<div class="mx-auto max-w-3xl space-y-6 p-6">
+  <header class="space-y-1">
+    <h1 class="text-lg font-semibold">Workspace members</h1>
+    <p class="text-sm text-muted-foreground">
+      Manage teammates from the app menu above, the Options menu on a row, or by right-clicking a row directly.
+    </p>
+  </header>
+
+  <%= poetry_menubar(label: "Application menu") do |menubar| %>
+    <% menubar.with_menu do |file_menu| %>
+      <% file_menu.with_trigger { "File" } %>
+      <% file_menu.with_item(shortcut: "⌘N") { "Invite member" } %>
+      <% file_menu.with_item(shortcut: "⌘O") { "Import from CSV" } %>
+      <% file_menu.with_separator %>
+      <% file_menu.with_item(shortcut: "⌘S") { "Save changes" } %>
+      <% file_menu.with_item(shortcut: "⇧⌘S") { "Save As..." } %>
+      <% file_menu.with_item { "Export roster..." } %>
+      <% file_menu.with_separator %>
+      <% file_menu.with_item(shortcut: "⌘W") { "Close window" } %>
+    <% end %>
+    <% menubar.with_menu do |view_menu| %>
+      <% view_menu.with_trigger { "View" } %>
+      <% view_menu.with_checkbox_item(checked: true) { "Show avatars" } %>
+      <% view_menu.with_checkbox_item(checked: true) { "Show email addresses" } %>
+      <% view_menu.with_checkbox_item { "Show roles" } %>
+      <% view_menu.with_separator %>
+      <% view_menu.with_item(shortcut: "⌘+") { "Zoom in" } %>
+      <% view_menu.with_item(shortcut: "⌘-") { "Zoom out" } %>
+      <% view_menu.with_item(shortcut: "⌘0") { "Reset zoom" } %>
+    <% end %>
+  <% end %>
+
+  <div class="rounded-lg border divide-y">
+    <% members.each do |member| %>
+      <%= poetry_context_menu(label: "#{member[:name]} row actions") do |cm| %>
+        <% cm.with_trigger do %>
+          <%= poetry_item(media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: "user") } %>
+            <% item.with_title { member[:name] } %>
+            <% item.with_description { "#{member[:email]} · #{member[:role]}" } %>
+            <% item.with_actions do %>
+              <%= poetry_dropdown_menu(align: :end) do |dd| %>
+                <% dd.with_trigger(variant: :outline, size: :sm) { "Options" } %>
+                <% dd.with_label { "Account" } %>
+                <% dd.with_item { "View profile" } %>
+                <% dd.with_item { "Edit permissions" } %>
+                <% dd.with_separator %>
+                <% dd.with_checkbox_item(checked: member[:notify]) { "Email notifications" } %>
+                <% dd.with_separator %>
+                <% dd.with_item { "Duplicate" } %>
+                <% dd.with_item(variant: :destructive) { "Remove member" } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <% cm.with_label { member[:name] } %>
+        <% cm.with_item { "View profile" } %>
+        <% cm.with_item { "Edit permissions" } %>
+        <% cm.with_separator %>
+        <% cm.with_checkbox_item(checked: member[:notify]) { "Email notifications" } %>
+        <% cm.with_separator %>
+        <% cm.with_item(variant: :destructive) { "Remove member" } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

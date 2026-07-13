@@ -1,0 +1,7 @@
+<div class="mx-auto max-w-xl p-6">
+  <%= poetry_alert(variant: :destructive) do |alert| %>
+    <% alert.with_icon(name: "triangle-alert") %>
+    <% alert.with_title { "Payment failed" } %>
+    We couldn't charge your card on file. Update your payment method to avoid a lapse in service.
+  <% end %>
+</div>

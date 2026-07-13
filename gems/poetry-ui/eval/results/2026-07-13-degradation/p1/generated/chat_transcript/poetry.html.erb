@@ -1,0 +1,41 @@
+<div class="mx-auto max-w-2xl p-6">
+  <h1 class="mb-4 text-lg font-semibold text-foreground">Conversation</h1>
+
+  <%= poetry_message_scroller(id: "transcript") do %>
+    <div class="flex justify-center py-2">
+      <%= poetry_marker(variant: :separator) { "July 13, 2026" } %>
+    </div>
+
+    <%= poetry_message_scroller_item(id: "msg-1") do %>
+      <%= poetry_message(align: :start) do |message| %>
+        <% message.with_avatar { poetry_avatar(label: "Assistant") { "AI" } } %>
+        <% message.with_header { "Assistant" } %>
+        <% message.with_footer { "10:32 AM" } %>
+        <%= poetry_bubble_group do %>
+          <%= poetry_bubble(variant: :default) { "I've pulled together the Q2 summary you asked for — the full report is attached below." } %>
+          <%= poetry_attachment(orientation: :horizontal, size: :default, state: :done) do |attachment| %>
+            <% attachment.with_media(variant: :icon) { poetry_icon(name: :"file-text") } %>
+            <% attachment.with_title { "Q2-summary.pdf" } %>
+            <% attachment.with_description { "1.8 MB" } %>
+            <% attachment.with_action(label: "Download") { poetry_icon(name: :download) } %>
+          <% end %>
+          <%= poetry_bubble(tag: :button, variant: :outline) { "Looks great, thanks!" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "msg-2") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <% message.with_footer { "10:33 AM" } %>
+        <%= poetry_bubble(variant: :default) { "Thanks, that works!" } %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_message_scroller_item(id: "msg-thinking") do %>
+      <%= poetry_message(align: :start) do |message| %>
+        <% message.with_avatar { poetry_avatar(label: "Assistant") { "AI" } } %>
+        <%= poetry_bubble(variant: :ghost) { poetry_spinner(label: "Assistant is thinking…") } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

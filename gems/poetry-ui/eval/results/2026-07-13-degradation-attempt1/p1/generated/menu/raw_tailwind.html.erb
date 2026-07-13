@@ -1,0 +1,188 @@
+<div class="min-h-screen bg-gray-50">
+
+  <%# ─────────────────────────  App menubar (File / View)  ───────────────────────── %>
+  <div class="border-b border-gray-200 bg-white px-2 py-1" role="menubar" aria-label="Application menu">
+
+    <details class="relative inline-block">
+      <summary class="list-none select-none rounded px-3 py-1 text-sm font-medium text-gray-700 cursor-default hover:bg-gray-100 open:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+               role="menuitem" aria-haspopup="menu">
+        File
+      </summary>
+      <ul role="menu" aria-label="File" class="absolute left-0 z-30 mt-1 w-60 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">New File <span class="text-xs text-gray-400">⌘N</span></a></li>
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">Open…<span class="text-xs text-gray-400">⌘O</span></a></li>
+        <li role="separator" class="my-1 border-t border-gray-200"></li>
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">Save <span class="text-xs text-gray-400">⌘S</span></a></li>
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">Save As…<span class="text-xs text-gray-400">⇧⌘S</span></a></li>
+        <li role="separator" class="my-1 border-t border-gray-200"></li>
+        <li role="menuitem"><a href="#" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Print…</a></li>
+      </ul>
+    </details>
+
+    <details class="relative inline-block">
+      <summary class="list-none select-none rounded px-3 py-1 text-sm font-medium text-gray-700 cursor-default hover:bg-gray-100 open:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+               role="menuitem" aria-haspopup="menu">
+        View
+      </summary>
+      <ul role="menu" aria-label="View" class="absolute left-0 z-30 mt-1 w-60 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+        <li role="menuitemcheckbox" aria-checked="true">
+          <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+            <input type="checkbox" checked class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            Show Sidebar
+          </label>
+        </li>
+        <li role="menuitemcheckbox" aria-checked="true">
+          <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+            <input type="checkbox" checked class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            Show Status Bar
+          </label>
+        </li>
+        <li role="menuitemcheckbox" aria-checked="false">
+          <label class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+            <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+            Show Toolbar
+          </label>
+        </li>
+        <li role="separator" class="my-1 border-t border-gray-200"></li>
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">Zoom In <span class="text-xs text-gray-400">⌘+</span></a></li>
+        <li role="menuitem"><a href="#" class="flex items-center justify-between px-3 py-1.5 text-gray-700 hover:bg-gray-100">Zoom Out <span class="text-xs text-gray-400">⌘-</span></a></li>
+        <li role="menuitem"><a href="#" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Reset Zoom</a></li>
+      </ul>
+    </details>
+
+  </div>
+
+  <%# ─────────────────────────  Page content  ───────────────────────── %>
+  <main class="mx-auto max-w-4xl px-8 py-10">
+    <h1 class="text-xl font-semibold text-gray-900">Projects</h1>
+    <p class="mt-1 text-sm text-gray-500">Use the “Options” button, or right-click (click) anywhere on a row, to see available actions.</p>
+
+    <div class="mt-6 overflow-visible rounded-lg border border-gray-200 bg-white" role="table" aria-label="Projects">
+
+      <div role="row" class="grid grid-cols-[2fr_1fr_1fr_2.5rem] gap-4 border-b border-gray-200 px-4 py-2 text-xs font-medium uppercase tracking-wide text-gray-500">
+        <div role="columnheader">Name</div>
+        <div role="columnheader">Status</div>
+        <div role="columnheader">Updated</div>
+        <div role="columnheader" class="sr-only">Actions</div>
+      </div>
+
+      <div role="rowgroup">
+
+        <%# ───── Row 1 ───── %>
+        <div role="row" class="relative border-b border-gray-100 last:border-b-0">
+          <details>
+            <summary class="grid list-none grid-cols-[2fr_1fr_1fr_2.5rem] items-center gap-4 px-4 py-3 text-sm text-gray-700 cursor-context-menu hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     title="Right-click for row actions" aria-haspopup="menu">
+              <span class="font-medium text-gray-900">Marketing Site Redesign</span>
+              <span><span class="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">Active</span></span>
+              <span class="text-gray-500">Jul 10, 2026</span>
+              <span></span>
+            </summary>
+            <div role="menu" aria-label="Row context menu" class="absolute left-4 top-full z-20 mt-1 w-52 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Copy</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Duplicate</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Rename</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete</a>
+            </div>
+          </details>
+
+          <details class="absolute right-3 top-1/2 z-30 -translate-y-1/2">
+            <summary class="list-none select-none rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     aria-haspopup="menu">
+              Options
+            </summary>
+            <div role="menu" aria-label="Row options" class="absolute right-0 z-30 mt-1 w-56 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">View profile</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Assign to me</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <label role="menuitemcheckbox" class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+                <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Pin to top
+              </label>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete project</a>
+            </div>
+          </details>
+        </div>
+
+        <%# ───── Row 2 ───── %>
+        <div role="row" class="relative border-b border-gray-100 last:border-b-0">
+          <details>
+            <summary class="grid list-none grid-cols-[2fr_1fr_1fr_2.5rem] items-center gap-4 px-4 py-3 text-sm text-gray-700 cursor-context-menu hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     title="Right-click for row actions" aria-haspopup="menu">
+              <span class="font-medium text-gray-900">Mobile App Onboarding</span>
+              <span><span class="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">In Review</span></span>
+              <span class="text-gray-500">Jul 8, 2026</span>
+              <span></span>
+            </summary>
+            <div role="menu" aria-label="Row context menu" class="absolute left-4 top-full z-20 mt-1 w-52 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Copy</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Duplicate</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Rename</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete</a>
+            </div>
+          </details>
+
+          <details class="absolute right-3 top-1/2 z-30 -translate-y-1/2">
+            <summary class="list-none select-none rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     aria-haspopup="menu">
+              Options
+            </summary>
+            <div role="menu" aria-label="Row options" class="absolute right-0 z-30 mt-1 w-56 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">View profile</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Assign to me</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <label role="menuitemcheckbox" class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+                <input type="checkbox" checked class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Pin to top
+              </label>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete project</a>
+            </div>
+          </details>
+        </div>
+
+        <%# ───── Row 3 ───── %>
+        <div role="row" class="relative border-b border-gray-100 last:border-b-0">
+          <details>
+            <summary class="grid list-none grid-cols-[2fr_1fr_1fr_2.5rem] items-center gap-4 px-4 py-3 text-sm text-gray-700 cursor-context-menu hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     title="Right-click for row actions" aria-haspopup="menu">
+              <span class="font-medium text-gray-900">Q3 Analytics Dashboard</span>
+              <span><span class="inline-flex items-center rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Archived</span></span>
+              <span class="text-gray-500">Jun 30, 2026</span>
+              <span></span>
+            </summary>
+            <div role="menu" aria-label="Row context menu" class="absolute left-4 top-full z-20 mt-1 w-52 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Copy</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Duplicate</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Rename</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete</a>
+            </div>
+          </details>
+
+          <details class="absolute right-3 top-1/2 z-30 -translate-y-1/2">
+            <summary class="list-none select-none rounded-md border border-gray-300 bg-white px-2.5 py-1 text-xs font-medium text-gray-700 cursor-pointer hover:bg-gray-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 [&::-webkit-details-marker]:hidden"
+                     aria-haspopup="menu">
+              Options
+            </summary>
+            <div role="menu" aria-label="Row options" class="absolute right-0 z-30 mt-1 w-56 rounded-md border border-gray-200 bg-white py-1 text-sm shadow-lg">
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">View profile</a>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-gray-700 hover:bg-gray-100">Assign to me</a>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <label role="menuitemcheckbox" class="flex cursor-pointer items-center gap-2 px-3 py-1.5 text-gray-700 hover:bg-gray-100">
+                <input type="checkbox" class="size-3.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                Pin to top
+              </label>
+              <div role="separator" class="my-1 border-t border-gray-200"></div>
+              <a href="#" role="menuitem" class="flex items-center px-3 py-1.5 text-red-600 hover:bg-red-50 hover:text-red-700">Delete project</a>
+            </div>
+          </details>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>

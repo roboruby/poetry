@@ -1,0 +1,139 @@
+<div class="flex h-screen w-full overflow-hidden bg-gray-50 text-gray-900 antialiased">
+  <input type="checkbox" id="sidebar-toggle" class="peer sr-only" aria-label="Toggle sidebar" />
+
+  <aside
+    class="flex w-64 shrink-0 flex-col overflow-hidden border-r border-gray-200 bg-white opacity-100 transition-all duration-200 ease-in-out peer-checked:w-0 peer-checked:border-r-0 peer-checked:opacity-0"
+    aria-label="Sidebar"
+  >
+    <div class="flex h-16 shrink-0 items-center gap-2 border-b border-gray-200 px-4">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white">A</span>
+      <span class="whitespace-nowrap text-sm font-semibold text-gray-900">Acme Console</span>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto px-3 py-4" aria-label="Primary">
+      <h3 class="whitespace-nowrap px-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Platform</h3>
+      <ul class="mt-2 space-y-1">
+        <li>
+          <a
+            href="#"
+            aria-current="page"
+            class="flex items-center gap-3 whitespace-nowrap rounded-md bg-indigo-50 px-2 py-2 text-sm font-medium text-indigo-700"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 13h4V5H3v8Zm0 6h4v-4H3v4Zm10 0h4V9h-4v10Zm0-16v4h4V3h-4Z" />
+            </svg>
+            Dashboard
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            class="flex items-center gap-3 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7.5 12 3l9 4.5-9 4.5-9-4.5Zm0 9L12 21l9-4.5M3 12l9 4.5 9-4.5" />
+            </svg>
+            Projects
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            class="flex items-center gap-3 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.5 11 14.5 15 9.5M4.5 5.5h15v13h-15v-13Z" />
+            </svg>
+            Tasks
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            class="flex items-center gap-3 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9m6.5 10V4m6.5 15v-7" />
+            </svg>
+            Reports
+          </a>
+        </li>
+        <li>
+          <a
+            href="#"
+            class="flex items-center gap-3 whitespace-nowrap rounded-md px-2 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+          >
+            <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.4 13.5a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V19.5a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H4.5a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H10a1.65 1.65 0 0 0 1-1.51V4.5a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V10a1.65 1.65 0 0 0 1.51 1H19.5a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+            </svg>
+            Settings
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <div class="shrink-0 border-t border-gray-200 p-4">
+      <div class="flex items-center gap-3">
+        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700">AL</span>
+        <div class="min-w-0">
+          <p class="truncate text-sm font-medium text-gray-900">Ada Lovelace</p>
+          <p class="truncate text-xs text-gray-500">ada@acme.com</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="flex min-w-0 flex-1 flex-col">
+    <header class="flex h-16 shrink-0 items-center gap-3 border-b border-gray-200 bg-white px-4">
+      <label
+        for="sidebar-toggle"
+        class="inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+        aria-hidden="true"
+      >
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+          <rect x="3.5" y="4.5" width="17" height="15" rx="2" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 4.5v15" />
+        </svg>
+      </label>
+      <h1 class="truncate text-base font-semibold text-gray-900">Dashboard</h1>
+    </header>
+
+    <main class="flex-1 overflow-y-auto p-6">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+          <p class="text-sm font-medium text-gray-500">Active Projects</p>
+          <p class="mt-2 text-2xl font-semibold text-gray-900">24</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+          <p class="text-sm font-medium text-gray-500">Open Tasks</p>
+          <p class="mt-2 text-2xl font-semibold text-gray-900">128</p>
+        </div>
+        <div class="rounded-lg border border-gray-200 bg-white p-5">
+          <p class="text-sm font-medium text-gray-500">Team Members</p>
+          <p class="mt-2 text-2xl font-semibold text-gray-900">16</p>
+        </div>
+      </div>
+
+      <div class="mt-6 rounded-lg border border-gray-200 bg-white">
+        <div class="border-b border-gray-200 px-5 py-4">
+          <h2 class="text-sm font-semibold text-gray-900">Recent Activity</h2>
+        </div>
+        <ul class="divide-y divide-gray-100">
+          <li class="flex items-center justify-between px-5 py-3 text-sm">
+            <span class="text-gray-700">Sprint 14 planning finalized</span>
+            <span class="text-gray-400">2h ago</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3 text-sm">
+            <span class="text-gray-700">Marketing site deployed to production</span>
+            <span class="text-gray-400">5h ago</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3 text-sm">
+            <span class="text-gray-700">3 new members joined the workspace</span>
+            <span class="text-gray-400">1d ago</span>
+          </li>
+        </ul>
+      </div>
+    </main>
+  </div>
+</div>

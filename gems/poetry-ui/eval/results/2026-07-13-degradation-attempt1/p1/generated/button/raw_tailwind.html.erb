@@ -1,0 +1,65 @@
+<section class="mx-auto max-w-2xl p-8">
+  <div class="rounded-lg border border-red-200 bg-red-50 p-6">
+    <h2 class="text-base font-semibold text-red-900">Delete account</h2>
+    <p class="mt-1 text-sm text-red-700">
+      Permanently delete your account and all associated data. This action cannot be undone.
+    </p>
+
+    <div class="mt-4">
+      <button
+        type="button"
+        command="show-modal"
+        commandfor="delete-account-dialog"
+        class="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8.75 1a.75.75 0 0 0-.75.75V2h-3.5a.75.75 0 0 0 0 1.5h.322l.798 11.17A2.25 2.25 0 0 0 7.868 17h4.264a2.25 2.25 0 0 0 2.248-2.33l.798-11.17h.322a.75.75 0 0 0 0-1.5h-3.5v-.25a.75.75 0 0 0-.75-.75h-2.5ZM8 6.75a.75.75 0 0 1 1.5 0v6.5a.75.75 0 0 1-1.5 0v-6.5Zm3.25-.75a.75.75 0 0 0-.75.75v6.5a.75.75 0 0 0 1.5 0v-6.5a.75.75 0 0 0-.75-.75Z" clip-rule="evenodd" />
+        </svg>
+        Delete account
+      </button>
+    </div>
+  </div>
+
+  <dialog id="delete-account-dialog" class="m-auto w-full max-w-md rounded-lg border border-gray-200 p-0 shadow-xl backdrop:bg-gray-900/50">
+    <form method="dialog" class="p-6">
+      <h3 class="text-lg font-semibold text-gray-900">Delete account?</h3>
+      <p class="mt-2 text-sm text-gray-600">
+        This will permanently delete your account, profile, and all data associated with it.
+        This action <span class="font-semibold text-gray-900">cannot be undone</span>.
+      </p>
+
+      <label for="delete-confirm" class="mt-4 block text-sm font-medium text-gray-700">
+        Type <span class="font-semibold">DELETE</span> to confirm
+      </label>
+      <input
+        id="delete-confirm"
+        name="confirm"
+        type="text"
+        autocomplete="off"
+        class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 shadow-sm focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500"
+      />
+
+      <div class="mt-6 flex justify-end gap-3">
+        <button
+          type="submit"
+          value="cancel"
+          class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50"
+        >
+          Cancel
+        </button>
+        <button
+          type="submit"
+          value="delete"
+          formmethod="post"
+          formaction="#"
+          class="inline-flex items-center gap-2 rounded-md bg-red-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-700"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.75 1a.75.75 0 0 0-.75.75V2h-3.5a.75.75 0 0 0 0 1.5h.322l.798 11.17A2.25 2.25 0 0 0 7.868 17h4.264a2.25 2.25 0 0 0 2.248-2.33l.798-11.17h.322a.75.75 0 0 0 0-1.5h-3.5v-.25a.75.75 0 0 0-.75-.75h-2.5ZM8 6.75a.75.75 0 0 1 1.5 0v6.5a.75.75 0 0 1-1.5 0v-6.5Zm3.25-.75a.75.75 0 0 0-.75.75v6.5a.75.75 0 0 0 1.5 0v-6.5a.75.75 0 0 0-.75-.75Z" clip-rule="evenodd" />
+          </svg>
+          Delete account
+        </button>
+      </div>
+    </form>
+  </dialog>
+</section>

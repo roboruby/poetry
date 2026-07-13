@@ -1,0 +1,126 @@
+<%= poetry_sidebar(collapsible: :icon) do |shell| %>
+  <% shell.with_nav do %>
+    <%= poetry_sidebar_header do %>
+      <div class="flex items-center gap-2 px-2 py-1.5">
+        <%= poetry_icon(name: :"audio-waveform", class: "size-5") %>
+        <div class="grid text-left leading-tight">
+          <span class="text-sm font-semibold">Meridian</span>
+          <span class="text-xs text-muted-foreground">Operations</span>
+        </div>
+      </div>
+    <% end %>
+    <%= poetry_sidebar_content do %>
+      <%= poetry_sidebar_group do %>
+        <%= poetry_sidebar_group_label { "Platform" } %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/dashboard", active: true) do %>
+              <%= poetry_icon(name: :"layout-dashboard") %><span>Dashboard</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/orders") do %>
+              <%= poetry_icon(name: :package) %><span>Orders</span>
+            <% end %>
+            <%= poetry_sidebar_menu_badge do %>12<% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/customers") do %>
+              <%= poetry_icon(name: :users) %><span>Customers</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/reports") do %>
+              <%= poetry_icon(name: :"bar-chart-3") %><span>Reports</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_sidebar_group do %>
+        <%= poetry_sidebar_group_label { "Resources" } %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/docs") do %>
+              <%= poetry_icon(name: :"book-open") %><span>Documentation</span>
+            <% end %>
+          <% end %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(href: "/support") do %>
+              <%= poetry_icon(name: :"life-buoy") %><span>Support</span>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_sidebar_footer do %>
+      <div class="flex items-center gap-2 px-2 py-1.5">
+        <%= poetry_avatar(label: "Riley Chen", size: :sm) { "RC" } %>
+        <div class="grid leading-tight">
+          <span class="text-sm font-medium">Riley Chen</span>
+          <span class="text-xs text-muted-foreground">riley@meridian.dev</span>
+        </div>
+      </div>
+    <% end %>
+    <%= poetry_sidebar_rail %>
+  <% end %>
+  <% shell.with_inset do %>
+    <header class="flex h-14 shrink-0 items-center gap-2 border-b px-4 transition-[height] group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
+      <%= poetry_sidebar_trigger %>
+      <%= poetry_separator(orientation: :vertical, class: "h-4") %>
+      <%= poetry_breadcrumb do |crumb| %>
+        <% crumb.with_item("Meridian", href: "/") %>
+        <% crumb.with_item("Dashboard") %>
+      <% end %>
+    </header>
+    <div class="flex flex-col gap-6 p-6">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <div class="space-y-1">
+          <h1 class="text-2xl font-semibold tracking-tight">Dashboard</h1>
+          <p class="text-sm text-muted-foreground">Today across the Meridian workspace.</p>
+        </div>
+        <%= poetry_button(variant: :outline) do |button| %>
+          <% button.with_leading { poetry_icon(name: :download) } %>
+          Export
+        <% end %>
+      </div>
+      <div class="grid gap-4 md:grid-cols-3">
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "Revenue" } %>
+          <% card.with_description { "Last 30 days" } %>
+          <div class="text-2xl font-semibold tabular-nums">$48,210</div>
+          <p class="text-xs text-muted-foreground">+12.4% from the previous period</p>
+        <% end %>
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "Open orders" } %>
+          <% card.with_description { "Awaiting fulfillment" } %>
+          <div class="text-2xl font-semibold tabular-nums">42</div>
+          <p class="text-xs text-muted-foreground">12 due before Friday</p>
+        <% end %>
+        <%= poetry_card(title_tag: :h2) do |card| %>
+          <% card.with_title { "On-time rate" } %>
+          <% card.with_description { "Trailing quarter" } %>
+          <div class="text-2xl font-semibold tabular-nums">98.2%</div>
+          <p class="text-xs text-muted-foreground">Target is 97.5%</p>
+        <% end %>
+      </div>
+      <%= poetry_card(title_tag: :h2) do |card| %>
+        <% card.with_title { "Recent activity" } %>
+        <% card.with_description { "The latest changes across orders and customers." } %>
+        <ul class="space-y-3 text-sm">
+          <li class="flex items-center justify-between gap-4">
+            <span>ORD-1042 marked fulfilled by Riley</span>
+            <span class="text-xs text-muted-foreground tabular-nums">2m ago</span>
+          </li>
+          <li class="flex items-center justify-between gap-4">
+            <span>Northwind Traders added a shipping address</span>
+            <span class="text-xs text-muted-foreground tabular-nums">18m ago</span>
+          </li>
+          <li class="flex items-center justify-between gap-4">
+            <span>Refund approved for ORD-1040</span>
+            <span class="text-xs text-muted-foreground tabular-nums">1h ago</span>
+          </li>
+        </ul>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

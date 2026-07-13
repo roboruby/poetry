@@ -1,0 +1,447 @@
+{
+  "generated_note": "GENERATED arms (N15 W2 benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
+  "tasks": {
+    "button": {
+      "description": "A destructive 'Delete account' button with a leading trash icon",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "accessible_name": true,
+            "explicit_type": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "accessible_name": true,
+            "explicit_type": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "5/6"
+        }
+      }
+    },
+    "dialog": {
+      "description": "A settings dialog opened by a button, with a description and a confirm action",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": true,
+            "trigger_present": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "6/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "modal_semantics": true,
+            "labelled_overlay": false,
+            "trigger_present": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/6"
+        }
+      }
+    },
+    "form_field": {
+      "description": "An email field labeled 'Work email', required, with a hint and the error 'can't be blank'",
+      "arms": {}
+    },
+    "form_controls": {
+      "description": "A notification settings panel: an 'Accept terms' checkbox staged for submit, an instant-effect 'Email alerts' switch, a bookmark toggle, an exclusive list/grid view switcher, a submitting digest-frequency choice, an 'Alert volume' slider, an 'Unsubscribe note' textarea, and a 6-digit 'Confirmation code' entry",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "checkbox_participates_in_the_form": true,
+            "switch_semantics": true,
+            "pressed_state_exposed": true,
+            "exclusive_choice_wears_radio_semantics": true,
+            "slider_wears_the_apg_surface": true,
+            "code_entry_is_one_autofillable_input": true,
+            "textarea_labelled_not_placeholdered": true,
+            "controls_named": true,
+            "content_complete": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "11/12",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "checkbox_participates_in_the_form": true,
+            "switch_semantics": true,
+            "pressed_state_exposed": false,
+            "exclusive_choice_wears_radio_semantics": true,
+            "slider_wears_the_apg_surface": true,
+            "code_entry_is_one_autofillable_input": true,
+            "textarea_labelled_not_placeholdered": true,
+            "controls_named": true,
+            "content_complete": true,
+            "focus_visible_treatment": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "10/12"
+        }
+      }
+    },
+    "alert": {
+      "description": "A destructive alert 'Payment failed' with a description and a warning icon",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "assertive_announcement": true,
+            "icon_decorative": true,
+            "title_and_body": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "assertive_announcement": true,
+            "icon_decorative": true,
+            "title_and_body": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "chat_transcript": {
+      "description": "A chat transcript: date divider, assistant message with an attachment and a quick reply, and a live 'thinking' status",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "attachment_described": false,
+            "quick_replies_are_real_controls": false,
+            "live_status_announced": true,
+            "decorative_icons_hidden": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "3/6",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "attachment_described": false,
+            "quick_replies_are_real_controls": false,
+            "live_status_announced": true,
+            "decorative_icons_hidden": false,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "2/6"
+        }
+      }
+    },
+    "disclosure": {
+      "description": "An FAQ accordion (one open at a time) plus a 'show advanced options' collapsible",
+      "arms": {}
+    },
+    "menu": {
+      "description": "The menus family end-to-end: an app menubar (File/View), a row-actions dropdown menu behind an 'Options' button (account items, a checkbox preference, a destructive delete), and a right-click context menu on the row itself",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "trigger_is_a_real_button": true,
+            "expansion_state_exposed": true,
+            "menu_semantics": true,
+            "menu_wired_to_trigger": true,
+            "toggle_state_accessible": true,
+            "content_complete": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "7/8",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "trigger_is_a_real_button": false,
+            "expansion_state_exposed": false,
+            "menu_semantics": true,
+            "menu_wired_to_trigger": false,
+            "toggle_state_accessible": true,
+            "content_complete": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/8"
+        }
+      }
+    },
+    "command_palette": {
+      "description": "A command palette: a search box filtering a grouped list of app commands (Suggestions: Calendar, Search Emoji, Calculator; Settings: Profile, Billing, Settings - with ⌘ shortcut hints), keyboard-first filter-then-activate",
+      "arms": {}
+    },
+    "searchable_select": {
+      "description": "A labelled framework picker: a combobox-role control with a hidden form serialization opening a type-to-filter popup over Next.js/SvelteKit/Nuxt.js/Remix/Astro options",
+      "arms": {}
+    },
+    "overlay": {
+      "description": "A destructive 'Delete API key' confirmation that must be answered (alert dialog), plus a 'Filter results' panel sliding in from the right edge (sheet)",
+      "arms": {}
+    },
+    "floating": {
+      "description": "The popper-consumer trio end-to-end: a 'Dimensions' popover behind an 'Open popover' button hosting a small form, an icon-only 'Add to library' control with a tooltip, and an '@nextjs' link enriched with a profile hover-card whose content lives at the link's destination",
+      "arms": {}
+    },
+    "toast": {
+      "description": "A notifications region hosting a 'Saved' success toast and a destructive 'Payment failed' toast with a 'Retry' action",
+      "arms": {}
+    },
+    "primitives": {
+      "description": "A loading state: a labelled spinner, a skeleton row, a separator, and a ⌘K hint",
+      "arms": {}
+    },
+    "pagination": {
+      "description": "Pagination for page 4 of 10, with a current-page marker",
+      "arms": {}
+    },
+    "empty_state": {
+      "description": "A 'no projects yet' empty state: an icon tile, a title, a description, and create/import actions",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "title_is_a_real_heading": true,
+            "actions_are_focusable": true,
+            "actions_are_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "5/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "title_is_a_real_heading": true,
+            "actions_are_focusable": true,
+            "actions_are_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "app_shell": {
+      "description": "An application shell: a collapsible sidebar with a Platform nav group (Dashboard active) and a main content area with a collapse toggle",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "content_is_a_main_landmark": false,
+            "nav_items_are_real_links": false,
+            "collapse_is_coordinated_state": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/5",
+          "render_error": "ActionView::Template::Error: unknown icon :\"bar-chart-3\" (not in this set)"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "content_is_a_main_landmark": true,
+            "nav_items_are_real_links": true,
+            "collapse_is_coordinated_state": false,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "date_field": {
+      "description": "A due-date field: a button showing the selected date that opens a calendar of selectable days",
+      "arms": {}
+    },
+    "site_nav": {
+      "description": "A site navigation bar: a Products dropdown of links, plus Pricing and Docs destinations",
+      "arms": {}
+    },
+    "artwork_carousel": {
+      "description": "A three-slide artwork carousel with previous/next controls",
+      "arms": {}
+    },
+    "split_editor": {
+      "description": "A two-pane resizable split (Files | Editor) with a draggable divider",
+      "arms": {}
+    },
+    "mobile_sheet": {
+      "description": "A bottom drawer for setting a daily activity goal: trigger, title, description, a Submit action, and a swipe handle",
+      "arms": {}
+    },
+    "deferred_region": {
+      "description": "A dashboard activity panel that loads only when scrolled into view, with a visible retry affordance when the fetch fails",
+      "arms": {}
+    },
+    "scrollable_tags": {
+      "description": "A bounded, scrollable list of 20 version tags in a 12rem box",
+      "arms": {}
+    },
+    "settings_tabs": {
+      "description": "Account settings tabs (Account / Password / Notifications) with the first tab active and its panel visible",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "tablist_semantics": true,
+            "selection_announced_and_wired": true,
+            "switching_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "tablist_semantics": false,
+            "selection_announced_and_wired": false,
+            "switching_is_real_wiring": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "3/5"
+        }
+      }
+    },
+    "filter_toolbar": {
+      "description": "A filter toolbar: a search box with a leading icon and ⌘K hint, a sort dropdown, and a List/Grid view switch",
+      "arms": {}
+    },
+    "user_directory": {
+      "description": "A team directory: a breadcrumb trail (Home / Team / Directory), then a list of member rows - avatar, name, description, and a Message action",
+      "arms": {}
+    },
+    "upload_progress": {
+      "description": "A determinate upload progress bar at 60%, with a visible label and value",
+      "arms": {}
+    },
+    "data_table": {
+      "description": "A sortable, filterable invoices table: sorted by invoice number ascending, with a filter box and pagination",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "sorted_column_announces": false,
+            "sorting_is_real_navigation": true,
+            "filter_is_labelled": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "sorted_column_announces": false,
+            "sorting_is_real_navigation": true,
+            "filter_is_labelled": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/5"
+        }
+      }
+    },
+    "table": {
+      "description": "An invoices table with a caption, column headers, and a footer total",
+      "arms": {}
+    },
+    "card": {
+      "description": "A plan card: title, description, a 'beta' badge, body copy, and a 'Learn more' link",
+      "arms": {}
+    }
+  },
+  "components_exercised": [
+    "alert",
+    "attachment",
+    "avatar",
+    "badge",
+    "bubble",
+    "button",
+    "card",
+    "checkbox",
+    "context_menu",
+    "dialog",
+    "dropdown_menu",
+    "empty",
+    "field",
+    "icon",
+    "input",
+    "input_group",
+    "input_otp",
+    "label",
+    "link",
+    "menubar",
+    "message",
+    "message_scroller",
+    "pagination",
+    "radio_group",
+    "select",
+    "separator",
+    "slider",
+    "spinner",
+    "switch",
+    "table",
+    "tabs",
+    "textarea",
+    "toggle",
+    "toggle_group"
+  ]
+}

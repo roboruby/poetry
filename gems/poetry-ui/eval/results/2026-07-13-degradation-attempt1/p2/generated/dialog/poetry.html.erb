@@ -1,0 +1,36 @@
+<div class="mx-auto max-w-xl p-6">
+  <%= poetry_dialog do |dialog| %>
+    <% dialog.with_trigger(variant: :outline) do %>
+      <%= poetry_icon(name: :settings) %>
+      Settings
+    <% end %>
+
+    <% dialog.with_title { "Settings" } %>
+    <% dialog.with_description { "Update your workspace preferences. Changes apply the next time anyone on the team signs in." } %>
+
+    <div class="space-y-5">
+      <%= poetry_field(id: "settings-notifications", label_text: "Email notifications", hint: "Get a daily summary of activity in this workspace.", orientation: :horizontal) do |field| %>
+        <%= poetry_checkbox(**field.control_attributes, name: "settings[notifications]", checked: true) %>
+      <% end %>
+
+      <%= poetry_field(id: "settings-two-factor", label_text: "Require two-factor authentication", hint: "Ask every member to confirm a second factor at sign-in.", orientation: :horizontal) do |field| %>
+        <%= poetry_checkbox(**field.control_attributes, name: "settings[two_factor]") %>
+      <% end %>
+
+      <%= poetry_field(id: "settings-language", label_text: "Default language", hint: "Used for new members until they set their own.") do |field| %>
+        <%= poetry_select(**field.control_attributes, name: "settings[language]", value: "en") do |select| %>
+          <% select.with_trigger %>
+          <% select.with_item(value: "en") { "English" } %>
+          <% select.with_item(value: "es") { "Spanish" } %>
+          <% select.with_item(value: "fr") { "French" } %>
+          <% select.with_item(value: "de") { "German" } %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <% dialog.with_footer do %>
+      <%= poetry_button(variant: :outline, data: { action: "poetry--core--dialog#close" }) { "Cancel" } %>
+      <%= poetry_button(data: { action: "poetry--core--dialog#close" }) { "Save changes" } %>
+    <% end %>
+  <% end %>
+</div>
