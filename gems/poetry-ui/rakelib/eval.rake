@@ -646,7 +646,17 @@ namespace :eval do
       }
       prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
 
-      units = Poetry::Eval::Degradation::SAMPLE.flat_map do |task|
+      # POETRY_BENCH_TASKS chunks the run (the lesson: long
+      # CLI-spawning rakes die to SIGTERM in the background - foreground
+      # chunks are the kill-proof procedure; the manifest resumes exactly).
+      sample = Poetry::Eval::Degradation::SAMPLE
+      if (filter = ENV.fetch("POETRY_BENCH_TASKS", nil))
+        names = filter.split(",").map(&:strip)
+        unknown = names - sample
+        abort "unknown POETRY_BENCH_TASKS: #{unknown.join(", ")}" unless unknown.empty?
+        sample = names
+      end
+      units = sample.flat_map do |task|
         Poetry::Eval::Degradation::ARM_HOSTS.keys.map { |arm| [task, arm] }
       end
       unless ENV["POETRY_BENCH_FORCE"] == "1"
