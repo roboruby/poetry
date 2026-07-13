@@ -359,3 +359,344 @@ describe("poetry--core--combobox", () => {
     })
   })
 })
+
+// The MULTIPLE mode (Base UI's multiple + input-inside layout): the chips
+// FIELD replaces the trigger - the filter input lives inline after the
+// chips (still data-slot=command-input; the engine rides the ROOT), the
+// native is a <select multiple> posting name[], selection TOGGLES with the
+// popup STAYING OPEN, and chips take real DOM focus with their own
+// keyboard map. The markup mirrors the component's multiple render.
+const labelOf = (value) => FRAMEWORKS.find(([v]) => v === value)?.[1] ?? value
+
+const chipMarkup = (value) => `
+  <div data-slot="combobox-chip" tabindex="-1" data-value="${value}" aria-label="${labelOf(value)}"
+       data-action="keydown->poetry--core--combobox#chipKeydown">${labelOf(value)}<button type="button"
+      tabindex="-1" data-slot="combobox-chip-remove" aria-label="Remove ${labelOf(value)}"
+      data-action="click->poetry--core--combobox#removeChip"></button></div>`
+
+const multipleMarkup = ({ values = [], open = false } = {}) => `
+  <button id="outside">outside</button>
+  <div id="root" data-slot="combobox" data-component="combobox"
+       data-controller="poetry--core--combobox poetry--core--command"
+       data-poetry--core--combobox-open-value="${open}"
+       data-poetry--core--combobox-multiple-value="true"
+       data-poetry--core--combobox-value-value='${JSON.stringify(values)}'>
+    <select id="native" multiple data-slot="combobox-native" aria-hidden="true" tabindex="-1"
+            name="frameworks[]" data-action="change->poetry--core--combobox#nativeChanged">
+      ${FRAMEWORKS.map(([v, label]) => `<option value="${v}" ${values.includes(v) ? "selected" : ""}>${label}</option>`).join("")}
+    </select>
+    <div id="chips" data-slot="combobox-chips" ${values.length > 0 ? 'role="toolbar"' : "data-placeholder"}
+         data-remove-label="Remove %{label}"
+         data-action="mousedown->poetry--core--combobox#chipsPointerdown">
+      ${values.map((value) => chipMarkup(value)).join("")}
+      <input id="input" data-slot="command-input" type="text" role="combobox"
+             aria-expanded="false" aria-controls="list" aria-autocomplete="list"
+             aria-label="Frameworks" placeholder="Select frameworks…"
+             data-action="input->poetry--core--command#filterInput keydown->poetry--core--command#keydown keydown->poetry--core--combobox#inputKeydown">
+      <template><div data-slot="combobox-chip" tabindex="-1"
+           data-action="keydown->poetry--core--combobox#chipKeydown"><button type="button"
+          tabindex="-1" data-slot="combobox-chip-remove"
+          data-action="click->poetry--core--combobox#removeChip"></button></div></template>
+    </div>
+    <div id="content" data-slot="combobox-content" tabindex="-1" data-closed ${open ? "" : "hidden"}>
+      <div id="list" data-slot="command-list" role="listbox" tabindex="-1" aria-label="Frameworks"
+           aria-multiselectable="true">
+        <div id="empty" data-slot="command-empty" hidden>No results found.</div>
+        ${FRAMEWORKS.map(([v, label]) => `
+          <div id="item-${v}" data-slot="command-item" role="option"
+               data-poetry-collection-item data-value="${v}"
+               aria-selected="${values.includes(v)}" ${values.includes(v) ? "data-selected" : ""}
+               data-action="click->poetry--core--command#activate pointermove->poetry--core--command#pointerHighlight">
+            <span data-slot="command-item-text">${label}</span>
+            <span data-slot="combobox-item-indicator" aria-hidden="true"></span>
+          </div>`).join("")}
+      </div>
+      <span id="status" data-slot="command-status" role="status" aria-live="polite"></span>
+    </div>
+  </div>`
+
+async function mountMultiple(options = {}) {
+  document.body.innerHTML = multipleMarkup(options)
+  const application = Application.start()
+  registerPoetryControllers(application)
+  await nextFrame()
+  return application
+}
+
+const chipValues = () =>
+  Array.from(el("chips").querySelectorAll('[data-slot="combobox-chip"]')).map((chip) => chip.dataset.value)
+
+const nativeSelected = () =>
+  Array.from(el("native").selectedOptions).map((option) => option.value)
+
+async function openMultiple() {
+  el("input").focus()
+  el("chips").dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }))
+  await flushMicrotasks()
+  await nextFrame()
+}
+
+describe("poetry--core--combobox (multiple)", () => {
+  let application
+
+  beforeEach(async () => {
+    application = await mountMultiple({ values: ["sveltekit", "remix"] })
+    return async () => {
+      document.body.replaceChildren()
+      await nextFrame()
+      application.stop()
+    }
+  })
+
+  describe("the chips field", () => {
+    it("reconciles on connect: chips IN VALUE ORDER, toolbar role, twin-writes by array inclusion", () => {
+      expect(chipValues()).toEqual(["sveltekit", "remix"])
+      expect(el("chips").getAttribute("role")).toBe("toolbar")
+      expect(el("chips").hasAttribute("data-placeholder")).toBe(false)
+      expect(ariaSelected()).toEqual(["false", "true", "false", "true", "false"])
+      expect(dataSelected()).toEqual([false, true, false, true, false])
+      expect(nativeSelected()).toEqual(["sveltekit", "remix"])
+      // Rebuilt chips keep the accessible names (chip = its value text).
+      const chip = el("chips").querySelector('[data-slot="combobox-chip"]')
+      expect(chip.getAttribute("aria-label")).toBe("SvelteKit")
+      expect(chip.querySelector('[data-slot="combobox-chip-remove"]').getAttribute("aria-label"))
+        .toBe("Remove SvelteKit")
+    })
+
+    it("empty selection wears data-placeholder and NO toolbar role", async () => {
+      application.stop()
+      application = await mountMultiple()
+
+      expect(chipValues()).toEqual([])
+      expect(el("chips").hasAttribute("role")).toBe(false)
+      expect(el("chips").hasAttribute("data-placeholder")).toBe(true)
+    })
+
+    it("mousedown anywhere in the frame focuses the input and opens; the input carries the open flip", async () => {
+      await openMultiple()
+
+      expect(document.activeElement).toBe(el("input"))
+      expect(el("content").hasAttribute("data-open")).toBe(true)
+      expect(el("input").getAttribute("aria-expanded")).toBe("true")
+      expect(el("input").hasAttribute("data-popup-open")).toBe(true)
+      // The committed options seed the highlight (first selected).
+      expect(el("item-sveltekit").hasAttribute("data-highlighted")).toBe(true)
+    })
+
+    it("a chip-remove press is NOT a chips-area press (removes without opening)", async () => {
+      const remove = el("chips").querySelector('[data-value="sveltekit"] [data-slot="combobox-chip-remove"]')
+
+      remove.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }))
+      click(remove)
+      await nextFrame()
+
+      expect(chipValues()).toEqual(["remix"])
+      expect(nativeSelected()).toEqual(["remix"])
+      expect(el("content").hidden).toBe(true)
+      expect(document.activeElement).toBe(el("input"))
+    })
+  })
+
+  describe("the toggle commit (popup stays open)", () => {
+    it("selecting an unselected option APPENDS at the array end and never closes", async () => {
+      await openMultiple()
+
+      const sequence = []
+      el("native").addEventListener("change", () => sequence.push(["native-change", nativeSelected()]))
+      el("root").addEventListener("poetry:combobox:change", (event) => sequence.push(["change", event.detail]))
+
+      click(el("item-astro"))
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(false) // STAYS OPEN
+      expect(chipValues()).toEqual(["sveltekit", "remix", "astro"])
+      expect(nativeSelected()).toEqual(["sveltekit", "remix", "astro"])
+      expect(sequence[0]).toEqual(["native-change", ["sveltekit", "remix", "astro"]]) // native FIRST
+      expect(sequence[1][1]).toEqual({
+        value: ["sveltekit", "remix", "astro"],
+        label: ["SvelteKit", "Remix", "Astro"],
+        previous: ["sveltekit", "remix"]
+      })
+      expect(ariaSelected()).toEqual(["false", "true", "false", "true", "true"])
+    })
+
+    it("re-selecting a selected option TOGGLES it out (no idempotent close)", async () => {
+      await openMultiple()
+
+      click(el("item-sveltekit"))
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(false)
+      expect(chipValues()).toEqual(["remix"])
+      expect(nativeSelected()).toEqual(["remix"])
+      expect(dataSelected()).toEqual([false, false, false, true, false])
+    })
+
+    it("a typed query clears immediately on select and the full list is restored", async () => {
+      await openMultiple()
+
+      el("input").value = "as"
+      el("input").dispatchEvent(new Event("input", { bubbles: true }))
+      expect(el("item-sveltekit").hasAttribute("hidden")).toBe(true)
+
+      click(el("item-astro"))
+      await nextFrame()
+
+      expect(el("input").value).toBe("")
+      expect(el("item-sveltekit").hasAttribute("hidden")).toBe(false) // full list restored
+      expect(el("content").hidden).toBe(false)
+      expect(chipValues()).toEqual(["sveltekit", "remix", "astro"])
+    })
+  })
+
+  describe("the input keyboard map", () => {
+    it("Backspace on the EMPTY input removes the LAST chip; focus stays in the input", async () => {
+      el("input").focus()
+      press(el("input"), "Backspace")
+      await nextFrame()
+
+      expect(chipValues()).toEqual(["sveltekit"])
+      expect(nativeSelected()).toEqual(["sveltekit"])
+      expect(document.activeElement).toBe(el("input"))
+
+      // A non-empty input keeps Backspace for TEXT editing.
+      el("input").value = "x"
+      press(el("input"), "Backspace")
+      await nextFrame()
+
+      expect(chipValues()).toEqual(["sveltekit"])
+    })
+
+    it("ArrowLeft at caret 0 focuses the LAST chip and closes the popup", async () => {
+      await openMultiple()
+
+      press(el("input"), "ArrowLeft")
+      await nextFrame()
+
+      const last = el("chips").querySelector('[data-value="remix"]')
+
+      expect(document.activeElement).toBe(last)
+      expect(el("content").hidden).toBe(true) // focusing a chip CLOSES the popup
+      expect(nativeSelected()).toEqual(["sveltekit", "remix"]) // no commit
+    })
+
+    it("Escape while the popup is CLOSED clears the query and wipes the selection to []", async () => {
+      el("input").focus()
+      el("input").value = "re"
+      press(el("input"), "Escape")
+      await nextFrame()
+
+      expect(el("input").value).toBe("")
+      expect(chipValues()).toEqual([])
+      expect(nativeSelected()).toEqual([])
+      expect(el("chips").hasAttribute("data-placeholder")).toBe(true)
+      expect(el("chips").hasAttribute("role")).toBe(false)
+    })
+
+    it("the Escape that closes the popup does NOT double as the wipe", async () => {
+      await openMultiple()
+
+      press(el("input"), "Escape")
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(chipValues()).toEqual(["sveltekit", "remix"]) // selection intact
+    })
+  })
+
+  describe("the chip keyboard map", () => {
+    const chip = (value) => el("chips").querySelector(`[data-value="${value}"]`)
+
+    it("ArrowLeft/Right walk the chips; off either end returns to the input", async () => {
+      await openMultiple()
+      press(el("input"), "ArrowLeft")
+      await nextFrame()
+
+      press(chip("remix"), "ArrowLeft")
+      expect(document.activeElement).toBe(chip("sveltekit"))
+
+      press(chip("sveltekit"), "ArrowLeft") // off the START -> input
+      expect(document.activeElement).toBe(el("input"))
+
+      press(el("input"), "ArrowLeft")
+      press(chip("remix"), "ArrowRight") // off the END -> input
+      expect(document.activeElement).toBe(el("input"))
+    })
+
+    it("Backspace removes the chip: next highlight same index, step back at the tail, input when emptied", async () => {
+      application.stop()
+      application = await mountMultiple({ values: ["next.js", "sveltekit", "remix"] })
+
+      press(el("input"), "ArrowLeft") // -> remix (the tail)
+      press(chip("remix"), "Backspace")
+      await nextFrame()
+
+      expect(chipValues()).toEqual(["next.js", "sveltekit"])
+      expect(document.activeElement).toBe(chip("sveltekit")) // tail steps BACK
+
+      press(chip("sveltekit"), "ArrowLeft")
+      press(chip("next.js"), "Delete")
+      await nextFrame()
+
+      expect(chipValues()).toEqual(["sveltekit"])
+      expect(document.activeElement).toBe(chip("sveltekit")) // SAME index
+
+      press(chip("sveltekit"), "Backspace")
+      await nextFrame()
+
+      expect(chipValues()).toEqual([])
+      expect(document.activeElement).toBe(el("input")) // emptied -> input
+    })
+
+    it("Enter/Space are no-ops returning to the input; ArrowDown reopens the popup", async () => {
+      press(el("input"), "ArrowLeft")
+
+      const enter = press(chip("remix"), "Enter")
+
+      expect(enter.defaultPrevented).toBe(true)
+      expect(document.activeElement).toBe(el("input"))
+      expect(chipValues()).toEqual(["sveltekit", "remix"])
+
+      press(el("input"), "ArrowLeft")
+      press(chip("remix"), "ArrowDown")
+      await flushMicrotasks()
+      await nextFrame()
+
+      expect(el("content").hasAttribute("data-open")).toBe(true)
+      expect(document.activeElement).toBe(el("input"))
+    })
+
+    it("a printable char on a chip refocuses the input (typing resumes)", async () => {
+      press(el("input"), "ArrowLeft")
+      expect(document.activeElement).toBe(chip("remix"))
+
+      press(chip("remix"), "n")
+
+      expect(document.activeElement).toBe(el("input"))
+      expect(chipValues()).toEqual(["sveltekit", "remix"])
+    })
+  })
+
+  describe("value plumbing", () => {
+    it("autofill (native change) adopts selectedOptions without re-dispatching native events", () => {
+      let nativeEvents = 0
+      el("native").addEventListener("input", () => { nativeEvents += 1 })
+
+      for (const option of el("native").options) option.selected = option.value === "astro"
+      el("native").dispatchEvent(new Event("change", { bubbles: true }))
+
+      expect(chipValues()).toEqual(["astro"])
+      expect(ariaSelected()).toEqual(["false", "false", "false", "false", "true"])
+      expect(nativeEvents).toBe(0) // fromNative: no write-back loop
+    })
+
+    it("setValue(array) funnels through the pipeline; the value Value carries JSON", () => {
+      controller(application).setValue(["nuxt.js", "next.js"])
+
+      expect(chipValues()).toEqual(["nuxt.js", "next.js"]) // VALUE order, not DOM order
+      expect(nativeSelected()).toEqual(["next.js", "nuxt.js"]) // native keeps option order
+      expect(el("root").getAttribute("data-poetry--core--combobox-value-value"))
+        .toBe('["nuxt.js","next.js"]')
+    })
+  })
+})

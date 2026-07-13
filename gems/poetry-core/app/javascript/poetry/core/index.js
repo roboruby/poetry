@@ -13,6 +13,7 @@ import DismissableController from "@poetry/controllers/dismissable_controller"
 import PopperController from "@poetry/controllers/popper_controller"
 import MenuController from "@poetry/controllers/menu_controller"
 import ContextMenuController from "@poetry/controllers/context_menu_controller"
+import MaskController from "@poetry/controllers/mask_controller"
 import MenubarController from "@poetry/controllers/menubar_controller"
 import PopoverController from "@poetry/controllers/popover_controller"
 import TooltipController from "@poetry/controllers/tooltip_controller"
@@ -33,6 +34,7 @@ import DrawerController from "@poetry/controllers/drawer_controller"
 import SheetController from "@poetry/controllers/sheet_controller"
 import CarouselController from "@poetry/controllers/carousel_controller"
 import ResizableController from "@poetry/controllers/resizable_controller"
+import NumberFieldController from "@poetry/controllers/number_field_controller"
 import NavigationMenuController from "@poetry/controllers/navigation_menu_controller"
 import SidebarController from "@poetry/controllers/sidebar_controller"
 import CalendarController from "@poetry/controllers/calendar_controller"
@@ -51,6 +53,7 @@ export { default as DismissableController } from "@poetry/controllers/dismissabl
 export { default as PopperController } from "@poetry/controllers/popper_controller"
 export { default as MenuController } from "@poetry/controllers/menu_controller"
 export { default as ContextMenuController } from "@poetry/controllers/context_menu_controller"
+export { default as MaskController } from "@poetry/controllers/mask_controller"
 export { default as MenubarController } from "@poetry/controllers/menubar_controller"
 export { default as PopoverController } from "@poetry/controllers/popover_controller"
 export { default as TooltipController } from "@poetry/controllers/tooltip_controller"
@@ -71,6 +74,7 @@ export { default as DrawerController } from "@poetry/controllers/drawer_controll
 export { default as SheetController } from "@poetry/controllers/sheet_controller"
 export { default as CarouselController } from "@poetry/controllers/carousel_controller"
 export { default as ResizableController } from "@poetry/controllers/resizable_controller"
+export { default as NumberFieldController } from "@poetry/controllers/number_field_controller"
 export { default as NavigationMenuController } from "@poetry/controllers/navigation_menu_controller"
 export { default as SidebarController } from "@poetry/controllers/sidebar_controller"
 export { default as CalendarController } from "@poetry/controllers/calendar_controller"
@@ -102,6 +106,7 @@ export const controllers = {
   "poetry--core--popper": PopperController,
   "poetry--core--menu": MenuController,
   "poetry--core--context-menu": ContextMenuController,
+  "poetry--core--mask": MaskController,
   "poetry--core--menubar": MenubarController,
   "poetry--core--popover": PopoverController,
   "poetry--core--tooltip": TooltipController,
@@ -122,6 +127,7 @@ export const controllers = {
   "poetry--core--sheet": SheetController,
   "poetry--core--carousel": CarouselController,
   "poetry--core--resizable": ResizableController,
+  "poetry--core--number-field": NumberFieldController,
   "poetry--core--navigation-menu": NavigationMenuController,
   "poetry--core--sidebar": SidebarController,
   "poetry--core--calendar": CalendarController,

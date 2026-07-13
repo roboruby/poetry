@@ -147,16 +147,24 @@
       "modal": {
         "type": "Boolean",
         "default": false
+      },
+      "multiple": {
+        "type": "Boolean",
+        "default": false
       }
     },
     "classes": [],
     "methods": [
+      "chipKeydown",
+      "chipsPointerdown",
       "close",
       "connect",
       "disconnect",
+      "inputKeydown",
       "nativeChanged",
       "open",
       "openValueChanged",
+      "removeChip",
       "setValue",
       "toggle",
       "triggerKeydown",
@@ -419,6 +427,40 @@
       "poetry:hover-card:open"
     ]
   },
+  "poetry--core--mask": {
+    "targets": [],
+    "values": {
+      "mask": {
+        "type": "String"
+      },
+      "slotChar": {
+        "type": "String",
+        "default": "_"
+      },
+      "alwaysShowMask": {
+        "type": "Boolean"
+      },
+      "showMaskOnFocus": {
+        "type": "Boolean",
+        "default": true
+      },
+      "autoClear": {
+        "type": "Boolean"
+      },
+      "upcase": {
+        "type": "Boolean"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:mask:change",
+      "poetry:mask:complete"
+    ]
+  },
   "poetry--core--menu": {
     "targets": [],
     "values": {
@@ -576,6 +618,63 @@
       "toggle"
     ],
     "events": []
+  },
+  "poetry--core--number-field": {
+    "targets": [
+      "decrement",
+      "hidden",
+      "increment",
+      "input"
+    ],
+    "values": {
+      "min": {
+        "type": "Number"
+      },
+      "max": {
+        "type": "Number"
+      },
+      "step": {
+        "type": "Number",
+        "default": 1
+      },
+      "largeStep": {
+        "type": "Number",
+        "default": 10
+      },
+      "smallStep": {
+        "type": "Number",
+        "default": 0.1
+      },
+      "snap": {
+        "type": "Boolean"
+      },
+      "wheel": {
+        "type": "Boolean"
+      },
+      "format": {
+        "type": "Object"
+      },
+      "locale": {
+        "type": "String"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blur",
+      "connect",
+      "disconnect",
+      "focus",
+      "hiddenChanged",
+      "input",
+      "keydown",
+      "leave",
+      "press",
+      "tap"
+    ],
+    "events": [
+      "poetry:number-field:change",
+      "poetry:number-field:commit"
+    ]
   },
   "poetry--core--otp": {
     "targets": [

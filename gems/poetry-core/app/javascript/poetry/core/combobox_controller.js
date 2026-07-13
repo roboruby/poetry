@@ -37,10 +37,26 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // funnels through #apply, NATIVE FIRST (serialization truth is never
 // behind the facade), with real bubbling change/input on the native so
 // Turbo auto-submit and form listeners work unmodified.
+//
+// MULTIPLE (Base UI's multiple + input-inside layout): the value is a
+// LIST (the value Value carries a JSON array over the same String seam),
+// the native is a <select multiple> posting name[], and the trigger is
+// replaced by the chips FIELD - one chip per committed value IN VALUE
+// ORDER with the filter input inline after them (data-slot=command-input,
+// so the engine contract holds; the engine itself rides the ROOT).
+// Selection TOGGLES and the popup STAYS OPEN; chips take REAL DOM focus
+// (:focus-visible styles it - never data-highlighted) and focusing a chip
+// closes the popup; Backspace on the empty input removes the last chip;
+// Escape on the CLOSED popup clears the query and wipes the selection.
+// The input NEVER mirrors selection text; single-mode paths are
+// behavior-identical.
 const TRIGGER_SELECTOR = '[data-slot="combobox-trigger"]'
 const NATIVE_SELECTOR = '[data-slot="combobox-native"]'
 const VALUE_SELECTOR = '[data-slot="combobox-value"]'
 const CONTENT_SELECTOR = '[data-slot="combobox-content"]'
+const CHIPS_SELECTOR = '[data-slot="combobox-chips"]'
+const CHIP_SELECTOR = '[data-slot="combobox-chip"]'
+const CHIP_REMOVE_SELECTOR = '[data-slot="combobox-chip-remove"]'
 const COMMAND_SELECTOR = '[data-slot="command"]'
 const INPUT_SELECTOR = '[data-slot="command-input"]'
 const ITEM_SELECTOR = '[data-slot="command-item"]'
@@ -63,10 +79,15 @@ export default class ComboboxController extends Controller {
 
   static values = {
     open: { type: Boolean, default: false },
+    // Single: the committed value. multiple: a JSON array over the same
+    // String seam (parsed by #listValues, serialized by #applyValues).
     value: { type: String, default: "" },
     // DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); true
     // restores the focus-scope trap for dialog-critical pickers.
-    modal: { type: Boolean, default: false }
+    modal: { type: Boolean, default: false },
+    // Base UI multiple: the value is a LIST, the trigger is the chips
+    // field, selection toggles, the popup stays open on select.
+    multiple: { type: Boolean, default: false }
   }
 
   #connected = false
@@ -75,11 +96,18 @@ export default class ComboboxController extends Controller {
   #cancelExit = null
   #applied = ""
   #placeholder = ""
+  #dismissedEvent = null
 
   connect() {
     const content = this.#content()
 
     if (content) this.#wireContent(content)
+
+    const chips = this.#chips()
+
+    // The chips FIELD is a second wired keyboard surface in multiple
+    // (Tab-out closes from the inline input exactly like from the popup).
+    if (chips) this.#listen(chips, "keydown", this.#onKeydown)
 
     const display = this.#display()
 
@@ -87,8 +115,11 @@ export default class ComboboxController extends Controller {
       (this.#trigger()?.hasAttribute("data-placeholder") ? (display?.textContent ?? "").trim() : "")
 
     // Reconcile-on-connect (Turbo Stream re-render safe): the native select
-    // is the serialization truth (Select-exact).
-    const serverValue = this.valueValue !== "" ? this.valueValue : (this.#native()?.value ?? "")
+    // is the serialization truth (Select-exact). multiple reads the value
+    // Value's JSON array, falling back to the native's selectedOptions.
+    const serverValue = this.multipleValue
+      ? this.#reconciledValues()
+      : (this.valueValue !== "" ? this.valueValue : (this.#native()?.value ?? ""))
 
     this.#applied = serverValue
     this.#apply(serverValue, { silent: true, force: true })
@@ -123,7 +154,18 @@ export default class ComboboxController extends Controller {
   }
 
   valueValueChanged(value) {
-    if (!this.#connected || value === this.#applied) return
+    if (!this.#connected) return
+
+    if (this.multipleValue) {
+      const values = this.#listValues(value)
+
+      if (this.#sameValues(values, this.#applied)) return
+
+      this.#apply(values)
+      return
+    }
+
+    if (value === this.#applied) return
 
     this.#apply(value)
   }
@@ -155,6 +197,146 @@ export default class ComboboxController extends Controller {
     }
   }
 
+  // --- the chips field (multiple) ---
+
+  // Mousedown anywhere in the chips FRAME focuses the input and opens the
+  // popup (Base UI: the whole frame is the field) - except a chip-remove
+  // press, which is a removal, never a chips-area press.
+  chipsPointerdown(event) {
+    const input = this.#input()
+
+    if (!input || input.disabled) return
+    if (event.target instanceof Element && event.target.closest(CHIP_REMOVE_SELECTOR)) return
+
+    // Keep the press from landing focus on the frame/chip; a press on the
+    // input itself keeps native caret placement.
+    if (event.target !== input) event.preventDefault()
+
+    input.focus()
+
+    if (!this.#isOpen()) this.#show("trigger-press")
+  }
+
+  // The inline input's OWN keyboard map (multiple; the engine's map rides
+  // the same keydown): Backspace on an empty input removes the LAST chip
+  // (focus stays here), ArrowLeft at caret 0 walks into the chips,
+  // ArrowDown/Up reopen the popup, Enter with no highlight closes, and
+  // Escape on the CLOSED popup clears the query AND wipes the selection
+  // to [] (Base UI-exact; readOnly blocks every mutation).
+  inputKeydown(event) {
+    if (!this.multipleValue) return
+
+    const input = event.target
+
+    switch (event.key) {
+      case "Backspace": {
+        if (input.value !== "" || input.readOnly) return
+        if (this.#applied.length === 0) return
+
+        this.#apply(this.#applied.slice(0, -1))
+        return
+      }
+      case "ArrowLeft": {
+        if (input.selectionStart !== 0 || input.selectionEnd !== 0) return
+
+        const chips = this.#chipElements()
+
+        if (chips.length > 0) {
+          event.preventDefault()
+          this.#focusChip(chips[chips.length - 1])
+        }
+        return
+      }
+      case "ArrowDown":
+      case "ArrowUp":
+        if (!this.#isOpen()) this.#show("list-navigation")
+        return
+      case "Enter":
+        if (this.#isOpen() && !this.#highlightedOption()) this.#hide("none")
+        return
+      case "Escape": {
+        // The press that just dismissed the popup must not ALSO wipe.
+        if (event === this.#dismissedEvent || this.#isOpen() || input.readOnly) return
+
+        this.#command()?.reset()
+        if (this.#applied.length > 0) this.#apply([])
+        return
+      }
+      default:
+        // Everything else belongs to the input or the engine's map.
+    }
+  }
+
+  // A focused chip's keyboard map (Base UI): Left/Right walk the chips
+  // (off either end -> back to the input), Backspace/Delete remove (next
+  // highlight: same index, step back at the tail, the input once
+  // emptied), Enter/Space are no-ops returning to the input, ArrowDown/Up
+  // reopen the popup, a printable char resumes the typing session.
+  chipKeydown(event) {
+    const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
+    const chip = origin instanceof Element ? origin.closest(CHIP_SELECTOR) : null
+
+    if (!chip) return
+
+    const chips = this.#chipElements()
+    const index = chips.indexOf(chip)
+
+    switch (event.key) {
+      case "ArrowLeft":
+      case "ArrowRight": {
+        event.preventDefault()
+
+        const next = index + (event.key === "ArrowRight" ? 1 : -1)
+
+        if (next >= 0 && next < chips.length) this.#focusChip(chips[next])
+        else this.#input()?.focus()
+        return
+      }
+      case "Backspace":
+      case "Delete":
+        event.preventDefault()
+
+        if (this.#input()?.readOnly) return
+
+        this.#removeAt(index)
+        return
+      case "Enter":
+      case " ":
+        event.preventDefault()
+        this.#input()?.focus()
+        return
+      case "ArrowDown":
+      case "ArrowUp":
+        event.preventDefault()
+        this.#input()?.focus()
+        if (!this.#isOpen()) this.#show("list-navigation")
+        return
+      default:
+        // A printable char refocuses the input (the key lands there).
+        if (event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey) {
+          this.#input()?.focus()
+        }
+    }
+  }
+
+  // ChipRemove press (its click action): remove the chip's value; focus
+  // returns to the input WITHOUT opening (not a chips-area press).
+  removeChip(event) {
+    if (this.#input()?.readOnly) return
+
+    const origin = event.currentTarget instanceof Element ? event.currentTarget : event.target
+    const chip = origin instanceof Element ? origin.closest(CHIP_SELECTOR) : null
+    const index = chip ? this.#chipElements().indexOf(chip) : -1
+
+    if (index === -1) return
+
+    const values = [...this.#applied]
+
+    values.splice(index, 1)
+    this.#apply(values)
+    this.#input()?.focus()
+  }
+
   // --- programmatic API ---
 
   open(reason = "trigger-press", { seed = "" } = {}) {
@@ -167,6 +349,15 @@ export default class ComboboxController extends Controller {
   }
 
   setValue(value) {
+    if (this.multipleValue) {
+      const values = this.#listValues(value)
+
+      if (this.#sameValues(values, this.#applied)) return
+
+      this.#apply(values)
+      return
+    }
+
     if (value === this.#applied) return
 
     this.#apply(String(value ?? ""))
@@ -175,6 +366,18 @@ export default class ComboboxController extends Controller {
   // --- autofill adoption (Select's path verbatim) ---
 
   nativeChanged() {
+    if (this.multipleValue) {
+      const values = this.#nativeValues()
+
+      // MEMBERSHIP comparison, not order: a <select multiple> only knows
+      // DOM order, so the pipeline's own bubbling change (value order
+      // preserved) must never round-trip into a reorder.
+      if (this.#sameMembers(values, this.#applied)) return
+
+      this.#apply(values, { fromNative: true })
+      return
+    }
+
     const value = this.#native()?.value ?? ""
 
     if (value === this.#applied) return
@@ -193,14 +396,14 @@ export default class ComboboxController extends Controller {
     this.#cancelExit = null
     this.#suppressRestore = false
 
-    const trigger = this.#trigger()
+    const expander = this.#expander()
 
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
     if (seed) content.setAttribute("data-open-seed", seed)
     else content.removeAttribute("data-open-seed")
-    trigger?.setAttribute("aria-expanded", "true")
-    if (trigger) setState(trigger, "popup-open")
+    expander?.setAttribute("aria-expanded", "true")
+    if (expander) setState(expander, "popup-open")
     enterPresence(content)
     this.#activateLayers(content)
     this.openValue = true
@@ -243,10 +446,10 @@ export default class ComboboxController extends Controller {
 
     this.#suppressRestore = !restoreFocus || (reason === "outside-press" && !this.modalValue)
 
-    const trigger = this.#trigger()
+    const expander = this.#expander()
 
-    trigger?.setAttribute("aria-expanded", "false")
-    if (trigger) setState(trigger, "popup-closed")
+    expander?.setAttribute("aria-expanded", "false")
+    if (expander) setState(expander, "popup-closed")
     content.removeAttribute("data-open-reason")
     content.removeAttribute("data-open-seed")
     this.openValue = false
@@ -271,6 +474,9 @@ export default class ComboboxController extends Controller {
   // vetoing keeps the popup open. Committing the already-selected value is
   // IDEMPOTENT: close, value unchanged, no change events (deselection is a
   // form affordance - include_blank - not a hidden toggle gesture).
+  // multiple INVERTS both rules (Base UI): selection TOGGLES membership
+  // (appended at the array END) and the popup STAYS OPEN; a typed query
+  // clears immediately so the full list is restored for the next pick.
   #onCommandSelect = (event) => {
     const { item, value = "", label = "" } = event.detail ?? {}
 
@@ -283,6 +489,28 @@ export default class ComboboxController extends Controller {
 
     if (select.defaultPrevented) return
 
+    if (this.multipleValue) {
+      const input = this.#input()
+
+      if (input?.readOnly) return
+
+      const values = [...this.#applied]
+      const index = values.indexOf(value)
+
+      if (index === -1) values.push(value)
+      else values.splice(index, 1)
+
+      this.#apply(values)
+
+      if (input && input.value !== "") {
+        this.#command()?.reset()
+        if (item instanceof Element) this.#command()?.highlightItem(item)
+      }
+
+      input?.focus()
+      return
+    }
+
     if (value !== this.#applied) this.#apply(value)
 
     this.#hide("item-press")
@@ -292,8 +520,14 @@ export default class ComboboxController extends Controller {
   // 1. native_select.value + real bubbling change/input; 2. aria-selected
   // + data-selected twin-flipped on every option; 3+4. display synced from
   // the option's item-text (data-text-value override) + the trigger's
-  // data-placeholder; 5. poetry:combobox:change.
+  // data-placeholder; 5. poetry:combobox:change. multiple routes to the
+  // set-shaped twin below.
   #apply(value, { silent = false, fromNative = false, force = false } = {}) {
+    if (this.multipleValue) {
+      this.#applyValues(this.#listValues(value), { silent, fromNative, force })
+      return
+    }
+
     if (!force && value === this.#applied) return
 
     const previous = this.#applied
@@ -341,11 +575,127 @@ export default class ComboboxController extends Controller {
       item.textContent ?? "").trim()
   }
 
+  // The multiple twin of #apply, set-shaped (the same 5 steps over a value
+  // LIST): 1. the native <select multiple>'s selectedOptions + real
+  // bubbling change/input; 2. aria-selected + data-selected twin-flipped
+  // by ARRAY INCLUSION; 3+4. chips rebuilt IN VALUE ORDER + the frame's
+  // data-placeholder / role=toolbar flips (the input NEVER mirrors
+  // selection text); 5. poetry:combobox:change with array-shaped detail.
+  #applyValues(values, { silent = false, fromNative = false, force = false } = {}) {
+    if (!force && this.#sameValues(values, this.#applied)) return
+
+    const previous = this.#applied
+
+    this.#applied = values
+    this.valueValue = JSON.stringify(values)
+
+    const native = this.#native()
+
+    if (native && !fromNative) {
+      for (const option of this.#nativeOptions()) option.selected = values.includes(option.value)
+
+      if (!silent) {
+        native.dispatchEvent(new Event("input", { bubbles: true }))
+        native.dispatchEvent(new Event("change", { bubbles: true }))
+      }
+    }
+
+    for (const item of this.#items()) {
+      const match = values.includes(item.dataset.value ?? "")
+
+      item.setAttribute("aria-selected", String(match))
+      setState(item, match ? "selected" : "unselected")
+    }
+
+    this.#renderChips(values)
+
+    if (!silent) {
+      this.dispatch("change", {
+        prefix: EVENT_PREFIX,
+        detail: { value: values, label: values.map((value) => this.#labelForValue(value)), previous }
+      })
+    }
+  }
+
+  // Chips are SERVER markup: the frame's <template> skeleton (byte-what
+  // the server renders for a committed value) is cloned per value rather
+  // than composing DOM of this controller's own.
+  #renderChips(values) {
+    const chips = this.#chips()
+
+    if (!chips) return
+
+    for (const chip of this.#chipElements()) chip.remove()
+
+    const template = chips.querySelector("template")
+    const input = chips.querySelector(INPUT_SELECTOR)
+    const removeTemplate = chips.dataset.removeLabel ?? "Remove %{label}"
+
+    if (template?.content?.firstElementChild) {
+      for (const value of values) {
+        const chip = template.content.firstElementChild.cloneNode(true)
+        const label = this.#labelForValue(value)
+
+        chip.setAttribute("data-value", value)
+        chip.setAttribute("aria-label", label)
+        chip.querySelector(CHIP_REMOVE_SELECTOR)
+          ?.setAttribute("aria-label", removeTemplate.replace("%{label}", label))
+        chip.insertBefore(document.createTextNode(label), chip.firstChild)
+        chips.insertBefore(chip, input)
+      }
+    }
+
+    // role=toolbar rides the frame ONLY while it holds chips (Base UI);
+    // an empty selection wears the data-placeholder styling hook instead.
+    if (values.length > 0) chips.setAttribute("role", "toolbar")
+    else chips.removeAttribute("role")
+    chips.toggleAttribute("data-placeholder", values.length === 0)
+  }
+
+  // Chip keyboard removal: next highlight lands on the SAME index, steps
+  // back at the tail, and returns to the input once the list empties.
+  #removeAt(index) {
+    const values = [...this.#applied]
+
+    if (index < 0 || index >= values.length) return
+
+    values.splice(index, 1)
+    this.#apply(values)
+
+    const chips = this.#chipElements()
+
+    if (chips.length === 0) this.#input()?.focus()
+    else this.#focusChip(chips[Math.min(index, chips.length - 1)])
+  }
+
+  // Real DOM focus IS the chip highlight (:focus-visible/:focus-within
+  // style it; chips never wear data-highlighted) - and focusing a chip
+  // CLOSES the popup (the typing session is suspended). disabled blocks
+  // chip focus entirely.
+  #focusChip(chip) {
+    if (!chip || chip.hasAttribute("data-disabled")) return
+
+    if (this.#isOpen()) this.#hide("chip-focus", { restoreFocus: false })
+
+    chip.focus()
+  }
+
+  #labelForValue(value) {
+    const item = this.#items().find((candidate) => (candidate.dataset.value ?? "") === value)
+
+    if (item) return this.#labelOf(item)
+
+    const option = this.#nativeOptions().find((candidate) => candidate.value === value)
+
+    return (option?.textContent ?? value).trim()
+  }
+
   // --- content wiring (programmatic: portal-safe) ---
 
   #wireContent(content) {
     this.#listen(content, "keydown", this.#onKeydown)
     this.#listen(content, "poetry:command:select", this.#onCommandSelect)
+    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
     this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
@@ -366,6 +716,17 @@ export default class ComboboxController extends Controller {
     this.#hide("focus-out", { restoreFocus: false })
   }
 
+  // multiple: a press in the chips FIELD is an anchor press, never an
+  // outside press - vetoing the layer keeps the popup open while chips
+  // mutate under the pointer.
+  #onInteractOutside = (event) => {
+    if (!this.multipleValue || event.target !== this.#content()) return
+
+    const origin = event.detail?.originalEvent?.target
+
+    if (origin instanceof Element && this.#chips()?.contains(origin)) event.preventDefault()
+  }
+
   // Esc / outside press arrive as the dismissable layer's dismiss event.
   // Neither EVER commits - the value is untouched (family rule).
   #onDismiss = (event) => {
@@ -373,6 +734,9 @@ export default class ComboboxController extends Controller {
 
     const escaped = event.detail?.originalEvent?.type === "keydown"
 
+    // Remembered so the SAME keypress cannot double as the closed-popup
+    // Escape wipe in the multiple input map.
+    this.#dismissedEvent = event.detail?.originalEvent ?? null
     this.#hide(escaped ? "escape-key" : "outside-press")
   }
 
@@ -438,7 +802,10 @@ export default class ComboboxController extends Controller {
   }
 
   #command() {
-    const root = this.#content()?.querySelector(COMMAND_SELECTOR)
+    // multiple mounts the engine on the ROOT (the input sits outside the
+    // popup); single keeps it on the popup's command part.
+    const root = this.#content()?.querySelector(COMMAND_SELECTOR) ??
+      (this.multipleValue ? this.element : null)
 
     return root
       ? this.application.getControllerForElementAndIdentifier(root, COMMAND_IDENTIFIER)
@@ -446,7 +813,10 @@ export default class ComboboxController extends Controller {
   }
 
   #input() {
-    return this.#content()?.querySelector(INPUT_SELECTOR) ?? null
+    // multiple: the ONE input lives inline in the chips frame (Base UI's
+    // input-inside layout); single keeps it in the popup.
+    return this.#content()?.querySelector(INPUT_SELECTOR) ??
+      this.#chips()?.querySelector(INPUT_SELECTOR) ?? null
   }
 
   #native() {
@@ -455,6 +825,75 @@ export default class ComboboxController extends Controller {
 
   #display() {
     return this.element.querySelector(VALUE_SELECTOR)
+  }
+
+  // The open-state carrier: the trigger button (single) or the inline
+  // input (multiple - Base UI stamps aria-expanded/data-popup-open there).
+  #expander() {
+    return this.#trigger() ?? (this.multipleValue ? this.#input() : null)
+  }
+
+  #chips() {
+    return this.element.querySelector(CHIPS_SELECTOR)
+  }
+
+  // Live chips only - the <template> skeleton's content is inert and
+  // never matches a querySelectorAll over the frame.
+  #chipElements() {
+    const chips = this.#chips()
+
+    return chips ? Array.from(chips.querySelectorAll(CHIP_SELECTOR)) : []
+  }
+
+  #highlightedOption() {
+    return (this.#listbox() ?? this.#content())?.querySelector("[data-highlighted]") ?? null
+  }
+
+  #reconciledValues() {
+    const declared = this.#listValues(this.valueValue)
+
+    return declared.length > 0 ? declared : this.#nativeValues()
+  }
+
+  // selectedOptions derived by hand (options + the selected property):
+  // identical semantics, and it holds in every DOM this runs against.
+  #nativeValues() {
+    return this.#nativeOptions()
+      .filter((option) => option.selected)
+      .map((option) => option.value)
+      .filter((value) => value !== "")
+  }
+
+  #nativeOptions() {
+    return Array.from(this.#native()?.querySelectorAll("option") ?? [])
+  }
+
+  // The value Value stays a String seam in both modes; multiple carries a
+  // JSON array through it (a bare scalar adopts as a one-element list).
+  #listValues(raw) {
+    if (Array.isArray(raw)) return raw.map(String)
+    if (typeof raw !== "string" || raw === "") return []
+
+    try {
+      const parsed = JSON.parse(raw)
+
+      return Array.isArray(parsed) ? parsed.map(String) : [String(parsed)]
+    } catch {
+      return [raw]
+    }
+  }
+
+  // Order-sensitive on purpose: chips render IN VALUE ORDER, so a reorder
+  // IS a change.
+  #sameValues(values, applied) {
+    return Array.isArray(applied) && values.length === applied.length &&
+      values.every((value, index) => value === applied[index])
+  }
+
+  // Order-blind twin for the native adoption seam only.
+  #sameMembers(values, applied) {
+    return Array.isArray(applied) && values.length === applied.length &&
+      values.every((value) => applied.includes(value))
   }
 
   #isOpen() {
