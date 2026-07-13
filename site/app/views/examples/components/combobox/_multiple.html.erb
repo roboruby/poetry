@@ -1,5 +1,5 @@
 <div class="w-80">
-  <%= poetry_combobox(name: "frameworks", multiple: true, value: %w[sveltekit remix],
+  <%= poetry_combobox(name: "frameworks", multiple: true, value: %w[sveltekit remix], "aria-label": "Frameworks",
                       placeholder: "Select frameworks...") do |combobox| %>
     <% [["next", "Next.js"], ["sveltekit", "SvelteKit"], ["remix", "Remix"],
         ["astro", "Astro"], ["nuxt", "Nuxt"]].each do |value, label| %>

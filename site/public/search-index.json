@@ -504,6 +504,12 @@
     "path": "/components/combobox#grouped"
   },
   {
+    "title": "Multiple",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#multiple"
+  },
+  {
     "title": "Valued",
     "page": "Combobox",
     "section": "components",
@@ -1144,6 +1150,30 @@
     "page": "Navigation Menu",
     "section": "components",
     "path": "/components/navigation-menu#viewport"
+  },
+  {
+    "title": "Number Field",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field"
+  },
+  {
+    "title": "Default",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#default"
+  },
+  {
+    "title": "Currency",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#currency"
+  },
+  {
+    "title": "Decimal steps",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#decimal-steps"
   },
   {
     "title": "Pagination",
