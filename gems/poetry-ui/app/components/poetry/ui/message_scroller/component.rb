@@ -34,6 +34,37 @@ module Poetry
 
         validates :default_scroll_position, inclusion: { in: SCROLL_POSITIONS }
 
+        part "message-scroller", "The transcript root the controller drives - runtime " \
+                                 "scroll state is mirrored here",
+             states: {
+               "data-mode" => { condition: "always once connected - the 4-state machine",
+                                values: %w[following-bottom free-scrolling
+                                           anchored-to-message settling-jump] },
+               "data-scrollable" => "overflow exists - carries which edges have room " \
+                                    "(start, end, or both as a space-separated pair)",
+               "data-autoscrolling" => "a programmatic scroll is settling - the " \
+                                       "follow-bottom release is suppressed while set"
+             }
+        part "message-scroller-viewport", "The native scroll region (role=region, " \
+                                          "focusable) - the controller mirrors the same " \
+                                          "runtime attributes here",
+             states: {
+               "data-scrollable" => "overflow exists - the same edge tokens as the root",
+               "data-autoscrolling" => "a programmatic scroll is settling"
+             }
+        part "message-scroller-content", "The row container and Turbo Stream append target " \
+                                         "(stable dom id <id>-messages); role=log announces " \
+                                         "additions"
+        part "message-scroller-item", "One transcript row (poetry_message_scroller_item) - " \
+                                      "the id is how anchoring and Streams find it",
+             states: {
+               "data-message-id" => "always - the row's message id",
+               "data-scroll-anchor" => "anchor: true - the turn the controller holds at " \
+                                       "the reading line"
+             }
+        part "message-scroller-spacer", "Tail spacer faking scroll room below a short " \
+                                        "anchored turn - hidden at height 0"
+
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "message-scroller" }

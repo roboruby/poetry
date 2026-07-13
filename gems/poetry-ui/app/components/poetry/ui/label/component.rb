@@ -14,6 +14,9 @@ module Poetry
 
         option :for_id, :string
 
+        part "label", "The <label> element itself - for= rides it (dropped in group mode, " \
+                      "where the group names itself via aria-labelledby at this label's id)"
+
         def call
           content_tag(:label, content, **root_attributes.to_attributes)
         end

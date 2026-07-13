@@ -31,6 +31,21 @@ module Poetry
 
         validates :direction, inclusion: { in: DIRECTIONS }
 
+        part "resizable-panel-group", "The flex group root - the splitter controller rides here",
+             states: {
+               "data-orientation" => { condition: "the group axis", values: DIRECTIONS.map(&:to_s) }
+             }
+        part "resizable-panel", "One flex child whose flex-grow IS its percentage - the controller " \
+                                "rewrites the inline flex on every resize",
+             states: {
+               "data-min-size" => "the panel's minimum percentage, rendered when with_panel passes " \
+                                  "min_size: (the controller's clamp floor)",
+               "data-max-size" => "the panel's maximum percentage, rendered when with_panel passes " \
+                                  "max_size: (the controller's clamp ceiling)"
+             }
+        part "resizable-handle", "The role=separator splitter between panels - drag and keyboard " \
+                                 "resizing live here; its aria-valuenow tracks the preceding panel"
+
         Panel = Data.define(:default_size, :min_size, :max_size, :classes, :block)
 
         # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry

@@ -62,6 +62,33 @@ module Poetry
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
+        part "hover-card", "Root wrapper around the trigger link and the panel"
+        part "hover-card-trigger", "The enriched link itself - simultaneously the no-JS " \
+                                   "fallback, the touch path, and the keyboard path",
+             states: {
+               "data-popup-open" => "bare while the card is open; absent while closed " \
+                                    "(Base UI absence-is-the-state)"
+             }
+        part "hover-card-content", "The role-less preview panel (invisible to AT on purpose) - " \
+                                   "positioning, animation, and the open state ride here",
+             states: {
+               "data-open" => "card is open (the controller flips the pair at runtime)",
+               "data-closed" => "card is closed (the server-rendered state; hidden rides along)",
+               "data-side" => { condition: "always - the side (initial placement, re-resolved " \
+                                           "live by popper after flip)",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
+                                       "animation",
+               "--available-width" => "viewport space left for the panel (popper, post-flip)",
+               "--available-height" => "viewport space left for the panel (popper, post-flip)",
+               "--anchor-width" => "the anchor's measured width (popper)",
+               "--anchor-height" => "the anchor's measured height (popper)"
+             }
+
         # The enriched LINK (Radix Primitive.a): a real navigable <a> -
         # THE no-JS fallback. tag: passthrough exists but change it
         # knowingly (an <a> is the contract's fallback story). NO

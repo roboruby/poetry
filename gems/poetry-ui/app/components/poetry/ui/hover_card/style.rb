@@ -10,7 +10,7 @@ module Poetry
       # caller w-* classes still win from the utilities layer.
       class Style < Poetry::Core::Style
         element :content, "cn-hover-card-content z-50 " \
-                          "origin-(--radix-hover-card-content-transform-origin) outline-hidden"
+                          "origin-(--transform-origin) outline-hidden"
       end
     end
   end

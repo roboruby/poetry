@@ -27,6 +27,15 @@ module Poetry
 
         validates :announce, inclusion: { in: ANNOUNCE }
 
+        part "marker", "The divider/status root - the label is real announced content " \
+                       "(role=status when announce: :status; never role=separator)",
+             states: {
+               "data-variant" => { condition: "always - the resolved variant",
+                                   values: VARIANTS.map(&:to_s) }
+             }
+        part "marker-icon", "Decorative icon wrapper (aria-hidden always)"
+        part "marker-content", "The label span - the marker text itself"
+
         renders_one :icon, Poetry::Ui::Icon::Component
 
         def root_attributes

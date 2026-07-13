@@ -34,6 +34,15 @@ module Poetry
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
+        part "carousel", "The role=region root - the controller (paging, button state, arrow keys) " \
+                         "rides here",
+             states: {
+               "data-orientation" => { condition: "the scroll axis", values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "carousel-content", "The viewport - a real scroll-snap container (tabindex=0); the " \
+                                 "platform owns the physics"
+        part "carousel-item", "One role=group slide - sized by item classes (basis-full default)"
+
         Slide = Data.define(:classes, :block)
 
         # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry

@@ -34,6 +34,29 @@ module Poetry
 
         validates :state, inclusion: { in: STATES }
 
+        part "attachment", "The chip root - the server-owned upload lifecycle rides here " \
+                           "(flip data-upload-state by re-render / Turbo Stream replace)",
+             states: {
+               "data-upload-state" => { condition: "always - the resolved state",
+                                        values: STATES.map(&:to_s) },
+               "data-size" => { condition: "always - the resolved size",
+                                values: SIZES.map(&:to_s) },
+               "data-orientation" => { condition: "always - the resolved orientation",
+                                       values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "attachment-media", "The media slot's box - the icon tile or the caller's <img>",
+             states: {
+               "data-variant" => { condition: "always - the media variant",
+                                   values: MEDIA_VARIANTS.map(&:to_s) }
+             }
+        part "attachment-content", "Text column wrapping title/description - renders when " \
+                                   "either slot is set"
+        part "attachment-title", "The file name line (title slot; user content, never html_safe)"
+        part "attachment-description", "Muted metadata / failure copy under the title"
+        part "attachment-actions", "Row of with_action poetry Buttons"
+        part "attachment-status", "sr-only role=status announcement for the in-flight and " \
+                                  "error states (uploading/processing/error)"
+
         renders_one :media, lambda { |variant: :icon, &block|
           raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
 

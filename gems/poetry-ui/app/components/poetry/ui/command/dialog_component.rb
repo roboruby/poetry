@@ -45,6 +45,24 @@ module Poetry
         option :value, :string
         option :id, :string
 
+        part "command-dialog", "Root wrapper around the trigger and the <dialog> - the " \
+                               "palette's own chrome; the embedded Command inside carries its " \
+                               "own part contract"
+        # The dialog-* parts below are Dialog's panel chrome REUSED (same
+        # controller, own template) - declared here because this component
+        # renders them itself, retuned for the palette.
+        part "dialog-content", "The <dialog> panel (Dialog's chrome retuned to overflow-hidden " \
+                               "p-0) - positioning, animation, and the open state ride here",
+             states: {
+               "data-open" => "panel is open (the dialog controller flips the pair at runtime)",
+               "data-closed" => "panel is closed or animating out (the server-rendered state)"
+             }
+        part "dialog-header", "Dialog's title block, sr-only here - the palette owns the " \
+                              "visible surface"
+        part "dialog-title", "The sr-only heading - the dialog's accessible name (defaults to " \
+                             "the source string)"
+        part "dialog-description", "The sr-only description wired to aria-describedby"
+
         # data-component self-id: "command-dialog", not the path-derived
         # "dialog" (which would shadow Dialog's own self-identification).
         def self.component_title

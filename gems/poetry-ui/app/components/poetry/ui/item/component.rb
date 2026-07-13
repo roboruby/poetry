@@ -34,6 +34,21 @@ module Poetry
 
         validates :media_variant, inclusion: { in: MEDIA_VARIANTS }
 
+        part "item", "The row root (a div by default; tag: :a for a clickable row) - variant and " \
+                     "density land here as data attributes",
+             states: {
+               "data-variant" => { condition: "the row's visual variant", values: VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "the row's density", values: SIZES.map(&:to_s) }
+             }
+        part "item-media", "The leading media cell - sized and rounded by its variant",
+             states: {
+               "data-variant" => { condition: "the media treatment", values: MEDIA_VARIANTS.map(&:to_s) }
+             }
+        part "item-content", "The center column collecting title, description, and loose content"
+        part "item-title", "The title row"
+        part "item-description", "The muted description line"
+        part "item-actions", "The trailing actions cell"
+
         renders_one :media
         renders_one :title
         renders_one :description

@@ -31,6 +31,32 @@ module Poetry
         option :mode, :symbol, default: :single
         option :week_start, :integer, default: 0 # 0 = Sunday
 
+        part "calendar", "Root wrapper - the calendar controller (navigation, selection, roving " \
+                         "arrow keys) rides here"
+        part "calendar-nav", "The header row - previous/next month Buttons around the caption"
+        part "calendar-caption", "The month label ('July 2026') - the controller rewrites it on " \
+                                 "navigation from the localized month names"
+        part "calendar-grid", "The role=grid - the weekday header row plus six week rows " \
+                              "(42 cells, always full weeks)"
+        part "calendar-weekdays", "The role=row of weekday column headers"
+        part "calendar-weekday", "One role=columnheader two-letter day label"
+        part "calendar-week", "One role=row of seven day cells"
+        part "calendar-day-cell", "The role=gridcell wrapper - aria-selected lives HERE (the " \
+                                  "ARIA grid contract; it is not valid on the button)"
+        part "calendar-day", "One day <button> - the selection vocabulary and the roving tab " \
+                             "stop ride here",
+             states: {
+               "data-date" => "always - the day's ISO date (the controller's selection key)",
+               "data-selected" => "the day is the single-mode pick, or a start-only range pick " \
+                                  "(bare; a complete range wears the range-* trio instead)",
+               "data-range-start" => "the day starts a COMPLETE range",
+               "data-range-end" => "the day ends a COMPLETE range",
+               "data-range-middle" => "the day sits strictly inside a complete range",
+               "data-today" => "the day is today (aria-current=date rides along)",
+               "data-outside" => "the day belongs to a neighbouring month (leading/trailing fill)"
+             }
+        part "calendar-day-label", "The day-number span inside the button"
+
         def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **) # rubocop:disable Metrics/ParameterLists
           super(**)
           raise ArgumentError, "unknown mode #{mode.inspect} (one of #{MODES.join(", ")})" unless MODES.include?(mode)

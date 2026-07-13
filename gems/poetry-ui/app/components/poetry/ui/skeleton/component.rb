@@ -12,6 +12,8 @@ module Poetry
           "Mark the live region that will replace it (aria-busy on the container), not the skeleton."
         ].freeze
 
+        part "skeleton", "The pulsing placeholder box itself - sized entirely by utility classes"
+
         def call
           content_tag(:div, content, **root_attributes.to_attributes)
         end

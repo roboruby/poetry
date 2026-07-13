@@ -28,6 +28,24 @@ module Poetry
 
         validates :size, inclusion: { in: SIZES }
 
+        part "native-select-wrapper", "Relative shell around the select and the chevron - " \
+                                      "dims the pair when the select is disabled",
+             states: {
+               "data-size" => { condition: "always - the resolved size",
+                                values: SIZES.map(&:to_s) }
+             }
+        part "native-select", "The real <select> - appearance-none (the chevron replaces the " \
+                              "native arrow); platform picker and form submission stay native",
+             states: {
+               "data-size" => { condition: "always - the resolved size (mirrors the wrapper)",
+                                values: SIZES.map(&:to_s) }
+             }
+        part "native-select-icon", "The decorative chevron wrapper - absolutely pinned, " \
+                                   "aria-hidden"
+        part "native-select-option", "An <option> from the options: fast path (or " \
+                                     "poetry_native_select_option) - Canvas system colors " \
+                                     "keep the native dropdown legible"
+
         def call
           content_tag(:div, wrapper_attributes.to_attributes) do
             safe_join([select_element, chevron])

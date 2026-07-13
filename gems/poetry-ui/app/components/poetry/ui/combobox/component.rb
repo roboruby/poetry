@@ -319,6 +319,82 @@ module Poetry
         validates :align, inclusion: { in: ALIGNS }
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        part "combobox", "Root wrapper carrying both controllers (combobox + popper) and the " \
+                         "optional dir attribute"
+        part "combobox-native", "The visually-hidden native <select> - the serialization truth " \
+                                "(Select's decision verbatim); plumbing, never styled or targeted"
+        part "combobox-trigger", "The role=combobox button (the demo's outline Button) the field " \
+                                 "label reaches - value display and chevrons ride inside",
+             states: {
+               "data-placeholder" => "no option is committed (bare; the controller toggles it " \
+                                     "on every commit)",
+               "data-popup-open" => "the popup is open (bare while open, absent while closed - " \
+                                    "the controller flips it with the open state)"
+             }
+        part "combobox-value", "The value display span - the selected option's label, or the placeholder",
+             states: {
+               "data-placeholder" => "placeholder: is given - carries the placeholder text so " \
+                                     "the controller can restore it"
+             }
+        part "combobox-content", "The popper-positioned popup housing the embedded Command " \
+                                 "anatomy - open/closed and the resolved placement ride here",
+             states: {
+               "data-open" => "popup is open (the controller flips the pair at runtime)",
+               "data-closed" => "popup is closed or animating out (the server-rendered state)",
+               "data-side" => { condition: "the placement side - server-rendered from side:, " \
+                                           "rewritten to the resolved side by popper on open",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "the placement alignment - server-rendered from " \
+                                            "align:, rewritten by popper on open",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "popper - the animation origin matching the resolved placement",
+               "--available-width" => "popper - viewport space available to the popup post-flip",
+               "--available-height" => "popper - viewport space available to the popup post-flip",
+               "--anchor-width" => "popper - the trigger's measured width (the popup width " \
+                                   "tracks it - one knob, two surfaces)",
+               "--anchor-height" => "popper - the trigger's measured height"
+             }
+        part "command", "The embedded engine root - Command's anatomy rendered here against its " \
+                        "own controller (composition at the markup contract)"
+        part "command-input-wrapper", "The input row - search icon + filter input above the list"
+        part "command-search-icon", "Decorative search glyph beside the input"
+        part "command-input", "The popup's filter input (role=combobox, its own accessible " \
+                              "name) - the typing session and aria-activedescendant live here"
+        part "command-list", "THE role=listbox - the aria-controls target of both combobox roles"
+        part "command-empty", "Zero-matches message - rendered hidden; the engine unhides it " \
+                              "when the filter pass leaves no visible items"
+        part "command-group", "role=group labelled by its heading - hidden by the engine when " \
+                              "every member item is filtered out"
+        part "command-group-heading", "The group heading - styled, no ARIA role (the group " \
+                                      "points at it via aria-labelledby)"
+        part "command-item", "One role=option div wearing BOTH meanings - a Command item " \
+                             "(filtering + highlight) AND Select's committed-value surface",
+             states: {
+               "data-value" => "always - the option's committable value (the native <option> twin)",
+               "data-selected" => "the option is committed (bare; absent while unselected - the " \
+                                  "controller twin-writes it with aria-selected)",
+               "data-highlighted" => "the item holds the activedescendant highlight (the server " \
+                                     "seeds it; the engine moves it with the input's " \
+                                     "aria-activedescendant)",
+               "data-disabled" => "disabled: is set (aria-disabled rides along)",
+               "data-hidden" => "the filter scored the item zero (the engine pairs it with " \
+                                "hidden; never rendered server-side)"
+             }
+        part "command-item-text", "The option's label span - the filter/typematch text source"
+        part "combobox-item-indicator", "The trailing committed-value check (ms-auto per the " \
+                                        "demo) - the parent item's data-selected absence hides it"
+        part "command-separator", "role=separator divider - hidden by the engine whenever the " \
+                                  "query is non-empty"
+        part "command-status", "The engine's sr-only polite result-count live region",
+             states: {
+               "data-zero" => "always - the localized zero-results template",
+               "data-one" => "always - the localized one-result template",
+               "data-other" => "always - the localized many-results template (a literal count " \
+                               "placeholder the controller interpolates)"
+             }
+
         # Optional custom trigger content rendered BEFORE the value span
         # (rare); the component owns role=combobox + the aria wiring + the
         # chevrons regardless, so composition cannot drop the contract.

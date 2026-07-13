@@ -35,6 +35,9 @@ module Poetry
         # from model errors.
         option :invalid, :boolean, default: false
 
+        part "textarea", "The <textarea> element itself - value renders as content; " \
+                         "auto-grow is the field-sizing-content CSS property, zero JS"
+
         def call
           # value as CONTENT (escaped by content_tag - the </textarea>
           # injection surface).

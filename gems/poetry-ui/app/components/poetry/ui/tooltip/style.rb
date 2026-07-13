@@ -10,7 +10,7 @@ module Poetry
       # UNGATED there, source-exact).
       class Style < Poetry::Core::Style
         element :content, "cn-tooltip-content z-50 w-fit " \
-                          "origin-(--radix-tooltip-content-transform-origin) " \
+                          "origin-(--transform-origin) " \
                           "bg-foreground text-background"
 
         # The arrow: popper positions/rotates the outer box; the visual

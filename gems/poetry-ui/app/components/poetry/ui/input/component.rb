@@ -20,6 +20,9 @@ module Poetry
         option :disabled, :boolean, default: false
         option :invalid, :boolean, default: false
 
+        part "input", "The <input> element itself - no inner anatomy; error state is " \
+                      "aria-invalid (set by Field/FormBuilder), never a parallel class"
+
         def call
           tag.input(**root_attributes.to_attributes)
         end

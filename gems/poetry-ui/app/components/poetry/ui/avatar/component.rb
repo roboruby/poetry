@@ -30,6 +30,17 @@ module Poetry
 
         validates :size, inclusion: { in: SIZES }
 
+        part "avatar", "Root span (role=img carrying the accessible name) - fallback, image, " \
+                       "and badge layer inside it",
+             states: {
+               "data-size" => { condition: "always - the resolved size", values: SIZES.map(&:to_s) }
+             }
+        part "avatar-fallback", "The initials layer (the content block) - always in the DOM, " \
+                                "showing until the image covers it"
+        part "avatar-image", "The <img> layered absolutely over the fallback - only when src: " \
+                             "is given; a failed load paints nothing"
+        part "avatar-badge", "The decorative presence dot (the badge slot), bottom-right"
+
         renders_one :badge
 
         requires_content "the initials fallback"

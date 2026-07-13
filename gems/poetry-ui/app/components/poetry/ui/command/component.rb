@@ -257,6 +257,53 @@ module Poetry
 
         include Helpers
 
+        part "command", "Root of the palette - the input row over the listbox, carrying the " \
+                        "engine controller"
+        part "command-input-wrapper", "The input row - search icon + filter input above the list"
+        part "command-search-icon", "Decorative search glyph beside the input"
+        part "command-input", "The role=combobox filter input - real focus stays pinned here " \
+                              "for the whole session; the highlight rides aria-activedescendant"
+        part "command-list", "The role=listbox holding empty/loading/items - the input's " \
+                             "aria-controls target"
+        part "command-empty", "Zero-matches message - rendered hidden; the controller unhides " \
+                              "it when the filter pass leaves no visible items"
+        part "command-loading", "Pending affordance (role=status) - rendered hidden; the HOST " \
+                                "toggles it (Turbo frame events), Command never does"
+        part "command-group", "role=group labelled by its heading - hidden by the controller " \
+                              "when every member item is filtered out",
+             states: {
+               "data-always-render" => "always_render: is set - the group survives every filter pass"
+             }
+        part "command-group-heading", "The group heading - styled, no ARIA role (the group " \
+                                      "points at it via aria-labelledby)"
+        part "command-item", "One role=option action row - highlight, filtering, and " \
+                             "disablement ride here (never aria-selected in a bare Command)",
+             states: {
+               "data-value" => "always - the item's unique value (its server-stable id follows " \
+                               "registration order)",
+               "data-highlighted" => "the item holds the highlight (bare; the controller " \
+                                     "twin-writes it with the input's aria-activedescendant)",
+               "data-disabled" => "disabled: is set (aria-disabled rides along)",
+               "data-keywords" => "keywords: given - extra filter terms beyond the label",
+               "data-always-render" => "always_render: is set - the item survives every filter pass",
+               "data-hidden" => "the filter scored the item zero (the controller pairs it with " \
+                                "hidden; never rendered server-side)"
+             }
+        part "command-item-text", "The item's label span - the filter/typematch text source " \
+                                  "(shortcuts and icons excluded)"
+        part "command-shortcut", "Presentational keyboard hint - excluded from the filter text; " \
+                                 "Command never binds the hinted key"
+        part "command-separator", "Decorative divider (aria-hidden) - hidden by the controller " \
+                                  "whenever the query is non-empty"
+        part "command-status", "The sr-only polite result-count live region - the controller " \
+                               "writes the debounced count from the localized templates",
+             states: {
+               "data-zero" => "always - the localized zero-results template",
+               "data-one" => "always - the localized one-result template",
+               "data-other" => "always - the localized many-results template (a literal count " \
+                               "placeholder the controller interpolates)"
+             }
+
         # Custom zero-results content (defaults to t('poetry.command.empty')).
         renders_one :empty
         # Custom pending content (a spinner); the HOST toggles visibility

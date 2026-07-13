@@ -68,6 +68,25 @@ module Poetry
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
+        part "radio-group", "The role=radiogroup root - one Tab stop; items (and their " \
+                            "label-pairing rows) render as direct children",
+             states: {
+               "data-disabled" => "disabled: is set on the root - every item disables with it"
+             }
+        part "radio-group-item", "A button[role=radio] per item - carries its own hidden " \
+                                 "native radio as a sibling",
+             states: {
+               "data-checked" => "the checked item (the controller writes the pair and " \
+                                 "aria-checked together on every item)",
+               "data-unchecked" => "every other item",
+               "data-disabled" => "the item (or the whole group) is disabled - also the " \
+                                  "roving-focus collection filter",
+               "data-value" => "always - the item's value (keys the checked-value machine)"
+             }
+        part "radio-group-indicator", "Centering span holding the checked dot - hidden (the " \
+                                      "native attribute, toggled by the controller) while " \
+                                      "unchecked"
+
         # One item per option: a real button[role=radio] carrying its own
         # hidden native radio; label: renders the demo's item+Label row.
         renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false, **options|

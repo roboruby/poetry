@@ -207,6 +207,71 @@ module Poetry
         validates :align, inclusion: { in: ALIGNS }
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        part "select", "Root wrapper carrying both controllers (select + popper) and the " \
+                       "optional dir attribute"
+        part "select-native", "The visually-hidden native <select> - the serialization truth " \
+                              "(name/required/disabled + every option); plumbing, never styled or targeted"
+        part "select-trigger", "The role=combobox button the field label reaches - the value " \
+                               "display and chevron ride inside",
+             states: {
+               "data-size" => { condition: "always - the resolved size variant",
+                                values: SIZES.map(&:to_s) },
+               "data-placeholder" => "no option is committed (bare; the controller toggles it " \
+                                     "on every commit)",
+               "data-popup-open" => "the popup is open (bare while open, absent while closed - " \
+                                    "the controller flips it with the open state)"
+             }
+        part "select-value", "The value display span - the selected option's label, or the placeholder",
+             states: {
+               "data-placeholder" => "placeholder: is given - carries the placeholder text so a " \
+                                     "later clear can restore it"
+             }
+        part "select-content", "The popper-positioned popup shell (scroll buttons + viewport) - " \
+                               "open/closed and the resolved placement ride here",
+             states: {
+               "data-open" => "popup is open (the controller flips the pair at runtime)",
+               "data-closed" => "popup is closed or animating out (the server-rendered state)",
+               "data-side" => { condition: "the placement side - server-rendered from side:, " \
+                                           "rewritten to the resolved side by popper on open",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "the placement alignment - server-rendered from " \
+                                            "align:, rewritten by popper on open",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "popper - the animation origin matching the resolved placement",
+               "--available-width" => "popper - viewport space available to the popup post-flip",
+               "--available-height" => "popper - viewport space available to the popup post-flip",
+               "--anchor-width" => "popper - the trigger's measured width",
+               "--anchor-height" => "popper - the trigger's measured height",
+               "--radix-select-trigger-width" => "the select controller measures the trigger on " \
+                                                 "open - the viewport's min-width binding",
+               "--radix-select-trigger-height" => "the select controller measures the trigger on " \
+                                                  "open - the viewport's height binding"
+             }
+        part "select-scroll-up-button", "Hover-scroll affordance above the viewport - rendered " \
+                                        "always but hidden; the controller unhides it per scroll " \
+                                        "extremes (aria-hidden)"
+        part "select-scroll-down-button", "Hover-scroll affordance below the viewport (the same " \
+                                          "contract as the up button)"
+        part "select-viewport", "The role=listbox scroll container - the options' actual parent, " \
+                                "labelled from the trigger"
+        part "select-group", "role=group wrapper labelled by its select-label heading"
+        part "select-label", "The group heading - styled, no ARIA role (the group points at it " \
+                             "via aria-labelledby)"
+        part "select-item", "One role=option div - selection, disablement, and the committable " \
+                            "value ride here",
+             states: {
+               "data-value" => "always - the option's committable value (the native <option> twin)",
+               "data-selected" => "the option is committed (bare; absent while unselected - the " \
+                                  "controller twin-writes it with aria-selected)",
+               "data-disabled" => "disabled: is set (aria-disabled rides along)"
+             }
+        part "select-item-indicator", "The check gutter - server-rendered always; the parent " \
+                                      "item's data-selected absence hides it"
+        part "select-item-text", "The option's label span - the value display copies from it"
+        part "select-separator", "Decorative divider between options (aria-hidden)"
+
         # Optional custom trigger content rendered BEFORE the value span
         # (rare); the component owns role=combobox + the aria wiring + the
         # chevron regardless, so composition cannot drop the contract.

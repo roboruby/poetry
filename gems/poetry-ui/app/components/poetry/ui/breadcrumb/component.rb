@@ -23,6 +23,15 @@ module Poetry
 
         Entry = Data.define(:label, :href, :ellipsis)
 
+        part "breadcrumb", "The <nav> landmark (aria-label=breadcrumb) around the trail"
+        part "breadcrumb-list", "The <ol> laying crumbs and separators out as one wrapping row"
+        part "breadcrumb-item", "One <li> of the trail - wraps a link, the current page, or the ellipsis"
+        part "breadcrumb-link", "A crumb with href: - a real <a> to an ancestor page"
+        part "breadcrumb-page", "The current page (the item without href:) - aria-current=page, not a link"
+        part "breadcrumb-separator", "The chevron <li> between crumbs - presentational, aria-hidden"
+        part "breadcrumb-ellipsis", "The collapsed-middle glyph (with_ellipsis) - aria-hidden; a sibling " \
+                                    "sr-only 'More' announces it"
+
         # Items append to one ordered trail so crumbs and an ellipsis
         # interleave in declaration order.
         renders_many :items, lambda { |label = nil, href: nil, ellipsis: false|

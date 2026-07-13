@@ -61,6 +61,38 @@ module Poetry
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
+        part "tooltip", "Root wrapper around the trigger and the bubble"
+        part "tooltip-content", "The role=tooltip bubble - positioning, animation, and the open " \
+                                "state ride here",
+             states: {
+               "data-open" => "bubble is open (the controller flips the pair at runtime)",
+               "data-closed" => "bubble is closed (the server-rendered state; hidden rides along)",
+               "data-instant" => { condition: "the open skipped the delay - warm-grace/" \
+                                              "programmatic or keyboard focus (runtime-only; " \
+                                              "absent on a delayed open)",
+                                   values: %w[delay focus] },
+               "data-side" => { condition: "always - the side (initial placement, re-resolved " \
+                                           "live by popper after flip)",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
+                                       "animation",
+               "--available-width" => "viewport space left for the bubble (popper, post-flip)",
+               "--available-height" => "viewport space left for the bubble (popper, post-flip)",
+               "--anchor-width" => "the anchor's measured width (popper)",
+               "--anchor-height" => "the anchor's measured height (popper)"
+             }
+        part "tooltip-arrow", "The arrow wrapper (aria-hidden) - popper pins it to the bubble's " \
+                              "anchor-facing edge and rotates it toward the anchor",
+             states: {
+               "data-side" => { condition: "written by popper alongside the content's - the " \
+                                           "resolved side, for per-side restyling",
+                                values: SIDES.map(&:to_s) }
+             }
+
         # The described control - commonly a poetry Button (demo parity:
         # with_trigger(variant: :outline) { "Hover" }). The slot owns the
         # state + timing wiring regardless of the composed content.

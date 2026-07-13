@@ -21,6 +21,17 @@ module Poetry
 
         requires_content "its control + addons"
 
+        part "input-group", "The bordered group surface (role=group) - wears the border, the " \
+                            "focus-within ring, and the invalid ring for the borderless " \
+                            "control inside"
+        part "input-group-addon", "One addon cell (icons, text, kbd hints, tiny buttons) " \
+                                  "rendered by poetry_input_group_addon around the control",
+             states: {
+               "data-align" => { condition: "always - the addon's align: axis (inline rides " \
+                                            "the row, block takes a full-width row)",
+                                 values: %w[inline-start inline-end block-start block-end] }
+             }
+
         def before_render
           ensure_content!
         end

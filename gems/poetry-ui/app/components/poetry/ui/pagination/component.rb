@@ -34,6 +34,14 @@ module Poetry
 
         validates :current_variant, inclusion: { in: CURRENT_VARIANTS }
 
+        # (pagination-link rides the composed Buttons, so those elements
+        # belong to Button's anatomy, not this contract.)
+        part "pagination", "The <nav> landmark (role=navigation, aria-label) around the page list"
+        part "pagination-content", "The <ul> holding every entry as one horizontal row"
+        part "pagination-item", "One <li> per entry - previous/next, a page link, or a gap"
+        part "pagination-ellipsis", "The elided-pages marker between windows - aria-hidden with an " \
+                                    "sr-only 'More pages'"
+
         # The page sequence with :gap markers where pages are elided. Small
         # ranges show every page; larger ones show first, last, and a window
         # of +/- siblings around current.

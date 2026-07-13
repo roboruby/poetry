@@ -192,6 +192,89 @@ module Poetry
         validates :align, inclusion: { in: ALIGNS }
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        # (dropdown-menu-trigger rides the composed Button, so that element
+        # belongs to Button's anatomy, not this contract.)
+        part "dropdown-menu", "Root wrapper hosting the menu + popper controllers around the trigger " \
+                              "and content"
+        part "dropdown-menu-content", "The role=menu popup panel - positioning, animation, and the " \
+                                      "open state ride here",
+             states: {
+               "data-open" => "menu is open (presence flips the pair at runtime)",
+               "data-closed" => "menu is closed or animating out (the server-rendered state)",
+               "data-side" => { condition: "the placement side (popper re-writes it after collision flips)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment against the trigger (popper re-resolves it)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the trigger's measured width",
+               "--anchor-height" => "popper: the trigger's measured height"
+             }
+        part "dropdown-menu-group", "role=group semantic grouping between separators"
+        part "dropdown-menu-label", "Non-interactive heading for a run of items",
+             states: {
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)"
+             }
+        part "dropdown-menu-item", "One role=menuitem action row",
+             states: {
+               "data-variant" => "default or destructive (the danger treatment)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)"
+             }
+        part "dropdown-menu-checkbox-item", "A role=menuitemcheckbox toggle row",
+             states: {
+               "data-checked" => "checked (the controller re-writes the pair with aria-checked on " \
+                                 "activation)",
+               "data-unchecked" => "unchecked",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)",
+               "data-close-on-select" => "per-item override of the menu's close-on-select default " \
+                                         "(\"false\" keeps the menu open)"
+             }
+        part "dropdown-menu-radio-group", "role=group scoping one single-select value",
+             states: {
+               "data-value" => "the selected radio value (the controller re-writes it on change)"
+             }
+        part "dropdown-menu-radio-item", "A role=menuitemradio row inside a radio group",
+             states: {
+               "data-checked" => "the selected radio (the controller re-writes the pair with aria-checked)",
+               "data-unchecked" => "not selected",
+               "data-value" => "the radio's value"
+             }
+        part "dropdown-menu-item-indicator", "The check/circle glyph slot inside checkbox and radio " \
+                                             "items - state rides the parent item; the glyph stays " \
+                                             "decorative"
+        part "dropdown-menu-separator", "role=separator rule between groups"
+        part "dropdown-menu-shortcut", "The trailing keybinding HINT - aria-hidden, never binds the key"
+        part "dropdown-menu-sub", "A submenu scope - hosts its own popper around the sub trigger/" \
+                                  "content pair"
+        part "dropdown-menu-sub-trigger", "The role=menuitem row opening its submenu",
+             states: {
+               "data-popup-open" => "its submenu is open (written with aria-expanded; absence is the " \
+                                    "closed state)"
+             }
+        part "dropdown-menu-sub-content", "The nested role=menu panel - its own popper content on the " \
+                                          "same presence machinery",
+             states: {
+               "data-open" => "submenu is open (presence flips the pair at runtime)",
+               "data-closed" => "submenu is closed (the server-rendered state)",
+               "data-side" => { condition: "the placement side (right/left by direction; popper resolves " \
+                                           "it at runtime)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment against the sub-trigger (popper resolves it " \
+                                            "at runtime)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the sub-trigger's measured width",
+               "--anchor-height" => "popper: the sub-trigger's measured height"
+             }
+
         # The trigger is a poetry Button wired as the menu button (demo
         # parity: with_trigger(variant: :outline) { "Open" }) - the slot
         # owns the aria-haspopup/expanded/controls wiring regardless of

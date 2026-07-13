@@ -43,6 +43,60 @@ module Poetry
 
         Entry = Data.define(:title, :value, :href, :panel)
 
+        part "navigation-menu", "The <nav> landmark around the whole disclosure bar",
+             states: {
+               "data-viewport" => "the mode marker (\"true\" = shared morphing viewport, \"false\" = " \
+                                  "per-item panels) - the dictionary's group-data chrome keys on it"
+             }
+        part "navigation-menu-list", "The bar row holding every item"
+        part "navigation-menu-item", "One bar entry - wraps a trigger + panel pair or a top-level link",
+             states: {
+               "data-value" => "the entry's value - the controller's open/close key"
+             }
+        part "navigation-menu-trigger", "The disclosure button opening its panel",
+             states: {
+               "data-popup-open" => "its panel is open (written with aria-expanded - the chevron " \
+                                    "rotation hook)",
+               "data-open" => "its panel is open (the controller writes both vocabularies)",
+               "data-closed" => "its panel is closed (written after the first close)"
+             }
+        part "navigation-menu-content", "One item's panel - presence-animated; in viewport mode it is " \
+                                        "adopted into the shared viewport on first activation",
+             states: {
+               "data-open" => "panel is open (presence flips the pair at runtime)",
+               "data-closed" => "panel is closed or animating out (the server-rendered state)",
+               "data-activation-direction" => "which way the activation traveled between triggers " \
+                                              "(left/right, viewport mode) - keys the slide styles",
+               "data-viewport-panel" => "stamped once the panel is adopted into the shared viewport"
+             }
+        part "navigation-menu-positioner", "The viewport-mode shell popper positions against the " \
+                                           "active trigger",
+             states: {
+               "data-instant" => "suppresses the morph transitions for one painted frame (cold opens)"
+             },
+             vars: {
+               "--positioner-width" => "the pinned morph width (reset to auto once the transition settles)",
+               "--positioner-height" => "the pinned morph height (reset to auto once the transition settles)"
+             }
+        part "navigation-menu-popup", "The morphing card inside the positioner - open state and the " \
+                                      "size transition ride here",
+             states: {
+               "data-open" => "a panel is showing (the controller flips the pair)",
+               "data-closed" => "the popup is closed (the server-rendered state)",
+               "data-instant" => "suppresses the morph transitions for one painted frame (cold opens)"
+             },
+             vars: {
+               "--popup-width" => "the pinned morph width (reset to auto once the transition settles)",
+               "--popup-height" => "the pinned morph height (reset to auto once the transition settles)"
+             }
+        part "navigation-menu-viewport", "The adoption container inside the popup - adopted panels " \
+                                         "stack absolutely in it"
+        part "navigation-menu-link", "A REAL destination link - top-level (with_link) or a panel entry " \
+                                     "(poetry_navigation_menu_link)",
+             states: {
+               "data-active" => "the current page (active: true)"
+             }
+
         renders_many :items, lambda { |title, value: nil, href: nil, &panel|
           if href.nil? && panel.nil?
             raise ArgumentError, "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"

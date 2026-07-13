@@ -43,6 +43,15 @@ module Poetry
         # advances. The host response must render the same frame id.
         option :frame, :string
 
+        part "data-table", "Root surface - toolbar, table, and pagination footer stack here"
+        part "data-table-toolbar", "The row above the table holding the filter form - " \
+                                   "renders unless filter: false"
+        part "data-table-filter", "The GET filter form (role=search) - hidden fields carry the " \
+                                  "current sort; a new filter resets the page"
+        part "table-container", "The composed W1 Table's scroll container - Table renders it, " \
+                                "this surface owns where it sits"
+        part "data-table-footer", "The Pagination row - renders when total: is more than one page"
+
         # The cell block is a per-row RENDERER, not captured content: it
         # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
         # yieldless contract), and a column cannot exist without one.

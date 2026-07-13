@@ -66,6 +66,25 @@ module Poetry
         # role=separator dash between groups (meaningful with 2+ groups).
         option :separator, :boolean, default: true
 
+        part "input-otp-container", "Root row (forced dir=ltr - slot order equals string index " \
+                                    "order even on RTL pages) wrapping the real input and the " \
+                                    "mirror cells"
+        part "input-otp", "THE real native <input> (autocomplete one-time-code) stretched " \
+                          "invisibly over the row - the only AT and serialization surface"
+        part "input-otp-group", "One aria-hidden cluster of mirror cells (groups: clustering)"
+        part "input-otp-slot", "One presentational mirror cell - paints its char and the " \
+                               "active-cell ring",
+             states: {
+               "data-active" => { condition: "\"true\" while the native caret sits on this cell " \
+                                             "(the controller projects selectionStart while the " \
+                                             "input is focused; the server renders \"false\")",
+                                  values: %w[true false] }
+             }
+        part "input-otp-caret", "The fake-caret overlay - hidden server-side; the controller " \
+                                "unhides it on the active EMPTY cell"
+        part "input-otp-separator", "The between-groups dash - role=separator kept for parity " \
+                                    "but aria-hidden (a recorded divergence)"
+
         def initialize(attributes = {})
           super
 

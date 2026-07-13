@@ -180,6 +180,93 @@ module Poetry
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        part "menubar", "The role=menubar bar - one horizontal roving tab stop across the triggers",
+             states: {
+               "data-open" => "some menu is open (value present; the coordinator flips the pair)",
+               "data-closed" => "no menu is open"
+             }
+        part "menubar-menu", "One logical menu - a display:contents wrapper hosting the trigger + " \
+                             "content pair's menu and popper controllers"
+        part "menubar-trigger", "The top-level menu button - a role=menuitem INSIDE the bar",
+             states: {
+               "data-value" => "the menu's value - the coordinator's open/close key",
+               "data-popup-open" => "its menu is open (written with aria-expanded; absence is the " \
+                                    "closed state)",
+               "data-disabled" => "trigger is disabled (written together with the disabled property)"
+             }
+        part "menubar-content", "The role=menu popup panel - positioning, animation, and the open " \
+                                "state ride here",
+             states: {
+               "data-open" => "menu is open (presence flips the pair at runtime)",
+               "data-closed" => "menu is closed or animating out (the server-rendered state)",
+               "data-side" => { condition: "the placement side (bottom initially; popper re-writes it " \
+                                           "after collision flips)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment against the trigger (start initially; popper " \
+                                            "re-resolves it)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the trigger's measured width",
+               "--anchor-height" => "popper: the trigger's measured height"
+             }
+        part "menubar-item", "One role=menuitem action row",
+             states: {
+               "data-variant" => "default or destructive (the danger treatment)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)"
+             }
+        part "menubar-checkbox-item", "A role=menuitemcheckbox toggle row",
+             states: {
+               "data-checked" => "checked (the controller re-writes the pair with aria-checked on " \
+                                 "activation)",
+               "data-unchecked" => "unchecked",
+               "data-close-on-select" => "per-item override of the menu's close-on-select default " \
+                                         "(\"false\" keeps the menu open)"
+             }
+        part "menubar-radio-group", "role=group scoping one single-select value",
+             states: {
+               "data-value" => "the selected radio value (the controller re-writes it on change)"
+             }
+        part "menubar-radio-item", "A role=menuitemradio row inside a radio group",
+             states: {
+               "data-checked" => "the selected radio (the controller re-writes the pair with aria-checked)",
+               "data-unchecked" => "not selected",
+               "data-value" => "the radio's value"
+             }
+        part "menubar-item-indicator", "The check/circle glyph slot inside checkbox and radio items - " \
+                                       "state rides the parent item; the glyph stays decorative"
+        part "menubar-separator", "role=separator rule between groups"
+        part "menubar-shortcut", "The trailing keybinding HINT - aria-hidden, never binds the key"
+        part "menubar-sub", "A submenu scope - hosts its own popper around the sub trigger/content pair"
+        part "menubar-sub-trigger", "The role=menuitem row opening its submenu",
+             states: {
+               "data-popup-open" => "its submenu is open (written with aria-expanded; absence is the " \
+                                    "closed state)"
+             }
+        part "menubar-sub-content", "The nested role=menu panel - its own popper content on the same " \
+                                    "presence machinery",
+             states: {
+               "data-open" => "submenu is open (presence flips the pair at runtime)",
+               "data-closed" => "submenu is closed (the server-rendered state)",
+               "data-side" => { condition: "the placement side (right/left by direction; popper resolves " \
+                                           "it at runtime)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment against the sub-trigger (popper resolves it " \
+                                            "at runtime)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the sub-trigger's measured width",
+               "--anchor-height" => "popper: the sub-trigger's measured height"
+             }
+
         renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         def before_render

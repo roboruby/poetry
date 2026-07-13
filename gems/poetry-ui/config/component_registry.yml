@@ -76,6 +76,47 @@ components:
     - The chevron is built in - never add another indicator icon to the trigger.
     required_slots:
       item: at least one item
+    parts:
+    - name: accordion
+      description: The list root - both controllers (the open-set machine and roving
+        focus) ride here
+      states:
+      - attr: data-orientation
+        condition: always vertical - the only axis the accordion ships
+        values:
+        - vertical
+    - name: accordion-item
+      description: One value-keyed section wrapping its header and panel
+      states:
+      - attr: data-open
+        condition: the item is expanded (server-rendered from open:; the controller
+          flips the pair at runtime)
+      - attr: data-closed
+        condition: the item is collapsed
+      - attr: data-value
+        condition: the item's open-state key (always present)
+    - name: accordion-header
+      description: The heading element (heading_level:, h3 default) hosting the trigger
+        button
+    - name: accordion-trigger
+      description: The toggle button inside the header - the chevron rotation rides
+        aria-expanded, not a data attribute
+      states:
+      - attr: data-panel-open
+        condition: its panel is open (Base UI trigger parity, controller-written;
+          absent while closed)
+    - name: accordion-content
+      description: The role=region panel - the presence animation and the measured
+        height var ride here
+      states:
+      - attr: data-open
+        condition: panel is open or entering
+      - attr: data-closed
+        condition: panel is closed or animating out (hidden lands after the exit finishes)
+      vars:
+      - name: "--accordion-panel-height"
+        description: the measured content height (controller-written) that feeds the
+          accordion-down/up keyframes
   poetry/ui/alert:
     class_name: Poetry::Ui::Alert::Component
     identifier: poetry--ui--alert
@@ -106,6 +147,20 @@ components:
       div.
     - destructive announces assertively (role=alert) - reserve it for errors, not
       emphasis.
+    parts:
+    - name: alert
+      description: The callout root - role rides the variant (destructive announces
+        assertively via role=alert; default is a polite role=status)
+      states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - destructive
+    - name: alert-title
+      description: The heading line, rendered when the title slot is set
+    - name: alert-description
+      description: The body copy - the content block renders here
   poetry/ui/alert_dialog:
     class_name: Poetry::Ui::AlertDialog::Component
     identifier: poetry--ui--alert_dialog
@@ -189,6 +244,31 @@ components:
       description: the alertdialog must explain itself
       action: the confirming choice
       cancel: the safe way out
+    parts:
+    - name: alert-dialog
+      description: Root wrapper around the trigger and the <dialog> element
+    - name: alert-dialog-content
+      description: The role=alertdialog <dialog> panel - sizing, animation, and the
+        open state ride here
+      states:
+      - attr: data-open
+        condition: panel is open (the shared dialog controller flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed (the server-rendered state)
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - sm
+    - name: alert-dialog-header
+      description: Title block - holds the optional media well, the title, and the
+        description
+    - name: alert-dialog-title
+      description: The heading - the alertdialog's accessible name (required slot)
+    - name: alert-dialog-description
+      description: The explanation, wired to aria-describedby (required slot)
+    - name: alert-dialog-footer
+      description: The choice row - cancel then action
   poetry/ui/aspect_ratio:
     class_name: Poetry::Ui::AspectRatio::Component
     identifier: poetry--ui--aspect_ratio
@@ -205,6 +285,13 @@ components:
     - 'Pass ratio: as a string fraction (''16/9'', ''1/1'') - Ruby''s 16/9 is integer
       division (1).'
     - The child fills the box itself (size-full object-cover on an image).
+    parts:
+    - name: aspect-ratio
+      description: The ratio-locked box - the content block fills it
+      vars:
+      - name: "--ratio"
+        description: 'always - the ratio: fraction verbatim (''16/9''), consumed by
+          the theme''s aspect-ratio rule'
   poetry/ui/attachment:
     class_name: Poetry::Ui::Attachment::Component
     identifier: poetry--ui--attachment
@@ -281,6 +368,50 @@ components:
       actions) - don't also wrap the chip in a link.
     - error state needs a with_description explaining the failure - the tint alone
       is not the message.
+    parts:
+    - name: attachment
+      description: The chip root - the server-owned upload lifecycle rides here (flip
+        data-upload-state by re-render / Turbo Stream replace)
+      states:
+      - attr: data-upload-state
+        condition: always - the resolved state
+        values:
+        - idle
+        - uploading
+        - processing
+        - error
+        - done
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - sm
+        - xs
+      - attr: data-orientation
+        condition: always - the resolved orientation
+        values:
+        - horizontal
+        - vertical
+    - name: attachment-media
+      description: The media slot's box - the icon tile or the caller's <img>
+      states:
+      - attr: data-variant
+        condition: always - the media variant
+        values:
+        - icon
+        - image
+    - name: attachment-content
+      description: Text column wrapping title/description - renders when either slot
+        is set
+    - name: attachment-title
+      description: The file name line (title slot; user content, never html_safe)
+    - name: attachment-description
+      description: Muted metadata / failure copy under the title
+    - name: attachment-actions
+      description: Row of with_action poetry Buttons
+    - name: attachment-status
+      description: sr-only role=status announcement for the in-flight and error states
+        (uploading/processing/error)
   poetry/ui/avatar:
     class_name: Poetry::Ui::Avatar::Component
     identifier: poetry--ui--avatar
@@ -318,6 +449,25 @@ components:
       not in the badge.
     - Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count.
     requires_content: the initials fallback
+    parts:
+    - name: avatar
+      description: Root span (role=img carrying the accessible name) - fallback, image,
+        and badge layer inside it
+      states:
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - sm
+        - lg
+    - name: avatar-fallback
+      description: The initials layer (the content block) - always in the DOM, showing
+        until the image covers it
+    - name: avatar-image
+      description: 'The <img> layered absolutely over the fallback - only when src:
+        is given; a failed load paints nothing'
+    - name: avatar-badge
+      description: The decorative presence dot (the badge slot), bottom-right
   poetry/ui/badge:
     class_name: Poetry::Ui::Badge::Component
     identifier: poetry--ui--badge
@@ -351,6 +501,21 @@ components:
       never a solid destructive pill inside a soft status column (design lint flags
       the mix).'
     requires_content: the visible status text
+    parts:
+    - name: badge
+      description: The status pill itself (a <span>) - the whole component is this
+        one element
+      states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - secondary
+        - destructive
+        - outline
+        - success
+        - warning
+        - info
   poetry/ui/breadcrumb:
     class_name: Poetry::Ui::Breadcrumb::Component
     identifier: poetry--ui--breadcrumb
@@ -380,6 +545,24 @@ components:
     - Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
     required_slots:
       item: at least one item
+    parts:
+    - name: breadcrumb
+      description: The <nav> landmark (aria-label=breadcrumb) around the trail
+    - name: breadcrumb-list
+      description: The <ol> laying crumbs and separators out as one wrapping row
+    - name: breadcrumb-item
+      description: One <li> of the trail - wraps a link, the current page, or the
+        ellipsis
+    - name: breadcrumb-link
+      description: 'A crumb with href: - a real <a> to an ancestor page'
+    - name: breadcrumb-page
+      description: The current page (the item without href:) - aria-current=page,
+        not a link
+    - name: breadcrumb-separator
+      description: The chevron <li> between crumbs - presentational, aria-hidden
+    - name: breadcrumb-ellipsis
+      description: The collapsed-middle glyph (with_ellipsis) - aria-hidden; a sibling
+        sr-only 'More' announces it
   poetry/ui/bubble:
     class_name: Poetry::Ui::Bubble::Component
     identifier: poetry--ui--bubble
@@ -437,6 +620,35 @@ components:
     - ghost is for tool output / system text flowing full-width - not a visual preference.
     - 'Reactions REQUIRE label: (the accessible name for the cluster).'
     - Inside a Message, alignment follows the Message's align - do not set both.
+    parts:
+    - name: bubble
+      description: The message surface root - variant and alignment ride here
+      states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - secondary
+        - muted
+        - tinted
+        - outline
+        - ghost
+        - destructive
+      - attr: data-align
+        condition: always - the resolved align
+        values:
+        - start
+        - end
+    - name: bubble-content
+      description: The body (<div>, or a <button>/<a> quick reply via tag:) - the
+        content block renders here
+    - name: bubble-reactions
+      description: The reactions pill overlay (role=group, named by label:)
+      states:
+      - attr: data-side
+        condition: always - which edge the pill overlays (default bottom)
+      - attr: data-align
+        condition: always - placement along that edge (default end)
   poetry/ui/button:
     class_name: Poetry::Ui::Button::Component
     identifier: poetry--ui--button
@@ -514,6 +726,41 @@ components:
       - trailing
       options:
       - loading
+    parts:
+    - name: button
+      description: 'The rendered control itself (<button>, or <a> when tag: :a) -
+        every visual state rides here'
+      states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - destructive
+        - outline
+        - secondary
+        - ghost
+        - link
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - xs
+        - sm
+        - lg
+        - icon
+        - icon-xs
+        - icon-sm
+        - icon-lg
+      - attr: data-loading
+        condition: 'loading: is set (aria-busy rides along)'
+    - name: icon
+      description: Wrapper span around leading/trailing slot content - sizes and centers
+        whatever it holds
+    - name: label
+      description: 'The content block''s span (display: contents - children join the
+        root''s flex row directly)'
+    - name: spinner
+      description: 'The loading indicator, swapped in for the leading icon while loading:'
   poetry/ui/button_group:
     class_name: Poetry::Ui::ButtonGroup::Component
     identifier: poetry--ui--button_group
@@ -540,6 +787,19 @@ components:
     - A visual divider between members is poetry_button_group_separator, not a styled
       border.
     requires_content: its member controls
+    parts:
+    - name: button-group
+      description: The role=group root - its selectors join ANY data-slot children
+        into the segmented unit
+      states:
+      - attr: data-orientation
+        condition: the join axis
+        values:
+        - horizontal
+        - vertical
+    - name: button-group-text
+      description: A non-button member (the poetry_button_group_text helper's div)
+        - a text affix joined like a button
   poetry/ui/calendar:
     class_name: Poetry::Ui::Calendar::Component
     identifier: poetry--ui--calendar
@@ -604,6 +864,48 @@ components:
       adds navigation + selection.
     - For a text-field + popover, use DatePicker (it composes this) - a bare Calendar
       is the always-visible grid.
+    parts:
+    - name: calendar
+      description: Root wrapper - the calendar controller (navigation, selection,
+        roving arrow keys) rides here
+    - name: calendar-nav
+      description: The header row - previous/next month Buttons around the caption
+    - name: calendar-caption
+      description: The month label ('July 2026') - the controller rewrites it on navigation
+        from the localized month names
+    - name: calendar-grid
+      description: The role=grid - the weekday header row plus six week rows (42 cells,
+        always full weeks)
+    - name: calendar-weekdays
+      description: The role=row of weekday column headers
+    - name: calendar-weekday
+      description: One role=columnheader two-letter day label
+    - name: calendar-week
+      description: One role=row of seven day cells
+    - name: calendar-day-cell
+      description: The role=gridcell wrapper - aria-selected lives HERE (the ARIA
+        grid contract; it is not valid on the button)
+    - name: calendar-day
+      description: One day <button> - the selection vocabulary and the roving tab
+        stop ride here
+      states:
+      - attr: data-date
+        condition: always - the day's ISO date (the controller's selection key)
+      - attr: data-selected
+        condition: the day is the single-mode pick, or a start-only range pick (bare;
+          a complete range wears the range-* trio instead)
+      - attr: data-range-start
+        condition: the day starts a COMPLETE range
+      - attr: data-range-end
+        condition: the day ends a COMPLETE range
+      - attr: data-range-middle
+        condition: the day sits strictly inside a complete range
+      - attr: data-today
+        condition: the day is today (aria-current=date rides along)
+      - attr: data-outside
+        condition: the day belongs to a neighbouring month (leading/trailing fill)
+    - name: calendar-day-label
+      description: The day-number span inside the button
   poetry/ui/card:
     class_name: Poetry::Ui::Card::Component
     identifier: poetry--ui--card
@@ -643,6 +945,22 @@ components:
     - The card body is the content block; use CardAction for the header-corner control.
     - 'The title renders as a real heading (h3 default) - set title_tag: to fit the
       page outline.'
+    parts:
+    - name: card
+      description: Root container - the vertical flex stack
+    - name: card-header
+      description: The title row grid - gains a trailing auto column when card-action
+        is present
+    - name: card-title
+      description: The heading (title_tag, h3 by default)
+    - name: card-description
+      description: Muted one-liner under the title
+    - name: card-action
+      description: The header's trailing corner control
+    - name: card-content
+      description: The body - the content block renders here
+    - name: card-footer
+      description: The bottom row (actions/meta)
   poetry/ui/carousel:
     class_name: Poetry::Ui::Carousel::Component
     identifier: poetry--ui--carousel
@@ -714,6 +1032,21 @@ components:
     - Size slides with item classes (basis-full default; basis-1/3 for a strip).
     required_slots:
       item: at least one slide
+    parts:
+    - name: carousel
+      description: The role=region root - the controller (paging, button state, arrow
+        keys) rides here
+      states:
+      - attr: data-orientation
+        condition: the scroll axis
+        values:
+        - horizontal
+        - vertical
+    - name: carousel-content
+      description: The viewport - a real scroll-snap container (tabindex=0); the platform
+        owns the physics
+    - name: carousel-item
+      description: One role=group slide - sized by item classes (basis-full default)
   poetry/ui/checkbox:
     class_name: Poetry::Ui::Checkbox::Component
     identifier: poetry--ui--checkbox
@@ -773,6 +1106,30 @@ components:
       all three; agents patching DOM must too).
     - Don't suppress unchecked_value unless using the array idiom - an unchecked box
       that submits nothing silently keeps the old server value.
+    parts:
+    - name: checkbox
+      description: The visual button[role=checkbox] - reflects the hidden input via
+        aria-checked plus the checked triple
+      states:
+      - attr: data-checked
+        condition: checked (the controller reflects every toggle here, aria-checked
+          in step)
+      - attr: data-unchecked
+        condition: unchecked - the indicator goes invisible
+      - attr: data-indeterminate
+        condition: 'checked: :indeterminate (server/programmatic only; the first toggle
+          resolves it to checked)'
+    - name: checkbox-indicator
+      description: Centering span around the check glyph (minus when indeterminate)
+        - CSS-hidden while unchecked, never unmounted
+      states:
+      - attr: data-checked
+        condition: mirrors the control (the controller reflects state on every part
+          wearing the triple)
+      - attr: data-unchecked
+        condition: mirrors the control - the indicator is invisible
+      - attr: data-indeterminate
+        condition: mirrors the control - the glyph swaps to minus
   poetry/ui/collapsible:
     class_name: Poetry::Ui::Collapsible::Component
     identifier: poetry--ui--collapsible
@@ -811,6 +1168,30 @@ components:
       markup serves both.'
     required_slots:
       trigger: the disclosure control
+    parts:
+    - name: collapsible
+      description: The disclosure root - the state controller flips the pair here
+      states:
+      - attr: data-open
+        condition: expanded (server-rendered from open:; the controller flips the
+          pair at runtime)
+      - attr: data-closed
+        condition: collapsed (the server-rendered default)
+    - name: collapsible-trigger
+      description: The disclosure button - mirrors aria-expanded
+      states:
+      - attr: data-panel-open
+        condition: its content is open (Base UI trigger parity, controller-written;
+          absent while closed)
+    - name: collapsible-content
+      description: The disclosure panel - stays in the DOM when closed (hidden) and
+        rides the presence helper on exit
+      states:
+      - attr: data-open
+        condition: content is open or entering
+      - attr: data-closed
+        condition: content is closed or animating out (hidden lands after the exit
+          finishes)
   poetry/ui/combobox:
     class_name: Poetry::Ui::Combobox::Component
     identifier: poetry--ui--combobox
@@ -979,6 +1360,120 @@ components:
       - committing the already-selected value closes without change.
     required_slots:
       item: at least one item
+    parts:
+    - name: combobox
+      description: Root wrapper carrying both controllers (combobox + popper) and
+        the optional dir attribute
+    - name: combobox-native
+      description: The visually-hidden native <select> - the serialization truth (Select's
+        decision verbatim); plumbing, never styled or targeted
+    - name: combobox-trigger
+      description: The role=combobox button (the demo's outline Button) the field
+        label reaches - value display and chevrons ride inside
+      states:
+      - attr: data-placeholder
+        condition: no option is committed (bare; the controller toggles it on every
+          commit)
+      - attr: data-popup-open
+        condition: the popup is open (bare while open, absent while closed - the controller
+          flips it with the open state)
+    - name: combobox-value
+      description: The value display span - the selected option's label, or the placeholder
+      states:
+      - attr: data-placeholder
+        condition: 'placeholder: is given - carries the placeholder text so the controller
+          can restore it'
+    - name: combobox-content
+      description: The popper-positioned popup housing the embedded Command anatomy
+        - open/closed and the resolved placement ride here
+      states:
+      - attr: data-open
+        condition: popup is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: popup is closed or animating out (the server-rendered state)
+      - attr: data-side
+        condition: the placement side - server-rendered from side:, rewritten to the
+          resolved side by popper on open
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the placement alignment - server-rendered from align:, rewritten
+          by popper on open
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper - the animation origin matching the resolved placement
+      - name: "--available-width"
+        description: popper - viewport space available to the popup post-flip
+      - name: "--available-height"
+        description: popper - viewport space available to the popup post-flip
+      - name: "--anchor-width"
+        description: popper - the trigger's measured width (the popup width tracks
+          it - one knob, two surfaces)
+      - name: "--anchor-height"
+        description: popper - the trigger's measured height
+    - name: command
+      description: The embedded engine root - Command's anatomy rendered here against
+        its own controller (composition at the markup contract)
+    - name: command-input-wrapper
+      description: The input row - search icon + filter input above the list
+    - name: command-search-icon
+      description: Decorative search glyph beside the input
+    - name: command-input
+      description: The popup's filter input (role=combobox, its own accessible name)
+        - the typing session and aria-activedescendant live here
+    - name: command-list
+      description: THE role=listbox - the aria-controls target of both combobox roles
+    - name: command-empty
+      description: Zero-matches message - rendered hidden; the engine unhides it when
+        the filter pass leaves no visible items
+    - name: command-group
+      description: role=group labelled by its heading - hidden by the engine when
+        every member item is filtered out
+    - name: command-group-heading
+      description: The group heading - styled, no ARIA role (the group points at it
+        via aria-labelledby)
+    - name: command-item
+      description: One role=option div wearing BOTH meanings - a Command item (filtering
+        + highlight) AND Select's committed-value surface
+      states:
+      - attr: data-value
+        condition: always - the option's committable value (the native <option> twin)
+      - attr: data-selected
+        condition: the option is committed (bare; absent while unselected - the controller
+          twin-writes it with aria-selected)
+      - attr: data-highlighted
+        condition: the item holds the activedescendant highlight (the server seeds
+          it; the engine moves it with the input's aria-activedescendant)
+      - attr: data-disabled
+        condition: 'disabled: is set (aria-disabled rides along)'
+      - attr: data-hidden
+        condition: the filter scored the item zero (the engine pairs it with hidden;
+          never rendered server-side)
+    - name: command-item-text
+      description: The option's label span - the filter/typematch text source
+    - name: combobox-item-indicator
+      description: The trailing committed-value check (ms-auto per the demo) - the
+        parent item's data-selected absence hides it
+    - name: command-separator
+      description: role=separator divider - hidden by the engine whenever the query
+        is non-empty
+    - name: command-status
+      description: The engine's sr-only polite result-count live region
+      states:
+      - attr: data-zero
+        condition: always - the localized zero-results template
+      - attr: data-one
+        condition: always - the localized one-result template
+      - attr: data-other
+        condition: always - the localized many-results template (a literal count placeholder
+          the controller interpolates)
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
     identifier: poetry--ui--command
@@ -1077,6 +1572,74 @@ components:
       - aria-label
       - aria-labelledby
       - aria
+    parts:
+    - name: command
+      description: Root of the palette - the input row over the listbox, carrying
+        the engine controller
+    - name: command-input-wrapper
+      description: The input row - search icon + filter input above the list
+    - name: command-search-icon
+      description: Decorative search glyph beside the input
+    - name: command-input
+      description: The role=combobox filter input - real focus stays pinned here for
+        the whole session; the highlight rides aria-activedescendant
+    - name: command-list
+      description: The role=listbox holding empty/loading/items - the input's aria-controls
+        target
+    - name: command-empty
+      description: Zero-matches message - rendered hidden; the controller unhides
+        it when the filter pass leaves no visible items
+    - name: command-loading
+      description: Pending affordance (role=status) - rendered hidden; the HOST toggles
+        it (Turbo frame events), Command never does
+    - name: command-group
+      description: role=group labelled by its heading - hidden by the controller when
+        every member item is filtered out
+      states:
+      - attr: data-always-render
+        condition: 'always_render: is set - the group survives every filter pass'
+    - name: command-group-heading
+      description: The group heading - styled, no ARIA role (the group points at it
+        via aria-labelledby)
+    - name: command-item
+      description: One role=option action row - highlight, filtering, and disablement
+        ride here (never aria-selected in a bare Command)
+      states:
+      - attr: data-value
+        condition: always - the item's unique value (its server-stable id follows
+          registration order)
+      - attr: data-highlighted
+        condition: the item holds the highlight (bare; the controller twin-writes
+          it with the input's aria-activedescendant)
+      - attr: data-disabled
+        condition: 'disabled: is set (aria-disabled rides along)'
+      - attr: data-keywords
+        condition: 'keywords: given - extra filter terms beyond the label'
+      - attr: data-always-render
+        condition: 'always_render: is set - the item survives every filter pass'
+      - attr: data-hidden
+        condition: the filter scored the item zero (the controller pairs it with hidden;
+          never rendered server-side)
+    - name: command-item-text
+      description: The item's label span - the filter/typematch text source (shortcuts
+        and icons excluded)
+    - name: command-shortcut
+      description: Presentational keyboard hint - excluded from the filter text; Command
+        never binds the hinted key
+    - name: command-separator
+      description: Decorative divider (aria-hidden) - hidden by the controller whenever
+        the query is non-empty
+    - name: command-status
+      description: The sr-only polite result-count live region - the controller writes
+        the debounced count from the localized templates
+      states:
+      - attr: data-zero
+        condition: always - the localized zero-results template
+      - attr: data-one
+        condition: always - the localized one-result template
+      - attr: data-other
+        condition: always - the localized many-results template (a literal count placeholder
+          the controller interpolates)
   poetry/ui/command/dialog:
     class_name: Poetry::Ui::Command::DialogComponent
     identifier: poetry--ui--command--dialog
@@ -1165,6 +1728,26 @@ components:
       rather than removing them (they are the dialog''s accessible name).'
     - 'Item wiring is Command''s: act on poetry:command:select; close the dialog in
       the listener if the action should dismiss the palette.'
+    parts:
+    - name: command-dialog
+      description: Root wrapper around the trigger and the <dialog> - the palette's
+        own chrome; the embedded Command inside carries its own part contract
+    - name: dialog-content
+      description: The <dialog> panel (Dialog's chrome retuned to overflow-hidden
+        p-0) - positioning, animation, and the open state ride here
+      states:
+      - attr: data-open
+        condition: panel is open (the dialog controller flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed or animating out (the server-rendered state)
+    - name: dialog-header
+      description: Dialog's title block, sr-only here - the palette owns the visible
+        surface
+    - name: dialog-title
+      description: The sr-only heading - the dialog's accessible name (defaults to
+        the source string)
+    - name: dialog-description
+      description: The sr-only description wired to aria-describedby
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu
@@ -1410,7 +1993,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 324e23b2b3b0
+    capsule: f5d8d74c9e50
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -1489,6 +2072,139 @@ components:
     required_slots:
       trigger: the right-click surface
       item: at least one item
+    parts:
+    - name: context-menu
+      description: Root wrapper hosting the context-menu + menu + popper controllers
+        around the surface and content
+    - name: context-menu-trigger
+      description: 'The right-click/long-press SURFACE wrapping the logical object
+        - not a widget: no role, no aria-haspopup'
+      states:
+      - attr: data-popup-open
+        condition: the menu is open (absence is the closed state - no aria-expanded
+          on a role-less surface)
+      - attr: data-disabled
+        condition: 'the surface is inert (disabled: true)'
+    - name: context-menu-content
+      description: The role=menu popup panel - anchored at the pointer via popper's
+        virtual-anchor mode; open state and animation ride here
+      states:
+      - attr: data-open
+        condition: menu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: menu is closed or animating out (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (forced right initially; popper re-writes it
+          after collision flips)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment (forced start initially; popper re-resolves it)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the anchor rect''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the anchor rect''s measured height'
+    - name: context-menu-label
+      description: Non-interactive heading for a run of items
+    - name: context-menu-item
+      description: One role=menuitem action row
+      states:
+      - attr: data-variant
+        condition: default or destructive (the danger treatment)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
+    - name: context-menu-checkbox-item
+      description: A role=menuitemcheckbox toggle row
+      states:
+      - attr: data-checked
+        condition: checked (the controller re-writes the pair with aria-checked on
+          activation)
+      - attr: data-unchecked
+        condition: unchecked
+      - attr: data-close-on-select
+        condition: per-item override of the menu's close-on-select default ("false"
+          keeps the menu open)
+    - name: context-menu-radio-group
+      description: role=group scoping one single-select value
+      states:
+      - attr: data-value
+        condition: the selected radio value (the controller re-writes it on change)
+    - name: context-menu-radio-item
+      description: A role=menuitemradio row inside a radio group
+      states:
+      - attr: data-checked
+        condition: the selected radio (the controller re-writes the pair with aria-checked)
+      - attr: data-unchecked
+        condition: not selected
+      - attr: data-value
+        condition: the radio's value
+    - name: context-menu-item-indicator
+      description: The check/circle glyph slot inside checkbox and radio items - state
+        rides the parent item; the glyph stays decorative
+    - name: context-menu-separator
+      description: role=separator rule between groups
+    - name: context-menu-shortcut
+      description: The trailing keybinding HINT - aria-hidden, never binds the key
+    - name: context-menu-sub
+      description: A submenu scope - hosts its own popper around the sub trigger/content
+        pair
+    - name: context-menu-sub-trigger
+      description: The role=menuitem row opening its submenu
+      states:
+      - attr: data-popup-open
+        condition: its submenu is open (written with aria-expanded; absence is the
+          closed state)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
+    - name: context-menu-sub-content
+      description: The nested role=menu panel - its own popper content on the same
+        presence machinery
+      states:
+      - attr: data-open
+        condition: submenu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: submenu is closed (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (right/left by direction; popper resolves it
+          at runtime)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment against the sub-trigger (popper resolves it at runtime)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the sub-trigger''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the sub-trigger''s measured height'
   poetry/ui/data_table:
     class_name: Poetry::Ui::DataTable::Component
     identifier: poetry--ui--data_table
@@ -1538,6 +2254,20 @@ components:
     - 'Give the table a caption: - it is the table''s accessible purpose.'
     required_slots:
       column: at least one column
+    parts:
+    - name: data-table
+      description: Root surface - toolbar, table, and pagination footer stack here
+    - name: data-table-toolbar
+      description: 'The row above the table holding the filter form - renders unless
+        filter: false'
+    - name: data-table-filter
+      description: The GET filter form (role=search) - hidden fields carry the current
+        sort; a new filter resets the page
+    - name: table-container
+      description: The composed W1 Table's scroll container - Table renders it, this
+        surface owns where it sits
+    - name: data-table-footer
+      description: 'The Pagination row - renders when total: is more than one page'
   poetry/ui/date_picker:
     class_name: Poetry::Ui::DatePicker::Component
     identifier: poetry--ui--date_picker
@@ -1578,6 +2308,10 @@ components:
       text.'
     - For an always-visible grid use Calendar directly - DatePicker is the field+popover
       form.
+    parts:
+    - name: date-picker
+      description: Root wrapper - the glue controller (formats the trigger label,
+        closes on pick) around the composed Popover + Calendar
   poetry/ui/deferred:
     class_name: Poetry::Ui::Deferred::Component
     identifier: poetry--ui--deferred
@@ -1610,6 +2344,17 @@ components:
     - The block is the placeholder (a Skeleton renders when absent); failure shows
       a retryable error card automatically - never hand-wire loading or error states
       around it.
+    parts:
+    - name: deferred
+      description: The <turbo-frame> root - src is armed at connect(); failure is
+        a state reflected here, never silent blankness
+      states:
+      - attr: data-error
+        condition: a frame fetch failed (error response, missing frame, or network
+          error) - the controller stamps the error card; retry clears it
+    - name: deferred-error
+      description: The retryable error card, stamped into the frame from the slotted
+        <template> on failure
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog
@@ -1665,6 +2410,25 @@ components:
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
     required_slots:
       title: the accessible name
+    parts:
+    - name: dialog
+      description: Root wrapper around the trigger and the <dialog> element
+    - name: dialog-content
+      description: The <dialog> panel - positioning, animation, and the open state
+        ride here
+      states:
+      - attr: data-open
+        condition: panel is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed or animating out (the server-rendered state)
+    - name: dialog-header
+      description: Title block at the top of the panel
+    - name: dialog-title
+      description: The heading - the dialog's accessible name (required slot)
+    - name: dialog-description
+      description: Muted copy under the title, wired to aria-describedby
+    - name: dialog-footer
+      description: Action row at the bottom of the panel
   poetry/ui/drawer:
     class_name: Poetry::Ui::Drawer::Component
     identifier: poetry--ui--drawer
@@ -1740,6 +2504,59 @@ components:
       never the only way out.
     required_slots:
       title: the accessible name
+    parts:
+    - name: drawer
+      description: Root wrapper around the trigger and the <dialog> element
+    - name: drawer-content
+      description: The <dialog> popup - the edge chrome, presence animation, and the
+        swipe contract all ride here (::backdrop inherits the swipe vars, so the overlay
+        fade rides along)
+      states:
+      - attr: data-open
+        condition: popup is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: popup is closed or animating out (the server-rendered state)
+      - attr: data-swipe-direction
+        condition: always - the dismiss direction
+        values:
+        - down
+        - up
+        - left
+        - right
+      - attr: data-swiping
+        condition: a pointer drag is tracking (transitions go duration-0 - the drawer
+          follows the finger)
+      - attr: data-starting-style
+        condition: the enter transition's first frame (the presence helper's two-frame
+          trick)
+      - attr: data-ending-style
+        condition: held through the exit transition before the native close()
+      vars:
+      - name: "--drawer-swipe-movement-x"
+        description: px dragged toward a left/right dismissal (controller-written
+          during swipes)
+      - name: "--drawer-swipe-movement-y"
+        description: px dragged toward an up/down dismissal (controller-written during
+          swipes)
+      - name: "--drawer-swipe-progress"
+        description: 0..1 fraction of the dismiss travel (the backdrop fade rides
+          it)
+      - name: "--drawer-swipe-strength"
+        description: remaining-travel factor set on release - scales the exit duration
+          so a mostly-swiped drawer closes fast
+    - name: drawer-swipe-handle
+      description: 'The grab pill (show_swipe_handle: true, aria-hidden) - a drag
+        may always start on it'
+    - name: drawer-header
+      description: Title block at the top of the popup
+    - name: drawer-title
+      description: The heading - the drawer's accessible name (required slot)
+    - name: drawer-description
+      description: Muted copy under the title, wired to aria-describedby
+    - name: drawer-body
+      description: The scrollable content region between header and footer
+    - name: drawer-footer
+      description: Action row pinned to the bottom of the popup
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
     identifier: poetry--ui--dropdown_menu
@@ -2005,7 +2822,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 690c0b189346
+    capsule: 7bafa0270ddb
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -2074,6 +2891,134 @@ components:
     required_slots:
       trigger: the menu button
       item: at least one item
+    parts:
+    - name: dropdown-menu
+      description: Root wrapper hosting the menu + popper controllers around the trigger
+        and content
+    - name: dropdown-menu-content
+      description: The role=menu popup panel - positioning, animation, and the open
+        state ride here
+      states:
+      - attr: data-open
+        condition: menu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: menu is closed or animating out (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (popper re-writes it after collision flips)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment against the trigger (popper re-resolves it)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the trigger''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the trigger''s measured height'
+    - name: dropdown-menu-group
+      description: role=group semantic grouping between separators
+    - name: dropdown-menu-label
+      description: Non-interactive heading for a run of items
+      states:
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
+    - name: dropdown-menu-item
+      description: One role=menuitem action row
+      states:
+      - attr: data-variant
+        condition: default or destructive (the danger treatment)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
+    - name: dropdown-menu-checkbox-item
+      description: A role=menuitemcheckbox toggle row
+      states:
+      - attr: data-checked
+        condition: checked (the controller re-writes the pair with aria-checked on
+          activation)
+      - attr: data-unchecked
+        condition: unchecked
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
+      - attr: data-close-on-select
+        condition: per-item override of the menu's close-on-select default ("false"
+          keeps the menu open)
+    - name: dropdown-menu-radio-group
+      description: role=group scoping one single-select value
+      states:
+      - attr: data-value
+        condition: the selected radio value (the controller re-writes it on change)
+    - name: dropdown-menu-radio-item
+      description: A role=menuitemradio row inside a radio group
+      states:
+      - attr: data-checked
+        condition: the selected radio (the controller re-writes the pair with aria-checked)
+      - attr: data-unchecked
+        condition: not selected
+      - attr: data-value
+        condition: the radio's value
+    - name: dropdown-menu-item-indicator
+      description: The check/circle glyph slot inside checkbox and radio items - state
+        rides the parent item; the glyph stays decorative
+    - name: dropdown-menu-separator
+      description: role=separator rule between groups
+    - name: dropdown-menu-shortcut
+      description: The trailing keybinding HINT - aria-hidden, never binds the key
+    - name: dropdown-menu-sub
+      description: A submenu scope - hosts its own popper around the sub trigger/content
+        pair
+    - name: dropdown-menu-sub-trigger
+      description: The role=menuitem row opening its submenu
+      states:
+      - attr: data-popup-open
+        condition: its submenu is open (written with aria-expanded; absence is the
+          closed state)
+    - name: dropdown-menu-sub-content
+      description: The nested role=menu panel - its own popper content on the same
+        presence machinery
+      states:
+      - attr: data-open
+        condition: submenu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: submenu is closed (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (right/left by direction; popper resolves it
+          at runtime)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment against the sub-trigger (popper resolves it at runtime)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the sub-trigger''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the sub-trigger''s measured height'
   poetry/ui/empty:
     class_name: Poetry::Ui::Empty::Component
     identifier: poetry--ui--empty
@@ -2121,6 +3066,28 @@ components:
       page outline.'
     - 'media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon
       in with_media.'
+    parts:
+    - name: empty
+      description: The empty-state root - the centered header and content stack
+    - name: empty-header
+      description: Wrapper around media/title/description - renders when at least
+        one of those slots is set
+    - name: empty-icon
+      description: 'The media slot''s box - media_variant: :icon gives the rounded
+        muted icon tile'
+      states:
+      - attr: data-variant
+        condition: always - the resolved media_variant
+        values:
+        - default
+        - icon
+    - name: empty-title
+      description: The title as a real heading (title_tag, h3 by default)
+    - name: empty-description
+      description: Muted copy under the title
+    - name: empty-content
+      description: The actions that fix the emptiness - the content block renders
+        here
   poetry/ui/field:
     class_name: Poetry::Ui::Field::Component
     identifier: poetry--ui--field
@@ -2160,6 +3127,31 @@ components:
       <p>.'
     - 'orientation: :horizontal is the boolean-control layout (checkbox/switch left,
       label + hint stacked right) - text inputs and groups stay vertical.'
+    parts:
+    - name: field
+      description: The quartet's grid root - label, control, hint, and error stack
+        inside
+      states:
+      - attr: data-invalid
+        condition: 'always - true when error: is present, else false'
+        values:
+        - 'true'
+        - 'false'
+      - attr: data-orientation
+        condition: always - the resolved orientation (horizontal is the boolean-control
+          layout)
+        values:
+        - vertical
+        - horizontal
+    - name: field-hint
+      description: The hint <p> - its id lands in the control's aria-describedby
+    - name: field-error
+      description: 'The error <p> - present only when error: is set; its id leads
+        the control''s aria-describedby'
+    - name: checkbox-input
+      description: A nested Checkbox's hidden native input - the toggle renders as
+        a wrapper-free fragment, so its sibling form store sits directly in the field's
+        DOM (the horizontal boolean-control layout)
   poetry/ui/hover_card:
     class_name: Poetry::Ui::HoverCard::Component
     identifier: poetry--ui--hover_card
@@ -2210,7 +3202,7 @@ components:
         trigger: 0
     elements:
     - content
-    capsule: bc5dc4784bee
+    capsule: 4e75d7b14fde
     controllers:
     - identifier: poetry--core--hover-card
       targets: []
@@ -2265,6 +3257,48 @@ components:
       open.'
     required_slots:
       trigger: the enriched link
+    parts:
+    - name: hover-card
+      description: Root wrapper around the trigger link and the panel
+    - name: hover-card-trigger
+      description: The enriched link itself - simultaneously the no-JS fallback, the
+        touch path, and the keyboard path
+      states:
+      - attr: data-popup-open
+        condition: bare while the card is open; absent while closed (Base UI absence-is-the-state)
+    - name: hover-card-content
+      description: The role-less preview panel (invisible to AT on purpose) - positioning,
+        animation, and the open state ride here
+      states:
+      - attr: data-open
+        condition: card is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: card is closed (the server-rendered state; hidden rides along)
+      - attr: data-side
+        condition: always - the side (initial placement, re-resolved live by popper
+          after flip)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: always - the alignment (re-resolved live by popper)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: the anchor-facing origin popper writes for scale-in animation
+      - name: "--available-width"
+        description: viewport space left for the panel (popper, post-flip)
+      - name: "--available-height"
+        description: viewport space left for the panel (popper, post-flip)
+      - name: "--anchor-width"
+        description: the anchor's measured width (popper)
+      - name: "--anchor-height"
+        description: the anchor's measured height (popper)
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -2284,6 +3318,10 @@ components:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
     - Never inline raw <svg> markup where an icon exists - use poetry_icon.
+    parts:
+    - name: icon
+      description: 'The <svg> root itself - the vendored icon markup renders inside;
+        ARIA (label: vs decorative) rides here'
   poetry/ui/input:
     class_name: Poetry::Ui::Input::Component
     identifier: poetry--ui--input
@@ -2313,6 +3351,10 @@ components:
       wires ids, errors, and aria).
     - Error styling comes from aria-invalid, set from model errors - never hand-toggle
       error classes.
+    parts:
+    - name: input
+      description: The <input> element itself - no inner anatomy; error state is aria-invalid
+        (set by Field/FormBuilder), never a parallel class
   poetry/ui/input_group:
     class_name: Poetry::Ui::InputGroup::Component
     identifier: poetry--ui--input_group
@@ -2343,6 +3385,22 @@ components:
     - The group is a surface, not a label - the control still needs its Label/Field
       pairing.
     requires_content: its control + addons
+    parts:
+    - name: input-group
+      description: The bordered group surface (role=group) - wears the border, the
+        focus-within ring, and the invalid ring for the borderless control inside
+    - name: input-group-addon
+      description: One addon cell (icons, text, kbd hints, tiny buttons) rendered
+        by poetry_input_group_addon around the control
+      states:
+      - attr: data-align
+        condition: 'always - the addon''s align: axis (inline rides the row, block
+          takes a full-width row)'
+        values:
+        - inline-start
+        - inline-end
+        - block-start
+        - block-end
   poetry/ui/input_otp:
     class_name: Poetry::Ui::InputOtp::Component
     identifier: poetry--ui--input_otp
@@ -2408,6 +3466,31 @@ components:
       never log the value (it is a live credential).'
     - InputOTP is for CODES - passwords use Input type=password, longer identifiers
       use Input.
+    parts:
+    - name: input-otp-container
+      description: Root row (forced dir=ltr - slot order equals string index order
+        even on RTL pages) wrapping the real input and the mirror cells
+    - name: input-otp
+      description: THE real native <input> (autocomplete one-time-code) stretched
+        invisibly over the row - the only AT and serialization surface
+    - name: input-otp-group
+      description: 'One aria-hidden cluster of mirror cells (groups: clustering)'
+    - name: input-otp-slot
+      description: One presentational mirror cell - paints its char and the active-cell
+        ring
+      states:
+      - attr: data-active
+        condition: '"true" while the native caret sits on this cell (the controller
+          projects selectionStart while the input is focused; the server renders "false")'
+        values:
+        - 'true'
+        - 'false'
+    - name: input-otp-caret
+      description: The fake-caret overlay - hidden server-side; the controller unhides
+        it on the active EMPTY cell
+    - name: input-otp-separator
+      description: The between-groups dash - role=separator kept for parity but aria-hidden
+        (a recorded divergence)
   poetry/ui/item:
     class_name: Poetry::Ui::Item::Component
     identifier: poetry--ui--item
@@ -2475,6 +3558,40 @@ components:
       in the content column after the description.
     - 'media_variant: :icon for a glyph, :image for a thumbnail (sized/rounded automatically).'
     - 'A clickable row is tag: :a with href: - never wrap an Item in a bare <a>.'
+    parts:
+    - name: item
+      description: 'The row root (a div by default; tag: :a for a clickable row) -
+        variant and density land here as data attributes'
+      states:
+      - attr: data-variant
+        condition: the row's visual variant
+        values:
+        - default
+        - outline
+        - muted
+      - attr: data-size
+        condition: the row's density
+        values:
+        - default
+        - sm
+        - xs
+    - name: item-media
+      description: The leading media cell - sized and rounded by its variant
+      states:
+      - attr: data-variant
+        condition: the media treatment
+        values:
+        - default
+        - icon
+        - image
+    - name: item-content
+      description: The center column collecting title, description, and loose content
+    - name: item-title
+      description: The title row
+    - name: item-description
+      description: The muted description line
+    - name: item-actions
+      description: The trailing actions cell
   poetry/ui/kbd:
     class_name: Poetry::Ui::Kbd::Component
     identifier: poetry--ui--kbd
@@ -2488,6 +3605,9 @@ components:
     - Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).
     - For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
     requires_content: the key text
+    parts:
+    - name: kbd
+      description: The <kbd> element itself - the key text renders here
   poetry/ui/label:
     class_name: Poetry::Ui::Label::Component
     identifier: poetry--ui--label
@@ -2502,6 +3622,10 @@ components:
     agent_rules:
     - Every control gets a Label wired via for_id - placeholder text is never the
       label.
+    parts:
+    - name: label
+      description: The <label> element itself - for= rides it (dropped in group mode,
+        where the group names itself via aria-labelledby at this label's id)
   poetry/ui/link:
     class_name: Poetry::Ui::Link::Component
     identifier: poetry--ui--link
@@ -2533,6 +3657,9 @@ components:
     - 'Mark the active nav item with current: true (aria-current), never with a bespoke
       class.'
     - 'external: true handles target/rel safely - never hand-write target=_blank.'
+    parts:
+    - name: link
+      description: 'The rendered <a> - the whole component; current: marks it aria-current=page'
   poetry/ui/marker:
     class_name: Poetry::Ui::Marker::Component
     identifier: poetry--ui--marker
@@ -2572,6 +3699,21 @@ components:
       dividers never announce.'
     - Icons in markers ride the typed icon slot (decorative always).
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
+    parts:
+    - name: marker
+      description: 'The divider/status root - the label is real announced content
+        (role=status when announce: :status; never role=separator)'
+      states:
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - separator
+        - border
+    - name: marker-icon
+      description: Decorative icon wrapper (aria-hidden always)
+    - name: marker-content
+      description: The label span - the marker text itself
   poetry/ui/menubar:
     class_name: Poetry::Ui::Menubar::Component
     identifier: poetry--ui--menubar
@@ -2820,7 +3962,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 86af6816fa92
+    capsule: ed0fc659be02
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -2906,6 +4048,145 @@ components:
       family contract.
     required_slots:
       menu: at least one menu
+    parts:
+    - name: menubar
+      description: The role=menubar bar - one horizontal roving tab stop across the
+        triggers
+      states:
+      - attr: data-open
+        condition: some menu is open (value present; the coordinator flips the pair)
+      - attr: data-closed
+        condition: no menu is open
+    - name: menubar-menu
+      description: One logical menu - a display:contents wrapper hosting the trigger
+        + content pair's menu and popper controllers
+    - name: menubar-trigger
+      description: The top-level menu button - a role=menuitem INSIDE the bar
+      states:
+      - attr: data-value
+        condition: the menu's value - the coordinator's open/close key
+      - attr: data-popup-open
+        condition: its menu is open (written with aria-expanded; absence is the closed
+          state)
+      - attr: data-disabled
+        condition: trigger is disabled (written together with the disabled property)
+    - name: menubar-content
+      description: The role=menu popup panel - positioning, animation, and the open
+        state ride here
+      states:
+      - attr: data-open
+        condition: menu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: menu is closed or animating out (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (bottom initially; popper re-writes it after
+          collision flips)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment against the trigger (start initially; popper re-resolves
+          it)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the trigger''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the trigger''s measured height'
+    - name: menubar-item
+      description: One role=menuitem action row
+      states:
+      - attr: data-variant
+        condition: default or destructive (the danger treatment)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
+    - name: menubar-checkbox-item
+      description: A role=menuitemcheckbox toggle row
+      states:
+      - attr: data-checked
+        condition: checked (the controller re-writes the pair with aria-checked on
+          activation)
+      - attr: data-unchecked
+        condition: unchecked
+      - attr: data-close-on-select
+        condition: per-item override of the menu's close-on-select default ("false"
+          keeps the menu open)
+    - name: menubar-radio-group
+      description: role=group scoping one single-select value
+      states:
+      - attr: data-value
+        condition: the selected radio value (the controller re-writes it on change)
+    - name: menubar-radio-item
+      description: A role=menuitemradio row inside a radio group
+      states:
+      - attr: data-checked
+        condition: the selected radio (the controller re-writes the pair with aria-checked)
+      - attr: data-unchecked
+        condition: not selected
+      - attr: data-value
+        condition: the radio's value
+    - name: menubar-item-indicator
+      description: The check/circle glyph slot inside checkbox and radio items - state
+        rides the parent item; the glyph stays decorative
+    - name: menubar-separator
+      description: role=separator rule between groups
+    - name: menubar-shortcut
+      description: The trailing keybinding HINT - aria-hidden, never binds the key
+    - name: menubar-sub
+      description: A submenu scope - hosts its own popper around the sub trigger/content
+        pair
+    - name: menubar-sub-trigger
+      description: The role=menuitem row opening its submenu
+      states:
+      - attr: data-popup-open
+        condition: its submenu is open (written with aria-expanded; absence is the
+          closed state)
+    - name: menubar-sub-content
+      description: The nested role=menu panel - its own popper content on the same
+        presence machinery
+      states:
+      - attr: data-open
+        condition: submenu is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: submenu is closed (the server-rendered state)
+      - attr: data-side
+        condition: the placement side (right/left by direction; popper resolves it
+          at runtime)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the alignment against the sub-trigger (popper resolves it at runtime)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper's anchor-facing animation origin
+      - name: "--available-width"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--available-height"
+        description: 'popper: viewport space left for the panel (post-flip)'
+      - name: "--anchor-width"
+        description: 'popper: the sub-trigger''s measured width'
+      - name: "--anchor-height"
+        description: 'popper: the sub-trigger''s measured height'
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
@@ -2941,6 +4222,25 @@ components:
       in the header.
     - Timestamps and delivery state belong in the footer slot (it lifts the avatar
       automatically).
+    parts:
+    - name: message
+      description: 'The chat-row root - avatar plus a content column; align: :end
+        mirrors the row for the local user''s side'
+      states:
+      - attr: data-align
+        condition: always - the resolved align
+        values:
+        - start
+        - end
+    - name: message-avatar
+      description: The avatar slot's box, kept out of the content column
+    - name: message-content
+      description: The content column - header, the body block (the Bubbles), footer
+    - name: message-header
+      description: Sender identity line above the bubbles (header slot)
+    - name: message-footer
+      description: Timestamps / delivery state below the bubbles (footer slot - it
+        lifts the avatar)
   poetry/ui/message_scroller:
     class_name: Poetry::Ui::MessageScroller::Component
     identifier: poetry--ui--message_scroller
@@ -3016,6 +4316,46 @@ components:
     - History loads PREPEND into the content element - the controller preserves the
       reading position.
     - Never nest a second scroll container inside the viewport.
+    parts:
+    - name: message-scroller
+      description: The transcript root the controller drives - runtime scroll state
+        is mirrored here
+      states:
+      - attr: data-mode
+        condition: always once connected - the 4-state machine
+        values:
+        - following-bottom
+        - free-scrolling
+        - anchored-to-message
+        - settling-jump
+      - attr: data-scrollable
+        condition: overflow exists - carries which edges have room (start, end, or
+          both as a space-separated pair)
+      - attr: data-autoscrolling
+        condition: a programmatic scroll is settling - the follow-bottom release is
+          suppressed while set
+    - name: message-scroller-viewport
+      description: The native scroll region (role=region, focusable) - the controller
+        mirrors the same runtime attributes here
+      states:
+      - attr: data-scrollable
+        condition: overflow exists - the same edge tokens as the root
+      - attr: data-autoscrolling
+        condition: a programmatic scroll is settling
+    - name: message-scroller-content
+      description: The row container and Turbo Stream append target (stable dom id
+        <id>-messages); role=log announces additions
+    - name: message-scroller-item
+      description: One transcript row (poetry_message_scroller_item) - the id is how
+        anchoring and Streams find it
+      states:
+      - attr: data-message-id
+        condition: always - the row's message id
+      - attr: data-scroll-anchor
+        condition: 'anchor: true - the turn the controller holds at the reading line'
+    - name: message-scroller-spacer
+      description: Tail spacer faking scroll room below a short anchored turn - hidden
+        at height 0
   poetry/ui/native_select:
     class_name: Poetry::Ui::NativeSelect::Component
     identifier: poetry--ui--native_select
@@ -3054,6 +4394,30 @@ components:
       name.'
     - 'The fast path is options: [[label, value], ...] + selected:; a content block
       overrides it.'
+    parts:
+    - name: native-select-wrapper
+      description: Relative shell around the select and the chevron - dims the pair
+        when the select is disabled
+      states:
+      - attr: data-size
+        condition: always - the resolved size
+        values:
+        - default
+        - sm
+    - name: native-select
+      description: The real <select> - appearance-none (the chevron replaces the native
+        arrow); platform picker and form submission stay native
+      states:
+      - attr: data-size
+        condition: always - the resolved size (mirrors the wrapper)
+        values:
+        - default
+        - sm
+    - name: native-select-icon
+      description: The decorative chevron wrapper - absolutely pinned, aria-hidden
+    - name: native-select-option
+      description: 'An <option> from the options: fast path (or poetry_native_select_option)
+        - Canvas system colors keep the native dropdown legible'
   poetry/ui/navigation_menu:
     class_name: Poetry::Ui::NavigationMenu::Component
     identifier: poetry--ui--navigation_menu
@@ -3133,6 +4497,77 @@ components:
     - 'Rich panels (title + description grids) want viewport: true - the shared morphing
       card contains and sizes them; the default per-item mode suits simple link lists
       (the top-nav block shows the viewport pattern).'
+    parts:
+    - name: navigation-menu
+      description: The <nav> landmark around the whole disclosure bar
+      states:
+      - attr: data-viewport
+        condition: the mode marker ("true" = shared morphing viewport, "false" = per-item
+          panels) - the dictionary's group-data chrome keys on it
+    - name: navigation-menu-list
+      description: The bar row holding every item
+    - name: navigation-menu-item
+      description: One bar entry - wraps a trigger + panel pair or a top-level link
+      states:
+      - attr: data-value
+        condition: the entry's value - the controller's open/close key
+    - name: navigation-menu-trigger
+      description: The disclosure button opening its panel
+      states:
+      - attr: data-popup-open
+        condition: its panel is open (written with aria-expanded - the chevron rotation
+          hook)
+      - attr: data-open
+        condition: its panel is open (the controller writes both vocabularies)
+      - attr: data-closed
+        condition: its panel is closed (written after the first close)
+    - name: navigation-menu-content
+      description: One item's panel - presence-animated; in viewport mode it is adopted
+        into the shared viewport on first activation
+      states:
+      - attr: data-open
+        condition: panel is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed or animating out (the server-rendered state)
+      - attr: data-activation-direction
+        condition: which way the activation traveled between triggers (left/right,
+          viewport mode) - keys the slide styles
+      - attr: data-viewport-panel
+        condition: stamped once the panel is adopted into the shared viewport
+    - name: navigation-menu-positioner
+      description: The viewport-mode shell popper positions against the active trigger
+      states:
+      - attr: data-instant
+        condition: suppresses the morph transitions for one painted frame (cold opens)
+      vars:
+      - name: "--positioner-width"
+        description: the pinned morph width (reset to auto once the transition settles)
+      - name: "--positioner-height"
+        description: the pinned morph height (reset to auto once the transition settles)
+    - name: navigation-menu-popup
+      description: The morphing card inside the positioner - open state and the size
+        transition ride here
+      states:
+      - attr: data-open
+        condition: a panel is showing (the controller flips the pair)
+      - attr: data-closed
+        condition: the popup is closed (the server-rendered state)
+      - attr: data-instant
+        condition: suppresses the morph transitions for one painted frame (cold opens)
+      vars:
+      - name: "--popup-width"
+        description: the pinned morph width (reset to auto once the transition settles)
+      - name: "--popup-height"
+        description: the pinned morph height (reset to auto once the transition settles)
+    - name: navigation-menu-viewport
+      description: The adoption container inside the popup - adopted panels stack
+        absolutely in it
+    - name: navigation-menu-link
+      description: A REAL destination link - top-level (with_link) or a panel entry
+        (poetry_navigation_menu_link)
+      states:
+      - attr: data-active
+        condition: 'the current page (active: true)'
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination
@@ -3176,6 +4611,17 @@ components:
     - 'The current page is aria-current=page; current_variant: :outline (upstream
       parity, default) or :filled (the primary treatment - unambiguous active state);
       the rest are ghost links.'
+    parts:
+    - name: pagination
+      description: The <nav> landmark (role=navigation, aria-label) around the page
+        list
+    - name: pagination-content
+      description: The <ul> holding every entry as one horizontal row
+    - name: pagination-item
+      description: One <li> per entry - previous/next, a page link, or a gap
+    - name: pagination-ellipsis
+      description: The elided-pages marker between windows - aria-hidden with an sr-only
+        'More pages'
   poetry/ui/popover:
     class_name: Poetry::Ui::Popover::Component
     identifier: poetry--ui--popover
@@ -3239,7 +4685,7 @@ components:
     - header
     - title
     - description
-    capsule: 2569733a8347
+    capsule: 286697f5d914
     controllers:
     - identifier: poetry--core--popover
       targets: []
@@ -3291,6 +4737,52 @@ components:
       it; comprehension does not).
     required_slots:
       trigger: the panel's control
+    parts:
+    - name: popover
+      description: Root wrapper around the trigger, the optional anchor, and the panel
+    - name: popover-anchor
+      description: Optional alternate popper anchor (Radix PopoverAnchor) - when present
+        the panel positions against it instead of the trigger
+    - name: popover-content
+      description: The role=dialog panel - positioning, animation, and the open state
+        ride here
+      states:
+      - attr: data-open
+        condition: panel is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed (the server-rendered state; hidden rides along)
+      - attr: data-side
+        condition: always - the side (initial placement, re-resolved live by popper
+          after flip)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: always - the alignment (re-resolved live by popper)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: the anchor-facing origin popper writes for scale-in animation
+      - name: "--available-width"
+        description: viewport space left for the panel (popper, post-flip)
+      - name: "--available-height"
+        description: viewport space left for the panel (popper, post-flip)
+      - name: "--anchor-width"
+        description: the anchor's measured width (popper)
+      - name: "--anchor-height"
+        description: the anchor's measured height (popper)
+    - name: popover-header
+      description: Title block wrapping the title and description (renders only when
+        either is present)
+    - name: popover-title
+      description: The heading - the panel's accessible name via aria-labelledby
+    - name: popover-description
+      description: Muted copy under the title, wired to aria-describedby
   poetry/ui/progress:
     class_name: Poetry::Ui::Progress::Component
     identifier: poetry--ui--progress
@@ -3322,6 +4814,19 @@ components:
     - 'value: is the current progress (0..max:, default max 100); the component computes
       the width.'
     - For an UNKNOWN duration use Spinner, not Progress - this bar is determinate.
+    parts:
+    - name: progress
+      description: Root (role=progressbar, aria-value* and the accessible name) -
+        label, value readout, and track stack here
+    - name: progress-label
+      description: The visible caption span (label:)
+    - name: progress-value
+      description: 'The tabular percent readout - renders unless show_value: false'
+    - name: progress-track
+      description: The full-width rail the indicator fills
+    - name: progress-indicator
+      description: 'The filled bar - sized by an inline width percentage computed
+        from value:/max:'
   poetry/ui/radio_group:
     class_name: Poetry::Ui::RadioGroup::Component
     identifier: poetry--ui--radio_group
@@ -3405,6 +4910,30 @@ components:
       - never a bare red ring.'
     required_slots:
       item: at least one radio item
+    parts:
+    - name: radio-group
+      description: The role=radiogroup root - one Tab stop; items (and their label-pairing
+        rows) render as direct children
+      states:
+      - attr: data-disabled
+        condition: 'disabled: is set on the root - every item disables with it'
+    - name: radio-group-item
+      description: A button[role=radio] per item - carries its own hidden native radio
+        as a sibling
+      states:
+      - attr: data-checked
+        condition: the checked item (the controller writes the pair and aria-checked
+          together on every item)
+      - attr: data-unchecked
+        condition: every other item
+      - attr: data-disabled
+        condition: the item (or the whole group) is disabled - also the roving-focus
+          collection filter
+      - attr: data-value
+        condition: always - the item's value (keys the checked-value machine)
+    - name: radio-group-indicator
+      description: Centering span holding the checked dot - hidden (the native attribute,
+        toggled by the controller) while unchecked
   poetry/ui/resizable:
     class_name: Poetry::Ui::Resizable::Component
     identifier: poetry--ui--resizable
@@ -3461,6 +4990,28 @@ components:
     - Nest a group inside a panel for two-axis layouts - groups self-scope.
     required_slots:
       panel: at least two panels
+    parts:
+    - name: resizable-panel-group
+      description: The flex group root - the splitter controller rides here
+      states:
+      - attr: data-orientation
+        condition: the group axis
+        values:
+        - horizontal
+        - vertical
+    - name: resizable-panel
+      description: One flex child whose flex-grow IS its percentage - the controller
+        rewrites the inline flex on every resize
+      states:
+      - attr: data-min-size
+        condition: 'the panel''s minimum percentage, rendered when with_panel passes
+          min_size: (the controller''s clamp floor)'
+      - attr: data-max-size
+        condition: 'the panel''s maximum percentage, rendered when with_panel passes
+          max_size: (the controller''s clamp ceiling)'
+    - name: resizable-handle
+      description: The role=separator splitter between panels - drag and keyboard
+        resizing live here; its aria-valuenow tracks the preceding panel
   poetry/ui/scroll_area:
     class_name: Poetry::Ui::ScrollArea::Component
     identifier: poetry--ui--scroll_area
@@ -3482,6 +5033,13 @@ components:
     - This is a NATIVE scroll surface - never bolt scroll JS onto it; use MessageScroller
       for chat transcripts.
     requires_content: what scrolls
+    parts:
+    - name: scroll-area
+      description: The bounding wrapper - size it with classes; content decides the
+        overflow
+    - name: scroll-area-viewport
+      description: The focusable native scroll region (role=region + tabindex=0) with
+        themed platform scrollbars - zero JS
   poetry/ui/select:
     class_name: Poetry::Ui::Select::Component
     identifier: poetry--ui--select
@@ -3573,7 +5131,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 5ac2c0e96e2a
+    capsule: 240bf2c024f7
     controllers:
     - identifier: poetry--core--popper
       targets:
@@ -3646,6 +5204,106 @@ components:
       item-aligned overlay mode is not ported - a documented parity delta).'
     required_slots:
       item: at least one item
+    parts:
+    - name: select
+      description: Root wrapper carrying both controllers (select + popper) and the
+        optional dir attribute
+    - name: select-native
+      description: The visually-hidden native <select> - the serialization truth (name/required/disabled
+        + every option); plumbing, never styled or targeted
+    - name: select-trigger
+      description: The role=combobox button the field label reaches - the value display
+        and chevron ride inside
+      states:
+      - attr: data-size
+        condition: always - the resolved size variant
+        values:
+        - sm
+        - default
+      - attr: data-placeholder
+        condition: no option is committed (bare; the controller toggles it on every
+          commit)
+      - attr: data-popup-open
+        condition: the popup is open (bare while open, absent while closed - the controller
+          flips it with the open state)
+    - name: select-value
+      description: The value display span - the selected option's label, or the placeholder
+      states:
+      - attr: data-placeholder
+        condition: 'placeholder: is given - carries the placeholder text so a later
+          clear can restore it'
+    - name: select-content
+      description: The popper-positioned popup shell (scroll buttons + viewport) -
+        open/closed and the resolved placement ride here
+      states:
+      - attr: data-open
+        condition: popup is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: popup is closed or animating out (the server-rendered state)
+      - attr: data-side
+        condition: the placement side - server-rendered from side:, rewritten to the
+          resolved side by popper on open
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: the placement alignment - server-rendered from align:, rewritten
+          by popper on open
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: popper - the animation origin matching the resolved placement
+      - name: "--available-width"
+        description: popper - viewport space available to the popup post-flip
+      - name: "--available-height"
+        description: popper - viewport space available to the popup post-flip
+      - name: "--anchor-width"
+        description: popper - the trigger's measured width
+      - name: "--anchor-height"
+        description: popper - the trigger's measured height
+      - name: "--radix-select-trigger-width"
+        description: the select controller measures the trigger on open - the viewport's
+          min-width binding
+      - name: "--radix-select-trigger-height"
+        description: the select controller measures the trigger on open - the viewport's
+          height binding
+    - name: select-scroll-up-button
+      description: Hover-scroll affordance above the viewport - rendered always but
+        hidden; the controller unhides it per scroll extremes (aria-hidden)
+    - name: select-scroll-down-button
+      description: Hover-scroll affordance below the viewport (the same contract as
+        the up button)
+    - name: select-viewport
+      description: The role=listbox scroll container - the options' actual parent,
+        labelled from the trigger
+    - name: select-group
+      description: role=group wrapper labelled by its select-label heading
+    - name: select-label
+      description: The group heading - styled, no ARIA role (the group points at it
+        via aria-labelledby)
+    - name: select-item
+      description: One role=option div - selection, disablement, and the committable
+        value ride here
+      states:
+      - attr: data-value
+        condition: always - the option's committable value (the native <option> twin)
+      - attr: data-selected
+        condition: the option is committed (bare; absent while unselected - the controller
+          twin-writes it with aria-selected)
+      - attr: data-disabled
+        condition: 'disabled: is set (aria-disabled rides along)'
+    - name: select-item-indicator
+      description: The check gutter - server-rendered always; the parent item's data-selected
+        absence hides it
+    - name: select-item-text
+      description: The option's label span - the value display copies from it
+    - name: select-separator
+      description: Decorative divider between options (aria-hidden)
   poetry/ui/separator:
     class_name: Poetry::Ui::Separator::Component
     identifier: poetry--ui--separator
@@ -3667,6 +5325,16 @@ components:
     agent_rules:
     - 'A purely visual divider stays decorative (the default): aria-hidden, role absent.'
     - 'Set decorative: false only when the divide is semantically meaningful (role=separator).'
+    parts:
+    - name: separator
+      description: 'The divider itself - decorative (aria-hidden) by default, role=separator
+        when decorative: false'
+      states:
+      - attr: data-orientation
+        condition: always - the resolved orientation
+        values:
+        - horizontal
+        - vertical
   poetry/ui/sheet:
     class_name: Poetry::Ui::Sheet::Component
     identifier: poetry--ui--sheet
@@ -3733,6 +5401,33 @@ components:
     - Do not rebuild a centered Dialog with a Sheet; use Dialog.
     required_slots:
       title: the accessible name
+    parts:
+    - name: sheet
+      description: Root wrapper around the trigger and the <dialog> element
+    - name: sheet-content
+      description: The <dialog> panel, anchored to a screen edge - the slide animation
+        and the open state ride here
+      states:
+      - attr: data-open
+        condition: panel is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: panel is closed or animating out (the server-rendered state; the
+          presence-hold close rides the closed slide-out)
+      - attr: data-side
+        condition: always - the edge the sheet slides in from
+        values:
+        - top
+        - right
+        - bottom
+        - left
+    - name: sheet-header
+      description: Title block at the top of the panel
+    - name: sheet-title
+      description: The heading - the sheet's accessible name (required slot)
+    - name: sheet-description
+      description: Muted copy under the title, wired to aria-describedby
+    - name: sheet-footer
+      description: Action row pinned to the bottom of the panel
   poetry/ui/sidebar:
     class_name: Poetry::Ui::Sidebar::Component
     identifier: poetry--ui--sidebar
@@ -3834,6 +5529,112 @@ components:
       current route) - navigation navigates.'
     required_slots:
       nav: the sidebar column
+    parts:
+    - name: sidebar-wrapper
+      description: The provider shell around the column, the mobile dialog, and the
+        inset
+      vars:
+      - name: "--sidebar-width"
+        description: the expanded column width (16rem) - the gap/container geometry
+          reads it
+      - name: "--sidebar-width-icon"
+        description: the collapsed icon-rail width (3rem)
+    - name: sidebar
+      description: The desktop state peer - the collapse state lives here and the
+        pure-CSS group-data chrome keys on it
+      states:
+      - attr: data-state
+        condition: expanded or collapsed - the controller flips it and persists the
+          cookie
+      - attr: data-collapsible
+        condition: the collapse mode WHILE collapsed (empty while expanded - source
+          parity)
+        values:
+        - offcanvas
+        - icon
+        - none
+      - attr: data-variant
+        condition: the column treatment
+        values:
+        - sidebar
+        - floating
+        - inset
+      - attr: data-side
+        condition: which edge the column hangs on
+        values:
+        - left
+        - right
+    - name: sidebar-gap
+      description: The in-flow width ghost that pushes the inset over - its width
+        animates on collapse
+    - name: sidebar-container
+      description: The fixed-position column itself
+      states:
+      - attr: data-side
+        condition: which edge it pins to
+        values:
+        - left
+        - right
+    - name: sidebar-inner
+      description: The flex column receiving the nav slot - the mobile mode adopts
+        its children from here
+    - name: sidebar-mobile
+      description: The mobile sheet <dialog> (below md) - server-rendered empty; the
+        controller adopts the nav children on open
+      states:
+      - attr: data-open
+        condition: sheet is open (presence flips the pair at runtime)
+      - attr: data-closed
+        condition: sheet is closed (the server-rendered state)
+      - attr: data-mobile
+        condition: always "true" - the mobile-mode marker
+      - attr: data-side
+        condition: which edge the sheet slides from
+        values:
+        - left
+        - right
+      - attr: data-sidebar
+        condition: always "sidebar" - the upstream sub-part marker
+      vars:
+      - name: "--sidebar-width"
+        description: overridden inline to the mobile sheet width (18rem)
+    - name: sidebar-mobile-inner
+      description: The adoption container the nav children move into while the sheet
+        is open
+    - name: sidebar-inset
+      description: The <main> page area beside the column
+    - name: sidebar-header
+      description: Top block of the column (with_nav content)
+    - name: sidebar-footer
+      description: Bottom block of the column
+    - name: sidebar-content
+      description: The scrollable middle of the column
+    - name: sidebar-group
+      description: One titled section inside the content
+    - name: sidebar-group-label
+      description: The section heading - fades and collapses away in icon mode
+    - name: sidebar-menu
+      description: The <ul> of menu items inside a group
+    - name: sidebar-menu-item
+      description: One <li> menu row (the group/menu-item hover scope)
+    - name: sidebar-menu-button
+      description: The row's link (href:) or button - the navigation entry itself
+      states:
+      - attr: data-active
+        condition: 'the current route (active: - links also get aria-current=page)'
+      - attr: data-size
+        condition: the row size variant (default, sm, or lg) - the action/badge tops
+          key on it
+    - name: sidebar-menu-action
+      description: The item-corner action button, absolutely positioned in the row
+      states:
+      - attr: data-sidebar
+        condition: always "menu-action" - the upstream sub-part marker
+    - name: sidebar-menu-badge
+      description: The trailing count/status chrome in the row corner - pointer-transparent
+      states:
+      - attr: data-sidebar
+        condition: always "menu-badge" - the upstream sub-part marker
   poetry/ui/skeleton:
     class_name: Poetry::Ui::Skeleton::Component
     identifier: poetry--ui--skeleton
@@ -3848,6 +5649,10 @@ components:
       no content of its own.
     - Mark the live region that will replace it (aria-busy on the container), not
       the skeleton.
+    parts:
+    - name: skeleton
+      description: The pulsing placeholder box itself - sized entirely by utility
+        classes
   poetry/ui/slider:
     class_name: Poetry::Ui::Slider::Component
     identifier: poetry--ui--slider
@@ -3939,6 +5744,68 @@ components:
       frame).
     - Never transition the thumb/range position with CSS - geometry must track the
       pointer.
+    parts:
+    - name: slider
+      description: Root - the controller, the geometry vars, and pointer capture ride
+        here
+      states:
+      - attr: data-orientation
+        condition: always - the axis
+        values:
+        - horizontal
+        - vertical
+      - attr: data-disabled
+        condition: 'disabled: is set (the control is inert; the hidden inputs still
+          submit)'
+      - attr: data-dragging
+        condition: a pointer drag is in flight (the controller sets it for the gesture;
+          never rendered server-side)
+      vars:
+      - name: "--slider-start"
+        description: the filled range's start edge as a percentage - server-rendered
+          (no first-paint jump), rewritten by the controller on every move
+      - name: "--slider-end"
+        description: the filled range's end edge as a percentage (the single-thumb
+          value rides here)
+    - name: slider-track
+      description: The full-length rail the range paints over
+      states:
+      - attr: data-orientation
+        condition: always - mirrors the root
+        values:
+        - horizontal
+        - vertical
+    - name: slider-range
+      description: The filled span between --slider-start and --slider-end
+      states:
+      - attr: data-orientation
+        condition: always - mirrors the root
+        values:
+        - horizontal
+        - vertical
+    - name: slider-anchor
+      description: Absolutely positioned thumb wrapper (one per thumb, with its hidden
+        input alongside) seated on the geometry vars
+      states:
+      - attr: data-orientation
+        condition: always - mirrors the root
+        values:
+        - horizontal
+        - vertical
+    - name: slider-thumb
+      description: The role=slider handle - its own Tab stop, carrying the aria-value*
+        surface (bounds neighbor-clamped in range mode)
+      states:
+      - attr: data-orientation
+        condition: always - mirrors the root
+        values:
+        - horizontal
+        - vertical
+      - attr: data-disabled
+        condition: 'disabled: is set (tabindex drops to -1)'
+      - attr: data-dragging
+        condition: this thumb is the one being dragged (the controller pairs it with
+          the root's)
   poetry/ui/spinner:
     class_name: Poetry::Ui::Spinner::Component
     identifier: poetry--ui--spinner
@@ -3955,6 +5822,10 @@ components:
     - Spinner announces itself (role=status + aria-label) - never a bare spinning
       div.
     - 'Set label: for the loading context (''Saving…''); the default is ''Loading''.'
+    parts:
+    - name: spinner
+      description: 'The spinning <svg> itself (the lucide loader-circle) - announces
+        as role=status with aria-label from label:'
   poetry/ui/switch:
     class_name: Poetry::Ui::Switch::Component
     identifier: poetry--ui--switch
@@ -4016,6 +5887,30 @@ components:
       - never flip UI-only for a setting the user believes is saved.
     - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
       and the input sync (the controller writes all three).
+    parts:
+    - name: switch
+      description: The visual button[role=switch] - reflects the hidden input via
+        aria-checked plus the checked pair (never indeterminate)
+      states:
+      - attr: data-checked
+        condition: on (the shared checked controller reflects every toggle here, aria-checked
+          in step)
+      - attr: data-unchecked
+        condition: off (the server-rendered default)
+      - attr: data-size
+        condition: always - the resolved size (the thumb reads it via group/switch
+          selectors)
+        values:
+        - default
+        - sm
+    - name: switch-thumb
+      description: The sliding knob - travel is pure CSS off the checked pair
+      states:
+      - attr: data-checked
+        condition: mirrors the control (the controller reflects state on every part
+          wearing the pair)
+      - attr: data-unchecked
+        condition: mirrors the control - the thumb sits at the start
   poetry/ui/table:
     class_name: Poetry::Ui::Table::Component
     identifier: poetry--ui--table
@@ -4040,6 +5935,28 @@ components:
       (a <td>).
     - Mark a selected row with data-selected on poetry_table_row - never a bespoke
       highlight class.
+    parts:
+    - name: table
+      description: The semantic <table> element itself - the root the part helpers
+        compose into
+    - name: table-caption
+      description: The <caption> (poetry_table_caption) - the table's accessible purpose
+    - name: table-header
+      description: The <thead> (poetry_table_header) holding the column-header row
+    - name: table-body
+      description: The <tbody> (poetry_table_body) holding the data rows
+    - name: table-footer
+      description: The <tfoot> (poetry_table_footer) - totals/summary rows
+    - name: table-row
+      description: A <tr> (poetry_table_row) in any section
+      states:
+      - attr: data-selected
+        condition: the row is marked selected (presence attribute, no value) - the
+          theme tints it
+    - name: table-head
+      description: A column header <th> (poetry_table_head)
+    - name: table-cell
+      description: A data <td> (poetry_table_cell)
   poetry/ui/tabs:
     class_name: Poetry::Ui::Tabs::Component
     identifier: poetry--ui--tabs
@@ -4108,6 +6025,40 @@ components:
       change.
     required_slots:
       tab: at least one tab
+    parts:
+    - name: tabs
+      description: Root wrapper - the orientation rides here and flips the flex direction
+      states:
+      - attr: data-orientation
+        condition: the tab axis (matches aria-orientation on the list)
+        values:
+        - horizontal
+        - vertical
+    - name: tabs-list
+      description: The role=tablist row of triggers - the roving-focus keyboard group
+        and the visual variant ride here
+      states:
+      - attr: data-variant
+        condition: the list treatment - default (filled capsule) or line (underline
+          indicator)
+    - name: tabs-trigger
+      description: One role=tab button per tab
+      states:
+      - attr: data-active
+        condition: the selected tab (the controller moves it with aria-selected on
+          activation)
+      - attr: data-disabled
+        condition: tab is disabled - also filters it from the roving-focus collection
+      - attr: data-value
+        condition: the tab's value - the key the controller matches panels against
+    - name: tabs-content
+      description: One role=tabpanel per tab - only the active panel is visible
+      states:
+      - attr: data-hidden
+        condition: panel is inactive (paired with the hidden property - the controller
+          flips both)
+      - attr: data-value
+        condition: the owning tab's value
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -4138,6 +6089,10 @@ components:
     - Use Textarea for free text; Input for single-line; do not bolt a JS autosizer
       on (auto-grow is CSS).
     - Do not set native required - required flows as aria-required via Field.
+    parts:
+    - name: textarea
+      description: The <textarea> element itself - value renders as content; auto-grow
+        is the field-sizing-content CSS property, zero JS
   poetry/ui/toast:
     class_name: Poetry::Ui::Toast::Component
     identifier: poetry--ui--toast
@@ -4212,6 +6167,38 @@ components:
     - 'Toasts are supplementary: never the only place an outcome is recorded.'
     required_slots:
       title: the message
+    parts:
+    - name: toast
+      description: The notification item itself (<li>, role=status) - variant, open
+        state, and the toaster's stack facts all ride here
+      states:
+      - attr: data-open
+        condition: toast is showing (the server-rendered state; the dismiss exit flips
+          the pair before removal)
+      - attr: data-closed
+        condition: toast is animating out
+      - attr: data-variant
+        condition: always - the resolved variant
+        values:
+        - default
+        - success
+        - info
+        - warning
+        - destructive
+      - attr: data-queued
+        condition: the toaster holds it hidden past the visible limit (timer paused
+          until a slot frees up)
+      vars:
+      - name: "--poetry-toast-index"
+        description: stack position written by the toaster's reflow (newest visible
+          toast = 0)
+    - name: toast-icon
+      description: The variant's icon well (aria-hidden; the default variant renders
+        none)
+    - name: toast-title
+      description: The message - the announced payload's first line (required slot)
+    - name: toast-description
+      description: Supporting copy under the title
   poetry/ui/toaster:
     class_name: Poetry::Ui::Toaster::Component
     identifier: poetry--ui--toaster
@@ -4256,6 +6243,21 @@ components:
       - never hand-append into #poetry-toaster.'
     - Do not announce() toast content yourself - the toast controller already does;
       double-announcing is a regression.
+    parts:
+    - name: toaster
+      description: The toast viewport itself (<ol>, role=region, data-turbo-permanent)
+        - the corner geometry and the Turbo Stream append target ride here
+      states:
+      - attr: data-position
+        condition: always - the corner; each toast's slide direction keys off it via
+          group/toaster
+        values:
+        - top-left
+        - top-center
+        - top-right
+        - bottom-left
+        - bottom-center
+        - bottom-right
   poetry/ui/toggle:
     class_name: Poetry::Ui::Toggle::Component
     identifier: poetry--ui--toggle
@@ -4310,6 +6312,26 @@ components:
       on failure - a pressed toggle whose effect failed is a lie.
     - Pressed visual is accent - don't override data-pressed colors per-instance (theme-level
       only).
+    parts:
+    - name: toggle
+      description: The pressed-state <button> - the whole component; aria-pressed
+        carries the state and the controller flips both together
+      states:
+      - attr: data-pressed
+        condition: pressed (bare presence boolean - absent when unpressed, never data-pressed=false)
+      - attr: data-disabled
+        condition: disabled (rendered alongside native disabled for styling-hook parity)
+      - attr: data-variant
+        condition: the visual variant
+        values:
+        - default
+        - outline
+      - attr: data-size
+        condition: the size
+        values:
+        - default
+        - sm
+        - lg
   poetry/ui/toggle_group:
     class_name: Poetry::Ui::ToggleGroup::Component
     identifier: poetry--ui--toggle_group
@@ -4400,6 +6422,60 @@ components:
       handle the empty change in the host.
     required_slots:
       item: at least one item
+    parts:
+    - name: toggle-group
+      description: The role=radiogroup (single) / role=toolbar (multiple) root - the
+        value-set machine and roving focus ride here; the axes cascade to items
+      states:
+      - attr: data-variant
+        condition: the shared Toggle variant (root wins)
+        values:
+        - default
+        - outline
+      - attr: data-size
+        condition: the shared Toggle size (root wins)
+        values:
+        - default
+        - sm
+        - lg
+      - attr: data-spacing
+        condition: the gap step - 0 is the segmented chain (joined corners), >0 free-standing
+      - attr: data-orientation
+        condition: the roving axis
+        values:
+        - horizontal
+        - vertical
+      - attr: data-disabled
+        condition: the whole group is disabled (disables every item)
+      vars:
+      - name: "--gap"
+        description: 'the item gap, set inline from spacing: - the root''s gap utility
+          consumes it'
+    - name: toggle-group-item
+      description: One dumb <button> under the group machine - Toggle-styled, no per-item
+        controller
+      states:
+      - attr: data-pressed
+        condition: pressed (bare presence boolean - absent when off; the controller
+          rederives the type-correct aria attribute from it)
+      - attr: data-disabled
+        condition: the item (or the whole group) is disabled - the roving-focus collection
+          filter
+      - attr: data-value
+        condition: the item's key in the value set (always present, unique)
+      - attr: data-variant
+        condition: cascaded from the root
+        values:
+        - default
+        - outline
+      - attr: data-size
+        condition: cascaded from the root
+        values:
+        - default
+        - sm
+        - lg
+      - attr: data-spacing
+        condition: cascaded from the root - keys the segmented corner/border chain
   poetry/ui/tooltip:
     class_name: Poetry::Ui::Tooltip::Component
     identifier: poetry--ui--tooltip
@@ -4446,7 +6522,7 @@ components:
     elements:
     - content
     - arrow
-    capsule: e6060b6a21f8
+    capsule: fc21afb6426d
     controllers:
     - identifier: poetry--core--popper
       targets:
@@ -4499,6 +6575,60 @@ components:
     - Do not pin tooltips open as onboarding callouts - that is a Popover.
     required_slots:
       trigger: the described control
+    parts:
+    - name: tooltip
+      description: Root wrapper around the trigger and the bubble
+    - name: tooltip-content
+      description: The role=tooltip bubble - positioning, animation, and the open
+        state ride here
+      states:
+      - attr: data-open
+        condition: bubble is open (the controller flips the pair at runtime)
+      - attr: data-closed
+        condition: bubble is closed (the server-rendered state; hidden rides along)
+      - attr: data-instant
+        condition: the open skipped the delay - warm-grace/programmatic or keyboard
+          focus (runtime-only; absent on a delayed open)
+        values:
+        - delay
+        - focus
+      - attr: data-side
+        condition: always - the side (initial placement, re-resolved live by popper
+          after flip)
+        values:
+        - top
+        - right
+        - bottom
+        - left
+      - attr: data-align
+        condition: always - the alignment (re-resolved live by popper)
+        values:
+        - start
+        - center
+        - end
+      vars:
+      - name: "--transform-origin"
+        description: the anchor-facing origin popper writes for scale-in animation
+      - name: "--available-width"
+        description: viewport space left for the bubble (popper, post-flip)
+      - name: "--available-height"
+        description: viewport space left for the bubble (popper, post-flip)
+      - name: "--anchor-width"
+        description: the anchor's measured width (popper)
+      - name: "--anchor-height"
+        description: the anchor's measured height (popper)
+    - name: tooltip-arrow
+      description: The arrow wrapper (aria-hidden) - popper pins it to the bubble's
+        anchor-facing edge and rotates it toward the anchor
+      states:
+      - attr: data-side
+        condition: written by popper alongside the content's - the resolved side,
+          for per-side restyling
+        values:
+        - top
+        - right
+        - bottom
+        - left
 helpers:
   poetry_attachment_group: {}
   poetry_avatar_group: {}

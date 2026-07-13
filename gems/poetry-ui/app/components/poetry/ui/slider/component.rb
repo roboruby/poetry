@@ -71,6 +71,48 @@ module Poetry
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
+        part "slider", "Root - the controller, the geometry vars, and pointer capture ride here",
+             states: {
+               "data-orientation" => { condition: "always - the axis",
+                                       values: ORIENTATIONS.map(&:to_s) },
+               "data-disabled" => "disabled: is set (the control is inert; the hidden inputs " \
+                                  "still submit)",
+               "data-dragging" => "a pointer drag is in flight (the controller sets it for the " \
+                                  "gesture; never rendered server-side)"
+             },
+             vars: {
+               "--slider-start" => "the filled range's start edge as a percentage - " \
+                                   "server-rendered (no first-paint jump), rewritten by the " \
+                                   "controller on every move",
+               "--slider-end" => "the filled range's end edge as a percentage (the single-thumb " \
+                                 "value rides here)"
+             }
+        part "slider-track", "The full-length rail the range paints over",
+             states: {
+               "data-orientation" => { condition: "always - mirrors the root",
+                                       values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "slider-range", "The filled span between --slider-start and --slider-end",
+             states: {
+               "data-orientation" => { condition: "always - mirrors the root",
+                                       values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "slider-anchor", "Absolutely positioned thumb wrapper (one per thumb, with its " \
+                              "hidden input alongside) seated on the geometry vars",
+             states: {
+               "data-orientation" => { condition: "always - mirrors the root",
+                                       values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "slider-thumb", "The role=slider handle - its own Tab stop, carrying the " \
+                             "aria-value* surface (bounds neighbor-clamped in range mode)",
+             states: {
+               "data-orientation" => { condition: "always - mirrors the root",
+                                       values: ORIENTATIONS.map(&:to_s) },
+               "data-disabled" => "disabled: is set (tabindex drops to -1)",
+               "data-dragging" => "this thumb is the one being dragged (the controller pairs it " \
+                                  "with the root's)"
+             }
+
         def initialize(attributes = {})
           if attributes.values_at(:value, "value").any? && attributes.values_at(:values, "values").any?
             raise ArgumentError, "value: is the single-thumb API and values: the range API - pass one"

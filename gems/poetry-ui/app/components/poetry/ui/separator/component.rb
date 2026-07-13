@@ -18,6 +18,13 @@ module Poetry
 
         validates :orientation, inclusion: { in: %i[horizontal vertical] }
 
+        part "separator", "The divider itself - decorative (aria-hidden) by default, " \
+                          "role=separator when decorative: false",
+             states: {
+               "data-orientation" => { condition: "always - the resolved orientation",
+                                       values: %w[horizontal vertical] }
+             }
+
         def call
           content_tag(:div, nil, **root_attributes.to_attributes)
         end

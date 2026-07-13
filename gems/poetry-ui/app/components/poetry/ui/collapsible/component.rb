@@ -21,6 +21,23 @@ module Poetry
 
         option :open, :boolean, default: false
 
+        part "collapsible", "The disclosure root - the state controller flips the pair here",
+             states: {
+               "data-open" => "expanded (server-rendered from open:; the controller flips the pair at runtime)",
+               "data-closed" => "collapsed (the server-rendered default)"
+             }
+        part "collapsible-trigger", "The disclosure button - mirrors aria-expanded",
+             states: {
+               "data-panel-open" => "its content is open (Base UI trigger parity, controller-written; " \
+                                    "absent while closed)"
+             }
+        part "collapsible-content", "The disclosure panel - stays in the DOM when closed (hidden) " \
+                                    "and rides the presence helper on exit",
+             states: {
+               "data-open" => "content is open or entering",
+               "data-closed" => "content is closed or animating out (hidden lands after the exit finishes)"
+             }
+
         renders_one :trigger, lambda { |**options, &block|
           attrs = {
             type: "button", "data-slot" => "collapsible-trigger",

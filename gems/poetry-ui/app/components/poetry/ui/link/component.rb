@@ -20,6 +20,8 @@ module Poetry
         option :external, :boolean, default: false
         option :current, :boolean, default: false
 
+        part "link", "The rendered <a> - the whole component; current: marks it aria-current=page"
+
         def call
           content_tag(:a, content, **root_attributes.to_attributes)
         end

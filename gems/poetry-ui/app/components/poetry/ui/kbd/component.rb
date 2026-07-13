@@ -13,6 +13,8 @@ module Poetry
 
         requires_content "the key text"
 
+        part "kbd", "The <kbd> element itself - the key text renders here"
+
         def before_render
           ensure_content!
         end

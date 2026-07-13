@@ -31,6 +31,37 @@ module Poetry
         validates :type, inclusion: { in: TYPES }
         validates :heading_level, inclusion: { in: HEADINGS }
 
+        part "accordion", "The list root - both controllers (the open-set machine and roving " \
+                          "focus) ride here",
+             states: {
+               "data-orientation" => { condition: "always vertical - the only axis the accordion ships",
+                                       values: %w[vertical] }
+             }
+        part "accordion-item", "One value-keyed section wrapping its header and panel",
+             states: {
+               "data-open" => "the item is expanded (server-rendered from open:; the controller " \
+                              "flips the pair at runtime)",
+               "data-closed" => "the item is collapsed",
+               "data-value" => "the item's open-state key (always present)"
+             }
+        part "accordion-header", "The heading element (heading_level:, h3 default) hosting the trigger button"
+        part "accordion-trigger", "The toggle button inside the header - the chevron rotation rides " \
+                                  "aria-expanded, not a data attribute",
+             states: {
+               "data-panel-open" => "its panel is open (Base UI trigger parity, controller-written; " \
+                                    "absent while closed)"
+             }
+        part "accordion-content", "The role=region panel - the presence animation and the measured " \
+                                  "height var ride here",
+             states: {
+               "data-open" => "panel is open or entering",
+               "data-closed" => "panel is closed or animating out (hidden lands after the exit finishes)"
+             },
+             vars: {
+               "--accordion-panel-height" => "the measured content height (controller-written) that " \
+                                             "feeds the accordion-down/up keyframes"
+             }
+
         renders_many :items, lambda { |value:, title:, **options, &block|
           open_item = open_values.include?(value.to_s)
           item_id = "#{instance_id}-#{value}"

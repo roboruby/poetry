@@ -33,6 +33,24 @@ module Poetry
 
         style :size, default: :default, required: true, variants: SIZES
 
+        part "alert-dialog", "Root wrapper around the trigger and the <dialog> element"
+        part "alert-dialog-content", "The role=alertdialog <dialog> panel - sizing, animation, " \
+                                     "and the open state ride here",
+             states: {
+               "data-open" => "panel is open (the shared dialog controller flips the pair " \
+                              "at runtime)",
+               "data-closed" => "panel is closed (the server-rendered state)",
+               "data-size" => { condition: "always - the resolved size",
+                                values: SIZES.map(&:to_s) }
+             }
+        part "alert-dialog-header", "Title block - holds the optional media well, the title, " \
+                                    "and the description"
+        part "alert-dialog-title", "The heading - the alertdialog's accessible name " \
+                                   "(required slot)"
+        part "alert-dialog-description", "The explanation, wired to aria-describedby " \
+                                         "(required slot)"
+        part "alert-dialog-footer", "The choice row - cancel then action"
+
         # The trigger is a poetry Button wired to open - the inherited
         # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
         renders_one :trigger, lambda { |**options, &block|

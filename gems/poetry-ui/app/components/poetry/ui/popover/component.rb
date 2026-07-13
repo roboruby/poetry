@@ -60,6 +60,33 @@ module Poetry
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
+        part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
+        part "popover-anchor", "Optional alternate popper anchor (Radix PopoverAnchor) - when " \
+                               "present the panel positions against it instead of the trigger"
+        part "popover-content", "The role=dialog panel - positioning, animation, and the open " \
+                                "state ride here",
+             states: {
+               "data-open" => "panel is open (the controller flips the pair at runtime)",
+               "data-closed" => "panel is closed (the server-rendered state; hidden rides along)",
+               "data-side" => { condition: "always - the side (initial placement, re-resolved " \
+                                           "live by popper after flip)",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
+                                       "animation",
+               "--available-width" => "viewport space left for the panel (popper, post-flip)",
+               "--available-height" => "viewport space left for the panel (popper, post-flip)",
+               "--anchor-width" => "the anchor's measured width (popper)",
+               "--anchor-height" => "the anchor's measured height (popper)"
+             }
+        part "popover-header", "Title block wrapping the title and description (renders only " \
+                               "when either is present)"
+        part "popover-title", "The heading - the panel's accessible name via aria-labelledby"
+        part "popover-description", "Muted copy under the title, wired to aria-describedby"
+
         # The trigger is a poetry Button wired as the dialog control (demo
         # parity: with_trigger(variant: :outline) { "Open popover" }) - the
         # slot owns the aria-haspopup/expanded/controls wiring regardless

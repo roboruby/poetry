@@ -34,6 +34,16 @@ module Poetry
         option :src, :string, required: true
         option :loading, :symbol, default: :lazy
 
+        part "deferred", "The <turbo-frame> root - src is armed at connect(); failure is " \
+                         "a state reflected here, never silent blankness",
+             states: {
+               "data-error" => "a frame fetch failed (error response, missing frame, or " \
+                               "network error) - the controller stamps the error card; " \
+                               "retry clears it"
+             }
+        part "deferred-error", "The retryable error card, stamped into the frame from the " \
+                               "slotted <template> on failure"
+
         def before_render
           raise ArgumentError, "poetry_deferred requires src:" if src.blank?
         end

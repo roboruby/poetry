@@ -54,6 +54,66 @@ module Poetry
         validates :variant, inclusion: { in: VARIANTS }
         validates :collapsible, inclusion: { in: COLLAPSIBLE }
 
+        part "sidebar-wrapper", "The provider shell around the column, the mobile dialog, and the inset",
+             vars: {
+               "--sidebar-width" => "the expanded column width (16rem) - the gap/container geometry reads it",
+               "--sidebar-width-icon" => "the collapsed icon-rail width (3rem)"
+             }
+        part "sidebar", "The desktop state peer - the collapse state lives here and the pure-CSS " \
+                        "group-data chrome keys on it",
+             states: {
+               "data-state" => "expanded or collapsed - the controller flips it and persists the cookie",
+               "data-collapsible" => { condition: "the collapse mode WHILE collapsed (empty while expanded " \
+                                                  "- source parity)",
+                                       values: %w[offcanvas icon none] },
+               "data-variant" => { condition: "the column treatment", values: %w[sidebar floating inset] },
+               "data-side" => { condition: "which edge the column hangs on", values: %w[left right] }
+             }
+        part "sidebar-gap", "The in-flow width ghost that pushes the inset over - its width animates " \
+                            "on collapse"
+        part "sidebar-container", "The fixed-position column itself",
+             states: {
+               "data-side" => { condition: "which edge it pins to", values: %w[left right] }
+             }
+        part "sidebar-inner", "The flex column receiving the nav slot - the mobile mode adopts its " \
+                              "children from here"
+        part "sidebar-mobile", "The mobile sheet <dialog> (below md) - server-rendered empty; the " \
+                               "controller adopts the nav children on open",
+             states: {
+               "data-open" => "sheet is open (presence flips the pair at runtime)",
+               "data-closed" => "sheet is closed (the server-rendered state)",
+               "data-mobile" => "always \"true\" - the mobile-mode marker",
+               "data-side" => { condition: "which edge the sheet slides from", values: %w[left right] },
+               "data-sidebar" => "always \"sidebar\" - the upstream sub-part marker"
+             },
+             vars: {
+               "--sidebar-width" => "overridden inline to the mobile sheet width (18rem)"
+             }
+        part "sidebar-mobile-inner", "The adoption container the nav children move into while the " \
+                                     "sheet is open"
+        part "sidebar-inset", "The <main> page area beside the column"
+        part "sidebar-header", "Top block of the column (with_nav content)"
+        part "sidebar-footer", "Bottom block of the column"
+        part "sidebar-content", "The scrollable middle of the column"
+        part "sidebar-group", "One titled section inside the content"
+        part "sidebar-group-label", "The section heading - fades and collapses away in icon mode"
+        part "sidebar-menu", "The <ul> of menu items inside a group"
+        part "sidebar-menu-item", "One <li> menu row (the group/menu-item hover scope)"
+        part "sidebar-menu-button", "The row's link (href:) or button - the navigation entry itself",
+             states: {
+               "data-active" => "the current route (active: - links also get aria-current=page)",
+               "data-size" => "the row size variant (default, sm, or lg) - the action/badge tops key on it"
+             }
+        part "sidebar-menu-action", "The item-corner action button, absolutely positioned in the row",
+             states: {
+               "data-sidebar" => "always \"menu-action\" - the upstream sub-part marker"
+             }
+        part "sidebar-menu-badge", "The trailing count/status chrome in the row corner - " \
+                                   "pointer-transparent",
+             states: {
+               "data-sidebar" => "always \"menu-badge\" - the upstream sub-part marker"
+             }
+
         renders_one :nav
         renders_one :inset
 

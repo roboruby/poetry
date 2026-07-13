@@ -13,7 +13,7 @@ module Poetry
         # tighter at 2.5) - closed panels stay hidden regardless because
         # preflight's [hidden] rule is !important.
         element :content, "cn-popover-content z-50 w-72 " \
-                          "origin-(--radix-popover-content-transform-origin) outline-hidden"
+                          "origin-(--transform-origin) outline-hidden"
 
         # new-york-v4 additions (plain divs in source; poetry wires their
         # ids to the dialog's aria-labelledby/describedby).

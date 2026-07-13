@@ -36,6 +36,21 @@ module Poetry
         # Source parity: showCloseButton.
         option :show_close_button, :boolean, default: true
 
+        part "sheet", "Root wrapper around the trigger and the <dialog> element"
+        part "sheet-content", "The <dialog> panel, anchored to a screen edge - the slide " \
+                              "animation and the open state ride here",
+             states: {
+               "data-open" => "panel is open (the controller flips the pair at runtime)",
+               "data-closed" => "panel is closed or animating out (the server-rendered state; " \
+                                "the presence-hold close rides the closed slide-out)",
+               "data-side" => { condition: "always - the edge the sheet slides in from",
+                                values: SIDES.map(&:to_s) }
+             }
+        part "sheet-header", "Title block at the top of the panel"
+        part "sheet-title", "The heading - the sheet's accessible name (required slot)"
+        part "sheet-description", "Muted copy under the title, wired to aria-describedby"
+        part "sheet-footer", "Action row pinned to the bottom of the panel"
+
         def before_render
           raise ArgumentError, "Sheet requires with_title (the accessible name)" unless title?
         end

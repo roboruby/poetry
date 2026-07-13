@@ -51,6 +51,14 @@ module Poetry
         option :hotkey, :string, default: "F8"
         option :limit, :integer, default: 3
 
+        part "toaster", "The toast viewport itself (<ol>, role=region, data-turbo-permanent) - " \
+                        "the corner geometry and the Turbo Stream append target ride here",
+             states: {
+               "data-position" => { condition: "always - the corner; each toast's slide " \
+                                               "direction keys off it via group/toaster",
+                                    values: POSITIONS.map(&:to_s) }
+             }
+
         def root_attributes
           html_attributes.merge_if_not_set(
             {

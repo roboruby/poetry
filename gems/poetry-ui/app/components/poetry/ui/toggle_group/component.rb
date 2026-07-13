@@ -83,6 +83,35 @@ module Poetry
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
+        part "toggle-group", "The role=radiogroup (single) / role=toolbar (multiple) root - the " \
+                             "value-set machine and roving focus ride here; the axes cascade to items",
+             states: {
+               "data-variant" => { condition: "the shared Toggle variant (root wins)",
+                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "the shared Toggle size (root wins)",
+                                values: Toggle::Component::SIZES.map(&:to_s) },
+               "data-spacing" => "the gap step - 0 is the segmented chain (joined corners), >0 free-standing",
+               "data-orientation" => { condition: "the roving axis", values: ORIENTATIONS.map(&:to_s) },
+               "data-disabled" => "the whole group is disabled (disables every item)"
+             },
+             vars: {
+               "--gap" => "the item gap, set inline from spacing: - the root's gap utility consumes it"
+             }
+        part "toggle-group-item", "One dumb <button> under the group machine - Toggle-styled, no " \
+                                  "per-item controller",
+             states: {
+               "data-pressed" => "pressed (bare presence boolean - absent when off; the controller " \
+                                 "rederives the type-correct aria attribute from it)",
+               "data-disabled" => "the item (or the whole group) is disabled - the roving-focus " \
+                                  "collection filter",
+               "data-value" => "the item's key in the value set (always present, unique)",
+               "data-variant" => { condition: "cascaded from the root",
+                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "cascaded from the root",
+                                values: Toggle::Component::SIZES.map(&:to_s) },
+               "data-spacing" => "cascaded from the root - keys the segmented corner/border chain"
+             }
+
         # One item per toggle: DUMB buttons under the group machine - no
         # per-item controller, data-action -> group#toggle, styled by the
         # shared Toggle dictionary + the item overrides.

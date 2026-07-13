@@ -22,6 +22,14 @@ module Poetry
 
         requires_content "its member controls"
 
+        part "button-group", "The role=group root - its selectors join ANY data-slot children into " \
+                             "the segmented unit",
+             states: {
+               "data-orientation" => { condition: "the join axis", values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "button-group-text", "A non-button member (the poetry_button_group_text helper's div) - " \
+                                  "a text affix joined like a button"
+
         def before_render
           ensure_content!
         end

@@ -35,6 +35,41 @@ module Poetry
 
         option :show_swipe_handle, :boolean, default: false
 
+        part "drawer", "Root wrapper around the trigger and the <dialog> element"
+        part "drawer-content", "The <dialog> popup - the edge chrome, presence animation, and " \
+                               "the swipe contract all ride here (::backdrop inherits the " \
+                               "swipe vars, so the overlay fade rides along)",
+             states: {
+               "data-open" => "popup is open (the controller flips the pair at runtime)",
+               "data-closed" => "popup is closed or animating out (the server-rendered state)",
+               "data-swipe-direction" => { condition: "always - the dismiss direction",
+                                           values: DIRECTIONS.map(&:to_s) },
+               "data-swiping" => "a pointer drag is tracking (transitions go duration-0 - the " \
+                                 "drawer follows the finger)",
+               "data-starting-style" => "the enter transition's first frame (the presence " \
+                                        "helper's two-frame trick)",
+               "data-ending-style" => "held through the exit transition before the native " \
+                                      "close()"
+             },
+             vars: {
+               "--drawer-swipe-movement-x" => "px dragged toward a left/right dismissal " \
+                                              "(controller-written during swipes)",
+               "--drawer-swipe-movement-y" => "px dragged toward an up/down dismissal " \
+                                              "(controller-written during swipes)",
+               "--drawer-swipe-progress" => "0..1 fraction of the dismiss travel (the backdrop " \
+                                            "fade rides it)",
+               "--drawer-swipe-strength" => "remaining-travel factor set on release - scales " \
+                                            "the exit duration so a mostly-swiped drawer " \
+                                            "closes fast"
+             }
+        part "drawer-swipe-handle", "The grab pill (show_swipe_handle: true, aria-hidden) - a " \
+                                    "drag may always start on it"
+        part "drawer-header", "Title block at the top of the popup"
+        part "drawer-title", "The heading - the drawer's accessible name (required slot)"
+        part "drawer-description", "Muted copy under the title, wired to aria-describedby"
+        part "drawer-body", "The scrollable content region between header and footer"
+        part "drawer-footer", "Action row pinned to the bottom of the popup"
+
         def before_render
           raise ArgumentError, "Drawer requires with_title (the accessible name)" unless title?
         end

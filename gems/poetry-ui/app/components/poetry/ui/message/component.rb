@@ -21,6 +21,19 @@ module Poetry
 
         validates :align, inclusion: { in: ALIGNS }
 
+        part "message", "The chat-row root - avatar plus a content column; align: :end " \
+                        "mirrors the row for the local user's side",
+             states: {
+               "data-align" => { condition: "always - the resolved align",
+                                 values: ALIGNS.map(&:to_s) }
+             }
+        part "message-avatar", "The avatar slot's box, kept out of the content column"
+        part "message-content", "The content column - header, the body block (the Bubbles), " \
+                                "footer"
+        part "message-header", "Sender identity line above the bubbles (header slot)"
+        part "message-footer", "Timestamps / delivery state below the bubbles (footer slot - " \
+                               "it lifts the avatar)"
+
         renders_one :avatar
         renders_one :header
         renders_one :footer

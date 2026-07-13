@@ -16,6 +16,19 @@ module Poetry
           "Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class."
         ].freeze
 
+        part "table", "The semantic <table> element itself - the root the part helpers compose into"
+        part "table-caption", "The <caption> (poetry_table_caption) - the table's accessible purpose"
+        part "table-header", "The <thead> (poetry_table_header) holding the column-header row"
+        part "table-body", "The <tbody> (poetry_table_body) holding the data rows"
+        part "table-footer", "The <tfoot> (poetry_table_footer) - totals/summary rows"
+        part "table-row", "A <tr> (poetry_table_row) in any section",
+             states: {
+               "data-selected" => "the row is marked selected (presence attribute, no value) - " \
+                                  "the theme tints it"
+             }
+        part "table-head", "A column header <th> (poetry_table_head)"
+        part "table-cell", "A data <td> (poetry_table_cell)"
+
         def container_attributes
           { "data-slot" => "table-container", "class" => css(:container) }
         end

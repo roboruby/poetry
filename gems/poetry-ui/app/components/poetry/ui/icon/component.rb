@@ -26,6 +26,9 @@ module Poetry
 
         validate :icon_must_exist
 
+        part "icon", "The <svg> root itself - the vendored icon markup renders inside; " \
+                     "ARIA (label: vs decorative) rides here"
+
         def call
           # Vendored + sanitized at vendor time (the fetch pipeline) - the
           # inner markup is trusted by construction; render never parses.

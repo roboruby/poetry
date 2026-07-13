@@ -70,6 +70,24 @@ module Poetry
         # aria-label fallback when no <label for>/Field association exists.
         option :label, :string
 
+        part "checkbox", "The visual button[role=checkbox] - reflects the hidden input via " \
+                         "aria-checked plus the checked triple",
+             states: {
+               "data-checked" => "checked (the controller reflects every toggle here, " \
+                                 "aria-checked in step)",
+               "data-unchecked" => "unchecked - the indicator goes invisible",
+               "data-indeterminate" => "checked: :indeterminate (server/programmatic only; " \
+                                       "the first toggle resolves it to checked)"
+             }
+        part "checkbox-indicator", "Centering span around the check glyph (minus when " \
+                                   "indeterminate) - CSS-hidden while unchecked, never unmounted",
+             states: {
+               "data-checked" => "mirrors the control (the controller reflects state on " \
+                                 "every part wearing the triple)",
+               "data-unchecked" => "mirrors the control - the indicator is invisible",
+               "data-indeterminate" => "mirrors the control - the glyph swaps to minus"
+             }
+
         def indeterminate?
           checked == :indeterminate
         end

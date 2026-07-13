@@ -21,6 +21,9 @@ module Poetry
 
         option :label, :string, default: "Loading"
 
+        part "spinner", "The spinning <svg> itself (the lucide loader-circle) - announces " \
+                        "as role=status with aria-label from label:"
+
         def call
           content_tag(:svg, glyph, **root_attributes.to_attributes)
         end

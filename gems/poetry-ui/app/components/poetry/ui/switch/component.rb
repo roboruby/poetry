@@ -51,6 +51,23 @@ module Poetry
         option :required, :boolean, default: false
         option :label, :string
 
+        part "switch", "The visual button[role=switch] - reflects the hidden input via " \
+                       "aria-checked plus the checked pair (never indeterminate)",
+             states: {
+               "data-checked" => "on (the shared checked controller reflects every toggle " \
+                                 "here, aria-checked in step)",
+               "data-unchecked" => "off (the server-rendered default)",
+               "data-size" => { condition: "always - the resolved size (the thumb reads it " \
+                                           "via group/switch selectors)",
+                                values: SIZES.map(&:to_s) }
+             }
+        part "switch-thumb", "The sliding knob - travel is pure CSS off the checked pair",
+             states: {
+               "data-checked" => "mirrors the control (the controller reflects state on " \
+                                 "every part wearing the pair)",
+               "data-unchecked" => "mirrors the control - the thumb sits at the start"
+             }
+
         def initialize(attributes = {})
           # A switch is strictly binary: aria-checked on role=switch must
           # never be "mixed" - the violation is unrepresentable (the base-contract

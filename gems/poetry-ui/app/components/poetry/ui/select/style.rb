@@ -16,8 +16,8 @@ module Poetry
                           "[&_svg]:pointer-events-none [&_svg]:shrink-0"
 
         element :content, "cn-select-content relative z-50 " \
-                          "max-h-(--radix-select-content-available-height) " \
-                          "origin-(--radix-select-content-transform-origin) " \
+                          "max-h-(--available-height) " \
+                          "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
         # Padding/scroll-margin are theme-owned via cn-select-viewport

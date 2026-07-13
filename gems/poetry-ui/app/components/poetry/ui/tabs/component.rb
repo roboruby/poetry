@@ -42,6 +42,29 @@ module Poetry
         validates :orientation, inclusion: { in: ORIENTATIONS }
         validates :variant, inclusion: { in: VARIANTS }
 
+        part "tabs", "Root wrapper - the orientation rides here and flips the flex direction",
+             states: {
+               "data-orientation" => { condition: "the tab axis (matches aria-orientation on the list)",
+                                       values: %w[horizontal vertical] }
+             }
+        part "tabs-list", "The role=tablist row of triggers - the roving-focus keyboard group and " \
+                          "the visual variant ride here",
+             states: {
+               "data-variant" => "the list treatment - default (filled capsule) or line (underline indicator)"
+             }
+        part "tabs-trigger", "One role=tab button per tab",
+             states: {
+               "data-active" => "the selected tab (the controller moves it with aria-selected on activation)",
+               "data-disabled" => "tab is disabled - also filters it from the roving-focus collection",
+               "data-value" => "the tab's value - the key the controller matches panels against"
+             }
+        part "tabs-content", "One role=tabpanel per tab - only the active panel is visible",
+             states: {
+               "data-hidden" => "panel is inactive (paired with the hidden property - the controller " \
+                                "flips both)",
+               "data-value" => "the owning tab's value"
+             }
+
         renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, &panel|
           raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block or defer:" unless panel || defer
 

@@ -17,6 +17,15 @@ module Poetry
 
         style :variant, default: :default, required: true, variants: VARIANTS
 
+        part "alert", "The callout root - role rides the variant (destructive announces " \
+                      "assertively via role=alert; default is a polite role=status)",
+             states: {
+               "data-variant" => { condition: "always - the resolved variant",
+                                   values: VARIANTS.map(&:to_s) }
+             }
+        part "alert-title", "The heading line, rendered when the title slot is set"
+        part "alert-description", "The body copy - the content block renders here"
+
         # Typed slot: with_icon(name: :"triangle-alert") - agents pass icon
         # props, never a render block.
         renders_one :icon, Poetry::Ui::Icon::Component

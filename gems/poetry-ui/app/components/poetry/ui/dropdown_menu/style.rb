@@ -10,8 +10,8 @@ module Poetry
       # inlines them on the lucide elements).
       class Style < Poetry::Core::Style
         element :content, "cn-dropdown-menu-content z-50 " \
-                          "max-h-(--radix-dropdown-menu-content-available-height) " \
-                          "origin-(--radix-dropdown-menu-content-transform-origin) " \
+                          "max-h-(--available-height) " \
+                          "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
         # group/dropdown-menu-item (N12): bare marker, no CSS - the vega
@@ -39,7 +39,7 @@ module Poetry
                               "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
         element :sub_content, "cn-dropdown-menu-sub-content z-50 " \
-                              "origin-(--radix-dropdown-menu-content-transform-origin) overflow-hidden"
+                              "origin-(--transform-origin) overflow-hidden"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it dropdown-menu-item-indicator - the self-identification rule).

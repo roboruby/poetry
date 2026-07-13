@@ -27,6 +27,13 @@ module Poetry
         option :placeholder, :string, default: "Pick a date"
         option :label, :string # the trigger's accessible name (aria-label)
 
+        # ONE owned part: DatePicker is composition - the Popover owns the
+        # overlay, the Calendar owns the grid + the form value, the trigger
+        # Button owns data-slot=date-picker-trigger (each under its own
+        # data-component root, so each declares its own contract).
+        part "date-picker", "Root wrapper - the glue controller (formats the trigger label, " \
+                            "closes on pick) around the composed Popover + Calendar"
+
         def initialize(value: nil, min: nil, max: nil, month: nil, **)
           super(**)
           if range?

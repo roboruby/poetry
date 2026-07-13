@@ -18,6 +18,12 @@ module Poetry
 
         RATIO = %r{\A\d+(\.\d+)?(\s*/\s*\d+(\.\d+)?)?\z}
 
+        part "aspect-ratio", "The ratio-locked box - the content block fills it",
+             vars: {
+               "--ratio" => "always - the ratio: fraction verbatim ('16/9'), consumed by the " \
+                            "theme's aspect-ratio rule"
+             }
+
         def before_render
           return if ratio.present? && ratio.match?(RATIO)
 

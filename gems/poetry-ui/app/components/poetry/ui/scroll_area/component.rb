@@ -30,6 +30,10 @@ module Poetry
 
         requires_content "what scrolls"
 
+        part "scroll-area", "The bounding wrapper - size it with classes; content decides the overflow"
+        part "scroll-area-viewport", "The focusable native scroll region (role=region + tabindex=0) " \
+                                     "with themed platform scrollbars - zero JS"
+
         def before_render
           raise ArgumentError, "ScrollArea requires label: (the region's accessible name)" if label.blank?
 

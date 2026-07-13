@@ -28,6 +28,12 @@ module Poetry
         # 2026-07-01 - a stray label: attribute rendered an empty pill).
         requires_content "the visible status text"
 
+        part "badge", "The status pill itself (a <span>) - the whole component is this one element",
+             states: {
+               "data-variant" => { condition: "always - the resolved variant",
+                                   values: VARIANTS.map(&:to_s) }
+             }
+
         def before_render
           ensure_content!
         end

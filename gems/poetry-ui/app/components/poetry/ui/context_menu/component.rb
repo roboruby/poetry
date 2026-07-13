@@ -183,6 +183,91 @@ module Poetry
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        part "context-menu", "Root wrapper hosting the context-menu + menu + popper controllers " \
+                             "around the surface and content"
+        part "context-menu-trigger", "The right-click/long-press SURFACE wrapping the logical object " \
+                                     "- not a widget: no role, no aria-haspopup",
+             states: {
+               "data-popup-open" => "the menu is open (absence is the closed state - no aria-expanded " \
+                                    "on a role-less surface)",
+               "data-disabled" => "the surface is inert (disabled: true)"
+             }
+        part "context-menu-content", "The role=menu popup panel - anchored at the pointer via popper's " \
+                                     "virtual-anchor mode; open state and animation ride here",
+             states: {
+               "data-open" => "menu is open (presence flips the pair at runtime)",
+               "data-closed" => "menu is closed or animating out (the server-rendered state)",
+               "data-side" => { condition: "the placement side (forced right initially; popper re-writes " \
+                                           "it after collision flips)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment (forced start initially; popper re-resolves it)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the anchor rect's measured width",
+               "--anchor-height" => "popper: the anchor rect's measured height"
+             }
+        part "context-menu-label", "Non-interactive heading for a run of items"
+        part "context-menu-item", "One role=menuitem action row",
+             states: {
+               "data-variant" => "default or destructive (the danger treatment)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)"
+             }
+        part "context-menu-checkbox-item", "A role=menuitemcheckbox toggle row",
+             states: {
+               "data-checked" => "checked (the controller re-writes the pair with aria-checked on " \
+                                 "activation)",
+               "data-unchecked" => "unchecked",
+               "data-close-on-select" => "per-item override of the menu's close-on-select default " \
+                                         "(\"false\" keeps the menu open)"
+             }
+        part "context-menu-radio-group", "role=group scoping one single-select value",
+             states: {
+               "data-value" => "the selected radio value (the controller re-writes it on change)"
+             }
+        part "context-menu-radio-item", "A role=menuitemradio row inside a radio group",
+             states: {
+               "data-checked" => "the selected radio (the controller re-writes the pair with aria-checked)",
+               "data-unchecked" => "not selected",
+               "data-value" => "the radio's value"
+             }
+        part "context-menu-item-indicator", "The check/circle glyph slot inside checkbox and radio " \
+                                            "items - state rides the parent item; the glyph stays " \
+                                            "decorative"
+        part "context-menu-separator", "role=separator rule between groups"
+        part "context-menu-shortcut", "The trailing keybinding HINT - aria-hidden, never binds the key"
+        part "context-menu-sub", "A submenu scope - hosts its own popper around the sub trigger/" \
+                                 "content pair"
+        part "context-menu-sub-trigger", "The role=menuitem row opening its submenu",
+             states: {
+               "data-popup-open" => "its submenu is open (written with aria-expanded; absence is the " \
+                                    "closed state)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)"
+             }
+        part "context-menu-sub-content", "The nested role=menu panel - its own popper content on the " \
+                                         "same presence machinery",
+             states: {
+               "data-open" => "submenu is open (presence flips the pair at runtime)",
+               "data-closed" => "submenu is closed (the server-rendered state)",
+               "data-side" => { condition: "the placement side (right/left by direction; popper resolves " \
+                                           "it at runtime)",
+                                values: %w[top right bottom left] },
+               "data-align" => { condition: "the alignment against the sub-trigger (popper resolves it " \
+                                            "at runtime)",
+                                 values: %w[start center end] }
+             },
+             vars: {
+               "--transform-origin" => "popper's anchor-facing animation origin",
+               "--available-width" => "popper: viewport space left for the panel (post-flip)",
+               "--available-height" => "popper: viewport space left for the panel (post-flip)",
+               "--anchor-width" => "popper: the sub-trigger's measured width",
+               "--anchor-height" => "popper: the sub-trigger's measured height"
+             }
+
         # DELTA - the right-click/long-press SURFACE: wraps arbitrary
         # content (a card, a row, a region); polymorphic tag: (default
         # :span, set tag: :div to wrap block content). NOT a button: no

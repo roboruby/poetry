@@ -53,6 +53,26 @@ module Poetry
 
         validates :politeness, inclusion: { in: POLITENESS }
 
+        part "toast", "The notification item itself (<li>, role=status) - variant, open state, " \
+                      "and the toaster's stack facts all ride here",
+             states: {
+               "data-open" => "toast is showing (the server-rendered state; the dismiss exit " \
+                              "flips the pair before removal)",
+               "data-closed" => "toast is animating out",
+               "data-variant" => { condition: "always - the resolved variant",
+                                   values: VARIANTS.map(&:to_s) },
+               "data-queued" => "the toaster holds it hidden past the visible limit " \
+                                "(timer paused until a slot frees up)"
+             },
+             vars: {
+               "--poetry-toast-index" => "stack position written by the toaster's reflow " \
+                                         "(newest visible toast = 0)"
+             }
+        part "toast-icon", "The variant's icon well (aria-hidden; the default variant " \
+                           "renders none)"
+        part "toast-title", "The message - the announced payload's first line (required slot)"
+        part "toast-description", "Supporting copy under the title"
+
         # The message (REQUIRED - the announced payload's first line).
         renders_one :title
 

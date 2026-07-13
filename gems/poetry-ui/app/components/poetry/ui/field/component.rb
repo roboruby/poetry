@@ -38,6 +38,22 @@ module Poetry
         # via aria-labelledby (the visible label, i18n-proof).
         option :group, :boolean, default: false
 
+        part "field", "The quartet's grid root - label, control, hint, and error stack inside",
+             states: {
+               "data-invalid" => { condition: "always - true when error: is present, else false",
+                                   values: %w[true false] },
+               "data-orientation" => { condition: "always - the resolved orientation " \
+                                                  "(horizontal is the boolean-control layout)",
+                                       values: ORIENTATIONS.map(&:to_s) }
+             }
+        part "field-hint", "The hint <p> - its id lands in the control's aria-describedby"
+        part "field-error", "The error <p> - present only when error: is set; its id leads " \
+                            "the control's aria-describedby"
+        part "checkbox-input", "A nested Checkbox's hidden native input - the toggle renders " \
+                               "as a wrapper-free fragment, so its sibling form store sits " \
+                               "directly in the field's DOM (the horizontal boolean-control " \
+                               "layout)"
+
         def hint_id = "#{id}-hint"
         def error_id = "#{id}-error"
         def label_id = "#{id}-label"

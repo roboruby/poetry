@@ -20,7 +20,7 @@ module Poetry
         element :trigger, "cn-menubar-trigger flex items-center outline-hidden select-none"
 
         element :content, "cn-menubar-content z-50 " \
-                          "origin-(--radix-menubar-content-transform-origin) overflow-hidden"
+                          "origin-(--transform-origin) overflow-hidden"
 
         # group/menubar-item (N12): bare marker, no CSS - the vega shortcut
         # re-color (group-focus/menubar-item) keys on it.
@@ -48,7 +48,7 @@ module Poetry
                               "outline-none select-none"
 
         element :sub_content, "cn-menubar-sub-content z-50 " \
-                              "origin-(--radix-menubar-content-transform-origin) overflow-hidden"
+                              "origin-(--transform-origin) overflow-hidden"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it menubar-item-indicator - the self-identification rule).

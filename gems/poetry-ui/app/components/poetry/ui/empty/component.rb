@@ -24,6 +24,20 @@ module Poetry
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
         validates :media_variant, inclusion: { in: %i[default icon] }
 
+        part "empty", "The empty-state root - the centered header and content stack"
+        part "empty-header", "Wrapper around media/title/description - renders when at " \
+                             "least one of those slots is set"
+        part "empty-icon", "The media slot's box - media_variant: :icon gives the rounded " \
+                           "muted icon tile",
+             states: {
+               "data-variant" => { condition: "always - the resolved media_variant",
+                                   values: %w[default icon] }
+             }
+        part "empty-title", "The title as a real heading (title_tag, h3 by default)"
+        part "empty-description", "Muted copy under the title"
+        part "empty-content", "The actions that fix the emptiness - the content block " \
+                              "renders here"
+
         renders_one :media
         renders_one :title
         renders_one :description

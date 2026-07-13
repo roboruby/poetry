@@ -45,6 +45,16 @@ module Poetry
         # carries the state - a flipping name makes SRs announce nonsense).
         option :label, :string
 
+        part "toggle", "The pressed-state <button> - the whole component; aria-pressed carries the " \
+                       "state and the controller flips both together",
+             states: {
+               "data-pressed" => "pressed (bare presence boolean - absent when unpressed, never " \
+                                 "data-pressed=false)",
+               "data-disabled" => "disabled (rendered alongside native disabled for styling-hook parity)",
+               "data-variant" => { condition: "the visual variant", values: VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "the size", values: SIZES.map(&:to_s) }
+             }
+
         # An icon-only (or empty) toggle without an accessible name never
         # ships (the golden Button's rule).
         def before_render

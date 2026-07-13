@@ -9,8 +9,8 @@ module Poetry
       # is a bare ml-auto); the trigger SURFACE still ships no classes.
       class Style < Poetry::Core::Style
         element :content, "cn-context-menu-content z-50 " \
-                          "max-h-(--radix-context-menu-content-available-height) " \
-                          "origin-(--radix-context-menu-content-transform-origin) " \
+                          "max-h-(--available-height) " \
+                          "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
         # group/context-menu-item (N12): bare marker, no CSS - the vega
@@ -38,7 +38,7 @@ module Poetry
                               "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
         element :sub_content, "cn-context-menu-subcontent z-50 " \
-                              "origin-(--radix-context-menu-content-transform-origin) overflow-hidden"
+                              "origin-(--transform-origin) overflow-hidden"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it context-menu-item-indicator - the self-identification rule).

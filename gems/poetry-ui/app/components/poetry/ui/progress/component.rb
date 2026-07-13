@@ -22,6 +22,14 @@ module Poetry
         option :label, :string, required: true
         option :show_value, :boolean, default: true
 
+        part "progress", "Root (role=progressbar, aria-value* and the accessible name) - " \
+                         "label, value readout, and track stack here"
+        part "progress-label", "The visible caption span (label:)"
+        part "progress-value", "The tabular percent readout - renders unless show_value: false"
+        part "progress-track", "The full-width rail the indicator fills"
+        part "progress-indicator", "The filled bar - sized by an inline width percentage " \
+                                   "computed from value:/max:"
+
         def before_render
           raise ArgumentError, "Progress requires label: (the progressbar's accessible name)" if label.blank?
           raise ArgumentError, "Progress max: must be positive" unless max.positive?
