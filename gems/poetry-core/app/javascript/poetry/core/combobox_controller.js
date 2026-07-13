@@ -720,15 +720,19 @@ export default class ComboboxController extends Controller {
     this.#hide("focus-out", { restoreFocus: false })
   }
 
-  // multiple: a press in the chips FIELD is an anchor press, never an
-  // outside press - vetoing the layer keeps the popup open while chips
-  // mutate under the pointer.
+  // A press on the combobox's OWN trigger is the toggle's job (the popover
+  // trigger-press rule: without the veto, pointerdown closes and the
+  // trailing click re-opens). In multiple, a press in the chips FIELD is
+  // an anchor press too - vetoing the layer keeps the popup open while
+  // chips mutate under the pointer.
   #onInteractOutside = (event) => {
-    if (!this.multipleValue || event.target !== this.#content()) return
+    if (event.target !== this.#content()) return
 
     const origin = event.detail?.originalEvent?.target
 
-    if (origin instanceof Element && this.#chips()?.contains(origin)) event.preventDefault()
+    if (!(origin instanceof Element)) return
+    if (this.#trigger()?.contains(origin)) return event.preventDefault()
+    if (this.multipleValue && this.#chips()?.contains(origin)) event.preventDefault()
   }
 
   // Esc / outside press arrive as the dismissable layer's dismiss event.

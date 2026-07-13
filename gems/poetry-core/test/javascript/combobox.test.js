@@ -175,6 +175,20 @@ describe("poetry--core--combobox", () => {
       expect(tokens).toContain("poetry--core--dismissable")
       expect(tokens).not.toContain("poetry--core--roving-focus")
     })
+
+    it("a REAL trigger press on an open combobox closes once and never re-opens (pointerdown, then click)", async () => {
+      await open()
+
+      // A real press reaches the dismissable layer as pointerdown FIRST (the
+      // trigger sits outside the content) - without the trigger veto that
+      // closes on pointerdown and the trailing click re-opens.
+      el("trigger").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+      click(el("trigger"))
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
+    })
   })
 
   describe("the commit pipeline (native first, Select's 5 steps)", () => {
