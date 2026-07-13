@@ -2166,6 +2166,12 @@
     "path": "/blocks/section-card"
   },
   {
+    "title": "Stepper",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper"
+  },
+  {
     "title": "Top nav",
     "page": "Top nav",
     "section": "blocks",

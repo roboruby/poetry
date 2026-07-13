@@ -20,7 +20,7 @@ Slots: leading, trailing.
 - PART `icon` - Wrapper span around leading/trailing slot content - sizes and centers whatever it holds
 - PART `label` - The content block's span (display: contents - children join the root's flex row directly)
 - PART `spinner` - The loading indicator, swapped in for the leading icon while loading:
-In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
+In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `stepper`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Use poetry_button - never a raw <button> with hand-written Tailwind.
 - RULE: The visible text is the content block: poetry_button { "Save" }. label: is ONLY the accessible name.
 - RULE: Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).
@@ -260,6 +260,7 @@ Class: Poetry::Ui::NumberField::Component - BEM block `poetry-ui-number_field`.
 - `format:` ()
 - `id:` (string)
 - `invalid:` (boolean) - default false
+- `label:` (string)
 - `large_step:` (float) - default 10.0
 - `locale:` (string)
 - `max:` (float)

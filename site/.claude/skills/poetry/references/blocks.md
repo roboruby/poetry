@@ -339,6 +339,59 @@ Source (adapt freely - the sample content is meant to be replaced):
   <% end %>
 </div>
 
+## Block: Stepper (`stepper`)
+
+A multi-step flow header: numbered step indicators with connectors and completed/current/upcoming states over the current step's panel with back/continue actions.
+Composes: button, card, icon. Generate: `bin/rails g poetry:block stepper`.
+Source (adapt freely - the sample content is meant to be replaced):
+
+<%# Stepper is a BLOCK, not a component: neither shadcn nor Base UI
+    ships one, so the pattern lives here as copy-in source - adapt the
+    steps freely; nothing hides behind an API. States are visual + ARIA
+    (aria-current="step" on the active item); when a step completes,
+    re-render with the arrays below shifted - the server owns the state. %>
+<div class="mx-auto max-w-2xl p-6">
+  <nav aria-label="Progress">
+    <ol class="flex items-center gap-3">
+      <%# Completed: filled indicator with a check, connector painted. %>
+      <li class="flex items-center gap-3">
+        <span class="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+        </span>
+        <span class="text-sm font-medium">Shipping</span>
+      </li>
+      <li aria-hidden="true" class="h-px min-w-8 flex-1 bg-primary"></li>
+      <%# Current: outlined in primary, named by aria-current. %>
+      <li aria-current="step" class="flex items-center gap-3">
+        <span class="flex size-8 items-center justify-center rounded-full border-2 border-primary text-sm font-semibold text-primary">2</span>
+        <span class="text-sm font-medium">Payment</span>
+      </li>
+      <li aria-hidden="true" class="h-px min-w-8 flex-1 bg-border"></li>
+      <%# Upcoming: muted until reached. %>
+      <li class="flex items-center gap-3">
+        <span class="flex size-8 items-center justify-center rounded-full border border-border text-sm text-muted-foreground">3</span>
+        <span class="text-sm text-muted-foreground">Review</span>
+      </li>
+    </ol>
+  </nav>
+
+  <div class="mt-6">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Payment" } %>
+      <% card.with_description { "Step 2 of 3 - how this order gets paid." } %>
+      <div class="space-y-4 text-sm">
+        <p>Card details are collected by the payment element that mounts here; this panel is the step's content slot.</p>
+      </div>
+      <% card.with_footer do %>
+        <div class="flex w-full items-center justify-between">
+          <%= poetry_button(variant: :outline) { "Back" } %>
+          <%= poetry_button { "Continue to review" } %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>
+
 ## Block: Top nav (`top-nav`)
 
 A site navigation bar: brand mark, a products dropdown of rich title-and-description links, direct destinations, and the log-in / sign-up action pair.

@@ -67,7 +67,7 @@ Slots: title, description, action, footer.
 - PART `card-action` - The header's trailing corner control
 - PART `card-content` - The body - the content block renders here
 - PART `card-footer` - The bottom row (actions/meta)
-In blocks: `app-shell`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
+In blocks: `app-shell`, `section-card`, `stepper` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Compose with the slots (title/description/action/footer) - never rebuild the header grid by hand.
 - RULE: The card body is the content block; use CardAction for the header-corner control.
 - RULE: The title renders as a real heading (h3 default) - set title_tag: to fit the page outline.

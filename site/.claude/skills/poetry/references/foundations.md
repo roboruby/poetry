@@ -10,7 +10,7 @@ Class: Poetry::Ui::Icon::Component - BEM block `poetry-ui-icon`.
 - `library:` (symbol)
 - `name:` (symbol) - required, format: icon-name
 - PART `icon` - The <svg> root itself - the vendored icon markup renders inside; ARIA (label: vs decorative) rides here
-In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `section-card`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
+In blocks: `app-shell`, `data-index`, `destructive-panel`, `page-header`, `section-card`, `stepper`, `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.
 - RULE: Never inline raw <svg> markup where an icon exists - use poetry_icon.
 
