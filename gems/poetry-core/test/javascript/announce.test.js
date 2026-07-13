@@ -2,14 +2,19 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 import { acquire, announce, release } from "@poetry/controllers/helpers/announce"
 
 // The announce singleton (P5) unit suite: lazy region creation, refcounted
-// acquire/release, polite/assertive routing, the clear-then-set microtask
-// (identical consecutive messages re-announce), the per-region queue gap,
-// and tab-visibility muting with the last-message flush. What jsdom cannot
-// see - whether screen readers actually SPEAK - is the browser/SR pass's
-// job (the live-region bug surface is jsdom-invisible by nature).
+// acquire/release, polite/assertive routing, the clear-then-set FRAME
+// (identical consecutive messages re-announce; a fresh region is born
+// empty so ATs never see a region created with content), the per-region
+// queue gap, and tab-visibility muting with the last-message flush. What
+// jsdom cannot see - whether screen readers actually SPEAK - is the
+// browser/SR pass's job (the live-region bug surface is jsdom-invisible
+// by nature).
 
-const flushMicrotasks = async () => {
-  await Promise.resolve()
+// jsdom schedules requestAnimationFrame as a ~16ms timer; under fake
+// timers a frame is advanceTimersByTimeAsync(16), under real timers this
+// helper waits one actual frame.
+const nextFrame = async () => {
+  await new Promise((resolve) => requestAnimationFrame(() => resolve()))
   await Promise.resolve()
 }
 
@@ -41,7 +46,7 @@ describe("helpers/announce", () => {
       expect(assertiveRegion()).toBeNull()
 
       announce("Saved")
-      await flushMicrotasks()
+      await nextFrame()
 
       const polite = politeRegion()
       const assertive = assertiveRegion()
@@ -63,13 +68,26 @@ describe("helpers/announce", () => {
 
       release()
     })
+
+    it("a freshly created region is born EMPTY - content lands a frame later (ATs skip regions born with content)", async () => {
+      announce("Saved")
+
+      const polite = politeRegion()
+
+      expect(polite).not.toBeNull()
+      expect(polite.textContent).toBe("")
+
+      await nextFrame()
+
+      expect(polite.textContent).toBe("Saved")
+    })
   })
 
   describe("politeness routing", () => {
     it("polite (default) writes the status region; assertive writes the alert region; textContent only", async () => {
       announce("Saved")
       announce("Failed", "assertive")
-      await flushMicrotasks()
+      await nextFrame()
 
       expect(politeRegion().textContent).toBe("Saved")
       expect(assertiveRegion().textContent).toBe("Failed")
@@ -78,24 +96,24 @@ describe("helpers/announce", () => {
 
     it("an unknown politeness falls back to polite", async () => {
       announce("Hm", "shouty")
-      await flushMicrotasks()
+      await nextFrame()
 
       expect(politeRegion().textContent).toBe("Hm")
     })
   })
 
   describe("the clear-then-set queue", () => {
-    it("identical consecutive messages re-announce (cleared, then set again on a microtask)", async () => {
+    it("identical consecutive messages re-announce (cleared, then set again a frame later)", async () => {
       vi.useFakeTimers()
 
       announce("Saved")
-      await vi.advanceTimersByTimeAsync(150)
+      await vi.advanceTimersByTimeAsync(200) // frame (16) + gap (150): drain complete
       expect(politeRegion().textContent).toBe("Saved")
 
       announce("Saved")
       expect(politeRegion().textContent).toBe("") // the clear happened synchronously
 
-      await vi.advanceTimersByTimeAsync(0)
+      await vi.advanceTimersByTimeAsync(16)
       expect(politeRegion().textContent).toBe("Saved") // re-set: SRs re-announce
     })
 
@@ -104,11 +122,11 @@ describe("helpers/announce", () => {
 
       announce("one")
       announce("two")
-      await vi.advanceTimersByTimeAsync(0)
+      await vi.advanceTimersByTimeAsync(16)
 
       expect(politeRegion().textContent).toBe("one")
 
-      await vi.advanceTimersByTimeAsync(150)
+      await vi.advanceTimersByTimeAsync(200)
       expect(politeRegion().textContent).toBe("two")
     })
   })
@@ -138,7 +156,7 @@ describe("helpers/announce", () => {
       vi.useFakeTimers()
 
       announce("before")
-      await vi.advanceTimersByTimeAsync(150)
+      await vi.advanceTimersByTimeAsync(200)
 
       setHidden(true)
 
@@ -154,7 +172,7 @@ describe("helpers/announce", () => {
       expect(politeRegion().textContent).toBe("before")
 
       setHidden(false)
-      await vi.advanceTimersByTimeAsync(0)
+      await vi.advanceTimersByTimeAsync(16)
 
       expect(politeRegion().getAttribute("aria-live")).toBe("polite")
       expect(assertiveRegion().getAttribute("aria-live")).toBe("assertive")

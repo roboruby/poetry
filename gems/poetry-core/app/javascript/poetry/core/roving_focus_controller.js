@@ -47,6 +47,7 @@ export default class RovingFocusController extends Controller {
   // Action: keydown->poetry--core--roving-focus#keydown on the group root.
   keydown(event) {
     if (event.defaultPrevented) return // a nested group (an open menu level) already moved focus
+    if (this.#caretTrapped(event)) return // the caret owns this key inside a text control
 
     const items = this.#items()
 
@@ -58,6 +59,44 @@ export default class RovingFocusController extends Controller {
 
     event.preventDefault() // a handled arrow must not also scroll the page
     this.#focusItem(items[nextIndex], items)
+  }
+
+  // The caret guard: when the keydown originates inside a text-entry
+  // control (a toolbar's search field, a menu's filter input), the caret
+  // owns horizontal arrows and Home/End until it reaches the boundary in
+  // the travel direction - only then does the group rove. Any selection
+  // means the key collapses it (caret work, never roving); contenteditable
+  // and controls without a selection API (type=number steps on arrows)
+  // are never stolen from. Vertical arrows inside a textarea stay with the
+  // caret too; a single-line input has no vertical caret motion, so
+  // Up/Down rove as usual.
+  #caretTrapped(event) {
+    const target = event.target
+
+    if (!(target instanceof HTMLElement)) return false
+    if (target.isContentEditable) return true
+
+    const isTextarea = target instanceof HTMLTextAreaElement
+    const isInput = target instanceof HTMLInputElement
+
+    if (!isTextarea && !isInput) return false
+    if (isTextarea && event.key.startsWith("Arrow")) return true
+
+    const horizontal = ["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)
+
+    if (!horizontal) return false
+
+    const start = target.selectionStart
+    const end = target.selectionEnd
+
+    if (start === null || end === null) return true // no selection API: never steal
+    if (start !== end) return true // a selection collapses first
+
+    const length = target.value.length
+    const rtl = directionOf(target) === "rtl"
+    const towardStart = event.key === "Home" || (event.key === (rtl ? "ArrowRight" : "ArrowLeft"))
+
+    return towardStart ? start > 0 : end < length
   }
 
   // The group's OWN items only: a hidden subtree (a closed submenu level) is

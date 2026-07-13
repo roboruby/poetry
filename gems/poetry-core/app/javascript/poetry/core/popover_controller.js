@@ -160,12 +160,26 @@ export default class PopoverController extends Controller {
 
   #wireContent(content) {
     this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
 
   #listen(target, type, listener) {
     target.addEventListener(type, listener)
     this.#wired.push([target, type, listener])
+  }
+
+  // A press on the popover's OWN trigger is the toggle's job, not an
+  // outside dismissal: without this veto the pointerdown closes and the
+  // trailing click re-opens, so the popover appears to never close on
+  // trigger press (Radix's targetIsTrigger rule; iOS light-dismiss
+  // double-fires arrive through the same seam and are covered by it).
+  #onInteractOutside = (event) => {
+    if (event.target !== this.#content()) return
+
+    const origin = event.detail?.originalEvent?.target
+
+    if (origin instanceof Element && this.#trigger()?.contains(origin)) event.preventDefault()
   }
 
   // Esc / outside-press arrive as the dismissable layer's dismiss event

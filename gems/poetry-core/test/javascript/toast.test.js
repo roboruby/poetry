@@ -14,6 +14,14 @@ import { registerPoetryControllers } from "@poetry/controllers"
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 
+// The announce singleton sets region text a real animation FRAME after the
+// clear (the born-with-content discipline) - announce assertions must wait
+// for one, not just a macrotask.
+const announceFrame = async () => {
+  await new Promise((resolve) => requestAnimationFrame(() => resolve()))
+  await Promise.resolve()
+}
+
 const el = (id) => document.getElementById(id)
 
 const politeRegion = () => document.querySelector('[data-poetry-announce-region="polite"]')
@@ -106,7 +114,7 @@ describe("poetry--core--toast / poetry--core--toaster", () => {
       const shows = record("poetry:toast:show", el("poetry-toaster"))
 
       await append("t1", { title: "Saved", description: "Your note is safe." })
-      await nextFrame()
+      await announceFrame()
 
       expect(politeRegion().textContent).toBe("Saved Your note is safe.")
       expect(el("t1").getAttribute("aria-live")).toBe("off")
@@ -117,7 +125,7 @@ describe("poetry--core--toast / poetry--core--toaster", () => {
       await mountToaster()
 
       await append("t1", { variant: "destructive", politeness: "assertive", title: "Delete failed" })
-      await nextFrame()
+      await announceFrame()
 
       expect(assertiveRegion().textContent).toBe("Delete failed")
       expect(politeRegion().textContent).toBe("")

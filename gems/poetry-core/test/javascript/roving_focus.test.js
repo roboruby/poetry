@@ -236,4 +236,98 @@ describe("poetry--core--roving-focus", () => {
       expect(document.activeElement).toBe(el("a"))
     })
   })
+
+  // The caret guard: a text control inside the group (a toolbar's search
+  // field) owns horizontal arrows and Home/End until the caret reaches the
+  // boundary in the travel direction.
+  describe("the caret guard", () => {
+    async function mountWithInput({ dir = null } = {}) {
+      document.body.innerHTML = `
+        <div id="wrapper" ${dir ? `dir="${dir}"` : ""}>
+          <div id="group" data-controller="poetry--core--roving-focus"
+               data-poetry--core--roving-focus-orientation-value="horizontal"
+               data-action="keydown->poetry--core--roving-focus#keydown">
+            <button id="a" data-poetry-collection-item>a</button>
+            <input id="field" type="text" value="poem" data-poetry-collection-item>
+            <button id="c" data-poetry-collection-item>c</button>
+          </div>
+        </div>`
+      const started = Application.start()
+      registerPoetryControllers(started)
+      await nextFrame()
+      return started
+    }
+
+    beforeEach(async () => {
+      application.stop()
+      application = await mountWithInput()
+      return () => application.stop()
+    })
+
+    const field = () => el("field")
+    const caret = (start, end = start) => field().setSelectionRange(start, end)
+
+    it("ArrowRight with the caret mid-text stays with the caret (no rove, no preventDefault)", () => {
+      field().focus()
+      caret(2)
+
+      expect(press(field(), "ArrowRight")).toBe(true) // not preventDefault'ed
+      expect(document.activeElement).toBe(field())
+    })
+
+    it("ArrowRight at the end of the value roves to the next item", () => {
+      field().focus()
+      caret(4)
+
+      press(field(), "ArrowRight")
+
+      expect(document.activeElement).toBe(el("c"))
+    })
+
+    it("ArrowLeft at caret 0 roves back; mid-text it stays", () => {
+      field().focus()
+      caret(0)
+      press(field(), "ArrowLeft")
+
+      expect(document.activeElement).toBe(el("a"))
+
+      field().focus()
+      caret(2)
+      press(field(), "ArrowLeft")
+
+      expect(document.activeElement).toBe(field())
+    })
+
+    it("a selection always belongs to the caret (the key collapses it, never roves)", () => {
+      field().focus()
+      caret(0, 4)
+
+      expect(press(field(), "ArrowRight")).toBe(true)
+      expect(document.activeElement).toBe(field())
+    })
+
+    it("Home/End mid-text stay with the caret; at their boundary they rove", () => {
+      field().focus()
+      caret(2)
+      press(field(), "Home")
+
+      expect(document.activeElement).toBe(field())
+
+      caret(0)
+      press(field(), "Home")
+
+      expect(document.activeElement).toBe(el("a"))
+    })
+
+    it("RTL: ArrowRight is the toward-start key - caret 0 roves, mid-text stays", async () => {
+      application.stop()
+      application = await mountWithInput({ dir: "rtl" })
+
+      field().focus()
+      caret(0)
+      press(field(), "ArrowRight") // rtl: Right retreats toward the previous item
+
+      expect(document.activeElement).toBe(el("a"))
+    })
+  })
 })

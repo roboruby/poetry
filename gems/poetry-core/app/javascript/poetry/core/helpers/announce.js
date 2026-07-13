@@ -107,9 +107,16 @@ function createRegion(politeness) {
   return { politeness, element, queue: [], draining: false, timer: null }
 }
 
-// Per-region queue: clear-then-set on a microtask (so a message identical
-// to the region's current text still re-announces), then a small gap
-// before the next queued message.
+// Per-region queue: clear-then-set across an animation FRAME, not a
+// microtask (so a message identical to the region's current text still
+// re-announces), then a small gap before the next queued message. The
+// frame matters twice over: a microtask lands in the SAME accessibility-
+// tree flush, so (a) a freshly created region would be seen "born with
+// content" - a mutation pattern ATs reliably skip - and (b) clear+set
+// would coalesce into one text change, letting AT dedup swallow repeats.
+// rAF pushes the set into the next frame's flush; a hidden document has
+// no frames, but the visibility contract already routes those to the
+// backlog before enqueue.
 function enqueue(region, message) {
   region.queue.push(String(message))
   drain(region)
@@ -125,7 +132,7 @@ function drain(region) {
   region.draining = true
   region.element.textContent = ""
 
-  queueMicrotask(() => {
+  requestAnimationFrame(() => {
     // The regions may have been torn down or muted between ticks.
     if (!regions || regions[region.politeness] !== region) return
 

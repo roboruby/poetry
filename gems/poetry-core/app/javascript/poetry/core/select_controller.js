@@ -644,6 +644,7 @@ export default class SelectController extends Controller {
     this.#listen(content, "click", this.#onClick)
     this.#listen(content, "scroll", () => this.syncScrollButtons())
     this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
@@ -661,6 +662,17 @@ export default class SelectController extends Controller {
     if (!item || this.#isDisabled(item)) return
 
     this.#commitItem(item)
+  }
+
+  // A press on the select's OWN trigger is the toggle's job, not an
+  // outside dismissal: without the veto the pointerdown closes and the
+  // trailing click re-opens (the popover trigger-press rule).
+  #onInteractOutside = (event) => {
+    if (event.target !== this.#content()) return
+
+    const origin = event.detail?.originalEvent?.target
+
+    if (origin instanceof Element && this.#trigger()?.contains(origin)) event.preventDefault()
   }
 
   // Esc / outside press arrive as the dismissable layer's dismiss event.

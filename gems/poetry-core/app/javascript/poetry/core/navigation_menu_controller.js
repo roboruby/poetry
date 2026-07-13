@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { setState } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
@@ -93,6 +94,7 @@ export default class NavigationMenuController extends Controller {
   // Action: keydown->...#keydown on the root.
   keydown(event) {
     if (event.key === "Escape") {
+      if (isImeKeydown(event)) return
       if (this.#openValue === null) return
 
       const trigger = this.#triggerFor(this.#openValue)

@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
+import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
@@ -73,7 +74,7 @@ export default class ToastController extends Controller {
     // Esc while focus is inside dismisses this toast (it reports as the
     // close affordance: close-press).
     this.#listen(this.element, "keydown", (event) => {
-      if (event.key !== "Escape") return
+      if (event.key !== "Escape" || isImeKeydown(event)) return
 
       event.stopPropagation()
       this.dismiss("close-press")

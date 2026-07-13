@@ -187,6 +187,28 @@ describe("poetry--core--menu", () => {
       expect(document.activeElement).toBe(el("trigger"))
     })
 
+    it("a REAL trigger press on an open menu closes once and never re-opens (pointerdown, then click)", async () => {
+      await mount()
+      const closes = record("poetry:menu:closed", el("root"))
+      const opens = record("poetry:menu:open", el("root"))
+
+      await openWithPointer()
+
+      expect(opens.length).toBe(1)
+
+      // A real press reaches the dismissable layer as pointerdown FIRST (the
+      // trigger sits outside the content) - without the trigger veto that
+      // closes on pointerdown and the trailing click re-opens.
+      el("trigger").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+      click(el("trigger"))
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
+      expect(closes).toEqual([{ reason: "trigger-press" }])
+      expect(opens.length).toBe(1) // no phantom re-open
+    })
+
     it("Tab while open closes the menu", async () => {
       await mount()
       await openWithKey("ArrowDown")

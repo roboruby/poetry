@@ -115,6 +115,21 @@ describe("poetry--core--select", () => {
       expect(document.activeElement).toBe(el("item-banana"))
     })
 
+    it("a REAL trigger press on an open select closes once and never re-opens (pointerdown, then click)", async () => {
+      await open()
+
+      // A real press reaches the dismissable layer as pointerdown FIRST (the
+      // trigger sits outside the content) - without the trigger veto that
+      // closes on pointerdown and the trailing click re-opens.
+      el("trigger").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+      click(el("trigger"))
+      await flushMicrotasks()
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
+    })
+
     it("all four trigger open keys focus the selected option; with no value, the first enabled", async () => {
       for (const key of ["Enter", " ", "ArrowDown", "ArrowUp"]) {
         press(el("trigger"), key)

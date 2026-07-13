@@ -142,8 +142,14 @@ export default class CalendarController extends Controller {
   }
 
   // Move focus to a date, crossing a month boundary by re-rendering first.
+  // A disabled (out-of-range) target is a WALL, not a landing spot: min/max
+  // is the only disabled source and it is contiguous, so navigation simply
+  // refuses - focus() on a disabled button is a silent no-op, and stamping
+  // it as the roving stop would leave the grid with no working Tab entry.
   #focusDate(date) {
     const iso = this.#iso(date)
+
+    if (this.#outOfRange(iso)) return
 
     if (this.#monthOf(date) !== this.monthValue) {
       this.monthValue = this.#monthOf(date)

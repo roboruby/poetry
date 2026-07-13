@@ -591,6 +591,7 @@ export default class MenuController extends Controller {
     this.#listen(content, "pointerover", this.#onPointerover)
     this.#listen(content, "pointerout", this.#onPointerout)
     this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
   }
@@ -614,6 +615,18 @@ export default class MenuController extends Controller {
   // Esc / outside-press arrive as the dismissable layer's dismiss event: the
   // root content's layer closes the menu; a sub-content's layer (the topmost
   // while a sub is open) closes just that level - Esc focuses ITS sub-trigger.
+  // A press on the menu's OWN root trigger is the toggle's job, not an
+  // outside dismissal: without the veto the pointerdown closes and the
+  // trailing click re-opens (the popover trigger-press rule; the menubar
+  // coordinator vetoes the same way for bar-wide triggers).
+  #onInteractOutside = (event) => {
+    if (event.target !== this.#content()) return
+
+    const origin = event.detail?.originalEvent?.target
+
+    if (origin instanceof Element && this.#trigger()?.contains(origin)) event.preventDefault()
+  }
+
   #onDismiss = (event) => {
     const target = event.target instanceof Element ? event.target : null
 

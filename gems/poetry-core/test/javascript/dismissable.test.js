@@ -58,6 +58,24 @@ describe("poetry--core--dismissable", () => {
     expect(el("layer")).not.toBeNull()
   })
 
+  it("an IME composition-cancel Escape NEVER dismisses (isComposing, and the legacy 229 keyCode)", async () => {
+    const dismissals = await mountLayer("layer")
+
+    window.dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true, isComposing: true })
+    )
+
+    const legacy = new KeyboardEvent("keydown", { key: "Escape", bubbles: true })
+    Object.defineProperty(legacy, "keyCode", { value: 229 })
+    window.dispatchEvent(legacy)
+
+    expect(dismissals).toEqual([])
+
+    pressEscape() // the real Escape still works afterwards
+
+    expect(dismissals).toEqual(["layer"])
+  })
+
   it("only the TOPMOST layer dismisses on Escape; the next layer takes over once it closes", async () => {
     const bottom = await mountLayer("bottom")
     const top = await mountLayer("top")

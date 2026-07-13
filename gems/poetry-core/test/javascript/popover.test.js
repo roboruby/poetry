@@ -94,6 +94,31 @@ describe("poetry--core--popover", () => {
       expect(el("content").hidden).toBe(true)
       expect(closes).toEqual([{ reason: "trigger-press" }])
     })
+
+    it("a REAL trigger press on an open popover closes once and never re-opens (pointerdown, then click)", async () => {
+      await mount()
+      const closes = record("poetry:popover:closed", el("root"))
+      const opens = record("poetry:popover:open", el("root"))
+
+      el("trigger").click()
+      await nextFrame()
+
+      expect(opens.length).toBe(1)
+
+      // A real press reaches the dismissable layer as pointerdown FIRST (the
+      // trigger sits outside the content element), then the button's click
+      // fires. Without the trigger veto that sequence closes on pointerdown
+      // and re-opens on click - the popover appears to never close. iOS
+      // light-dismiss double-fires arrive through this same seam.
+      el("trigger").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true }))
+      el("trigger").click()
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
+      expect(closes).toEqual([{ reason: "trigger-press" }])
+      expect(opens.length).toBe(1) // no phantom re-open
+    })
   })
 
   describe("the token-activated layer stack", () => {

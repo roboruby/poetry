@@ -146,6 +146,39 @@ describe("poetry--core--calendar", () => {
     expect(el("cal").querySelector("[data-poetry--core--calendar-target=caption]").textContent).toBe("July 2026")
     expect(document.activeElement.dataset.date).toBe("2026-07-01")
   })
+
+  it("arrowing INTO the disabled min/max edge is a wall: focus, the tab stop, and the month all hold", async () => {
+    application = await mount({ selected: "2026-06-11", min: "2026-06-10", max: "2026-06-20" })
+    el("next").click()
+    el("prev").click() // force a render so min/max disabling is applied
+
+    // Walk legally onto the edge day first (this hands it the roving stop).
+    const start = dayFor("2026-06-11")
+    start.focus()
+    start.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }))
+
+    expect(document.activeElement).toBe(dayFor("2026-06-10"))
+    expect(dayFor("2026-06-10").getAttribute("tabindex")).toBe("0")
+
+    // ArrowLeft now targets Jun 9 (disabled): navigation refuses - focus
+    // stays, and the roving stop is NOT handed to a disabled button (a
+    // silent focus() no-op there would leave the grid with no working Tab
+    // entry).
+    const edge = dayFor("2026-06-10")
+    edge.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }))
+
+    expect(document.activeElement).toBe(dayFor("2026-06-10"))
+    expect(dayFor("2026-06-10").getAttribute("tabindex")).toBe("0")
+    expect(dayFor("2026-06-09").getAttribute("tabindex")).not.toBe("0")
+
+    // ArrowUp targets Jun 3 (disabled, a week back): same wall.
+    edge.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowUp", bubbles: true, cancelable: true }))
+
+    expect(document.activeElement).toBe(dayFor("2026-06-10"))
+
+    // The month never flipped while refusing.
+    expect(el("cal").querySelector("[data-poetry--core--calendar-target=caption]").textContent).toBe("June 2026")
+  })
 })
 
 // -- range mode (N9 D1): the addToRange transcription + the range wire ------

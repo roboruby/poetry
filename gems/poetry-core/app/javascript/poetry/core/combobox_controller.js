@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
+import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
@@ -255,8 +256,11 @@ export default class ComboboxController extends Controller {
         if (this.#isOpen() && !this.#highlightedOption()) this.#hide("none")
         return
       case "Escape": {
-        // The press that just dismissed the popup must not ALSO wipe.
+        // The press that just dismissed the popup must not ALSO wipe - and
+        // neither may an IME composition-cancel Escape (the user is dropping
+        // a composition, not asking to clear the field).
         if (event === this.#dismissedEvent || this.#isOpen() || input.readOnly) return
+        if (isImeKeydown(event)) return
 
         this.#command()?.reset()
         if (this.#applied.length > 0) this.#apply([])
