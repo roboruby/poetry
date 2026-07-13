@@ -6988,6 +6988,24 @@ blocks:
     - detail
     - summary
     - form
+  stepper:
+    title: Stepper
+    description: 'A multi-step flow header: numbered step indicators with connectors
+      and completed/current/upcoming states over the current step''s panel with back/continue
+      actions.'
+    components:
+    - button
+    - card
+    - icon
+    template: lib/generators/poetry/block/templates/stepper.html.erb
+    keywords:
+    - stepper
+    - wizard
+    - steps
+    - checkout
+    - onboarding
+    - progress
+    - multi-step
   top-nav:
     title: Top nav
     description: 'A site navigation bar: brand mark, a products dropdown of rich title-and-description
