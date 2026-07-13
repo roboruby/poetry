@@ -87,7 +87,10 @@ module Poetry
         controllers << Live::CONTROLLER if respond_to?(:live?) && live?
         controllers << Live::WINDOW_CONTROLLER if window
 
-        data = {}
+        # Self-identification: the frame is the chart type's own
+        # root - the Container wrapper self-ids as "container", so without
+        # this the SVG anatomy would have no owner in the part contract.
+        data = { component: self.class.component_title }
         data[:controller] = controllers.join(" ") if controllers.any?
         actions = []
         if controllers.include?(Live::CONTROLLER)

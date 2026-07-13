@@ -59,7 +59,7 @@
     <% if tooltip? %>
       <g data-slot="chart-hit-wedges">
         <% rows.each_index do |i| %>
-          <path data-index="<%= i %>" d="<%= hit_wedge(i) %>" fill="transparent"/>
+          <path data-slot="chart-hit-wedge" data-index="<%= i %>" d="<%= hit_wedge(i) %>" fill="transparent"/>
         <% end %>
       </g>
     <% end %>
