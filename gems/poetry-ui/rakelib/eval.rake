@@ -619,6 +619,157 @@ namespace :eval do
     desc "The full benchmark pipeline: generate -> score -> capture -> judge -> aggregate"
     task run: %i[generate score capture judge aggregate]
   end
+
+  # Degradation mode: multi-turn convention-survival over the
+  # pre-registered 10-brief sample. The generate stage is its own driver
+  # (conversation chains + probes); every downstream stage is the UNCHANGED
+  # eval:benchmark machinery pointed at the probe dirs (they are
+  # benchmark-run shaped on purpose). Root: eval/results/<date>-degradation
+  # with p0/p1/p2 probe runs inside.
+  namespace :degradation do
+    desc "Run the 10-brief x 2-arm degradation conversations -> probe dirs + degradation-manifest.json"
+    task :generate do
+      poetry_ui_boot!
+      require_relative "../eval/degradation"
+      require "json"
+
+      deg = Poetry::Eval::Degradation.new(results_root: poetry_degradation_root)
+      deg.build_hosts!
+      manifest_path = poetry_degradation_root.join("degradation-manifest.json")
+      manifest = manifest_path.exist? ? JSON.parse(manifest_path.read) : {}
+      manifest["units"] ||= {}
+      manifest["config"] = {
+        "model" => deg.model, "sample" => Poetry::Eval::Degradation::SAMPLE,
+        "budgets" => Poetry::Eval::Degradation::BUDGETS,
+        "sequence" => Poetry::Eval::Degradation::SEQUENCE.map { |step| step.compact.join(":") },
+        "toolbelts" => Poetry::Eval::Degradation::TOOLBELTS
+      }
+      prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
+
+      units = Poetry::Eval::Degradation::SAMPLE.flat_map do |task|
+        Poetry::Eval::Degradation::ARM_HOSTS.keys.map { |arm| [task, arm] }
+      end
+      unless ENV["POETRY_BENCH_FORCE"] == "1"
+        units = units.reject do |task, arm|
+          entry = manifest["units"].dig(task, arm)
+          entry && !entry.key?("error") &&
+            Poetry::Eval::Degradation::PROBES.all? do |probe|
+              poetry_degradation_root.join(probe, "generated", task, "#{arm}.html.erb").exist?
+            end
+        end
+      end
+      puts "degradation: #{units.size} conversations (model #{deg.model}, " \
+           "#{Poetry::Eval::Degradation::SEQUENCE.count { |step, _k, _i| step == :message }} messages each) " \
+           "-> #{poetry_degradation_root}..."
+
+      queue = Queue.new
+      units.each { |unit| queue << unit }
+      mutex = Mutex.new
+      workers = Array.new([Integer(ENV.fetch("POETRY_BENCH_CONCURRENCY", "4")), units.size].min) do
+        Thread.new do
+          loop do
+            task_name, arm = begin
+              queue.pop(true)
+            rescue ThreadError
+              break
+            end
+            entry = begin
+              deg.degrade_unit(task: task_name, arm: arm,
+                               brief: Poetry::Eval::Runner::TASKS.fetch(task_name)["description"])
+            rescue Poetry::Eval::Benchmark::HermeticityError
+              raise
+            rescue Poetry::Eval::Benchmark::Error => e
+              { "error" => e.message[0, 300] }
+            end
+            mutex.synchronize do
+              manifest["units"][task_name] ||= {}
+              manifest["units"][task_name][arm] = entry
+              manifest["usage"] = poetry_degradation_usage(manifest, deg, prior_receipted)
+              manifest_path.dirname.mkpath
+              manifest_path.write(JSON.pretty_generate(manifest))
+              status = if entry["error"]
+                         "ERROR #{entry["error"][0, 60]}"
+                       else
+                         cost = entry["messages"].sum { |message| message["cost_usd"].to_f }
+                         format("$%<cost>.2f  probes %<probes>s", cost: cost,
+                                                                  probes: entry["probes"].values.join("/"))
+                       end
+              puts format("  %<task>-19s %<arm>-13s %<status>s", task: task_name, arm: arm, status: status)
+            end
+          end
+        end
+      end
+      workers.each(&:join)
+      puts "degradation manifest: #{manifest_path} ($#{manifest.dig("usage", "receipted_cost_usd")} receipted)"
+    end
+
+    desc "Score all three probes through the benchmark score stage"
+    task :score do
+      poetry_degradation_stage("score", Poetry::Eval::Degradation::PROBES)
+    end
+
+    desc "Capture the judged probes (p0, p2) through the benchmark capture stage"
+    task :capture do
+      poetry_degradation_stage("capture", Poetry::Eval::Degradation::JUDGED_PROBES)
+    end
+
+    desc "Judge the p0 and p2 pairs through the benchmark judge stage"
+    task :judge do
+      poetry_degradation_stage("judge", Poetry::Eval::Degradation::JUDGED_PROBES)
+    end
+
+    desc "Fold probes + verdicts + manifest into degradation-results.json (schema degradation-v1)"
+    task :aggregate do
+      poetry_ui_boot!
+      require_relative "../eval/degradation"
+      require "json"
+      require "date"
+
+      root = poetry_degradation_root
+      scorecards = Poetry::Eval::Degradation::PROBES.to_h do |probe|
+        [probe, JSON.parse(root.join(probe, "generated-scorecard.json").read)]
+      end
+      verdicts = Poetry::Eval::Degradation::JUDGED_PROBES.to_h do |probe|
+        [probe, JSON.parse(root.join(probe, "benchmark-verdicts.json").read)]
+      end
+      artifacts = Poetry::Eval::Degradation::PROBES.to_h do |probe|
+        [probe, Poetry::Eval::Degradation::SAMPLE.to_h do |task|
+          [task, Poetry::Eval::Degradation::ARM_HOSTS.keys.to_h do |arm|
+            path = root.join(probe, "generated", task, "#{arm}.html.erb")
+            [arm, path.exist? ? path.read : ""]
+          end]
+        end]
+      end
+      payload = Poetry::Eval::Degradation.aggregate(
+        scorecards: scorecards, verdicts: verdicts, artifacts: artifacts,
+        manifest: JSON.parse(root.join("degradation-manifest.json").read),
+        meta: {
+          "generated_on" => ENV.fetch("POETRY_BENCH_DATE", Date.today.iso8601),
+          "protocol_notes" => [
+            "multi-turn continuation via claude -p --resume (session chain per unit)",
+            "probes p0/p1/p2 at the pre-registered depths; p1 mechanical-only",
+            "fillers are chat-only by instruction; the distractor is a temptation, never an order",
+            "budget exhaustion on a follow-up is recorded data, never a unit error"
+          ]
+        }
+      )
+      path = root.join("degradation-results.json")
+      path.write(JSON.pretty_generate(payload))
+      summary = payload["summary"]
+      puts "pass rates: #{summary["probe_pass_rates"].map do |arm, rates|
+        "#{arm} #{rates.values.join(" -> ")}"
+      end.join("  |  ")}"
+      puts "drop p0->p2: #{summary["drop_p0_to_p2"].map { |arm, drop| "#{arm} #{drop}" }.join(", ")}"
+      puts "judged poetry wins: #{summary["judged_poetry_wins"].map { |probe, n| "#{probe} #{n}" }.join(", ")}"
+      summary["predictions"].each do |key, record|
+        puts "#{key}: #{record["pass"] ? "PASS" : "FAIL"} - #{record["detail"]}"
+      end
+      puts "results: #{path}"
+    end
+
+    desc "The full degradation pipeline: generate -> score -> capture -> judge -> aggregate"
+    task run: %i[generate score capture judge aggregate]
+  end
 end
 
 # Shared roots/filters for the eval:benchmark:* stages.
@@ -637,8 +788,13 @@ def poetry_bench_spec_tasks
   when "pagescale"
     require_relative "../eval/pagescale"
     Poetry::Eval::Pagescale::TASKS
+  when "holdout"
+    # The holdout stratum: run ONLY to validate an agent-surface
+    # change, never to tune one (doctrine in eval/holdout.rb).
+    require_relative "../eval/holdout"
+    Poetry::Eval::Holdout::TASKS
   else
-    abort "unknown POETRY_BENCH_SPEC #{spec.inspect} (standing | pagescale)"
+    abort "unknown POETRY_BENCH_SPEC #{spec.inspect} (standing | pagescale | holdout)"
   end
 end
 
@@ -663,4 +819,41 @@ def poetry_bench_manifest_usage(manifest, bench, prior_receipted)
     "unit_cost_sum_usd" => entries.sum { |entry| entry["cost_usd"].to_f }.round(4),
     "receipted_cost_usd" => (prior_receipted + bench.receipted_cost_usd).round(4)
   }
+end
+
+# The degradation run's own root: eval/results/<date>-degradation, with the
+# p0/p1/p2 probe runs nested inside. POETRY_DEG_DATE (not POETRY_BENCH_DATE:
+# the probe stages rewrite that per probe) pins a specific run.
+def poetry_degradation_root
+  require "date"
+  Poetry::Ui.root.join("eval/results", "#{ENV.fetch("POETRY_DEG_DATE", Date.today.iso8601)}-degradation")
+end
+
+def poetry_degradation_usage(manifest, deg, prior_receipted)
+  entries = manifest["units"].values.flat_map(&:values)
+  {
+    "units_recorded" => entries.size,
+    "unit_cost_sum_usd" => entries.sum do |entry|
+      (entry["messages"] || []).sum { |message| message["cost_usd"].to_f }
+    end.round(4),
+    "receipted_cost_usd" => (prior_receipted + deg.receipted_cost_usd).round(4)
+  }
+end
+
+# Run one UNCHANGED eval:benchmark stage once per probe dir: the probe
+# dirs are benchmark-run shaped exactly so these stages need no variants.
+def poetry_degradation_stage(stage, probes)
+  require_relative "../eval/degradation"
+  prefix = poetry_degradation_root.basename.to_s
+  probes.each do |probe|
+    ENV["POETRY_BENCH_DATE"] = "#{prefix}/#{probe}"
+    ENV["POETRY_BENCH_TASKS"] = Poetry::Eval::Degradation::SAMPLE.join(",")
+    puts "== degradation #{stage} @ #{probe} =="
+    stage_task = Rake::Task["eval:benchmark:#{stage}"]
+    stage_task.reenable
+    stage_task.invoke
+  ensure
+    ENV.delete("POETRY_BENCH_DATE")
+    ENV.delete("POETRY_BENCH_TASKS")
+  end
 end

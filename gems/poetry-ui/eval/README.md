@@ -127,3 +127,29 @@ allowed on both arms); the capture stylesheet compiles the generated arms
 as an extra `@source` so arbitrary raw utilities render with full
 fidelity. The run spends real generation + judging tokens: only under its
 own green-light, on-demand cadence, never CI.
+
+## Degradation mode
+
+The benchmark measures ONE-SHOT output; degradation mode measures whether
+convention adherence survives a working session: follow-up edits, filler
+questions polluting the context, and one temptation to abandon the app's
+conventions. Driver: `eval/degradation.rb` (protocol = its `SEQUENCE`
+constant, pre-registered: brief → probe p0 → 3 fillers → edit 1 → p1 →
+distractor → filler → edit 2 → p2). Multi-turn rides `claude -p --resume`
+session chains; the probe dirs are benchmark-run shaped so score/capture/
+judge are the UNCHANGED `eval:benchmark:*` stages run per probe (p1 is
+mechanical-only). `rake eval:degradation:run` chains everything; results
+land at `eval/results/<date>-degradation/` (`degradation-v1`). Budget
+exhaustion on a follow-up is recorded data, never a unit error — the next
+probe scores whatever state the artifact reached.
+
+## The holdout stratum
+
+Eight briefs in `eval/holdout.rb`, RESERVED for validating agent-surface
+changes (skills, AGENTS.md, llms text, MCP descriptions) — the standing 31
+get tuned against over time; these must not be. Doctrine (in the file, and
+binding): never cite a holdout failure as motivation for an edit; run only
+when a surface change claims improvement (`POETRY_BENCH_SPEC=holdout`
+through the full benchmark machinery, before/after); report every run in
+the decision log including losses. An unreported holdout run is a tuned
+holdout.
