@@ -60,6 +60,10 @@ export default class DateFieldController extends Controller {
     this.#readInput()
     this.#buildSegments()
     this.element.setAttribute("data-enhanced", "")
+    // The native input leaves the tab order (segments are the surface)
+    // but STAYS the form value and the constraint-validation carrier.
+    this.inputTarget.setAttribute("tabindex", "-1")
+    this.inputTarget.setAttribute("aria-hidden", "true")
 
     // Native required validation fires on the (visually hidden) input;
     // route the browser's focus request to the first empty segment.
@@ -71,6 +75,8 @@ export default class DateFieldController extends Controller {
     this.inputTarget?.removeEventListener("invalid", this.#onInvalid)
     document.removeEventListener("selectionchange", this.#onSelectionChange)
     this.element.removeAttribute("data-enhanced")
+    this.inputTarget?.removeAttribute("tabindex")
+    this.inputTarget?.removeAttribute("aria-hidden")
     this.#segments = []
   }
 
@@ -232,7 +238,8 @@ export default class DateFieldController extends Controller {
 
     const escaped = typeof CSS !== "undefined" && CSS.escape ? CSS.escape(id) : id
 
-    return document.querySelector(`label[for="${escaped}"]`)?.textContent?.trim() || null
+    return document.querySelector(`label[for="${escaped}"]`)?.textContent?.trim() ||
+      this.inputTarget.getAttribute("aria-label") || null
   }
 
   #resolveDayPeriodNames() {
