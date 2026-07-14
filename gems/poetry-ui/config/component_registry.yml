@@ -7519,6 +7519,82 @@ components:
         - right
         - bottom
         - left
+  poetry/ui/tree:
+    class_name: Poetry::Ui::Tree::Component
+    identifier: poetry--ui--tree
+    bem_block: poetry-ui-tree
+    styles: []
+    options:
+    - name: label
+      type: string
+      required: true
+    slots: []
+    slot_extras:
+    - item
+    elements:
+    - item
+    - cell
+    - toggle
+    - toggle_spacer
+    - label
+    capsule: 908b5c0a5a2b
+    controllers:
+    - identifier: poetry--core--tree
+      targets: []
+      values: []
+      actions:
+      - keydown
+      - press
+      - pressStart
+      - toggle
+      events:
+      - poetry:tree:toggle
+    agent_rules:
+    - Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with
+      click handlers; the treegrid semantics, expansion keys, and focus rules ride
+      the controller.
+    - 'label: is REQUIRED (the treegrid''s accessible name).'
+    - 'Items: tree.with_item(text:, value:, expanded:, disabled:, href:) with nesting
+      via the block - the component flattens and computes aria-level/posinset/setsize.'
+    - 'Expansion is client state; persist it by listening for poetry:tree:toggle and
+      re-rendering with expanded: from your store.'
+    - 'Navigation destinations take href: (the label renders as a link); a Tree is
+      not a menu - actions belong to DropdownMenu, picking to Select/Combobox.'
+    parts:
+    - name: tree
+      description: The treegrid container (role=treegrid, the accessible name) - roving
+        focus, expansion keys, and typeahead ride here; rows are FLAT siblings
+    - name: tree-item
+      description: One row (role=row > gridcell) - hierarchy in aria-level/posinset/setsize,
+        indentation via --poetry-tree-level; rows under a collapsed ancestor render
+        hidden
+      states:
+      - attr: data-expanded
+        condition: the row's subtree is open (parents only; aria-expanded is the canonical
+          twin)
+      - attr: data-disabled
+        condition: the item is disabled (skipped by arrows and typeahead)
+      - attr: data-value
+        condition: always - the toggle event's identity
+      - attr: data-level
+        condition: always - the 1-based depth (aria-level's twin; --poetry-tree-level
+          drives the indent)
+      vars:
+      - name: "--poetry-tree-level"
+        description: the 1-based depth - indentation is calc((level - 1) * step) in
+          the dictionary
+    - name: tree-item-toggle
+      description: 'The chevron (parents only): tabindex -1, never steals focus, aria-label
+        flips Expand/Collapse'
+      states:
+      - attr: data-expand-label
+        condition: always - the localized Expand string the controller swaps in on
+          collapse
+      - attr: data-collapse-label
+        condition: always - the localized Collapse string the controller swaps in
+          on expand
+    - name: tree-item-label
+      description: 'The row''s text - a link when href: is given'
 helpers:
   poetry_attachment_group: {}
   poetry_avatar_group: {}
@@ -7837,3 +7913,4 @@ helper_args:
   poetry_toolbar: 0
   poetry_tooltip: 0
   poetry_tooltip_provider: 0
+  poetry_tree: 0

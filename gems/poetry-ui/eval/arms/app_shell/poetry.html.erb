@@ -31,5 +31,19 @@
           never Progress - progress is an operation completing. %>
       <%= poetry_meter(value: 68, label: "Storage used") %>
     </div>
+    <%# A hierarchical navigator is a Tree: flat treegrid rows,
+        expansion keys and typeahead ride the controller - never nested
+        <ul>s with click handlers. %>
+    <div class="px-4 pb-4">
+      <%= poetry_tree(label: "Projects") do |tree| %>
+        <% tree.with_item(text: "Acme rollout", value: "acme", expanded: true) do |acme| %>
+          <% acme.with_item(text: "Kickoff notes", value: "kickoff", href: "/projects/acme/kickoff") %>
+          <% acme.with_item(text: "Milestones", value: "milestones", href: "/projects/acme/milestones") %>
+        <% end %>
+        <% tree.with_item(text: "Globex migration", value: "globex") do |globex| %>
+          <% globex.with_item(text: "Runbook", value: "runbook", href: "/projects/globex/runbook") %>
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
 <% end %>

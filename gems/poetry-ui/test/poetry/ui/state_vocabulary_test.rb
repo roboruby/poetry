@@ -33,6 +33,8 @@ module Poetry
         "inset" => "menu item inset marker (server-rendered)",
         "enhanced" => "date/time field progressive-enhancement marker " \
                       "(poetry--core--date-field via setAttribute)",
+        "expanded" => "tree row open marker (server-rendered + poetry--core--tree via " \
+                      "toggleAttribute; aria-expanded is the canonical twin)",
         "invalid" => "server-rendered invalid marker on segment-field groups ",
         "today" => "calendar today-cell marker (server + poetry--core--calendar via setAttribute, N9 W6)",
         "outside" => "calendar outside-month day marker (server + poetry--core--calendar, N9 W6)",

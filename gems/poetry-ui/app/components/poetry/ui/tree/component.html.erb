@@ -1,0 +1,32 @@
+<%# The flat treegrid: every row a sibling, hierarchy in aria-* computed
+    server-side, rows under collapsed ancestors hidden. %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <% if rows.any? %>
+    <% rows.each_with_index do |row, index| %>
+      <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(row_attributes(row, index)).to_attributes) do %>
+        <span role="gridcell" class="<%= css(:cell) %>">
+          <% if row.expandable %>
+            <%= content_tag(:button, **Poetry::Core::HTML::Attributes.new(toggle_attributes(row, index)).to_attributes) do %>
+              <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-right") %>
+            <% end %>
+          <% else %>
+            <span class="<%= css(:toggle_spacer) %>" aria-hidden="true"></span>
+          <% end %>
+          <% if row.href.present? && !row.disabled %>
+            <a href="<%= row.href %>" data-slot="tree-item-label" class="<%= css(:label) %>" tabindex="-1"><%= row.text %></a>
+          <% else %>
+            <span data-slot="tree-item-label" class="<%= css(:label) %>"><%= row.text %></span>
+          <% end %>
+        </span>
+      <% end %>
+    <% end %>
+  <% else %>
+    <%# An empty treegrid with bare content is invalid ARIA - the empty
+        state wraps in a placeholder row > gridcell (the contract). %>
+    <div role="row" aria-level="1" data-slot="tree-item" data-value="" tabindex="-1" class="<%= css(:item) %>" style="--poetry-tree-level: 1">
+      <span role="gridcell" class="<%= css(:cell) %>">
+        <span data-slot="tree-item-label" class="text-muted-foreground"><%= t("poetry.tree.empty") %></span>
+      </span>
+    </div>
+  <% end %>
+<% end %>

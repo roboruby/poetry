@@ -33,6 +33,10 @@ en:
       decrement: "Decrease"
     search_field:
       clear: "Clear search"
+    tree:
+      expand: "Expand"
+      collapse: "Collapse"
+      empty: "No items"
     tag_group:
       remove: "Remove"
     date_field:

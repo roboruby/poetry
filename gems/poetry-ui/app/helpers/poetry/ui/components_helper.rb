@@ -502,6 +502,13 @@ module Poetry
         render(Poetry::Ui::TagGroup::Component.new(**), &)
       end
 
+      # Hierarchical expandable list (flat treegrid): items via the
+      # nested with_item builder, expansion persisted by the host through
+      # poetry:tree:toggle.
+      def poetry_tree(**, &)
+        render(Poetry::Ui::Tree::Component.new(**), &)
+      end
+
       def poetry_field(**, &)
         render(Poetry::Ui::Field::Component.new(**), &)
       end
