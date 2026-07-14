@@ -36,6 +36,14 @@ visual fragments under `themes/`.
   browser); `docs/*-port-ledger.txt` — per-theme residuals, kept current
 - `eval/` — the harness: frozen arms + runner (mechanical), judge + captures
   + committed results (judged); `eval/README.md` is the doctrine
+- `lib/poetry/ui/testing/` — the shipped interaction testers:
+  `require "poetry/ui/testing"`, include `Poetry::Ui::Testing` in a Capybara
+  system test, then drive components through their REAL keyboard/pointer
+  contracts (`poetry_select("#plan").select_option("Pro", via: :keyboard)`;
+  also `poetry_combobox`, `poetry_dropdown_menu`, `poetry_dialog`). Write consumer
+  tests THROUGH the testers, never with hand-rolled click sequences — they
+  assert on the data-open/aria contract, and `bundle exec rake test:testers`
+  proves them against the live preview pages (browser-gated, like visual/axe)
 
 ## Known traps
 
