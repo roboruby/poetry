@@ -951,6 +951,24 @@
       "poetry--core--scroll-spy:changed"
     ]
   },
+  "poetry--core--search-field": {
+    "targets": [
+      "clear",
+      "input"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "changed",
+      "clear",
+      "connect",
+      "holdFocus",
+      "keydown"
+    ],
+    "events": [
+      "poetry:search-field:clear"
+    ]
+  },
   "poetry--core--select": {
     "targets": [],
     "values": {
@@ -1164,6 +1182,20 @@
     ],
     "events": [
       "poetry--core--tabs:change"
+    ]
+  },
+  "poetry--core--tag-group": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "keydown",
+      "remove"
+    ],
+    "events": [
+      "poetry:tag-group:remove"
     ]
   },
   "poetry--core--toast": {

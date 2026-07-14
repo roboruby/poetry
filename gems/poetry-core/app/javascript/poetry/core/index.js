@@ -7,6 +7,7 @@ import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
 import AccordionController from "@poetry/controllers/accordion_controller"
+import SearchFieldController from "@poetry/controllers/search_field_controller"
 import RovingFocusController from "@poetry/controllers/roving_focus_controller"
 import FocusScopeController from "@poetry/controllers/focus_scope_controller"
 import DismissableController from "@poetry/controllers/dismissable_controller"
@@ -31,6 +32,7 @@ import OtpController from "@poetry/controllers/otp_controller"
 import SelectController from "@poetry/controllers/select_controller"
 import CommandController from "@poetry/controllers/command_controller"
 import ComboboxController from "@poetry/controllers/combobox_controller"
+import TagGroupController from "@poetry/controllers/tag_group_controller"
 import TabsController from "@poetry/controllers/tabs_controller"
 import DrawerController from "@poetry/controllers/drawer_controller"
 import SheetController from "@poetry/controllers/sheet_controller"
@@ -49,6 +51,7 @@ export { default as StateController } from "@poetry/controllers/state_controller
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
 export { default as MessageScrollerController } from "@poetry/controllers/message_scroller_controller"
 export { default as AccordionController } from "@poetry/controllers/accordion_controller"
+export { default as SearchFieldController } from "@poetry/controllers/search_field_controller"
 export { default as RovingFocusController } from "@poetry/controllers/roving_focus_controller"
 export { default as FocusScopeController } from "@poetry/controllers/focus_scope_controller"
 export { default as DismissableController } from "@poetry/controllers/dismissable_controller"
@@ -73,6 +76,7 @@ export { default as OtpController } from "@poetry/controllers/otp_controller"
 export { default as SelectController } from "@poetry/controllers/select_controller"
 export { default as CommandController } from "@poetry/controllers/command_controller"
 export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
+export { default as TagGroupController } from "@poetry/controllers/tag_group_controller"
 export { default as TabsController } from "@poetry/controllers/tabs_controller"
 export { default as DrawerController } from "@poetry/controllers/drawer_controller"
 export { default as SheetController } from "@poetry/controllers/sheet_controller"
@@ -104,6 +108,7 @@ export const controllers = {
   "poetry--core--dialog": DialogController,
   "poetry--core--message-scroller": MessageScrollerController,
   "poetry--core--accordion": AccordionController,
+  "poetry--core--search-field": SearchFieldController,
   "poetry--core--roving-focus": RovingFocusController,
   "poetry--core--focus-scope": FocusScopeController,
   "poetry--core--dismissable": DismissableController,
@@ -128,6 +133,7 @@ export const controllers = {
   "poetry--core--select": SelectController,
   "poetry--core--command": CommandController,
   "poetry--core--combobox": ComboboxController,
+  "poetry--core--tag-group": TagGroupController,
   "poetry--core--tabs": TabsController,
   "poetry--core--drawer": DrawerController,
   "poetry--core--sheet": SheetController,
