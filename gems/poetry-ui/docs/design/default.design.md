@@ -101,7 +101,7 @@ poetry:
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: system sans
   treatment: the neutral shadcn-parity treatment (new-york-v4 baseline)
-  components_count: 72
+  components_count: 75
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
     floor: WCAG 2.2 AA (4.5:1) - locked, every gated pair
@@ -194,7 +194,7 @@ Semantic roles only - components never reference raw palette values
 
 ## Components
 
-- catalog: 72 components - the registry is the truth; read
+- catalog: 75 components - the registry is the truth; read
   `/poetry/llms.txt` (or `llms-full.txt` with events and variants)
   instead of duplicating it here
 - consume via `poetry_*` helpers; styling rides the theme's `cn-*` classes,

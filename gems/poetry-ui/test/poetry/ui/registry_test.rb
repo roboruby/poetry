@@ -28,16 +28,16 @@ module Poetry
                       poetry/ui/kbd
                       poetry/ui/label
                       poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
-                      poetry/ui/metadata_list
+                      poetry/ui/metadata_list poetry/ui/meter
                       poetry/ui/native_select poetry/ui/navigation_menu poetry/ui/number_field
                       poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group
                       poetry/ui/resizable
                       poetry/ui/scroll_area
-                      poetry/ui/select
+                      poetry/ui/search_field poetry/ui/select
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
                       poetry/ui/spinner poetry/ui/stat
-                      poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea
-                      poetry/ui/time_field poetry/ui/toast
+                      poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group
+                      poetry/ui/textarea poetry/ui/time_field poetry/ui/toast
                       poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip]
 

@@ -3,6 +3,11 @@
 <% row = Struct.new(:number, :customer, :amount) %>
 <% rows = [row.new("INV-001", "Acme", "$250.00"), row.new("INV-002", "Globex", "$1,150.00")] %>
 <% state = Poetry::Ui::DataTable::State.from_params({ sort: "number", dir: "asc" }, sortable: %w[number customer]) %>
+<%# Search over records is a SearchField: Escape clears then
+    dismisses, the clear button holds focus - never a bare Input with a
+    hand-rolled x. %>
+<%= poetry_search_field(name: "q", label: "Search invoices", placeholder: "Search invoices…",
+                        class: "mb-2 max-w-xs") %>
 <%# The bulk-action strip: one Tab stop of grouped actions over
     the table - roving arrows move between the buttons. %>
 <%= poetry_toolbar(label: "Invoice actions", class: "mb-2") do |toolbar| %>

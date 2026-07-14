@@ -41,17 +41,20 @@ module Poetry
       "toolbar" => %w[button input separator], # the typed slots render them
       "file_input" => %w[input icon], # input variant wears Input; the dropzone's upload glyph
       "date_field" => %w[input], # the pre-enhancement native input wears Input's chrome
-      "time_field" => %w[date_field input] # DateField at hour granularity - one segment engine
+      "time_field" => %w[date_field input], # DateField at hour granularity - one segment engine
+      "meter" => %w[progress], # wears Progress::Style chrome verbatim
+      "search_field" => %w[input input_group button icon], # composes their chrome
+      "tag_group" => %w[icon] # the remove glyph
     }.freeze
 
     SKILL_FAMILIES = {
       "forms" => %w[button button_group calendar checkbox combobox date_field date_picker field
                     file_input input input_group input_otp label native_select number_field
-                    radio_group select slider switch textarea time_field toggle toggle_group],
+                    radio_group search_field select slider switch textarea time_field toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel collapsible data_table empty
-                   item metadata_list stat table toolbar],
+                   item metadata_list meter stat table tag_group toolbar],
       "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],

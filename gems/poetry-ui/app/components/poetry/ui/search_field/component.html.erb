@@ -1,0 +1,15 @@
+<%# InputGroup anatomy: leading search glyph, the type=search control,
+    trailing clear affordance (hidden while empty). %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(group_attributes).to_attributes) do %>
+    <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(addon_attributes(:start)).to_attributes) do %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :search) %>
+    <% end %>
+    <%= tag.input(**input_attributes.to_attributes) %>
+    <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(addon_attributes(:end)).to_attributes) do %>
+      <%= render clear_button do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

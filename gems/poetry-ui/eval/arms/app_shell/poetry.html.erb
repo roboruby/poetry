@@ -27,6 +27,9 @@
     <div class="grid gap-6 p-4 sm:grid-cols-2">
       <%= poetry_stat(label: "Active users", delta: "+12.5%", trend: :up) { "2,847" } %>
       <%= poetry_stat(label: "Error rate", delta: "-0.3%", trend: :down, sentiment: :positive) { "0.42%" } %>
+      <%# A QUANTITY in a range is a Meter (role="meter progressbar"),
+          never Progress - progress is an operation completing. %>
+      <%= poetry_meter(value: 68, label: "Storage used") %>
     </div>
   <% end %>
 <% end %>

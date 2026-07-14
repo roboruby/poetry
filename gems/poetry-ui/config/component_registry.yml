@@ -4682,6 +4682,52 @@ components:
       description: The fact's name (<dt>) - muted, small
     - name: metadata-list-value
       description: The fact's value (<dd>) - composes text, badges, links
+  poetry/ui/meter:
+    class_name: Poetry::Ui::Meter::Component
+    identifier: poetry--ui--meter
+    bem_block: poetry-ui-meter
+    styles: []
+    options:
+    - name: label
+      type: string
+      required: true
+    - name: max
+      type: integer
+      default: 100
+    - name: min
+      type: integer
+      default: 0
+    - name: show_value
+      type: boolean
+      default: true
+    - name: value
+      type: integer
+      required: true
+    - name: value_label
+      type: string
+    slots: []
+    elements: []
+    capsule: 328a98df3a37
+    agent_rules:
+    - A quantity within a range is a Meter (disk, seats, strength); an operation's
+      completion over time is Progress. There is NO indeterminate meter - unknown
+      duration means Spinner.
+    - 'label: is REQUIRED - the meter''s accessible name and visible caption.'
+    - 'value_label: replaces the percent readout AND aria-valuetext verbatim ("3 of
+      4 seats"); without it both show the percentage of the RANGE.'
+    parts:
+    - name: meter
+      description: Root (role="meter progressbar" - the two-token fallback - plus
+        aria-value* and the accessible name); label, readout, and track stack here
+    - name: meter-label
+      description: The visible caption span (label:)
+    - name: meter-value
+      description: 'The readout - value_label: verbatim, else the range percentage;
+        renders unless show_value: false'
+    - name: meter-track
+      description: The full-width rail (Progress's cn chrome)
+    - name: meter-indicator
+      description: The filled bar - inline width percentage of the range
   poetry/ui/native_select:
     class_name: Poetry::Ui::NativeSelect::Component
     identifier: poetry--ui--native_select
@@ -5490,6 +5536,82 @@ components:
     - name: scroll-area-viewport
       description: The focusable native scroll region (role=region + tabindex=0) with
         themed platform scrollbars - zero JS
+  poetry/ui/search_field:
+    class_name: Poetry::Ui::SearchField::Component
+    identifier: poetry--ui--search_field
+    bem_block: poetry-ui-search_field
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: name
+      type: string
+      required: true
+    - name: placeholder
+      type: string
+    - name: readonly
+      type: boolean
+      default: false
+    - name: required
+      type: boolean
+      default: false
+    - name: value
+      type: string
+    slots: []
+    elements:
+    - input
+    capsule: aecc24984d65
+    controllers:
+    - identifier: poetry--core--search-field
+      targets:
+      - clear
+      - input
+      values: []
+      actions:
+      - changed
+      - clear
+      - holdFocus
+      - keydown
+      events:
+      - poetry:search-field:clear
+    agent_rules:
+    - Search inputs are a SearchField (poetry_search_field) - never a bare Input with
+      a hand-rolled clear button; Escape-clears and focus retention ride the controller.
+    - Enter submits the surrounding form natively - wrap it in a form/turbo-frame
+      for live search; listen for poetry:search-field:clear to reset results.
+    - 'Pair with a Label/Field for the accessible name, or pass label: standalone.'
+    parts:
+    - name: search-field
+      description: Root - the controller and the emptiness state ride here
+      states:
+      - attr: data-empty
+        condition: the input holds no text (server-set, controller-kept; hides the
+          clear affordance)
+    - name: input-group-addon
+      description: The leading search-glyph cell - InputGroup's addon vocabulary (the
+        NumberField precedent)
+      states:
+      - attr: data-align
+        condition: always - inline-start holds the glyph, inline-end the clear button
+        values:
+        - inline-start
+        - inline-end
+    - name: search-field-group
+      description: The bordered field surface - InputGroup's chrome, focus ring keyed
+        on the control inside
+    - name: input-group-control
+      description: The native <input type=search> - InputGroup's control slot (the
+        themes' focus-ring hook); WebKit's own cancel affordance suppressed
   poetry/ui/select:
     class_name: Poetry::Ui::Select::Component
     identifier: poetry--ui--select
@@ -6588,6 +6710,84 @@ components:
           flips both)
       - attr: data-value
         condition: the owning tab's value
+  poetry/ui/tag_group:
+    class_name: Poetry::Ui::TagGroup::Component
+    identifier: poetry--ui--tag_group
+    bem_block: poetry-ui-tag_group
+    styles: []
+    options:
+    - name: label
+      type: string
+      required: true
+    - name: name
+      type: string
+    slots:
+    - name: tags
+      many: true
+      setter_args:
+        tag: 0
+      yieldless:
+      - tag
+    elements:
+    - label
+    - grid
+    - tag
+    - cell
+    - remove
+    capsule: 5085927b7e17
+    controllers:
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
+      events:
+      - poetry--core--roving-focus:entry
+    - identifier: poetry--core--tag-group
+      targets: []
+      values: []
+      actions:
+      - keydown
+      - remove
+      events:
+      - poetry:tag-group:remove
+    agent_rules:
+    - Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal
+      keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.
+    - 'label: is REQUIRED (the grid''s accessible name, rendered as a caption span).'
+    - 'name: turns the group into a form value - one hidden <name>[] input per tag
+      submits; removing a tag removes its input.'
+    - 'Removal is cancelable: listen for poetry:tag-group:remove and preventDefault
+      to own the removal server-side (Turbo re-render).'
+    - Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup
+      - a TagGroup holds items that exist until removed.
+    parts:
+    - name: tag-group
+      description: The labelled wrapper - caption span + grid stack here
+    - name: tag-group-label
+      description: The caption span (label:), wired via aria-labelledby (a grid is
+        not a labelable form control - never a <label>)
+    - name: tag-group-grid
+      description: The tag collection (role=grid; role=group + the tab stop when empty)
+        - roving focus, removal keys, and the focus-scoped live region ride here
+      states:
+      - attr: data-empty
+        condition: no tags remain (controller-kept after removals)
+    - name: tag-group-tag
+      description: 'One chip (role=row > gridcell): content, the remove button, and
+        - in form mode - the hidden name[] input'
+      states:
+      - attr: data-disabled
+        condition: the tag is disabled (skipped by arrows and removal)
+      - attr: data-value
+        condition: always - the tag's value (the remove event's detail and the hidden
+          input's value)
+    - name: tag-group-remove
+      description: The per-tag remove button - tabbable (Tab steps from the row into
+        it), removes exactly its own tag
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -7578,6 +7778,7 @@ helper_args:
   poetry_message_scroller: 0
   poetry_message_scroller_item: 0
   poetry_metadata_list: 0
+  poetry_meter: 0
   poetry_native_select: 0
   poetry_native_select_optgroup: 0
   poetry_native_select_option: 0
@@ -7590,6 +7791,7 @@ helper_args:
   poetry_radio_group: 0
   poetry_resizable: 0
   poetry_scroll_area: 0
+  poetry_search_field: 0
   poetry_select: 0
   poetry_separator: 0
   poetry_sheet: 0
@@ -7625,6 +7827,7 @@ helper_args:
   poetry_table_header: 0
   poetry_table_row: 0
   poetry_tabs: 0
+  poetry_tag_group: 0
   poetry_textarea: 0
   poetry_time_field: 0
   poetry_toast: 0

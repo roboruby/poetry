@@ -31,6 +31,10 @@ en:
       roledescription: "Number field"
       increment: "Increase"
       decrement: "Decrease"
+    search_field:
+      clear: "Clear search"
+    tag_group:
+      remove: "Remove"
     date_field:
       empty: "Empty"
       year: "year"

@@ -1,0 +1,160 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    module SearchField
+      # The SearchField (the react-aria contract): a type=search
+      # input on InputGroup's chrome - leading search glyph, trailing
+      # clear affordance. The seams live in poetry--core--search-field:
+      # Escape CLEARS a non-empty field and is consumed (the NEXT press
+      # reaches the dismissal layer), an empty field lets it propagate;
+      # the clear button never steals focus (mobile keyboards stay up)
+      # and is tabindex -1 - keyboard users already have Escape. Enter is
+      # never intercepted: native form submission is the Rails path. The
+      # native WebKit cancel affordance is suppressed so poetry's clear
+      # button is the only one.
+      class Component < Poetry::Core::Component
+        CONTROLLER = %i[poetry core search_field].freeze
+
+        AGENT_RULES = [
+          "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
+          "hand-rolled clear button; Escape-clears and focus retention ride the controller.",
+          "Enter submits the surrounding form natively - wrap it in a form/turbo-frame for " \
+          "live search; listen for poetry:search-field:clear to reset results.",
+          "Pair with a Label/Field for the accessible name, or pass label: standalone."
+        ].freeze
+
+        option :name, :string, required: true
+        option :value, :string
+        option :placeholder, :string
+        option :id, :string
+        option :label, :string
+        option :described_by, :string
+        option :disabled, :boolean, default: false
+        option :readonly, :boolean, default: false
+        option :required, :boolean, default: false
+        option :invalid, :boolean, default: false
+
+        part "search-field", "Root - the controller and the emptiness state ride here",
+             states: {
+               "data-empty" => "the input holds no text (server-set, controller-kept; hides " \
+                               "the clear affordance)"
+             }
+        part "input-group-addon", "The leading search-glyph cell - InputGroup's addon " \
+                                  "vocabulary (the NumberField precedent)",
+             states: {
+               "data-align" => { condition: "always - inline-start holds the glyph, " \
+                                            "inline-end the clear button",
+                                 values: %w[inline-start inline-end] }
+             }
+        part "search-field-group", "The bordered field surface - InputGroup's chrome, focus " \
+                                   "ring keyed on the control inside"
+        part "input-group-control", "The native <input type=search> - InputGroup's control " \
+                                    "slot (the themes' focus-ring hook); WebKit's own cancel " \
+                                    "affordance suppressed"
+        # The clear affordance renders as a composed ghost Button carrying
+        # data-slot=search-field-clear on Button's root - ownership
+        # attributes it to Button (the NumberField stepper pattern), so it
+        # is documented here in prose only: tabindex -1 (Escape is the
+        # keyboard path), hidden while empty, never steals focus.
+
+        def control_id
+          @control_id ||= id.presence || "poetry-search-field-#{SecureRandom.hex(4)}"
+        end
+
+        def root_attributes
+          attrs = {
+            "data-slot" => "search-field",
+            "class" => css
+          }.merge(component_data_attributes)
+          attrs["data-empty"] = "" if value.blank?
+          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+        end
+
+        def group_attributes
+          {
+            "role" => "group",
+            "data-slot" => "search-field-group",
+            "class" => InputGroup::Style.css
+          }
+        end
+
+        def addon_attributes(align)
+          {
+            "data-slot" => "input-group-addon",
+            "data-align" => "inline-#{align}",
+            "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:"addon_inline_#{align}"))
+          }
+        end
+
+        def input_attributes
+          attrs = Poetry::Core::HTML::Attributes.new(
+            "type" => "search",
+            "name" => name,
+            "id" => control_id,
+            "data-slot" => "input-group-control",
+            "class" => "#{Input::Style.css(class: InputGroup::Style.css(:control_input))} #{css(:input)}",
+            "autocomplete" => "off",
+            "autocorrect" => "off",
+            "spellcheck" => "false"
+          )
+          attrs["value"] = value if value.present?
+          attrs["placeholder"] = placeholder if placeholder.present?
+          attrs["aria-label"] = label if label.present?
+          attrs["aria-invalid"] = "true" if invalid && !disabled
+          attrs["aria-describedby"] = described_by if described_by.present?
+          attrs["disabled"] = "" if disabled
+          attrs["readonly"] = "" if readonly
+          attrs["required"] = "" if required
+          attrs.merge!(input_stimulus_attributes)
+          attrs
+        end
+
+        # The clear affordance: a ghost icon Button (the NumberField
+        # stepper chrome) that is NEVER a tab stop and never steals focus.
+        def clear_button
+          Button::Component.new({
+            variant: :ghost, size: :"icon-xs", disabled: disabled,
+            label: t("poetry.search_field.clear"),
+            class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
+            "data-slot" => "search-field-clear",
+            "tabindex" => "-1",
+            "hidden" => value.blank? || readonly || disabled ? "" : nil,
+            "aria-controls" => control_id
+          }.compact.merge(clear_stimulus_attributes))
+        end
+
+        private
+
+        def root_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          field.register_controller
+          attrs.to_attributes
+        end
+
+        def input_stimulus_attributes
+          stimulus_attributes do |field|
+            field.with_target(:input)
+            field.with_action(:changed, on: :input)
+            field.with_action(:keydown, on: :keydown)
+          end
+        end
+
+        def clear_stimulus_attributes
+          stimulus_attributes do |field|
+            field.with_target(:clear)
+            field.with_action(:holdFocus, on: :pointerdown)
+            field.with_action(:clear, on: :click)
+          end
+        end
+
+        def stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          attrs.to_attributes
+        end
+      end
+    end
+  end
+end

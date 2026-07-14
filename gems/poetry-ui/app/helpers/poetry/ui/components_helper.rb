@@ -484,6 +484,24 @@ module Poetry
         render(Poetry::Ui::TimeField::Component.new(**))
       end
 
+      # A quantity within a known range (disk, seats, strength) - role
+      # "meter progressbar" (the two-token fallback); never indeterminate.
+      def poetry_meter(**)
+        render(Poetry::Ui::Meter::Component.new(**))
+      end
+
+      # type=search on InputGroup chrome: Escape clears-then-dismisses,
+      # focus-holding clear button, native WebKit affordances suppressed.
+      def poetry_search_field(**)
+        render(Poetry::Ui::SearchField::Component.new(**))
+      end
+
+      # Removable-chip collection (grid semantics, roving arrows, Delete
+      # removal w/ focus recovery); name: serializes name[] per tag.
+      def poetry_tag_group(**, &)
+        render(Poetry::Ui::TagGroup::Component.new(**), &)
+      end
+
       def poetry_field(**, &)
         render(Poetry::Ui::Field::Component.new(**), &)
       end

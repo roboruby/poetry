@@ -24,6 +24,12 @@
       <% group.with_item(value: "grid", label: "Grid view") { poetry_icon(name: :"layout-grid") } %>
     <% end %>
   </div>
+  <%# Removable chips are a TagGroup: grid semantics, Delete
+      removal with focus recovery, one hidden name[] input per tag. %>
+  <%= poetry_tag_group(name: "settings[topics]", label: "Muted topics") do |group| %>
+    <% group.with_tag(value: "billing") { "Billing" } %>
+    <% group.with_tag(value: "digest") { "Digest" } %>
+  <% end %>
   <%= poetry_radio_group(name: "settings[digest]", value: "weekly", label: "Digest frequency") do |group| %>
     <% group.with_item(value: "daily", label: "Daily digest") %>
     <% group.with_item(value: "weekly", label: "Weekly digest") %>

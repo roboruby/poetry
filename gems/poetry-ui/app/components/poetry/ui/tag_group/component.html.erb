@@ -1,0 +1,8 @@
+<%# Grid semantics: caption span (aria-labelledby - a grid is not a
+    labelable control), then the roving row collection. %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:span, label, "id" => label_id, "data-slot" => "tag-group-label", "class" => css(:label)) %>
+  <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(grid_attributes).to_attributes) do %>
+    <% tags.each do |tag_slot| %><%= tag_slot %><% end %>
+  <% end %>
+<% end %>
