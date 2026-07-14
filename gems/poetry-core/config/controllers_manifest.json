@@ -1302,5 +1302,20 @@
       "poetry:tooltip:closed",
       "poetry:tooltip:open"
     ]
+  },
+  "poetry--core--tree": {
+    "targets": [],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "connect",
+      "keydown",
+      "press",
+      "pressStart",
+      "toggle"
+    ],
+    "events": [
+      "poetry:tree:toggle"
+    ]
   }
 }

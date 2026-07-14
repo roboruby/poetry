@@ -19,6 +19,7 @@ import FileInputController from "@poetry/controllers/file_input_controller"
 import MaskController from "@poetry/controllers/mask_controller"
 import MenubarController from "@poetry/controllers/menubar_controller"
 import PopoverController from "@poetry/controllers/popover_controller"
+import TreeController from "@poetry/controllers/tree_controller"
 import TooltipController from "@poetry/controllers/tooltip_controller"
 import HoverCardController from "@poetry/controllers/hover_card_controller"
 import ToastController from "@poetry/controllers/toast_controller"
@@ -63,6 +64,7 @@ export { default as FileInputController } from "@poetry/controllers/file_input_c
 export { default as MaskController } from "@poetry/controllers/mask_controller"
 export { default as MenubarController } from "@poetry/controllers/menubar_controller"
 export { default as PopoverController } from "@poetry/controllers/popover_controller"
+export { default as TreeController } from "@poetry/controllers/tree_controller"
 export { default as TooltipController } from "@poetry/controllers/tooltip_controller"
 export { default as HoverCardController } from "@poetry/controllers/hover_card_controller"
 export { default as ToastController } from "@poetry/controllers/toast_controller"
@@ -120,6 +122,7 @@ export const controllers = {
   "poetry--core--mask": MaskController,
   "poetry--core--menubar": MenubarController,
   "poetry--core--popover": PopoverController,
+  "poetry--core--tree": TreeController,
   "poetry--core--tooltip": TooltipController,
   "poetry--core--hover-card": HoverCardController,
   "poetry--core--toast": ToastController,
