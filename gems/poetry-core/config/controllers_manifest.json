@@ -356,6 +356,32 @@
     ],
     "events": []
   },
+  "poetry--core--file-input": {
+    "targets": [
+      "clear",
+      "input",
+      "list"
+    ],
+    "values": {
+      "multiple": {
+        "type": "Boolean",
+        "default": false
+      }
+    },
+    "classes": [],
+    "methods": [
+      "changed",
+      "clear",
+      "connect",
+      "dragenter",
+      "dragleave",
+      "dragover",
+      "drop"
+    ],
+    "events": [
+      "poetry:file-input:change"
+    ]
+  },
   "poetry--core--focus-scope": {
     "targets": [],
     "values": {
