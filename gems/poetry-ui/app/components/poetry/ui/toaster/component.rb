@@ -56,7 +56,10 @@ module Poetry
              states: {
                "data-position" => { condition: "always - the corner; each toast's slide " \
                                                "direction keys off it via group/toaster",
-                                    values: POSITIONS.map(&:to_s) }
+                                    values: POSITIONS.map(&:to_s) },
+               "data-poetry-top-layer" => { condition: "always - the dismissal layer exempts " \
+                                                       "presses here, so clicking a toast never " \
+                                                       "dismisses the overlay under it" }
              }
 
         def root_attributes
@@ -65,6 +68,9 @@ module Poetry
               "id" => DEFAULT_ID, "data-slot" => "toaster",
               "role" => "region", "aria-label" => t("poetry.toast.region_label", hotkey: hotkey),
               "tabindex" => "-1", "data-turbo-permanent" => "",
+              # The dismissal layer's top-layer exemption: presses inside
+              # the toaster are never "outside" an open overlay.
+              "data-poetry-top-layer" => "",
               # The toast items key their slide direction on this via the
               # group-data selector (items render independently of the
               # region - a streamed toast cannot know the corner).

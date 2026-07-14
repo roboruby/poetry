@@ -6695,6 +6695,9 @@ components:
         - bottom-left
         - bottom-center
         - bottom-right
+      - attr: data-poetry-top-layer
+        condition: always - the dismissal layer exempts presses here, so clicking
+          a toast never dismisses the overlay under it
   poetry/ui/toggle:
     class_name: Poetry::Ui::Toggle::Component
     identifier: poetry--ui--toggle
