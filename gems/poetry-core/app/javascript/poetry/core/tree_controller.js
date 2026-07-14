@@ -124,6 +124,14 @@ export default class TreeController extends Controller {
 
     row.setAttribute("aria-expanded", String(expanded))
     row.toggleAttribute("data-expanded", expanded)
+
+    // The chevron's name flips with the state (Expand/Collapse; the
+    // strings arrive server-localized as data attributes).
+    const chevron = row.querySelector("[data-slot='tree-item-toggle']")
+    const label = chevron?.getAttribute(expanded ? "data-collapse-label" : "data-expand-label")
+
+    if (chevron && label) chevron.setAttribute("aria-label", label)
+
     this.#applyVisibility()
 
     this.dispatch("toggle", {
