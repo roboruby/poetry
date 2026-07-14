@@ -20,6 +20,13 @@ en:
     deferred:
       failed: "This section failed to load."
       retry: "Retry"
+    stat:
+      trend_up: "trending up"
+      trend_down: "trending down"
+      trend_flat: "flat"
+    file_input:
+      prompt: "Drag and drop or click to browse"
+      clear: "Clear selection"
     number_field:
       roledescription: "Number field"
       increment: "Increase"

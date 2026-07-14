@@ -1,6 +1,6 @@
 # AGENTS.md — poetry-ui
 
-The component gem: the 66-component shadcn-parity catalog on ViewComponent +
+The component gem: the 70-component shadcn-parity catalog on ViewComponent +
 Stimulus (machinery from poetry-core), themed by the cn-* layer — nine complete
 visual fragments under `themes/`.
 

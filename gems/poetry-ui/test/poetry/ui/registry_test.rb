@@ -21,22 +21,23 @@ module Poetry
                       poetry/ui/data_table poetry/ui/date_picker poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
                       poetry/ui/dropdown_menu
                       poetry/ui/empty
-                      poetry/ui/field
+                      poetry/ui/field poetry/ui/file_input
                       poetry/ui/hover_card
                       poetry/ui/icon poetry/ui/input poetry/ui/input_group poetry/ui/input_otp poetry/ui/item
                       poetry/ui/kbd
                       poetry/ui/label
                       poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
+                      poetry/ui/metadata_list
                       poetry/ui/native_select poetry/ui/navigation_menu poetry/ui/number_field
                       poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group
                       poetry/ui/resizable
                       poetry/ui/scroll_area
                       poetry/ui/select
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
-                      poetry/ui/spinner
+                      poetry/ui/spinner poetry/ui/stat
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea poetry/ui/toast
                       poetry/ui/toaster
-                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/tooltip]
+                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip]
 
         assert_equal expected, registry.entries.keys.sort
       end

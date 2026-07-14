@@ -3200,6 +3200,106 @@ components:
       description: A nested Checkbox's hidden native input - the toggle renders as
         a wrapper-free fragment, so its sibling form store sits directly in the field's
         DOM (the horizontal boolean-control layout)
+  poetry/ui/file_input:
+    class_name: Poetry::Ui::FileInput::Component
+    identifier: poetry--ui--file_input
+    bem_block: poetry-ui-file_input
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - input
+      - dropzone
+      default: input
+    options:
+    - name: accept
+      type: string
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: hint
+      type: string
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: multiple
+      type: boolean
+      default: false
+    - name: name
+      type: string
+    - name: prompt
+      type: string
+    slots: []
+    elements:
+    - dropzone
+    - dropzone_disabled
+    - icon
+    - prompt
+    - hint
+    - list
+    - clear
+    capsule: 14a68c52b6be
+    controllers:
+    - identifier: poetry--core--file-input
+      targets:
+      - clear
+      - input
+      - list
+      values:
+      - multiple
+      actions:
+      - changed
+      - clear
+      - dragenter
+      - dragleave
+      - dragover
+      - drop
+      events:
+      - poetry:file-input:change
+    agent_rules:
+    - 'File selection is a FileInput: variant: :input for compact forms, :dropzone
+      when dragging is expected (uploads as the page''s point) - never a hand-rolled
+      drop div.'
+    - 'The native input is the form value: set name: (multiple: true wants a name
+      ending in [] for Rails params); ActiveStorage direct upload attaches to it as
+      usual.'
+    - 'The dropzone''s selected-file list and clear button are controller-rendered
+      - compose prompt:/hint: copy instead of adding your own list markup.'
+    - In a Field, prefer form.file_input (the builder wires id/label/errors); the
+      bare component suits standalone dropzones.
+    parts:
+    - name: file-input
+      description: The dropzone root - wraps the zone, the selection list, and clear
+      states:
+      - attr: data-variant
+        condition: always on the dropzone root (the input variant renders the Input
+          component instead)
+        values:
+        - dropzone
+      - attr: data-dragging
+        condition: a file drag is over the zone (controller-written, enter/leave counted)
+      - attr: data-populated
+        condition: the native input holds at least one file (controller-written)
+    - name: file-input-dropzone
+      description: The <label> drop surface - dashed, platform click-to-browse; its
+        text is the control's accessible name
+    - name: file-input-control
+      description: The native <input type=file> - visually hidden in the dropzone,
+        THE form value in both variants
+    - name: file-input-prompt
+      description: 'The zone''s instruction line (prompt: overrides the default)'
+    - name: file-input-hint
+      description: 'Muted constraints copy under the prompt (hint: - formats, size)'
+    - name: file-input-list
+      description: The selected-file <ul> the controller fills (name + size per item;
+        items are controller-built, not server parts)
+    - name: file-input-clear
+      description: The clear affordance - hidden until populated; never re-opens the
+        picker
   poetry/ui/hover_card:
     class_name: Poetry::Ui::HoverCard::Component
     identifier: poetry--ui--hover_card
@@ -4427,6 +4527,69 @@ components:
     - name: message-scroller-spacer
       description: Tail spacer faking scroll room below a short anchored turn - hidden
         at height 0
+  poetry/ui/metadata_list:
+    class_name: Poetry::Ui::MetadataList::Component
+    identifier: poetry--ui--metadata_list
+    bem_block: poetry-ui-metadata_list
+    styles:
+    - name: columns
+      type: symbol
+      variants:
+      - one
+      - two
+      - three
+      default: one
+    - name: orientation
+      type: symbol
+      variants:
+      - vertical
+      - horizontal
+      default: vertical
+    options: []
+    slots:
+    - name: items
+      many: true
+      setter_args:
+        item: 0
+      yieldless:
+      - item
+    elements:
+    - item
+    - label
+    - value
+    capsule: e6791a7ee6b2
+    agent_rules:
+    - Record facts on a detail page belong in a MetadataList - never a hand-rolled
+      grid of label/value divs (this is the <dl> the page owes its readers).
+    - 'Each with_item takes label: and the value as its block - values compose freely
+      (text, a Badge, a Link, a Timestamp).'
+    - 'columns: :two / :three spread the facts on wide viewports; orientation: :horizontal
+      puts labels beside values (the classic key/value sheet) - pick one per surface.'
+    - For editable facts pair each value with its edit affordance inside the item
+      block; the list itself stays read-only vocabulary.
+    required_slots:
+      item: 'at least one item (label: plus the value block)'
+    parts:
+    - name: metadata-list
+      description: The <dl> root - the record's fact sheet
+      states:
+      - attr: data-orientation
+        condition: always - label placement
+        values:
+        - vertical
+        - horizontal
+      - attr: data-columns
+        condition: always - the column count word
+        values:
+        - one
+        - two
+        - three
+    - name: metadata-list-item
+      description: One fact group (a <div> holding its <dt>/<dd> pair)
+    - name: metadata-list-label
+      description: The fact's name (<dt>) - muted, small
+    - name: metadata-list-value
+      description: The fact's value (<dd>) - composes text, badges, links
   poetry/ui/native_select:
     class_name: Poetry::Ui::NativeSelect::Component
     identifier: poetry--ui--native_select
@@ -6021,6 +6184,85 @@ components:
     - name: spinner
       description: 'The spinning <svg> itself (the lucide loader-circle) - announces
         as role=status with aria-label from label:'
+  poetry/ui/stat:
+    class_name: Poetry::Ui::Stat::Component
+    identifier: poetry--ui--stat
+    bem_block: poetry-ui-stat
+    styles: []
+    options:
+    - name: delta
+      type: string
+    - name: label
+      type: string
+      required: true
+    - name: sentiment
+      type: symbol
+      variants:
+      - positive
+      - negative
+      - neutral
+    - name: trend
+      type: symbol
+      variants:
+      - up
+      - down
+      - flat
+      default: up
+    slots:
+    - name: description
+      many: false
+    - name: media
+      many: false
+    elements:
+    - label
+    - row
+    - value
+    - delta
+    - delta_positive
+    - delta_negative
+    - delta_neutral
+    - description
+    - media
+    capsule: dc20a8e9715e
+    agent_rules:
+    - 'One Stat is ONE metric: label: names it, the content block is the value - compose
+      several in a grid (typically each inside a Card) for a dashboard row.'
+    - 'delta: carries the change text (''+12.5%''); trend: (up/down/flat) sets the
+      arrow and the default sentiment. Override sentiment: :positive when DOWN is
+      the good direction (costs, churn, error rate) - color follows sentiment, never
+      the arrow.'
+    - Keep the value textual - tabular numerals are already applied; units and formatting
+      belong in the content ('$45,231', '99.98%').
+    - 'A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts).'
+    requires_content: the metric value
+    parts:
+    - name: stat
+      description: The stat root - a label/value/delta/description column
+    - name: stat-label
+      description: The muted metric name above the value
+    - name: stat-value
+      description: The metric itself - large, semibold, tabular numerals
+    - name: stat-delta
+      description: The change pill beside the value - arrow icon + delta text with
+        an sr-only trend word
+      states:
+      - attr: data-trend
+        condition: always - the arrow direction
+        values:
+        - up
+        - down
+        - flat
+      - attr: data-sentiment
+        condition: always - resolved sentiment (trend-derived unless overridden)
+        values:
+        - positive
+        - negative
+        - neutral
+    - name: stat-description
+      description: Muted supporting copy under the value
+    - name: stat-media
+      description: The trend-visual slot (sparkline, chart, glyph) below the text
+        stack
   poetry/ui/switch:
     class_name: Poetry::Ui::Switch::Component
     identifier: poetry--ui--switch
@@ -6671,6 +6913,70 @@ components:
         - lg
       - attr: data-spacing
         condition: cascaded from the root - keys the segmented corner/border chain
+  poetry/ui/toolbar:
+    class_name: Poetry::Ui::Toolbar::Component
+    identifier: poetry--ui--toolbar
+    bem_block: poetry-ui-toolbar
+    styles:
+    - name: orientation
+      type: symbol
+      variants:
+      - horizontal
+      - vertical
+      default: horizontal
+    options:
+    - name: label
+      type: string
+      required: true
+    - name: loop
+      type: boolean
+      default: true
+    slots:
+    - name: items
+      many: true
+      types:
+      - button
+      - input
+      - separator
+      setter_args:
+        button: 0
+        input: 0
+        separator: 0
+    elements: []
+    capsule: 77a81ff9c40f
+    controllers:
+    - identifier: poetry--core--roving-focus
+      targets: []
+      values:
+      - loop
+      - manageTabindex
+      - orientation
+      actions:
+      - keydown
+      events:
+      - poetry--core--roving-focus:entry
+    agent_rules:
+    - 'A Toolbar is ONE Tab stop: arrows move between its controls - use it for grouped
+      actions over a surface (table bulk actions, editor strips), never as page navigation.'
+    - 'Compose through the typed slots: with_button (a real poetry Button - tag: :a
+      makes it a link), with_input (search/filter - the caret keeps its arrow keys),
+      with_separator (orientation flips automatically).'
+    - 'label: is the toolbar''s accessible name and is required - screen readers announce
+      it on entry.'
+    - A ToggleGroup composed inside keeps its own arrow navigation (its items rove
+      locally); place it between separators so the seam reads as a group.
+    required_slots:
+      button: at least one control (with_button / with_input)
+    parts:
+    - name: toolbar
+      description: The role=toolbar root - one Tab stop; arrow keys rove across the
+        slotted controls (roving-focus, with the caret guard protecting inputs)
+      states:
+      - attr: data-orientation
+        condition: always - which arrows rove
+        values:
+        - horizontal
+        - vertical
   poetry/ui/tooltip:
     class_name: Poetry::Ui::Tooltip::Component
     identifier: poetry--ui--tooltip
@@ -7058,6 +7364,7 @@ helper_args:
   poetry_dropdown_menu: 0
   poetry_empty: 0
   poetry_field: 0
+  poetry_file_input: 0
   poetry_hover_card: 0
   poetry_icon: 0
   poetry_input: 0
@@ -7080,6 +7387,7 @@ helper_args:
   poetry_message_group: 0
   poetry_message_scroller: 0
   poetry_message_scroller_item: 0
+  poetry_metadata_list: 0
   poetry_native_select: 0
   poetry_native_select_optgroup: 0
   poetry_native_select_option: 0
@@ -7116,6 +7424,7 @@ helper_args:
   poetry_skeleton: 0
   poetry_slider: 0
   poetry_spinner: 0
+  poetry_stat: 0
   poetry_switch: 0
   poetry_table: 0
   poetry_table_body: 0
@@ -7131,5 +7440,6 @@ helper_args:
   poetry_toaster: 0
   poetry_toggle: 0
   poetry_toggle_group: 0
+  poetry_toolbar: 0
   poetry_tooltip: 0
   poetry_tooltip_provider: 0

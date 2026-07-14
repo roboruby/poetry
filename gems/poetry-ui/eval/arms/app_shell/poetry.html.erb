@@ -22,5 +22,11 @@
       <%= poetry_sidebar_trigger %>
       <span class="text-sm font-medium">Dashboard</span>
     </div>
+    <%# The dashboard's first row: one KPI per Stat, sentiment
+        follows the metric's good direction. %>
+    <div class="grid gap-6 p-4 sm:grid-cols-2">
+      <%= poetry_stat(label: "Active users", delta: "+12.5%", trend: :up) { "2,847" } %>
+      <%= poetry_stat(label: "Error rate", delta: "-0.3%", trend: :down, sentiment: :positive) { "0.42%" } %>
+    </div>
   <% end %>
 <% end %>

@@ -1,0 +1,14 @@
+<% if variant == :input %>
+  <%= render input_variant_component %>
+<% else %>
+  <%= content_tag(:div, **root_attributes.to_attributes) do %>
+    <%= content_tag(:label, dropzone_attributes) do %>
+      <%= tag(:input, control_attributes) %>
+      <%= render Poetry::Ui::Icon::Component.new(name: :upload, class: css(:icon)) %>
+      <span data-slot="file-input-prompt" class="<%= css(:prompt) %>"><%= prompt_text %></span>
+      <% if hint.present? %><span data-slot="file-input-hint" class="<%= css(:hint) %>"><%= hint %></span><% end %>
+    <% end %>
+    <%= content_tag(:ul, "", list_attributes) %>
+    <%= content_tag(:button, t("poetry.file_input.clear"), clear_attributes) %>
+  <% end %>
+<% end %>

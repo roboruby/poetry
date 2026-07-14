@@ -153,6 +153,23 @@ module Poetry
         end
       end
 
+      # form.file_input(:document) / form.file_input(:photos, variant: :dropzone,
+      # multiple: true) - a Field wrapping a FileInput; the native
+      # input is the form value, so ActiveStorage attaches as usual.
+      def file_input(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render FileInput::Component.new(
+            name: field_name(method, multiple: options[:multiple] || false),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
       # The FormBuilder#select-equivalent (the listbox capstone): a
       # Field wrapping a Select, everything derived from the object. The
       # hidden native <select> is the serialization truth (name/value/

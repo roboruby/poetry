@@ -10,4 +10,9 @@
     <%= poetry_link(href: "/plans/team") { "Learn more" } %>
   <% end %>
   Invite unlimited collaborators and manage roles from one place.
+  <%# The plan's fact sheet: a real <dl>, never label/value divs. %>
+  <%= poetry_metadata_list(class: "mt-4") do |list| %>
+    <% list.with_item(label: "Seats") { "Up to 25" } %>
+    <% list.with_item(label: "Billing") { "Monthly or annual" } %>
+  <% end %>
 <% end %>

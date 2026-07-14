@@ -1,0 +1,13 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <div data-slot="stat-label" class="<%= css(:label) %>"><%= label %></div>
+  <div class="<%= css(:row) %>">
+    <div data-slot="stat-value" class="<%= css(:value) %>"><%= content %></div>
+    <% if delta.present? %>
+      <span data-slot="stat-delta" data-trend="<%= trend %>" data-sentiment="<%= resolved_sentiment %>" class="<%= delta_classes %>">
+        <%= render Poetry::Ui::Icon::Component.new(name: trend_icon) %><%= delta %><span class="sr-only"><%= t("poetry.stat.trend_#{trend}") %></span>
+      </span>
+    <% end %>
+  </div>
+  <% if description? %><div data-slot="stat-description" class="<%= css(:description) %>"><%= description %></div><% end %>
+  <% if media? %><div data-slot="stat-media" class="<%= css(:media) %>"><%= media %></div><% end %>
+<% end %>

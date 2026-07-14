@@ -1426,3 +1426,8 @@
 .cn-command-dialog {
   @apply rounded-xl!;
 }
+
+/* MARK: Stat */
+.cn-stat-delta-positive {
+  @apply text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success;
+}

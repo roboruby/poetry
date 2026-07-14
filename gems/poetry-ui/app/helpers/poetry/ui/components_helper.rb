@@ -28,6 +28,22 @@ module Poetry
         render(Poetry::Ui::Badge::Component.new(**), &)
       end
 
+      def poetry_stat(**, &)
+        render(Poetry::Ui::Stat::Component.new(**), &)
+      end
+
+      def poetry_metadata_list(**, &)
+        render(Poetry::Ui::MetadataList::Component.new(**), &)
+      end
+
+      def poetry_toolbar(**, &)
+        render(Poetry::Ui::Toolbar::Component.new(**), &)
+      end
+
+      def poetry_file_input(**, &)
+        render(Poetry::Ui::FileInput::Component.new(**), &)
+      end
+
       def poetry_alert(**, &)
         render(Poetry::Ui::Alert::Component.new(**), &)
       end

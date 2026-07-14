@@ -59,4 +59,11 @@
         value; steppers are pointer affordances, arrows step on the input. %>
     <%= poetry_number_field(name: "settings[seats]", id: "settings-seats", value: 5, min: 1, max: 50) %>
   </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-contract") { "Signed contract" } %>
+    <%# The native input IS the form value; the dropzone's label
+        text names the control, drag-and-drop rides the controller. %>
+    <%= poetry_file_input(variant: :dropzone, name: "settings[contract]", id: "settings-contract",
+                          accept: ".pdf", hint: "PDF up to 10 MB") %>
+  </div>
 </div>

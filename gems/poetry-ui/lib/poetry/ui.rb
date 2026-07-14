@@ -36,17 +36,20 @@ module Poetry
       "field" => %w[label input],
       "alert" => %w[icon],
       "select" => %w[icon], # chevrons + check; Field is an optional pairing, not a hard edge
-      "number_field" => %w[input input_group button icon] # composes their chrome
+      "number_field" => %w[input input_group button icon], # composes their chrome
+      "stat" => %w[icon], # the delta's trend arrow
+      "toolbar" => %w[button input separator], # the typed slots render them
+      "file_input" => %w[input icon] # input variant wears Input; the dropzone's upload glyph
     }.freeze
 
     SKILL_FAMILIES = {
       "forms" => %w[button button_group calendar checkbox combobox date_picker field
-                    input input_group input_otp label native_select number_field radio_group
-                    select slider switch textarea toggle toggle_group],
+                    file_input input input_group input_otp label native_select number_field
+                    radio_group select slider switch textarea toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel collapsible data_table empty
-                   item table],
+                   item metadata_list stat table toolbar],
       "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],
