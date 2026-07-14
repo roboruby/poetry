@@ -780,6 +780,24 @@
     "path": "/components/field#with-hint"
   },
   {
+    "title": "File Input",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input"
+  },
+  {
+    "title": "Default",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#default"
+  },
+  {
+    "title": "Dropzone",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#dropzone"
+  },
+  {
     "title": "Hover Card",
     "page": "Hover Card",
     "section": "components",
@@ -1108,6 +1126,24 @@
     "page": "Message Scroller",
     "section": "components",
     "path": "/components/message-scroller#without-jump-button"
+  },
+  {
+    "title": "Metadata List",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list"
+  },
+  {
+    "title": "Default",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#default"
+  },
+  {
+    "title": "Two columns",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#two-columns"
   },
   {
     "title": "Native Select",
@@ -1536,6 +1572,24 @@
     "path": "/components/spinner#with-context-label"
   },
   {
+    "title": "Stat",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat"
+  },
+  {
+    "title": "Default",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#default"
+  },
+  {
+    "title": "With description",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#with-description"
+  },
+  {
     "title": "Switch",
     "page": "Switch",
     "section": "components",
@@ -1762,6 +1816,18 @@
     "page": "Toggle Group",
     "section": "components",
     "path": "/components/toggle-group#spaced"
+  },
+  {
+    "title": "Toolbar",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar"
+  },
+  {
+    "title": "Default",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar#default"
   },
   {
     "title": "Tooltip",

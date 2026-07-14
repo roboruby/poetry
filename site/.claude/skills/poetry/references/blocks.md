@@ -347,45 +347,77 @@ Source (adapt freely - the sample content is meant to be replaced):
 
 <%# Stepper is a BLOCK, not a component: neither shadcn nor Base UI
     ships one, so the pattern lives here as copy-in source - adapt the
-    steps freely; nothing hides behind an API. States are visual + ARIA
-    (aria-current="step" on the active item); when a step completes,
-    re-render with the arrays below shifted - the server owns the state. %>
+    steps freely; nothing hides behind an API. The server owns step state:
+    pass step: as a local, or let it ride ?step= - Back/Continue are plain
+    links that re-render, and completed steps are links back. In a real
+    flow, swap the query param for your wizard's own routes/model state
+    and the final action for a form submit. %>
+<% steps = ["Shipping", "Payment", "Review"] %>
+<% step = (local_assigns[:step] || params[:step] || 2).to_i.clamp(1, steps.length) %>
+<% panels = {
+     1 => ["Shipping", "Step 1 of 3 - where this order lands.",
+           "Address fields mount here; this panel is the step's content slot."],
+     2 => ["Payment", "Step 2 of 3 - how this order gets paid.",
+           "Card details are collected by the payment element that mounts here; this panel is the step's content slot."],
+     3 => ["Review", "Step 3 of 3 - confirm and place the order.",
+           "The order summary renders here - line items, shipping choice, and the charge that Place order will submit."]
+   } %>
+<% title, description, body = panels.fetch(step) %>
 <div class="mx-auto max-w-2xl p-6">
   <nav aria-label="Progress">
     <ol class="flex items-center gap-3">
-      <%# Completed: filled indicator with a check, connector painted. %>
-      <li class="flex items-center gap-3">
-        <span class="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
-          <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
-        </span>
-        <span class="text-sm font-medium">Shipping</span>
-      </li>
-      <li aria-hidden="true" class="h-px min-w-8 flex-1 bg-primary"></li>
-      <%# Current: outlined in primary, named by aria-current. %>
-      <li aria-current="step" class="flex items-center gap-3">
-        <span class="flex size-8 items-center justify-center rounded-full border-2 border-primary text-sm font-semibold text-primary">2</span>
-        <span class="text-sm font-medium">Payment</span>
-      </li>
-      <li aria-hidden="true" class="h-px min-w-8 flex-1 bg-border"></li>
-      <%# Upcoming: muted until reached. %>
-      <li class="flex items-center gap-3">
-        <span class="flex size-8 items-center justify-center rounded-full border border-border text-sm text-muted-foreground">3</span>
-        <span class="text-sm text-muted-foreground">Review</span>
-      </li>
+      <% steps.each_with_index do |label, index| %>
+        <% number = index + 1 %>
+        <% unless number == 1 %>
+          <li aria-hidden="true" class="h-px min-w-8 flex-1 <%= number <= step ? "bg-primary" : "bg-border" %>"></li>
+        <% end %>
+        <% if number < step %>
+          <%# Completed: filled indicator with a check, revisitable. %>
+          <li class="flex items-center">
+            <a href="?step=<%= number %>" class="flex items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring">
+              <span class="flex size-8 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+              </span>
+              <span class="text-sm font-medium"><%= label %></span>
+            </a>
+          </li>
+        <% elsif number == step %>
+          <%# Current: outlined in primary, named by aria-current. %>
+          <li aria-current="step" class="flex items-center gap-3">
+            <span class="flex size-8 items-center justify-center rounded-full border-2 border-primary text-sm font-semibold text-primary"><%= number %></span>
+            <span class="text-sm font-medium"><%= label %></span>
+          </li>
+        <% else %>
+          <%# Upcoming: muted and inert until reached. %>
+          <li class="flex items-center gap-3">
+            <span class="flex size-8 items-center justify-center rounded-full border border-border text-sm text-muted-foreground"><%= number %></span>
+            <span class="text-sm text-muted-foreground"><%= label %></span>
+          </li>
+        <% end %>
+      <% end %>
     </ol>
   </nav>
 
   <div class="mt-6">
     <%= poetry_card do |card| %>
-      <% card.with_title { "Payment" } %>
-      <% card.with_description { "Step 2 of 3 - how this order gets paid." } %>
+      <% card.with_title { title } %>
+      <% card.with_description { description } %>
       <div class="space-y-4 text-sm">
-        <p>Card details are collected by the payment element that mounts here; this panel is the step's content slot.</p>
+        <p><%= body %></p>
       </div>
       <% card.with_footer do %>
         <div class="flex w-full items-center justify-between">
-          <%= poetry_button(variant: :outline) { "Back" } %>
-          <%= poetry_button { "Continue to review" } %>
+          <% if step > 1 %>
+            <%= poetry_button(tag: :a, href: "?step=#{step - 1}", variant: :outline) { "Back" } %>
+          <% else %>
+            <span></span>
+          <% end %>
+          <% if step < steps.length %>
+            <%= poetry_button(tag: :a, href: "?step=#{step + 1}") { "Continue to #{steps[step].downcase}" } %>
+          <% else %>
+            <%# The terminal action: wire this to your submit. %>
+            <%= poetry_button { "Place order" } %>
+          <% end %>
         </div>
       <% end %>
     <% end %>

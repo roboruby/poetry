@@ -1,0 +1,6 @@
+<%= poetry_toolbar(label: "Invoice actions") do |toolbar| %>
+  <% toolbar.with_button(variant: :outline, size: :sm) { "Export" } %>
+  <% toolbar.with_button(variant: :outline, size: :sm) { "Archive" } %>
+  <% toolbar.with_separator %>
+  <% toolbar.with_input(type: "search", placeholder: "Filter invoices…", "aria-label": "Filter invoices") %>
+<% end %>

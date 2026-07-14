@@ -163,6 +163,42 @@ Slots: media, title, description, actions, header, footer.
 - RULE: media_variant: :icon for a glyph, :image for a thumbnail (sized/rounded automatically).
 - RULE: A clickable row is tag: :a with href: - never wrap an Item in a bare <a>.
 
+## metadata_list (`poetry_metadata_list`)
+
+Class: Poetry::Ui::MetadataList::Component - BEM block `poetry-ui-metadata_list`.
+Slot REQUIRED: with_item (at least one item (label: plus the value block)) - a call without it raises.
+- `columns:` (symbol) - one of one|two|three, default "one"
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical"
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- PART `metadata-list` - The <dl> root - the record's fact sheet | states: data-orientation=vertical|horizontal (always - label placement); data-columns=one|two|three (always - the column count word)
+- PART `metadata-list-item` - One fact group (a <div> holding its <dt>/<dd> pair)
+- PART `metadata-list-label` - The fact's name (<dt>) - muted, small
+- PART `metadata-list-value` - The fact's value (<dd>) - composes text, badges, links
+- RULE: Record facts on a detail page belong in a MetadataList - never a hand-rolled grid of label/value divs (this is the <dl> the page owes its readers).
+- RULE: Each with_item takes label: and the value as its block - values compose freely (text, a Badge, a Link, a Timestamp).
+- RULE: columns: :two / :three spread the facts on wide viewports; orientation: :horizontal puts labels beside values (the classic key/value sheet) - pick one per surface.
+- RULE: For editable facts pair each value with its edit affordance inside the item block; the list itself stays read-only vocabulary.
+
+## stat (`poetry_stat`)
+
+Class: Poetry::Ui::Stat::Component - BEM block `poetry-ui-stat`.
+Content block REQUIRED (the metric value) - a blockless call raises.
+- `delta:` (string)
+- `label:` (string) - required
+- `sentiment:` (symbol) - one of positive|negative|neutral
+- `trend:` (symbol) - one of up|down|flat, default "up"
+Slots: description, media.
+- PART `stat` - The stat root - a label/value/delta/description column
+- PART `stat-label` - The muted metric name above the value
+- PART `stat-value` - The metric itself - large, semibold, tabular numerals
+- PART `stat-delta` - The change pill beside the value - arrow icon + delta text with an sr-only trend word | states: data-trend=up|down|flat (always - the arrow direction); data-sentiment=positive|negative|neutral (always - resolved sentiment (trend-derived unless overridden))
+- PART `stat-description` - Muted supporting copy under the value
+- PART `stat-media` - The trend-visual slot (sparkline, chart, glyph) below the text stack
+- RULE: One Stat is ONE metric: label: names it, the content block is the value - compose several in a grid (typically each inside a Card) for a dashboard row.
+- RULE: delta: carries the change text ('+12.5%'); trend: (up/down/flat) sets the arrow and the default sentiment. Override sentiment: :positive when DOWN is the good direction (costs, churn, error rate) - color follows sentiment, never the arrow.
+- RULE: Keep the value textual - tabular numerals are already applied; units and formatting belong in the content ('$45,231', '99.98%').
+- RULE: A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts).
+
 ## table (`poetry_table`)
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
@@ -178,4 +214,19 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
 - RULE: A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).
 - RULE: Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.
+
+## toolbar (`poetry_toolbar`)
+
+Class: Poetry::Ui::Toolbar::Component - BEM block `poetry-ui-toolbar`.
+Slot REQUIRED: with_button (at least one control (with_button / with_input)) - a call without it raises.
+- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
+- `label:` (string) - required
+- `loop:` (boolean) - default true
+Slots: items (many; types button|input|separator - one with_<type> setter each, options as keywords).
+- PART `toolbar` - The role=toolbar root - one Tab stop; arrow keys rove across the slotted controls (roving-focus, with the caret guard protecting inputs) | states: data-orientation=horizontal|vertical (always - which arrows rove)
+- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
+- RULE: A Toolbar is ONE Tab stop: arrows move between its controls - use it for grouped actions over a surface (table bulk actions, editor strips), never as page navigation.
+- RULE: Compose through the typed slots: with_button (a real poetry Button - tag: :a makes it a link), with_input (search/filter - the caret keeps its arrow keys), with_separator (orientation flips automatically).
+- RULE: label: is the toolbar's accessible name and is required - screen readers announce it on entry.
+- RULE: A ToggleGroup composed inside keeps its own arrow navigation (its items rove locally); place it between separators so the seam reads as a group.
 

@@ -1,0 +1,10 @@
+<div class="w-full max-w-lg">
+  <%= poetry_metadata_list(columns: :two) do |list| %>
+    <% list.with_item(label: "Invoice") { "INV-0042" } %>
+    <% list.with_item(label: "Amount") { "$1,250.00" } %>
+    <% list.with_item(label: "Status") do %>
+      <%= poetry_badge(variant: :success) { "Paid" } %>
+    <% end %>
+    <% list.with_item(label: "Method") { "ACH transfer" } %>
+  <% end %>
+</div>

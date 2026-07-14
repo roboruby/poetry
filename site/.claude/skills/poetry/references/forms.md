@@ -173,6 +173,32 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - RULE: Error text arrives via error: (from model errors upstream) - never a bare red <p>.
 - RULE: orientation: :horizontal is the boolean-control layout (checkbox/switch left, label + hint stacked right) - text inputs and groups stay vertical.
 
+## file_input (`poetry_file_input`)
+
+Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
+- `variant:` (symbol) - one of input|dropzone, default "input"
+- `accept:` (string)
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `hint:` (string)
+- `id:` (string)
+- `invalid:` (boolean) - default false
+- `multiple:` (boolean) - default false
+- `name:` (string)
+- `prompt:` (string)
+- PART `file-input` - The dropzone root - wraps the zone, the selection list, and clear | states: data-variant=dropzone (always on the dropzone root (the input variant renders the Input component instead)); data-dragging (a file drag is over the zone (controller-written, enter/leave counted)); data-populated (the native input holds at least one file (controller-written))
+- PART `file-input-dropzone` - The <label> drop surface - dashed, platform click-to-browse; its text is the control's accessible name
+- PART `file-input-control` - The native <input type=file> - visually hidden in the dropzone, THE form value in both variants
+- PART `file-input-prompt` - The zone's instruction line (prompt: overrides the default)
+- PART `file-input-hint` - Muted constraints copy under the prompt (hint: - formats, size)
+- PART `file-input-list` - The selected-file <ul> the controller fills (name + size per item; items are controller-built, not server parts)
+- PART `file-input-clear` - The clear affordance - hidden until populated; never re-opens the picker
+- WIRING `poetry--core--file-input`: targets clear, input, list; values multiple; actions changed, clear, dragenter, dragleave, dragover, drop; events poetry:file-input:change
+- RULE: File selection is a FileInput: variant: :input for compact forms, :dropzone when dragging is expected (uploads as the page's point) - never a hand-rolled drop div.
+- RULE: The native input is the form value: set name: (multiple: true wants a name ending in [] for Rails params); ActiveStorage direct upload attaches to it as usual.
+- RULE: The dropzone's selected-file list and clear button are controller-rendered - compose prompt:/hint: copy instead of adding your own list markup.
+- RULE: In a Field, prefer form.file_input (the builder wires id/label/errors); the bare component suits standalone dropzones.
+
 ## input (`poetry_input`)
 
 Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.

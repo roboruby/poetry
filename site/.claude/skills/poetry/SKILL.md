@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (66 components + 13 chart components + 7 blocks). After updating
+Generated from the poetry registry (70 components + 13 chart components + 7 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -50,9 +50,9 @@ Load the reference for the family you are composing in - each file
 carries the full contracts (options, variants, slots, wiring, RULE
 lines) for its components:
 
-- **forms** (`references/forms.md`): button, button_group, calendar, checkbox, combobox, date_picker, field, input, input_group, input_otp, label, native_select, number_field, radio_group, select, slider, switch, textarea, toggle, toggle_group
+- **forms** (`references/forms.md`): button, button_group, calendar, checkbox, combobox, date_picker, field, file_input, input, input_group, input_otp, label, native_select, number_field, radio_group, select, slider, switch, textarea, toggle, toggle_group
 - **overlays** (`references/overlays.md`): alert_dialog, command, command_dialog, context_menu, dialog, drawer, dropdown_menu, hover_card, menubar, popover, sheet, tooltip
-- **data** (`references/data.md`): accordion, avatar, badge, card, carousel, collapsible, data_table, empty, item, table
+- **data** (`references/data.md`): accordion, avatar, badge, card, carousel, collapsible, data_table, empty, item, metadata_list, stat, table, toolbar
 - **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toaster
 - **navigation** (`references/navigation.md`): breadcrumb, navigation_menu, pagination, sidebar, tabs
 - **foundations** (`references/foundations.md`): icon, kbd, link, marker, separator

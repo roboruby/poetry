@@ -1,0 +1,5 @@
+<div class="grid w-full max-w-2xl gap-6 sm:grid-cols-3">
+  <%= poetry_stat(label: "Revenue", delta: "+20.1%", trend: :up) { "$45,231" } %>
+  <%= poetry_stat(label: "Churn", delta: "-0.8%", trend: :down, sentiment: :positive) { "2.1%" } %>
+  <%= poetry_stat(label: "Uptime", delta: "0.00%", trend: :flat) { "99.98%" } %>
+</div>
