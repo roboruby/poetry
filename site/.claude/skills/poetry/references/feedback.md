@@ -84,7 +84,7 @@ Class: Poetry::Ui::Toaster::Component - BEM block `poetry-ui-toaster`.
 - `position:` (symbol) - one of top-left|top-center|top-right|bottom-left|bottom-center|bottom-right, default "bottom-right", required
 - `hotkey:` (string) - default "F8"
 - `limit:` (integer) - default 3
-- PART `toaster` - The toast viewport itself (<ol>, role=region, data-turbo-permanent) - the corner geometry and the Turbo Stream append target ride here | states: data-position=top-left|top-center|top-right|bottom-left|bottom-center|bottom-right (always - the corner; each toast's slide direction keys off it via group/toaster)
+- PART `toaster` - The toast viewport itself (<ol>, role=region, data-turbo-permanent) - the corner geometry and the Turbo Stream append target ride here | states: data-position=top-left|top-center|top-right|bottom-left|bottom-center|bottom-right (always - the corner; each toast's slide direction keys off it via group/toaster); data-poetry-top-layer (always - the dismissal layer exempts presses here, so clicking a toast never dismisses the overlay under it)
 - WIRING `poetry--core--toaster`: targets item; values hotkey, limit, position; actions focusRegion, reflow
 - RULE: Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.
 - RULE: Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never hand-append into #poetry-toaster.
