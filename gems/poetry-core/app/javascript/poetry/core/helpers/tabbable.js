@@ -15,7 +15,7 @@ const CANDIDATE_SELECTOR = [
 ].join(", ")
 
 export function tabbableWithin(container) {
-  return Array.from(container.querySelectorAll(CANDIDATE_SELECTOR)).filter(
+  const candidates = Array.from(container.querySelectorAll(CANDIDATE_SELECTOR)).filter(
     (element) =>
       !element.disabled &&
       !element.hidden &&
@@ -23,4 +23,25 @@ export function tabbableWithin(container) {
       element.closest("[inert]") === null &&
       element.type !== "hidden"
   )
+
+  return candidates.filter((element) => isRadioTabStop(element, candidates))
+}
+
+// A radio GROUP is one tab stop, not one per radio (react-aria's walker
+// rule): the checked radio represents the group; an all-unchecked group is
+// represented by its first radio. Without this, a dialog trap treats every
+// radio as an edge candidate and Shift+Tab at the "first" tabbable is
+// wrong whenever a radio group sits at either end of the scope.
+function isRadioTabStop(element, candidates) {
+  if (element.type !== "radio" || !element.name) return true
+
+  const group = candidates.filter(
+    (candidate) =>
+      candidate.type === "radio" &&
+      candidate.name === element.name &&
+      candidate.form === element.form
+  )
+  const checked = group.find((candidate) => candidate.checked)
+
+  return checked ? element === checked : element === group[0]
 }

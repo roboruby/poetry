@@ -8,6 +8,15 @@
 let locks = 0
 let previous = null
 
+// Preferred gutter strategy (react-aria's rule): `scrollbar-gutter: stable`
+// on the ROOT reserves the rail at the viewport itself, so position:fixed
+// elements (toasts, floating headers) hold still too - body padding only
+// compensates in-flow content. Feature-detected; the padding path stays as
+// the fallback.
+function supportsScrollbarGutter() {
+  return typeof CSS !== "undefined" && CSS.supports?.("scrollbar-gutter: stable") === true
+}
+
 export function lockScroll() {
   locks += 1
   if (locks > 1) return
@@ -15,11 +24,16 @@ export function lockScroll() {
   const gap = window.innerWidth - document.documentElement.clientWidth
   previous = {
     overflow: document.body.style.overflow,
-    paddingRight: document.body.style.paddingRight
+    paddingRight: document.body.style.paddingRight,
+    scrollbarGutter: document.documentElement.style.scrollbarGutter
   }
   if (gap > 0) {
-    const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0
-    document.body.style.paddingRight = `${current + gap}px`
+    if (supportsScrollbarGutter()) {
+      document.documentElement.style.scrollbarGutter = "stable"
+    } else {
+      const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0
+      document.body.style.paddingRight = `${current + gap}px`
+    }
   }
   document.body.style.overflow = "hidden"
 }
@@ -32,6 +46,7 @@ export function unlockScroll() {
 
   document.body.style.overflow = previous.overflow
   document.body.style.paddingRight = previous.paddingRight
+  document.documentElement.style.scrollbarGutter = previous.scrollbarGutter
   previous = null
 }
 

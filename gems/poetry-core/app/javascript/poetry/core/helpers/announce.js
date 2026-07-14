@@ -21,6 +21,12 @@
 // treat consecutive messages as separate announcements.
 const QUEUE_GAP = 150
 
+// Safari drops messages announced right after a live region is INSERTED
+// (react-aria waits ~100ms post-creation; a WebKit behavior, not a spec
+// timing) - a fresh region holds its queue until this warmup elapses. The
+// clear-then-set rAF alone (~one frame) is shorter than Safari needs.
+const REGION_WARMUP = 100
+
 const POLITENESS = {
   polite: { role: "status", live: "polite" },
   assertive: { role: "alert", live: "assertive" }
@@ -104,7 +110,18 @@ function createRegion(politeness) {
 
   document.body.appendChild(element)
 
-  return { politeness, element, queue: [], draining: false, timer: null }
+  const region = {
+    politeness, element, queue: [], draining: false, timer: null,
+    warm: false, warmupTimer: null
+  }
+
+  region.warmupTimer = window.setTimeout(() => {
+    region.warmupTimer = null
+    region.warm = true
+    drain(region)
+  }, REGION_WARMUP)
+
+  return region
 }
 
 // Per-region queue: clear-then-set across an animation FRAME, not a
@@ -123,7 +140,7 @@ function enqueue(region, message) {
 }
 
 function drain(region) {
-  if (region.draining) return
+  if (!region.warm || region.draining) return
 
   const message = region.queue.shift()
 
@@ -183,6 +200,7 @@ function teardown() {
 
   for (const region of Object.values(regions)) {
     if (region.timer !== null) window.clearTimeout(region.timer)
+    if (region.warmupTimer !== null) window.clearTimeout(region.warmupTimer)
 
     region.element.remove()
   }

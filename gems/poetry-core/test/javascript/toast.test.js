@@ -14,10 +14,12 @@ import { registerPoetryControllers } from "@poetry/controllers"
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-// The announce singleton sets region text a real animation FRAME after the
-// clear (the born-with-content discipline) - announce assertions must wait
-// for one, not just a macrotask.
+// The announce singleton holds a fresh region's queue through the 100ms
+// Safari warmup, then sets region text a real animation FRAME after the
+// clear (the born-with-content discipline) - announce assertions wait out
+// both, not just a macrotask.
 const announceFrame = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 110))
   await new Promise((resolve) => requestAnimationFrame(() => resolve()))
   await Promise.resolve()
 }

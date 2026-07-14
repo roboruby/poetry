@@ -75,6 +75,36 @@ describe("poetry--core--focus-scope", () => {
     expect(document.activeElement).toBe(el("scope-last"))
   })
 
+  it("a Tab mid-IME-composition is never intercepted (it commits the candidate text)", async () => {
+    await mountScope()
+
+    el("scope-last").focus()
+    const handled = !press(el("scope-last"), "Tab", { isComposing: true })
+
+    expect(handled).toBe(false) // not preventDefault'd - the IME keeps it
+    expect(document.activeElement).toBe(el("scope-last")) // no loop happened
+  })
+
+  it("a radio GROUP at the scope edge is ONE tab stop (Shift+Tab on the checked radio loops)", async () => {
+    el("host").insertAdjacentHTML(
+      "beforeend",
+      `<div id="scope" data-controller="poetry--core--focus-scope">
+        <label><input type="radio" name="plan" id="radio-a"> A</label>
+        <label><input type="radio" name="plan" id="radio-b" checked> B</label>
+        <button id="scope-button">ok</button>
+      </div>`
+    )
+    await nextFrame()
+
+    // The checked radio represents the group: it IS the first tabbable, so
+    // Shift+Tab there loops to the scope's end - the unchecked sibling is
+    // not a stop and must not be treated as "first".
+    expect(document.activeElement).toBe(el("radio-b"))
+
+    press(el("radio-b"), "Tab", { shiftKey: true })
+    expect(document.activeElement).toBe(el("scope-button"))
+  })
+
   it("loop=false still traps: Tab at the edge is swallowed but focus stays put", async () => {
     await mountScope(`data-poetry--core--focus-scope-loop-value="false"`)
 

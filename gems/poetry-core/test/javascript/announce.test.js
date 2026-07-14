@@ -18,6 +18,13 @@ const nextFrame = async () => {
   await Promise.resolve()
 }
 
+// A FRESH region drains only after the 100ms Safari warmup - real-timer
+// tests wait it out (plus a frame) before expecting text.
+const afterWarmup = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 110))
+  await nextFrame()
+}
+
 const politeRegion = () => document.querySelector('[data-poetry-announce-region="polite"]')
 const assertiveRegion = () => document.querySelector('[data-poetry-announce-region="assertive"]')
 
@@ -69,7 +76,7 @@ describe("helpers/announce", () => {
       release()
     })
 
-    it("a freshly created region is born EMPTY - content lands a frame later (ATs skip regions born with content)", async () => {
+    it("a freshly created region is born EMPTY - content lands after the Safari warmup (ATs skip regions born with content; Safari drops immediate announces)", async () => {
       announce("Saved")
 
       const polite = politeRegion()
@@ -77,7 +84,11 @@ describe("helpers/announce", () => {
       expect(polite).not.toBeNull()
       expect(polite.textContent).toBe("")
 
+      // One frame is NOT enough on purpose: the 100ms warmup gates it.
       await nextFrame()
+      expect(polite.textContent).toBe("")
+
+      await afterWarmup()
 
       expect(polite.textContent).toBe("Saved")
     })
@@ -87,7 +98,7 @@ describe("helpers/announce", () => {
     it("polite (default) writes the status region; assertive writes the alert region; textContent only", async () => {
       announce("Saved")
       announce("Failed", "assertive")
-      await nextFrame()
+      await afterWarmup()
 
       expect(politeRegion().textContent).toBe("Saved")
       expect(assertiveRegion().textContent).toBe("Failed")
@@ -96,7 +107,7 @@ describe("helpers/announce", () => {
 
     it("an unknown politeness falls back to polite", async () => {
       announce("Hm", "shouty")
-      await nextFrame()
+      await afterWarmup()
 
       expect(politeRegion().textContent).toBe("Hm")
     })
@@ -107,7 +118,7 @@ describe("helpers/announce", () => {
       vi.useFakeTimers()
 
       announce("Saved")
-      await vi.advanceTimersByTimeAsync(200) // frame (16) + gap (150): drain complete
+      await vi.advanceTimersByTimeAsync(300) // warmup (100) + frame (16) + gap (150): drain complete
       expect(politeRegion().textContent).toBe("Saved")
 
       announce("Saved")
@@ -122,7 +133,7 @@ describe("helpers/announce", () => {
 
       announce("one")
       announce("two")
-      await vi.advanceTimersByTimeAsync(16)
+      await vi.advanceTimersByTimeAsync(116) // warmup (100) + frame (16)
 
       expect(politeRegion().textContent).toBe("one")
 
@@ -156,7 +167,7 @@ describe("helpers/announce", () => {
       vi.useFakeTimers()
 
       announce("before")
-      await vi.advanceTimersByTimeAsync(200)
+      await vi.advanceTimersByTimeAsync(300) // warmup + frame + gap
 
       setHidden(true)
 

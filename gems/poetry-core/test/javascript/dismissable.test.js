@@ -132,6 +132,51 @@ describe("poetry--core--dismissable", () => {
     expect(top).toEqual([])
   })
 
+  it("a press whose target was unhooked mid-gesture NEVER dismisses (the Turbo-morph false-dismiss class)", async () => {
+    // Registered BEFORE the layer mounts, so it runs ahead of the layer's
+    // capture listener - the stand-in for a morph racing the gesture.
+    const remover = (event) => event.target.remove()
+    document.addEventListener("pointerdown", remover, { capture: true })
+
+    const dismissals = await mountLayer("layer")
+
+    pointerdown(el("outside"))
+
+    expect(dismissals).toEqual([])
+    expect(el("outside")).toBeNull() // the remover really ran first
+
+    document.removeEventListener("pointerdown", remover, { capture: true })
+  })
+
+  it("a press inside the top layer (a toast) never dismisses the overlay under it", async () => {
+    document.body.insertAdjacentHTML(
+      "beforeend",
+      `<div data-poetry-top-layer=""><button id="toast-action">Undo</button></div>`
+    )
+    const dismissals = await mountLayer("layer")
+
+    pointerdown(el("toast-action"))
+
+    expect(dismissals).toEqual([])
+
+    pointerdown(el("outside")) // a genuinely outside press still dismisses
+
+    expect(dismissals).toEqual(["layer"])
+  })
+
+  it("a press inside shadow content within the layer stays 'inside' (composedPath, not contains)", async () => {
+    const dismissals = await mountLayer("layer")
+    const host = document.createElement("div")
+    el("layer").appendChild(host)
+    const shadow = host.attachShadow({ mode: "open" })
+    const button = document.createElement("button")
+    shadow.appendChild(button)
+
+    button.dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, composed: true }))
+
+    expect(dismissals).toEqual([])
+  })
+
   it("disableOutsidePointerEvents scrims the body while mounted and restores it after", async () => {
     await mountLayer("layer", `data-poetry--core--dismissable-disable-outside-pointer-events-value="true"`)
 

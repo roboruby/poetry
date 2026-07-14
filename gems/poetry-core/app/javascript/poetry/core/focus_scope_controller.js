@@ -106,6 +106,9 @@ export default class FocusScopeController extends Controller {
   // mid-list Tab is the browser's job (Radix intervenes the same way).
   #handleKeydown(event) {
     if (event.key !== "Tab") return
+    // A Tab mid-IME-composition commits the candidate text, it does not
+    // navigate - intercepting it eats the commit (react-aria's guard).
+    if (event.isComposing) return
     if (!this.trappedValue && !this.loopValue) return
 
     const candidates = tabbableWithin(this.element)

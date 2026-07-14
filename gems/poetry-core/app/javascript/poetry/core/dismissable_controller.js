@@ -59,10 +59,23 @@ export default class DismissableController extends Controller {
   // pointerdown, not click: dismissal happens on press (Radix), so a drag
   // that starts inside can never end up counting as outside.
   #handlePointerdown(event) {
-    if (this.element.contains(event.target)) return
+    // A target already unhooked from the document (a Turbo morph or an
+    // earlier handler removed it mid-gesture) says nothing about WHERE the
+    // press landed - dismissing on it is the false-dismiss class.
+    if (!(event.target instanceof Element) || !event.target.isConnected) return
+
+    // composedPath, not contains(): the path is fixed at dispatch, so a
+    // press on a node an inner handler removes (a chip, a swapped row)
+    // still counts as inside - and shadow-DOM retargeting can't hide it.
+    const path = event.composedPath()
+
+    if (path.includes(this.element)) return
     // A press inside a HIGHER layer (a nested overlay, often portaled out
     // of this subtree) is inside the stack, not "outside" this layer.
-    if (this.#layersAbove().some((layer) => layer.element.contains(event.target))) return
+    if (this.#layersAbove().some((layer) => path.includes(layer.element))) return
+    // The top layer (toasts) sits above EVERY dismissal layer by fiat:
+    // pressing a toast must never dismiss the overlay under it.
+    if (event.target.closest("[data-poetry-top-layer]")) return
 
     const interactOutside = this.dispatch("interact-outside", {
       detail: { originalEvent: event },
