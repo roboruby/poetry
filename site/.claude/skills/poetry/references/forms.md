@@ -363,6 +363,28 @@ Slots: items (many).
 - RULE: 7+ options: use Select instead.
 - RULE: Wire errors through Field/FormBuilder (invalid: + describedby on the root) - never a bare red ring.
 
+## search_field (`poetry_search_field`)
+
+Class: Poetry::Ui::SearchField::Component - BEM block `poetry-ui-search_field`.
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `id:` (string)
+- `invalid:` (boolean) - default false
+- `label:` (string)
+- `name:` (string) - required
+- `placeholder:` (string)
+- `readonly:` (boolean) - default false
+- `required:` (boolean) - default false
+- `value:` (string)
+- PART `search-field` - Root - the controller and the emptiness state ride here | states: data-empty (the input holds no text (server-set, controller-kept; hides the clear affordance))
+- PART `input-group-addon` - The leading search-glyph cell - InputGroup's addon vocabulary (the NumberField precedent) | states: data-align=inline-start|inline-end (always - inline-start holds the glyph, inline-end the clear button)
+- PART `search-field-group` - The bordered field surface - InputGroup's chrome, focus ring keyed on the control inside
+- PART `input-group-control` - The native <input type=search> - InputGroup's control slot (the themes' focus-ring hook); WebKit's own cancel affordance suppressed
+- WIRING `poetry--core--search-field`: targets clear, input; actions changed, clear, holdFocus, keydown; events poetry:search-field:clear
+- RULE: Search inputs are a SearchField (poetry_search_field) - never a bare Input with a hand-rolled clear button; Escape-clears and focus retention ride the controller.
+- RULE: Enter submits the surrounding form natively - wrap it in a form/turbo-frame for live search; listen for poetry:search-field:clear to reset results.
+- RULE: Pair with a Label/Field for the accessible name, or pass label: standalone.
+
 ## select (`poetry_select`)
 
 Class: Poetry::Ui::Select::Component - BEM block `poetry-ui-select`.

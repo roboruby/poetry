@@ -1,0 +1,6 @@
+<%# name: serializes one hidden topics[] input per tag; removal is
+    cancelable (poetry:tag-group:remove) for Turbo-owned re-renders. %>
+<%= poetry_tag_group(name: "post[topics]", label: "Topics") do |group| %>
+  <% group.with_tag(value: "news") { "News" } %>
+  <% group.with_tag(value: "release") { "Release" } %>
+<% end %>

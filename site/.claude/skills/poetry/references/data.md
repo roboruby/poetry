@@ -179,6 +179,24 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: columns: :two / :three spread the facts on wide viewports; orientation: :horizontal puts labels beside values (the classic key/value sheet) - pick one per surface.
 - RULE: For editable facts pair each value with its edit affordance inside the item block; the list itself stays read-only vocabulary.
 
+## meter (`poetry_meter`)
+
+Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
+- `label:` (string) - required
+- `max:` (integer) - default 100
+- `min:` (integer) - default 0
+- `show_value:` (boolean) - default true
+- `value:` (integer) - required
+- `value_label:` (string)
+- PART `meter` - Root (role="meter progressbar" - the two-token fallback - plus aria-value* and the accessible name); label, readout, and track stack here
+- PART `meter-label` - The visible caption span (label:)
+- PART `meter-value` - The readout - value_label: verbatim, else the range percentage; renders unless show_value: false
+- PART `meter-track` - The full-width rail (Progress's cn chrome)
+- PART `meter-indicator` - The filled bar - inline width percentage of the range
+- RULE: A quantity within a range is a Meter (disk, seats, strength); an operation's completion over time is Progress. There is NO indeterminate meter - unknown duration means Spinner.
+- RULE: label: is REQUIRED - the meter's accessible name and visible caption.
+- RULE: value_label: replaces the percent readout AND aria-valuetext verbatim ("3 of 4 seats"); without it both show the percentage of the RANGE.
+
 ## stat (`poetry_stat`)
 
 Class: Poetry::Ui::Stat::Component - BEM block `poetry-ui-stat`.
@@ -214,6 +232,25 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
 - RULE: A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).
 - RULE: Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.
+
+## tag_group (`poetry_tag_group`)
+
+Class: Poetry::Ui::TagGroup::Component - BEM block `poetry-ui-tag_group`.
+- `label:` (string) - required
+- `name:` (string)
+Slots: tags (many; with_tag yields NOTHING to the block - no |param|, write content directly).
+- PART `tag-group` - The labelled wrapper - caption span + grid stack here
+- PART `tag-group-label` - The caption span (label:), wired via aria-labelledby (a grid is not a labelable form control - never a <label>)
+- PART `tag-group-grid` - The tag collection (role=grid; role=group + the tab stop when empty) - roving focus, removal keys, and the focus-scoped live region ride here | states: data-empty (no tags remain (controller-kept after removals))
+- PART `tag-group-tag` - One chip (role=row > gridcell): content, the remove button, and - in form mode - the hidden name[] input | states: data-disabled (the tag is disabled (skipped by arrows and removal)); data-value (always - the tag's value (the remove event's detail and the hidden input's value))
+- PART `tag-group-remove` - The per-tag remove button - tabbable (Tab steps from the row into it), removes exactly its own tag
+- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
+- WIRING `poetry--core--tag-group`: actions keydown, remove; events poetry:tag-group:remove
+- RULE: Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.
+- RULE: label: is REQUIRED (the grid's accessible name, rendered as a caption span).
+- RULE: name: turns the group into a form value - one hidden <name>[] input per tag submits; removing a tag removes its input.
+- RULE: Removal is cancelable: listen for poetry:tag-group:remove and preventDefault to own the removal server-side (Turbo re-render).
+- RULE: Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup - a TagGroup holds items that exist until removed.
 
 ## toolbar (`poetry_toolbar`)
 

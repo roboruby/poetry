@@ -1,0 +1,5 @@
+<%= poetry_tag_group(label: "Topics") do |group| %>
+  <% group.with_tag(value: "rails") { "Rails" } %>
+  <% group.with_tag(value: "hotwire") { "Hotwire" } %>
+  <% group.with_tag(value: "ruby") { "Ruby" } %>
+<% end %>

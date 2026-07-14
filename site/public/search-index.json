@@ -1164,6 +1164,24 @@
     "path": "/components/metadata-list#two-columns"
   },
   {
+    "title": "Meter",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter"
+  },
+  {
+    "title": "Default",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#default"
+  },
+  {
+    "title": "With value label",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#with-value-label"
+  },
+  {
     "title": "Native Select",
     "page": "Native Select",
     "section": "components",
@@ -1396,6 +1414,24 @@
     "page": "Scroll Area",
     "section": "components",
     "path": "/components/scroll-area#horizontal"
+  },
+  {
+    "title": "Search Field",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field"
+  },
+  {
+    "title": "Default",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#default"
+  },
+  {
+    "title": "With value",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#with-value"
   },
   {
     "title": "Select",
@@ -1684,6 +1720,24 @@
     "page": "Tabs",
     "section": "components",
     "path": "/components/tabs#vertical"
+  },
+  {
+    "title": "Tag Group",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group"
+  },
+  {
+    "title": "Default",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#default"
+  },
+  {
+    "title": "As form value",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#as-form-value"
   },
   {
     "title": "Textarea",
