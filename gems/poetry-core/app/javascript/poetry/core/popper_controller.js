@@ -79,6 +79,8 @@ export default class PopperController extends Controller {
   #anchorElement = null
   #generation = 0
   #connected = false
+  #hidPointerEvents = false
+  #pointerEventsBeforeHide = ""
 
   connect() {
     this.#connected = true
@@ -190,7 +192,21 @@ export default class PopperController extends Controller {
       const hidden = Boolean(middlewareData.hide.referenceHidden)
 
       content.style.visibility = hidden ? "hidden" : ""
-      content.style.pointerEvents = hidden ? "none" : ""
+
+      // Save/restore, never clear: the dismissable scrim opts this SAME
+      // element back in (pointer-events: auto) while body is none -
+      // blanking it on every position pass left modal popovers click-dead.
+      // Found by the tester proofs (the first real-pointer gate;
+      // dommy dispatches synthetically, so pointer-events was invisible
+      // to it).
+      if (hidden && !this.#hidPointerEvents) {
+        this.#hidPointerEvents = true
+        this.#pointerEventsBeforeHide = content.style.pointerEvents
+        content.style.pointerEvents = "none"
+      } else if (!hidden && this.#hidPointerEvents) {
+        this.#hidPointerEvents = false
+        content.style.pointerEvents = this.#pointerEventsBeforeHide
+      }
     }
 
     if (arrowElement) this.#positionArrow(arrowElement, side, middlewareData)
