@@ -267,3 +267,18 @@ Slots: items (many; types button|input|separator - one with_<type> setter each, 
 - RULE: label: is the toolbar's accessible name and is required - screen readers announce it on entry.
 - RULE: A ToggleGroup composed inside keeps its own arrow navigation (its items rove locally); place it between separators so the seam reads as a group.
 
+## tree (`poetry_tree`)
+
+Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
+- `label:` (string) - required
+- PART `tree` - The treegrid container (role=treegrid, the accessible name) - roving focus, expansion keys, and typeahead ride here; rows are FLAT siblings
+- PART `tree-item` - One row (role=row > gridcell) - hierarchy in aria-level/posinset/setsize, indentation via --poetry-tree-level; rows under a collapsed ancestor render hidden | states: data-expanded (the row's subtree is open (parents only; aria-expanded is the canonical twin)); data-disabled (the item is disabled (skipped by arrows and typeahead)); data-value (always - the toggle event's identity); data-level (always - the 1-based depth (aria-level's twin; --poetry-tree-level drives the indent)) | vars: --poetry-tree-level (the 1-based depth - indentation is calc((level - 1) * step) in the dictionary)
+- PART `tree-item-toggle` - The chevron (parents only): tabindex -1, never steals focus, aria-label flips Expand/Collapse | states: data-expand-label (always - the localized Expand string the controller swaps in on collapse); data-collapse-label (always - the localized Collapse string the controller swaps in on expand)
+- PART `tree-item-label` - The row's text - a link when href: is given
+- WIRING `poetry--core--tree`: actions keydown, press, pressStart, toggle; events poetry:tree:toggle
+- RULE: Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with click handlers; the treegrid semantics, expansion keys, and focus rules ride the controller.
+- RULE: label: is REQUIRED (the treegrid's accessible name).
+- RULE: Items: tree.with_item(text:, value:, expanded:, disabled:, href:) with nesting via the block - the component flattens and computes aria-level/posinset/setsize.
+- RULE: Expansion is client state; persist it by listening for poetry:tree:toggle and re-rendering with expanded: from your store.
+- RULE: Navigation destinations take href: (the label renders as a link); a Tree is not a menu - actions belong to DropdownMenu, picking to Select/Combobox.
+

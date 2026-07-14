@@ -1,0 +1,13 @@
+<div class="w-72">
+  <%= poetry_tree(label: "Files") do |tree| %>
+    <% tree.with_item(text: "docs", value: "docs", expanded: true) do |docs| %>
+      <% docs.with_item(text: "guides", value: "guides") do |guides| %>
+        <% guides.with_item(text: "intro.md", value: "intro") %>
+      <% end %>
+      <% docs.with_item(text: "README.md", value: "readme") %>
+    <% end %>
+    <% tree.with_item(text: "src", value: "src") do |src| %>
+      <% src.with_item(text: "main.rb", value: "main") %>
+    <% end %>
+  <% end %>
+</div>

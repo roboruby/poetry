@@ -1956,6 +1956,24 @@
     "path": "/components/tooltip#with-label"
   },
   {
+    "title": "Tree",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree"
+  },
+  {
+    "title": "Default",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#default"
+  },
+  {
+    "title": "With links",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#with-links"
+  },
+  {
     "title": "Adapter Chart",
     "page": "Adapter Chart",
     "section": "charts",
