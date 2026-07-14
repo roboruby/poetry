@@ -141,6 +141,31 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - RULE: Do not put interactive elements inside options (an option IS the interactive unit).
 - RULE: Deselection in single mode is include_blank (a visible blank option), never a re-click toggle - committing the already-selected value closes without change. In multiple, re-committing IS the deselect gesture (chip-remove is its pointer twin).
 
+## date_field (`poetry_date_field`)
+
+Class: Poetry::Ui::DateField::Component - BEM block `poetry-ui-date_field`.
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `id:` (string)
+- `invalid:` (boolean) - default false
+- `label:` (string)
+- `locale:` (string)
+- `max:` ()
+- `min:` ()
+- `name:` (string) - required
+- `placeholder_value:` ()
+- `readonly:` (boolean) - default false
+- `required:` (boolean) - default false
+- `value:` ()
+- PART `date-field` - Root - the controller and the enhanced/disabled surface ride here | states: data-enhanced (the controller connected and built segments (no JS = the native input, visible and styled)); data-disabled (disabled: is set); data-invalid (invalid: is set (the group wears the destructive ring))
+- PART `date-field-group` - The bordered segment row (cn-input chrome, focus-within ring) - hidden until enhancement, then the editing surface the controller fills with segments | states: data-disabled (disabled: is set (chrome dims, pointer events off)); data-invalid (invalid: is set (destructive border + ring))
+- PART `date-field-input` - The native <input type=date> - THE form value in both modes; tabindex -1 + aria-hidden once segments exist
+- WIRING `poetry--core--date-field`: targets group, input; values hourCycle, labels, locale, placeholder, placeholders, seconds; actions focusGap, settle; events poetry:date-field:change
+- RULE: Date entry is a DateField (poetry_date_field / form.date_field) - never a masked Input, three selects, or a bare input type=date when the design system is in play.
+- RULE: The native input is the form value: params[<name>] is ISO (yyyy-mm-dd) with or without JS; min:/max: take Date or ISO strings and ride native validation.
+- RULE: Pair with a Label/Field for the accessible name (label for= the input id); standalone use takes label: - segments announce it themselves.
+- RULE: Locale drives segment order and numerals automatically; pass locale: only to pin a field to a different locale than the page.
+
 ## date_picker (`poetry_date_picker`)
 
 Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
@@ -451,6 +476,32 @@ Class: Poetry::Ui::Textarea::Component - BEM block `poetry-ui-textarea`.
 - RULE: Placeholder is NOT a label - pair with Label/Field always.
 - RULE: Use Textarea for free text; Input for single-line; do not bolt a JS autosizer on (auto-grow is CSS).
 - RULE: Do not set native required - required flows as aria-required via Field.
+
+## time_field (`poetry_time_field`)
+
+Class: Poetry::Ui::TimeField::Component - BEM block `poetry-ui-time_field`.
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `hour_cycle:` (string)
+- `id:` (string)
+- `invalid:` (boolean) - default false
+- `label:` (string)
+- `locale:` (string)
+- `max:` ()
+- `min:` ()
+- `name:` (string) - required
+- `placeholder_value:` ()
+- `readonly:` (boolean) - default false
+- `required:` (boolean) - default false
+- `seconds:` (boolean) - default false
+- `value:` ()
+- PART `time-field` - Root - the controller and the enhanced/disabled surface ride here (segments inside share the date-field-* vocabulary) | states: data-enhanced (the controller connected and built segments (no JS = the native input, visible and styled)); data-disabled (disabled: is set); data-invalid (invalid: is set (the group wears the destructive ring))
+- PART `time-field-group` - The bordered segment row - hidden until enhancement, then the editing surface (cn-input chrome, focus-within ring) | states: data-disabled (disabled: is set (chrome dims, pointer events off)); data-invalid (invalid: is set (destructive border + ring))
+- PART `time-field-input` - The native <input type=time> - THE form value in both modes; tabindex -1 + aria-hidden once segments exist
+- WIRING `poetry--core--date-field`: targets group, input; values hourCycle, labels, locale, placeholder, placeholders, seconds; actions focusGap, settle; events poetry:date-field:change
+- RULE: Time entry is a TimeField (poetry_time_field / form.time_field) - never a masked Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).
+- RULE: 12- vs 24-hour follows the user's locale automatically (the dayPeriod segment appears only under twelve-hour cycles); hour_cycle: pins it when a product must.
+- RULE: For a date AND a time, compose a DateField and a TimeField side by side - there is no datetime component by design.
 
 ## toggle (`poetry_toggle`)
 

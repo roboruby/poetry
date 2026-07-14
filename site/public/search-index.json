@@ -630,6 +630,24 @@
     "path": "/components/data-table#filtered-and-paginated"
   },
   {
+    "title": "Date Field",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field"
+  },
+  {
+    "title": "Default",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#default"
+  },
+  {
+    "title": "With range",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#with-range"
+  },
+  {
     "title": "Date Picker",
     "page": "Date Picker",
     "section": "components",
@@ -1702,6 +1720,24 @@
     "page": "Textarea",
     "section": "components",
     "path": "/components/textarea#with-label"
+  },
+  {
+    "title": "Time Field",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field"
+  },
+  {
+    "title": "Default",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#default"
+  },
+  {
+    "title": "Twenty four hour",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#twenty-four-hour"
   },
   {
     "title": "Toast",
