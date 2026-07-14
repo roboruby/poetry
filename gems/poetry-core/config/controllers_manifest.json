@@ -234,6 +234,48 @@
       "poetry:context-menu:open"
     ]
   },
+  "poetry--core--date-field": {
+    "targets": [
+      "group",
+      "input"
+    ],
+    "values": {
+      "locale": {
+        "type": "String",
+        "default": ""
+      },
+      "hourCycle": {
+        "type": "String",
+        "default": ""
+      },
+      "seconds": {
+        "type": "Boolean",
+        "default": false
+      },
+      "placeholder": {
+        "type": "String",
+        "default": ""
+      },
+      "labels": {
+        "type": "Object",
+        "default": {}
+      },
+      "placeholders": {
+        "type": "Object",
+        "default": {}
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "focusGap",
+      "settle"
+    ],
+    "events": [
+      "poetry:date-field:change"
+    ]
+  },
   "poetry--core--date-picker": {
     "targets": [
       "label"

@@ -13,6 +13,7 @@ import DismissableController from "@poetry/controllers/dismissable_controller"
 import PopperController from "@poetry/controllers/popper_controller"
 import MenuController from "@poetry/controllers/menu_controller"
 import ContextMenuController from "@poetry/controllers/context_menu_controller"
+import DateFieldController from "@poetry/controllers/date_field_controller"
 import FileInputController from "@poetry/controllers/file_input_controller"
 import MaskController from "@poetry/controllers/mask_controller"
 import MenubarController from "@poetry/controllers/menubar_controller"
@@ -54,6 +55,7 @@ export { default as DismissableController } from "@poetry/controllers/dismissabl
 export { default as PopperController } from "@poetry/controllers/popper_controller"
 export { default as MenuController } from "@poetry/controllers/menu_controller"
 export { default as ContextMenuController } from "@poetry/controllers/context_menu_controller"
+export { default as DateFieldController } from "@poetry/controllers/date_field_controller"
 export { default as FileInputController } from "@poetry/controllers/file_input_controller"
 export { default as MaskController } from "@poetry/controllers/mask_controller"
 export { default as MenubarController } from "@poetry/controllers/menubar_controller"
@@ -108,6 +110,7 @@ export const controllers = {
   "poetry--core--popper": PopperController,
   "poetry--core--menu": MenuController,
   "poetry--core--context-menu": ContextMenuController,
+  "poetry--core--date-field": DateFieldController,
   "poetry--core--file-input": FileInputController,
   "poetry--core--mask": MaskController,
   "poetry--core--menubar": MenubarController,
