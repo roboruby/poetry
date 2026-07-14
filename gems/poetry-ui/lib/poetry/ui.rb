@@ -39,13 +39,15 @@ module Poetry
       "number_field" => %w[input input_group button icon], # composes their chrome
       "stat" => %w[icon], # the delta's trend arrow
       "toolbar" => %w[button input separator], # the typed slots render them
-      "file_input" => %w[input icon] # input variant wears Input; the dropzone's upload glyph
+      "file_input" => %w[input icon], # input variant wears Input; the dropzone's upload glyph
+      "date_field" => %w[input], # the pre-enhancement native input wears Input's chrome
+      "time_field" => %w[date_field input] # DateField at hour granularity - one segment engine
     }.freeze
 
     SKILL_FAMILIES = {
-      "forms" => %w[button button_group calendar checkbox combobox date_picker field
+      "forms" => %w[button button_group calendar checkbox combobox date_field date_picker field
                     file_input input input_group input_otp label native_select number_field
-                    radio_group select slider switch textarea toggle toggle_group],
+                    radio_group select slider switch textarea time_field toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel collapsible data_table empty

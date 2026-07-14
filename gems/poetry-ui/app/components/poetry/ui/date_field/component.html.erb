@@ -1,0 +1,7 @@
+<%# Progressive enhancement: the native input is the visible control (and
+    the form value) until the controller builds segments into the group
+    and hides it from the tab order. %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:span, "", **Poetry::Core::HTML::Attributes.new(group_attributes).to_attributes) %>
+  <%= tag.input(**input_attributes.to_attributes) %>
+<% end %>

@@ -31,6 +31,19 @@ en:
       roledescription: "Number field"
       increment: "Increase"
       decrement: "Decrease"
+    date_field:
+      empty: "Empty"
+      year: "year"
+      month: "month"
+      day: "day"
+      hour: "hour"
+      minute: "minute"
+      second: "second"
+      day_period: "AM/PM"
+      placeholder_year: "yyyy"
+      placeholder_month: "mm"
+      placeholder_day: "dd"
+      placeholder_time: "––"
     dialog:
       close: "Close"
     sheet:

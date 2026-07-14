@@ -153,6 +153,43 @@ module Poetry
         end
       end
 
+      # form.date_field(:due_on) - a Field wrapping a DateField;
+      # params arrive as ISO yyyy-mm-dd with or without JS. OVERRIDES
+      # ActionView's date_field (the number_field precedent).
+      def date_field(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render DateField::Component.new(
+            name: field_name(method),
+            value: object.public_send(method),
+            required: required?(method),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # form.time_field(:starts_at) - a Field wrapping a TimeField;
+      # params arrive as HH:MM (HH:MM:SS with seconds: true).
+      def time_field(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render TimeField::Component.new(
+            name: field_name(method),
+            value: object.public_send(method),
+            required: required?(method),
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
       # form.file_input(:document) / form.file_input(:photos, variant: :dropzone,
       # multiple: true) - a Field wrapping a FileInput; the native
       # input is the form value, so ActiveStorage attaches as usual.

@@ -60,6 +60,19 @@
     <%= poetry_number_field(name: "settings[seats]", id: "settings-seats", value: 5, min: 1, max: 50) %>
   </div>
   <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-renews") { "Renews on" } %>
+    <%# Segmented date editing: the native type=date input IS the
+        form value (ISO with or without JS); segments are the controller's. %>
+    <%= poetry_date_field(name: "settings[renews_on]", id: "settings-renews",
+                          value: Date.new(2026, 8, 1)) %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "settings-digest-at") { "Digest time" } %>
+    <%# TimeField = DateField at hour granularity; the locale decides
+        12- vs 24-hour editing, HH:MM on the wire. %>
+    <%= poetry_time_field(name: "settings[digest_at]", id: "settings-digest-at", value: "09:30") %>
+  </div>
+  <div class="grid gap-2">
     <%= poetry_label(for_id: "settings-contract") { "Signed contract" } %>
     <%# The native input IS the form value; the dropzone's label
         text names the control, drag-and-drop rides the controller. %>

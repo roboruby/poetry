@@ -471,6 +471,19 @@ module Poetry
         render(Poetry::Ui::NumberField::Component.new(**))
       end
 
+      # The segmented date editor (the react-aria segment model):
+      # a native input type=date (ISO on the wire, native pickers with no
+      # JS) enhanced into per-segment spinbutton editing.
+      def poetry_date_field(**)
+        render(Poetry::Ui::DateField::Component.new(**))
+      end
+
+      # DateField at hour granularity: HH:MM[:SS] on the wire; the locale
+      # decides 12- vs 24-hour editing (hour_cycle: pins it).
+      def poetry_time_field(**)
+        render(Poetry::Ui::TimeField::Component.new(**))
+      end
+
       def poetry_field(**, &)
         render(Poetry::Ui::Field::Component.new(**), &)
       end

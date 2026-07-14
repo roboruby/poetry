@@ -18,7 +18,8 @@ module Poetry
                       poetry/ui/checkbox
                       poetry/ui/collapsible
                       poetry/ui/combobox poetry/ui/command poetry/ui/command/dialog poetry/ui/context_menu
-                      poetry/ui/data_table poetry/ui/date_picker poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
+                      poetry/ui/data_table poetry/ui/date_field poetry/ui/date_picker
+                      poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
                       poetry/ui/dropdown_menu
                       poetry/ui/empty
                       poetry/ui/field poetry/ui/file_input
@@ -35,7 +36,8 @@ module Poetry
                       poetry/ui/select
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
                       poetry/ui/spinner poetry/ui/stat
-                      poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea poetry/ui/toast
+                      poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/textarea
+                      poetry/ui/time_field poetry/ui/toast
                       poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip]
 

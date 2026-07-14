@@ -2316,6 +2316,98 @@ components:
         surface owns where it sits
     - name: data-table-footer
       description: 'The Pagination row - renders when total: is more than one page'
+  poetry/ui/date_field:
+    class_name: Poetry::Ui::DateField::Component
+    identifier: poetry--ui--date_field
+    bem_block: poetry-ui-date_field
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: locale
+      type: string
+    - name: max
+      type:
+    - name: min
+      type:
+    - name: name
+      type: string
+      required: true
+    - name: placeholder_value
+      type:
+    - name: readonly
+      type: boolean
+      default: false
+    - name: required
+      type: boolean
+      default: false
+    - name: value
+      type:
+    slots: []
+    elements:
+    - group
+    - input
+    capsule: c812f47a82a9
+    controllers:
+    - identifier: poetry--core--date-field
+      targets:
+      - group
+      - input
+      values:
+      - hourCycle
+      - labels
+      - locale
+      - placeholder
+      - placeholders
+      - seconds
+      actions:
+      - focusGap
+      - settle
+      events:
+      - poetry:date-field:change
+    agent_rules:
+    - Date entry is a DateField (poetry_date_field / form.date_field) - never a masked
+      Input, three selects, or a bare input type=date when the design system is in
+      play.
+    - 'The native input is the form value: params[<name>] is ISO (yyyy-mm-dd) with
+      or without JS; min:/max: take Date or ISO strings and ride native validation.'
+    - 'Pair with a Label/Field for the accessible name (label for= the input id);
+      standalone use takes label: - segments announce it themselves.'
+    - 'Locale drives segment order and numerals automatically; pass locale: only to
+      pin a field to a different locale than the page.'
+    parts:
+    - name: date-field
+      description: Root - the controller and the enhanced/disabled surface ride here
+      states:
+      - attr: data-enhanced
+        condition: the controller connected and built segments (no JS = the native
+          input, visible and styled)
+      - attr: data-disabled
+        condition: 'disabled: is set'
+      - attr: data-invalid
+        condition: 'invalid: is set (the group wears the destructive ring)'
+    - name: date-field-group
+      description: The bordered segment row (cn-input chrome, focus-within ring) -
+        hidden until enhancement, then the editing surface the controller fills with
+        segments
+      states:
+      - attr: data-disabled
+        condition: 'disabled: is set (chrome dims, pointer events off)'
+      - attr: data-invalid
+        condition: 'invalid: is set (destructive border + ring)'
+    - name: date-field-input
+      description: The native <input type=date> - THE form value in both modes; tabindex
+        -1 + aria-hidden once segments exist
   poetry/ui/date_picker:
     class_name: Poetry::Ui::DatePicker::Component
     identifier: poetry--ui--date_picker
@@ -6530,6 +6622,100 @@ components:
     - name: textarea
       description: The <textarea> element itself - value renders as content; auto-grow
         is the field-sizing-content CSS property, zero JS
+  poetry/ui/time_field:
+    class_name: Poetry::Ui::TimeField::Component
+    identifier: poetry--ui--time_field
+    bem_block: poetry-ui-time_field
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: hour_cycle
+      type: string
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: locale
+      type: string
+    - name: max
+      type:
+    - name: min
+      type:
+    - name: name
+      type: string
+      required: true
+    - name: placeholder_value
+      type:
+    - name: readonly
+      type: boolean
+      default: false
+    - name: required
+      type: boolean
+      default: false
+    - name: seconds
+      type: boolean
+      default: false
+    - name: value
+      type:
+    slots: []
+    elements:
+    - group
+    - input
+    capsule: c812f47a82a9
+    controllers:
+    - identifier: poetry--core--date-field
+      targets:
+      - group
+      - input
+      values:
+      - hourCycle
+      - labels
+      - locale
+      - placeholder
+      - placeholders
+      - seconds
+      actions:
+      - focusGap
+      - settle
+      events:
+      - poetry:date-field:change
+    agent_rules:
+    - Time entry is a TimeField (poetry_time_field / form.time_field) - never a masked
+      Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).
+    - '12- vs 24-hour follows the user''s locale automatically (the dayPeriod segment
+      appears only under twelve-hour cycles); hour_cycle: pins it when a product must.'
+    - For a date AND a time, compose a DateField and a TimeField side by side - there
+      is no datetime component by design.
+    parts:
+    - name: time-field
+      description: Root - the controller and the enhanced/disabled surface ride here
+        (segments inside share the date-field-* vocabulary)
+      states:
+      - attr: data-enhanced
+        condition: the controller connected and built segments (no JS = the native
+          input, visible and styled)
+      - attr: data-disabled
+        condition: 'disabled: is set'
+      - attr: data-invalid
+        condition: 'invalid: is set (the group wears the destructive ring)'
+    - name: time-field-group
+      description: The bordered segment row - hidden until enhancement, then the editing
+        surface (cn-input chrome, focus-within ring)
+      states:
+      - attr: data-disabled
+        condition: 'disabled: is set (chrome dims, pointer events off)'
+      - attr: data-invalid
+        condition: 'invalid: is set (destructive border + ring)'
+    - name: time-field-input
+      description: The native <input type=time> - THE form value in both modes; tabindex
+        -1 + aria-hidden once segments exist
   poetry/ui/toast:
     class_name: Poetry::Ui::Toast::Component
     identifier: poetry--ui--toast
@@ -7360,6 +7546,7 @@ helper_args:
   poetry_command_dialog: 0
   poetry_context_menu: 0
   poetry_data_table: 0
+  poetry_date_field: 0
   poetry_date_picker: 0
   poetry_deferred: 0
   poetry_dialog: 0
@@ -7439,6 +7626,7 @@ helper_args:
   poetry_table_row: 0
   poetry_tabs: 0
   poetry_textarea: 0
+  poetry_time_field: 0
   poetry_toast: 0
   poetry_toaster: 0
   poetry_toggle: 0

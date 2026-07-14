@@ -31,6 +31,9 @@ module Poetry
         "active" => "OTP caret cell / tab markers (JS)",
         "variant" => "server-rendered style variant marker",
         "inset" => "menu item inset marker (server-rendered)",
+        "enhanced" => "date/time field progressive-enhancement marker " \
+                      "(poetry--core--date-field via setAttribute)",
+        "invalid" => "server-rendered invalid marker on segment-field groups ",
         "today" => "calendar today-cell marker (server + poetry--core--calendar via setAttribute, N9 W6)",
         "outside" => "calendar outside-month day marker (server + poetry--core--calendar, N9 W6)",
         "range-start" => "calendar range-start day (v2 range mode; server/controller, N9 W6)",
