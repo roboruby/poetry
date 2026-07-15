@@ -34,86 +34,12 @@ module Poetry
         entries.map { |path, entry| component_section(path, entry) }.join("\n")
       end
 
-      private
-
-      def skill_md
-        <<~MD
-          ---
-          name: poetry
-          description: >-
-            Build Rails views with the poetry component library: helper
-            contracts, options, slots, blocks, and the check workflow. Use
-            whenever writing or editing ERB/UI in an app that has poetry
-            installed.
-          ---
-
-          # poetry - component usage
-
-          Generated from the poetry registry (#{census}). After updating
-          poetry gems, regenerate with `bin/rails g poetry:skill`.
-
-          ## Guardrails
-
-          - FIRST MOVE, for every brief: call the poetry MCP `compose` tool
-            with the task text, before writing any ERB. It routes you to the
-            matching vetted block (source included, adapt in place - the
-            known winning path for screens) or to the right components for
-            single-component work. No MCP? Open `references/blocks.md` and
-            `bin/rails g poetry:block --list`. Composing a screen from
-            scratch when a block matched is the known losing path.
-          - Compose with the `poetry_<name>` helpers; never hand-write `cn-*`
-            classes, raw hex/oklch colors, or off-scale arbitrary values -
-            tokens and variants carry the design.
-          - Options are keywords; content is the block. Helpers take at most
-            the positional arguments their contract lists - most take none.
-          - A typed slot renders another component: the call takes THAT
-            component's props, never a render block.
-          - Icon names are kebab-case symbols: `:"circle-check"`, never
-            `:circle_check`.
-          - Status reads as a set: one badge treatment family per surface -
-            never mix solid (default/destructive) and soft
-            (success/warning/info) pills in one table.
-          - Page framing: a section that IS the page's subject keeps its
-            container and breathing room (`mx-auto max-w-* p-6`); a bare
-            component at the viewport origin reads cramped. Drop the wrapper
-            when composing into an already-padded frame.
-          - One visual theme per app (chosen at install); components read
-            tokens, never restate them.
-          - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
-            `check` tool - instant, no app boot) as the FINAL action, after
-            your last edit. An edit made after your last check is unverified
-            markup - re-run check before finishing, every time.
-
-          ## Find your component
-
-          Not sure WHICH component the job calls for? Open
-          `references/deciding.md` first - the decision tree matches the
-          INTERACTION MODEL (what the user does), never the visual look.
-
-          Load the reference for the family you are composing in - each file
-          carries the full contracts (options, variants, slots, wiring, RULE
-          lines) for its components:
-
-          #{family_index}
-
-          ## Composing a page? Load poetry-design
-
-          Building or restyling a full page, screen, or dashboard - not a
-          lone component? Load the `poetry-design` skill BEFORE composing:
-          theme fit, page macrostructure, hierarchy, status color, and the
-          finishing audit live there. Component contracts alone do not make
-          a composed page - and neither does guidance: start the page from
-          `compose`'s block match and adapt, don't rebuild its advice from
-          a blank file.
-        MD
-      end
-
       # The component decision tree (, the react-aria skill-genre
       # port): curated head-to-heads keyed on the INTERACTION MODEL. The
       # roster facts it names are gate-checked (doc-prose scans installed
-      # skill prose), so keep every claim registry-true. A CLASS method:
-      # the boot-free MCP agent serves it too (the guidance tool), without
-      # a registry in hand.
+      # skill prose), so keep every claim registry-true. A PUBLIC class
+      # method: the boot-free MCP agent serves it too (the guidance tool),
+      # without a registry in hand.
       def self.deciding_reference
         <<~MD
           # deciding - which component
@@ -196,6 +122,80 @@ module Poetry
           KEYBOARD contract matches what the user expects to press. If the
           answer still is not obvious, the block catalog probably already
           composed it - check `references/blocks.md` before building.
+        MD
+      end
+
+      private
+
+      def skill_md
+        <<~MD
+          ---
+          name: poetry
+          description: >-
+            Build Rails views with the poetry component library: helper
+            contracts, options, slots, blocks, and the check workflow. Use
+            whenever writing or editing ERB/UI in an app that has poetry
+            installed.
+          ---
+
+          # poetry - component usage
+
+          Generated from the poetry registry (#{census}). After updating
+          poetry gems, regenerate with `bin/rails g poetry:skill`.
+
+          ## Guardrails
+
+          - FIRST MOVE, for every brief: call the poetry MCP `compose` tool
+            with the task text, before writing any ERB. It routes you to the
+            matching vetted block (source included, adapt in place - the
+            known winning path for screens) or to the right components for
+            single-component work. No MCP? Open `references/blocks.md` and
+            `bin/rails g poetry:block --list`. Composing a screen from
+            scratch when a block matched is the known losing path.
+          - Compose with the `poetry_<name>` helpers; never hand-write `cn-*`
+            classes, raw hex/oklch colors, or off-scale arbitrary values -
+            tokens and variants carry the design.
+          - Options are keywords; content is the block. Helpers take at most
+            the positional arguments their contract lists - most take none.
+          - A typed slot renders another component: the call takes THAT
+            component's props, never a render block.
+          - Icon names are kebab-case symbols: `:"circle-check"`, never
+            `:circle_check`.
+          - Status reads as a set: one badge treatment family per surface -
+            never mix solid (default/destructive) and soft
+            (success/warning/info) pills in one table.
+          - Page framing: a section that IS the page's subject keeps its
+            container and breathing room (`mx-auto max-w-* p-6`); a bare
+            component at the viewport origin reads cramped. Drop the wrapper
+            when composing into an already-padded frame.
+          - One visual theme per app (chosen at install); components read
+            tokens, never restate them.
+          - Check comes LAST: run `bin/rails poetry:check` (or the poetry MCP
+            `check` tool - instant, no app boot) as the FINAL action, after
+            your last edit. An edit made after your last check is unverified
+            markup - re-run check before finishing, every time.
+
+          ## Find your component
+
+          Not sure WHICH component the job calls for? Open
+          `references/deciding.md` first - the decision tree matches the
+          INTERACTION MODEL (what the user does), never the visual look.
+
+          Load the reference for the family you are composing in - each file
+          carries the full contracts (options, variants, slots, wiring, RULE
+          lines) for its components:
+
+          #{family_index}
+
+          ## Composing a page? Load poetry-design
+
+          Building or restyling a full page, screen, or dashboard - not a
+          lone component? Load the `poetry-design` skill BEFORE composing:
+          theme fit, page macrostructure, hierarchy, status color, and the
+          finishing audit live there. Component contracts alone do not make
+          a composed page - and neither does guidance: start the page from
+          `compose`'s block match and adapt, don't rebuild its advice from
+          a blank file.
         MD
       end
 

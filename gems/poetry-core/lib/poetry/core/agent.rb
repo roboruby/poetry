@@ -367,15 +367,14 @@ module Poetry
 
         # Curated guidance topics: the same text the installed
         # usage skill carries, reachable when only the MCP is connected.
-        GUIDANCE_TOPICS = { "deciding" => -> { SkillText.deciding_reference } }.freeze
-
         def guidance(arguments)
           topic = arguments["topic"].to_s
-          entry = GUIDANCE_TOPICS[topic]
+          topics = { "deciding" => -> { SkillText.deciding_reference } }
+          entry = topics[topic]
 
           return entry.call if entry
 
-          "no such topic: #{topic.inspect} - topics: #{GUIDANCE_TOPICS.keys.join(", ")}"
+          "no such topic: #{topic.inspect} - topics: #{topics.keys.join(", ")}"
         end
 
         def describe_block(arguments)
