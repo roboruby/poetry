@@ -46,6 +46,10 @@ poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Find your component
 
+Not sure WHICH component the job calls for? Open
+`references/deciding.md` first - the decision tree matches the
+INTERACTION MODEL (what the user does), never the visual look.
+
 Load the reference for the family you are composing in - each file
 carries the full contracts (options, variants, slots, wiring, RULE
 lines) for its components:
