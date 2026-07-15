@@ -98,6 +98,21 @@ module Poetry
             "required" => ["name"]
           },
           "annotations" => { "readOnlyHint" => true }
+        },
+        {
+          "name" => "guidance",
+          "description" => "Curated composition guidance, per topic: 'deciding' = the " \
+                           "which-component decision tree (interaction model first). The same " \
+                           "text the installed usage skill carries - reach it here when the " \
+                           "skill is not installed.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "topic" => { "type" => "string", "description" => "guidance topic; currently: deciding" }
+            },
+            "required" => ["topic"]
+          },
+          "annotations" => { "readOnlyHint" => true }
         }
       ].freeze
 
@@ -192,6 +207,7 @@ module Poetry
             when "check" then check(arguments)
             when "list_blocks" then list_blocks
             when "describe_block" then describe_block(arguments)
+            when "guidance" then guidance(arguments)
             else return tool_content("unknown tool: #{name}", error: true)
             end
           tool_content(text)
@@ -347,6 +363,19 @@ module Poetry
             "- #{name}: #{entry["title"]} - #{entry["description"]} " \
               "[composes: #{entry["components"].join(", ")}]"
           end.join("\n")
+        end
+
+        # Curated guidance topics: the same text the installed
+        # usage skill carries, reachable when only the MCP is connected.
+        GUIDANCE_TOPICS = { "deciding" => -> { SkillText.deciding_reference } }.freeze
+
+        def guidance(arguments)
+          topic = arguments["topic"].to_s
+          entry = GUIDANCE_TOPICS[topic]
+
+          return entry.call if entry
+
+          "no such topic: #{topic.inspect} - topics: #{GUIDANCE_TOPICS.keys.join(", ")}"
         end
 
         def describe_block(arguments)

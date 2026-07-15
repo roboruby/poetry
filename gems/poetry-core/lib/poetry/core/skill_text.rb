@@ -21,7 +21,7 @@ module Poetry
         files = { "SKILL.md" => skill_md }
         @families.each_key { |family| files["references/#{family}.md"] = family_reference(family) }
         files["references/blocks.md"] = blocks_reference
-        files["references/deciding.md"] = deciding_reference
+        files["references/deciding.md"] = self.class.deciding_reference
         files["references/charts.md"] = charts_reference if @charts_registry
         files
       end
@@ -111,8 +111,10 @@ module Poetry
       # The component decision tree (, the react-aria skill-genre
       # port): curated head-to-heads keyed on the INTERACTION MODEL. The
       # roster facts it names are gate-checked (doc-prose scans installed
-      # skill prose), so keep every claim registry-true.
-      def deciding_reference
+      # skill prose), so keep every claim registry-true. A CLASS method:
+      # the boot-free MCP agent serves it too (the guidance tool), without
+      # a registry in hand.
+      def self.deciding_reference
         <<~MD
           # deciding - which component
 

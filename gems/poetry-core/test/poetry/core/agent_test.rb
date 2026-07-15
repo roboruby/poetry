@@ -100,7 +100,8 @@ module Poetry
         tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
-        assert_equal %w[compose list_components describe_component check list_blocks describe_block], names
+        assert_equal %w[compose list_components describe_component check list_blocks describe_block
+                        guidance], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 
@@ -290,6 +291,16 @@ module Poetry
         assert_includes block_slot, %(name: "triangle_alert" is not an icon name)
         assert_includes bad_align, "FAIL"
         assert_includes bad_align, "inline-start, inline-end, block-start, block-end"
+      end
+
+      def test_guidance_serves_the_deciding_tree_and_names_unknown_topics
+        deciding = call("guidance", "topic" => "deciding")
+        unknown = call("guidance", "topic" => "vibes")
+
+        assert_includes deciding, "INTERACTION MODEL"
+        assert_includes deciding, "never a menu"
+        assert_includes unknown, "no such topic"
+        assert_includes unknown, "deciding"
       end
 
       # --- stdio framing ---
