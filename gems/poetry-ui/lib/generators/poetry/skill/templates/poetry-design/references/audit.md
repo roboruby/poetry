@@ -44,6 +44,29 @@ Every finding names its fix in the message. The thirteen rules:
 - `stock-theme-nudge` - the app still wears the stock look while a foreign
   DESIGN.md is present (DOM tier).
 
+## Score it (deterministic)
+
+When the audit needs a NUMBER - a PR gate, a before/after, a fleet
+sweep - compute the adherence score from findings, never from a
+subjective sense of overall quality (the spectrum-audit rule).
+
+Severity weights, fixed:
+
+- **Critical 10** - each `poetry:check` ERROR (unknown component/option/
+  variant/icon, arity, wiring, slot misuse). These also block outright.
+- **High 5** - each `poetry:verify` failure (a class that never
+  compiled: styling silently not applying).
+- **Medium 2** - each design-slop WARNING (`POETRY_CHECK_DESIGN=1`, the
+  thirteen rules above).
+- **Low 1** - each critique-checklist finding (the judgment items; name
+  the surface for every one you count).
+
+Per category: `score = 100 - min(100, sum_of_weights)`. Overall
+adherence = the weighted mean: contracts 40%, compiled styling 25%,
+design slop 25%, critique 10%. Report all four category scores plus the
+overall, each with its finding count - a score with no finding list is
+not a score.
+
 ## The critique checklist (what detectors cannot see)
 
 Work the rendered page, not the source:
