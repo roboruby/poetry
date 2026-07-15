@@ -2278,6 +2278,11 @@ components:
       default: Filter…
     - name: frame
       type: string
+    - name: selectable
+      type:
+    - name: selection_name
+      type: string
+      default: selected_ids
     slots:
     - name: columns
       many: true
@@ -2290,7 +2295,21 @@ components:
     - container
     - footer
     - empty
-    capsule: 054550d68ba7
+    - checkbox
+    - select_cell
+    capsule: 3c75c408cd2d
+    controllers:
+    - identifier: poetry--core--table-selection
+      targets:
+      - all
+      values:
+      - label
+      actions:
+      - press
+      - toggleAll
+      - toggled
+      events:
+      - poetry:data-table:selection-change
     agent_rules:
     - 'Build State.from_params(params, sortable: [...]) in the controller - NEVER
       order by raw params; the whitelist is what makes state.order_clause injection-safe.'
@@ -4713,12 +4732,13 @@ components:
       completion over time is Progress. There is NO indeterminate meter - unknown
       duration means Spinner.
     - 'label: is REQUIRED - the meter''s accessible name and visible caption.'
-    - 'value_label: replaces the percent readout AND aria-valuetext verbatim ("3 of
-      4 seats"); without it both show the percentage of the RANGE.'
+    - 'value_label: replaces the visible readout verbatim ("3 of 4 seats"); without
+      it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2
+      deprecated it on role=meter; aria-valuenow carries the value.'
     parts:
     - name: meter
-      description: Root (role="meter progressbar" - the two-token fallback - plus
-        aria-value* and the accessible name); label, readout, and track stack here
+      description: Root (role=meter, aria-value*, and the accessible name); label,
+        readout, and track stack here
     - name: meter-label
       description: The visible caption span (label:)
     - name: meter-value
@@ -7658,6 +7678,27 @@ helpers:
   poetry_table_row: {}
   poetry_tooltip_provider: {}
 blocks:
+  action-bar:
+    title: Action bar
+    description: 'Bulk actions over a selectable table: a selection-driven floating
+      bar with the live count, the actions, and clear - shown while rows are selected,
+      Escape clears, focus never steals.'
+    components:
+    - button
+    - data_table
+    - icon
+    template: lib/generators/poetry/block/templates/action_bar.html.erb
+    keywords:
+    - bulk
+    - selection
+    - batch
+    - actions
+    - action bar
+    - selected
+    - archive
+    - delete rows
+    - multi-select
+    - table actions
   app-shell:
     title: App shell
     description: 'The frame every screen composes into: an icon-collapsible sidebar

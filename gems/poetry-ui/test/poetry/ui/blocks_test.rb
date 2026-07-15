@@ -20,8 +20,8 @@ module Poetry
       end
 
       def test_the_shipped_blocks_roster
-        assert_equal %w[app-shell data-index destructive-panel page-header section-card stepper
-                        top-nav],
+        assert_equal %w[action-bar app-shell data-index destructive-panel page-header section-card
+                        stepper top-nav],
                      registry_blocks.keys.sort
       end
 

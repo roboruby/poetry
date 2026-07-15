@@ -136,7 +136,10 @@ module Poetry
           }
           attrs["aria-expanded"] = row.expanded.to_s if row.expandable
           attrs["data-expanded"] = "" if row.expandable && row.expanded
-          attrs["data-disabled"] = "" if row.disabled
+          if row.disabled
+            attrs["data-disabled"] = ""
+            attrs["aria-disabled"] = "true"
+          end
           attrs["hidden"] = "" if row.hidden
           attrs
         end

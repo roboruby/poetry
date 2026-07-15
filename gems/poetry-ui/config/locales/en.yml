@@ -33,6 +33,10 @@ en:
       decrement: "Decrease"
     search_field:
       clear: "Clear search"
+    data_table:
+      select_all: "Select all rows"
+      select_row: "Select row"
+      selected_count: "%{count} selected"
     tree:
       expand: "Expand"
       collapse: "Collapse"

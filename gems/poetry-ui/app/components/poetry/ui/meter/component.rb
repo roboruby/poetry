@@ -9,18 +9,20 @@ module Poetry
       # concretely, a meter has no indeterminate state, by construction).
       # Wears Progress's visual chrome verbatim (the NumberField
       # composition precedent - zero new theme CSS); the semantic delta is
-      # the ROLE: the two-token fallback `meter progressbar` (Chrome
-      # historically fell back from meter on its own, Firefox lacked
-      # role=meter entirely - react-aria useMeter.ts:40-45), so AT that
-      # understands meter uses it and everything else lands on progressbar.
+      # the ROLE: role=meter. (react-aria ships the 2019-era two-token
+      # fallback "meter progressbar" for browsers without the meter role;
+      # by 2026 support is universal, and axe 4.12 cannot resolve the
+      # multi-token string - it falls back to generic and flags every
+      # aria-value* attribute - so poetry ships the single honest token.)
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "A quantity within a range is a Meter (disk, seats, strength); an operation's " \
           "completion over time is Progress. There is NO indeterminate meter - unknown " \
           "duration means Spinner.",
           "label: is REQUIRED - the meter's accessible name and visible caption.",
-          "value_label: replaces the percent readout AND aria-valuetext verbatim " \
-          "(\"3 of 4 seats\"); without it both show the percentage of the RANGE."
+          "value_label: replaces the visible readout verbatim (\"3 of 4 seats\"); without it " \
+          "the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 " \
+          "deprecated it on role=meter; aria-valuenow carries the value."
         ].freeze
 
         option :value, :integer, required: true
@@ -29,13 +31,12 @@ module Poetry
         # required: the hand raise in before_render carries the message;
         # the flag carries the fact to the registry (the Progress twin).
         option :label, :string, required: true
-        # Verbatim human-readable value ("3 of 4") - readout + valuetext.
+        # Verbatim human-readable value ("3 of 4") - the visible readout.
         option :value_label, :string
         option :show_value, :boolean, default: true
 
-        part "meter", "Root (role=\"meter progressbar\" - the two-token fallback - plus " \
-                      "aria-value* and the accessible name); label, readout, and track " \
-                      "stack here"
+        part "meter", "Root (role=meter, aria-value*, and the accessible name); label, " \
+                      "readout, and track stack here"
         part "meter-label", "The visible caption span (label:)"
         part "meter-value", "The readout - value_label: verbatim, else the range percentage; " \
                             "renders unless show_value: false"
@@ -60,9 +61,12 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             {
-              "data-slot" => "meter", "role" => "meter progressbar",
+              "data-slot" => "meter", "role" => "meter",
+              # No aria-valuetext: ARIA 1.2 DEPRECATED it on role=meter
+              # (axe 4.12 flags it) - the visible readout carries the
+              # human string, aria-valuenow the value. A divergence from
+              # react-aria, which predates the deprecation.
               "aria-valuemin" => min, "aria-valuemax" => max, "aria-valuenow" => clamped,
-              "aria-valuetext" => readout,
               "aria-label" => label
             }.merge(component_data_attributes)
           )

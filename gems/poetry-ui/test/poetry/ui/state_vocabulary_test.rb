@@ -33,6 +33,8 @@ module Poetry
         "inset" => "menu item inset marker (server-rendered)",
         "enhanced" => "date/time field progressive-enhancement marker " \
                       "(poetry--core--date-field via setAttribute)",
+        "selected" => "table row selection marker (poetry--core--table-selection via " \
+                      "toggleAttribute; aria-selected is the canonical twin)",
         "expanded" => "tree row open marker (server-rendered + poetry--core--tree via " \
                       "toggleAttribute; aria-expanded is the canonical twin)",
         "invalid" => "server-rendered invalid marker on segment-field groups ",

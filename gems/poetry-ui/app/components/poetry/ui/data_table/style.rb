@@ -9,9 +9,17 @@ module Poetry
         base "w-full"
 
         element :toolbar, "cn-data-table-toolbar flex items-center"
-        element :container, "cn-data-table-container overflow-hidden"
+        element :container, "cn-data-table-container overflow-hidden " \
+                            "[&_tr[data-selected]]:bg-muted/50"
         element :footer, "cn-data-table-footer"
         element :empty, "cn-data-table-empty"
+        # Selection: native checkboxes on the token accent; the
+        # selected-row wash rides the container (rows are controller-
+        # marked data-selected).
+        element :checkbox, "size-4 shrink-0 translate-y-px rounded-sm border-input " \
+                           "accent-primary outline-none " \
+                           "focus-visible:ring-[3px] focus-visible:ring-ring/50"
+        element :select_cell, "w-10"
       end
     end
   end

@@ -31,6 +31,7 @@ module Poetry
         # A declared column: header label, the whitelisted sort key, and the
         # cell block (called per row, returns the cell content).
         Column = Data.define(:label, :key, :sortable, :classes, :cell)
+        SELECTION = %i[poetry core table_selection].freeze
 
         option :caption, :string
         option :empty_text, :string, default: "No results."
@@ -42,6 +43,14 @@ module Poetry
         # Turbo scope the round trip to the table while the URL still
         # advances. The host response must render the same frame id.
         option :frame, :string
+        # Row selection: a lambda mapping each row to its id turns
+        # the feature ON - a leading checkbox column (select-all with a
+        # real indeterminate middle state, shift ranges, count
+        # announcements) whose checkboxes ARE the form value
+        # (selection_name[], plain checkboxes with no JS). Pair with the
+        # action-bar block for bulk actions.
+        option :selectable, ActiveModel::Type::Value.new
+        option :selection_name, :string, default: "selected_ids"
 
         part "data-table", "Root surface - toolbar, table, and pagination footer stack here"
         part "data-table-toolbar", "The row above the table holding the filter form - " \
@@ -51,6 +60,14 @@ module Poetry
         part "table-container", "The composed W1 Table's scroll container - Table renders it, " \
                                 "this surface owns where it sits"
         part "data-table-footer", "The Pagination row - renders when total: is more than one page"
+        # The selection checkboxes (selectable: only) render INSIDE the
+        # composed Table's root, so ownership attributes them to Table
+        # (the NumberField-stepper precedent) - prose, not parts:
+        # data-slot="data-table-select-all" is the header checkbox (the
+        # controller drives its INDETERMINATE middle state as a property);
+        # data-slot="data-table-select-row" is one row's checkbox - THE
+        # form value (selection_name[], value from the selectable: lambda);
+        # the controller mirrors aria-selected/data-selected onto rows.
 
         # The cell block is a per-row RENDERER, not captured content: it
         # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
@@ -91,9 +108,35 @@ module Poetry
         end
 
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "data-table" }.merge(component_data_attributes)
-          )
+          attrs = { "data-slot" => "data-table" }.merge(component_data_attributes)
+          attrs = attrs.merge(selection_stimulus_attributes) if selectable?
+          html_attributes.merge_if_not_set(attrs)
+        end
+
+        def selectable?
+          selectable.present?
+        end
+
+        def select_all_attributes
+          {
+            "type" => "checkbox", "data-slot" => "data-table-select-all",
+            "class" => css(:checkbox),
+            "aria-label" => t("poetry.data_table.select_all"),
+            "data-poetry--core--table-selection-target" => "all",
+            "data-action" => "change->poetry--core--table-selection#toggleAll"
+          }
+        end
+
+        def select_row_attributes(row)
+          {
+            "type" => "checkbox", "data-slot" => "data-table-select-row",
+            "name" => "#{selection_name}[]", "value" => selectable.call(row),
+            "class" => css(:checkbox),
+            "aria-label" => t("poetry.data_table.select_row"),
+            "data-action" => "pointerdown->poetry--core--table-selection#press " \
+                             "keydown->poetry--core--table-selection#press " \
+                             "change->poetry--core--table-selection#toggled"
+          }
         end
 
         def path_for(params)
@@ -147,6 +190,14 @@ module Poetry
         end
 
         private
+
+        def selection_stimulus_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          selection = Poetry::Core::Stimulus::Builder.new(SELECTION, attrs)
+          selection.register_controller
+          selection.with_value(:label, t("poetry.data_table.selected_count"))
+          attrs.to_attributes
+        end
 
         # rows/state/path/total are structural collaborators, not typed
         # options (see Pagination's path: for the precedent).

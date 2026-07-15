@@ -20,6 +20,11 @@
         <% end %>
         <thead data-slot="table-header" class="<%= Poetry::Ui::Table::Style.css(:header) %>">
           <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
+            <% if selectable? %>
+              <th data-slot="table-head" class="<%= Poetry::Ui::Table::Style.css(:head) %> <%= css(:select_cell) %>">
+                <%= tag.input(**Poetry::Core::HTML::Attributes.new(select_all_attributes).to_attributes) %>
+              </th>
+            <% end %>
             <% column_defs.each do |column| %>
               <%= content_tag(:th, head_attributes(column)) do %>
                 <% if column.sortable %>
@@ -38,6 +43,11 @@
           <% if rows.any? %>
             <% rows.each do |row| %>
               <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
+                <% if selectable? %>
+                  <td data-slot="table-cell" class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:select_cell) %>">
+                    <%= tag.input(**Poetry::Core::HTML::Attributes.new(select_row_attributes(row)).to_attributes) %>
+                  </td>
+                <% end %>
                 <% column_defs.each do |column| %>
                   <%= content_tag(:td, column.cell.call(row), cell_attributes(column)) %>
                 <% end %>
@@ -45,7 +55,7 @@
             <% end %>
           <% else %>
             <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">
-              <td data-slot="table-cell" colspan="<%= column_defs.size %>"
+              <td data-slot="table-cell" colspan="<%= column_defs.size + (selectable? ? 1 : 0) %>"
                   class="<%= Poetry::Ui::Table::Style.css(:cell) %> <%= css(:empty) %>"><%= empty_text %></td>
             </tr>
           <% end %>

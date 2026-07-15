@@ -21,6 +21,17 @@ module Poetry
           end
         end
 
+        # Row selection: selectable: maps rows to ids; the header
+        # checkbox tri-states, shift-click ranges, the checkboxes ARE the
+        # selected_ids[] form value. Pair with the action-bar block.
+        def selectable
+          render_component(rows: ROWS, state: state(sort: "number", dir: "asc"),
+                           path: path, caption: "A list of recent invoices.",
+                           selectable: ->(invoice) { invoice.number }) do |table| # rubocop:disable Style/SymbolProc
+            columns(table)
+          end
+        end
+
         def filtered_and_paginated
           render_component(rows: ROWS.first(2), total: 3,
                            state: state(q: "inv", sort: "customer", dir: "desc", page: 2),
