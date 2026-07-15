@@ -27,7 +27,7 @@ module Poetry
       test "the usage skill is a lean menu over one reference per family plus blocks" do
         expected = ["SKILL.md"] +
                    SKILL_FAMILIES.keys.map { |family| "references/#{family}.md" } +
-                   ["references/blocks.md"]
+                   ["references/blocks.md", "references/deciding.md"]
 
         assert_equal expected, skill_files.keys,
                      "charts joins only in charts-installed hosts; this env has none"
