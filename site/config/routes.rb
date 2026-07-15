@@ -22,6 +22,12 @@ Rails.application.routes.draw do
   get "r/:name" => "registry#show", as: :registry_item, format: false,
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 
+  # Web-installable Agent Skills: discovery index + skill files,
+  # served from the same generators the installed skills use.
+  get "/.well-known/skills/index.json" => "skills#index", as: :skills_index, format: false
+  get "/.well-known/skills/:skill/*file" => "skills#show", as: :skill_file, format: false,
+      constraints: { skill: /[a-z-]+/ }
+
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block
