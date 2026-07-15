@@ -34,6 +34,8 @@ import SelectController from "@poetry/controllers/select_controller"
 import CommandController from "@poetry/controllers/command_controller"
 import ComboboxController from "@poetry/controllers/combobox_controller"
 import TagGroupController from "@poetry/controllers/tag_group_controller"
+import TableSelectionController from "@poetry/controllers/table_selection_controller"
+import ActionBarController from "@poetry/controllers/action_bar_controller"
 import TabsController from "@poetry/controllers/tabs_controller"
 import DrawerController from "@poetry/controllers/drawer_controller"
 import SheetController from "@poetry/controllers/sheet_controller"
@@ -79,6 +81,8 @@ export { default as SelectController } from "@poetry/controllers/select_controll
 export { default as CommandController } from "@poetry/controllers/command_controller"
 export { default as ComboboxController } from "@poetry/controllers/combobox_controller"
 export { default as TagGroupController } from "@poetry/controllers/tag_group_controller"
+export { default as TableSelectionController } from "@poetry/controllers/table_selection_controller"
+export { default as ActionBarController } from "@poetry/controllers/action_bar_controller"
 export { default as TabsController } from "@poetry/controllers/tabs_controller"
 export { default as DrawerController } from "@poetry/controllers/drawer_controller"
 export { default as SheetController } from "@poetry/controllers/sheet_controller"
@@ -137,6 +141,8 @@ export const controllers = {
   "poetry--core--command": CommandController,
   "poetry--core--combobox": ComboboxController,
   "poetry--core--tag-group": TagGroupController,
+  "poetry--core--table-selection": TableSelectionController,
+  "poetry--core--action-bar": ActionBarController,
   "poetry--core--tabs": TabsController,
   "poetry--core--drawer": DrawerController,
   "poetry--core--sheet": SheetController,

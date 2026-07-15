@@ -20,6 +20,27 @@
       "poetry--core--accordion:change"
     ]
   },
+  "poetry--core--action-bar": {
+    "targets": [
+      "count"
+    ],
+    "values": {
+      "label": {
+        "type": "String",
+        "default": "%{count} selected"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "clear",
+      "connect",
+      "disconnect",
+      "keydown"
+    ],
+    "events": [
+      "poetry:data-table:clear-selection"
+    ]
+  },
   "poetry--core--calendar": {
     "targets": [
       "caption",
@@ -1164,6 +1185,28 @@
       "toggle"
     ],
     "events": []
+  },
+  "poetry--core--table-selection": {
+    "targets": [
+      "all"
+    ],
+    "values": {
+      "label": {
+        "type": "String",
+        "default": "%{count} selected"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "connect",
+      "disconnect",
+      "press",
+      "toggleAll",
+      "toggled"
+    ],
+    "events": [
+      "poetry:data-table:selection-change"
+    ]
   },
   "poetry--core--tabs": {
     "targets": [],
