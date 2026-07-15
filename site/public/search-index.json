@@ -2304,6 +2304,12 @@
     "path": "/charts/scatter#reference-zones"
   },
   {
+    "title": "Action bar",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar"
+  },
+  {
     "title": "App shell",
     "page": "App shell",
     "section": "blocks",

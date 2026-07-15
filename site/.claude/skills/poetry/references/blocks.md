@@ -9,6 +9,57 @@ composed patterns - containment, status color-coding, page
 furniture, realistic content - so a screen starts composed, not
 blank. The sample content is meant to be replaced.
 
+## Block: Action bar (`action-bar`)
+
+Bulk actions over a selectable table: a selection-driven floating bar with the live count, the actions, and clear - shown while rows are selected, Escape clears, focus never steals.
+Composes: button, data_table, icon. Generate: `bin/rails g poetry:block action-bar`.
+Source (adapt freely - the sample content is meant to be replaced):
+
+<%# ActionBar is a BLOCK, not a component (the anatomy): the bar
+    is plain markup wired to two small engines - the data_table's
+    selectable: engine dispatches selection-change, and the bar's
+    controller shows/hides on it, retains the last non-zero count while
+    animating out, announces "Actions available." once per appearance,
+    and Escape anywhere inside clears the selection. The wrapper div
+    PAIRS them positionally (shared parent) - no id contract. Swap the
+    sample actions for your bulk endpoints: the checkboxes are real form
+    values (selected_ids[]), so a wrapping form_with posts them as-is. %>
+<% invoice = Struct.new(:id, :number, :customer, :amount) %>
+<% rows = local_assigns[:rows] || [
+     invoice.new(1, "INV-001", "Acme", "$250.00"),
+     invoice.new(2, "INV-002", "Globex", "$1,150.00"),
+     invoice.new(3, "INV-003", "Initech", "$420.00")
+   ] %>
+<% state = Poetry::Ui::DataTable::State.from_params(params, sortable: %w[number customer]) %>
+<div class="relative mx-auto max-w-3xl pb-16">
+  <%= poetry_data_table(rows: rows, state: state, path: ->(p) { "?#{p.to_query}" },
+                        caption: "Recent invoices.",
+                        selectable: ->(row) { row.id }) do |table| %>
+    <% table.with_column("Invoice", key: :number, sortable: true) { |row| row.number } %>
+    <% table.with_column("Customer", key: :customer, sortable: true) { |row| row.customer } %>
+    <% table.with_column("Amount", classes: "text-right") { |row| row.amount } %>
+  <% end %>
+  <div hidden
+       data-controller="poetry--core--action-bar"
+       data-poetry--core--action-bar-label-value="%{count} selected"
+       data-available-label="Actions available."
+       data-action="keydown->poetry--core--action-bar#keydown"
+       data-slot="action-bar"
+       class="absolute inset-x-8 bottom-2 z-10 mx-auto flex max-w-xl items-center gap-3 rounded-lg border bg-popover px-4 py-2 text-popover-foreground shadow-lg transition-[opacity,translate] data-open:translate-y-0 data-open:opacity-100 not-data-open:translate-y-2 not-data-open:opacity-0">
+    <span data-slot="action-bar-count" class="text-sm font-medium tabular-nums"
+          data-poetry--core--action-bar-target="count"></span>
+    <span class="ms-auto flex items-center gap-2" data-slot="action-bar-actions" aria-label="Actions">
+      <%= poetry_button(variant: :outline, size: :sm) { "Export" } %>
+      <%= poetry_button(variant: :destructive, size: :sm) { "Archive" } %>
+    </span>
+    <%= poetry_button(variant: :ghost, size: :"icon-sm", label: "Clear selection",
+                      "data-slot": "action-bar-clear",
+                      data: { action: "click->poetry--core--action-bar#clear" }) do %>
+      <%= poetry_icon(name: :x) %>
+    <% end %>
+  </div>
+</div>
+
 ## Block: App shell (`app-shell`)
 
 The frame every screen composes into: an icon-collapsible sidebar with grouped nav, badges and a user footer, plus a topbar with breadcrumb that answers the collapsed state, and a stat-card content grid.

@@ -115,12 +115,16 @@ Slot REQUIRED: with_column (at least one column) - a call without it raises.
 - `filter_name:` (string) - default "q"
 - `filter_placeholder:` (string) - default "Filter…"
 - `frame:` (string)
+- `selectable:` ()
+- `selection_name:` (string) - default "selected_ids"
 Slots: columns (many; with_column REQUIRES a content block (the cell renderer - { |row| ... })).
 - PART `data-table` - Root surface - toolbar, table, and pagination footer stack here
 - PART `data-table-toolbar` - The row above the table holding the filter form - renders unless filter: false
 - PART `data-table-filter` - The GET filter form (role=search) - hidden fields carry the current sort; a new filter resets the page
 - PART `table-container` - The composed W1 Table's scroll container - Table renders it, this surface owns where it sits
 - PART `data-table-footer` - The Pagination row - renders when total: is more than one page
+In blocks: `action-bar` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
+- WIRING `poetry--core--table-selection`: targets all; values label; actions press, toggleAll, toggled; events poetry:data-table:selection-change
 - RULE: Build State.from_params(params, sortable: [...]) in the controller - NEVER order by raw params; the whitelist is what makes state.order_clause injection-safe.
 - RULE: Column cell blocks RETURN the cell content ({ |row| row.title }) - they must not write to the template buffer.
 - RULE: Sort/filter/page are URL state over GET links and a GET form. Row mutations (inline edit, row actions) belong to poetry-reactive components rendered inside cells - never to this component.
@@ -188,14 +192,14 @@ Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
 - `show_value:` (boolean) - default true
 - `value:` (integer) - required
 - `value_label:` (string)
-- PART `meter` - Root (role="meter progressbar" - the two-token fallback - plus aria-value* and the accessible name); label, readout, and track stack here
+- PART `meter` - Root (role=meter, aria-value*, and the accessible name); label, readout, and track stack here
 - PART `meter-label` - The visible caption span (label:)
 - PART `meter-value` - The readout - value_label: verbatim, else the range percentage; renders unless show_value: false
 - PART `meter-track` - The full-width rail (Progress's cn chrome)
 - PART `meter-indicator` - The filled bar - inline width percentage of the range
 - RULE: A quantity within a range is a Meter (disk, seats, strength); an operation's completion over time is Progress. There is NO indeterminate meter - unknown duration means Spinner.
 - RULE: label: is REQUIRED - the meter's accessible name and visible caption.
-- RULE: value_label: replaces the percent readout AND aria-valuetext verbatim ("3 of 4 seats"); without it both show the percentage of the RANGE.
+- RULE: value_label: replaces the visible readout verbatim ("3 of 4 seats"); without it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 deprecated it on role=meter; aria-valuenow carries the value.
 
 ## stat (`poetry_stat`)
 
