@@ -48,7 +48,8 @@ module Poetry
 
       def test_files_map_covers_menu_families_and_blocks
         with_registry do |registry|
-          assert_equal ["SKILL.md", "references/data.md", "references/blocks.md"],
+          assert_equal ["SKILL.md", "references/data.md", "references/blocks.md",
+                        "references/deciding.md"],
                        skill(registry).files.keys
         end
       end
