@@ -67,6 +67,17 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=code-block]", minimum: 7 # every recipe ships its source
   end
 
+  test "the installation guide documents the upgrade path and the ownership tiers" do
+    get "/installation"
+
+    assert_response :success
+    assert_select "h1", text: "Installation"
+    assert_select "h2[id=?]", "upgrade" # the runbook anchor feeds search
+    assert_select "h2[id=?]", "ownership"
+    assert_select "[data-slot=code-block]", minimum: 4 # Gemfile/install/upgrade/diff snippets
+    assert_select "code.font-mono", text: /poetry:diff/
+  end
+
   test "a block page renders the real gem template and its exact source" do
     get "/blocks/data-index"
 

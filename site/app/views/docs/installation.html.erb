@@ -1,0 +1,128 @@
+<% content_for :title, "Installation" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Installation") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag, never inside an output tag.
+  gemfile_source = <<~CODE
+    gem "poetry-core"
+    gem "poetry-ui"
+    # gem "poetry-charts"   # optional
+  CODE
+  install_source = <<~CODE
+    bundle install
+    bin/rails g poetry:install --theme default
+  CODE
+  upgrade_source = <<~CODE
+    bundle update poetry-core poetry-ui poetry-charts
+    bin/rails g poetry:install     # your theme choice sticks; --theme switches
+    bin/rails tailwindcss:build    # or your CSS build
+    bin/rails test                 # confirm the app still renders
+  CODE
+  diff_source = <<~CODE
+    bin/rails g poetry:diff        # read-only: copied at / gem ships / file-by-file drift
+    bin/rails g poetry:add button  # adds newly-shipped files; never overwrites yours
+  CODE
+%>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Installation</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      One generator wires everything, and the same generator is the upgrade
+      path — every step is idempotent, so re-running it on a years-old app
+      is always safe.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="install">Install</h2>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      The installer copies the vendored CSS set under
+      <code class="font-mono">app/assets/tailwind/poetry/</code> (tokens, the
+      Tailwind theme mapping, the animation layer, your chosen
+      <%= link_to "visual theme", theming_path, class: "underline underline-offset-4" %>,
+      the class safelist), injects the Tailwind entry imports line by line,
+      registers the Stimulus controllers, mounts the engine (llms.txt), and
+      writes the <code class="font-mono">AGENTS.md</code> section and the
+      Claude Code skills. Add <code class="font-mono">--charts</code> to wire
+      poetry-charts. File creations skip what exists; injections append only
+      missing lines.
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="upgrade">Upgrade an existing app</h2>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      <strong>The install generator is the upgrade path, not a one-shot.</strong>
+      Gem-owned code — components, templates, controllers, the registry and
+      MCP surface — upgrades with <code class="font-mono">bundle update</code>
+      alone. The vendored CSS files and the safelist upgrade only when the
+      generator re-runs: new components ship their theme rules and classes
+      there, so skipping the re-run leaves them unstyled.
+    </p>
+    <%= poetry_code_block(code: upgrade_source, language: "shell", label: "Upgrade") %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      A plain re-run keeps the theme already installed (it reads the fragment
+      header back); passing <code class="font-mono">--theme</code> is how you
+      switch. Files you own — <code class="font-mono">base.css</code>, the
+      initializer, the component manifest, and everything copied in — are
+      never rewritten.
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="ownership">The three ownership tiers</h2>
+    <div class="overflow-x-auto rounded-lg border">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b bg-muted/50 text-left">
+            <th class="p-3 font-medium">Tier</th>
+            <th class="p-3 font-medium">Examples</th>
+            <th class="p-3 font-medium">Upgrades via</th>
+          </tr>
+        </thead>
+        <tbody class="[&_td]:p-3 [&_tr]:border-b last:[&_tr]:border-0">
+          <tr>
+            <td>Gem-owned</td>
+            <td>components, controllers, registry, MCP, llms.txt</td>
+            <td class="font-mono">bundle update</td>
+          </tr>
+          <tr>
+            <td>Vendored into the app</td>
+            <td class="font-mono">app/assets/tailwind/poetry/*, safelist.txt</td>
+            <td class="font-mono">bin/rails g poetry:install</td>
+          </tr>
+          <tr>
+            <td>App-owned copy-ins</td>
+            <td><span class="font-mono">poetry:add</span> components, blocks, <span class="font-mono">base.css</span>, initializer</td>
+            <td>you — <span class="font-mono">poetry:diff</span> reports</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="copy-ins">Copy-ins: <code class="font-mono">poetry:diff</code></h2>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Components copied in with <code class="font-mono">poetry:add</code> and
+      blocks copied with <code class="font-mono">poetry:block</code> are yours:
+      nothing ever rewrites them. Every <code class="font-mono">poetry:add</code>
+      records the gem version it copied from in
+      <code class="font-mono">config/poetry_components.yml</code>, and the
+      read-only drift report shows where your copies stand after an upgrade:
+    </p>
+    <%= poetry_code_block(code: diff_source, language: "shell", label: "Copy-in report") %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Blocks are starting points meant to be edited, so the report treats a
+      differing block as normal, not drift — it simply points at the gem's
+      current template for reference.
+    </p>
+  </section>
+</div>

@@ -1,5 +1,35 @@
 [
   {
+    "title": "Installation",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation"
+  },
+  {
+    "title": "Install",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#install"
+  },
+  {
+    "title": "Upgrade an existing app",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#upgrade"
+  },
+  {
+    "title": "The three ownership tiers",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#ownership"
+  },
+  {
+    "title": "Copy-ins: poetry:diff",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#copy-ins"
+  },
+  {
     "title": "Theming",
     "page": "Theming",
     "section": "docs",

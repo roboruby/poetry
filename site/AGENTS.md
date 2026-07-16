@@ -37,7 +37,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (65 components + 13 chart components + 6 blocks)
+## Building UI with poetry (79 components + 13 chart components + 8 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted
@@ -63,6 +63,12 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   `compose` to start and its `check` tool when iterating.
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
+- Upgrading poetry gems: after `bundle update`, re-run
+  `bin/rails g poetry:install` - the vendored token/theme/safelist
+  files refresh (the installed theme sticks; `--theme` switches),
+  new wiring appends, this section and the skills regenerate. Then
+  rebuild CSS and run the suite. `bin/rails g poetry:diff` reports
+  where copied-in components drift from the installed gems.
 - Claude Code skills: `poetry` (component contracts by family) and
   `poetry-design` (theme / compose / audit / study - the taste layer)
   live under `.claude/skills/` - load `poetry` whenever writing ERB,

@@ -17,6 +17,10 @@ class DocsCatalog
   # entry owns. Each has its own controller action; entries here feed the
   # sidebar, the palette, the search index, and the 200-gate.
   DOCS = [
+    Entry.new(slug: "installation", title: "Installation", section: "docs", icon: :package,
+              description: "Install and upgrade: what poetry:install wires (idempotent, theme-sticky " \
+                           "re-runs), the three ownership tiers, and the poetry:diff copy-in report — " \
+                           "the install generator is the upgrade path, not a one-shot."),
     Entry.new(slug: "theming", title: "Theming", section: "docs", icon: :palette,
               description: "All nine upstream themes: install-time selection with --theme, the " \
                            "docs style switcher mechanism, and the lyra/sera font-pairing story."),

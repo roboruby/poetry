@@ -2,6 +2,9 @@ class DocsController < ApplicationController
   def index
   end
 
+  def installation
+  end
+
   def theming
   end
 
