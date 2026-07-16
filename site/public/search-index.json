@@ -462,6 +462,42 @@
     "path": "/components/checkbox#states"
   },
   {
+    "title": "Clipboard Text",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text"
+  },
+  {
+    "title": "Default",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#default"
+  },
+  {
+    "title": "Truncated copy",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#truncated-copy"
+  },
+  {
+    "title": "Code Block",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block"
+  },
+  {
+    "title": "Default",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#default"
+  },
+  {
+    "title": "Numbered and highlighted",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#numbered-and-highlighted"
+  },
+  {
     "title": "Collapsible",
     "page": "Collapsible",
     "section": "components",
@@ -1474,6 +1510,24 @@
     "page": "Select",
     "section": "components",
     "path": "/components/select#valued"
+  },
+  {
+    "title": "Sensitive Input",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input"
+  },
+  {
+    "title": "Default",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#default"
+  },
+  {
+    "title": "With copy",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#with-copy"
   },
   {
     "title": "Separator",

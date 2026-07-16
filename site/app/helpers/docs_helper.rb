@@ -24,10 +24,10 @@ module DocsHelper
        .sort_by { |name| [ name == "default" ? 0 : 1, name ] }
   end
 
+  # Example/block source panels ride the CodeBlock component: the
+  # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
+  # every code tab gains the copy affordance.
   def highlight_erb(source)
-    formatter = Rouge::Formatters::HTML.new
-    lexer = Rouge::Lexers::ERB.new
-    content_tag(:div, formatter.format(lexer.lex(source)).html_safe,
-                class: "highlight overflow-x-auto rounded-md border bg-muted/30 p-4 text-sm leading-relaxed")
+    poetry_code_block(code: source, language: "erb", label: "Example source")
   end
 end

@@ -89,6 +89,41 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard even before JS - never gate content behind the buttons alone.
 - RULE: Size slides with item classes (basis-full default; basis-1/3 for a strip).
 
+## clipboard_text (`poetry_clipboard_text`)
+
+Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_text`.
+- `described_by:` (string)
+- `disabled:` (boolean) - default false
+- `id:` (string)
+- `label:` (string)
+- `text_to_copy:` (string)
+- `value:` (string) - required
+- PART `clipboard-text` - Root - the controller rides here | states: data-copied (stamped for a beat after a successful copy (the stacked copy/check glyphs swap off it))
+- PART `clipboard-text-group` - The bordered field surface - InputGroup's chrome
+- PART `input-group-control` - The readonly mono <input> showing the value - selectable, never editable; InputGroup's control slot
+- PART `input-group-addon` - The trailing cell holding the copy affordance - InputGroup's addon vocabulary | states: data-align=inline-end (always - inline-end holds the copy button)
+- WIRING `poetry--core--clipboard-text`: targets input, source; values message, text; actions copy; events poetry:clipboard-text:copied
+- RULE: A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install commands, IDs. Editable text is an Input; a secret that needs masking is a SensitiveInput.
+- RULE: value: is what SHOWS; text_to_copy: overrides what lands on the clipboard when the display truncates - never truncate the copied text itself.
+- RULE: Give it label: (or compose under a Field/Label) - the readonly input still needs its accessible name.
+
+## code_block (`poetry_code_block`)
+
+Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
+- `code:` (string) - required
+- `copy:` (boolean) - default true
+- `highlight_lines:` ()
+- `label:` (string)
+- `language:` (string) - default "text"
+- `line_numbers:` (boolean) - default false
+- PART `code-block` - Root - the syntax-palette surface (cn-code-block) | states: data-language (always - the lexer name, a styling/tooling hook); data-line-numbers (line_numbers: - turns on the ::before CSS counters); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine))
+- PART `code-block-pre` - The scroll container - tabindex 0 + role region + label (a scrollable region must be keyboard-reachable and named)
+- PART `code-block-code` - The code element - rouge's .line/.hll spans and the seven --syntax-* token maps live under it; the copy affordance reads ITS textContent
+- WIRING `poetry--core--clipboard-text`: targets input, source; values message, text; actions copy; events poetry:clipboard-text:copied
+- RULE: Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code with utility classes; the syntax palette, line counters, and copy affordance ride it.
+- RULE: Highlighting needs `gem "rouge"` in the host Gemfile - without it the block renders plain (same markup, no colors). Inline code stays plain <code> typography.
+- RULE: highlight_lines: takes 1-based line numbers; line numbers are CSS counters and never pollute copied text.
+
 ## collapsible (`poetry_collapsible`)
 
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.

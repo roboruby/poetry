@@ -21,7 +21,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-slot=button]", minimum: 6
     assert_select "[data-controller~=?]", "poetry--core--tabs"
-    assert_select "div.highlight", minimum: 1 # the Rouge code tab
+    assert_select "[data-slot=code-block]", minimum: 1 # the Rouge code tab
   end
 
   test "a chart page renders a finished SVG through the kernel pipeline" do
@@ -64,7 +64,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "h2[id=?]", "headings" # the example anchors feed search
     assert_select "code.font-mono", minimum: 1
     assert_select "[data-controller~=?]", "poetry--core--tabs"
-    assert_select "div.highlight", minimum: 7 # every recipe ships its source
+    assert_select "[data-slot=code-block]", minimum: 7 # every recipe ships its source
   end
 
   test "a block page renders the real gem template and its exact source" do
@@ -73,7 +73,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-slot=table]", 1, "the preview renders the block live"
     assert_select "[data-slot=badge]", minimum: 4
-    assert_select "div.highlight", 1 # the code tab: the source poetry:block copies in
+    assert_select "[data-slot=code-block]", 1 # the code tab: the source poetry:block copies in
     assert_select "code.font-mono", text: /bin\/rails g poetry:block data-index/
   end
 
