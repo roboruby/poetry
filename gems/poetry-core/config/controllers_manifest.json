@@ -156,7 +156,8 @@
   },
   "poetry--core--clipboard-text": {
     "targets": [
-      "input"
+      "input",
+      "source"
     ],
     "values": {
       "text": {
