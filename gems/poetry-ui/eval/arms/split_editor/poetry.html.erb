@@ -5,6 +5,9 @@
     <div class="flex h-full items-center justify-center p-6 text-sm">Files</div>
   <% end %>
   <% group.with_panel do %>
-    <div class="flex h-full items-center justify-center p-6 text-sm">Editor</div>
+    <div class="h-full p-3">
+      <%= poetry_code_block(code: "def total\n  line_items.sum(&:amount)\nend", language: "ruby",
+                            label: "Editor buffer", line_numbers: true) %>
+    </div>
   <% end %>
 <% end %>

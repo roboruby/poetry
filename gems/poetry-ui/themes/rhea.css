@@ -397,6 +397,21 @@
   @apply bg-input/90 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary border-transparent aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4 items-center justify-center rounded-[5px] border transition-shadow focus-visible:ring-3 aria-invalid:ring-3;
 }
 
+/* MARK: CodeBlock */
+/* The syntax palette: seven vars the dictionary's token map reads
+ * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
+ * redefining the vars); .hll is highlight_lines:, .line::before the CSS
+ * counters (out of copied text by construction). */
+.cn-code-block {
+  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#cf222e] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#953800] [--syntax-markup:#116329] [--syntax-function:#8250df] [--syntax-comment:#6e7781] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
+}
+.cn-code-block .hll {
+  @apply bg-primary/10 -mx-4 w-[calc(100%+2rem)] px-4;
+}
+.cn-code-block[data-line-numbers] .line::before {
+  @apply text-muted-foreground me-4 inline-block w-6 text-right content-[counter(line)] [counter-increment:line];
+}
+
 /* MARK: Command */
 .cn-command {
   @apply bg-popover text-popover-foreground rounded-3xl p-1;

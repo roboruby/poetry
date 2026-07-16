@@ -527,6 +527,14 @@ module Poetry
         render(Poetry::Ui::ClipboardText::Component.new(**))
       end
 
+      # Server-rendered highlighted code panel (rouge, soft dependency):
+      # language:, CSS-counter line_numbers:, highlight_lines:, and a
+      # copy affordance reading the rendered code. Inline code stays
+      # plain <code> typography.
+      def poetry_code_block(**)
+        render(Poetry::Ui::CodeBlock::Component.new(**))
+      end
+
       # Secret shown-on-demand (API keys, tokens): masked container is the
       # reveal button, blur/Escape/eye re-mask, copy: copies without
       # revealing. Plain passwords being SET (not shown) can stay a

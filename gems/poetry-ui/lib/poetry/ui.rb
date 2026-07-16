@@ -4,6 +4,7 @@ require "poetry/core"
 require "yaml"
 require_relative "ui/version"
 require_relative "ui/themes"
+require_relative "ui/code_block_highlighter"
 
 module Poetry
   # The component library: shadcn-parity ViewComponents built entirely on
@@ -47,7 +48,8 @@ module Poetry
       "tag_group" => %w[icon], # the remove glyph
       "tree" => %w[icon], # the chevron
       "clipboard_text" => %w[input input_group button icon], # composes their chrome
-      "sensitive_input" => %w[input input_group button icon clipboard_text] # + the copy: engine
+      "sensitive_input" => %w[input input_group button icon clipboard_text], # + the copy: engine
+      "code_block" => %w[button icon] # the copy affordance
     }.freeze
 
     SKILL_FAMILIES = {
@@ -57,7 +59,7 @@ module Poetry
                     toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
-      "data" => %w[accordion avatar badge card carousel clipboard_text collapsible data_table empty
+      "data" => %w[accordion avatar badge card carousel clipboard_text code_block collapsible data_table empty
                    item metadata_list meter stat table tag_group toolbar tree],
       "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],

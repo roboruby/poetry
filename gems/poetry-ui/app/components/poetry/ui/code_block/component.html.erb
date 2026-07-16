@@ -1,0 +1,13 @@
+<%# The pre/code nesting stays on one line - literal template whitespace
+    inside <pre> would render. %>
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= content_tag(:pre, content_tag(:code, highlighted || code, **code_attributes.to_attributes), **Poetry::Core::HTML::Attributes.new(pre_attributes).to_attributes) %>
+  <% if copy %>
+    <%= render copy_button do %>
+      <span class="<%= css(:icon_stack) %>">
+        <%= render Poetry::Ui::Icon::Component.new(name: :copy, class: css(:icon_copy)) %>
+        <%= render Poetry::Ui::Icon::Component.new(name: :check, class: css(:icon_check)) %>
+      </span>
+    <% end %>
+  <% end %>
+<% end %>

@@ -1161,6 +1161,7 @@ components:
     - identifier: poetry--core--clipboard-text
       targets:
       - input
+      - source
       values:
       - message
       - text
@@ -1196,6 +1197,74 @@ components:
         condition: always - inline-end holds the copy button
         values:
         - inline-end
+  poetry/ui/code_block:
+    class_name: Poetry::Ui::CodeBlock::Component
+    identifier: poetry--ui--code_block
+    bem_block: poetry-ui-code_block
+    styles: []
+    options:
+    - name: code
+      type: string
+      required: true
+    - name: copy
+      type: boolean
+      default: true
+    - name: highlight_lines
+      type:
+    - name: label
+      type: string
+    - name: language
+      type: string
+      default: text
+    - name: line_numbers
+      type: boolean
+      default: false
+    slots: []
+    elements:
+    - pre
+    - code
+    - copy
+    - icon_stack
+    - icon_copy
+    - icon_check
+    capsule: 2acaf6921f6d
+    controllers:
+    - identifier: poetry--core--clipboard-text
+      targets:
+      - input
+      - source
+      values:
+      - message
+      - text
+      actions:
+      - copy
+      events:
+      - poetry:clipboard-text:copied
+    agent_rules:
+    - Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code
+      with utility classes; the syntax palette, line counters, and copy affordance
+      ride it.
+    - Highlighting needs `gem "rouge"` in the host Gemfile - without it the block
+      renders plain (same markup, no colors). Inline code stays plain <code> typography.
+    - 'highlight_lines: takes 1-based line numbers; line numbers are CSS counters
+      and never pollute copied text.'
+    parts:
+    - name: code-block
+      description: Root - the syntax-palette surface (cn-code-block)
+      states:
+      - attr: data-language
+        condition: always - the lexer name, a styling/tooling hook
+      - attr: data-line-numbers
+        condition: 'line_numbers: - turns on the ::before CSS counters'
+      - attr: data-copied
+        condition: 'copy: only - stamped for a beat after a successful copy (the clipboard-text
+          engine)'
+    - name: code-block-pre
+      description: The scroll container - tabindex 0 + role region + label (a scrollable
+        region must be keyboard-reachable and named)
+    - name: code-block-code
+      description: The code element - rouge's .line/.hll spans and the seven --syntax-*
+        token maps live under it; the copy affordance reads ITS textContent
   poetry/ui/collapsible:
     class_name: Poetry::Ui::Collapsible::Component
     identifier: poetry--ui--collapsible
@@ -6011,6 +6080,7 @@ components:
     - identifier: poetry--core--clipboard-text
       targets:
       - input
+      - source
       values:
       - message
       - text
@@ -8042,6 +8112,7 @@ helper_args:
   poetry_carousel: 0
   poetry_checkbox: 0
   poetry_clipboard_text: 0
+  poetry_code_block: 0
   poetry_collapsible: 0
   poetry_combobox: 0
   poetry_command: 0

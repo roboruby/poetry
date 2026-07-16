@@ -36,6 +36,8 @@ en:
     clipboard_text:
       copy: "Copy"
       copied: "Copied to clipboard"
+    code_block:
+      label: "Code"
     sensitive_input:
       masked_label: "%{label}, masked."
       masked_fallback: "Sensitive value, masked."

@@ -5,6 +5,10 @@ source "https://rubygems.org"
 gemspec
 
 # The engine under development next door (published dependency once released).
+# CodeBlock's soft highlighting dependency - the dummy/gate builds exercise
+# the rouge path (hosts without rouge get the plain fallback).
+gem "rouge"
+
 gem "poetry-core", path: "../poetry-core"
 gem "poetry-lucide", path: "../poetry-lucide"
 
