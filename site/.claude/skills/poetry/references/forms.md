@@ -447,12 +447,12 @@ Class: Poetry::Ui::SensitiveInput::Component - BEM block `poetry-ui-sensitive_in
 - `required:` (boolean) - default false
 - `value:` (string)
 - PART `sensitive-input` - Root - the state machine rides here | states: data-state=masked|revealed|empty (always - masked (value hidden, group is the reveal button), revealed, or empty); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine)); data-disabled (disabled: - the masked group loses its tab stop and pointer affordances)
-- PART `sensitive-input-group` - The bordered field surface (InputGroup's chrome) - while masked it IS the reveal affordance: role=button, tabindex 0, "{label}, masked.", described by the sr hint
+- PART `sensitive-input-group` - The bordered field surface (InputGroup's chrome) - clicks anywhere on it reveal; wears the focus ring when the mask button inside holds focus
 - PART `input-group-control` - The real input - rendered in every state for layout stability; inert while masked (aria-hidden, tabindex -1, readonly, transparent); type=password unless revealed
-- PART `sensitive-input-mask` - The aria-hidden overlay painting the masked state - bullet dots swapping to the reveal hint on hover/focus (both stacked, no layout shift)
+- PART `sensitive-input-mask` - The overlay painting the masked state - while masked it IS the reveal button (role=button, tabindex 0, "{label}, masked.", described by the sr hint; only text spans inside, so no nested-interactive); bullet dots swap to the reveal hint on hover/focus with no layout shift
 - PART `input-group-addon` - The trailing cell holding the eye (and copy: affordance) | states: data-align=inline-end (always - inline-end holds the actions)
 - WIRING `poetry--core--clipboard-text`: targets input, source; values message, text; actions copy; events poetry:clipboard-text:copied
-- WIRING `poetry--core--sensitive-input`: targets group, hint, input, toggle; values hiddenMessage, maskedLabel, readOnly; actions blurred, changed, groupKeydown, inputKeydown, reveal, toggle; events poetry:sensitive-input:mask, poetry:sensitive-input:reveal
+- WIRING `poetry--core--sensitive-input`: targets hint, input, mask, toggle; values hiddenMessage, maskedLabel, readOnly; actions blurred, changed, inputKeydown, maskKeydown, reveal, toggle; events poetry:sensitive-input:mask, poetry:sensitive-input:reveal
 - RULE: Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare password Input with a hand-rolled eye; the masked-container contract (role=button, focus discipline, blur re-mask) rides the controller.
 - RULE: label: feeds the masked announcement ("{label}, masked.") - pair with a Label/Field for the visible caption.
 - RULE: copy: true adds copy-without-revealing; leave it off for password-change forms.
