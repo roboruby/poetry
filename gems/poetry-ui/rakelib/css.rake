@@ -75,6 +75,57 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
   end
 end
 
+# Runtime custom-property assignments, DERIVED from the actual sources -
+# never a maintained list (, the kumo parseKumoSemanticColors lesson
+# pointed verify-side):
+#   - poetry-core JS: every bare "--name" string literal (setProperty args,
+#     `property:` options, module constants) plus template-literal prefixes
+#     for dynamic names (`--drawer-swipe-movement-${axis}` registers the
+#     prefix, and any read under it resolves)
+#   - gem templates/components + block templates: inline-style `--name:`
+#     assignments (e.g. --poetry-tree-level), comment lines stripped first
+#     so prose mentioning a var never counts as defining it
+def poetry_ui_runtime_var_definitions
+  js = Dir[Poetry::Core.root.join("app/javascript/**/*.js").to_s]
+       .map { |file| File.read(file) }.join("\n")
+  names = js.scan(/["'`](--[A-Za-z][\w-]*)["'`]/).flatten
+  prefixes = js.scan(/`(--[A-Za-z][\w-]*-)\$\{/).flatten
+
+  inline = poetry_ui_var_scan_sources.flat_map do |text|
+    text.scan(Poetry::Core::CSS::VarCoverage::DECLARATION).flatten
+  end
+  [(names + inline).uniq, prefixes.uniq]
+end
+
+# var(--x) reads that live in inline styles / template attributes, which a
+# compiled Tailwind build never sees (class-string reads DO compile via the
+# safelist and are already covered by the build scan).
+def poetry_ui_template_var_reads
+  poetry_ui_var_scan_sources.flat_map do |text|
+    text.scan(Poetry::Core::CSS::VarCoverage::READ).flatten
+  end.uniq
+end
+
+def poetry_ui_var_scan_sources
+  globs = ["app/components/**/*.rb", "app/components/**/*.erb",
+           "lib/generators/poetry/block/templates/*.html.erb"]
+  globs.flat_map { |glob| Dir[Poetry::Ui.root.join(glob).to_s] }.map do |file|
+    File.read(file).lines.reject { |line| line.strip.start_with?("#", "<%#") }.join
+  end
+end
+
+# Reads pinned inside VENDORED upstream CSS are upstream's contract, not
+# poetry's: tw-animate keyframes target every ecosystem's accordion var
+# (--radix-, --bits-, --kb-, --reka-...), and shadcn's shimmer/scroll-fade
+# utilities read vars the CONSUMER sets inline. Derived from the vendor
+# files themselves - a poetry-owned dead read (the class) never
+# appears there, so the exemption cannot mask one.
+def poetry_ui_vendored_var_reads
+  Dir[Poetry::Core.root.join("vendor/**/*.css").to_s].flat_map do |file|
+    File.read(file).scan(Poetry::Core::CSS::VarCoverage::READ).flatten
+  end.uniq
+end
+
 namespace :css do
   namespace :template_classes do
     desc "Regenerate config/template_classes.txt from the gem's templates (herb)"
@@ -143,6 +194,43 @@ namespace :css do
 
       puts "theme coverage (#{theme}): #{coverage.theme_names.size} cn rules <-> " \
            "#{coverage.dictionary_names.size} dictionary names"
+    end
+  end
+
+  desc "Verify every var(--x) read resolves to a definition - compiled declarations, @property " \
+       "registrations, or runtime assignments derived from the real JS/template sources (; " \
+       "the class of bug dug out by hand as 13 dead --radix-* reads)"
+  task :verify_vars do
+    poetry_ui_boot!
+
+    runtime_names, runtime_prefixes = poetry_ui_runtime_var_definitions
+    template_reads = poetry_ui_template_var_reads
+
+    # The ONLY hand-maintained entries; each carries its reason.
+    #   --font-heading: the documented consumer hook - a host defines it to
+    #   opt into a heading font; cn-font-heading falls back to --font-sans
+    #   (themes/*.css) - definition-free in the gem BY CONTRACT.
+    consumer_hooks = %w[--font-heading]
+    # Tailwind's own namespaces (--tw-* internals + preflight's optional
+    # --default-* font hooks) are the toolchain's contract.
+    toolchain_prefixes = %w[--tw --default-]
+
+    poetry_ui_gate_themes.each do |theme|
+      coverage = Poetry::Core::CSS::VarCoverage.new(
+        compiled_css: poetry_ui_compile_tailwind(theme: theme),
+        extra_definitions: runtime_names + poetry_ui_vendored_var_reads + consumer_hooks,
+        definition_prefixes: runtime_prefixes + toolchain_prefixes,
+        extra_reads: template_reads
+      )
+
+      if coverage.dead_reads.any?
+        abort "dead var() reads (theme #{theme}) - read somewhere, defined nowhere " \
+              "(build, @property, JS setProperty, inline style):\n  #{coverage.dead_reads.join("\n  ")}"
+      end
+
+      puts "var coverage (#{theme}): #{coverage.reads.size} reads resolve against " \
+           "#{coverage.definitions.size} definitions (+#{runtime_names.size} runtime, " \
+           "#{runtime_prefixes.size} dynamic prefixes)"
     end
   end
 
