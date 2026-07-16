@@ -50,11 +50,17 @@ module Poetry
         end
 
         def tokens_css
-          lines = ["/* #{HEADER} */", "", ":root {", "  --radius: #{@tokens.radius_css};"]
+          # color-scheme travels with the mode blocks: UA scrollbars,
+          # form-control chrome, and canvas defaults follow the app's mode
+          # instead of the OS preference - without it, a dark-OS user in a
+          # light app gets dark scrollbars on light surfaces (the same
+          # split-brain closed for the dark: variant).
+          lines = ["/* #{HEADER} */", "", ":root {", "  color-scheme: light;",
+                   "  --radius: #{@tokens.radius_css};"]
           @tokens.color_names("light").each do |name|
             lines << "  --#{name}: #{@tokens.color("light", name).css};"
           end
-          lines << "}" << "" << ".dark {"
+          lines << "}" << "" << ".dark {" << "  color-scheme: dark;"
           @tokens.color_names("dark").each do |name|
             lines << "  --#{name}: #{@tokens.color("dark", name).css};"
           end
