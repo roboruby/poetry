@@ -34,6 +34,7 @@ module Poetry
                       poetry/ui/resizable
                       poetry/ui/scroll_area
                       poetry/ui/search_field poetry/ui/select
+                      poetry/ui/sensitive_input
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
                       poetry/ui/spinner poetry/ui/stat
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group

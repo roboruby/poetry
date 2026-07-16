@@ -5962,6 +5962,124 @@ components:
       description: The option's label span - the value display copies from it
     - name: select-separator
       description: Decorative divider between options (aria-hidden)
+  poetry/ui/sensitive_input:
+    class_name: Poetry::Ui::SensitiveInput::Component
+    identifier: poetry--ui--sensitive_input
+    bem_block: poetry-ui-sensitive_input
+    styles: []
+    options:
+    - name: copy
+      type: boolean
+      default: false
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: invalid
+      type: boolean
+      default: false
+    - name: label
+      type: string
+    - name: name
+      type: string
+      required: true
+    - name: placeholder
+      type: string
+    - name: readonly
+      type: boolean
+      default: false
+    - name: required
+      type: boolean
+      default: false
+    - name: value
+      type: string
+    slots: []
+    elements:
+    - group
+    - input
+    - mask
+    - mask_dots
+    - mask_reveal
+    - icon_stack
+    - icon_copy
+    - icon_check
+    capsule: 63434ee45008
+    controllers:
+    - identifier: poetry--core--clipboard-text
+      targets:
+      - input
+      values:
+      - message
+      - text
+      actions:
+      - copy
+      events:
+      - poetry:clipboard-text:copied
+    - identifier: poetry--core--sensitive-input
+      targets:
+      - group
+      - hint
+      - input
+      - toggle
+      values:
+      - hiddenMessage
+      - maskedLabel
+      - readOnly
+      actions:
+      - blurred
+      - changed
+      - groupKeydown
+      - inputKeydown
+      - reveal
+      - toggle
+      events:
+      - poetry:sensitive-input:mask
+      - poetry:sensitive-input:reveal
+    agent_rules:
+    - Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never
+      a bare password Input with a hand-rolled eye; the masked-container contract
+      (role=button, focus discipline, blur re-mask) rides the controller.
+    - 'label: feeds the masked announcement ("{label}, masked.") - pair with a Label/Field
+      for the visible caption.'
+    - 'copy: true adds copy-without-revealing; leave it off for password-change forms.'
+    - Values re-mask on blur BY DESIGN - do not fight it with reveal-state persistence.
+    parts:
+    - name: sensitive-input
+      description: Root - the state machine rides here
+      states:
+      - attr: data-state
+        condition: always - masked (value hidden, group is the reveal button), revealed,
+          or empty
+        values:
+        - masked
+        - revealed
+        - empty
+      - attr: data-copied
+        condition: 'copy: only - stamped for a beat after a successful copy (the clipboard-text
+          engine)'
+      - attr: data-disabled
+        condition: 'disabled: - the masked group loses its tab stop and pointer affordances'
+    - name: sensitive-input-group
+      description: 'The bordered field surface (InputGroup''s chrome) - while masked
+        it IS the reveal affordance: role=button, tabindex 0, "{label}, masked.",
+        described by the sr hint'
+    - name: input-group-control
+      description: The real input - rendered in every state for layout stability;
+        inert while masked (aria-hidden, tabindex -1, readonly, transparent); type=password
+        unless revealed
+    - name: sensitive-input-mask
+      description: The aria-hidden overlay painting the masked state - bullet dots
+        swapping to the reveal hint on hover/focus (both stacked, no layout shift)
+    - name: input-group-addon
+      description: 'The trailing cell holding the eye (and copy: affordance)'
+      states:
+      - attr: data-align
+        condition: always - inline-end holds the actions
+        values:
+        - inline-end
   poetry/ui/separator:
     class_name: Poetry::Ui::Separator::Component
     identifier: poetry--ui--separator
@@ -7977,6 +8095,7 @@ helper_args:
   poetry_scroll_area: 0
   poetry_search_field: 0
   poetry_select: 0
+  poetry_sensitive_input: 0
   poetry_separator: 0
   poetry_sheet: 0
   poetry_sidebar: 0

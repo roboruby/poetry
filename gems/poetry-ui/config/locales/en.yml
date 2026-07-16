@@ -36,6 +36,13 @@ en:
     clipboard_text:
       copy: "Copy"
       copied: "Copied to clipboard"
+    sensitive_input:
+      masked_label: "%{label}, masked."
+      masked_fallback: "Sensitive value, masked."
+      hint: "Click or press Enter to reveal."
+      reveal_hint: "Click to reveal"
+      hidden: "Value hidden"
+      hide: "Hide value"
     data_table:
       select_all: "Select all rows"
       select_row: "Select row"

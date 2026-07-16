@@ -1123,6 +1123,13 @@
   @apply absolute top-4 right-4;
 }
 
+/* MARK: SensitiveInput */
+/* The masked GROUP is the focusable reveal button: it needs the
+ * ring the theme otherwise keys on the CONTROL focus-visible. */
+.cn-sensitive-input-group:focus-visible {
+  @apply outline-none border-ring ring-ring/50 ring-3;
+}
+
 /* MARK: Sidebar */
 .cn-sidebar-mobile {
   @apply bg-sidebar p-0 text-sidebar-foreground shadow-lg transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;

@@ -8,6 +8,8 @@
   <% end %>
   <% tabs.with_tab("Password", value: "password") do %>
     <p>Change your password here.</p>
+    <%= poetry_sensitive_input(name: "current_secret", label: "Current API secret",
+                              value: "sk_demo_4eC39HqLyjWDarjtT1zdp7dc", copy: true) %>
   <% end %>
   <% tabs.with_tab("Notifications", value: "notifications") do %>
     <p>Choose what you hear about.</p>

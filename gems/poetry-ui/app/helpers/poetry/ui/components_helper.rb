@@ -527,6 +527,14 @@ module Poetry
         render(Poetry::Ui::ClipboardText::Component.new(**))
       end
 
+      # Secret shown-on-demand (API keys, tokens): masked container is the
+      # reveal button, blur/Escape/eye re-mask, copy: copies without
+      # revealing. Plain passwords being SET (not shown) can stay a
+      # poetry_input type: :password.
+      def poetry_sensitive_input(**)
+        render(Poetry::Ui::SensitiveInput::Component.new(**))
+      end
+
       # Void control - instant-effect on/off (role=switch announces on/off);
       # values staged for submit belong to poetry_checkbox.
       def poetry_switch(**)

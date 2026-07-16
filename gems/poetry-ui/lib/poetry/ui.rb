@@ -46,13 +46,15 @@ module Poetry
       "search_field" => %w[input input_group button icon], # composes their chrome
       "tag_group" => %w[icon], # the remove glyph
       "tree" => %w[icon], # the chevron
-      "clipboard_text" => %w[input input_group button icon] # composes their chrome
+      "clipboard_text" => %w[input input_group button icon], # composes their chrome
+      "sensitive_input" => %w[input input_group button icon clipboard_text] # + the copy: engine
     }.freeze
 
     SKILL_FAMILIES = {
       "forms" => %w[button button_group calendar checkbox combobox date_field date_picker field
                     file_input input input_group input_otp label native_select number_field
-                    radio_group search_field select slider switch textarea time_field toggle toggle_group],
+                    radio_group search_field select sensitive_input slider switch textarea time_field
+                    toggle toggle_group],
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel clipboard_text collapsible data_table empty
