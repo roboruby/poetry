@@ -5,7 +5,7 @@
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
   <%= content_tag(:div, **group_attributes.to_attributes) do %>
     <%= tag.input(**input_attributes.to_attributes) %>
-    <%= content_tag(:span, **Poetry::Core::HTML::Attributes.new(mask_attributes).to_attributes) do %>
+    <%= content_tag(:span, **mask_attributes.to_attributes) do %>
       <span class="relative">
         <span class="<%= css(:mask_dots) %>">••••••••</span>
         <span class="<%= css(:mask_reveal) %>"><%= t("poetry.sensitive_input.reveal_hint") %></span>

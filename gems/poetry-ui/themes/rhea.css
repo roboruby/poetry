@@ -403,7 +403,7 @@
  * redefining the vars); .hll is highlight_lines:, .line::before the CSS
  * counters (out of copied text by construction). */
 .cn-code-block {
-  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#cf222e] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#953800] [--syntax-markup:#116329] [--syntax-function:#8250df] [--syntax-comment:#6e7781] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
+  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#a40e26] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#7f3400] [--syntax-markup:#116329] [--syntax-function:#6639ba] [--syntax-comment:#57606a] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
 }
 .cn-code-block .hll {
   @apply bg-primary/10 -mx-4 w-[calc(100%+2rem)] px-4;
@@ -1136,9 +1136,10 @@
 }
 
 /* MARK: SensitiveInput */
-/* The masked GROUP is the focusable reveal button: it needs the
- * ring the theme otherwise keys on the CONTROL focus-visible. */
-.cn-sensitive-input-group:focus-visible {
+/* The masked MASK OVERLAY is the focusable reveal button (; the
+ * group would trip axe nested-interactive around the inert input) - the
+ * bordered group wears the ring when the mask inside holds focus. */
+.cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible) {
   @apply outline-none border-ring ring-ring/30 ring-3;
 }
 

@@ -6075,7 +6075,7 @@ components:
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: 63434ee45008
+    capsule: e0990c643b15
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:
@@ -6090,9 +6090,9 @@ components:
       - poetry:clipboard-text:copied
     - identifier: poetry--core--sensitive-input
       targets:
-      - group
       - hint
       - input
+      - mask
       - toggle
       values:
       - hiddenMessage
@@ -6101,8 +6101,8 @@ components:
       actions:
       - blurred
       - changed
-      - groupKeydown
       - inputKeydown
+      - maskKeydown
       - reveal
       - toggle
       events:
@@ -6133,16 +6133,17 @@ components:
       - attr: data-disabled
         condition: 'disabled: - the masked group loses its tab stop and pointer affordances'
     - name: sensitive-input-group
-      description: 'The bordered field surface (InputGroup''s chrome) - while masked
-        it IS the reveal affordance: role=button, tabindex 0, "{label}, masked.",
-        described by the sr hint'
+      description: The bordered field surface (InputGroup's chrome) - clicks anywhere
+        on it reveal; wears the focus ring when the mask button inside holds focus
     - name: input-group-control
       description: The real input - rendered in every state for layout stability;
         inert while masked (aria-hidden, tabindex -1, readonly, transparent); type=password
         unless revealed
     - name: sensitive-input-mask
-      description: The aria-hidden overlay painting the masked state - bullet dots
-        swapping to the reveal hint on hover/focus (both stacked, no layout shift)
+      description: The overlay painting the masked state - while masked it IS the
+        reveal button (role=button, tabindex 0, "{label}, masked.", described by the
+        sr hint; only text spans inside, so no nested-interactive); bullet dots swap
+        to the reveal hint on hover/focus with no layout shift
     - name: input-group-addon
       description: 'The trailing cell holding the eye (and copy: affordance)'
       states:

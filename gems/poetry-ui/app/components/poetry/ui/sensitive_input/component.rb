@@ -5,7 +5,7 @@ module Poetry
     module SensitiveInput
       # The SensitiveInput (the kumo contract): a secret field -
       # API keys, tokens, credentials - in a three-state machine carried by
-      # data-state on the root: masked (value hidden, the bordered GROUP is
+      # data-state on the root: masked (value hidden, the MASK OVERLAY is
       # the reveal affordance - role=button, label, sr hint - while the
       # real input stays rendered for layout but goes inert), revealed
       # (type=text, editable, the eye re-masks), empty (a plain password
@@ -51,14 +51,16 @@ module Poetry
                                   "affordances"
              }
         part "sensitive-input-group", "The bordered field surface (InputGroup's chrome) - " \
-                                      "while masked it IS the reveal affordance: role=button, " \
-                                      "tabindex 0, \"{label}, masked.\", described by the sr hint"
+                                      "clicks anywhere on it reveal; wears the focus ring when " \
+                                      "the mask button inside holds focus"
         part "input-group-control", "The real input - rendered in every state for layout " \
                                     "stability; inert while masked (aria-hidden, tabindex -1, " \
                                     "readonly, transparent); type=password unless revealed"
-        part "sensitive-input-mask", "The aria-hidden overlay painting the masked state - " \
-                                     "bullet dots swapping to the reveal hint on hover/focus " \
-                                     "(both stacked, no layout shift)"
+        part "sensitive-input-mask", "The overlay painting the masked state - while masked it " \
+                                     "IS the reveal button (role=button, tabindex 0, " \
+                                     "\"{label}, masked.\", described by the sr hint; only text " \
+                                     "spans inside, so no nested-interactive); bullet dots swap " \
+                                     "to the reveal hint on hover/focus with no layout shift"
         part "input-group-addon", "The trailing cell holding the eye (and copy: affordance)",
              states: {
                "data-align" => { condition: "always - inline-end holds the actions",
@@ -103,12 +105,6 @@ module Poetry
             "data-slot" => "sensitive-input-group",
             "class" => InputGroup::Style.css(class: css(:group))
           )
-          if masked?
-            attrs["role"] = "button"
-            attrs["tabindex"] = disabled ? "-1" : "0"
-            attrs["aria-label"] = masked_label
-            attrs["aria-describedby"] = hint_id
-          end
           attrs.merge!(group_stimulus_attributes)
           attrs
         end
@@ -121,12 +117,23 @@ module Poetry
           }
         end
 
+        # The mask overlay IS the reveal button while masked (never the
+        # group: a role=button ancestor around the inert input trips axe
+        # nested-interactive - the catch kumo, with no axe walk, ships).
+        # Display:none in every other state keeps it out of the a11y tree.
         def mask_attributes
-          {
+          attrs = Poetry::Core::HTML::Attributes.new(
             "data-slot" => "sensitive-input-mask",
-            "aria-hidden" => "true",
             "class" => css(:mask)
-          }
+          )
+          if masked?
+            attrs["role"] = "button"
+            attrs["tabindex"] = disabled ? "-1" : "0"
+            attrs["aria-label"] = masked_label
+            attrs["aria-describedby"] = hint_id
+          end
+          attrs.merge!(mask_stimulus_attributes)
+          attrs
         end
 
         def input_attributes
@@ -216,11 +223,18 @@ module Poetry
           attrs.to_attributes
         end
 
+        # Clicks anywhere on the bordered surface reveal (the mask's own
+        # clicks bubble here); Enter/Space ride the mask button.
         def group_stimulus_attributes
           stimulus_attributes do |field|
-            field.with_target(:group)
             field.with_action(:reveal, on: :click)
-            field.with_action(:groupKeydown, on: :keydown)
+          end
+        end
+
+        def mask_stimulus_attributes
+          stimulus_attributes do |field|
+            field.with_target(:mask)
+            field.with_action(:maskKeydown, on: :keydown)
           end
         end
 

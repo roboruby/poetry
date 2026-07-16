@@ -25,10 +25,14 @@ module Poetry
                         "[[data-state=masked]_&]:text-transparent " \
                         "[[data-state=masked]_&]:select-none"
 
-        # The overlay paints the masked state only; both texts render
+        # The overlay paints the masked state only - and while masked it IS
+        # the reveal button (pointer target + focusable); display:none in
+        # every other state keeps it out of the a11y tree. Both texts render
         # stacked so the hover swap never shifts layout.
         element :mask, "pointer-events-none absolute inset-y-0 start-0 hidden items-center " \
-                       "px-3 text-base md:text-sm [[data-state=masked]_&]:flex"
+                       "px-3 text-base outline-none md:text-sm [[data-state=masked]_&]:flex " \
+                       "[[data-state=masked]:not([data-disabled])_&]:pointer-events-auto " \
+                       "[[data-state=masked]:not([data-disabled])_&]:cursor-pointer"
         element :mask_dots, "group-focus-within/sensitive:invisible group-hover/sensitive:invisible"
         element :mask_reveal, "invisible absolute start-0 top-0 whitespace-nowrap " \
                               "text-muted-foreground group-focus-within/sensitive:visible " \
