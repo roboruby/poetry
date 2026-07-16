@@ -3,6 +3,8 @@
 <%= poetry_tabs(label: "Account settings") do |tabs| %>
   <% tabs.with_tab("Account", value: "account") do %>
     <p>Make changes to your account here.</p>
+    <%= poetry_clipboard_text(value: "pk_live_51Nx…9fQ2", label: "API key",
+                              text_to_copy: "pk_live_51NxAbCdEfGhIjKlMnOpQrStUvWxYz0123456789fQ2") %>
   <% end %>
   <% tabs.with_tab("Password", value: "password") do %>
     <p>Change your password here.</p>

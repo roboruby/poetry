@@ -33,6 +33,9 @@ en:
       decrement: "Decrease"
     search_field:
       clear: "Clear search"
+    clipboard_text:
+      copy: "Copy"
+      copied: "Copied to clipboard"
     data_table:
       select_all: "Select all rows"
       select_row: "Select row"

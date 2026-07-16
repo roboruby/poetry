@@ -1130,6 +1130,72 @@ components:
         condition: mirrors the control - the indicator is invisible
       - attr: data-indeterminate
         condition: mirrors the control - the glyph swaps to minus
+  poetry/ui/clipboard_text:
+    class_name: Poetry::Ui::ClipboardText::Component
+    identifier: poetry--ui--clipboard_text
+    bem_block: poetry-ui-clipboard_text
+    styles: []
+    options:
+    - name: described_by
+      type: string
+    - name: disabled
+      type: boolean
+      default: false
+    - name: id
+      type: string
+    - name: label
+      type: string
+    - name: text_to_copy
+      type: string
+    - name: value
+      type: string
+      required: true
+    slots: []
+    elements:
+    - input
+    - icon_stack
+    - icon_copy
+    - icon_check
+    capsule: d0c14ad54438
+    controllers:
+    - identifier: poetry--core--clipboard-text
+      targets:
+      - input
+      values:
+      - message
+      - text
+      actions:
+      - copy
+      events:
+      - poetry:clipboard-text:copied
+    agent_rules:
+    - A read-only value with one copy affordance (poetry_clipboard_text) - API keys,
+      install commands, IDs. Editable text is an Input; a secret that needs masking
+      is a SensitiveInput.
+    - 'value: is what SHOWS; text_to_copy: overrides what lands on the clipboard when
+      the display truncates - never truncate the copied text itself.'
+    - 'Give it label: (or compose under a Field/Label) - the readonly input still
+      needs its accessible name.'
+    parts:
+    - name: clipboard-text
+      description: Root - the controller rides here
+      states:
+      - attr: data-copied
+        condition: stamped for a beat after a successful copy (the stacked copy/check
+          glyphs swap off it)
+    - name: clipboard-text-group
+      description: The bordered field surface - InputGroup's chrome
+    - name: input-group-control
+      description: The readonly mono <input> showing the value - selectable, never
+        editable; InputGroup's control slot
+    - name: input-group-addon
+      description: The trailing cell holding the copy affordance - InputGroup's addon
+        vocabulary
+      states:
+      - attr: data-align
+        condition: always - inline-end holds the copy button
+        values:
+        - inline-end
   poetry/ui/collapsible:
     class_name: Poetry::Ui::Collapsible::Component
     identifier: poetry--ui--collapsible
@@ -7857,6 +7923,7 @@ helper_args:
   poetry_card: 0
   poetry_carousel: 0
   poetry_checkbox: 0
+  poetry_clipboard_text: 0
   poetry_collapsible: 0
   poetry_combobox: 0
   poetry_command: 0

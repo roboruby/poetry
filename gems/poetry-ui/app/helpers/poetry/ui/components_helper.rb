@@ -519,6 +519,14 @@ module Poetry
         render(Poetry::Ui::Checkbox::Component.new(**))
       end
 
+      # Read-only value + one copy affordance (API keys, install commands,
+      # IDs); text_to_copy: overrides the clipboard when the display
+      # truncates. Editable text is poetry_input; masked secrets are
+      # poetry_sensitive_input.
+      def poetry_clipboard_text(**)
+        render(Poetry::Ui::ClipboardText::Component.new(**))
+      end
+
       # Void control - instant-effect on/off (role=switch announces on/off);
       # values staged for submit belong to poetry_checkbox.
       def poetry_switch(**)

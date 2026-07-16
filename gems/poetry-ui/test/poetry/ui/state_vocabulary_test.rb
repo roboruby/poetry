@@ -26,6 +26,8 @@ module Poetry
         "horizontal" => "bridge variant for data-orientation=horizontal (shadcn/tailwind.css)",
         "vertical" => "bridge variant for data-orientation=vertical (shadcn/tailwind.css)",
         "highlighted" => "menu/command/select active-option marker (JS)",
+        "copied" => "clipboard-text post-copy beat (poetry--core--clipboard-text via " \
+                    "toggleAttribute; drives the copy/check glyph swap)",
         "disabled" => "server-rendered + JS-reflected disabled marker",
         "placeholder" => "select trigger empty-value marker (server + JS)",
         "active" => "OTP caret cell / tab markers (JS)",
