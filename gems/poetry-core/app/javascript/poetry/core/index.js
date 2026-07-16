@@ -8,6 +8,7 @@ import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
 import AccordionController from "@poetry/controllers/accordion_controller"
 import SearchFieldController from "@poetry/controllers/search_field_controller"
+import ClipboardTextController from "@poetry/controllers/clipboard_text_controller"
 import RovingFocusController from "@poetry/controllers/roving_focus_controller"
 import FocusScopeController from "@poetry/controllers/focus_scope_controller"
 import DismissableController from "@poetry/controllers/dismissable_controller"
@@ -55,6 +56,7 @@ export { default as DialogController } from "@poetry/controllers/dialog_controll
 export { default as MessageScrollerController } from "@poetry/controllers/message_scroller_controller"
 export { default as AccordionController } from "@poetry/controllers/accordion_controller"
 export { default as SearchFieldController } from "@poetry/controllers/search_field_controller"
+export { default as ClipboardTextController } from "@poetry/controllers/clipboard_text_controller"
 export { default as RovingFocusController } from "@poetry/controllers/roving_focus_controller"
 export { default as FocusScopeController } from "@poetry/controllers/focus_scope_controller"
 export { default as DismissableController } from "@poetry/controllers/dismissable_controller"
@@ -115,6 +117,7 @@ export const controllers = {
   "poetry--core--message-scroller": MessageScrollerController,
   "poetry--core--accordion": AccordionController,
   "poetry--core--search-field": SearchFieldController,
+  "poetry--core--clipboard-text": ClipboardTextController,
   "poetry--core--roving-focus": RovingFocusController,
   "poetry--core--focus-scope": FocusScopeController,
   "poetry--core--dismissable": DismissableController,

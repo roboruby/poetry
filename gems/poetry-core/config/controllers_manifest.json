@@ -154,6 +154,27 @@
       "poetry--core--checked:change"
     ]
   },
+  "poetry--core--clipboard-text": {
+    "targets": [
+      "input"
+    ],
+    "values": {
+      "text": {
+        "type": "String"
+      },
+      "message": {
+        "type": "String"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "copy",
+      "disconnect"
+    ],
+    "events": [
+      "poetry:clipboard-text:copied"
+    ]
+  },
   "poetry--core--combobox": {
     "targets": [],
     "values": {
