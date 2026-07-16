@@ -16,11 +16,14 @@ export default class ClipboardTextController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:clipboard-text:copied"]
 
-  static targets = ["input"]
+  // input: a field whose value is the text. source: any element whose
+  // textContent is the text (CodeBlock's rendered code - CSS-counter line
+  // numbers live in ::before and are excluded by construction).
+  static targets = ["input", "source"]
 
   static values = {
     // Copy override: the full value when the display truncates (kumo's
-    // textToCopy). Empty means "copy what the input shows".
+    // textToCopy). Empty means "copy what the input/source shows".
     text: String,
     // The announcement, localized server-side.
     message: String
@@ -31,7 +34,7 @@ export default class ClipboardTextController extends Controller {
   }
 
   async copy() {
-    const text = this.textValue !== "" ? this.textValue : this.inputTarget.value
+    const text = this.#text
     if (!(await this.#write(text))) return
 
     this.element.toggleAttribute("data-copied", true)
@@ -43,6 +46,13 @@ export default class ClipboardTextController extends Controller {
   }
 
   #timer
+
+  get #text() {
+    if (this.textValue !== "") return this.textValue
+    if (this.hasSourceTarget) return this.sourceTarget.textContent
+
+    return this.inputTarget.value
+  }
 
   async #write(text) {
     try {

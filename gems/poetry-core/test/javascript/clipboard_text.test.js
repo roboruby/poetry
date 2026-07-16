@@ -72,6 +72,21 @@ describe("poetry--core--clipboard-text", () => {
     expect(events).toEqual(["npm install poetry"])
   })
 
+  it("copies a source target's textContent (the CodeBlock path)", async () => {
+    el("host").innerHTML = `
+      <div id="root" data-controller="poetry--core--clipboard-text"
+           data-poetry--core--clipboard-text-message-value="">
+        <code id="code" data-poetry--core--clipboard-text-target="source">gem "poetry-ui"</code>
+        <button id="copy" data-action="click->poetry--core--clipboard-text#copy">Copy</button>
+      </div>`
+    await nextFrame()
+
+    await copy()
+
+    expect(written).toEqual([`gem "poetry-ui"`])
+    expect(el("root").hasAttribute("data-copied")).toBe(true)
+  })
+
   it("prefers the textValue override to the displayed value", async () => {
     await mount({ value: "poetry-core@0.1…", text: "poetry-core@0.1.0-full-digest" })
 
