@@ -1064,6 +1064,39 @@
       "poetry:select:select"
     ]
   },
+  "poetry--core--sensitive-input": {
+    "targets": [
+      "group",
+      "hint",
+      "input",
+      "toggle"
+    ],
+    "values": {
+      "maskedLabel": {
+        "type": "String"
+      },
+      "hiddenMessage": {
+        "type": "String"
+      },
+      "readOnly": {
+        "type": "Boolean"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurred",
+      "changed",
+      "connect",
+      "groupKeydown",
+      "inputKeydown",
+      "reveal",
+      "toggle"
+    ],
+    "events": [
+      "poetry:sensitive-input:mask",
+      "poetry:sensitive-input:reveal"
+    ]
+  },
   "poetry--core--sheet": {
     "targets": [
       "dialog"
