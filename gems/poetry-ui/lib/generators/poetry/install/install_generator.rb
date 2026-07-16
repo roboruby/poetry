@@ -31,6 +31,10 @@ module Poetry
     include Generators::SkillsSection
 
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
+    STYLE_SLOT = "app/assets/tailwind/poetry/style-default.css"
+    # Every shipped fragment opens with `/* poetry <name> theme` - the sniff
+    # reads the slot's first line back so a plain re-run keeps the theme.
+    THEME_HEADER = %r{\A/\* poetry ([a-z0-9-]+) theme\b}
 
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
@@ -38,11 +42,17 @@ module Poetry
     # N12: install-time theme selection. Every themes/<name>.css fragment is
     # a complete visual theme; the chosen one fills the style-default.css
     # slot (the SLOT filename never changes - that keeps ENTRY_LINES
-    # idempotent and makes switching themes a plain re-run with a different
+    # idempotent and makes switching themes a re-run with a different
     # --theme, overwriting in place). One theme per build; the multi-theme
     # .style-<name> wrapper arrives with the docs switcher, not here.
-    class_option :theme, type: :string, default: "default",
-                         desc: "Visual theme fragment to install (a themes/<name>.css shipped by poetry-ui)"
+    #
+    # (the upgrade-path contract): the default is nil, not "default" -
+    # a plain re-run sniffs the theme already in the slot and keeps it, so
+    # upgrading (bundle update + re-run) never swaps an app's design. An
+    # explicit --theme always wins; only a first install falls to "default".
+    class_option :theme, type: :string, default: nil,
+                         desc: "Visual theme fragment to install (a themes/<name>.css shipped by poetry-ui); " \
+                               "defaults to the theme already installed, or \"default\" on a first install"
 
     # Injected line by line (not as one block) so a re-run after an upgrade
     # appends any line a previous poetry version didn't know about.
@@ -91,13 +101,13 @@ module Poetry
     def verify_theme_choice
       unless ui_theme_path.exist?
         available = Dir[Poetry::Ui.root.join("themes/*.css").to_s].map { |f| File.basename(f, ".css") }.sort
-        raise Thor::Error, "unknown poetry theme #{options[:theme].inspect} - poetry-ui ships: #{available.join(", ")}"
+        raise Thor::Error, "unknown poetry theme #{resolved_theme.inspect} - poetry-ui ships: #{available.join(", ")}"
       end
 
       return if !options[:charts] || !charts_available? || charts_theme_path.exist?
 
-      raise Thor::Error, "poetry-charts does not ship theme #{options[:theme].inspect} - " \
-                         "every installed poetry gem must provide themes/#{options[:theme]}.css"
+      raise Thor::Error, "poetry-charts does not ship theme #{resolved_theme.inspect} - " \
+                         "every installed poetry gem must provide themes/#{resolved_theme}.css"
     end
 
     def copy_tokens_and_theme
@@ -235,16 +245,37 @@ module Poetry
 
     private
 
+    def resolved_theme
+      @resolved_theme ||= options[:theme] || installed_theme || "default"
+    end
+
+    #: which theme fills the slot right now. Unreadable header (a
+    # hand-edited file, or a pre-N12 install) falls back to "default" WITH a
+    # warning - never silently.
+    def installed_theme
+      path = File.join(destination_root, STYLE_SLOT)
+      return nil unless File.exist?(path)
+
+      name = File.foreach(path).first.to_s[THEME_HEADER, 1]
+      if name.nil?
+        say_status :theme, "could not identify the installed theme from #{STYLE_SLOT} - " \
+                           "installing \"default\" (pass --theme <name> to keep yours)", :yellow
+      elsif name != "default"
+        say_status :theme, "keeping installed theme #{name.inspect} (pass --theme to switch)", :cyan
+      end
+      name
+    end
+
     def charts_available?
       defined?(Poetry::Charts::Engine) ? true : false
     end
 
     def ui_theme_path
-      Poetry::Ui.root.join("themes/#{options[:theme]}.css")
+      Poetry::Ui.root.join("themes/#{resolved_theme}.css")
     end
 
     def charts_theme_path
-      Poetry::Charts.root.join("themes/#{options[:theme]}.css")
+      Poetry::Charts.root.join("themes/#{resolved_theme}.css")
     end
 
     # The idempotency lives in the file-mutation primitive, not the

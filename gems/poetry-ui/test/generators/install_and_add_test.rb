@@ -202,7 +202,7 @@ module Poetry
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
     end
 
-    def test_theme_vega_fills_the_same_slot_and_switching_back_is_a_plain_rerun
+    def test_theme_vega_fills_the_same_slot_and_switching_back_is_an_explicit_rerun
       run_generator %w[--theme vega]
 
       # The SLOT filename never changes - only the content swaps.
@@ -212,13 +212,35 @@ module Poetry
 
       assert_equal 1, entry.scan('@import "./poetry/style-default.css" layer(base);').size
 
-      run_generator # back to default: same slot, overwritten in place
+      run_generator %w[--theme default] # switching is EXPLICIT: same slot, overwritten in place
 
       assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
       entry = File.read(File.join(destination_root, InstallGenerator::TAILWIND_ENTRY))
 
       assert_equal 1, entry.scan('@import "./poetry/style-default.css" layer(base);').size,
                    "switching themes never accretes entry lines"
+    end
+
+    def test_rerun_without_the_flag_keeps_the_installed_theme
+      run_generator %w[--theme vega]
+
+      # The upgrade path: bundle update + plain re-run must refresh
+      # the vendored files WITHOUT swapping the app's design.
+      stdout = run_generator
+
+      assert_file "app/assets/tailwind/poetry/style-default.css", /poetry vega theme/
+      assert_match(/keeping installed theme "vega"/, stdout)
+    end
+
+    def test_unidentifiable_slot_falls_back_to_default_with_a_warning
+      run_generator %w[--theme vega]
+      File.write(File.join(destination_root, "app/assets/tailwind/poetry/style-default.css"),
+                 "/* my hand-rolled theme */\n.cn-button { color: red }\n")
+
+      stdout = run_generator
+
+      assert_match(/could not identify the installed theme/, stdout)
+      assert_file "app/assets/tailwind/poetry/style-default.css", /poetry default theme/
     end
 
     def test_charts_gem_missing_the_requested_theme_fails_fast
