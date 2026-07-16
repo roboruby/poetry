@@ -1067,9 +1067,9 @@
   },
   "poetry--core--sensitive-input": {
     "targets": [
-      "group",
       "hint",
       "input",
+      "mask",
       "toggle"
     ],
     "values": {
@@ -1088,8 +1088,8 @@
       "blurred",
       "changed",
       "connect",
-      "groupKeydown",
       "inputKeydown",
+      "maskKeydown",
       "reveal",
       "toggle"
     ],

@@ -4,15 +4,17 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
 // The SensitiveInput machine (the kumo contract): a secret field in
 // three states - masked | revealed | empty - where data-state on the root
-// carries the truth and CSS renders it. Masked-with-value turns the
-// bordered GROUP into the reveal affordance (role=button + label +
-// sr-hint; a div because copy/eye buttons live inside) while the real
-// input stays rendered for layout but goes inert (aria-hidden,
-// tabindex -1, readonly, transparent). Reveal: click/Enter/Space on the
-// group, focus moves into the input. Re-mask: Escape (focus returns to
-// the group - the input just lost its tab stop), leaving the component,
-// or the eye. Typing into an empty field auto-reveals so composition
-// happens in type=text. The no-JS story is a plain password input.
+// carries the truth and CSS renders it. Masked-with-value turns the MASK
+// OVERLAY into the reveal affordance (role=button + label + sr-hint; only
+// text spans inside - a role on the surrounding group would trip axe
+// nested-interactive around the inert input, the bug kumo ships unseen)
+// while the real input stays rendered for layout but goes inert
+// (aria-hidden, tabindex -1, readonly, transparent). Reveal: click
+// anywhere on the group (mask clicks bubble) or Enter/Space on the mask,
+// focus moves into the input. Re-mask: Escape (focus returns to the mask
+// - the input just lost its tab stop), leaving the component, or the eye.
+// Typing into an empty field auto-reveals so composition happens in
+// type=text. The no-JS story is a plain password input.
 const EVENT_PREFIX = "poetry:sensitive-input"
 
 export default class SensitiveInputController extends Controller {
@@ -20,7 +22,7 @@ export default class SensitiveInputController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:sensitive-input:reveal", "poetry:sensitive-input:mask"]
 
-  static targets = ["group", "input", "toggle", "hint"]
+  static targets = ["mask", "input", "toggle", "hint"]
 
   static values = {
     // "{label}, masked." - built server-side so i18n stays in Rails.
@@ -37,7 +39,8 @@ export default class SensitiveInputController extends Controller {
     this.#reflect()
   }
 
-  // click on the group - the masked container is the reveal affordance.
+  // click anywhere on the bordered group (the mask button's own clicks
+  // bubble here too).
   reveal(event) {
     if (this.#disabled || this.#state !== "masked") return
     // The addon cell holds its own actions (copy/eye) - their clicks
@@ -50,9 +53,9 @@ export default class SensitiveInputController extends Controller {
     this.#reveal()
   }
 
-  groupKeydown(event) {
+  maskKeydown(event) {
     if (this.#disabled || this.#state !== "masked") return
-    if (event.target !== this.groupTarget) return
+    if (event.target !== this.maskTarget) return
     if (event.key !== "Enter" && event.key !== " ") return
 
     event.preventDefault()
@@ -66,7 +69,7 @@ export default class SensitiveInputController extends Controller {
     // Consumed: this press masks; the NEXT one reaches the dismissal layer.
     event.preventDefault()
     event.stopPropagation()
-    this.#mask({ focusGroup: true })
+    this.#mask({ focusMask: true })
   }
 
   // focusout on the root: leaving the component with a value re-masks.
@@ -85,13 +88,13 @@ export default class SensitiveInputController extends Controller {
     this.#reflect()
   }
 
-  // the eye: re-mask, and hand focus to the group - the eye is about to
-  // hide (it only exists while revealed).
+  // the eye: re-mask, and hand focus to the mask button - the eye is about
+  // to hide (it only exists while revealed).
   toggle(event) {
     event.stopPropagation()
     if (this.#state !== "revealed") return
 
-    this.#mask({ focusGroup: true })
+    this.#mask({ focusMask: true })
   }
 
   #visible = false
@@ -111,11 +114,11 @@ export default class SensitiveInputController extends Controller {
     this.dispatch("reveal", { prefix: EVENT_PREFIX })
   }
 
-  #mask({ focusGroup = false } = {}) {
+  #mask({ focusMask = false } = {}) {
     this.#visible = false
     this.#reflect()
     if (this.hiddenMessageValue !== "") announce(this.hiddenMessageValue)
-    if (focusGroup) this.groupTarget.focus()
+    if (focusMask) this.maskTarget.focus()
     this.dispatch("mask", { prefix: EVENT_PREFIX })
   }
 
@@ -127,15 +130,15 @@ export default class SensitiveInputController extends Controller {
     const masked = state === "masked"
 
     if (masked) {
-      this.groupTarget.setAttribute("role", "button")
-      this.groupTarget.setAttribute("tabindex", this.#disabled ? "-1" : "0")
-      this.groupTarget.setAttribute("aria-label", this.maskedLabelValue)
-      if (this.hasHintTarget) this.groupTarget.setAttribute("aria-describedby", this.hintTarget.id)
+      this.maskTarget.setAttribute("role", "button")
+      this.maskTarget.setAttribute("tabindex", this.#disabled ? "-1" : "0")
+      this.maskTarget.setAttribute("aria-label", this.maskedLabelValue)
+      if (this.hasHintTarget) this.maskTarget.setAttribute("aria-describedby", this.hintTarget.id)
     } else {
-      this.groupTarget.removeAttribute("role")
-      this.groupTarget.removeAttribute("tabindex")
-      this.groupTarget.removeAttribute("aria-label")
-      this.groupTarget.removeAttribute("aria-describedby")
+      this.maskTarget.removeAttribute("role")
+      this.maskTarget.removeAttribute("tabindex")
+      this.maskTarget.removeAttribute("aria-label")
+      this.maskTarget.removeAttribute("aria-describedby")
     }
 
     // The real input: rendered for layout, inert while masked; native
