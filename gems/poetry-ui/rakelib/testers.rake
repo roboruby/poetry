@@ -49,6 +49,21 @@ namespace :test do
       raise "value text #{select.text.inspect}" unless select.text == "Banana"
     end
 
+    prove.call("select popup opens to its list, never the trigger height") do
+      visit.call("/previews/poetry/ui/select/default")
+      select = Poetry::Ui::Testing::Select.new(root_for.call("select"), session: session)
+
+      select.open
+      popup_height, item_count = session.evaluate_script(<<~JS)
+        [document.querySelector('[data-slot="select-content"][data-open]')?.getBoundingClientRect()?.height || 0,
+         document.querySelectorAll('[data-slot="select-item"]').length]
+      JS
+      # Five ~32px items cannot fit a trigger-height popup: the
+      # collapse (a hard h-[var(--radix-select-trigger-height)] on the
+      # viewport). Goldens never see open popups; this proof does.
+      raise "popup #{popup_height}px for #{item_count} items - collapsed to trigger height" if popup_height < 100
+    end
+
     prove.call("select drives the keyboard sequence") do
       visit.call("/previews/poetry/ui/select/default")
       select = Poetry::Ui::Testing::Select.new(root_for.call("select"), session: session)

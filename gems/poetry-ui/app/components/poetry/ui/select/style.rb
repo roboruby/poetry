@@ -22,7 +22,12 @@ module Poetry
 
         # Padding/scroll-margin are theme-owned via cn-select-viewport
         # (W5 roster pass; sera runs p-1.5). Sizing vars stay structural.
-        element :viewport, "cn-select-viewport h-[var(--radix-select-trigger-height)] w-full " \
+        # min-h, NOT upstream's h: Radix neutralizes its own h binding with
+        # injected flex styles poetry doesn't carry - a hard h collapses the
+        # whole popup to trigger height (62px for a five-item list) the
+        # moment the var is fed (the wiring made it live; goldens
+        # never see open popups, so only a human caught it).
+        element :viewport, "cn-select-viewport min-h-[var(--radix-select-trigger-height)] w-full " \
                            "min-w-[var(--radix-select-trigger-width)]"
 
         element :item, "cn-select-item relative flex w-full cursor-default items-center " \

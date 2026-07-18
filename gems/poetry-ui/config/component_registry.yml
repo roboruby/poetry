@@ -5863,7 +5863,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 240bf2c024f7
+    capsule: 63964d516134
     controllers:
     - identifier: poetry--core--popper
       targets:
@@ -6003,7 +6003,8 @@ components:
           min-width binding
       - name: "--radix-select-trigger-height"
         description: the select controller measures the trigger on open - the viewport's
-          height binding
+          MINIMUM-height binding (a hard height collapses the popup to the trigger;
+          the list grows past it)
     - name: select-scroll-up-button
       description: Hover-scroll affordance above the viewport - rendered always but
         hidden; the controller unhides it per scroll extremes (aria-hidden)

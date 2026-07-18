@@ -247,7 +247,9 @@ module Poetry
                "--radix-select-trigger-width" => "the select controller measures the trigger on " \
                                                  "open - the viewport's min-width binding",
                "--radix-select-trigger-height" => "the select controller measures the trigger on " \
-                                                  "open - the viewport's height binding"
+                                                  "open - the viewport's MINIMUM-height binding " \
+                                                  "(a hard height collapses the popup to the " \
+                                                  "trigger; the list grows past it)"
              }
         part "select-scroll-up-button", "Hover-scroll affordance above the viewport - rendered " \
                                         "always but hidden; the controller unhides it per scroll " \
