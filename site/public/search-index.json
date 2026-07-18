@@ -30,6 +30,12 @@
     "path": "/installation#copy-ins"
   },
   {
+    "title": "Scaffold templates",
+    "page": "Installation",
+    "section": "docs",
+    "path": "/installation#scaffold-templates"
+  },
+  {
     "title": "Theming",
     "page": "Theming",
     "section": "docs",

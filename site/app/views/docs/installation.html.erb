@@ -26,6 +26,10 @@
     bin/rails g poetry:diff        # read-only: copied at / gem ships / file-by-file drift
     bin/rails g poetry:add button  # adds newly-shipped files; never overwrites yours
   CODE
+  scaffold_source = <<~CODE
+    bin/rails g poetry:scaffold_templates
+    bin/rails g scaffold Post title:string body:text published:boolean
+  CODE
 %>
 
 <div class="flex flex-col gap-10">
@@ -123,6 +127,25 @@
       Blocks are starting points meant to be edited, so the report treats a
       differing block as normal, not drift; it simply points at the gem's
       current template for reference.
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="scaffold-templates">Scaffold templates</h2>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Rails lets an app override its generator templates from
+      <code class="font-mono">lib/templates/</code>; poetry ships a set that
+      renders with the library. After installing them, the standard scaffold
+      generator produces a DataTable index with sanitized URL state (sortable
+      columns, filter, pagination and a matching controller), Field-composed
+      forms mapped from attribute types, and a MetadataList show page:
+    </p>
+    <%= poetry_code_block(code: scaffold_source, language: "shell", label: "Scaffold templates") %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      The copies under <code class="font-mono">lib/templates/</code> are
+      app-owned: edit them freely, and re-runs never overwrite. The templates
+      are lint-gated in the gem's own suite, so generated views pass
+      <code class="font-mono">poetry:check</code> by construction.
     </p>
   </section>
 </div>
