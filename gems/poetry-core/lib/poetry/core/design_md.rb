@@ -30,7 +30,7 @@ module Poetry
       # The google-labs canonical section order (the spec's own linter warns
       # on out-of-order sections).
       SECTIONS = ["Overview", "Colors", "Typography", "Layout", "Elevation & Depth",
-                  "Shapes", "Components", "Do's and Don'ts"].freeze
+                  "Shapes", "Components", "Do's and Don'ts", "Intentional deviations"].freeze
 
       COMPONENTS_POINTER = "/poetry/llms.txt"
 
@@ -52,7 +52,10 @@ module Poetry
         # the per-theme presentation metadata: "typography" (pairing/family -
         # metadata only, no poetry theme moves a font token;),
         # "treatment", "components_count", optional "description".
-        def build(tokens:, theme:, details:)
+        # `deviations`: the host's declared.cn-* overrides from
+        # config/poetry_components.yml - design intent, not drift, so the
+        # export carries them (the poetry: front matter round-trips them).
+        def build(tokens:, theme:, details:, deviations: [])
           gate = Tokens::ContrastGate.new(tokens)
           {
             "name" => "poetry #{theme}",
@@ -74,7 +77,8 @@ module Poetry
             },
             "treatment" => details.fetch("treatment"),
             "components" => { "count" => details.fetch("components_count"), "pointer" => COMPONENTS_POINTER },
-            "generator" => details["generator"]
+            "generator" => details["generator"],
+            "deviations" => (deviations unless Array(deviations).empty?)
           }.compact
         end
 
@@ -113,7 +117,8 @@ module Poetry
               "treatment" => doc["treatment"],
               "components_count" => doc.dig("components", "count"),
               "components_pointer" => doc.dig("components", "pointer"),
-              "contrast_policy" => doc["contrast"]
+              "contrast_policy" => doc["contrast"],
+              "deviations" => doc["deviations"]
             }.compact
           }
           "#{YAML.dump(data)}---\n"
@@ -142,7 +147,8 @@ module Poetry
         def body(doc)
           [overview_section(doc), colors_section(doc), typography_section(doc),
            layout_section, elevation_section(doc), shapes_section(doc),
-           components_section(doc), dos_and_donts_section].join("\n")
+           components_section(doc), dos_and_donts_section,
+           deviations_section(doc)].compact.join("\n")
         end
 
         def overview_section(doc)
@@ -242,6 +248,29 @@ module Poetry
           MD
         end
 
+        # Declared.cn-* overrides: rendered only when the host has
+        # any - the nine gem exports stay byte-stable.
+        def deviations_section(doc)
+          deviations = Array(doc["deviations"])
+          return nil if deviations.empty?
+
+          rows = deviations.map do |entry|
+            files = Array(entry["files"]).join(", ")
+            "| `#{entry["cn"]}` | #{files.empty? ? "-" : "`#{files}`"} | #{entry["reason"]} | #{entry["created"]} |"
+          end
+          <<~MD
+            ## Intentional deviations
+
+            Declared `.cn-*` overrides from `config/poetry_components.yml` - design
+            intent, reviewed and reasoned; anything else touching `cn-*` from host
+            CSS is drift (`bin/rails poetry:design:overrides`).
+
+            | cn | files | reason | created |
+            |----|-------|--------|---------|
+            #{rows.join("\n")}
+          MD
+        end
+
         # --- parsing ---------------------------------------------------------
 
         def split_front_matter(markdown)
@@ -272,6 +301,7 @@ module Poetry
             "treatment" => meta["treatment"],
             "components" => { "count" => meta["components_count"], "pointer" => meta["components_pointer"] },
             "generator" => meta["generator"],
+            "deviations" => meta["deviations"],
             "unknown" => { "colors" => light_unknown.merge(dark_unknown), "sections" => [] }
           }
         end

@@ -42,7 +42,16 @@ module Poetry
         "type-scale-monotony" => [:dom, "the design-rule analogue: type hierarchy audit; checkable design axis"],
         "adjacent-same-surface" => [:dom, "the design-rule analogue: surface separation audit"],
         "contrast-adjacent" => [:dom, "boundary legibility as a measurable axis"],
-        "stock-theme-nudge" => [:dom, "the slop-gate analogue: refuses the default look when a brand exists"]
+        "stock-theme-nudge" => [:dom, "the slop-gate analogue: refuses the default look when a brand exists"],
+        # Tranche 2: the the design-rule analogue copy/composition tells that CAN
+        # fire on poetry surfaces (off-token color/border tells cannot).
+        "em-dash-overuse" => [:ast, "the design-rule analogue: >=5 em dashes in page copy - the LLM prose tell"],
+        "marketing-buzzword" => [:ast, "the design-rule analogue: stock SaaS phrases in page copy"],
+        "aphoristic-cadence" => [:ast, "the design-rule analogue: 'Not a X. Y.' manufactured-contrast cadence"],
+        "numbered-section-markers" => [:ast, "the design-rule analogue: sequential 01/02/03 section markers"],
+        "repeated-section-kickers" => [:ast, "the design-rule analogue: tracked-caps kicker above every section heading"],
+        "hero-eyebrow-chip" => [:ast, "the design-rule analogue: tracked-caps/accent text eyebrow above the h1"],
+        "oversized-h1" => [:ast, "the design-rule analogue: 72px+ display h1 carrying long copy"]
       }.freeze
 
       # Spacing/sizing/type utilities where an arbitrary length is off-scale.
@@ -56,7 +65,7 @@ module Poetry
       # The lint tree: HTML elements plus poetry_* call blocks as
       # pseudo-nodes, so "Card inside Card" is checkable whether the card is
       # a helper call (consumer ERB) or rendered markup (eval arms).
-      Node = Struct.new(:kind, :tag, :classes, :attrs, :helper, :line, :children, :parent,
+      Node = Struct.new(:kind, :tag, :classes, :attrs, :helper, :line, :children, :parent, :texts,
                         keyword_init: true) do
         def element? = kind == :element
         def heading_level = tag&.match(HEADING) && Regexp.last_match(1).to_i
@@ -95,6 +104,8 @@ module Poetry
         heading_skips(root, findings)
         center_everything(root, findings)
         mixed_status_weight(root, findings)
+        copy_tells(root, findings)
+        repeated_section_kickers(root, findings)
         findings.sort_by! { |finding| [finding.line || 0, finding.rule] }
         findings.each { |finding| finding.file = file }
       end
@@ -116,7 +127,7 @@ module Poetry
       # --- tree ----------------------------------------------------------
 
       def build_tree(ast)
-        root = Node.new(kind: :root, classes: [], attrs: {}, children: [])
+        root = Node.new(kind: :root, classes: [], attrs: {}, children: [], texts: [])
         append_children(ast, root)
         root
       end
@@ -131,9 +142,11 @@ module Poetry
           when "ERBBlockNode"
             helper = child.content.value[/\bpoetry_[a-z_]+/] if child.respond_to?(:content)
             node = Node.new(kind: helper ? :call : :block, helper: helper, classes: [], attrs: {},
-                            line: child.location.start.line, children: [], parent: tree_parent)
+                            line: child.location.start.line, children: [], texts: [], parent: tree_parent)
             tree_parent.children << node
             append_children(child, node)
+          when "HTMLTextNode"
+            tree_parent.texts << child.content if child.respond_to?(:content)
           else
             append_children(child, tree_parent) if child.respond_to?(:child_nodes)
           end
@@ -151,7 +164,7 @@ module Poetry
         end
         Node.new(kind: :element, tag: ast_el.tag_name&.value.to_s.downcase, attrs: attrs,
                  classes: attrs.fetch("class", "").split, line: ast_el.location.start.line,
-                 children: [], parent: parent)
+                 children: [], texts: [], parent: parent)
       end
 
       def literal_content(node)
@@ -174,7 +187,9 @@ module Poetry
         node.children.each_with_index do |child, index|
           card_in_card(child, findings) if child.card? && stack.any?(&:card?)
           icon_tile_over_heading(child, node.children[index + 1], findings)
+          hero_eyebrow_chip(child, node.children[index + 1], findings)
           class_token_rules(child, findings) if child.element?
+          oversized_h1(child, findings)
           shadow_stack(child, findings)
           wall_of_cards(node, findings) if index.zero?
           walk_rules(child, findings, stack + [child])
@@ -306,6 +321,156 @@ module Poetry
           variants << [node.attrs["data-variant"], node.line]
         end
         node.children.each { |child| collect_badge_variants(child, variants) }
+      end
+
+      # --- tranche 2: the the design-rule analogue copy/composition tells --------
+
+      # Page copy is the joined static text OUTSIDE code/kbd contexts - em
+      # dashes and `01` tokens inside code samples are content, not design.
+      COPY_EXEMPT_TAGS = %w[pre code kbd script style].freeze
+
+      # A curated cut of the design-rule analogue's 28-phrase list: the stock SaaS phrases
+      # a model reaches for when no copy direction was given.
+      BUZZWORDS = [
+        "streamline your", "enterprise-grade", "harness the power", "unlock the power",
+        "supercharge", "seamlessly integrate", "revolutionize", "game-changing",
+        "next-generation", "cutting-edge", "empower your", "to the next level",
+        "all-in-one platform", "built for scale", "lightning-fast", "blazingly fast",
+        "future-proof", "world-class", "effortlessly", "in seconds, not"
+      ].freeze
+
+      # "Not a X. Y." manufactured contrast + "X. No Y. Just Z." rebuttal.
+      # The lookbehind keeps the shared period unconsumed so back-to-back
+      # rebuttals ("No config. Just results.") each count.
+      APHORISM_PATTERNS = [
+        /\b[Nn]ot (?:a|an|just|your) [^.!?\n]{2,60}\.\s+[A-Z][^.!?\n]{1,40}\./,
+        /(?<=[.!?])\s+(?:no [a-z][a-z -]{1,30}\.|just [a-z][a-z -]{1,30}\.)/i
+      ].freeze
+
+      def copy_tells(root, findings)
+        text = page_copy(root)
+        return if text.length < 80 # fragments carry no prose signal
+
+        em_dash_overuse(text, findings)
+        marketing_buzzword(text, findings)
+        aphoristic_cadence(text, findings)
+        numbered_section_markers(text, findings)
+      end
+
+      def page_copy(root)
+        chunks = []
+        collect_copy(root, chunks)
+        chunks.join(" ").squeeze(" ")
+      end
+
+      def collect_copy(node, chunks)
+        return if node.element? && COPY_EXEMPT_TAGS.include?(node.tag)
+
+        chunks.concat(node.texts) if node.texts
+        node.children.each { |child| collect_copy(child, chunks) }
+      end
+
+      def em_dash_overuse(text, findings)
+        count = text.count("—")
+        return if count < 5
+
+        findings << finding("em-dash-overuse", nil,
+                            "#{count} em dashes in the page copy - the LLM prose tell; rewrite " \
+                            "most as periods, commas, or parentheses")
+      end
+
+      def marketing_buzzword(text, findings)
+        down = text.downcase
+        hits = BUZZWORDS.select { |phrase| down.include?(phrase) }
+        return if hits.size < 3
+
+        findings << finding("marketing-buzzword", nil,
+                            "stock SaaS copy: #{hits.first(4).map(&:inspect).join(", ")} - say what " \
+                            "the product concretely does instead")
+      end
+
+      def aphoristic_cadence(text, findings)
+        count = APHORISM_PATTERNS.sum { |pattern| text.scan(pattern).size }
+        return if count < 3
+
+        findings << finding("aphoristic-cadence", nil,
+                            "#{count} manufactured-contrast constructions (\"Not a X. Y.\" / " \
+                            "\"No X. Just Y.\") - one lands, #{count} read as generated copy")
+      end
+
+      def numbered_section_markers(text, findings)
+        # Two-digit tokens only, and at least one zero-padded (01-09): "3
+        # steps" and prices must never count; "01 02 03" editorial markers do.
+        tokens = text.scan(/(?<![\d.,:$])(0[1-9]|1[0-2])(?![\d.,:%])/).flatten
+        return unless tokens.any? { |t| t.start_with?("0") }
+
+        numbers = tokens.map(&:to_i).uniq.sort
+        return if numbers.size < 3
+        return unless numbers.each_cons(2).count { |a, b| b == a + 1 } >= 2
+
+        findings << finding("numbered-section-markers", nil,
+                            "sequential section markers (#{numbers.first(4).map { |n| format("%02d", n) }.join(" ")}" \
+                            ") - the numbered-editorial tell; cut the numbers or vary the anatomy")
+      end
+
+      # Tracked-caps kicker above section headings: one is an accent, one per
+      # section is the template tell. Nav/breadcrumb chrome never counts.
+      def repeated_section_kickers(root, findings)
+        kickers = []
+        collect_kickers(root, kickers)
+        return if kickers.size < 3
+
+        findings << finding("repeated-section-kickers", kickers[2].line,
+                            "#{kickers.size} tracked-caps kickers above headings on one page - " \
+                            "the sectioned-template tell; keep at most one, or vary section openers")
+      end
+
+      def collect_kickers(node, kickers)
+        return if node.element? && (node.tag == "nav" || node.attrs["role"] == "navigation" ||
+                                    node.attrs["aria-label"].to_s.downcase.include?("breadcrumb"))
+
+        node.children.each_cons(2) do |candidate, heading|
+          next unless candidate.element? && heading.element? && heading.heading_level.to_i.between?(2, 4)
+          next unless kicker_classes?(candidate)
+
+          kickers << candidate
+        end
+        node.children.each { |child| collect_kickers(child, kickers) }
+      end
+
+      def kicker_classes?(node)
+        node.classes.include?("uppercase") &&
+          node.classes.any? { |c| c.start_with?("tracking-") } &&
+          node.attrs["data-slot"] != "badge"
+      end
+
+      # Text eyebrow directly above the h1 - the stock AI hero opener. The
+      # icon-tile variant has its own rule; badges (announcement pills) are a
+      # deliberate pattern and never count.
+      def hero_eyebrow_chip(node, next_sibling, findings)
+        return unless node.element? && next_sibling&.element? && next_sibling.heading_level == 1
+        return if node.attrs["data-slot"] == "badge" || node.texts.to_a.join.strip.empty?
+        return unless kicker_classes?(node) ||
+                      (node.classes.any? { |c| c.match?(/\Afont-(semibold|bold)\z/) } &&
+                       node.classes.include?("text-primary"))
+
+        findings << finding("hero-eyebrow-chip", node.line,
+                            "text eyebrow directly above the h1 - the stock AI hero opener; fold " \
+                            "it into the heading or cut it")
+      end
+
+      # 72px+ display type carrying a full sentence: display sizes are for
+      # 2-6 word statements.
+      OVERSIZED_TEXT = %w[text-7xl text-8xl text-9xl].freeze
+
+      def oversized_h1(node, findings)
+        return unless node.element? && node.heading_level == 1
+        return unless node.classes.intersect?(OVERSIZED_TEXT)
+        return if node.texts.to_a.join(" ").strip.length < 40
+
+        findings << finding("oversized-h1", node.line,
+                            "display-size h1 (#{(node.classes & OVERSIZED_TEXT).first}) carrying " \
+                            "40+ characters - shorten the headline or step the size down")
       end
 
       def center_everything(root, findings)

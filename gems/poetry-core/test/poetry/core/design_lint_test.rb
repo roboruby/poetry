@@ -198,8 +198,79 @@ module Poetry
                         "solid and soft in DIFFERENT tables are two consistent sets"
       end
 
+      # --- tranche 2: copy/composition tells --------------------
+
+      def test_em_dash_overuse
+        prose = "We build tools — fast ones — for teams — everywhere — always — now. " * 2
+        red = "<p>#{prose}</p>"
+        green = "<p>We build fast tools for teams. One aside — that is fine. #{"filler words " * 10}</p>"
+
+        assert_red_green("em-dash-overuse", red: red, green: green)
+      end
+
+      def test_em_dash_ignores_code_samples
+        code = "<pre>#{"a — b — c — d — e — f\n" * 3}</pre><p>#{"plain copy here " * 8}</p>"
+
+        refute_includes rules_hit(code), "em-dash-overuse", "em dashes in code are content, not prose"
+      end
+
+      def test_marketing_buzzword
+        red = "<p>Streamline your workflow with our enterprise-grade, all-in-one platform " \
+              "and take shipping to the next level. #{"more words " * 8}</p>"
+        green = "<p>Renders components on the server and checks the result. #{"plain detail " * 10}</p>"
+
+        assert_red_green("marketing-buzzword", red: red, green: green)
+      end
+
+      def test_aphoristic_cadence
+        red = "<p>Not a framework. A contract. Not a wrapper. A rewrite. " \
+              "No config. Just results. #{"context words " * 10}</p>"
+        green = "<p>It is not a framework replacement; it layers on top of Rails. #{"detail " * 12}</p>"
+
+        assert_red_green("aphoristic-cadence", red: red, green: green)
+      end
+
+      def test_numbered_section_markers
+        red = "<div><span>01</span> Plan <span>02</span> Build <span>03</span> Ship " \
+              "#{"filler copy words here " * 5}</div>"
+        green = "<p>3 steps, 12 components, 2 gems - shipped in 4 weeks. #{"prose " * 15}</p>"
+
+        assert_red_green("numbered-section-markers", red: red, green: green)
+      end
+
+      def test_repeated_section_kickers
+        kicker = %(<p class="uppercase tracking-widest text-xs">Features</p><h2>One</h2>)
+        red = "<section>#{kicker * 3}</section>"
+        green = "<section>#{kicker}<h2>Two</h2><h2>Three</h2></section>"
+
+        assert_red_green("repeated-section-kickers", red: red, green: green)
+      end
+
+      def test_repeated_section_kickers_skips_nav_chrome
+        item = %(<span class="uppercase tracking-wide">Docs</span><h2 class="sr-only">Section</h2>)
+        nav = "<nav>#{item * 3}</nav>"
+
+        refute_includes rules_hit(nav), "repeated-section-kickers", "nav chrome never counts"
+      end
+
+      def test_hero_eyebrow_chip
+        red = %(<p class="uppercase tracking-widest text-xs">New for 2026</p><h1>The headline</h1>)
+        green = %(<span data-slot="badge" data-variant="default" class="uppercase tracking-wide">New</span>) +
+                %(<h1>The headline</h1>)
+
+        assert_red_green("hero-eyebrow-chip", red: red, green: green)
+      end
+
+      def test_oversized_h1
+        long = "A very long headline that keeps going well past forty characters total"
+
+        assert_red_green("oversized-h1",
+                         red: %(<h1 class="text-8xl font-semibold">#{long}</h1>),
+                         green: %(<h1 class="text-8xl font-semibold">Ship faster</h1>))
+      end
+
       def test_rules_registry_documents_every_rule_with_provenance
-        assert_equal 13, DesignLint::RULES.size
+        assert_equal 20, DesignLint::RULES.size
         DesignLint::RULES.each do |id, (tier, provenance)|
           assert_includes %i[ast dom], tier, id
           assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration|/, provenance,

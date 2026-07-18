@@ -38,7 +38,25 @@ module Poetry
       def test_serialize_emits_sections_in_the_spec_canonical_order
         headings = DesignMd.serialize(doc).scan(/^## (.+)$/).flatten
 
-        assert_equal DesignMd::SECTIONS, headings
+        # "Intentional deviations" renders only when the host declared any
+        # - the nine gem exports stay byte-stable.
+        assert_equal DesignMd::SECTIONS - ["Intentional deviations"], headings
+      end
+
+      def test_deviations_render_in_order_and_round_trip
+        deviations = [{ "cn" => "*", "files" => ["app/assets/tailwind/styles/style-*.css"],
+                        "reason" => "docs switcher renders all nine themes", "created" => "2026-07-18" }]
+        with = DesignMd.build(
+          tokens: Tokens.load, theme: "default",
+          details: { "typography" => TYPOGRAPHY.dup, "treatment" => "t", "components_count" => 27 },
+          deviations: deviations
+        )
+        md = DesignMd.serialize(with)
+
+        assert_equal DesignMd::SECTIONS, md.scan(/^## (.+)$/).flatten
+        assert_match(/docs switcher renders all nine themes/, md)
+        assert_equal md, DesignMd.serialize(DesignMd.parse(md)), "deviations must round-trip byte-stable"
+        assert_equal deviations, DesignMd.parse(md)["deviations"]
       end
 
       def test_colors_table_carries_every_role_in_both_modes
