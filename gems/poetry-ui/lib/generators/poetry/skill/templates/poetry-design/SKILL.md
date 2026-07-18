@@ -40,6 +40,11 @@ to prevent).
   is mechanically detectable, and every rule names its fix.
 - Express every fix through a token, variant, option, theme, or DESIGN.md
   override. If a fix seems to need hand-written CSS, the real fix is a
-  different composition (or an upstream gap worth reporting).
+  different composition (or an upstream gap worth reporting). The one
+  sanctioned exception: a DECLARED `cn-*` override - host CSS restyling a
+  theme-owned class, recorded with a reason under `overrides:` in
+  config/poetry_components.yml after the user confirms intent
+  (`bin/rails poetry:design:overrides` reports drift). Never declare an
+  override to skip a fix.
 - For component contracts (options, slots, variants), load the `poetry`
   usage skill; this skill assumes you compose through it.

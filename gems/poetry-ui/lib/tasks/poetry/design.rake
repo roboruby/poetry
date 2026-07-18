@@ -21,12 +21,51 @@ namespace :poetry do
         "components_count" => registry.fetch("components").size,
         "generator" => "bin/rails poetry:design:export"
       )
-      doc = Poetry::Core::DesignMd.build(tokens: Poetry::Core::Tokens.load, theme: theme, details: details)
+      doc = Poetry::Core::DesignMd.build(tokens: Poetry::Core::Tokens.load, theme: theme, details: details,
+                                         deviations: poetry_design_declared_overrides)
       poetry_design_apply_overrides(doc)
       path.write(Poetry::Core::DesignMd.serialize(doc))
 
       poetry_design_warn_on_token_drift
       puts "poetry:design:export: wrote #{path} (theme #{theme})"
+    end
+
+    # The.cn-* override contract (, the intent-vs-accident
+    # model): token-level restyling has a sanctioned channel
+    # (poetry:design:import -> design-overrides.css); host CSS that targets
+    # theme-owned .cn-* classes is the OTHER channel, and every such
+    # override must be declared - dated, reasoned, scoped - under
+    # `overrides:` in config/poetry_components.yml. This task reports both
+    # directions (undeclared drift AND stale declarations); undeclared
+    # findings print a paste-ready declaration. Never silence a finding to
+    # skip fixing it - declare only what the design owner confirms.
+    desc "Report host CSS overriding theme-owned .cn-* classes against the declared contract " \
+         "(config/poetry_components.yml `overrides:`; STRICT=1 exits nonzero on undeclared/invalid)"
+    task overrides: :environment do
+      scan = Poetry::Core::CSS::OverrideScan.new(
+        sources: poetry_design_host_css_sources,
+        declarations: poetry_design_declared_overrides
+      )
+
+      scan.invalid.each { |message| puts "  INVALID   #{message}" }
+      scan.stale.each do |declaration|
+        puts "  STALE     overrides[#{declaration.index}] (cn: #{declaration.cn.inspect}) matches no host CSS - " \
+             "remove it or fix its `files:` scope"
+      end
+      scan.undeclared.each do |path, classes|
+        puts "  UNDECLARED #{path}: #{classes.join(", ")}"
+        puts "    declare it (after confirming intent) in config/poetry_components.yml under overrides:"
+        puts scan.snippet_for(path, classes).gsub(/^/, "      ")
+      end
+
+      if scan.ok?
+        puts "poetry:design:overrides: clean - #{scan.declared_count} declared override(s), " \
+             "#{scan.stale.size} stale declaration(s)"
+      else
+        message = "poetry:design:overrides: #{scan.undeclared.sum { |_, c| c.size }} undeclared .cn-* " \
+                  "override(s), #{scan.invalid.size} invalid declaration(s)"
+        ENV["STRICT"] == "1" ? abort(message) : puts(message)
+      end
     end
 
     desc "Import a DESIGN.md into token overrides " \
@@ -53,6 +92,34 @@ namespace :poetry do
       end
     end
   end
+end
+
+# The declared.cn-* overrides from the host manifest - tolerant
+# like every other manifest reader (missing file/key = none declared).
+def poetry_design_declared_overrides
+  path = Rails.root.join("config/poetry_components.yml")
+  # Hosts write `created:` as a bare YAML date - permit it, then normalize
+  # to ISO strings so everything downstream (scan, DESIGN.md) is string-typed.
+  config = path.exist? ? YAML.safe_load_file(path, permitted_classes: [Date]) : nil
+  return [] unless config.is_a?(Hash) && config["overrides"].is_a?(Array)
+
+  config["overrides"].map do |entry|
+    entry.is_a?(Hash) ? entry.merge("created" => entry["created"]&.to_s) : entry
+  end
+end
+
+# Host-owned stylesheet SOURCES: everything the app authors, excluding the
+# poetry-vendored set (which legitimately defines cn-*) and compiled output.
+def poetry_design_host_css_sources
+  root = Rails.root
+  sources = {}
+  root.glob("app/assets/**/*.css").each do |path|
+    relative = path.relative_path_from(root).to_s
+    next if relative.start_with?("app/assets/tailwind/poetry/", "app/assets/builds/")
+
+    sources[relative] = path.read
+  end
+  sources
 end
 
 # The installed theme, recovered from the slot bytes themselves (the
