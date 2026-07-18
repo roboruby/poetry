@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { onEscapeKeydown } from "@poetry/controllers/helpers/escape"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { flushPendingExits } from "@poetry/controllers/helpers/presence"
 
 // The dismissal layer (Tier 2, P2): Escape + pointerdown-outside for every
 // overlay. This controller NEVER removes DOM - it dispatches "dismiss" and
@@ -24,7 +26,23 @@ export default class DismissableController extends Controller {
     disableOutsidePointerEvents: { type: Boolean, default: false }
   }
 
+  // Pages cached BEFORE the before-cache teardown shipped carry a poisoned
+  // body (inline pointer-events:none serialized with no live scrim behind
+  // it) - and no layer connects on the restored page to release it. Heal
+  // on every Turbo render: with zero scrim holders, the style can only be
+  // a serialized leftover.
+  static {
+    if (typeof document !== "undefined") {
+      document.addEventListener("turbo:load", () => {
+        if (DismissableController.#scrimCount === 0 && document.body?.style.pointerEvents === "none") {
+          document.body.style.pointerEvents = ""
+        }
+      })
+    }
+  }
+
   #unsubscribeEscape = null
+  #unsubscribeBeforeCache = null
   #onPointerdown = (event) => this.#handlePointerdown(event)
 
   connect() {
@@ -34,6 +52,21 @@ export default class DismissableController extends Controller {
     // inner handler can swallow it (the escape helper defaults to capture).
     this.#unsubscribeEscape = onEscapeKeydown((event) => this.#handleEscape(event))
     document.addEventListener("pointerdown", this.#onPointerdown, { capture: true })
+    // A layer still open when Turbo snapshots serializes its scrim's
+    // inline body pointer-events into the cache - a restored page is
+    // click-dead. Dismiss synchronously so the snapshot is clean, and
+    // release the scrim HERE too: the owner's close resets its own
+    // attributes in the same tick, but its unmount (which normally
+    // releases the scrim via disconnect) can ride an exit transition -
+    // after the snapshot is already taken.
+    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+      this.#dismiss(null)
+      // The dismiss just started the owner's exit presence - flush it in
+      // the same tick so hidden + layer-controller removal land BEFORE
+      // the snapshot (a serialized live layer resurrects on restore).
+      flushPendingExits()
+      this.#disableScrim()
+    })
 
     if (this.disableOutsidePointerEventsValue) this.#enableScrim()
   }
@@ -46,6 +79,8 @@ export default class DismissableController extends Controller {
     this.#unsubscribeEscape?.()
     this.#unsubscribeEscape = null
     document.removeEventListener("pointerdown", this.#onPointerdown, { capture: true })
+    this.#unsubscribeBeforeCache?.()
+    this.#unsubscribeBeforeCache = null
 
     if (this.disableOutsidePointerEventsValue) this.#disableScrim()
   }
@@ -99,9 +134,23 @@ export default class DismissableController extends Controller {
     return DismissableController.stack.slice(DismissableController.stack.indexOf(this) + 1)
   }
 
+  // Per-instance flag so enable/disable pair exactly once: the
+  // before-cache release and the later disconnect (after the owner's
+  // deferred unmount) must not double-decrement.
+  #scrimEnabled = false
+
   #enableScrim() {
+    if (this.#scrimEnabled) return
+
+    this.#scrimEnabled = true
+
     if (DismissableController.#scrimCount === 0) {
-      DismissableController.#previousBodyPointerEvents = document.body.style.pointerEvents
+      // Never save a value this scrim itself writes: a page restored from
+      // a cached snapshot arrives with the serialized "none" already on
+      // the body, and saving it would make every later restore re-freeze
+      // the page (the poisoned-previous class).
+      const current = document.body.style.pointerEvents
+      DismissableController.#previousBodyPointerEvents = current === "none" ? "" : current
       document.body.style.pointerEvents = "none"
     }
 
@@ -110,6 +159,9 @@ export default class DismissableController extends Controller {
   }
 
   #disableScrim() {
+    if (!this.#scrimEnabled) return
+
+    this.#scrimEnabled = false
     DismissableController.#scrimCount -= 1
     this.element.style.pointerEvents = ""
 

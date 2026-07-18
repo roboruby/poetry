@@ -22,8 +22,13 @@ export function lockScroll() {
   if (locks > 1) return
 
   const gap = window.innerWidth - document.documentElement.clientWidth
+  // Never save a value the lock itself writes: a Turbo-restored snapshot
+  // arrives with the serialized "hidden" already inline (no refcount
+  // behind it), and saving it would re-freeze scrolling on every later
+  // unlock (the poisoned-previous class).
+  const overflow = document.body.style.overflow
   previous = {
-    overflow: document.body.style.overflow,
+    overflow: overflow === "hidden" ? "" : overflow,
     paddingRight: document.body.style.paddingRight,
     scrollbarGutter: document.documentElement.style.scrollbarGutter
   }

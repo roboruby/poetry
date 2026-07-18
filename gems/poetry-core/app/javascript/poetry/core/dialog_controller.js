@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
 import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // The native-dialog primitive: borrow the PLATFORM overlay -
 // showModal() gives the focus trap, Esc handling, top-layer stacking, and
@@ -22,8 +23,16 @@ export default class extends Controller {
   }
 
   #onHotkey = null
+  #unsubscribeBeforeCache = null
 
   connect() {
+    this.#healRestoredSnapshot()
+    // Close before Turbo snapshots: an open dialog serialized into the
+    // cache restores as a de-modalized zombie over a frozen scroll lock.
+    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+      if (this.hasDialogTarget && this.dialogTarget.open) this.close()
+    })
+
     if (this.hotkeyValue === "") return
 
     this.#onHotkey = (event) => {
@@ -37,11 +46,43 @@ export default class extends Controller {
 
   disconnect() {
     this.unlockScroll()
+    this.#unsubscribeBeforeCache?.()
+    this.#unsubscribeBeforeCache = null
 
     if (this.#onHotkey) {
       window.removeEventListener("keydown", this.#onHotkey)
       this.#onHotkey = null
     }
+  }
+
+  // A dialog restored from a PRE-FIX cached snapshot: the open attribute
+  // survived serialization but :modal did not, and the body's inline
+  // scroll-lock styles came back with no refcount behind them. Normalize
+  // to closed and clear the orphaned lock styles directly (the refcounted
+  // helper is at zero on a fresh page and must not be decremented).
+  #healRestoredSnapshot() {
+    if (!this.hasDialogTarget) return
+
+    const dialog = this.dialogTarget
+
+    if (!dialog.open) return
+    // A genuinely modal dialog only reconnects mid-flight when its subtree
+    // is MOVED while open (the sidebar DOM-move class) - leave those alone.
+    // Engines without :modal support (happy-dom) treat open-at-connect as
+    // the zombie it almost certainly is.
+    let modal = false
+    try {
+      modal = dialog.matches(":modal")
+    } catch {
+      modal = false
+    }
+    if (modal) return
+
+    dialog.close()
+    setState(dialog, "closed")
+    document.body.style.overflow = ""
+    document.body.style.paddingRight = ""
+    document.documentElement.style.scrollbarGutter = ""
   }
 
   toggle() {

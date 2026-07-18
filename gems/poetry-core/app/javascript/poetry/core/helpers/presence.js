@@ -1,4 +1,5 @@
 import { setState } from "@poetry/controllers/helpers/state"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // Presence (P3): the mount/unmount animation convention - a helper, not a
 // controller (per the primitive catalogue). Exit flips the pair to
@@ -15,6 +16,22 @@ const EXIT_TIMEOUT_GRACE = 100
 // Safety net (ms) when a duration cannot be computed (an animation is
 // declared but reports zero length): never strand a closed node in the DOM.
 const EXIT_TIMEOUT_FALLBACK = 1000
+
+// Exits waiting on their CSS animation. A Turbo snapshot must never
+// capture one mid-flight: the owner's onRemove (hidden + layer-controller
+// removal) would land AFTER the cache is taken, so the restored page
+// resurrects a live layer - the click-dead restore. Every pending
+// exit is flushed synchronously at turbo:before-cache; the dismissable
+// layer also flushes explicitly after dispatching its before-cache
+// dismiss, so exits STARTED by that dismiss complete in the same tick
+// regardless of listener order.
+const pendingExits = new Set()
+
+export function flushPendingExits() {
+  for (const flush of [...pendingExits]) flush()
+}
+
+if (typeof document !== "undefined") onBeforeCache(flushPendingExits)
 
 // The measured-entry/exit hook (the Accordion contract's height mechanism):
 // height keyframes cannot animate to auto, so the keyframe chain reads a
@@ -95,6 +112,7 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
     element.removeEventListener("animationend", settle)
     element.removeEventListener("transitionend", settle)
     if (timeout !== null) window.clearTimeout(timeout)
+    pendingExits.delete(flush)
   }
 
   const settle = (event) => {
@@ -107,9 +125,12 @@ export function exitPresence(element, { onRemove, measure = false, property } = 
     onRemove?.()
   }
 
+  const flush = () => settle()
+
   element.addEventListener("animationend", settle)
   element.addEventListener("transitionend", settle)
   timeout = window.setTimeout(settle, exitTimeoutFor(element))
+  pendingExits.add(flush)
 
   // getAnimations().finished is the Base UI end-detection: it resolves for
   // transitions AND keyframes symmetrically and needs no duration math.
