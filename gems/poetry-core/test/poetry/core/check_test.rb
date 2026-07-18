@@ -95,7 +95,7 @@ module Poetry
                             "variants" => %w[inline-start inline-end block-start block-end] }]
           },
           "poetry_sidebar_group" => {},
-          "poetry_chart" => {}
+          "poetry_chart" => { "yields" => "the dispatched chart component" }
         },
         icon_names: %w[circle-alert folder-plus triangle-alert],
         helper_args: { "poetry_button" => 0, "poetry_sidebar_group" => 0, "poetry_chart" => 1 }
@@ -104,6 +104,50 @@ module Poetry
       def lint(source) = Check.lint(source, catalog: CATALOG)
       def rules(source) = lint(source).map(&:rule)
       def first(source, rule) = lint(source).find { |finding| finding.rule == rule }
+
+      # A merged multi-gem catalog (the docs host shape): poetry/charts/*
+      # components must map to their poetry_* helpers exactly like
+      # poetry/ui/* ones ( - pathless chart helpers read as yielding
+      # wrappers and every `do |chart|` block was a yieldless-block error).
+      MERGED_CATALOG = Check::Catalog.new(
+        {
+          "poetry/ui/badge" => { "options" => [{ "name" => "variant" }] },
+          "poetry/charts/area_chart" => {
+            "options" => [{ "name" => "data", "required" => true }, { "name" => "config", "required" => true }],
+            "slots" => [{ "name" => "areas", "many" => true }, { "name" => "grid", "many" => false }]
+          }
+        }
+      ).freeze
+
+      def test_a_charts_component_helper_maps_to_its_path_in_a_merged_catalog
+        findings = Check.lint(<<~ERB, catalog: MERGED_CATALOG)
+          <%= poetry_area_chart(data: data, config: config) do |chart| %>
+            <% chart.with_grid %>
+          <% end %>
+        ERB
+
+        assert_empty findings.select { |f| f.rule == "yieldless-block" },
+                     "a slot-yielding chart block is not a yieldless wrapper block"
+      end
+
+      def test_a_charts_helper_still_checks_its_option_contract
+        findings = Check.lint(%(<%= poetry_area_chart(data: d, config: c, variant: :x) %>), catalog: MERGED_CATALOG)
+
+        assert(findings.none? { |f| f.rule == "unknown-component" }, "poetry_area_chart resolves")
+      end
+
+      # --- ERB comments are prose, not Ruby ---
+
+      def test_an_erb_comment_mentioning_helpers_is_never_parsed_as_ruby
+        source = <<~ERB
+          <%# The search pattern: the control inside must be
+              poetry_input_group_addon (a plain poetry_button double-chromes it). %>
+          <%= poetry_button(variant: "default") { "Go" } %>
+        ERB
+
+        assert_empty lint(source).reject { |f| f.rule == "requires-any" },
+                     "comment prose must produce no helper findings"
+      end
 
       # --- helper arity (the blocks-gate site_nav crash class) ---
 
@@ -323,6 +367,12 @@ module Poetry
       end
 
       # --- composition contracts (the crash classes) ---
+
+      def test_a_declared_yielding_dispatcher_block_param_is_not_yieldless
+        refute_includes rules(%(<%= poetry_chart :line, data: rows do |chart| %>x<% end %>)),
+                        "yieldless-block",
+                        "a helpers-section yields declaration exempts the dispatcher"
+      end
 
       def test_a_wrapper_block_param_errors_as_yieldless
         finding = first(%(<%= poetry_sidebar_group do |group| %>x<% end %>), "yieldless-block")

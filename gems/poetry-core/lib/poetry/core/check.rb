@@ -44,10 +44,22 @@ module Poetry
         RAW_COLOR = /\b(?:#{COLOR_UTILITIES.join("|")})-(?:#{COLOR_FAMILIES.join("|")})-\d{2,3}\b/
 
         def self.from_registry(root, helpers: nil, icon_names: nil)
-          payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
-          new(payload.fetch("components"), helpers: helpers,
-                                           helper_entries: payload["helpers"], icon_names: icon_names,
-                                           helper_args: payload["helper_args"])
+          from_registries([root], helpers: helpers, icon_names: icon_names)
+        end
+
+        # A host catalog spans every installed poetry gem (ui + charts): a
+        # gem whose components stay out of the merge leaves its helpers
+        # name-valid but pathless, and every one of their blocks reads as a
+        # yieldless wrapper block (the chart false positives).
+        def self.from_registries(roots, helpers: nil, icon_names: nil)
+          payloads = roots.map do |root|
+            YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
+          end
+          new(payloads.map { |payload| payload.fetch("components") }.reduce({}, :merge),
+              helpers: helpers,
+              helper_entries: payloads.map { |payload| payload["helpers"] || {} }.reduce({}, :merge),
+              icon_names: icon_names,
+              helper_args: payloads.map { |payload| payload["helper_args"] || {} }.reduce({}, :merge))
         end
 
         # helpers: the FULL set of valid poetry_* helper method names (from
@@ -66,11 +78,15 @@ module Poetry
           @helper_entries = helper_entries || {}
           @helper_args = helper_args || {}
           @icon_names = icon_names&.to_set(&:to_s)
-          # helper name -> registry path: poetry_ + the path under poetry/ui/
-          # (poetry/ui/command/dialog -> poetry_command_dialog, avoiding the
-          # last-segment collision with poetry/ui/dialog).
+          # helper name -> registry path: poetry_ + the path under the gem
+          # namespace (poetry/ui/command/dialog -> poetry_command_dialog,
+          # avoiding the last-segment collision with poetry/ui/dialog). The
+          # prefix strip covers every poetry gem, not just poetry/ui/ - a
+          # merged catalog carries poetry/charts/* too, and a chart helper
+          # that fails to map here reads as a yielding wrapper (the
+          # chart yieldless-block false positives).
           @path_by_helper = components.keys.to_h do |path|
-            ["poetry_#{path.delete_prefix("poetry/ui/").tr("/", "_")}", path]
+            ["poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}", path]
           end
           @helper_names = ((helpers&.map(&:to_s) || @path_by_helper.keys) + @helper_entries.keys).to_set
         end
@@ -85,6 +101,12 @@ module Poetry
         # Max positional arity for a helper, or nil when the registry does
         # not state one (legacy registries stay lint-identical).
         def helper_args(helper) = @helper_args[helper]
+
+        # A pathless helper that DECLARES it yields (registry helpers
+        # section, "yields" key): the dispatcher exception to the
+        # no-wrapper-yields invariant - poetry_chart routes to a component
+        # that yields its slot builder.
+        def helper_yields?(helper) = !@helper_entries.dig(helper, "yields").nil?
 
         def option_names(path)
           entry = @components.fetch(path, {})
@@ -238,7 +260,15 @@ module Poetry
 
         def erb?(node)
           node.respond_to?(:content) && node.content.respond_to?(:value) &&
-            node.class.name.include?("ERB")
+            node.class.name.include?("ERB") && !erb_comment?(node)
+        end
+
+        # <%# ... %> parses as an ERBContentNode like any output tag - only
+        # the tag opening tells prose from code. Comment text mentioning a
+        # helper ("a plain poetry_input chromes it") must never reach Prism
+        # as Ruby (the helper-arity false positives).
+        def erb_comment?(node)
+          node.respond_to?(:tag_opening) && node.tag_opening&.value == "<%#"
         end
 
         # --- Ruby-call rules (component / option / variant / value / slot) ---
@@ -350,6 +380,8 @@ module Poetry
         end
 
         def yieldless_findings(helper, call, line)
+          return [] if @catalog.helper_yields?(helper)
+
           block = call.block
           return [] unless block.respond_to?(:parameters) && block.parameters
 
