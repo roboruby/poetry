@@ -10,7 +10,7 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">Theming</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
-      poetry ships nine complete themes — the upstream shadcn styles at pin
+      poetry ships nine complete themes: the upstream shadcn styles at pin
       <code class="font-mono text-base">d0fae528</code>, translated onto the
       <code class="font-mono text-base">cn-*</code> layer. An app installs
       one; this site renders all nine. Use the style picker in the header to
@@ -21,7 +21,7 @@
   <section class="flex flex-col gap-4">
     <h2 class="text-2xl font-semibold tracking-tight" id="the-nine-themes">The nine themes</h2>
     <p class="text-sm text-muted-foreground">
-      Themes change shape and texture only — radii, spacing, borders, type
+      Themes change shape and texture only: radii, spacing, borders, type
       scale, scrims. Color tokens live one layer down (<code class="font-mono">tokens.css</code>)
       and are shared, so light/dark mode is orthogonal to the theme choice.
     </p>
@@ -34,15 +34,15 @@
           </tr>
         </thead>
         <tbody class="[&_td]:p-3 [&_tr]:border-b last:[&_tr]:border-0">
-          <tr><td class="font-mono">default</td><td>poetry's original look — the new-york-v4 lineage the library was built against</td></tr>
+          <tr><td class="font-mono">default</td><td>poetry's original look: the new-york-v4 lineage the library was built against</td></tr>
           <tr><td class="font-mono">vega</td><td>closest to default: ring-based surfaces, subtle blur scrims, xl radii</td></tr>
-          <tr><td class="font-mono">nova</td><td>compact — tighter paddings and smaller surfaces</td></tr>
-          <tr><td class="font-mono">mira</td><td>compact and quiet — relaxed xs body text, heavily dimmed drawer scrims</td></tr>
-          <tr><td class="font-mono">rhea</td><td>soft and elevated — capped 4xl radii, shadow-xl, blurred scrims</td></tr>
-          <tr><td class="font-mono">maia</td><td>fully rounded — 4xl surfaces, deeply dimmed scrims</td></tr>
-          <tr><td class="font-mono">luma</td><td>soft-round — blurred scrims and a floating drawer frame</td></tr>
-          <tr><td class="font-mono">lyra</td><td>boxy and sharp — radius zero, type one step down, made for mono fonts</td></tr>
-          <tr><td class="font-mono">sera</td><td>editorial — uppercase tracked type, underline-only fields, serif pairing</td></tr>
+          <tr><td class="font-mono">nova</td><td>compact: tighter paddings and smaller surfaces</td></tr>
+          <tr><td class="font-mono">mira</td><td>compact and quiet: relaxed xs body text, heavily dimmed drawer scrims</td></tr>
+          <tr><td class="font-mono">rhea</td><td>soft and elevated: capped 4xl radii, shadow-xl, blurred scrims</td></tr>
+          <tr><td class="font-mono">maia</td><td>fully rounded: 4xl surfaces, deeply dimmed scrims</td></tr>
+          <tr><td class="font-mono">luma</td><td>soft-round: blurred scrims and a floating drawer frame</td></tr>
+          <tr><td class="font-mono">lyra</td><td>boxy and sharp: radius zero, type one step down, made for mono fonts</td></tr>
+          <tr><td class="font-mono">sera</td><td>editorial: uppercase tracked type, underline-only fields, serif pairing</td></tr>
         </tbody>
       </table>
     </div>
@@ -53,7 +53,7 @@
     <p class="text-sm text-muted-foreground">
       An app carries <strong>one</strong> theme. The installer copies the
       chosen fragment into a fixed slot; re-run with a different
-      <code class="font-mono">--theme</code> to switch — the slot filename
+      <code class="font-mono">--theme</code> to switch; the slot filename
       never changes, so nothing else in your app moves.
     </p>
     <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code>bin/rails g poetry:install --charts --theme vega
@@ -70,7 +70,7 @@
     <p class="text-sm text-muted-foreground">
       When two or more themes must coexist, each fragment is wrapped in a
       <code class="font-mono">.style-&lt;name&gt;</code> block and every wrapped
-      fragment is imported together — the same mechanism the upstream shadcn
+      fragment is imported together, the same mechanism the upstream shadcn
       app uses. Exactly one <code class="font-mono">style-&lt;name&gt;</code>
       class sits on <code class="font-mono">&lt;html&gt;</code> at all times
       (poetry fragments are complete visual layers, so a lone unscoped theme
@@ -91,7 +91,7 @@
   <section class="flex flex-col gap-4">
     <h2 class="text-2xl font-semibold tracking-tight" id="the-font-pairing">The font pairing</h2>
     <p class="text-sm text-muted-foreground">
-      No poetry theme moves a font token — upstream's fragments don't either.
+      No poetry theme moves a font token; upstream's fragments don't either.
       The pairings are metadata from upstream's create flow: <strong>lyra</strong>
       is biased hard to mono (JetBrains Mono, radius forced to zero) and
       <strong>sera</strong> keeps serif company (Noto Serif, Instrument Serif).
@@ -100,15 +100,41 @@
     </p>
     <p class="text-sm text-muted-foreground">
       This site honors the pairing with system stacks keyed off the same
-      switcher class — pick lyra or sera in the header and watch the page
+      switcher class: pick lyra or sera in the header and watch the page
       follow:
     </p>
     <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code>.style-lyra { font-family: ui-monospace, SFMono-Regular, Menlo, ...; }
 .style-sera { font-family: ui-serif, Georgia, Cambria, ...; }</code></pre>
     <p class="text-sm text-muted-foreground">
-      In your own app, set the family alongside the install — e.g. load
+      In your own app, set the family alongside the install; e.g. load
       JetBrains Mono and point <code class="font-mono">--font-sans</code> at
       it when installing lyra.
+    </p>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <h2 class="text-2xl font-semibold tracking-tight" id="overrides">Overriding the theme</h2>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Utility classes in your templates always win over the theme (fragments
+      import into <code class="font-mono">layer(base)</code>), and token-level
+      restyling has its own channel —
+      <code class="font-mono">poetry:design:import</code> writes
+      <code class="font-mono">design-overrides.css</code> from a DESIGN.md.
+      Writing your own CSS against theme-owned
+      <code class="font-mono">cn-*</code> classes is the third, sharpest tool:
+      allowed, but it must be <strong>declared</strong> — a dated, reasoned,
+      file-scoped entry under <code class="font-mono">overrides:</code> in
+      <code class="font-mono">config/poetry_components.yml</code>.
+    </p>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      <code class="font-mono">bin/rails poetry:design:overrides</code> reports
+      both directions — undeclared <code class="font-mono">cn-*</code> rules
+      (drift; the report prints a paste-ready declaration) and stale
+      declarations that no longer match any CSS. Declared overrides travel
+      into the exported DESIGN.md as an "Intentional deviations" section, so
+      design intent is versioned with the design. This site dogfoods the
+      contract: the style switcher's nine scoped theme copies are one declared
+      override.
     </p>
   </section>
 
@@ -119,7 +145,7 @@
       emits one from <code class="font-mono">study</code>, the design-rule analogue authors
       one, Stitch exports one, and poetry both writes and reads the format.
       The loop end-to-end: study a brand with any design skill, hand the
-      resulting file to poetry, and the app themes itself — with the same
+      resulting file to poetry, and the app themes itself, with the same
       contrast gate poetry's own tokens live under.
     </p>
     <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code># write this app's design as the shared artifact
@@ -132,7 +158,7 @@ bin/rails 'poetry:design:import[path/to/DESIGN.md]'</code></pre>
       like <code class="font-mono">brand → primary</code>, and Material-style
       <code class="font-mono">on-*</code> pairs); everything else is listed in
       the report and dropped, never guessed. Every token-pair the import
-      touches is measured against the WCAG AA floor on the merged set — a
+      touches is measured against the WCAG AA floor on the merged set; a
       failing pair is dropped with a deterministic nearest-passing suggestion
       (an OKLCH lightness walk, chroma held), and only
       <code class="font-mono">POETRY_DESIGN_FORCE=1</code> ships one. Fonts

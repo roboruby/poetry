@@ -17,7 +17,7 @@ with a clean `poetry:check` run AFTER the final edit, never before it.
 
 ## The design-lint rules (what each catches)
 
-Every finding names its fix in the message. The thirteen rules:
+Every finding names its fix in the message. The twenty rules:
 
 - `card-in-card` - a Card nested in a Card; flatten to one containment level.
 - `icon-tile-over-heading` - the decorative icon-in-a-tile stacked above
@@ -43,6 +43,20 @@ Every finding names its fix in the message. The thirteen rules:
   surface (DOM tier).
 - `stock-theme-nudge` - the app still wears the stock look while a foreign
   DESIGN.md is present (DOM tier).
+- `em-dash-overuse` - five or more em dashes in the page copy; the LLM
+  prose tell. Rewrite most as periods, commas, or parentheses.
+- `marketing-buzzword` - stock SaaS phrases ("streamline your",
+  "enterprise-grade"); say what the product concretely does.
+- `aphoristic-cadence` - "Not a X. Y." / "No X. Just Y." constructions;
+  one lands, three read as generated copy.
+- `numbered-section-markers` - sequential 01/02/03 editorial markers; cut
+  the numbers or vary the section anatomy.
+- `repeated-section-kickers` - a tracked-caps kicker above every section
+  heading; keep at most one.
+- `hero-eyebrow-chip` - a text eyebrow directly above the h1; fold it into
+  the heading or cut it (badge announcement pills are fine).
+- `oversized-h1` - display-size type (text-7xl+) carrying 40+ characters;
+  shorten the headline or step the size down.
 
 ## Score it (deterministic)
 
@@ -57,7 +71,7 @@ Severity weights, fixed:
 - **High 5** - each `poetry:verify` failure (a class that never
   compiled: styling silently not applying).
 - **Medium 2** - each design-slop WARNING (`POETRY_CHECK_DESIGN=1`, the
-  thirteen rules above).
+  twenty rules above).
 - **Low 1** - each critique-checklist finding (the judgment items; name
   the surface for every one you count).
 
@@ -86,4 +100,7 @@ Work the rendered page, not the source:
 
 Report findings in the linters' voice: name the surface, name the fix, and
 express every fix through a token, variant, option, theme, or DESIGN.md
-override - never per-instance CSS.
+override - never per-instance CSS. Host CSS already touching `cn-*` classes
+is either a DECLARED override (listed by `bin/rails poetry:design:overrides`;
+respect it - it is recorded design intent) or drift to flag, never silently
+extend.

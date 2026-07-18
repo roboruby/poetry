@@ -77,4 +77,11 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   mention design). Install/refresh: `bin/rails g poetry:skill`.
 - Design interop: `bin/rails poetry:design:export` writes this app's
   DESIGN.md (tokens + treatment) for external design skills.
+- Overriding the theme: token-level restyling goes through
+  `poetry:design:import` (design-overrides.css). Host CSS that
+  targets theme-owned `cn-*` classes is allowed ONLY as a declared
+  override - a dated, reasoned entry under `overrides:` in
+  config/poetry_components.yml (`bin/rails poetry:design:overrides`
+  reports drift and prints the paste-ready declaration). Declare
+  only after the user confirms intent; never declare to skip a fix.
 <!-- poetry:agents:end -->

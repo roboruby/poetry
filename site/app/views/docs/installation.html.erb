@@ -33,7 +33,7 @@
     <h1 class="text-4xl font-semibold tracking-tight">Installation</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
       One generator wires everything, and the same generator is the upgrade
-      path — every step is idempotent, so re-running it on a years-old app
+      path: every step is idempotent, so re-running it on a years-old app
       is always safe.
     </p>
   </header>
@@ -60,8 +60,8 @@
     <h2 class="text-2xl font-semibold tracking-tight" id="upgrade">Upgrade an existing app</h2>
     <p class="max-w-2xl text-sm text-muted-foreground">
       <strong>The install generator is the upgrade path, not a one-shot.</strong>
-      Gem-owned code — components, templates, controllers, the registry and
-      MCP surface — upgrades with <code class="font-mono">bundle update</code>
+      Gem-owned code (components, templates, controllers, the registry and
+      MCP surface) upgrades with <code class="font-mono">bundle update</code>
       alone. The vendored CSS files and the safelist upgrade only when the
       generator re-runs: new components ship their theme rules and classes
       there, so skipping the re-run leaves them unstyled.
@@ -70,8 +70,8 @@
     <p class="max-w-2xl text-sm text-muted-foreground">
       A plain re-run keeps the theme already installed (it reads the fragment
       header back); passing <code class="font-mono">--theme</code> is how you
-      switch. Files you own — <code class="font-mono">base.css</code>, the
-      initializer, the component manifest, and everything copied in — are
+      switch. Files you own (<code class="font-mono">base.css</code>, the
+      initializer, the component manifest, and everything copied in) are
       never rewritten.
     </p>
   </section>
@@ -101,7 +101,7 @@
           <tr>
             <td>App-owned copy-ins</td>
             <td><span class="font-mono">poetry:add</span> components, blocks, <span class="font-mono">base.css</span>, initializer</td>
-            <td>you — <span class="font-mono">poetry:diff</span> reports</td>
+            <td>you; <span class="font-mono">poetry:diff</span> reports</td>
           </tr>
         </tbody>
       </table>
@@ -121,7 +121,7 @@
     <%= poetry_code_block(code: diff_source, language: "shell", label: "Copy-in report") %>
     <p class="max-w-2xl text-sm text-muted-foreground">
       Blocks are starting points meant to be edited, so the report treats a
-      differing block as normal, not drift — it simply points at the gem's
+      differing block as normal, not drift; it simply points at the gem's
       current template for reference.
     </p>
   </section>

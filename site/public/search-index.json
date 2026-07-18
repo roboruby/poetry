@@ -60,6 +60,12 @@
     "path": "/theming#the-font-pairing"
   },
   {
+    "title": "Overriding the theme",
+    "page": "Theming",
+    "section": "docs",
+    "path": "/theming#overrides"
+  },
+  {
     "title": "DESIGN.md interop",
     "page": "Theming",
     "section": "docs",
