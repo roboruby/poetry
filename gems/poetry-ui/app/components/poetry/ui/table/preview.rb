@@ -15,9 +15,19 @@ module Poetry
           ["INV004", "Paid", "$500.00", false]
         ].freeze
 
+        STATUSES = %w[Paid Pending Unpaid].freeze
+
         def default
           render_component do
             safe_join([caption, header, body, footer])
+          end
+        end
+
+        # sticky_header pins the thead while the capped container scrolls
+        # - enough rows to overflow the max-h-56 cap.
+        def sticky
+          render_component(sticky_header: true, container_class: "max-h-56") do
+            safe_join([header, long_body])
           end
         end
 
@@ -52,6 +62,20 @@ module Poetry
         def footer
           part(:tfoot, :footer, "table-footer") do
             row { safe_join([cell(colspan: 2) { "Total" }, cell(class: "text-right") { "$1,250.00" }]) }
+          end
+        end
+
+        def long_body
+          part(:tbody, :body, "table-body") do
+            safe_join((1..12).map do |i|
+              row do
+                safe_join([
+                            cell(class: "font-medium") { format("INV%03d", i) },
+                            cell { STATUSES[i % 3] },
+                            cell(class: "text-right") { format("$%d50.00", i) }
+                          ])
+              end
+            end)
           end
         end
 

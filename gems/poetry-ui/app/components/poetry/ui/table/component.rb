@@ -13,8 +13,13 @@ module Poetry
           "Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - " \
           "they carry the data-slot + classes onto real thead/tbody/tr/th/td.",
           "A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).",
-          "Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class."
+          "Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.",
+          "sticky_header: true pins the thead while the container scrolls - it only scrolls once " \
+          "container_class: caps the height (\"max-h-96\"); without a cap nothing sticks."
         ].freeze
+
+        option :sticky_header, :boolean, default: false
+        option :container_class, :string
 
         part "table", "The semantic <table> element itself - the root the part helpers compose into"
         part "table-caption", "The <caption> (poetry_table_caption) - the table's accessible purpose"
@@ -30,7 +35,8 @@ module Poetry
         part "table-cell", "A data <td> (poetry_table_cell)"
 
         def container_attributes
-          { "data-slot" => "table-container", "class" => css(:container) }
+          extra = [(css(:container_sticky) if sticky_header), container_class].compact.join(" ")
+          { "data-slot" => "table-container", "class" => css(:container, class: extra.presence) }
         end
 
         def root_attributes

@@ -11,6 +11,8 @@ module Poetry
         base "cn-table"
 
         element :container, "relative w-full overflow-x-auto"
+        element :container_sticky,
+                "overflow-y-auto [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-background"
         element :header, "cn-table-header"
         element :body, "cn-table-body"
         element :footer, "cn-table-footer"

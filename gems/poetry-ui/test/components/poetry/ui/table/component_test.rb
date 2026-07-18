@@ -62,6 +62,23 @@ module Poetry
           assert_includes html, "<td" # no block = an empty cell, not a crash
           assert_includes html, 'data-slot="table-cell"'
         end
+
+        def test_sticky_header_adds_the_scroll_mechanism_and_merges_the_container_cap
+          fragment = render_inline(Component.new(sticky_header: true, container_class: "max-h-56")) { "rows" }
+          container = fragment.css('[data-slot="table-container"]').first
+
+          assert_includes container["class"], "overflow-y-auto"
+          assert_includes container["class"], "[&_thead]:sticky"
+          assert_includes container["class"], "max-h-56", "container_class caps the scroll container"
+        end
+
+        def test_without_sticky_header_the_container_stays_the_plain_overflow_wrapper
+          fragment = render_inline(Component.new) { "rows" }
+          container = fragment.css('[data-slot="table-container"]').first
+
+          refute_includes container["class"], "overflow-y-auto"
+          refute_includes container["class"], "sticky"
+        end
       end
     end
   end

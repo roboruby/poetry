@@ -24,11 +24,16 @@ namespace :poetry do
     end
 
     helpers = Poetry::Ui.helper_names
+    roots = [Poetry::Ui.root]
     if defined?(Poetry::Charts::ComponentsHelper)
       helpers += Poetry::Charts::ComponentsHelper.public_instance_methods(false)
                                                  .grep(/\Apoetry_/).map(&:to_s)
+      # The charts registry must join the catalog, not just the helper
+      # names - a name-valid pathless helper reads as a yielding wrapper
+      # (the chart yieldless-block false positives).
+      roots << Poetry::Charts.root
     end
-    catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Ui.root, helpers: helpers)
+    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
     # The taste tier (N14 W3): design-slop warnings join the mechanical

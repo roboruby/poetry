@@ -2396,6 +2396,8 @@ components:
     options:
     - name: caption
       type: string
+    - name: container_class
+      type: string
     - name: empty_text
       type: string
       default: No results.
@@ -2418,6 +2420,9 @@ components:
     - name: selection_name
       type: string
       default: selected_ids
+    - name: sticky_header
+      type: boolean
+      default: false
     slots:
     - name: columns
       many: true
@@ -6842,10 +6847,16 @@ components:
     identifier: poetry--ui--table
     bem_block: poetry-ui-table
     styles: []
-    options: []
+    options:
+    - name: container_class
+      type: string
+    - name: sticky_header
+      type: boolean
+      default: false
     slots: []
     elements:
     - container
+    - container_sticky
     - header
     - body
     - footer
@@ -6853,7 +6864,7 @@ components:
     - head
     - cell
     - caption
-    capsule: 8792f3bd5b27
+    capsule: f01733872da3
     agent_rules:
     - Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell)
       - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
@@ -6861,6 +6872,8 @@ components:
       (a <td>).
     - Mark a selected row with data-selected on poetry_table_row - never a bespoke
       highlight class.
+    - 'sticky_header: true pins the thead while the container scrolls - it only scrolls
+      once container_class: caps the height ("max-h-96"); without a cap nothing sticks.'
     parts:
     - name: table
       description: The semantic <table> element itself - the root the part helpers
