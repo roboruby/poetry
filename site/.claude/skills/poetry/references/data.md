@@ -144,6 +144,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 Class: Poetry::Ui::DataTable::Component - BEM block `poetry-ui-data_table`.
 Slot REQUIRED: with_column (at least one column) - a call without it raises.
 - `caption:` (string)
+- `container_class:` (string)
 - `empty_text:` (string) - default "No results."
 - `filter:` (boolean) - default true
 - `filter_label:` (string) - default "Filter"
@@ -152,6 +153,7 @@ Slot REQUIRED: with_column (at least one column) - a call without it raises.
 - `frame:` (string)
 - `selectable:` ()
 - `selection_name:` (string) - default "selected_ids"
+- `sticky_header:` (boolean) - default false
 Slots: columns (many; with_column REQUIRES a content block (the cell renderer - { |row| ... })).
 - PART `data-table` - Root surface - toolbar, table, and pagination footer stack here
 - PART `data-table-toolbar` - The row above the table holding the filter form - renders unless filter: false
@@ -259,6 +261,8 @@ Slots: description, media.
 ## table (`poetry_table`)
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
+- `container_class:` (string)
+- `sticky_header:` (boolean) - default false
 - PART `table` - The semantic <table> element itself - the root the part helpers compose into
 - PART `table-caption` - The <caption> (poetry_table_caption) - the table's accessible purpose
 - PART `table-header` - The <thead> (poetry_table_header) holding the column-header row
@@ -271,6 +275,7 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - they carry the data-slot + classes onto real thead/tbody/tr/th/td.
 - RULE: A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).
 - RULE: Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.
+- RULE: sticky_header: true pins the thead while the container scrolls - it only scrolls once container_class: caps the height ("max-h-96"); without a cap nothing sticks.
 
 ## tag_group (`poetry_tag_group`)
 

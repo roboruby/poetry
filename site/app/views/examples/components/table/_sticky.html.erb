@@ -1,0 +1,18 @@
+<%= poetry_table(sticky_header: true, container_class: "max-h-64") do %>
+  <%= poetry_table_header do %>
+    <%= poetry_table_row do %>
+      <%= poetry_table_head { "Invoice" } %>
+      <%= poetry_table_head { "Status" } %>
+      <%= poetry_table_head(class: "text-right") { "Amount" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_table_body do %>
+    <% 1.upto(12) do |i| %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(class: "font-medium") { format("INV%03d", i) } %>
+        <%= poetry_table_cell { %w[Paid Pending Unpaid][i % 3] } %>
+        <%= poetry_table_cell(class: "text-right") { format("$%d50.00", i) } %>
+      <% end %>
+    <% end %>
+  <% end %>
+<% end %>

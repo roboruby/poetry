@@ -1788,6 +1788,12 @@
     "path": "/components/table#minimal"
   },
   {
+    "title": "Sticky",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#sticky"
+  },
+  {
     "title": "Tabs",
     "page": "Tabs",
     "section": "components",

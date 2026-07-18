@@ -412,6 +412,21 @@
   @apply size-4 rounded-[4px] border border-input shadow-xs transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-checked:bg-primary;
 }
 
+/* MARK: CodeBlock */
+/* The syntax palette: seven vars the dictionary's token map reads
+ * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
+ * redefining the vars); .hll is highlight_lines:, .line::before the CSS
+ * counters (out of copied text by construction). */
+.cn-code-block {
+  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#a40e26] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#7f3400] [--syntax-markup:#116329] [--syntax-function:#6639ba] [--syntax-comment:#57606a] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
+}
+.cn-code-block .hll {
+  @apply bg-primary/10 -mx-4 w-[calc(100%+2rem)] px-4;
+}
+.cn-code-block[data-line-numbers] .line::before {
+  @apply text-muted-foreground me-4 inline-block w-6 text-right content-[counter(line)] [counter-increment:line];
+}
+
 /* MARK: Command */
 .cn-command {
   @apply rounded-md bg-popover text-popover-foreground;
@@ -464,6 +479,26 @@
 
 .cn-combobox-item-indicator {
   @apply size-4;
+}
+
+/* The chips FIELD (multiple:) - the input frame per the shadcn source
+ * (combobox.tsx): chip padding tighten via has-data, chip = the muted
+ * mini-badge; the chip focus ring is poetry's a11y addition (Base UI
+ * styles chip highlight as real :focus-visible). */
+.cn-combobox-chips {
+  @apply min-h-9 gap-1.5 rounded-md border border-input px-2.5 py-1.5 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-data-[slot=combobox-chip]:px-1.5;
+}
+
+.cn-combobox-chip {
+  @apply h-5.5 gap-1 rounded-sm bg-muted px-1.5 text-xs font-medium focus-visible:ring-[3px] focus-visible:ring-ring/50;
+}
+
+.cn-combobox-chip-remove {
+  @apply -ml-1 rounded-sm opacity-50 hover:opacity-100 focus-visible:opacity-100;
+}
+
+.cn-combobox-chip-input {
+  @apply min-w-16 placeholder:text-muted-foreground;
 }
 
 /* MARK: ContextMenu */
@@ -1104,6 +1139,14 @@
   @apply absolute top-4 right-4;
 }
 
+/* MARK: SensitiveInput */
+/* The masked MASK OVERLAY is the focusable reveal button (; the
+ * group would trip axe nested-interactive around the inert input) - the
+ * bordered group wears the ring when the mask inside holds focus. */
+.cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible) {
+  @apply outline-none border-ring ring-3 ring-ring/50;
+}
+
 /* MARK: Sidebar */
 .cn-sidebar-mobile {
   @apply bg-sidebar p-0 text-sidebar-foreground shadow-lg transition ease-in-out data-open:animate-in data-open:duration-500 data-closed:animate-out data-closed:duration-300 backdrop:bg-black/50;
@@ -1423,4 +1466,9 @@
 /* CommandDialog re-tunes the Dialog panel (p-0 must beat cn-dialog-content's p-6). */
 .cn-command-dialog {
   @apply overflow-hidden p-0;
+}
+
+/* MARK: Stat */
+.cn-stat-delta-positive {
+  @apply text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success;
 }
