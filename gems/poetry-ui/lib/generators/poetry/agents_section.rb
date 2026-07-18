@@ -68,6 +68,10 @@ module Poetry
             new wiring appends, this section and the skills regenerate. Then
             rebuild CSS and run the suite. `bin/rails g poetry:diff` reports
             where copied-in components drift from the installed gems.
+          - `bin/rails g poetry:scaffold_templates` retargets the STANDARD
+            `rails g scaffold` to emit poetry-composed views (DataTable index
+            with URL state, Field-composed forms) plus a matching controller -
+            prefer scaffolding over hand-writing CRUD views.
           - Claude Code skills: `poetry` (component contracts by family) and
             `poetry-design` (theme / compose / audit / study - the taste layer)
             live under `.claude/skills/` - load `poetry` whenever writing ERB,

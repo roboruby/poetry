@@ -56,6 +56,14 @@ bin/rails g poetry:diff        # read-only drift report for copy-ins
 bin/rails g poetry:add <name>  # adds newly-shipped files, never overwrites
 ```
 
+And `rails g scaffold` itself can produce poetry-composed views — a
+DataTable index with sanitized URL state, Field-composed forms, and a
+matching controller — by installing the app-owned template overrides once:
+
+```bash
+bin/rails g poetry:scaffold_templates
+```
+
 Three ownership tiers, three upgrade behaviors:
 
 | Tier | Examples | Upgrades via |

@@ -1,0 +1,78 @@
+<% module_namespacing do -%>
+class <%= controller_class_name %>Controller < ApplicationController
+  PER_PAGE = 25
+
+  before_action :set_<%= singular_table_name %>, only: %i[ show edit update destroy ]
+
+  # GET <%= route_url %> - sort/filter/page arrive as sanitized URL state
+  # (the poetry DataTable contract): State whitelists the sort column, so
+  # order_clause is injection-safe by construction.
+  def index
+    @state = Poetry::Ui::DataTable::State.from_params(
+      params,
+      sortable: %w[<%= attributes.reject { |a| a.attachment? || a.attachments? || a.rich_text? || a.password_digest? }.map(&:column_name).join(" ") %>]
+    )
+    scope = <%= class_name %>.order(@state.order_clause)
+<% filter_column = attributes.find { |a| !a.password_digest? && a.type.to_s == "string" } -%>
+<% if filter_column -%>
+    scope = scope.where("<%= filter_column.column_name %> LIKE ?", "%#{@state.q}%") if @state.q.present?
+<% end -%>
+    @pages = [(scope.count.to_f / PER_PAGE).ceil, 1].max
+    @<%= plural_table_name %> = scope.offset((@state.page - 1) * PER_PAGE).limit(PER_PAGE)
+  end
+
+  # GET <%= route_url %>/1
+  def show
+  end
+
+  # GET <%= route_url %>/new
+  def new
+    @<%= singular_table_name %> = <%= orm_class.build(class_name) %>
+  end
+
+  # GET <%= route_url %>/1/edit
+  def edit
+  end
+
+  # POST <%= route_url %>
+  def create
+    @<%= singular_table_name %> = <%= orm_class.build(class_name, "#{singular_table_name}_params") %>
+
+    if @<%= orm_instance.save %>
+      redirect_to <%= redirect_resource_name %>, notice: <%= %("#{human_name} was successfully created.") %>
+    else
+      render :new, status: <%= ActionDispatch::Constants::UNPROCESSABLE_CONTENT.inspect %>
+    end
+  end
+
+  # PATCH/PUT <%= route_url %>/1
+  def update
+    if @<%= orm_instance.update("#{singular_table_name}_params") %>
+      redirect_to <%= redirect_resource_name %>, notice: <%= %("#{human_name} was successfully updated.") %>, status: :see_other
+    else
+      render :edit, status: <%= ActionDispatch::Constants::UNPROCESSABLE_CONTENT.inspect %>
+    end
+  end
+
+  # DELETE <%= route_url %>/1
+  def destroy
+    @<%= orm_instance.destroy %>
+    redirect_to <%= index_helper %>_path, notice: <%= %("#{human_name} was successfully destroyed.") %>, status: :see_other
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_<%= singular_table_name %>
+      @<%= singular_table_name %> = <%= orm_class.find(class_name, "params.expect(:id)") %>
+    end
+
+    # Only allow a list of trusted parameters through.
+    def <%= "#{singular_table_name}_params" %>
+      <%- if attributes_names.empty? -%>
+      params.fetch(:<%= singular_table_name %>, {})
+      <%- else -%>
+      params.expect(<%= singular_table_name %>: [ <%= permitted_params %> ])
+      <%- end -%>
+    end
+end
+<% end -%>

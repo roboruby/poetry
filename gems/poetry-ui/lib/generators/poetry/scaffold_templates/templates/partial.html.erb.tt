@@ -1,0 +1,13 @@
+<div id="<%%= dom_id <%= singular_name %> %>">
+  <%%= poetry_metadata_list do |list| %>
+<% attributes.reject(&:password_digest?).each do |attribute| -%>
+<% if attribute.attachment? -%>
+    <%% list.with_item(label: "<%= attribute.human_name %>") { (link_to <%= singular_name %>.<%= attribute.column_name %>.filename, <%= singular_name %>.<%= attribute.column_name %>) if <%= singular_name %>.<%= attribute.column_name %>.attached? } %>
+<% elsif attribute.attachments? -%>
+    <%% list.with_item(label: "<%= attribute.human_name %>") { safe_join(<%= singular_name %>.<%= attribute.column_name %>.map { |file| link_to(file.filename, file) }, ", ") } %>
+<% else -%>
+    <%% list.with_item(label: "<%= attribute.human_name %>") { <%= singular_name %>.<%= attribute.column_name %> } %>
+<% end -%>
+<% end -%>
+  <%% end %>
+</div>

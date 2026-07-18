@@ -1,0 +1,24 @@
+<% data_columns = attributes.reject { |a| a.attachment? || a.attachments? || a.rich_text? || a.password_digest? } -%>
+<% has_filter = data_columns.any? { |a| a.type.to_s == "string" } -%>
+<%% content_for :title, "<%= human_name.pluralize %>" %>
+
+<div class="flex flex-col gap-6">
+  <header class="flex flex-wrap items-end justify-between gap-3">
+    <h1 class="text-2xl font-semibold tracking-tight"><%= human_name.pluralize %></h1>
+    <%%= poetry_button(tag: :a, href: <%= new_helper(type: :path) %>) { "New <%= human_name.downcase %>" } %>
+  </header>
+
+  <%%= poetry_data_table(rows: @<%= plural_table_name %>, state: @state, total: @pages,
+                        path: ->(p) { <%= index_helper(type: :path) %>(p) },
+                        caption: "<%= human_name.pluralize %>",
+                        filter: <%= has_filter %>,
+                        empty_text: "No <%= human_name.pluralize.downcase %> yet.") do |t| %>
+<% data_columns.each do |attribute| -%>
+    <%% t.with_column("<%= attribute.human_name %>", key: :<%= attribute.column_name %>, sortable: true) { |<%= singular_table_name %>| <%= singular_table_name %>.<%= attribute.column_name %> } %>
+<% end -%>
+<% attributes.select { |a| a.attachment? || a.attachments? || a.rich_text? }.each do |attribute| -%>
+    <%% t.with_column("<%= attribute.human_name %>") { |<%= singular_table_name %>| <%= singular_table_name %>.<%= attribute.column_name %> } %>
+<% end -%>
+    <%% t.with_column("", classes: "text-right") { |<%= singular_table_name %>| poetry_button(tag: :a, variant: :ghost, size: :sm, href: <%= singular_table_name %>_path(<%= singular_table_name %>)) { "Show" } } %>
+  <%% end %>
+</div>
