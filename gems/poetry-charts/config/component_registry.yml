@@ -1887,6 +1887,9 @@ components:
     slots: []
     elements: []
     capsule: 3aa9cd90e2e1
+helpers:
+  poetry_chart:
+    yields: the dispatched chart component
 helper_args:
   poetry_area_chart: 0
   poetry_bar_chart: 0

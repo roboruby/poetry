@@ -51,15 +51,18 @@ module Poetry
 
       def component_sources(component)
         dir = Poetry::Charts.root.join("app/components", component.component_path)
-        Dir.glob("#{dir}/**/*.{rb,erb}").sort.map { |file| File.read(file) }.join("\n")
+        Dir.glob("#{dir}/**/*.{rb,erb}").map { |file| File.read(file) }.join("\n")
       end
 
       # The second source for JS-applied states and vars: charts' own
       # controllers plus core's (motion/live ride core primitives).
       def js_corpus
-        @js_corpus ||= [Poetry::Charts.root, Poetry::Core.root].flat_map do |root|
-          Dir.glob("#{root.join('app/javascript')}/**/*.js").sort
-        end.map { |file| File.read(file) }.join("\n")
+        @js_corpus ||= begin
+          files = [Poetry::Charts.root, Poetry::Core.root].flat_map do |root|
+            Dir.glob("#{root.join("app/javascript")}/**/*.js")
+          end
+          files.map { |file| File.read(file) }.join("\n")
+        end
       end
 
       def format_finding(component, finding)

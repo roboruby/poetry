@@ -39,7 +39,14 @@ module Poetry
       # legitimately takes one, which is exactly why arity is an emitted
       # per-helper fact and never a convention.
       def registry
-        Poetry::Core::Registry.new(source_root: root, helper_args: registry_helper_args)
+        # The helpers section carries the dispatcher's yields declaration:
+        # poetry_chart(type) routes to a component that yields its slot
+        # builder, so its block param is legitimate - the one exception to
+        # the no-wrapper-yields invariant.
+        Poetry::Core::Registry.new(
+          source_root: root, helper_args: registry_helper_args,
+          helpers: { "poetry_chart" => { "yields" => "the dispatched chart component" } }
+        )
       end
 
       # The shadcn-interop item projection (Ecosystem v1), boot-free
