@@ -853,7 +853,6 @@ h-6
 h-9
 h-96
 h-[calc(100%-1px)]
-h-[var(--radix-select-trigger-height)]
 h-auto
 h-full
 h-max
@@ -940,6 +939,7 @@ min-h-16
 min-h-32
 min-h-64
 min-h-72
+min-h-[var(--radix-select-trigger-height)]
 min-h-full
 min-h-svh
 min-w-(--cell-size)
