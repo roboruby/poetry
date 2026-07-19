@@ -5,8 +5,8 @@
 # the app's ERB against the committed registry + controllers manifest.
 # Loaded automatically by the engine (lib/tasks).
 namespace :poetry do
-  desc "Lint app ERB against the poetry registry " \
-       "(glob arg, default app/{views,components}/**/*.html.erb; POETRY_CHECK_JSON=1 for JSON)"
+  desc "Lint app ERB + icon declarations in app Ruby against the poetry registry " \
+       "(glob arg overrides the default sweep; POETRY_CHECK_JSON=1 for JSON)"
   task :check, [:glob] => :environment do |_task, args|
     # The linter parses ERB with herb, which stays out of poetry's runtime
     # dependencies on purpose (hosts never need it to RENDER) - same
@@ -16,10 +16,12 @@ namespace :poetry do
             "add `gem \"herb\"` to your Gemfile (development group is enough)"
     end
 
-    glob = args[:glob] || "app/{views,components}/**/*.html.erb"
-    paths = Dir.glob(Rails.root.join(glob).to_s)
+    # Default sweep: ERB through the template tier, app Ruby through the
+    # icon-declaration tier (the FLASH_ICONS pattern lives in.rb).
+    patterns = args[:glob] ? [args[:glob]] : ["app/{views,components}/**/*.html.erb", "app/**/*.rb"]
+    paths = patterns.flat_map { |pattern| Dir.glob(Rails.root.join(pattern).to_s) }.uniq
     if paths.empty?
-      warn "poetry check: no files matched #{glob.inspect}"
+      warn "poetry check: no files matched #{patterns.join(", ").inspect}"
       exit 0
     end
 
@@ -33,7 +35,15 @@ namespace :poetry do
       # (the chart yieldless-block false positives).
       roots << Poetry::Charts.root
     end
-    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers)
+    # The active set's names light up membership validation (the value
+    # contract) and the declaration tier; a host without a
+    # registered set still checks icon-name shape.
+    icon_names = begin
+      Poetry::Core::Icons.set.names
+    rescue Poetry::Core::Error
+      nil
+    end
+    catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers, icon_names: icon_names)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
     # The taste tier (N14 W3): design-slop warnings join the mechanical
@@ -41,7 +51,9 @@ namespace :poetry do
     # stock-theme nudge fires only for a FOREIGN DESIGN.md (a brand waiting
     # to be applied) - poetry's own export IS the current state.
     if ENV["POETRY_CHECK_DESIGN"] == "1"
-      findings += paths.flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
+      # DesignLint herb-parses templates - the .rb paths in the sweep are
+      # the declaration tier's, not its.
+      findings += paths.grep(/\.erb\z/).flat_map { |path| Poetry::Core::DesignLint.lint(File.read(path), file: path) }
       design_md = Rails.root.join("DESIGN.md")
       foreign = design_md.exist? && Poetry::Core::DesignMd.parse(design_md.read)["theme"].nil?
       findings += Poetry::Core::DesignLint.lint_dom(

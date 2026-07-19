@@ -53,6 +53,72 @@ module Poetry
           refute_predicate Component.new(name: :"definitely-not-an-icon"), :valid?
         end
 
+        def test_the_invalid_message_names_the_closest_icon
+          component = Component.new(name: :"alert-circle")
+
+          refute_predicate component, :valid?
+          assert_includes component.errors[:name].first, %(did you mean :"circle-alert"?)
+        end
+
+        # --- the missing-icon policy ---
+
+        def test_an_unknown_icon_raises_in_local_envs
+          # Rails.env "test" is local - dev/test keep the raise, so bad
+          # literals die loudly where they're written.
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(name: :"definitely-not-an-icon"))
+          end
+
+          assert_includes error.message, "unknown icon"
+        end
+
+        def test_outside_local_envs_the_fallback_renders_and_the_hook_fires
+          config = Poetry::Core::Config.current
+          config.raise_on_missing_icon = false
+          seen = nil
+          config.on_missing_icon = ->(name:, library:, error:) { seen = [name, library, error.class] }
+
+          html = render_inline(Component.new(name: :"definitely-not-an-icon")).to_html
+
+          # The fallback's path data (render_inline normalizes self-closing
+          # tags, so compare path geometry, not raw markup).
+          assert_includes html, "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"
+          assert_equal [:"definitely-not-an-icon", :lucide, ArgumentError], seen
+        ensure
+          config.raise_on_missing_icon = nil
+          config.on_missing_icon = nil
+        end
+
+        def test_a_nil_fallback_reraises_the_original_error
+          config = Poetry::Core::Config.current
+          config.raise_on_missing_icon = false
+          config.icon_fallback = nil
+
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(name: :"definitely-not-an-icon"))
+          end
+
+          assert_includes error.message, "definitely-not-an-icon"
+        ensure
+          config.raise_on_missing_icon = nil
+          config.icon_fallback = :"circle-question-mark"
+        end
+
+        def test_a_missing_fallback_reraises_the_original_error
+          config = Poetry::Core::Config.current
+          config.raise_on_missing_icon = false
+          config.icon_fallback = :"also-not-an-icon"
+
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(name: :"definitely-not-an-icon"))
+          end
+
+          assert_includes error.message, "definitely-not-an-icon"
+        ensure
+          config.raise_on_missing_icon = nil
+          config.icon_fallback = :"circle-question-mark"
+        end
+
         def test_the_full_lucide_set_is_available
           # M5: the real vendored set, not the M3.5 three-icon stub.
           html = render_inline(Component.new(name: :calendar)).to_html
