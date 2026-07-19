@@ -38,11 +38,13 @@ module Poetry
         end
 
         def test_sticky_header_forwards_to_the_inner_table_container
-          html = render_table(sticky_header: true, container_class: "max-h-56")
+          html = render_table(sticky_header: true, container_class: "max-h-56", caption: "Recent notes")
           container = html.css('[data-slot="table-container"]').first
 
           assert_includes container["class"], "[&_thead]:sticky"
           assert_includes container["class"], "max-h-56"
+          assert_equal "Recent notes", container["aria-label"], "scroll_label falls back to the caption"
+          assert_equal "0", container["tabindex"]
         end
 
         def test_the_active_column_announces_its_sort

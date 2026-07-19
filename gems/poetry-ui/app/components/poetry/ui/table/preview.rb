@@ -26,7 +26,8 @@ module Poetry
         # sticky_header pins the thead while the capped container scrolls
         # - enough rows to overflow the max-h-56 cap.
         def sticky
-          render_component(sticky_header: true, container_class: "max-h-56") do
+          render_component(sticky_header: true, container_class: "max-h-56",
+                           scroll_label: "Recent invoices") do
             safe_join([header, long_body])
           end
         end

@@ -46,9 +46,11 @@ module Poetry
         # Forwarded to the inner Table: sticky_header pins the
         # thead while the table's scroll container scrolls; container_class
         # caps that container's height ("max-h-96") - without a cap nothing
-        # sticks.
+        # sticks. The sticky scroll region needs an accessible name (the
+        # ScrollArea rule); scroll_label: falls back to caption:.
         option :sticky_header, :boolean, default: false
         option :container_class, :string
+        option :scroll_label, :string
         # Row selection: a lambda mapping each row to its id turns
         # the feature ON - a leading checkbox column (select-all with a
         # real indeterminate middle state, shift ranges, count

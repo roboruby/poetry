@@ -64,6 +64,7 @@ module Poetry
       %(@import "./poetry/aliases.css";),
       %(@import "./poetry/style-default.css" layer(base);),
       %(@import "./poetry/base.css";),
+      %(@import "./poetry/typeset.css";),
       %(@source "./poetry/safelist.txt";)
     ].freeze
 
@@ -133,6 +134,11 @@ module Poetry
       create_file "app/assets/tailwind/poetry/style-default.css",
                   ui_theme_path.read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
+      # poetry/typeset (the shadcn/typeset port): prose styling for
+      # rendered markdown. App-OWNED like base.css (skip, never force) -
+      # the whole point of the artifact is that the file is yours to tune.
+      create_file "app/assets/tailwind/poetry/typeset.css",
+                  Poetry::Ui.root.join("typeset/typeset.css").read, skip: true
     end
 
     def generate_safelist

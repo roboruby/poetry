@@ -2415,6 +2415,8 @@ components:
       default: Filter…
     - name: frame
       type: string
+    - name: scroll_label
+      type: string
     - name: selectable
       type:
     - name: selection_name
@@ -6851,6 +6853,8 @@ components:
     options:
     - name: container_class
       type: string
+    - name: scroll_label
+      type: string
     - name: sticky_header
       type: boolean
       default: false
@@ -6875,6 +6879,9 @@ components:
       highlight class.
     - 'sticky_header: true pins the thead while the container scrolls - it only scrolls
       once container_class: caps the height ("max-h-96"); without a cap nothing sticks.'
+    - 'sticky_header requires scroll_label: - the container becomes a focusable scroll
+      region (tabindex=0 + role=region) and a keyboard-reachable region needs a name
+      (the ScrollArea rule).'
     parts:
     - name: table
       description: The semantic <table> element itself - the root the part helpers
@@ -7884,6 +7891,32 @@ components:
           on expand
     - name: tree-item-label
       description: 'The row''s text - a link when href: is given'
+  poetry/ui/typeset:
+    class_name: Poetry::Ui::Typeset::Component
+    identifier: poetry--ui--typeset
+    bem_block: poetry-ui-typeset
+    styles: []
+    options:
+    - name: preset
+      type: string
+    slots: []
+    elements: []
+    capsule: d236e8297167
+    agent_rules:
+    - Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) -
+      never app chrome; poetry components style themselves.
+    - 'preset: "docs" appends typeset-docs - a preset is a tiny class in the app''s
+      own CSS setting --typeset-size/-leading/-flow (and font vars).'
+    - 'Opt an embedded component OUT of the prose styling with class: "not-typeset"
+      - it covers the whole subtree.'
+    - Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose
+      to scroll horizontally instead of compressing.
+    requires_content: the rendered prose HTML
+    parts:
+    - name: typeset
+      description: The prose container - every bare element inside is styled by the
+        app-owned typeset.css; not-typeset (class or data attribute) opts a subtree
+        out
 helpers:
   poetry_attachment_group: {}
   poetry_avatar_group: {}
@@ -8227,3 +8260,4 @@ helper_args:
   poetry_tooltip: 0
   poetry_tooltip_provider: 0
   poetry_tree: 0
+  poetry_typeset: 0

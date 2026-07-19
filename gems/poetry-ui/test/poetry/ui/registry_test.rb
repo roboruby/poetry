@@ -40,7 +40,8 @@ module Poetry
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group
                       poetry/ui/textarea poetry/ui/time_field poetry/ui/toast
                       poetry/ui/toaster
-                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip poetry/ui/tree]
+                      poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip poetry/ui/tree
+                      poetry/ui/typeset]
 
         assert_equal expected, registry.entries.keys.sort
       end

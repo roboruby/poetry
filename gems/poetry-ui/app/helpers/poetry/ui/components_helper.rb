@@ -40,6 +40,10 @@ module Poetry
         render(Poetry::Ui::Toolbar::Component.new(**), &)
       end
 
+      def poetry_typeset(**, &)
+        render(Poetry::Ui::Typeset::Component.new(**), &)
+      end
+
       def poetry_file_input(**, &)
         render(Poetry::Ui::FileInput::Component.new(**), &)
       end

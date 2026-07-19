@@ -15,11 +15,24 @@ module Poetry
           "A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).",
           "Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.",
           "sticky_header: true pins the thead while the container scrolls - it only scrolls once " \
-          "container_class: caps the height (\"max-h-96\"); without a cap nothing sticks."
+          "container_class: caps the height (\"max-h-96\"); without a cap nothing sticks.",
+          "sticky_header requires scroll_label: - the container becomes a focusable scroll region " \
+          "(tabindex=0 + role=region) and a keyboard-reachable region needs a name (the ScrollArea rule)."
         ].freeze
 
         option :sticky_header, :boolean, default: false
         option :container_class, :string
+        # The scroll region's accessible name, required with sticky_header:
+        # a scrollable region a keyboard can't reach fails WCAG (axe
+        # scrollable-region-focusable), and a focusable region needs a name.
+        option :scroll_label, :string
+
+        def before_render
+          return unless sticky_header && scroll_label.blank?
+
+          raise ArgumentError,
+                "Table sticky_header: requires scroll_label: (the scroll region's accessible name)"
+        end
 
         part "table", "The semantic <table> element itself - the root the part helpers compose into"
         part "table-caption", "The <caption> (poetry_table_caption) - the table's accessible purpose"
@@ -36,7 +49,9 @@ module Poetry
 
         def container_attributes
           extra = [(css(:container_sticky) if sticky_header), container_class].compact.join(" ")
-          { "data-slot" => "table-container", "class" => css(:container, class: extra.presence) }
+          attrs = { "data-slot" => "table-container", "class" => css(:container, class: extra.presence) }
+          attrs.merge!("tabindex" => "0", "role" => "region", "aria-label" => scroll_label) if sticky_header
+          attrs
         end
 
         def root_attributes

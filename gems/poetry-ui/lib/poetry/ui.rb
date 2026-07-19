@@ -60,7 +60,7 @@ module Poetry
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel clipboard_text code_block collapsible data_table empty
-                   item metadata_list meter stat table tag_group toolbar tree],
+                   item metadata_list meter stat table tag_group toolbar tree typeset],
       "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],

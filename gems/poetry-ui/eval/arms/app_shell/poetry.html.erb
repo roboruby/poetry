@@ -31,6 +31,15 @@
           never Progress - progress is an operation completing. %>
       <%= poetry_meter(value: 68, label: "Storage used") %>
     </div>
+    <%# Rendered-markdown prose is a Typeset: bare elements
+        styled by the app-owned typeset.css, never per-element utilities. %>
+    <div class="px-4 pb-2">
+      <%= poetry_typeset(class: "max-w-2xl") do %>
+        <h2>Release notes</h2>
+        <p>The <code>status</code> column shipped. Earlier blocks keep
+        their styling as new ones stream in.</p>
+      <% end %>
+    </div>
     <%# A hierarchical navigator is a Tree: flat treegrid rows,
         expansion keys and typeahead ride the controller - never nested
         <ul>s with click handlers. %>

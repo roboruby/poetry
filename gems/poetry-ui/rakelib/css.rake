@@ -65,6 +65,7 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
       @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
       @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
       @import "#{poetry_ui_theme_path(theme)}" layer(base);
+      @import "#{Poetry::Ui.root.join("typeset/typeset.css")}";
       @source "#{File.join(dir, "safelist.txt")}";
       #{extra_sources.map { |src| %(@source "#{src}";) }.join("\n")}
     CSS

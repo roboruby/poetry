@@ -64,12 +64,24 @@ module Poetry
         end
 
         def test_sticky_header_adds_the_scroll_mechanism_and_merges_the_container_cap
-          fragment = render_inline(Component.new(sticky_header: true, container_class: "max-h-56")) { "rows" }
+          fragment = render_inline(Component.new(sticky_header: true, container_class: "max-h-56",
+                                                 scroll_label: "Invoices")) { "rows" }
           container = fragment.css('[data-slot="table-container"]').first
 
           assert_includes container["class"], "overflow-y-auto"
           assert_includes container["class"], "[&_thead]:sticky"
           assert_includes container["class"], "max-h-56", "container_class caps the scroll container"
+          assert_equal "0", container["tabindex"], "a scroll region a keyboard can't reach fails WCAG"
+          assert_equal "region", container["role"]
+          assert_equal "Invoices", container["aria-label"]
+        end
+
+        def test_sticky_header_without_a_scroll_label_raises
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(sticky_header: true)) { "rows" }
+          end
+
+          assert_match(/scroll_label/, error.message)
         end
 
         def test_without_sticky_header_the_container_stays_the_plain_overflow_wrapper
