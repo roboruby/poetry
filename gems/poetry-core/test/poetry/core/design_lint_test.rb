@@ -137,6 +137,17 @@ module Poetry
         refute_includes dom_lint(html, varied), "type-scale-monotony"
       end
 
+      def test_typeset_prose_is_exempt_from_type_scale_monotony
+        # Typeset sizes prose via em-derived nested:where rules
+        # the static renderer cannot compute - bare elements at one computed
+        # size are the pattern there, not the slop.
+        prose = "#{"<p>copy</p>" * 5}<h1>title</h1>"
+        html = %(<main><div class="typeset typeset-docs">#{prose}</div></main>)
+        flat = { "p, h1, main, div" => { "font-size" => "16px" } }
+
+        refute_includes dom_lint(html, flat), "type-scale-monotony"
+      end
+
       def test_adjacent_same_surface
         html = %(<div class="wrap"><section class="a">x</section><section class="b">y</section></div>)
         same = { "section" => { "background-color" => "oklch(1 0 0)" },

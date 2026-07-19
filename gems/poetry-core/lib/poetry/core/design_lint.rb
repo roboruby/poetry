@@ -509,6 +509,13 @@ module Poetry
         nodes = nodes.reject do |el|
           el.name == "li" && el.ancestors.any? { |a| a.name == "nav" || a["role"] == "navigation" }
         end
+        # Typeset prose owns its hierarchy in the app-owned
+        # stylesheet's em-derived element rules - nested :where() CSS the
+        # static renderer cannot compute, so every element reads as the
+        # base size. Bare-element prose is the pattern, not the slop.
+        nodes = nodes.reject do |el|
+          el.ancestors.any? { |a| a["class"].to_s.split(/\s+/).include?("typeset") }
+        end
         nodes = nodes.select { |el| rendered?(styles.call(el)) }
         return if nodes.size < 6
 
