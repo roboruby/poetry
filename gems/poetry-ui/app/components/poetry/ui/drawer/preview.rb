@@ -27,6 +27,22 @@ module Poetry
             "Swipe right to dismiss."
           end
         end
+
+        def top_sheet
+          render_component(direction: :up) do |drawer|
+            drawer.with_trigger { "Open notice" }
+            drawer.with_title { "Service notice" }
+            "Swipe up to dismiss."
+          end
+        end
+
+        def left_edge
+          render_component(direction: :left) do |drawer|
+            drawer.with_trigger { "Open navigation" }
+            drawer.with_title { "Navigate" }
+            "Swipe left to dismiss."
+          end
+        end
       end
     end
   end

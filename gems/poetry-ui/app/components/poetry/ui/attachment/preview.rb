@@ -37,6 +37,23 @@ module Poetry
           end
         end
 
+        # The compact rows (axis coverage): sm for dense lists,
+        # xs for inline chips.
+        def size_sm
+          render_component(size: :sm) do |attachment|
+            attachment.with_media { icon(:file) }
+            attachment.with_title { "invoice.pdf" }
+            attachment.with_description { "84 KB" }
+          end
+        end
+
+        def size_xs
+          render_component(size: :xs) do |attachment|
+            attachment.with_media { icon(:file) }
+            attachment.with_title { "readme.md" }
+          end
+        end
+
         def vertical_with_actions
           render_component(orientation: :vertical) do |attachment|
             attachment.with_media(variant: :image) { icon(:image) }

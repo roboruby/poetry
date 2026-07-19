@@ -19,6 +19,10 @@ module Poetry
         def always_underlined
           render_component(href: "#", underline: :always) { "Terms of service" }
         end
+
+        def never_underlined
+          render_component(href: "#", underline: :none) { "Settings" }
+        end
       end
     end
   end

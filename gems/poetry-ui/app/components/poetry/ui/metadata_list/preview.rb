@@ -29,6 +29,17 @@ module Poetry
           end
         end
 
+        def three_columns
+          render_component(columns: :three) do |list|
+            list.with_item(label: "CPU") { "42%" }
+            list.with_item(label: "Memory") { "3.1 GB" }
+            list.with_item(label: "Disk") { "58%" }
+            list.with_item(label: "Region") { "us-east-1" }
+            list.with_item(label: "Uptime") { "14 days" }
+            list.with_item(label: "Status") { "Healthy" }
+          end
+        end
+
         # Values compose: a status Badge inside the <dd>.
         def composed_values
           render_component(columns: :two) do |list|

@@ -21,6 +21,12 @@ module Poetry
           end
         end
 
+        def positions
+          # The four placements the examples above don't render, one canvas
+          # (axis coverage) - see the template's fixture note.
+          render_with_template(template: "poetry/ui/toaster/positions_preview")
+        end
+
         private
 
         def stack_toast(variant, title)

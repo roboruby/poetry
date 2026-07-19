@@ -23,6 +23,15 @@ module Poetry
           end
         end
 
+        # The tightest row ( axis coverage; sm lives in the group
+        # template below).
+        def size_xs
+          render_component(size: :xs) do |item|
+            item.with_title { "Cache cleared" }
+            item.with_description { "2 minutes ago" }
+          end
+        end
+
         def group
           # An explicit per-example template (a class-level preview.html.erb
           # would shadow every other example - see Avatar's group note).

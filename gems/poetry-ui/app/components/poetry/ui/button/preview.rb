@@ -54,6 +54,12 @@ module Poetry
           end
         end
 
+        def icon_large
+          render_component(size: :"icon-lg", label: "Open settings") do |component|
+            component.with_leading { embed(Icon::Component.new(name: :settings)) }
+          end
+        end
+
         # @!endgroup
 
         # @!group States
