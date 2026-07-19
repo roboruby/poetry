@@ -1,0 +1,25 @@
+<%# Rendered-markdown fixture: bare elements, styled entirely by the
+    app-owned typeset.css. %>
+<%= poetry_typeset(class: "max-w-xl") do %>
+  <h1>The Pilcrow Papers</h1>
+  <p>You render markdown and get back plain, unstyled HTML. <strong>Typeset</strong>
+  styles everything inside the container from three rhythm variables, and
+  <a href="#preview">everything else derives</a>.</p>
+  <h2>Rhythm</h2>
+  <p>Three controls: <code>--typeset-size</code>, <code>--typeset-leading</code>,
+  and <code>--typeset-flow</code>.</p>
+  <ul>
+    <li>It fits its container — chat bubble or article.</li>
+    <li>It reads your theme tokens, so dark mode is free.</li>
+    <li>Appending a block never restyles earlier blocks.</li>
+  </ul>
+  <blockquote><p>Utilities on an element still win — the rules are zero-specificity.</p></blockquote>
+  <table>
+    <thead><tr><th>Control</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td>size</td><td>1em</td></tr>
+      <tr><td>leading</td><td>1.75</td></tr>
+      <tr><td>flow</td><td>1.25em</td></tr>
+    </tbody>
+  </table>
+<% end %>

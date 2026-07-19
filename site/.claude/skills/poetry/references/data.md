@@ -151,6 +151,7 @@ Slot REQUIRED: with_column (at least one column) - a call without it raises.
 - `filter_name:` (string) - default "q"
 - `filter_placeholder:` (string) - default "Filter…"
 - `frame:` (string)
+- `scroll_label:` (string)
 - `selectable:` ()
 - `selection_name:` (string) - default "selected_ids"
 - `sticky_header:` (boolean) - default false
@@ -262,6 +263,7 @@ Slots: description, media.
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
 - `container_class:` (string)
+- `scroll_label:` (string)
 - `sticky_header:` (boolean) - default false
 - PART `table` - The semantic <table> element itself - the root the part helpers compose into
 - PART `table-caption` - The <caption> (poetry_table_caption) - the table's accessible purpose
@@ -276,6 +278,7 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: A column header is poetry_table_head (a <th>); a data cell is poetry_table_cell (a <td>).
 - RULE: Mark a selected row with data-selected on poetry_table_row - never a bespoke highlight class.
 - RULE: sticky_header: true pins the thead while the container scrolls - it only scrolls once container_class: caps the height ("max-h-96"); without a cap nothing sticks.
+- RULE: sticky_header requires scroll_label: - the container becomes a focusable scroll region (tabindex=0 + role=region) and a keyboard-reachable region needs a name (the ScrollArea rule).
 
 ## tag_group (`poetry_tag_group`)
 
@@ -325,4 +328,15 @@ Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
 - RULE: Items: tree.with_item(text:, value:, expanded:, disabled:, href:) with nesting via the block - the component flattens and computes aria-level/posinset/setsize.
 - RULE: Expansion is client state; persist it by listening for poetry:tree:toggle and re-rendering with expanded: from your store.
 - RULE: Navigation destinations take href: (the label renders as a link); a Tree is not a menu - actions belong to DropdownMenu, picking to Select/Combobox.
+
+## typeset (`poetry_typeset`)
+
+Class: Poetry::Ui::Typeset::Component - BEM block `poetry-ui-typeset`.
+Content block REQUIRED (the rendered prose HTML) - a blockless call raises.
+- `preset:` (string)
+- PART `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; not-typeset (class or data attribute) opts a subtree out
+- RULE: Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) - never app chrome; poetry components style themselves.
+- RULE: preset: "docs" appends typeset-docs - a preset is a tiny class in the app's own CSS setting --typeset-size/-leading/-flow (and font vars).
+- RULE: Opt an embedded component OUT of the prose styling with class: "not-typeset" - it covers the whole subtree.
+- RULE: Wrap a wide table (or any wide block) in a typeset-scroll div inside the prose to scroll horizontally instead of compressing.
 

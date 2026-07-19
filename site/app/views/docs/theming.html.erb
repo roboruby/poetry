@@ -5,8 +5,32 @@
     <% crumb.with_item("Theming") %>
   <% end %>
 <% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag, never inside an output tag.
+  install_theme_source = <<~CODE
+    bin/rails g poetry:install --charts --theme vega
+    # app/assets/tailwind/poetry/style-default.css  <- vega's bytes land here
+    # app/assets/tailwind/poetry/style-charts.css   <- and the chart-side match
+  CODE
+  registry_source = <<~CODE
+    /* style-registry.css */
+    @import "./styles/style-vega.css" layer(base);   /* .style-vega { .cn-* rules } */
+    @custom-variant style-vega (&:where(.style-vega *));
+  CODE
+  fonts_source = <<~CODE
+    .style-lyra { font-family: ui-monospace, SFMono-Regular, Menlo, ...; }
+    .style-sera { font-family: ui-serif, Georgia, Cambria, ...; }
+  CODE
+  design_source = <<~CODE
+    # write this app's design as the shared artifact
+    bin/rails poetry:design:export        # -> DESIGN.md (tokens + treatment + both modes)
 
-<div class="flex flex-col gap-10">
+    # read a brand's DESIGN.md into token overrides
+    bin/rails 'poetry:design:import[path/to/DESIGN.md]'
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
   <header class="flex flex-col gap-3">
     <h1 class="text-4xl font-semibold tracking-tight">Theming</h1>
     <p class="max-w-2xl text-lg text-muted-foreground">
@@ -18,157 +42,165 @@
     </p>
   </header>
 
+  <%# The docs prose rides poetry/typeset: bare elements, rhythm
+      from the preset; poetry components sit between prose runs as chrome. %>
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="the-nine-themes">The nine themes</h2>
-    <p class="text-sm text-muted-foreground">
-      Themes change shape and texture only: radii, spacing, borders, type
-      scale, scrims. Color tokens live one layer down (<code class="font-mono">tokens.css</code>)
-      and are shared, so light/dark mode is orthogonal to the theme choice.
-    </p>
-    <div class="overflow-x-auto rounded-lg border">
-      <table class="w-full text-sm">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-nine-themes">The nine themes</h2>
+      <p>
+        Themes change shape and texture only: radii, spacing, borders, type
+        scale, scrims. Color tokens live one layer down
+        (<code>tokens.css</code>) and are shared, so light/dark mode is
+        orthogonal to the theme choice.
+      </p>
+      <table>
         <thead>
-          <tr class="border-b bg-muted/50 text-left">
-            <th class="p-3 font-medium">Theme</th>
-            <th class="p-3 font-medium">Character</th>
-          </tr>
+          <tr><th>Theme</th><th>Character</th></tr>
         </thead>
-        <tbody class="[&_td]:p-3 [&_tr]:border-b last:[&_tr]:border-0">
-          <tr><td class="font-mono">default</td><td>poetry's original look: the new-york-v4 lineage the library was built against</td></tr>
-          <tr><td class="font-mono">vega</td><td>closest to default: ring-based surfaces, subtle blur scrims, xl radii</td></tr>
-          <tr><td class="font-mono">nova</td><td>compact: tighter paddings and smaller surfaces</td></tr>
-          <tr><td class="font-mono">mira</td><td>compact and quiet: relaxed xs body text, heavily dimmed drawer scrims</td></tr>
-          <tr><td class="font-mono">rhea</td><td>soft and elevated: capped 4xl radii, shadow-xl, blurred scrims</td></tr>
-          <tr><td class="font-mono">maia</td><td>fully rounded: 4xl surfaces, deeply dimmed scrims</td></tr>
-          <tr><td class="font-mono">luma</td><td>soft-round: blurred scrims and a floating drawer frame</td></tr>
-          <tr><td class="font-mono">lyra</td><td>boxy and sharp: radius zero, type one step down, made for mono fonts</td></tr>
-          <tr><td class="font-mono">sera</td><td>editorial: uppercase tracked type, underline-only fields, serif pairing</td></tr>
+        <tbody>
+          <tr><td><code>default</code></td><td>poetry's original look: the new-york-v4 lineage the library was built against</td></tr>
+          <tr><td><code>vega</code></td><td>closest to default: ring-based surfaces, subtle blur scrims, xl radii</td></tr>
+          <tr><td><code>nova</code></td><td>compact: tighter paddings and smaller surfaces</td></tr>
+          <tr><td><code>mira</code></td><td>compact and quiet: relaxed xs body text, heavily dimmed drawer scrims</td></tr>
+          <tr><td><code>rhea</code></td><td>soft and elevated: capped 4xl radii, shadow-xl, blurred scrims</td></tr>
+          <tr><td><code>maia</code></td><td>fully rounded: 4xl surfaces, deeply dimmed scrims</td></tr>
+          <tr><td><code>luma</code></td><td>soft-round: blurred scrims and a floating drawer frame</td></tr>
+          <tr><td><code>lyra</code></td><td>boxy and sharp: radius zero, type one step down, made for mono fonts</td></tr>
+          <tr><td><code>sera</code></td><td>editorial: uppercase tracked type, underline-only fields, serif pairing</td></tr>
         </tbody>
       </table>
-    </div>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="installing-a-theme">Installing a theme</h2>
-    <p class="text-sm text-muted-foreground">
-      An app carries <strong>one</strong> theme. The installer copies the
-      chosen fragment into a fixed slot; re-run with a different
-      <code class="font-mono">--theme</code> to switch; the slot filename
-      never changes, so nothing else in your app moves.
-    </p>
-    <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code>bin/rails g poetry:install --charts --theme vega
-# app/assets/tailwind/poetry/style-default.css  &lt;- vega's bytes land here
-# app/assets/tailwind/poetry/style-charts.css   &lt;- and the chart-side match</code></pre>
-    <p class="text-sm text-muted-foreground">
-      Fragments import into <code class="font-mono">layer(base)</code>, so
-      utility classes you write in templates always win over the theme.
-    </p>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="installing-a-theme">Installing a theme</h2>
+      <p>
+        An app carries <strong>one</strong> theme. The installer copies the
+        chosen fragment into a fixed slot; re-run with a different
+        <code>--theme</code> to switch; the slot filename never changes, so
+        nothing else in your app moves.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: install_theme_source, language: "shell", label: "Theme install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Fragments import into <code>layer(base)</code>, so utility classes
+        you write in templates always win over the theme.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="how-this-site-renders-all-nine">How this site renders all nine</h2>
-    <p class="text-sm text-muted-foreground">
-      When two or more themes must coexist, each fragment is wrapped in a
-      <code class="font-mono">.style-&lt;name&gt;</code> block and every wrapped
-      fragment is imported together, the same mechanism the upstream shadcn
-      app uses. Exactly one <code class="font-mono">style-&lt;name&gt;</code>
-      class sits on <code class="font-mono">&lt;html&gt;</code> at all times
-      (poetry fragments are complete visual layers, so a lone unscoped theme
-      would leak tokens into whichever theme is stamped).
-    </p>
-    <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code>/* style-registry.css */
-@import "./styles/style-vega.css" layer(base);   /* .style-vega { .cn-* rules } */
-@custom-variant style-vega (&amp;:where(.style-vega *));</code></pre>
-    <p class="text-sm text-muted-foreground">
-      The <code class="font-mono">@custom-variant</code> half also enables
-      per-style opt-ins in markup. This card rounds off under vega only:
-    </p>
-    <div class="style-vega:rounded-none rounded-lg border p-4 text-sm">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="how-this-site-renders-all-nine">How this site renders all nine</h2>
+      <p>
+        When two or more themes must coexist, each fragment is wrapped in a
+        <code>.style-&lt;name&gt;</code> block and every wrapped fragment is
+        imported together, the same mechanism the upstream shadcn app uses.
+        Exactly one <code>style-&lt;name&gt;</code> class sits on
+        <code>&lt;html&gt;</code> at all times (poetry fragments are
+        complete visual layers, so a lone unscoped theme would leak tokens
+        into whichever theme is stamped).
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: registry_source, language: "css", label: "style-registry.css") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <code>@custom-variant</code> half also enables per-style opt-ins
+        in markup. This card rounds off under vega only:
+      </p>
+    <% end %>
+    <div class="style-vega:rounded-none max-w-2xl rounded-lg border p-4 text-sm">
       <code class="font-mono">class="style-vega:rounded-none rounded-lg border p-4"</code>
     </div>
   </section>
 
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="the-font-pairing">The font pairing</h2>
-    <p class="text-sm text-muted-foreground">
-      No poetry theme moves a font token; upstream's fragments don't either.
-      The pairings are metadata from upstream's create flow: <strong>lyra</strong>
-      is biased hard to mono (JetBrains Mono, radius forced to zero) and
-      <strong>sera</strong> keeps serif company (Noto Serif, Instrument Serif).
-      lyra and sera move their typography through size, weight, tracking and
-      uppercase utilities, which port verbatim; the family is your call.
-    </p>
-    <p class="text-sm text-muted-foreground">
-      This site honors the pairing with system stacks keyed off the same
-      switcher class: pick lyra or sera in the header and watch the page
-      follow:
-    </p>
-    <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code>.style-lyra { font-family: ui-monospace, SFMono-Regular, Menlo, ...; }
-.style-sera { font-family: ui-serif, Georgia, Cambria, ...; }</code></pre>
-    <p class="text-sm text-muted-foreground">
-      In your own app, set the family alongside the install; e.g. load
-      JetBrains Mono and point <code class="font-mono">--font-sans</code> at
-      it when installing lyra.
-    </p>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="the-font-pairing">The font pairing</h2>
+      <p>
+        No poetry theme moves a font token; upstream's fragments don't
+        either. The pairings are metadata from upstream's create flow:
+        <strong>lyra</strong> is biased hard to mono (JetBrains Mono, radius
+        forced to zero) and <strong>sera</strong> keeps serif company (Noto
+        Serif, Instrument Serif). lyra and sera move their typography
+        through size, weight, tracking and uppercase utilities, which port
+        verbatim; the family is your call.
+      </p>
+      <p>
+        This site honors the pairing with system stacks keyed off the same
+        switcher class: pick lyra or sera in the header and watch the page
+        follow:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: fonts_source, language: "css", label: "Font stacks") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        In your own app, set the family alongside the install; e.g. load
+        JetBrains Mono and point <code>--font-sans</code> at it when
+        installing lyra. The same vars feed
+        <%= link_to "typeset", typography_path %> presets.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="overrides">Overriding the theme</h2>
-    <p class="max-w-2xl text-sm text-muted-foreground">
-      Utility classes in your templates always win over the theme (fragments
-      import into <code class="font-mono">layer(base)</code>), and token-level
-      restyling has its own channel —
-      <code class="font-mono">poetry:design:import</code> writes
-      <code class="font-mono">design-overrides.css</code> from a DESIGN.md.
-      Writing your own CSS against theme-owned
-      <code class="font-mono">cn-*</code> classes is the third, sharpest tool:
-      allowed, but it must be <strong>declared</strong> — a dated, reasoned,
-      file-scoped entry under <code class="font-mono">overrides:</code> in
-      <code class="font-mono">config/poetry_components.yml</code>.
-    </p>
-    <p class="max-w-2xl text-sm text-muted-foreground">
-      <code class="font-mono">bin/rails poetry:design:overrides</code> reports
-      both directions — undeclared <code class="font-mono">cn-*</code> rules
-      (drift; the report prints a paste-ready declaration) and stale
-      declarations that no longer match any CSS. Declared overrides travel
-      into the exported DESIGN.md as an "Intentional deviations" section, so
-      design intent is versioned with the design. This site dogfoods the
-      contract: the style switcher's nine scoped theme copies are one declared
-      override.
-    </p>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="overrides">Overriding the theme</h2>
+      <p>
+        Utility classes in your templates always win over the theme
+        (fragments import into <code>layer(base)</code>), and token-level
+        restyling has its own channel:
+        <code>poetry:design:import</code> writes
+        <code>design-overrides.css</code> from a DESIGN.md. Writing your own
+        CSS against theme-owned <code>cn-*</code> classes is the third,
+        sharpest tool: allowed, but it must be <strong>declared</strong>, a
+        dated, reasoned, file-scoped entry under <code>overrides:</code> in
+        <code>config/poetry_components.yml</code>.
+      </p>
+      <p>
+        <code>bin/rails poetry:design:overrides</code> reports both
+        directions: undeclared <code>cn-*</code> rules (drift; the report
+        prints a paste-ready declaration) and stale declarations that no
+        longer match any CSS. Declared overrides travel into the exported
+        DESIGN.md as an "Intentional deviations" section, so design intent
+        is versioned with the design. This site dogfoods the contract: the
+        style switcher's nine scoped theme copies are one declared override.
+      </p>
+    <% end %>
   </section>
 
   <section class="flex flex-col gap-4">
-    <h2 class="text-2xl font-semibold tracking-tight" id="design-md-interop">DESIGN.md interop</h2>
-    <p class="text-sm text-muted-foreground">
-      DESIGN.md is the design-skill ecosystem's shared artifact — the slop-gate analogue
-      emits one from <code class="font-mono">study</code>, the design-rule analogue authors
-      one, Stitch exports one, and poetry both writes and reads the format.
-      The loop end-to-end: study a brand with any design skill, hand the
-      resulting file to poetry, and the app themes itself, with the same
-      contrast gate poetry's own tokens live under.
-    </p>
-    <pre class="overflow-x-auto rounded-lg border bg-muted p-4 font-mono text-sm"><code># write this app's design as the shared artifact
-bin/rails poetry:design:export        # -&gt; DESIGN.md (tokens + treatment + both modes)
-
-# read a brand's DESIGN.md into token overrides
-bin/rails 'poetry:design:import[path/to/DESIGN.md]'</code></pre>
-    <p class="text-sm text-muted-foreground">
-      Import maps role names conservatively (poetry roles, a short alias set
-      like <code class="font-mono">brand → primary</code>, and Material-style
-      <code class="font-mono">on-*</code> pairs); everything else is listed in
-      the report and dropped, never guessed. Every token-pair the import
-      touches is measured against the WCAG AA floor on the merged set; a
-      failing pair is dropped with a deterministic nearest-passing suggestion
-      (an OKLCH lightness walk, chroma held), and only
-      <code class="font-mono">POETRY_DESIGN_FORCE=1</code> ships one. Fonts
-      never enter CSS (the pairing above stays metadata); a light-only palette
-      gets its dark values pinned to the poetry defaults so the overrides
-      can't leak across modes. The result lands in
-      <code class="font-mono">app/assets/tailwind/poetry/design-overrides.css</code>,
-      wired after the theme imports;
-      <code class="font-mono">POETRY_DESIGN_JSON=1</code> emits the report as
-      JSON for tooling.
-    </p>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="design-md-interop">DESIGN.md interop</h2>
+      <p>
+        DESIGN.md is the design-skill ecosystem's shared artifact — the slop-gate analogue
+        emits one from <code>study</code>, the design-rule analogue authors one, an external design tool
+        exports one, and poetry both writes and reads the format. The loop
+        end-to-end: study a brand with any design skill, hand the resulting
+        file to poetry, and the app themes itself, with the same contrast
+        gate poetry's own tokens live under.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: design_source, language: "shell", label: "DESIGN.md loop") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Import maps role names conservatively (poetry roles, a short alias
+        set like <code>brand → primary</code>, and Material-style
+        <code>on-*</code> pairs); everything else is listed in the report
+        and dropped, never guessed. Every token-pair the import touches is
+        measured against the WCAG AA floor on the merged set; a failing pair
+        is dropped with a deterministic nearest-passing suggestion (an OKLCH
+        lightness walk, chroma held), and only
+        <code>POETRY_DESIGN_FORCE=1</code> ships one. Fonts never enter CSS
+        (the pairing above stays metadata); a light-only palette gets its
+        dark values pinned to the poetry defaults so the overrides can't
+        leak across modes. The result lands in
+        <code>app/assets/tailwind/poetry/design-overrides.css</code>, wired
+        after the theme imports; <code>POETRY_DESIGN_JSON=1</code> emits the
+        report as JSON for tooling.
+      </p>
+    <% end %>
   </section>
 </div>

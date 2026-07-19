@@ -1183,6 +1183,7 @@ translate-x-px
 translate-y-[calc(-50%_-_2px)]
 translate-y-px
 truncate
+typeset
 underline-offset-4
 w-(--anchor-width)
 w-(--popup-width)

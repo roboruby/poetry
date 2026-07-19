@@ -17,3 +17,13 @@
    @import "./poetry/style-default.css" layer(base);
    @import "./poetry/style-charts.css" layer(base); */
 @import "./style-registry.css";
+@import "./poetry/typeset.css";
+
+/* poetry/typeset presets: the docs prose rhythm. Matches the
+   previous hand-utility scale (text-sm body) so the flip reads as a
+   refinement, not a redesign. */
+.typeset-docs {
+  --typeset-size: 0.875rem;
+  --typeset-leading: 1.75;
+  --typeset-flow: 1.25em;
+}

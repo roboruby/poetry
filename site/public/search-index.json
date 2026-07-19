@@ -2076,6 +2076,30 @@
     "path": "/components/tree#with-links"
   },
   {
+    "title": "Typeset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset"
+  },
+  {
+    "title": "Default",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#default"
+  },
+  {
+    "title": "Chat preset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#chat-preset"
+  },
+  {
+    "title": "Not typeset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#not-typeset"
+  },
+  {
     "title": "Adapter Chart",
     "page": "Adapter Chart",
     "section": "charts",
