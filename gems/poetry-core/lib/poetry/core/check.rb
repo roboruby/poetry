@@ -446,9 +446,12 @@ module Poetry
           end
           return [] if @catalog.icon_names.nil? || @catalog.icon_names.include?(value)
 
+          # Icons.suggest, not the generic checker: it catches the Lucide v1
+          # reversed-compound renames (alert-circle -> circle-alert) that
+          # edit distance misses every time.
           [Finding.new(rule: "unknown-icon", severity: :error,
                        message: "#{key}: #{value.inspect} is not in the icon set", line: line,
-                       suggestion: suggest(value, @catalog.icon_names))]
+                       suggestion: Icons.suggest(value, @catalog.icon_names))]
         end
 
         # Required-with-no-default options that a literal call omits (a
@@ -935,16 +938,132 @@ module Poetry
         end
       end
 
-      # Reads files, lints each, attaches the file to every finding.
+      # The declaration tier (the FLASH_ICONS pattern): icon names
+      # that live in app RUBY - `icon:`-keyed hash pairs and ICON-named
+      # constants - and reach the renderer through a lookup the ERB tier can
+      # never see (`poetry_icon name: ICONS[status]`). Prism-walks .rb files
+      # for icon-shaped literals in those declaration positions and validates
+      # them against the active set. Warning severity: a key named `icon` is
+      # strong-but-not-certain evidence. Skipped entirely when the catalog
+      # carries no set names (membership IS the question), and on files that
+      # don't parse (broken Ruby is not this tier's finding). Prism ships
+      # with Ruby - no new dependency, same optional-parse posture as herb.
+      class IconDeclarations
+        # `icon:`, `menu_icon:`, `icons:`, `status_icons:` - but NOT
+        # `icon_position:` (an enum, not a name; the FP that loose /icon/
+        # matching would create).
+        ICON_KEY = /\A[a-z0-9_]*icons?\z/
+        # ICON underscore-bounded on both sides: FLASH_ICONS, ICON_NAMES,
+        # ICON - but not LEXICON or ICONOGRAPHY.
+        ICON_CONSTANT = /(?:\A|_)ICONS?(?:_|\z)/
+        # A literal that could be an icon name. Excludes CSS class strings
+        # (spaces, slashes), paths, and interpolation.
+        NAME_SHAPED = /\A[a-z][a-z0-9_-]*\z/
+
+        def initialize(catalog)
+          @catalog = catalog
+        end
+
+        # Lint one Ruby source string. Returns [Finding].
+        def lint(source)
+          names = @catalog.icon_names
+          return [] if names.nil?
+
+          require "prism"
+          result = Prism.parse(source)
+          return [] unless result.success?
+
+          findings = []
+          walk(result.value, findings, names, Set.new)
+          findings
+        end
+
+        private
+
+        def walk(node, findings, names, seen)
+          case node
+          when Prism::AssocNode
+            key = node.key
+            if key.is_a?(Prism::SymbolNode) && key.unescaped.match?(ICON_KEY)
+              harvest(node.value, key.unescaped, findings, names, seen)
+            end
+          when Prism::ConstantWriteNode
+            harvest(node.value, node.name.to_s, findings, names, seen) if node.name.to_s.match?(ICON_CONSTANT)
+          end
+          node.child_nodes.compact.each { |child| walk(child, findings, names, seen) }
+        end
+
+        # Collects icon-name candidates from a declaration value: a bare
+        # literal, an array of literals, or a hash's VALUES ({ success:
+        # :circle-check } - the keys are the app's domain, not icon names).
+        # `.freeze` and parentheses are peeled so frozen constant maps still
+        # harvest.
+        def harvest(value_node, owner, findings, names, seen)
+          value_node = unwrap(value_node)
+          case value_node
+          when Prism::SymbolNode, Prism::StringNode
+            check(value_node, owner, findings, names, seen)
+          when Prism::ArrayNode
+            value_node.elements.each { |element| harvest(element, owner, findings, names, seen) }
+          when Prism::HashNode
+            value_node.elements.grep(Prism::AssocNode).each { |assoc| harvest(assoc.value, owner, findings, names, seen) }
+          end
+        end
+
+        def unwrap(value_node)
+          while value_node.is_a?(Prism::CallNode) && value_node.name == :freeze && value_node.receiver &&
+                (value_node.arguments.nil? || value_node.arguments.arguments.empty?)
+            value_node = value_node.receiver
+          end
+          value_node = value_node.body.first if value_node.is_a?(Prism::ParenthesesNode) &&
+                                                value_node.body.is_a?(Prism::StatementsNode) &&
+                                                value_node.body.body.size == 1
+          value_node
+        end
+
+        def check(literal, owner, findings, names, seen)
+          raw = literal.unescaped
+          return unless raw.is_a?(String) && raw.match?(NAME_SHAPED)
+
+          line = literal.location.start_line
+          return unless seen.add?([line, raw])
+
+          kebab = raw.tr("_", "-")
+          if names.include?(kebab)
+            return if raw == kebab
+
+            findings << Finding.new(rule: "icon-declaration", severity: :warning,
+                                    message: "#{owner}: #{raw.inspect} is written snake_case - " \
+                                             "icon names are kebab-case (#{kebab.to_sym.inspect} " \
+                                             "is what renders)",
+                                    line: line, suggestion: kebab)
+          else
+            findings << Finding.new(rule: "icon-declaration", severity: :warning,
+                                    message: "#{owner}: #{raw.inspect} looks like an icon name " \
+                                             "but is not in the icon set",
+                                    line: line, suggestion: Icons.suggest(kebab, names))
+          end
+        end
+      end
+
+      # Reads files, lints each, attaches the file to every finding. Ruby
+      # files go through the declaration tier; everything else is ERB.
       class Runner
         def initialize(catalog)
           @linter = Linter.new(catalog)
+          @declarations = IconDeclarations.new(catalog)
         end
 
         def run(paths)
           paths.flat_map do |path|
-            @linter.lint(File.read(path)).each { |finding| finding.file = path }
+            linter_for(path).lint(File.read(path)).each { |finding| finding.file = path }
           end
+        end
+
+        private
+
+        def linter_for(path)
+          path.end_with?(".rb") ? @declarations : @linter
         end
       end
 

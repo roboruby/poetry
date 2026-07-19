@@ -30,7 +30,12 @@ module Poetry
 
         def fetch(name)
           raise ArgumentError, "invalid icon name #{name.inspect}" unless valid_name?(name)
-          raise ArgumentError, "unknown icon #{name.inspect} (not in this set)" unless path_for(name).exist?
+
+          unless path_for(name).exist?
+            suggestion = Icons.suggest(name, names)
+            hint = suggestion ? " - did you mean #{suggestion.to_sym.inspect}?" : ""
+            raise ArgumentError, "unknown icon #{name.inspect} (not in this set)#{hint}"
+          end
 
           @mutex.synchronize do
             @cache[name.to_sym] ||= path_for(name).read.strip
@@ -53,6 +58,24 @@ module Poetry
       end
 
       class << self
+        # Did-you-mean for icon names. The reversed-compound form is
+        # checked before edit distance: Lucide v1 swapped modifier and noun
+        # (alert-circle -> circle-alert, x-circle -> circle-x), a rename class
+        # DidYouMean's checker misses every time - the reversal IS the fix.
+        #
+        # @param name [Symbol, String] the unknown name (underscores tolerated)
+        # @param names [Enumerable] the valid names to suggest from
+        # @return [String, nil] the closest valid name, or nil
+        def suggest(name, names)
+          name = name.to_s.tr("_", "-")
+          candidates = names.map(&:to_s)
+          reversed = name.split("-").reverse.join("-")
+          return reversed if reversed != name && candidates.include?(reversed)
+
+          require "did_you_mean"
+          DidYouMean::SpellChecker.new(dictionary: candidates).correct(name).first
+        end
+
         def registry
           @registry ||= {}
         end

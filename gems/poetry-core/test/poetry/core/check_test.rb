@@ -366,6 +366,91 @@ module Poetry
                         "unknown-icon"
       end
 
+      def test_a_reversed_compound_icon_gets_the_rename_suggestion
+        # Lucide v1 swapped modifier and noun (alert-circle -> circle-alert);
+        # edit distance never bridges the reversal.
+        finding = first(%(<%= poetry_icon(name: :"alert-circle") %>), "unknown-icon")
+
+        assert_equal "circle-alert", finding.suggestion
+      end
+
+      # --- the declaration tier (icon names living in app Ruby) ---
+
+      def declaration_findings(ruby)
+        Check::IconDeclarations.new(CATALOG).lint(ruby)
+      end
+
+      def test_an_unknown_name_in_an_icon_keyed_pair_warns_with_a_suggestion
+        finding = declaration_findings(%(FLASH = { success: { icon: "cirle-alert" } })).first
+
+        assert_equal "icon-declaration", finding.rule
+        assert_equal :warning, finding.severity
+        assert_equal "circle-alert", finding.suggestion
+        assert_includes finding.message, "icon"
+      end
+
+      def test_a_reversed_compound_declaration_gets_the_rename_suggestion
+        finding = declaration_findings(%(icon_for(icon: :"alert-circle"))).first
+
+        assert_equal "circle-alert", finding.suggestion
+      end
+
+      def test_a_frozen_icon_constant_hash_harvests_its_values
+        findings = declaration_findings(<<~RUBY)
+          STATUS_ICONS = { ok: :"circle-alert", bad: :"triangl-alert" }.freeze
+        RUBY
+
+        assert_equal 1, findings.length
+        assert_includes findings.first.message, "triangl-alert"
+        assert_equal "triangle-alert", findings.first.suggestion
+      end
+
+      def test_an_icon_name_array_constant_harvests_each_element
+        findings = declaration_findings(%(ICON_NAMES = %w[circle-alert cirle-alert]))
+
+        assert_equal 1, findings.length
+        assert_equal "circle-alert", findings.first.suggestion
+      end
+
+      def test_a_snake_case_declaration_of_a_real_icon_warns_with_the_kebab_fix
+        finding = declaration_findings(%(tile = { icon: :circle_alert })).first
+
+        assert_equal "circle-alert", finding.suggestion
+        assert_includes finding.message, "kebab-case"
+      end
+
+      def test_valid_declarations_and_non_name_values_stay_silent
+        assert_empty declaration_findings(<<~RUBY)
+          FLASH_ICONS = { success: :"circle-alert", notice: :"triangle-alert" }.freeze
+          legacy = { icon: "fa fa-home" }
+          layout(icon_position: :left)
+        RUBY
+      end
+
+      def test_declarations_stand_down_without_a_known_icon_set
+        catalog = Check::Catalog.new({ "poetry/ui/icon" => ICON_ENTRY })
+
+        assert_empty Check::IconDeclarations.new(catalog).lint(%(ICON = :"not-a-real-icon"))
+      end
+
+      def test_unparseable_ruby_is_not_a_declaration_finding
+        assert_empty declaration_findings("def broken(; end")
+      end
+
+      def test_the_runner_routes_ruby_to_the_declaration_tier_and_erb_to_the_linter
+        Dir.mktmpdir("check-declarations") do |dir|
+          ruby = File.join(dir, "flash_helper.rb")
+          erb = File.join(dir, "show.html.erb")
+          File.write(ruby, %(ICONS = { bad: :"cirle-alert" }))
+          File.write(erb, %(<%= poetry_icon(name: :"cirle-alert") %>))
+
+          findings = Check::Runner.new(CATALOG).run([ruby, erb])
+
+          assert_equal %w[icon-declaration unknown-icon], findings.map(&:rule)
+          assert_equal [ruby, erb], findings.map(&:file)
+        end
+      end
+
       # --- composition contracts (the crash classes) ---
 
       def test_a_declared_yielding_dispatcher_block_param_is_not_yieldless

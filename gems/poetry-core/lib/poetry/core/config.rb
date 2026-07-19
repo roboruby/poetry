@@ -76,7 +76,21 @@ module Poetry
                                                      css_mode: :tailwind,
                                                      # The active icon set (: Lucide default; sets
                                                      # register via Poetry::Core::Icons.register).
-                                                     icon_library: :lucide
+                                                     icon_library: :lucide,
+                                                     # The missing-icon policy. Static literals
+                                                     # are caught by poetry check; a DYNAMIC name (a DB
+                                                     # value, a user setting) surfaces at render. nil =
+                                                     # auto: raise in Rails.env.local?, degrade to
+                                                     # icon_fallback elsewhere. true/false force it.
+                                                     raise_on_missing_icon: nil,
+                                                     # Rendered instead of a missing icon when not
+                                                     # raising; nil re-raises. Must exist in every
+                                                     # registered set (Lucide ships it).
+                                                     icon_fallback: :"circle-question-mark",
+                                                     # Optional callable(name:, library:, error:) fired
+                                                     # before the fallback renders - the instrumentation
+                                                     # seam (log, notify, count). Fires per render.
+                                                     on_missing_icon: nil
                                                    })
         end
 
