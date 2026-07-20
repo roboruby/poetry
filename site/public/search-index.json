@@ -1896,6 +1896,30 @@
     "path": "/components/time-field#twenty-four-hour"
   },
   {
+    "title": "Timeline",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline"
+  },
+  {
+    "title": "Default",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#default"
+  },
+  {
+    "title": "Horizontal",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#horizontal"
+  },
+  {
+    "title": "With icons",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#with-icons"
+  },
+  {
     "title": "Toast",
     "page": "Toast",
     "section": "components",

@@ -1,0 +1,14 @@
+<div class="max-w-md">
+  <%= poetry_timeline do |timeline| %>
+    <% timeline.with_item(title: "Order placed", time: "Mar 15, 09:12", completed: true) do %>
+      Payment authorized and inventory reserved.
+    <% end %>
+    <% timeline.with_item(title: "Packed", time: "Mar 15, 14:03", completed: true) do %>
+      Two parcels sealed at dock B.
+    <% end %>
+    <% timeline.with_item(title: "In transit", time: "Mar 16") do %>
+      Handed to the carrier - estimated delivery Thursday.
+    <% end %>
+    <% timeline.with_item(title: "Delivered") %>
+  <% end %>
+</div>
