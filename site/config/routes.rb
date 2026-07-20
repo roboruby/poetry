@@ -15,6 +15,9 @@ Rails.application.routes.draw do
   get "typography" => "docs#typography", as: :typography
   get "deferred" => "docs#deferred", as: :deferred
   get "deferred/fragment" => "docs#deferred_fragment", as: :deferred_fragment
+  get "optimistic-forms" => "docs#optimistic_forms", as: :optimistic_forms
+  post "optimistic-forms/favorite" => "docs#optimistic_favorite", as: :optimistic_favorite
+  post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
 
   # The official registry (Ecosystem v1) - shadcn-schema items
   # served live from the gem registries; literal routes before the catch.

@@ -150,6 +150,24 @@
     "path": "/deferred#lazy"
   },
   {
+    "title": "Optimistic Forms",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms"
+  },
+  {
+    "title": "Default",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#default"
+  },
+  {
+    "title": "Reconciliation",
+    "page": "Optimistic Forms",
+    "section": "docs",
+    "path": "/optimistic-forms#reconciliation"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",

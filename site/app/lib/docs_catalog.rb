@@ -31,7 +31,12 @@ class DocsCatalog
     Entry.new(slug: "deferred", title: "Deferred Regions", section: "docs", icon: :timer,
               description: "poetry_deferred(src:) — Turbo owns the loading physics (lazy fetches " \
                            "on visibility, so hidden Tabs panels and HoverCards defer for free); " \
-                           "poetry owns the states: a Skeleton placeholder and a retryable error card.")
+                           "poetry owns the states: a Skeleton placeholder and a retryable error card."),
+    Entry.new(slug: "optimistic-forms", title: "Optimistic Forms", section: "docs", icon: :zap,
+              description: "poetry_optimistic_form — the predicted result paints on submit as a " \
+                           "server-authored Turbo Stream; the server corrects only on rejection " \
+                           "(morph refresh). One vocabulary for prediction and truth, plus the " \
+                           "204/no-redirect server contract.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page
