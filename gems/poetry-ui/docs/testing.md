@@ -141,3 +141,11 @@ realistic raw-Tailwind arm per component family — scored two ways.
   the judge's own calibration — its agreement rate is in the verdicts file.
 
 Doctrine and cadence live in `eval/README.md`.
+
+## Accessibility
+
+The axe walk (`rake test:accessibility`) is part of the default gates and
+covers the structural tier automatically — but axe catches roughly a third of
+WCAG issues. Focus management, screen-reader announcements, and keyboard
+operability need a human pass: the manual protocol, per-pattern checklists,
+and recording rules live in [a11y-testing.md](a11y-testing.md).
