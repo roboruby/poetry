@@ -79,6 +79,18 @@ module Poetry
         assert_empty source.scan(/capture\((?!&)[^)]*\)/), "capture must take only the block, never arguments"
         refute_match(/block\.call\(.+\)/, source, "blocks must not be called with arguments")
       end
+
+      def test_color_scheme_script_bootstraps_before_paint_and_wires_the_api
+        html = render_erb(%(<%= poetry_color_scheme_script %>))
+
+        assert_match(/\A<script/, html)
+        assert_includes html, %(localStorage.getItem(KEY)), "reads the stored preference"
+        assert_includes html, %("poetry-color-scheme"), "the documented storage key"
+        assert_includes html, %(prefers-color-scheme: dark), "falls back to the OS preference"
+        assert_includes html, 'classList.toggle("dark"', "applies the mode as the .dark class"
+        assert_includes html, %(window.Poetry.colorScheme), "exposes the switch API"
+        assert_includes html, %(poetry:color-scheme), "announces changes for redraw listeners"
+      end
     end
   end
 end

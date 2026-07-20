@@ -249,6 +249,14 @@ module Poetry
       apply_poetry_skills
     end
 
+    # Dark mode is one layout line, but nothing else in the install touches
+    # the layout - without the pointer the theme never applies before first
+    # paint and hosts rediscover the flash-of-light-mode pothole.
+    def announce_color_scheme
+      say_status :note, "dark mode: render <%= poetry_color_scheme_script %> in your layout <head> " \
+                        "(docs/theming.md, \"Color scheme\")", :cyan
+    end
+
     private
 
     def resolved_theme

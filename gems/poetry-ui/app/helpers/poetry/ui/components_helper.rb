@@ -709,6 +709,46 @@ module Poetry
         render(Poetry::Ui::Menubar::Component.new(**), &)
       end
 
+      # The color-scheme bootstrap (, the pothole a classes-only port-rb patches
+      # into every host by hand): tokens ship `.dark` + `color-scheme`, but
+      # WHEN `.dark` applies is the host's job - and it must happen before
+      # first paint or every visit flashes light. Render inside <head>,
+      # before the stylesheets. Also wires window.Poetry.colorScheme
+      # (current/set/toggle/clear) for toggle controls; an unset preference
+      # follows the OS and tracks its changes live. Full recipe:
+      # docs/theming.md, "Color scheme (dark mode)".
+      def poetry_color_scheme_script
+        javascript_tag(COLOR_SCHEME_JS, nonce: true)
+      end
+
+      COLOR_SCHEME_JS = <<~JS
+        (() => {
+          const KEY = "poetry-color-scheme";
+          const media = window.matchMedia("(prefers-color-scheme: dark)");
+          const stored = () => { try { return localStorage.getItem(KEY); } catch { return null; } };
+          const current = () => stored() || (media.matches ? "dark" : "light");
+          const apply = () => {
+            const mode = current();
+            document.documentElement.classList.toggle("dark", mode === "dark");
+            document.documentElement.dispatchEvent(
+              new CustomEvent("poetry:color-scheme", { bubbles: true, detail: { mode } })
+            );
+          };
+          apply();
+          media.addEventListener("change", () => { if (!stored()) apply(); });
+          window.Poetry = window.Poetry || {};
+          window.Poetry.colorScheme = {
+            current,
+            set(mode) {
+              try { mode ? localStorage.setItem(KEY, mode) : localStorage.removeItem(KEY); } catch {}
+              apply();
+            },
+            toggle() { this.set(current() === "dark" ? "light" : "dark"); },
+            clear() { this.set(null); }
+          };
+        })();
+      JS
+
       private
 
       # The chat-set group wrappers are dictionary ELEMENTS, not components.

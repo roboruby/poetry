@@ -11,6 +11,7 @@
   <%% end %>
 
 <% attributes.each do |attribute| -%>
+<% required = attribute.attr_options[:null] == false -%>
 <% if attribute.password_digest? -%>
   <%%= poetry_field(id: form.field_id(:password), label_text: "Password",
                    error: <%= singular_table_name %>.errors[:password].first) do |field| %>
@@ -27,12 +28,12 @@
                       checked: <%= model_resource_name %>.<%= attribute.column_name %>?, value: "1", unchecked_value: "0") %>
 <% elsif %w[integer decimal float].include?(attribute.type.to_s) -%>
   <%%= poetry_number_field(label: "<%= attribute.human_name %>", name: form.field_name(:<%= attribute.column_name %>),
-                          value: <%= model_resource_name %>.<%= attribute.column_name %><%= attribute.type.to_s == "integer" ? ", step: 1" : "" %>) %>
+                          value: <%= model_resource_name %>.<%= attribute.column_name %><%= attribute.type.to_s == "integer" ? ", step: 1" : "" %><%= ", required: true" if required %>) %>
 <% elsif attribute.type.to_s == "date" -%>
   <%%= poetry_date_field(label: "<%= attribute.human_name %>", name: form.field_name(:<%= attribute.column_name %>),
-                        value: <%= model_resource_name %>.<%= attribute.column_name %>) %>
+                        value: <%= model_resource_name %>.<%= attribute.column_name %><%= ", required: true" if required %>) %>
 <% elsif %w[text rich_text].include?(attribute.type.to_s) -%>
-  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",
+  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",<%= " required: true," if required %>
                    error: <%= singular_table_name %>.errors[:<%= attribute.column_name %>].first) do |field| %>
     <%%= poetry_textarea(name: form.field_name(:<%= attribute.column_name %>),
                         value: <%= model_resource_name %>.<%= attribute.column_name %>,
@@ -48,10 +49,21 @@
                 when "datetime" then "#{model_resource_name}.#{attribute.column_name}&.strftime(\"%Y-%m-%dT%H:%M\")"
                 when "time" then "#{model_resource_name}.#{attribute.column_name}&.strftime(\"%H:%M\")"
                 else "#{model_resource_name}.#{attribute.column_name}"
+                end
+   input_type = if attribute.type.to_s != "string"
+                  { "datetime" => "datetime-local", "time" => "time" }.fetch(attribute.type.to_s, "text")
+                elsif %w[email email_address].include?(attribute.column_name)
+                  "email"
+                elsif %w[phone phone_number].include?(attribute.column_name)
+                  "tel"
+                elsif %w[url website permalink].include?(attribute.column_name)
+                  "url"
+                else
+                  "text"
                 end -%>
-  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",
+  <%%= poetry_field(id: form.field_id(:<%= attribute.column_name %>), label_text: "<%= attribute.human_name %>",<%= " required: true," if required %>
                    error: <%= singular_table_name %>.errors[:<%= attribute.column_name %>].first) do |field| %>
-    <%%= poetry_input(type: "<%= { "datetime" => "datetime-local", "time" => "time" }.fetch(attribute.type.to_s, "text") %>", name: form.field_name(:<%= attribute.column_name %>),
+    <%%= poetry_input(type: "<%= input_type %>", name: form.field_name(:<%= attribute.column_name %>),
                      value: <%= value_expr %>,
                      **field.control_attributes.transform_keys(&:to_sym)) %>
   <%% end %>

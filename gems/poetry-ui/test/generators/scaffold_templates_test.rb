@@ -62,7 +62,8 @@ module Poetry
     ATTRIBUTES = [
       "title:string", "body:text", "price:decimal", "quantity:integer",
       "published:boolean", "published_on:date", "starts_at:datetime",
-      "password:digest", "photo:attachment", "documents:attachments"
+      "password:digest", "photo:attachment", "documents:attachments",
+      "email:string!", "website:string", "seats:integer!"
     ].freeze
 
     def self.expanded(name)
@@ -97,6 +98,27 @@ module Poetry
       assert_includes expanded, 'with_column("Title", key: :title, sortable: true)'
       assert_includes expanded, 'with_column("Photo")', "attachments are not sortable columns"
       refute_includes expanded, "password", "password digests never render in the table"
+    end
+
+    def test_the_expanded_form_maps_column_names_to_input_types
+      expanded = self.class.expanded("_form")
+
+      assert_includes expanded, 'poetry_input(type: "email", name: form.field_name(:email)',
+                      "an email column renders a type=email input (the a classes-only port heuristics)"
+      assert_includes expanded, 'poetry_input(type: "url", name: form.field_name(:website)'
+      assert_includes expanded, 'poetry_input(type: "text", name: form.field_name(:title)',
+                      "names outside the heuristic lists stay text"
+    end
+
+    def test_the_expanded_form_carries_required_from_null_false
+      expanded = self.class.expanded("_form")
+
+      assert_includes expanded, 'label_text: "Email", required: true',
+                      "a bang column (null: false) marks its Field required"
+      assert_includes expanded, "value: post.seats, step: 1, required: true",
+                      "composite fields carry required directly"
+      refute_includes expanded, 'label_text: "Title", required: true',
+                      "nullable columns stay unrequired"
     end
 
     def test_the_controller_template_whitelists_only_real_columns

@@ -116,6 +116,45 @@ Two standalone classes the theme defines for direct use:
   `POETRY_THEME=<name> VISUAL_REBASELINE=1`) and the full theme matrix
   runs at milestone closes rather than per commit.
 
+## Color scheme (dark mode)
+
+Every theme ships both modes: the tokens define `:root` (light) and
+`.dark` overrides, and both blocks carry `color-scheme`, so UA
+scrollbars, form-control chrome and canvas defaults follow the app's
+mode rather than the OS preference. What the gem does not decide
+is WHEN `.dark` applies — that part is one line in the host layout:
+
+```erb
+<head>
+  <%= poetry_color_scheme_script %>
+  <%# ...stylesheet/javascript tags... %>
+</head>
+```
+
+Render it inside `<head>`, before the stylesheets. Before first paint it
+reads the stored preference (`localStorage["poetry-color-scheme"]`),
+falls back to `prefers-color-scheme`, and toggles `.dark` on `<html>` —
+no light-mode flash on refresh (the pothole every hand-rolled dark mode
+hits once), and an unset preference follows the OS live, including
+mid-session OS switches. Because the class lives on `<html>`, Turbo
+visits and bfcache restores keep the mode with no re-application.
+
+The script also installs the switch API — wire any control to it:
+
+```erb
+<%= poetry_button(variant: :ghost, size: :icon, label: "Toggle dark mode",
+                 onclick: "Poetry.colorScheme.toggle()") do %>
+  <%= poetry_icon(name: :"sun-moon") %>
+<% end %>
+```
+
+`Poetry.colorScheme.current()` reads the active mode, `set("dark")` /
+`set("light")` pins one, `toggle()` flips, and `clear()` returns to
+following the OS. Every change dispatches `poetry:color-scheme` on
+`document.documentElement` (bubbling, `detail: { mode }`) for anything
+that must redraw with the mode — chart recoloring, embedded editors,
+maps.
+
 ## Multi-theme (what ships, what's ahead)
 
 Shipped today: **install-time selection** — one theme per build via
