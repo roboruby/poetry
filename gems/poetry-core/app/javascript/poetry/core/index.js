@@ -51,6 +51,7 @@ import DatePickerController from "@poetry/controllers/date_picker_controller"
 import DeferredController from "@poetry/controllers/deferred_controller"
 import HotkeyController from "@poetry/controllers/hotkey_controller"
 import ScrollSpyController from "@poetry/controllers/scroll_spy_controller"
+import OptimisticFormController from "@poetry/controllers/optimistic_form_controller"
 
 export { default as StateController } from "@poetry/controllers/state_controller"
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
@@ -100,6 +101,7 @@ export { default as DatePickerController } from "@poetry/controllers/date_picker
 export { default as DeferredController } from "@poetry/controllers/deferred_controller"
 export { default as HotkeyController } from "@poetry/controllers/hotkey_controller"
 export { default as ScrollSpyController } from "@poetry/controllers/scroll_spy_controller"
+export { default as OptimisticFormController } from "@poetry/controllers/optimistic_form_controller"
 export * from "@poetry/controllers/helpers/state"
 export * from "@poetry/controllers/helpers/collection"
 export * from "@poetry/controllers/helpers/direction"
@@ -161,7 +163,8 @@ export const controllers = {
   "poetry--core--date-picker": DatePickerController,
   "poetry--core--deferred": DeferredController,
   "poetry--core--hotkey": HotkeyController,
-  "poetry--core--scroll-spy": ScrollSpyController
+  "poetry--core--scroll-spy": ScrollSpyController,
+  "poetry--core--optimistic-form": OptimisticFormController
 }
 
 // The bundler-host one-liner: registers every poetry controller on the

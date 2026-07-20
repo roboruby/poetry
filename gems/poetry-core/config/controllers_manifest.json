@@ -787,6 +787,18 @@
       "poetry:number-field:commit"
     ]
   },
+  "poetry--core--optimistic-form": {
+    "targets": [
+      "template"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "apply",
+      "reconcile"
+    ],
+    "events": []
+  },
   "poetry--core--otp": {
     "targets": [
       "input",
