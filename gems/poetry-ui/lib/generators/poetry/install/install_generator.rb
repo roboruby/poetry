@@ -257,6 +257,16 @@ module Poetry
                         "(docs/theming.md, \"Color scheme\")", :cyan
     end
 
+    # poetry_optimistic_form reconciles failures via a Turbo refresh, which
+    # must MORPH to be seamless - two layout metas the install cannot add
+    # for the host (; the redirect trap and server contract live in
+    # the doc).
+    def announce_optimistic_form
+      say_status :note, "optimistic forms: add <meta name=\"turbo-refresh-method\" content=\"morph\"> " \
+                        "+ <meta name=\"turbo-refresh-scroll\" content=\"preserve\"> to your layout " \
+                        "<head> before using poetry_optimistic_form (docs/optimistic-form.md)", :cyan
+    end
+
     private
 
     def resolved_theme

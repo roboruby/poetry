@@ -110,6 +110,36 @@ module Poetry
         render(Poetry::Ui::Deferred::Component.new(**), &)
       end
 
+      # Optimistic UI for a Turbo form: the block's
+      # form.optimistic_template authors the PREDICTED state as a
+      # turbo-stream in a <template>; the controller paints it on submit
+      # and reconciles (morph refresh) only when the server rejects. The
+      # server contract - success answers 204 or a targeted stream, NEVER
+      # a redirect; failure answers 4xx - and the morph-refresh meta
+      # prerequisite live in docs/optimistic-form.md.
+      # attribute_name:/value: auto-inject the submitted-value hidden field
+      # (false survives; form.optimistic_hidden_field places it explicitly).
+      def poetry_optimistic_form(attribute_name: nil, value: OptimisticFormBuilder::UNSET,
+                                 **options, &block)
+        options[:builder] = OptimisticFormBuilder
+        options[:data] = (options[:data] || {}).dup
+        options[:data][:controller] =
+          [options[:data][:controller], "poetry--core--optimistic-form"].compact.join(" ")
+        options[:data][:action] = [
+          options[:data][:action],
+          "turbo:submit-start->poetry--core--optimistic-form#apply " \
+          "turbo:submit-end->poetry--core--optimistic-form#reconcile"
+        ].compact.join(" ")
+
+        form_with(**options) do |form|
+          body = capture(form, &block)
+          prefix = if optimistic_auto_inject?(form, attribute_name, value)
+                     form.optimistic_hidden_field(attribute_name, value: value)
+                   end
+          safe_join([prefix, body].compact)
+        end
+      end
+
       # The key text is the content block: poetry_kbd { "⌘" }.
       def poetry_kbd(**, &)
         render(Poetry::Ui::Kbd::Component.new(**), &)
@@ -429,6 +459,15 @@ module Poetry
       # :leading crash class). Plain wrapper helpers need no entry here;
       # registry generation lists them name-only.
       HELPER_CONTRACTS = {
+        "poetry_optimistic_form" => {
+          "yields" => "the form builder - form.optimistic_template authors the predicted " \
+                      "turbo-stream(s); form.optimistic_hidden_field places the submitted value; " \
+                      "every standard field helper works",
+          "options" => [
+            { "name" => "attribute_name", "type" => "symbol" },
+            { "name" => "value", "type" => "object" }
+          ]
+        },
         "poetry_input_group_addon" => {
           "options" => [{ "name" => "align", "type" => "symbol", "default" => "inline-start",
                           "variants" => INPUT_GROUP_ALIGNS.map(&:to_s) }]
@@ -754,6 +793,16 @@ module Poetry
       JS
 
       private
+
+      # Auto-inject only when the caller supplied the pair AND didn't place
+      # the field explicitly inside the block (the block is captured first,
+      # so an explicit optimistic_hidden_field call wins).
+      def optimistic_auto_inject?(form, attribute_name, value)
+        attribute_name.present? &&
+          !value.nil? &&
+          !OptimisticFormBuilder::UNSET.equal?(value) &&
+          !form.optimistic_hidden_field_rendered?
+      end
 
       # The chat-set group wrappers are dictionary ELEMENTS, not components.
       def poetry_chat_group(style, slot, **attrs, &)

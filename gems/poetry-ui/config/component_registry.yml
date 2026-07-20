@@ -8027,6 +8027,15 @@ helpers:
   poetry_native_select_optgroup: {}
   poetry_native_select_option: {}
   poetry_navigation_menu_link: {}
+  poetry_optimistic_form:
+    yields: the form builder - form.optimistic_template authors the predicted turbo-stream(s);
+      form.optimistic_hidden_field places the submitted value; every standard field
+      helper works
+    options:
+    - name: attribute_name
+      type: symbol
+    - name: value
+      type: object
   poetry_sidebar_content: {}
   poetry_sidebar_footer: {}
   poetry_sidebar_group: {}
@@ -8280,6 +8289,7 @@ helper_args:
   poetry_navigation_menu: 0
   poetry_navigation_menu_link: 0
   poetry_number_field: 0
+  poetry_optimistic_form: 0
   poetry_pagination: 0
   poetry_popover: 0
   poetry_progress: 0

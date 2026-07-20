@@ -76,7 +76,17 @@ module Poetry
         source = Poetry::Ui.root.join("app/helpers/poetry/ui/components_helper.rb").read
 
         refute_match(/\byield\b/, source, "wrapper helpers must not yield")
-        assert_empty source.scan(/capture\((?!&)[^)]*\)/), "capture must take only the block, never arguments"
+        # extends the rule consciously: a wrapper MAY yield when its
+        # HELPER_CONTRACTS entry declares "yields" (the check tool's
+        # yieldless tier reads the same declaration, so source and rule
+        # cannot drift). Every capture-with-args must be the form-builder
+        # shape, and their count must match the declared yielders exactly.
+        declared_yielders = ComponentsHelper::HELPER_CONTRACTS.count { |_name, contract| contract["yields"] }
+        with_args = source.scan(/capture\((?!&)[^)]*\)/)
+
+        assert_equal(["capture(form, &block)"] * declared_yielders, with_args,
+                     "capture takes only the block - unless the helper declares \"yields\" " \
+                     "in HELPER_CONTRACTS and passes exactly the form builder")
         refute_match(/block\.call\(.+\)/, source, "blocks must not be called with arguments")
       end
 
@@ -90,6 +100,73 @@ module Poetry
         assert_includes html, 'classList.toggle("dark"', "applies the mode as the .dark class"
         assert_includes html, %(window.Poetry.colorScheme), "exposes the switch API"
         assert_includes html, %(poetry:color-scheme), "announces changes for redraw listeners"
+      end
+
+      # -- poetry_optimistic_form --------------------------------------
+
+      def test_optimistic_form_wires_the_controller_and_wraps_the_prediction
+        html = render_erb(<<~ERB)
+          <%= poetry_optimistic_form(url: "/favorites", method: :post) do |form| %>
+            <%= form.optimistic_template "fav-icon", "★" %>
+            <%= form.button "Save" %>
+          <% end %>
+        ERB
+        doc = Nokogiri::HTML::Document.parse(html)
+        form = doc.css("form").first
+
+        assert_includes form["data-controller"], "poetry--core--optimistic-form"
+        assert_includes form["data-action"],
+                        "turbo:submit-start->poetry--core--optimistic-form#apply"
+        assert_includes form["data-action"],
+                        "turbo:submit-end->poetry--core--optimistic-form#reconcile"
+        template = form.css("template").first
+
+        assert_equal "template", template["data-poetry--core--optimistic-form-target"]
+        stream = template.element_children.first.css("turbo-stream").first ||
+                 Nokogiri::HTML.fragment(template.inner_html).css("turbo-stream").first
+
+        assert_equal "update", stream["action"]
+        assert_equal "fav-icon", stream["target"]
+      end
+
+      def test_optimistic_form_hidden_field_preserves_false_and_defers_to_explicit
+        auto = render_erb(<<~ERB)
+          <%= poetry_optimistic_form(url: "/favorites", attribute_name: :favorite, value: false) do |form| %>
+            <%= form.button "Save" %>
+          <% end %>
+        ERB
+
+        assert_includes auto, 'name="favorite"', "attribute_name: injects the hidden field"
+        assert_includes auto, 'value="false"', "false is a real value - only nil suppresses"
+
+        explicit = render_erb(<<~ERB)
+          <%= poetry_optimistic_form(url: "/favorites", attribute_name: :favorite, value: true) do |form| %>
+            <%= form.optimistic_hidden_field :favorite, value: false %>
+          <% end %>
+        ERB
+
+        assert_equal 1, explicit.scan('name="favorite"').length,
+                     "an explicit optimistic_hidden_field suppresses the auto-injection"
+
+        bare = render_erb(<<~ERB)
+          <%= poetry_optimistic_form(url: "/favorites") do |form| %>
+            <%= form.button "Save" %>
+          <% end %>
+        ERB
+
+        refute_includes bare, 'name="favorite"', "no attribute_name: means no injected field"
+      end
+
+      def test_optimistic_form_block_template_authors_the_streams_directly
+        html = render_erb(<<~ERB)
+          <%= poetry_optimistic_form(url: "/cart", method: :post) do |form| %>
+            <%= form.optimistic_template do %>
+              <turbo-stream action="update" target="cart-count"><template>3</template></turbo-stream>
+            <% end %>
+          <% end %>
+        ERB
+
+        assert_includes html, 'target="cart-count"', "block form carries the authored stream verbatim"
       end
     end
   end
