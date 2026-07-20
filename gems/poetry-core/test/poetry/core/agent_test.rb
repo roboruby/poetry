@@ -101,7 +101,7 @@ module Poetry
         names = tools.map { |tool| tool["name"] }
 
         assert_equal %w[compose list_components describe_component check list_blocks describe_block
-                        guidance], names
+                        get_skill guidance], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 
@@ -291,6 +291,57 @@ module Poetry
         assert_includes block_slot, %(name: "triangle_alert" is not an icon name)
         assert_includes bad_align, "FAIL"
         assert_includes bad_align, "inline-start, inline-end, block-start, block-end"
+      end
+
+      # --- get_skill (runtime skill delivery) ---
+
+      SKILL_FIXTURE = {
+        "SKILL.md" => "# poetry - component usage\nGuardrails here.",
+        "references/forms.md" => "# forms contracts",
+        "references/deciding.md" => "# deciding"
+      }.freeze
+
+      def skills_server
+        loads = 0
+        counter = -> { loads }
+        skills = { "poetry" => lambda {
+          loads += 1
+          SKILL_FIXTURE
+        } }
+        catalog = Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES)
+        [Agent::Server.new(entries: ENTRIES, catalog: catalog, skills: skills), counter]
+      end
+
+      def test_get_skill_serves_skill_md_with_the_file_index
+        target, = skills_server
+        text = call_on(target, "get_skill")
+
+        assert_includes text, "# poetry - component usage"
+        assert_includes text, "references/forms.md"
+        assert_includes text, "get_skill(name: \"poetry\", file:"
+      end
+
+      def test_get_skill_fetches_one_reference_and_memoizes_generation
+        target, loads = skills_server
+        first = call_on(target, "get_skill", "name" => "poetry", "file" => "references/forms.md")
+        call_on(target, "get_skill", "file" => "references/deciding.md")
+
+        assert_equal "# forms contracts", first
+        assert_equal 1, loads.call, "the file map is generated once, then served from memory"
+      end
+
+      def test_get_skill_names_what_is_missing
+        target, = skills_server
+        no_skill = call_on(target, "get_skill", "name" => "poetry-design")
+        no_file = call_on(target, "get_skill", "file" => "references/vibes.md")
+        bare = call("get_skill")
+
+        assert_includes no_skill, 'no skill "poetry-design"'
+        assert_includes no_skill, "available here: poetry"
+        assert_includes no_file, 'no file "references/vibes.md"'
+        assert_includes no_file, "references/forms.md"
+        assert_includes bare, "this host serves none"
+        assert_includes bare, "bin/rails g poetry:skill"
       end
 
       def test_guidance_serves_the_deciding_tree_and_names_unknown_topics

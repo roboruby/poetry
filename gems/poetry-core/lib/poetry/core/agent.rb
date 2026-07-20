@@ -100,6 +100,27 @@ module Poetry
           "annotations" => { "readOnlyHint" => true }
         },
         {
+          "name" => "get_skill",
+          "description" => "A poetry Claude Code skill served at runtime - for hosts where " \
+                           "the installed .claude/skills files are absent (hosted agents, sessions " \
+                           "that never ran the generator). name: poetry (component usage, generated " \
+                           "from this registry) or poetry-design (page-composition taste). Returns " \
+                           "SKILL.md plus the file index; pass file: to fetch one reference " \
+                           "(e.g. references/forms.md). The installed skills are the same text - " \
+                           "when .claude/skills/poetry exists, read it there instead.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "name" => { "type" => "string", "enum" => %w[poetry poetry-design],
+                          "default" => "poetry" },
+              "file" => { "type" => "string",
+                          "description" => "one skill file, e.g. references/deciding.md " \
+                                           "(omit for SKILL.md + the file index)" }
+            }
+          },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
           "name" => "guidance",
           "description" => "Curated composition guidance, per topic: 'deciding' = the " \
                            "which-component decision tree (interaction model first). The same " \
@@ -123,20 +144,27 @@ module Poetry
       # icon values by membership, not just shape. Everything read is the
       # live committed registry.
       class Server
-        def self.from_registry(root, helpers: nil, icon_names: nil)
-          payload = YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
-          entries = payload.fetch("components")
-          catalog = Check::Catalog.new(entries, helpers: helpers,
-                                                helper_entries: payload["helpers"], icon_names: icon_names,
-                                                helper_args: payload["helper_args"])
-          new(entries: entries, catalog: catalog, blocks: payload["blocks"] || {}, root: root)
+        # skills: skill name => a zero-arg callable returning the skill's
+        # {relative path => content} file map (the get_skill tool).
+        # Lazy because the usage skill is generated from the registry on
+        # first fetch - server boot stays instant.
+        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {})
+          committed = Registry.committed(root)
+          catalog = Check::Catalog.new(committed.entries, helpers: helpers,
+                                                          helper_entries: committed.helpers,
+                                                          icon_names: icon_names,
+                                                          helper_args: committed.helper_args)
+          new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
+              root: root, skills: skills)
         end
 
-        def initialize(entries:, catalog:, blocks: {}, root: nil)
+        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {})
           @entries = entries
           @catalog = catalog
           @blocks = blocks
           @root = root
+          @skills = skills
+          @skill_files = {}
         end
 
         # compose routing: the strong-match threshold, and the words
@@ -207,6 +235,7 @@ module Poetry
             when "check" then check(arguments)
             when "list_blocks" then list_blocks
             when "describe_block" then describe_block(arguments)
+            when "get_skill" then get_skill(arguments)
             when "guidance" then guidance(arguments)
             else return tool_content("unknown tool: #{name}", error: true)
             end
@@ -363,6 +392,37 @@ module Poetry
             "- #{name}: #{entry["title"]} - #{entry["description"]} " \
               "[composes: #{entry["components"].join(", ")}]"
           end.join("\n")
+        end
+
+        # Runtime skill delivery (the ReUI-review add): the SAME
+        # files `rails g poetry:skill` installs, served over MCP for hosts
+        # that cannot write files. SKILL.md alone first - the skill's own
+        # progressive-disclosure design; references load one at a time.
+        def get_skill(arguments)
+          name = arguments["name"] || "poetry"
+          loader = @skills[name]
+          unless loader
+            available = @skills.keys.sort.join(", ")
+            listing = available.empty? ? "this host serves none" : "available here: #{available}"
+            return "no skill #{name.inspect} - #{listing}. In an app, " \
+                   "`bin/rails g poetry:skill` installs them as files instead."
+          end
+
+          files = (@skill_files[name] ||= loader.call)
+          file = arguments["file"]
+          return skill_menu(name, files) unless file
+
+          files.fetch(file) do
+            "no file #{file.inspect} in the #{name} skill - files: #{files.keys.sort.join(", ")}"
+          end
+        end
+
+        def skill_menu(name, files)
+          references = files.keys.reject { |path| path == "SKILL.md" }.sort
+          menu = ["", "---", "Files in this skill - fetch one with get_skill(name: #{name.inspect}, " \
+                             "file: \"...\"):"]
+          references.each { |path| menu << "- #{path}" }
+          files.fetch("SKILL.md") + menu.join("\n")
         end
 
         # Curated guidance topics: the same text the installed

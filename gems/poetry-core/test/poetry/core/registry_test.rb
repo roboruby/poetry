@@ -62,6 +62,17 @@ module Poetry
         end
       end
 
+      def test_committed_reads_the_generated_sections_boot_free
+        Dir.mktmpdir do |dir|
+          registry.generate!(root: dir)
+          committed = Registry.committed(dir)
+
+          assert_equal registry.entries.keys, committed.entries.keys
+          assert_equal Pathname.new(dir), committed.source_root
+          assert_nil committed.blocks, "a registry generated without blocks reads back without them"
+        end
+      end
+
       def test_helpers_section_is_emitted_when_given_and_absent_otherwise
         contracts = {
           "poetry_widget_addon" => {

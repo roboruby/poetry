@@ -23,6 +23,32 @@ module Poetry
       # Stimulus lifecycle callbacks are not consumer-callable actions.
       LIFECYCLE_METHODS = %w[connect disconnect initialize].freeze
 
+      # The committed-registry view: the four generated sections
+      # plus the root they resolve against, read straight from the YAML a
+      # `registry:generate` run committed - no component classes, no Rails.
+      # It satisfies every LlmsText/SkillText read (entries / blocks /
+      # source_root), so boot-free consumers (the MCP server, runtime skill
+      # delivery) share one loader instead of each parsing the payload.
+      class Committed
+        attr_reader :entries, :blocks, :helpers, :helper_args, :source_root
+
+        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:)
+          @entries = entries
+          @blocks = blocks
+          @helpers = helpers
+          @helper_args = helper_args
+          @source_root = source_root
+        end
+      end
+
+      def self.committed(root)
+        source_root = Pathname.new(root)
+        payload = YAML.load_file(source_root.join(RELATIVE_PATH), aliases: true)
+        Committed.new(entries: payload.fetch("components"), blocks: payload["blocks"],
+                      helpers: payload["helpers"], helper_args: payload["helper_args"],
+                      source_root: source_root)
+      end
+
       # @param components [Enumerable<Class>, nil] component classes; defaults
       #   to every named Poetry::Core::Component descendant (eager-loaded)
       #   whose source lives under source_root.
