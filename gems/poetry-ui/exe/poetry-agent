@@ -31,5 +31,6 @@ rescue LoadError, Poetry::Core::Error
 end
 
 Poetry::Core::Agent::Server.from_registry(
-  Poetry::Ui.root, helpers: Poetry::Ui.helper_names, icon_names: icon_names
+  Poetry::Ui.root, helpers: Poetry::Ui.helper_names, icon_names: icon_names,
+                   skills: Poetry::Ui.agent_skills
 ).serve

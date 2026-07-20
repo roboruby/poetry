@@ -30,6 +30,17 @@ module Poetry
           "params" => { "name" => "check", "arguments" => { "source" => source } } }
       end
 
+      def test_the_resolving_exe_serves_the_skills_at_runtime
+        request = { "jsonrpc" => "2.0", "id" => 1, "method" => "tools/call",
+                    "params" => { "name" => "get_skill",
+                                  "arguments" => { "name" => "poetry-design" } } }
+        text = call_exe([request]).first.dig("result", "content", 0, "text")
+
+        assert_includes text, "poetry-design",
+                        "the design skill reaches MCP-only hosts "
+        assert_includes text, "references/audit.md", "the file index rides along"
+      end
+
       def test_the_resolving_exe_checks_icon_membership_and_helper_arity
         replies = call_exe([
                              check_request(1, %(<%= poetry_icon(name: :filter) %>)),

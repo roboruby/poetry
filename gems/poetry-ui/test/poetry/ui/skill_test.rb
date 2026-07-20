@@ -15,6 +15,22 @@ module Poetry
         @skill_files ||= Poetry::Ui.skill_files
       end
 
+      # get_skill: the runtime map serves the SAME files the
+      # generator installs - boot-free, from the COMMITTED registries.
+      test "agent_skills serves both installed skills from committed sources" do
+        skills = Poetry::Ui.agent_skills
+        usage = skills.fetch("poetry").call
+        design = skills.fetch("poetry-design").call
+
+        assert_includes usage.fetch("SKILL.md"), "# poetry - component usage"
+        assert usage.key?("references/deciding.md")
+        assert usage.key?("references/blocks.md")
+        assert_equal Poetry::Ui.skill_files.keys.sort, usage.keys.sort,
+                     "runtime delivery and the generator must install the same file set"
+        assert_includes design.fetch("SKILL.md"), "poetry-design"
+        assert_equal Dir.glob(DESIGN_DIR.join("**/*.md").to_s).length, design.length
+      end
+
       test "every registry component lives in exactly one skill family" do
         mapped = SKILL_FAMILIES.values.flatten
         roster = Poetry::Ui.registry.entries.keys.map { |path| path.split("/").drop(2).join("_") }

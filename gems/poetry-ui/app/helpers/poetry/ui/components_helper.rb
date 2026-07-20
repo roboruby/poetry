@@ -36,6 +36,10 @@ module Poetry
         render(Poetry::Ui::MetadataList::Component.new(**), &)
       end
 
+      def poetry_timeline(**, &)
+        render(Poetry::Ui::Timeline::Component.new(**), &)
+      end
+
       def poetry_toolbar(**, &)
         render(Poetry::Ui::Toolbar::Component.new(**), &)
       end

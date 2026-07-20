@@ -46,6 +46,7 @@ module Poetry
       "meter" => %w[progress], # wears Progress::Style chrome verbatim
       "search_field" => %w[input input_group button icon], # composes their chrome
       "tag_group" => %w[icon], # the remove glyph
+      "timeline" => %w[icon], # the indicator glyph
       "tree" => %w[icon], # the chevron
       "clipboard_text" => %w[input input_group button icon], # composes their chrome
       "sensitive_input" => %w[input input_group button icon clipboard_text], # + the copy: engine
@@ -60,7 +61,7 @@ module Poetry
       "overlays" => %w[alert_dialog command command_dialog context_menu dialog drawer
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel clipboard_text code_block collapsible data_table empty
-                   item metadata_list meter stat table tag_group toolbar tree typeset],
+                   item metadata_list meter stat table tag_group timeline toolbar tree typeset],
       "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],
@@ -138,6 +139,39 @@ module Poetry
 
         Poetry::Charts.registry
       rescue StandardError
+        nil
+      end
+
+      # The MCP server's runtime skill map (get_skill): the SAME
+      # files `rails g poetry:skill` writes, for hosts that cannot write
+      # files. Boot-free by construction - the usage skill regenerates from
+      # the COMMITTED registries (never the booted builders above), the
+      # design skill reads its static templates - so the exe can serve both
+      # without Rails. Lazy: nothing generates until an agent asks.
+      def agent_skills
+        {
+          "poetry" => -> { runtime_skill_files },
+          "poetry-design" => lambda {
+            require "generators/poetry/skills_section"
+            Object.new.extend(Poetry::Generators::SkillsSection).design_skill_files
+          }
+        }
+      end
+
+      def runtime_skill_files
+        Poetry::Core::SkillText.new(
+          registry: Poetry::Core::Registry.committed(root),
+          families: SKILL_FAMILIES, charts_registry: committed_charts_registry
+        ).files
+      end
+
+      # The charts reference rides along whenever the charts gem is present
+      # (its committed registry, not its booted builder); absent, the skill
+      # simply drops it - the charts_registry tolerance, boot-free.
+      def committed_charts_registry
+        require "poetry/charts"
+        Poetry::Core::Registry.committed(Poetry::Charts.root)
+      rescue LoadError, StandardError
         nil
       end
 

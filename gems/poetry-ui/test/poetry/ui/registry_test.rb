@@ -38,7 +38,7 @@ module Poetry
                       poetry/ui/separator poetry/ui/sheet poetry/ui/sidebar poetry/ui/skeleton poetry/ui/slider
                       poetry/ui/spinner poetry/ui/stat
                       poetry/ui/switch poetry/ui/table poetry/ui/tabs poetry/ui/tag_group
-                      poetry/ui/textarea poetry/ui/time_field poetry/ui/toast
+                      poetry/ui/textarea poetry/ui/time_field poetry/ui/timeline poetry/ui/toast
                       poetry/ui/toaster
                       poetry/ui/toggle poetry/ui/toggle_group poetry/ui/toolbar poetry/ui/tooltip poetry/ui/tree
                       poetry/ui/typeset]

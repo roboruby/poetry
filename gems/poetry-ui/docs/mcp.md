@@ -12,9 +12,14 @@ surface does: the registry, `poetry check`, and llms.txt.
 
 | Tool | Args | Returns |
 |------|------|---------|
+| `compose` | `brief` | the FIRST move for every brief: routes to the matching vetted block (source inline) or the matching components |
 | `list_components` | — | every component, its `poetry_*` helper, and whether it is interactive |
-| `describe_component` | `name`, `detail: brief\|detailed\|full` | the contract — progressive disclosure so an agent loads one component, not all 38 |
-| `check` | `source` | a verdict (PASS/FAIL) + findings: unknown component/option/variant/wiring, raw colors |
+| `describe_component` | `name`, `detail: brief\|detailed\|full` | the contract — progressive disclosure so an agent loads one component, not the whole catalog |
+| `check` | `source` | a verdict (PASS/FAIL) + findings: unknown component/option/variant/wiring, raw colors, icon membership, arity, required slots, any-of contracts |
+| `list_blocks` | — | the vetted composed-screen catalog |
+| `describe_block` | `name` | one block's contract AND full ERB source, ready to adapt |
+| `get_skill` | `name: poetry\|poetry-design`, `file` | the installed skills served at runtime — SKILL.md + file index, or one reference file — for hosts that cannot write `.claude/skills/` |
+| `guidance` | `topic` | curated composition guidance; `deciding` = the which-component decision tree |
 
 `describe_component` accepts either the short name (`button`, `command_dialog`)
 or the full registry path. `full` detail adds the Stimulus wiring surface

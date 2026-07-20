@@ -7212,6 +7212,78 @@ components:
     - name: time-field-input
       description: The native <input type=time> - THE form value in both modes; tabindex
         -1 + aria-hidden once segments exist
+  poetry/ui/timeline:
+    class_name: Poetry::Ui::Timeline::Component
+    identifier: poetry--ui--timeline
+    bem_block: poetry-ui-timeline
+    styles:
+    - name: orientation
+      type: symbol
+      variants:
+      - vertical
+      - horizontal
+      default: vertical
+    options: []
+    slots:
+    - name: items
+      many: true
+      setter_args:
+        item: 0
+      yieldless:
+      - item
+    elements:
+    - item
+    - indicator
+    - indicator_dot
+    - indicator_icon
+    - separator
+    - header
+    - title
+    - time
+    - content
+    capsule: 70bf132a2f6e
+    agent_rules:
+    - A sequence of dated events (activity feed, order status, deploy history) is
+      a Timeline - never a hand-rolled stack of dots and left borders (this is the
+      <ol> the sequence owes its readers).
+    - 'Each with_item takes title:, optional time: (renders a <time>), optional icon:
+      (swaps the dot for a glyph), completed: for progress - the description is the
+      block.'
+    - 'completed: colors the item''s indicator and its rail segment - mark every step
+      up to the current one, not just the latest.'
+    - 'orientation: :horizontal lays the steps left-to-right (an order tracker); the
+      vertical default reads as a feed. For steps the USER advances through, use Stepper
+      - a Timeline records, it never navigates.'
+    required_slots:
+      item: at least one item (title:, with the description as its block)
+    parts:
+    - name: timeline
+      description: The <ol> root - the event sequence
+      states:
+      - attr: data-orientation
+        condition: always - the layout axis
+        values:
+        - vertical
+        - horizontal
+    - name: timeline-item
+      description: 'One event (<li>): indicator + rail segment + header + description'
+      states:
+      - attr: data-completed
+        condition: the step is done - recolors its indicator and rail segment
+    - name: timeline-indicator
+      description: The decorative marker on the rail - a dot, or icon:'s glyph (aria-hidden;
+        the sequence lives in the list semantics)
+    - name: timeline-separator
+      description: The decorative rail segment toward the next item - hidden on the
+        last
+    - name: timeline-header
+      description: The title/time row
+    - name: timeline-title
+      description: The event's name
+    - name: timeline-time
+      description: The event's <time> - muted, small
+    - name: timeline-content
+      description: Muted description under the header (the item's block)
   poetry/ui/toast:
     class_name: Poetry::Ui::Toast::Component
     identifier: poetry--ui--toast
@@ -7924,6 +7996,7 @@ helpers:
   poetry_bubble_group: {}
   poetry_button_group_separator: {}
   poetry_button_group_text: {}
+  poetry_color_scheme_script: {}
   poetry_input_group_addon:
     options:
     - name: align
@@ -8162,6 +8235,7 @@ helper_args:
   poetry_clipboard_text: 0
   poetry_code_block: 0
   poetry_collapsible: 0
+  poetry_color_scheme_script: 0
   poetry_combobox: 0
   poetry_command: 0
   poetry_command_dialog: 0
@@ -8252,6 +8326,7 @@ helper_args:
   poetry_tag_group: 0
   poetry_textarea: 0
   poetry_time_field: 0
+  poetry_timeline: 0
   poetry_toast: 0
   poetry_toaster: 0
   poetry_toggle: 0

@@ -54,5 +54,21 @@
         <% end %>
       <% end %>
     </div>
+    <%# A sequence of dated events is a Timeline: a real <ol>,
+        completed: recolors the rail up to the current step - never a
+        hand-rolled stack of dots and left borders. %>
+    <div class="px-4 pb-4">
+      <%= poetry_timeline do |timeline| %>
+        <% timeline.with_item(title: "Deploy queued", time: "09:12", completed: true) do %>
+          Build #482 passed - waiting on the canary window.
+        <% end %>
+        <% timeline.with_item(title: "Canary live", time: "09:31", completed: true) do %>
+          5% of traffic on the new release.
+        <% end %>
+        <% timeline.with_item(title: "Full rollout", time: "10:00") do %>
+          Promotes automatically when error budget holds.
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
 <% end %>

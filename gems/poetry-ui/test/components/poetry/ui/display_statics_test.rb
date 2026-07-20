@@ -140,6 +140,53 @@ module Poetry
 
         assert_equal "/setting", root["href"]
       end
+
+      # -- Timeline ----------------------------------------------------
+
+      def test_timeline_is_an_ordered_list_with_progress_and_optional_parts
+        html = render_inline(Timeline::Component.new) do |timeline|
+          timeline.with_item(title: "Order placed", time: "Mar 15", completed: true) do
+            "Payment authorized."
+          end
+          timeline.with_item(title: "Shipped")
+        end
+        root = html.css('ol[data-slot="timeline"]').first
+
+        assert_equal "vertical", root["data-orientation"]
+        items = root.css('li[data-slot="timeline-item"]')
+
+        assert_equal 2, items.length
+        assert items.first.key?("data-completed"), "completed: marks the item"
+        refute items.last.key?("data-completed")
+        assert_equal "Mar 15", items.first.css('time[data-slot="timeline-time"]').first.text
+        assert_equal "Payment authorized.",
+                     items.first.css('[data-slot="timeline-content"]').first.text
+        assert_empty items.last.css("time"), "no time: renders no <time>"
+        assert_empty items.last.css('[data-slot="timeline-content"]'),
+                     "no block renders no content part"
+      end
+
+      def test_timeline_indicator_and_rail_stay_decorative
+        html = render_inline(Timeline::Component.new) do |timeline|
+          timeline.with_item(title: "Created", icon: :"git-branch")
+        end
+        indicator = html.css('[data-slot="timeline-indicator"]').first
+        separator = html.css('[data-slot="timeline-separator"]').first
+
+        assert_equal "true", indicator["aria-hidden"]
+        assert_equal "true", separator["aria-hidden"]
+        assert_predicate indicator.css("svg"), :any?, "icon: renders the glyph in the indicator"
+      end
+
+      def test_timeline_requires_an_item_and_flips_orientation
+        assert_raises(ArgumentError) { render_inline(Timeline::Component.new) }
+
+        html = render_inline(Timeline::Component.new(orientation: :horizontal)) do |timeline|
+          timeline.with_item(title: "Step")
+        end
+
+        assert_equal "horizontal", html.css('[data-slot="timeline"]').first["data-orientation"]
+      end
     end
   end
 end
