@@ -1,0 +1,9 @@
+<div class="w-full max-w-lg">
+  <%# Borders are class composition, not an API: a border on the root,
+      border-b + padding per item, trimmed on the last (upstream parity). %>
+  <%= poetry_accordion(collapsible: true, open: %w[billing], class: "rounded-lg border") do |accordion| %>
+    <% accordion.with_item(value: "billing", title: "How does billing work?", class: "border-b px-4 last:border-b-0") { "Monthly and annual plans, charged at the start of each cycle — cancel anytime. Every plan includes automatic backups, 24/7 support, and unlimited team members." } %>
+    <% accordion.with_item(value: "security", title: "Is my data secure?", class: "border-b px-4 last:border-b-0") { "Yes. End-to-end encryption, SOC 2 Type II compliance, and regular third-party audits — encrypted at rest and in transit." } %>
+    <% accordion.with_item(value: "integration", title: "What integrations do you support?", class: "border-b px-4 last:border-b-0") { "500+ tools including Slack, Zapier, Salesforce, and HubSpot — plus custom integrations over the REST API and webhooks." } %>
+  <% end %>
+</div>
