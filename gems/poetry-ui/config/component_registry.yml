@@ -1156,7 +1156,7 @@ components:
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: d0c14ad54438
+    capsule: 10135cb290ae
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:
@@ -1227,7 +1227,7 @@ components:
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: 2acaf6921f6d
+    capsule: '049533fbf644'
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:
@@ -6083,7 +6083,7 @@ components:
     - icon_stack
     - icon_copy
     - icon_check
-    capsule: e0990c643b15
+    capsule: 24e0d913d538
     controllers:
     - identifier: poetry--core--clipboard-text
       targets:

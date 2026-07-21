@@ -13,9 +13,9 @@ module Poetry
         element :input, "font-mono"
 
         element :icon_stack, "relative flex size-4 items-center justify-center"
-        element :icon_copy, "absolute inset-0 transition-all duration-200 " \
+        element :icon_copy, "absolute inset-0 m-auto transition-all duration-200 " \
                             "[[data-copied]_&]:scale-0 [[data-copied]_&]:opacity-0"
-        element :icon_check, "absolute inset-0 scale-0 opacity-0 transition-all duration-200 " \
+        element :icon_check, "absolute inset-0 m-auto scale-0 opacity-0 transition-all duration-200 " \
                              "[[data-copied]_&]:scale-100 [[data-copied]_&]:opacity-100"
       end
     end
