@@ -1,7 +1,5 @@
-<div class="w-full max-w-md">
-  <%= poetry_accordion(collapsible: true) do |accordion| %>
-    <% accordion.with_item(value: "history", title: "Can I access my account history?") { "Yes — the complete history of transactions, plan changes, and support tickets lives in the Account History section of your dashboard." } %>
-    <% accordion.with_item(value: "premium", title: "Premium feature information", disabled: true) { "This section contains information about premium features. Upgrade your plan to access this content." } %>
-    <% accordion.with_item(value: "email", title: "How do I update my email address?") { "Update it in account settings — you'll receive a verification email at the new address to confirm the change." } %>
-  <% end %>
-</div>
+<%= poetry_accordion(collapsible: true, class: "max-w-md") do |accordion| %>
+  <% accordion.with_item(value: "history", title: "Can I access my account history?") { "Yes — the complete history of transactions, plan changes, and support tickets lives in the Account History section of your dashboard." } %>
+  <% accordion.with_item(value: "premium", title: "Premium feature information", disabled: true) { "This section contains information about premium features. Upgrade your plan to access this content." } %>
+  <% accordion.with_item(value: "email", title: "How do I update my email address?") { "Update it in account settings — you'll receive a verification email at the new address to confirm the change." } %>
+<% end %>

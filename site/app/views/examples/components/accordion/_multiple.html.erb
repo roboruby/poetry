@@ -1,6 +1,4 @@
-<div class="w-full max-w-md">
-  <%= poetry_accordion(type: :multiple, open: %w[a b]) do |accordion| %>
-    <% accordion.with_item(value: "a", title: "First") { "Open together" } %>
-    <% accordion.with_item(value: "b", title: "Second") { "with the first." } %>
-  <% end %>
-</div>
+<%= poetry_accordion(type: :multiple, open: %w[a b], class: "max-w-md") do |accordion| %>
+  <% accordion.with_item(value: "a", title: "First") { "Open together" } %>
+  <% accordion.with_item(value: "b", title: "Second") { "with the first." } %>
+<% end %>
