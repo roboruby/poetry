@@ -46,8 +46,19 @@ Rails.application.configure do
   # Replace the default in-process memory cache store with a durable alternative.
   # config.cache_store = :mem_cache_store
 
+  # Store uploaded files on the local file system (config/storage.yml names the services).
+  config.active_storage.service = :local
+
+  # Action Cable runs on Solid Cable (see config/cable.yml).
+
+  # Set host to be used by links generated in mailer templates.
+  config.action_mailer.default_url_options = { host: "poetryui.com" }
+  # Delivery stays :smtp-default and unconfigured until a provider is chosen
+  # (deployment-plan follow-up); nothing in the app sends mail unattended.
+
   # Replace the default in-process and non-durable queuing backend for Active Job.
-  # config.active_job.queue_adapter = :resque
+  config.active_job.queue_adapter = :solid_queue
+  config.solid_queue.connects_to = { database: { writing: :queue } }
 
   # Enable locale fallbacks for I18n (makes lookups for any locale fall back to
   # the I18n.default_locale when a translation cannot be found).

@@ -2,6 +2,8 @@ source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.1.3"
+# Use sqlite3 as the database for Active Record
+gem "sqlite3", ">= 2.1"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use the Puma web server [https://github.com/puma/puma]
@@ -14,6 +16,10 @@ gem "turbo-rails"
 gem "stimulus-rails"
 # Use Tailwind CSS [https://github.com/rails/tailwindcss-rails]
 gem "tailwindcss-rails"
+# Database-backed Active Job backend [https://github.com/rails/solid_queue]
+gem "solid_queue"
+# Database-backed Action Cable adapter [https://github.com/rails/solid_cable]
+gem "solid_cable"
 
 # The poetry family, consumed the way a real host would (path-pinned while
 # the naming hold stands - published names once naming reopens). This app

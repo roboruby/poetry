@@ -25,6 +25,19 @@ Rails.application.configure do
   # Render exception templates for rescuable exceptions and raise for other exceptions.
   config.action_dispatch.show_exceptions = :rescuable
 
+  # Store uploaded files on the local file system in a temporary directory.
+  config.active_storage.service = :test
+
+  # Solid Queue reads/writes the queue database in test too, so the real
+  # adapter path (see test/jobs/solid_queue_integration_test.rb) is testable.
+  config.solid_queue.connects_to = { database: { writing: :queue } }
+
+  # Tell Action Mailer not to deliver emails to the real world.
+  # The :test delivery method accumulates sent emails in the
+  # ActionMailer::Base.deliveries array.
+  config.action_mailer.delivery_method = :test
+  config.action_mailer.default_url_options = { host: "example.com" }
+
   # Disable request forgery protection in test environment.
   config.action_controller.allow_forgery_protection = false
 

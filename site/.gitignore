@@ -21,6 +21,13 @@
 !/tmp/pids/
 !/tmp/pids/.keep
 
+# Ignore storage (SQLite databases, Active Storage disk service files).
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
 /public/assets
 
 # Ignore key files for decrypting credentials and more.
