@@ -404,6 +404,21 @@
   @apply border-input dark:bg-input/30 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4 items-center justify-center rounded-[4px] border transition-shadow focus-visible:ring-2 aria-invalid:ring-2;
 }
 
+/* MARK: CodeBlock */
+/* The syntax palette: seven vars the dictionary's token map reads
+ * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
+ * redefining the vars); .hll is highlight_lines:, .line::before the CSS
+ * counters (out of copied text by construction). */
+.cn-code-block {
+  @apply bg-muted/30 rounded-lg border text-foreground [--syntax-keyword:#a40e26] [--syntax-constant:#0550ae] [--syntax-string:#0a3069] [--syntax-entity:#7f3400] [--syntax-markup:#116329] [--syntax-function:#6639ba] [--syntax-comment:#57606a] dark:[--syntax-keyword:#ff7b72] dark:[--syntax-constant:#79c0ff] dark:[--syntax-string:#a5d6ff] dark:[--syntax-entity:#ffa657] dark:[--syntax-markup:#7ee787] dark:[--syntax-function:#d2a8ff] dark:[--syntax-comment:#8b949e];
+}
+.cn-code-block .hll {
+  @apply bg-primary/10 -mx-4 w-[calc(100%+2rem)] px-4;
+}
+.cn-code-block[data-line-numbers] .line::before {
+  @apply text-muted-foreground me-4 inline-block w-6 text-right content-[counter(line)] [counter-increment:line];
+}
+
 /* MARK: Command */
 .cn-command {
   @apply bg-popover text-popover-foreground rounded-xl p-1;
@@ -456,6 +471,24 @@
 
 .cn-combobox-item-indicator {
   @apply pointer-events-none absolute right-2 flex items-center justify-center;
+}
+
+/* The chips FIELD (multiple:) - mira's compact field; micro chips on
+ * the badge's full-round micro type. */
+.cn-combobox-chips {
+  @apply min-h-7 gap-1 rounded-md border border-input bg-input/20 px-2 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1;
+}
+
+.cn-combobox-chip {
+  @apply h-4.5 gap-1 rounded-full bg-muted px-1.5 text-[0.625rem] font-medium focus-visible:ring-2 focus-visible:ring-ring/30;
+}
+
+.cn-combobox-chip-remove {
+  @apply -ml-1 rounded-full opacity-50 hover:opacity-100 focus-visible:opacity-100;
+}
+
+.cn-combobox-chip-input {
+  @apply min-w-16 placeholder:text-muted-foreground;
 }
 
 /* MARK: ContextMenu */
@@ -1100,6 +1133,14 @@
   @apply absolute top-4 right-4;
 }
 
+/* MARK: SensitiveInput */
+/* The masked MASK OVERLAY is the focusable reveal button (; the
+ * group would trip axe nested-interactive around the inert input) - the
+ * bordered group wears the ring when the mask inside holds focus. */
+.cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible) {
+  @apply outline-none border-ring ring-ring/30 ring-2;
+}
+
 /* MARK: Sidebar */
 .cn-sidebar-mobile {
   @apply bg-sidebar p-0 text-sidebar-foreground shadow-lg transition duration-200 ease-in-out data-open:animate-in data-closed:animate-out backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
@@ -1419,6 +1460,11 @@
 /* CommandDialog re-tunes the Dialog panel (p-0 must beat cn-dialog-content's p-6). */
 .cn-command-dialog {
   @apply rounded-xl! p-0;
+}
+
+/* MARK: Stat */
+.cn-stat-delta-positive {
+  @apply text-[oklch(from_var(--success)_calc(l*0.85)_c_h)] dark:text-success;
 }
 }
 
