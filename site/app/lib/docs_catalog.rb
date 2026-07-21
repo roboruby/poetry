@@ -119,13 +119,13 @@ class DocsCatalog
 
     def component_parts
       @component_parts ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
-        [key.split("/")[2..].join("-").tr("_", "-"), entry["parts"]]
+        [ key.split("/")[2..].join("-").tr("_", "-"), entry["parts"] ]
       end
     end
 
     def chart_parts
       @chart_parts ||= registry_components(Poetry::Charts.root).to_h do |key, entry|
-        [key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["parts"]]
+        [ key.split("/").last.delete_suffix("_chart").tr("_", "-"), entry["parts"] ]
       end
     end
 

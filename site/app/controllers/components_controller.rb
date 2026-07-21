@@ -21,7 +21,7 @@ class ComponentsController < ApplicationController
 
     sections = Poetry::Core::SkillText.new(
       registry: registry, families: Poetry::Ui::SKILL_FAMILIES
-    ).sections([path])
+    ).sections([ path ])
 
     render plain: sections, content_type: "text/markdown"
   end

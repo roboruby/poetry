@@ -29,7 +29,7 @@ class SkillsController < ApplicationController
 
   def design_skill_files
     base = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-design")
-    Dir.glob("**/*.md", base: base).sort.to_h { |rel| [rel, base.join(rel).read] }
+    Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
   end
 
   def index_entry(name, files)
