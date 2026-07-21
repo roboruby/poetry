@@ -1,5 +1,5 @@
 <div class="w-full max-w-md">
-  <%= poetry_accordion(open: %w[shipping]) do |accordion| %>
+  <%= poetry_accordion(collapsible: true, open: %w[shipping]) do |accordion| %>
     <% accordion.with_item(value: "shipping", title: "Shipping") { "Free over $50, worldwide." } %>
     <% accordion.with_item(value: "returns", title: "Returns") { "30 days, no questions." } %>
     <% accordion.with_item(value: "warranty", title: "Warranty") { "Two years, parts and labor." } %>

@@ -1,0 +1,8 @@
+<div class="w-full max-w-md">
+  <%# Without collapsible: the primitive default - one item is always open;
+      the open item's trigger locks (aria-disabled) until another opens. %>
+  <%= poetry_accordion(open: %w[always]) do |accordion| %>
+    <% accordion.with_item(value: "always", title: "One stays open") { "Opening another item is the only way to close me." } %>
+    <% accordion.with_item(value: "other", title: "The other item") { "Now the first one could close." } %>
+  <% end %>
+</div>
