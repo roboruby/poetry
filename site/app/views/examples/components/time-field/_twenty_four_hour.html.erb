@@ -1,6 +1,4 @@
-<div class="w-56">
-  <%# hour_cycle: pins 24-hour editing regardless of the page locale;
-      omit it and the locale decides (a dayPeriod segment appears only
-      under twelve-hour cycles). %>
-  <%= poetry_time_field(name: "shift[start]", label: "Shift start", value: "21:15", hour_cycle: "h23") %>
-</div>
+<%# hour_cycle: pins 24-hour editing regardless of the page locale;
+    omit it and the locale decides (a dayPeriod segment appears only
+    under twelve-hour cycles). %>
+<%= poetry_time_field(name: "shift[start]", label: "Shift start", value: "21:15", hour_cycle: "h23", class: "w-56") %>

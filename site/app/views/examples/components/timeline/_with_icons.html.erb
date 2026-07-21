@@ -1,13 +1,11 @@
-<div class="max-w-md">
-  <%= poetry_timeline do |timeline| %>
-    <% timeline.with_item(title: "Repository created", time: "Jun 2", icon: :"git-branch", completed: true) do %>
-      Scaffolded from the gem template.
-    <% end %>
-    <% timeline.with_item(title: "First deploy", time: "Jun 4", icon: :rocket, completed: true) do %>
-      Shipped to staging behind the feature flag.
-    <% end %>
-    <% timeline.with_item(title: "Incident opened", time: "Jun 9", icon: :"triangle-alert") do %>
-      Elevated 5xx rate on checkout - rolled back in 12 minutes.
-    <% end %>
+<%= poetry_timeline(class: "max-w-md") do |timeline| %>
+  <% timeline.with_item(title: "Repository created", time: "Jun 2", icon: :"git-branch", completed: true) do %>
+    Scaffolded from the gem template.
   <% end %>
-</div>
+  <% timeline.with_item(title: "First deploy", time: "Jun 4", icon: :rocket, completed: true) do %>
+    Shipped to staging behind the feature flag.
+  <% end %>
+  <% timeline.with_item(title: "Incident opened", time: "Jun 9", icon: :"triangle-alert") do %>
+    Elevated 5xx rate on checkout - rolled back in 12 minutes.
+  <% end %>
+<% end %>

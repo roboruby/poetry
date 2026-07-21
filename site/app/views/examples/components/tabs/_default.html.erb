@@ -1,6 +1,4 @@
-<div class="w-full max-w-md">
-  <%= poetry_tabs(label: "Account settings") do |tabs| %>
-    <% tabs.with_tab("Account", value: "account") { "Make changes to your account here." } %>
-    <% tabs.with_tab("Password", value: "password") { "Change your password here." } %>
-  <% end %>
-</div>
+<%= poetry_tabs(label: "Account settings", class: "w-full max-w-md") do |tabs| %>
+  <% tabs.with_tab("Account", value: "account") { "Make changes to your account here." } %>
+  <% tabs.with_tab("Password", value: "password") { "Change your password here." } %>
+<% end %>

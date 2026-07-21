@@ -1,17 +1,15 @@
-<div class="w-full max-w-md">
-  <%= poetry_command(placeholder: "Type a command or search...",
-                     "aria-label": "Command palette",
-                     class: "rounded-lg border shadow-md") do |command| %>
-    <% command.with_group(heading: "Suggestions") do |group| %>
-      <% group.with_item(value: "calendar", keywords: %w[schedule dates]) { "Calendar" } %>
-      <% group.with_item(value: "emoji") { "Search Emoji" } %>
-      <% group.with_item(value: "calculator", disabled: true) { "Calculator" } %>
-    <% end %>
-    <% command.with_separator %>
-    <% command.with_group(heading: "Settings") do |group| %>
-      <% group.with_item(value: "profile", shortcut: "⌘P") { "Profile" } %>
-      <% group.with_item(value: "billing", shortcut: "⌘B") { "Billing" } %>
-      <% group.with_item(value: "settings", shortcut: "⌘S") { "Settings" } %>
-    <% end %>
+<%= poetry_command(placeholder: "Type a command or search...",
+                   "aria-label": "Command palette",
+                   class: "w-full max-w-md rounded-lg border shadow-md") do |command| %>
+  <% command.with_group(heading: "Suggestions") do |group| %>
+    <% group.with_item(value: "calendar", keywords: %w[schedule dates]) { "Calendar" } %>
+    <% group.with_item(value: "emoji") { "Search Emoji" } %>
+    <% group.with_item(value: "calculator", disabled: true) { "Calculator" } %>
   <% end %>
-</div>
+  <% command.with_separator %>
+  <% command.with_group(heading: "Settings") do |group| %>
+    <% group.with_item(value: "profile", shortcut: "⌘P") { "Profile" } %>
+    <% group.with_item(value: "billing", shortcut: "⌘B") { "Billing" } %>
+    <% group.with_item(value: "settings", shortcut: "⌘S") { "Settings" } %>
+  <% end %>
+<% end %>

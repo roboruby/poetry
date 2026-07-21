@@ -1,7 +1,5 @@
-<div class="w-full max-w-md">
-  <%= poetry_tabs(variant: :line, label: "Docs sections", default: "usage") do |tabs| %>
-    <% tabs.with_tab("Overview", value: "overview") { "The component at a glance." } %>
-    <% tabs.with_tab("Usage", value: "usage") { "How to compose it." } %>
-    <% tabs.with_tab("API", value: "api") { "Options and slots." } %>
-  <% end %>
-</div>
+<%= poetry_tabs(variant: :line, label: "Docs sections", default: "usage", class: "w-full max-w-md") do |tabs| %>
+  <% tabs.with_tab("Overview", value: "overview") { "The component at a glance." } %>
+  <% tabs.with_tab("Usage", value: "usage") { "How to compose it." } %>
+  <% tabs.with_tab("API", value: "api") { "Options and slots." } %>
+<% end %>

@@ -1,11 +1,9 @@
-<div class="w-full max-w-md">
-  <%= poetry_command("aria-label": "Jump to", placeholder: "Search pages…",
-                     class: "rounded-lg border shadow-md") do |command| %>
-    <% command.with_empty { "Nothing matches - try fewer letters." } %>
-    <% command.with_item(value: "dashboard") { "Dashboard" } %>
-    <% command.with_item(value: "reports") { "Reports" } %>
-    <% command.with_group(heading: "Recent", always_render: true) do |group| %>
-      <% group.with_item(value: "readme", always_render: true) { "README.md" } %>
-    <% end %>
+<%= poetry_command("aria-label": "Jump to", placeholder: "Search pages…",
+                   class: "w-full max-w-md rounded-lg border shadow-md") do |command| %>
+  <% command.with_empty { "Nothing matches - try fewer letters." } %>
+  <% command.with_item(value: "dashboard") { "Dashboard" } %>
+  <% command.with_item(value: "reports") { "Reports" } %>
+  <% command.with_group(heading: "Recent", always_render: true) do |group| %>
+    <% group.with_item(value: "readme", always_render: true) { "README.md" } %>
   <% end %>
-</div>
+<% end %>

@@ -1,8 +1,6 @@
-<div class="w-full max-w-md">
-  <%= poetry_command(value: "billing", "aria-label": "Settings",
-                     class: "rounded-lg border shadow-md") do |command| %>
-    <% command.with_item(value: "profile") { "Profile" } %>
-    <% command.with_item(value: "billing") { "Billing" } %>
-    <% command.with_item(value: "notifications") { "Notifications" } %>
-  <% end %>
-</div>
+<%= poetry_command(value: "billing", "aria-label": "Settings",
+                   class: "w-full max-w-md rounded-lg border shadow-md") do |command| %>
+  <% command.with_item(value: "profile") { "Profile" } %>
+  <% command.with_item(value: "billing") { "Billing" } %>
+  <% command.with_item(value: "notifications") { "Notifications" } %>
+<% end %>

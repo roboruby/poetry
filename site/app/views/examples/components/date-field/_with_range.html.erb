@@ -1,6 +1,4 @@
-<div class="w-64">
-  <%# min/max ride the native input - constraint validation stays on
-      with or without JS. %>
-  <%= poetry_date_field(name: "booking[night]", label: "First night",
-                        min: Date.new(2026, 1, 1), max: Date.new(2026, 12, 31)) %>
-</div>
+<%# min/max ride the native input - constraint validation stays on
+    with or without JS. %>
+<%= poetry_date_field(name: "booking[night]", label: "First night",
+                      min: Date.new(2026, 1, 1), max: Date.new(2026, 12, 31), class: "w-64") %>

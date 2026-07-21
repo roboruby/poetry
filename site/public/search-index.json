@@ -180,16 +180,28 @@
     "path": "/components/accordion#default"
   },
   {
+    "title": "Borders",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#borders"
+  },
+  {
+    "title": "Disabled",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#disabled"
+  },
+  {
     "title": "Multiple",
     "page": "Accordion",
     "section": "components",
     "path": "/components/accordion#multiple"
   },
   {
-    "title": "Single collapsible",
+    "title": "Non collapsible",
     "page": "Accordion",
     "section": "components",
-    "path": "/components/accordion#single-collapsible"
+    "path": "/components/accordion#non-collapsible"
   },
   {
     "title": "Alert",
