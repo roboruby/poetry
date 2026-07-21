@@ -74,6 +74,8 @@ components:
     - 'heading_level: fits the page outline (h3 default) - the trigger button lives
       inside it.'
     - The chevron is built in - never add another indicator icon to the trigger.
+    - 'disabled: true on with_item locks that item (native disabled on the trigger;
+      roving focus skips it).'
     required_slots:
       item: at least one item
     parts:
@@ -95,6 +97,9 @@ components:
         condition: the item is collapsed
       - attr: data-value
         condition: the item's open-state key (always present)
+      - attr: data-disabled
+        condition: 'with_item(disabled: true) - the item is locked (styling hook;
+          the trigger carries the native disabled attribute)'
     - name: accordion-header
       description: The heading element (heading_level:, h3 default) hosting the trigger
         button
@@ -105,6 +110,9 @@ components:
       - attr: data-panel-open
         condition: its panel is open (Base UI trigger parity, controller-written;
           absent while closed)
+      - attr: data-disabled
+        condition: 'with_item(disabled: true) - stamped beside the native disabled
+          attribute; roving focus filters it out at query time'
     - name: accordion-content
       description: The role=region panel - the presence animation and the measured
         height var ride here

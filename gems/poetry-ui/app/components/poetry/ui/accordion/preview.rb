@@ -25,6 +25,14 @@ module Poetry
             accordion.with_item(value: "only", title: "Toggle me") { "I can close." }
           end
         end
+
+        def disabled
+          render_component(collapsible: true) do |accordion|
+            accordion.with_item(value: "history", title: "Account history") { "All transactions and plan changes." }
+            accordion.with_item(value: "premium", title: "Premium features", disabled: true) { "Upgrade to access." }
+            accordion.with_item(value: "email", title: "Update email") { "Change it in account settings." }
+          end
+        end
       end
     end
   end

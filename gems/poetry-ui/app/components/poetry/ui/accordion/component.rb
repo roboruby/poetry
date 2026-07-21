@@ -20,7 +20,8 @@ module Poetry
           "type: :single (default) opens one at a time; pass collapsible: true to allow closing it.",
           "Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.",
           "heading_level: fits the page outline (h3 default) - the trigger button lives inside it.",
-          "The chevron is built in - never add another indicator icon to the trigger."
+          "The chevron is built in - never add another indicator icon to the trigger.",
+          "disabled: true on with_item locks that item (native disabled on the trigger; roving focus skips it)."
         ].freeze
 
         option :type, :symbol, default: :single
@@ -42,14 +43,18 @@ module Poetry
                "data-open" => "the item is expanded (server-rendered from open:; the controller " \
                               "flips the pair at runtime)",
                "data-closed" => "the item is collapsed",
-               "data-value" => "the item's open-state key (always present)"
+               "data-value" => "the item's open-state key (always present)",
+               "data-disabled" => "with_item(disabled: true) - the item is locked (styling hook; " \
+                                  "the trigger carries the native disabled attribute)"
              }
         part "accordion-header", "The heading element (heading_level:, h3 default) hosting the trigger button"
         part "accordion-trigger", "The toggle button inside the header - the chevron rotation rides " \
                                   "aria-expanded, not a data attribute",
              states: {
                "data-panel-open" => "its panel is open (Base UI trigger parity, controller-written; " \
-                                    "absent while closed)"
+                                    "absent while closed)",
+               "data-disabled" => "with_item(disabled: true) - stamped beside the native disabled " \
+                                  "attribute; roving focus filters it out at query time"
              }
         part "accordion-content", "The role=region panel - the presence animation and the measured " \
                                   "height var ride here",
@@ -62,12 +67,14 @@ module Poetry
                                              "feeds the accordion-down/up keyframes"
              }
 
-        renders_many :items, lambda { |value:, title:, **options, &block|
+        renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
           open_item = open_values.include?(value.to_s)
           item_id = "#{instance_id}-#{value}"
-          content_tag(:div, class: css(:item), "data-slot" => "accordion-item",
-                            "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options) do
-            safe_join([accordion_header(item_id, title, open_item), accordion_panel(item_id, open_item, &block)])
+          item_attrs = { class: css(:item, class: options.delete(:class)), "data-slot" => "accordion-item",
+                         "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options }
+          item_attrs["data-disabled"] = "" if disabled
+          content_tag(:div, **item_attrs) do
+            safe_join([accordion_header(item_id, title, open_item, disabled), accordion_panel(item_id, open_item, &block)])
           end
         }
 
@@ -98,7 +105,7 @@ module Poetry
           @instance_id ||= "poetry-accordion-#{SecureRandom.hex(4)}"
         end
 
-        def accordion_header(item_id, title, open_item)
+        def accordion_header(item_id, title, open_item, disabled = false)
           trigger_attrs = {
             type: "button", id: "#{item_id}-trigger", class: css(:trigger),
             # No state attribute on the trigger: the controller reflects only
@@ -109,6 +116,13 @@ module Poetry
             "aria-expanded" => open_item.to_s, "aria-controls" => "#{item_id}-panel"
           }.merge(stimulus_attributes(ACCORDION) { |accordion| accordion.with_action(:toggle, on: :click) })
           trigger_attrs["aria-disabled"] = "true" if open_item && type == :single && !collapsible
+          # Native disabled owns interaction and focus; data-disabled is the
+          # roving-focus query filter (a natively disabled button already
+          # drops from the tab order, matching Radix/Base UI).
+          if disabled
+            trigger_attrs[:disabled] = true
+            trigger_attrs["data-disabled"] = ""
+          end
 
           content_tag(heading_level, class: css(:header), "data-slot" => "accordion-header") do
             content_tag(:button, trigger_attrs) do

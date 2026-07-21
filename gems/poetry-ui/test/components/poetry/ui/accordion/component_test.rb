@@ -68,6 +68,32 @@ module Poetry
           assert_match(/data-slot="accordion-trigger".*?data-component="icon"/m, render_accordion,
                        "the indicator icon is built in")
         end
+
+        def test_disabled_item_locks_its_trigger_natively_and_marks_both_for_roving
+          html = render_inline(Component.new(collapsible: true)) do |accordion|
+            accordion.with_item(value: "on", title: "Enabled") { "open" }
+            accordion.with_item(value: "off", title: "Locked", disabled: true) { "locked" }
+          end.to_html
+
+          disabled_item = html[%r{data-value="off".*?</h3>}m]
+          enabled_item = html[%r{data-value="on".*?</h3>}m]
+
+          assert_match(/data-value="off"[^>]*data-disabled=""/, html)
+          assert_includes disabled_item, 'disabled="disabled"'
+          assert_includes disabled_item, 'data-disabled=""'
+          refute_includes enabled_item, "data-disabled"
+          refute_includes enabled_item, 'disabled="disabled"'
+        end
+
+        def test_item_class_merges_with_the_dictionary
+          html = render_inline(Component.new) do |accordion|
+            accordion.with_item(value: "x", title: "T", class: "border-b px-4 last:border-b-0") { "p" }
+          end.to_html
+
+          item = html[/<div[^>]*data-slot="accordion-item"[^>]*>/]
+          assert_includes item, "cn-accordion-item"
+          assert_includes item, "border-b px-4 last:border-b-0"
+        end
       end
     end
   end
