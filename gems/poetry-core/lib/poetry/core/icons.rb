@@ -7,6 +7,14 @@ module Poetry
     # #fetch(name) -> inner SVG markup, and #names. Sets register themselves
     # on require (poetry-lucide does); the active set is selected by
     # `config.icon_library` and can be overridden per render.
+    #
+    # SECURITY: #fetch's return value is rendered `html_safe` by the Icon
+    # component. The shipped sets vendor SVGs sanitized AT VENDOR TIME
+    # (poetry-lucide's fetch script strips <script>/<foreignObject>/handlers
+    # /external-href <use>/<image>), so render never parses untrusted markup.
+    # A custom set registered by a host MUST pre-sanitize its SVGs the same
+    # way - the vendored pipeline is the reference; a set that serves raw,
+    # attacker-influenced SVG is an XSS sink.
     module Icons
       # A directory of vendored, pre-sanitized icon files - one
       # `<name>.svg` per icon holding the INNER markup (the component owns

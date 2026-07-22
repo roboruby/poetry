@@ -259,6 +259,40 @@ module Poetry
         self.class.config.classname_merger.merge(*classnames)
       end
 
+      # HTML-safe JSON for embedding in a `<script type="application/json">`
+      # data island. Escapes the script-terminating characters (`<` `>` `&`,
+      # plus the JS line separators U+2028/U+2029) to their JSON `\uXXXX`
+      # forms, INDEPENDENT of the host's
+      # `ActiveSupport.escape_html_entities_in_json` setting: that flag
+      # defaults to true (which escapes them for us) but is host-overridable
+      # to false (legitimately, e.g. in API apps), and a component must not
+      # depend on a global it neither sets nor checks. `</script>` closes a
+      # script element regardless of its `type`, so an unescaped value
+      # carrying it would break out of the island into live HTML. Idempotent
+      # when the host already escapes (the `\uXXXX` forms carry no literal
+      # `<`/`>`/`&`), and JSON.parse decodes the escapes back to the original
+      # text. Accepts a pre-serialized JSON string or any `to_json`-able object.
+      #
+      # @param json [String, Object] serialized JSON, or an object to serialize
+      # @return [ActiveSupport::SafeBuffer] escaped, HTML-safe JSON text
+      def script_json(json)
+        json = json.to_json unless json.is_a?(String)
+        json.gsub(/[<>&  ]/) { |char| format('\u%04x', char.ord) }.html_safe
+      end
+
+      # Reduces a value to a token safe for a DOM id and a CSS selector:
+      # `[A-Za-z0-9_-]` only. A user-controlled id would otherwise break out
+      # of the `<style>` block or the id attribute it is interpolated into.
+      # Returns nil when nothing safe remains (callers fall back to a random
+      # token), preserving the id attribute / JS-selector match by using the
+      # same reduced value on both sides.
+      #
+      # @param value [Object] the requested id
+      # @return [String, nil] the safe token, or nil if empty
+      def dom_id_token(value)
+        value.to_s.gsub(/[^A-Za-z0-9_-]/, "").presence
+      end
+
       # Renders the component to an HTML string.
       #
       # Creates a minimal controller and view context to render the component
