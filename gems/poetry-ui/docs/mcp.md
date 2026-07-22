@@ -13,6 +13,7 @@ surface does: the registry, `poetry check`, and llms.txt.
 | Tool | Args | Returns |
 |------|------|---------|
 | `compose` | `brief` | the FIRST move for every brief: routes to the matching vetted block (source inline) or the matching components |
+| `build_page` | `intent`, `step`, `source` | the GUIDED build for a whole screen: a five-step workflow (probe → plan → direct → snippets → verify), one step per call, done only on a `check` PASS |
 | `list_components` | — | every component, its `poetry_*` helper, and whether it is interactive |
 | `describe_component` | `name`, `detail: brief\|detailed\|full` | the contract — progressive disclosure so an agent loads one component, not the whole catalog |
 | `check` | `source` | a verdict (PASS/FAIL) + findings: unknown component/option/variant/wiring, raw colors, icon membership, arity, required slots, any-of contracts |
@@ -49,6 +50,27 @@ claude mcp add poetry -- bundle exec poetry-agent
 
 That is the "verify against, not just read about" bet: the same `poetry check`
 that runs in CI and the eval is one tool call away inside the agent's own loop.
+
+## The guided build (`build_page`)
+
+For a whole screen, `build_page` runs a guided workflow instead of a single
+route. Call it with the `intent`; the entry routes on your verb (a *review* or
+*harden* request stays read-only — an audit never becomes an edit), and an
+*implement* intent starts the sequence:
+
+1. **probe** — reads the host (`config/poetry_components.yml`, the installed
+   theme, css mode, importmap-vs-bundler) and reports setup gaps.
+2. **plan** — matches the intent to a page architecture: section order, the
+   states a real screen handles (loading, both kinds of empty, error), the edge
+   cases, the components, and the vetted block to start from.
+3. **direct** — the creative direction, derived from the installed theme (poetry
+   sells coherence, not a freeform trend pick).
+4. **snippets** — the block/components to start from (routed exactly as `compose`).
+5. **verify** — runs `check`; the workflow is **done only on a PASS**, an
+   executable verdict rather than a claim.
+
+Each call returns one step and the exact next call; out-of-order steps are
+answered, never refused, so à-la-carte use keeps working.
 
 ## Scope (v1)
 

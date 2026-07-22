@@ -30,7 +30,9 @@ rescue LoadError, Poetry::Core::Error
   nil
 end
 
+# app_root is the app the agent runs in (Dir.pwd): build_page's probe/direct
+# steps read its config/theme. A miss just degrades those steps gracefully.
 Poetry::Core::Agent::Server.from_registry(
   Poetry::Ui.root, helpers: Poetry::Ui.helper_names, icon_names: icon_names,
-                   skills: Poetry::Ui.agent_skills
+                   skills: Poetry::Ui.agent_skills, app_root: Dir.pwd
 ).serve
