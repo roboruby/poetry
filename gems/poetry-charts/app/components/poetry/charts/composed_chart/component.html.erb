@@ -90,6 +90,6 @@
     <%= render legend_component %>
   <% end %>
   <% if tooltip? %><%= render tooltip_layer_component %><% end %>
-  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= script_json(coordinates_json) %></script>
   <% end %>
 <% end %>

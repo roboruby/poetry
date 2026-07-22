@@ -89,7 +89,7 @@
     <%= render legend_component %>
   <% end %>
   <% if tooltip? %><%= render tooltip_layer_component %><% end %>
-  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= coordinates_json.html_safe %></script>
-  <% if live? %><script type="application/json" data-slot="chart-live-payload" data-poetry--charts--live-target="payload"><%= live_payload_json.html_safe %></script>
+  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= script_json(coordinates_json) %></script>
+  <% if live? %><script type="application/json" data-slot="chart-live-payload" data-poetry--charts--live-target="payload"><%= script_json(live_payload_json) %></script>
 <% end %>  <% end %>
 <% end %>

@@ -46,7 +46,7 @@ module Poetry
         end
 
         def chart_id
-          @chart_id ||= "chart-#{id.presence || SecureRandom.hex(4)}"
+          @chart_id ||= "chart-#{dom_id_token(id) || SecureRandom.hex(4)}"
         end
 
         def mount_label
