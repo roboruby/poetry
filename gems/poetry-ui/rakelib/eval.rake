@@ -340,7 +340,8 @@ namespace :eval do
       manifest = manifest_path.exist? ? JSON.parse(manifest_path.read) : {}
       manifest["units"] ||= {}
       manifest["config"] = { "model" => bench.model, "max_turns" => bench.max_turns,
-                             "toolbelts" => Poetry::Eval::Benchmark::TOOLBELTS }
+                             "guided" => Poetry::Eval::Benchmark.guided?,
+                             "toolbelts" => Poetry::Eval::Benchmark.resolved_toolbelts }
       prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
 
       units = poetry_bench_task_names.flat_map do |task|
@@ -798,7 +799,12 @@ end
 def poetry_bench_spec_tasks
   case (spec = ENV.fetch("POETRY_BENCH_SPEC", "standing"))
   when "standing" then Poetry::Eval::Runner::TASKS
-  when "pagescale"
+  when "pagescale", "guided"
+    # pagescale = the page-scale briefs. "guided" reuses the
+    # SAME briefs - composition is the page-scale axis - and puts the
+    # treatment in the toolbelt instead: POETRY_BENCH_GUIDED=1 adds build_page
+    # to the poetry belt (control vs treatment). Protocol + pre-registered
+    # predictions: eval/guided.md.
     require_relative "../eval/pagescale"
     Poetry::Eval::Pagescale::TASKS
   when "holdout"
@@ -807,7 +813,7 @@ def poetry_bench_spec_tasks
     require_relative "../eval/holdout"
     Poetry::Eval::Holdout::TASKS
   else
-    abort "unknown POETRY_BENCH_SPEC #{spec.inspect} (standing | pagescale | holdout)"
+    abort "unknown POETRY_BENCH_SPEC #{spec.inspect} (standing | pagescale | holdout | guided)"
   end
 end
 

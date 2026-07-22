@@ -153,3 +153,15 @@ when a surface change claims improvement (`POETRY_BENCH_SPEC=holdout`
 through the full benchmark machinery, before/after); report every run in
 the decision log including losses. An unreported holdout run is a tuned
 holdout.
+
+## The guided-workflow eval
+
+`POETRY_BENCH_SPEC=guided` runs the 12 page-scale (`pagescale`) briefs as a
+control-vs-treatment pair: the treatment (`POETRY_BENCH_GUIDED=1`) adds
+`mcp__poetry__build_page` to the poetry belt, the control is the standing
+belt, the raw arm is untouched. The graded question — does the guided
+workflow move the judged **composition** score where/79 did not — plus
+the full protocol (known-perfect ceiling, three trials, linkable traces),
+the pre-registered predictions, and the run commands live in
+`eval/guided.md`. On-demand, real token cost, never CI; report every run in
+the decision log including losses.

@@ -65,6 +65,24 @@ module Poetry
                     "mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block",
         "raw_tailwind" => "Read,Glob,Grep,Write,Skill"
       }.freeze
+
+      # The guided treatment: under POETRY_BENCH_GUIDED=1 the poetry
+      # arm's belt also carries build_page (the guided workflow), so the run
+      # measures whether guided entry moves composition where compose alone
+      # did not (79). The control run (flag unset) is the standing
+      # poetry belt. The raw arm is untouched - the asymmetry is the
+      # treatment. The resolved belt is recorded in the manifest so a run is
+      # reproducible from its own artifacts. Protocol: eval/guided.md.
+      def self.guided? = ENV["POETRY_BENCH_GUIDED"] == "1"
+
+      def self.toolbelt(arm)
+        belt = TOOLBELTS.fetch(arm)
+        return belt unless arm == "poetry" && guided?
+
+        "#{belt},mcp__poetry__build_page"
+      end
+
+      def self.resolved_toolbelts = TOOLBELTS.keys.to_h { |arm| [arm, toolbelt(arm)] }
       # CLAUDE.md is byte-identical in both hosts: the project-memory hook
       # the claude CLI auto-loads must not itself be a treatment.
       COMMON_CLAUDE_MD = <<~MD
@@ -154,7 +172,7 @@ module Poetry
 
         started = Process.clock_gettime(Process::CLOCK_MONOTONIC)
         begin
-          envelope = claude_generate(prompt, host: host, toolbelt: TOOLBELTS.fetch(arm))
+          envelope = claude_generate(prompt, host: host, toolbelt: self.class.toolbelt(arm))
           {
             "cost_usd" => envelope["total_cost_usd"].to_f.round(4),
             "num_turns" => envelope["num_turns"],

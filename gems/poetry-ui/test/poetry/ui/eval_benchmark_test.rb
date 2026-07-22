@@ -53,6 +53,42 @@ module Poetry
         end
       end
 
+      # --- the guided treatment (the toolbelt asymmetry) ------------
+
+      def with_guided(value)
+        prior = ENV.fetch("POETRY_BENCH_GUIDED", nil)
+        ENV["POETRY_BENCH_GUIDED"] = value
+        yield
+      ensure
+        ENV["POETRY_BENCH_GUIDED"] = prior
+      end
+
+      def test_guided_flag_adds_build_page_to_the_poetry_belt_only
+        with_guided(nil) do
+          refute_predicate Poetry::Eval::Benchmark, :guided?
+          refute_includes Poetry::Eval::Benchmark.toolbelt("poetry"), "build_page"
+        end
+        with_guided("1") do
+          assert_predicate Poetry::Eval::Benchmark, :guided?
+          poetry = Poetry::Eval::Benchmark.toolbelt("poetry")
+
+          assert_includes poetry, "mcp__poetry__build_page"
+          assert_includes poetry, "mcp__poetry__compose", "the treatment ADDS, never replaces"
+          # The raw arm is never touched - the asymmetry IS the treatment.
+          assert_equal Poetry::Eval::Benchmark::TOOLBELTS.fetch("raw_tailwind"),
+                       Poetry::Eval::Benchmark.toolbelt("raw_tailwind")
+        end
+      end
+
+      def test_resolved_toolbelts_records_the_treatment_for_the_manifest
+        with_guided("1") do
+          resolved = Poetry::Eval::Benchmark.resolved_toolbelts
+
+          assert_includes resolved["poetry"], "build_page"
+          refute_includes resolved["raw_tailwind"], "build_page"
+        end
+      end
+
       # --- the one-prompt rule ---------------------------------------------
 
       def test_generation_prompt_has_no_arm_parameter_and_never_names_the_house
