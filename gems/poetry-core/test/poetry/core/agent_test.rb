@@ -100,8 +100,8 @@ module Poetry
         tools = server.handle("id" => 2, "method" => "tools/list").dig("result", "tools")
         names = tools.map { |tool| tool["name"] }
 
-        assert_equal %w[compose list_components describe_component check list_blocks describe_block
-                        get_skill guidance], names
+        assert_equal %w[compose build_page list_components describe_component check list_blocks
+                        describe_block get_skill guidance], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 
@@ -193,6 +193,145 @@ module Poetry
           assert_includes call_on(blocks_server, "describe_block", "name" => "nope"),
                           "no such block"
         end
+      end
+
+      # --- build_page (the guided page workflow) ---
+
+      # A server with BOTH a blocks registry (for the snippets step) and a
+      # host app_root (for probe/direct): a fake config, an importmap, a
+      # Tailwind entry, and a theme-scoped CSS header.
+      def with_build_server
+        require "tmpdir"
+        Dir.mktmpdir("agent-build") do |dir|
+          root = Pathname(dir).join("registry")
+          app = Pathname(dir).join("app")
+          root.join("blocks").mkpath
+          root.join("blocks/data_index.html.erb").write(BLOCK_TEMPLATE)
+          app.join("config").mkpath
+          app.join("config/poetry_components.yml").write(<<~YML)
+            components:
+              button: {}
+              table: {}
+            overrides:
+              cn-card: { reason: "brand" }
+          YML
+          app.join("config/importmap.rb").write("pin \"application\"\n")
+          app.join("app/assets/stylesheets").mkpath
+          app.join("app/assets/stylesheets/poetry.css").write("/* poetry theme: vega */\n.style-vega {}\n")
+          app.join("app/assets/tailwind").mkpath
+          app.join("app/assets/tailwind/application.css").write("@import \"tailwindcss\";\n")
+          catalog = Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES,
+                                                icon_names: %w[circle-alert triangle-alert])
+          yield Agent::Server.new(entries: ENTRIES, catalog: catalog, blocks: BLOCKS,
+                                  root: root.to_s, app_root: app.to_s)
+        end
+      end
+
+      def test_build_page_needs_an_intent
+        assert_includes call("build_page", "step" => "plan"), "build_page needs the intent"
+      end
+
+      def test_build_page_entry_routes_a_build_verb_into_the_probe_step
+        # No app_root on the plain server: probe degrades, the sequence still starts.
+        text = call("build_page", "intent" => "build a records index for invoices")
+
+        assert_includes text, "mode: implement"
+        assert_includes text, "STEP 1/5 - PROBE"
+        assert_includes text, "Host app not visible", "probe degrades without a host"
+        assert_includes text, %(step: "plan"), "it routes to the next step"
+      end
+
+      def test_build_page_probe_reads_the_host_when_present
+        with_build_server do |target|
+          text = call_on(target, "build_page", "intent" => "build a dashboard", "step" => "probe")
+
+          assert_includes text, "2 component(s) configured, 1 declared cn-* override"
+          assert_includes text, "theme: vega"
+          assert_includes text, "Tailwind entry found"
+          assert_includes text, "importmap"
+          assert_includes text, %(step: "plan")
+        end
+      end
+
+      def test_build_page_plan_matches_an_archetype_with_states_and_edge_cases
+        text = call("build_page", "intent" => "a dashboard overview for the admin workspace",
+                                  "step" => "plan")
+
+        assert_includes text, "MATCH: Admin dashboard"
+        assert_includes text, "`admin-dashboard`"
+        assert_includes text, "Start from block `app-shell`"
+        assert_includes text, "Section order:"
+        assert_includes text, "States a real screen handles"
+        assert_includes text, "Edge cases that bite:"
+        assert_includes text, %(step: "direct")
+      end
+
+      def test_build_page_plan_falls_back_to_the_seed_note_when_nothing_matches
+        text = call("build_page", "intent" => "xyzzy plugh frobnicate", "step" => "plan")
+
+        assert_includes text, "No archetype strongly matched"
+        assert_includes text, "SEED"
+        assert_includes text, "compose"
+      end
+
+      def test_build_page_direct_is_theme_derived_and_delegates_the_vocabulary
+        with_build_server do |target|
+          text = call_on(target, "build_page", "intent" => "a settings page", "step" => "direct")
+
+          assert_includes text, "THEME-DERIVED"
+          assert_includes text, "Installed theme: `vega`"
+          assert_includes text, "references/theme.md"
+          assert_includes text, "No DESIGN.md here"
+          assert_includes text, %(step: "snippets")
+        end
+      end
+
+      def test_build_page_snippets_routes_source_like_compose
+        with_build_server do |target|
+          text = call_on(target, "build_page",
+                         "intent" => "An invoices table listing records with totals", "step" => "snippets")
+
+          assert_includes text, "STRONG BLOCK MATCH", "snippets reuses the compose router"
+          assert_includes text, %(<%= poetry_badge { "Fulfilled" } %>), "the block source is inline"
+          assert_includes text, %(step: "verify")
+        end
+      end
+
+      def test_build_page_verify_is_the_executable_gate
+        pass = call("build_page", "intent" => "x", "step" => "verify",
+                                  "source" => %(<%= poetry_button(variant: :ghost) { "x" } %>))
+        fail_ = call("build_page", "intent" => "x", "step" => "verify",
+                                   "source" => %(<%= poetry_button(variant: :nope) { "x" } %>))
+        no_source = call("build_page", "intent" => "x", "step" => "verify")
+
+        assert_includes pass, "PASS - the guided build is DONE"
+        assert_includes fail_, "FAIL - not done"
+        assert_includes fail_, "not a poetry_button variant"
+        assert_includes no_source, "Pass your built ERB as `source`"
+      end
+
+      def test_build_page_review_and_harden_verbs_stay_read_only
+        review = call("build_page", "intent" => "review this dashboard for issues")
+        harden = call("build_page", "intent" => "harden the a11y of this settings page")
+
+        assert_includes review, "REQUEST MODE: review"
+        assert_includes review, "an audit does not become an edit"
+        refute_includes review, "STEP 1/5", "a review never enters the build sequence"
+        assert_includes harden, "REQUEST MODE: harden"
+        assert_includes harden, "read-only recon"
+      end
+
+      def test_build_page_shape_verb_plans_without_probing
+        text = call("build_page", "intent" => "plan the architecture of a pricing page")
+
+        assert_includes text, "mode: shape"
+        assert_includes text, "STEP 2/5 - PLAN"
+        assert_includes text, "pricing"
+        refute_includes text, "STEP 1/5 - PROBE", "shape skips probe"
+      end
+
+      def test_build_page_rejects_an_unknown_step
+        assert_includes call("build_page", "intent" => "x", "step" => "frobnicate"), "no such step"
       end
 
       def test_a_notification_gets_no_reply

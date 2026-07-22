@@ -41,6 +41,31 @@ module Poetry
           "annotations" => { "readOnlyHint" => true }
         },
         {
+          "name" => "build_page",
+          "description" => "The GUIDED build for a whole SCREEN/page/dashboard - use this over " \
+                           "compose when the job is a full page. Give the intent verbatim; it runs a " \
+                           "five-step workflow and each call returns ONE step plus the exact next call: " \
+                           "probe (host setup) -> plan (page architecture: section order, states, edge " \
+                           "cases) -> direct (theme-derived creative direction) -> snippets (the block/" \
+                           "components to start from) -> verify (the executable check gate). The workflow " \
+                           "is DONE only on a PASS from check - a real verdict, not a claim. Omit step to " \
+                           "start; the entry routes by your verb (review/harden stay read-only). " \
+                           "Out-of-order steps are answered, never refused.",
+          "inputSchema" => {
+            "type" => "object",
+            "properties" => {
+              "intent" => { "type" => "string",
+                            "description" => "the page you are building, verbatim (a sentence is enough)" },
+              "step" => { "type" => "string", "enum" => %w[probe plan direct snippets verify],
+                          "description" => "the workflow step to run; omit to start at the routed entry" },
+              "source" => { "type" => "string",
+                            "description" => "verify step only: the ERB you built, to run through check" }
+            },
+            "required" => ["intent"]
+          },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
           "name" => "list_components",
           "description" => "List every poetry component (name, helper, one-line surface). Start here " \
                            "AFTER compose has routed the brief; then describe_component for the full " \
@@ -148,23 +173,28 @@ module Poetry
         # {relative path => content} file map (the get_skill tool).
         # Lazy because the usage skill is generated from the registry on
         # first fetch - server boot stays instant.
-        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {})
+        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil)
           committed = Registry.committed(root)
           catalog = Check::Catalog.new(committed.entries, helpers: helpers,
                                                           helper_entries: committed.helpers,
                                                           icon_names: icon_names,
                                                           helper_args: committed.helper_args)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
-              root: root, skills: skills)
+              root: root, skills: skills, app_root: app_root)
         end
 
-        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {})
+        # app_root: the HOST app directory (where `bundle exec poetry-agent`
+        # runs, i.e. Dir.pwd), so build_page's probe/direct steps can read
+        # the app's config/theme. nil => the host is not inspected and those
+        # steps degrade gracefully; the registry read (root) is unaffected.
+        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil)
           @entries = entries
           @catalog = catalog
           @blocks = blocks
           @root = root
           @skills = skills
           @skill_files = {}
+          @app_root = app_root
         end
 
         # compose routing: the strong-match threshold, and the words
@@ -172,6 +202,12 @@ module Poetry
         # component-anatomy words (title/description/action) every brief
         # uses regardless of scale.
         STRONG_MATCH = 4
+        # build_page: the guided workflow's five steps, the themes
+        # its probe/direct steps sniff for, and the plan step's match floor
+        # (one curated archetype keyword = 2, so 2 is the weakest real hit).
+        STEPS = %w[probe plan direct snippets verify].freeze
+        THEMES = %w[default vega nova mira rhea maia luma lyra sera].freeze
+        ARCHETYPE_MATCH = 2
         STOPWORDS = %w[
           the a an and or with for of to in on at from into by over under this that it its as is are
           be has have should must can will each per when where build create make add show include
@@ -230,6 +266,7 @@ module Poetry
           text =
             case name
             when "compose" then compose(arguments)
+            when "build_page" then build_page(arguments)
             when "list_components" then list_components
             when "describe_component" then describe_component(arguments)
             when "check" then check(arguments)
@@ -383,6 +420,304 @@ module Poetry
                   .sub(/\A<%#\s*poetry:block[^%]*%>\n?/, "").rstrip
         rescue StandardError => e
           "block source unavailable: #{e.message} - use `bin/rails g poetry:block` instead"
+        end
+
+        # --- build_page: the guided page workflow ---
+        #
+        # A stateless state machine: the STEP is carried in the arguments
+        # (the Blueprint nextStep pattern), so #handle stays a pure function
+        # and the server stays boot-free - no session storage. Each step
+        # response ends with the exact next call. With no step, the entry
+        # routes on the intent's VERB (the Vercel request-mode router):
+        # review/harden stay read-only so an audit never becomes an edit;
+        # shape plans without probing; implement runs the full sequence.
+        def build_page(arguments)
+          intent = arguments["intent"].to_s.strip
+          return "build_page needs the intent - the page you are building, in a sentence." if intent.empty?
+
+          step = arguments["step"].to_s.strip
+          return route_entry(intent) if step.empty?
+
+          run_step(step, intent, arguments)
+        end
+
+        # The request-mode router (Vercel product-design piece): resolve the
+        # mode from the verb BEFORE acting. Only a clear review/harden/shape
+        # verb diverts; a page description with no verb is an implement.
+        def request_mode(intent)
+          text = intent.downcase
+          return :review if text.match?(/\b(review|audit|assess|evaluate|inspect|critique)\b/)
+          return :harden if text.match?(/\b(harden|a11y|accessib\w*|tighten|secure|polish)\b/)
+          if text.match?(/\b(plan|shape|architect|outline|sketch|wireframe)\b/) &&
+             !text.match?(/\b(build|create|make|implement|generate|scaffold|add)\b/)
+            return :shape
+          end
+
+          :implement
+        end
+
+        def route_entry(intent)
+          case request_mode(intent)
+          when :review then review_route(intent)
+          when :harden then harden_route
+          when :shape then shape_entry(intent)
+          else implement_entry(intent)
+          end
+        end
+
+        def implement_entry(intent)
+          banner = ["GUIDED BUILD - mode: implement.",
+                    "Steps: probe -> plan -> direct -> snippets -> verify; each ends with the next call.",
+                    "DONE means a PASS from the check tool (an executable verdict), never a claim.", "", ""]
+          banner.join("\n") + run_step("probe", intent, {})
+        end
+
+        def shape_entry(intent)
+          banner = ["GUIDED BUILD - mode: shape (planning only, no host changes).",
+                    "You asked to shape, not build - here is the architecture; call step: \"snippets\" " \
+                    "when you want source.", "", ""]
+          banner.join("\n") + run_step("plan", intent, {})
+        end
+
+        def review_route(intent)
+          ["REQUEST MODE: review - staying read-only (an audit does not become an edit).",
+           "I will not enter the build sequence to review. To assess existing markup:",
+           "- run the `check` tool with the ERB source (verdict + findings), or `bin/rails poetry:check`;",
+           "- the visual/a11y critique: get_skill(name: \"poetry-design\", file: \"references/audit.md\");",
+           "- wrong-component calls: guidance(topic: \"deciding\").", "",
+           %(To BUILD instead, re-call with a build verb, e.g. "build #{intent}".)].join("\n")
+        end
+
+        def harden_route
+          ["REQUEST MODE: harden - read-only recon, no edits from here.",
+           "Hardening runs the same executable gate, not a rewrite:",
+           "- `check` the current ERB for contract violations (verdict + findings);",
+           "- get_skill(name: \"poetry-design\", file: \"references/audit.md\") for the a11y + slop pass;",
+           "- fix through tokens/variants/DESIGN.md, never per-instance CSS; re-run check as the LAST action.",
+           "", "To build a NEW page instead, re-call with a build verb."].join("\n")
+        end
+
+        def run_step(step, intent, arguments)
+          case step
+          when "probe" then framed(1, "PROBE (host setup)", probe_body, "plan")
+          when "plan" then framed(2, "PLAN (page architecture)", plan_body(intent), "direct")
+          when "direct" then framed(3, "DIRECT (creative direction)", direct_body, "snippets")
+          when "snippets" then framed(4, "SNIPPETS (start-from source)", snippets_body(intent), "verify")
+          when "verify" then verify_body(arguments)
+          else redirect_step(step)
+          end
+        end
+
+        def framed(number, label, body, nxt)
+          ["STEP #{number}/5 - #{label}", "", body, "",
+           %(NEXT -> call build_page again with step: "#{nxt}" (same intent).)].join("\n")
+        end
+
+        def redirect_step(step)
+          "no such step: #{step.inspect} - the workflow is #{STEPS.join(" -> ")}. " \
+            "Omit step for the guided entry, or pass one of those."
+        end
+
+        # Step 1: host doctor. Reads what it can from @app_root and degrades
+        # gracefully (the plan step never depends on it). Also the
+        # vite fail-fast: a bundler present without the controllers channel
+        # leaves interactive components inert.
+        def probe_body
+          root = @app_root
+          return probe_no_host unless root && File.directory?(root)
+
+          lines = [host_config_line(root), theme_line(detect_theme(root)), css_mode_line(root)]
+          lines.concat(js_pipeline_lines(root))
+          lines.join("\n")
+        end
+
+        def probe_no_host
+          ["Host app not visible (run `bundle exec poetry-agent` from the app dir for setup checks).",
+           "Probe would read: installed components + declared overrides (config/poetry_components.yml),",
+           "the installed theme, css_mode, icon set, and importmap-vs-bundler. Assume a standard",
+           "poetry install and continue - the plan step does not depend on this."].join("\n")
+        end
+
+        def host_config_line(root)
+          cfg = read_host_yaml(File.join(root, "config", "poetry_components.yml"))
+          return "poetry config: config/poetry_components.yml not found - run `bin/rails g poetry:install`." unless cfg
+
+          installed = (cfg["components"] || {}).size
+          overrides = (cfg["overrides"] || {}).size
+          "poetry config: #{installed} component(s) configured, #{overrides} declared cn-* override(s)."
+        end
+
+        def theme_line(theme)
+          return "theme: not detected - the direct step covers picking one of the nine." unless theme
+
+          "theme: #{theme} (its tokens ARE your creative direction - step 3)."
+        end
+
+        def css_mode_line(root)
+          entry = ["app/assets/tailwind/application.css", "tailwind.config.js", "config/tailwind.config.js",
+                   "app/assets/stylesheets/application.tailwind.css"].any? { |rel| host_exist?(root, rel) }
+          if entry
+            "css_mode: Tailwind entry found - poetry emits Tailwind classes."
+          else
+            "css_mode: no Tailwind entry detected - poetry can emit raw BEM when css_mode is set."
+          end
+        end
+
+        def js_pipeline_lines(root)
+          importmap = host_exist?(root, "config/importmap.rb")
+          bundler = %w[vite.config.js vite.config.ts config/vite.json package.json].any? do |rel|
+            host_exist?(root, rel)
+          end
+          if importmap && !bundler
+            ["js: importmap - pin poetry's Stimulus controllers so interactive components wire up."]
+          elsif bundler
+            ["js: a JS bundler is present - poetry's controllers need the @poetry/controllers npm channel",
+             "wired, or the interactive components stay inert. Verify the import."]
+          else
+            ["js: no importmap or bundler detected - poetry's interactive components need one wired."]
+          end
+        end
+
+        # Step 2: the intent-matched page architecture (the new IP). Same
+        # stem tokenization + weighting as the block router, so plan and
+        # compose rank an intent the same way.
+        def plan_body(intent)
+          tokens = brief_tokens(intent)
+          scored = PageArchitectures.scored(tokens)
+          best, best_score = scored.first
+          return no_archetype(scored) if best.nil? || best_score < ARCHETYPE_MATCH
+
+          [render_archetype(best, best_score), runners_note(scored)].reject(&:empty?).join("\n")
+        end
+
+        def render_archetype(entry, score)
+          lines = ["MATCH: #{entry["title"]} (`#{entry["name"]}`) - score #{score}.", entry["purpose"], "",
+                   start_from(entry), "", "Section order:"]
+          entry["sections"].each { |section| lines << "- #{section}" }
+          lines << ""
+          lines << "States a real screen handles (not just the happy path):"
+          entry["states"].each { |state| lines << "- #{state}" }
+          lines << ""
+          lines << "Edge cases that bite:"
+          entry["edge_cases"].each { |edge| lines << "- #{edge}" }
+          lines << ""
+          lines << "Components: #{entry["components"].join(", ")} (describe_component for the contracts)."
+          lines.join("\n")
+        end
+
+        def start_from(entry)
+          if entry["block"]
+            "Start from block `#{entry["block"]}` - describe_block returns its source; adapt in place " \
+              "(the known winning path). Fill gaps with the components below."
+          else
+            "No single vetted block covers this yet - compose from the components below, applying the " \
+              "section order and the five mechanics (get_skill poetry-design references/compose.md)."
+          end
+        end
+
+        def runners_note(scored)
+          runners = scored.drop(1).select { |_entry, score| score.positive? }.first(2)
+          return "" if runners.empty?
+
+          described = runners.map { |entry, score| "`#{entry["name"]}` (#{entry["title"]}, score #{score})" }
+          "\nNearby archetypes: #{described.join(", ")}."
+        end
+
+        def no_archetype(scored)
+          near = scored.first(3).map { |entry, _score| entry["name"] }.join(", ")
+          ["No archetype strongly matched this intent. The catalog is a SEED " \
+           "(#{PageArchitectures.all.size} archetypes; it grows toward the ~50 target).",
+           "Fall back to `compose` for block/component routing, and the five composition mechanics " \
+           "(get_skill poetry-design references/compose.md).",
+           "Nearest archetypes if one fits: #{near}."].join("\n")
+        end
+
+        # Step 3: theme-derived creative direction. poetry's direction is
+        # design-system-constrained by construction - it delegates
+        # to the authored per-theme vocabulary rather than restating it.
+        def direct_body
+          theme = @app_root && detect_theme(@app_root)
+          lines = ["poetry's creative direction is THEME-DERIVED, not a freeform trend pick: the installed",
+                   "theme's typography, radius, motion, and color vocabulary IS the direction. Coherence is",
+                   "the product; range comes from the nine themes + a brand DESIGN.md, not per-page CSS.", ""]
+          lines << if theme
+                     "Installed theme: `#{theme}`. Build inside its vocabulary - its tokens carry the look."
+                   else
+                     "No theme detected here. Pick one of the nine at install (`--theme`); each is distinct."
+                   end
+          lines << "Per-theme vocabulary: get_skill(name: \"poetry-design\", file: \"references/theme.md\")."
+          lines << if @app_root && design_md_present?(@app_root)
+                     "A DESIGN.md is present - it is the brand-override door on top of the theme; honor it."
+                   else
+                     "No DESIGN.md here - study a brand into one (poetry-design `study`) to override the theme."
+                   end
+          lines << "Do NOT add gradients, shadows, or arbitrary colors for 'personality' - that is drift."
+          lines.join("\n")
+        end
+
+        # Step 4: the concrete source, routed exactly as the compose tool
+        # (block match inline, or the matching components). compose already
+        # closes with "check as the LAST action", which dovetails into verify.
+        def snippets_body(intent)
+          ["The source to start from (routed like the compose tool):", "", compose("brief" => intent)].join("\n")
+        end
+
+        # Step 5: the executable gate. DONE requires a PASS from the same
+        # check tool - not an attestation. This is the structural edge over
+        # a workflow whose completion is an LLM's word.
+        def verify_body(arguments)
+          source = arguments["source"].to_s
+          if source.strip.empty?
+            return ["STEP 5/5 - VERIFY (the executable gate)", "",
+                    "Pass your built ERB as `source` to run check here, or run `bin/rails poetry:check`.",
+                    "The workflow is DONE only on a PASS - an edit after your last check is unverified.",
+                    %(When ready: build_page(intent: "...", step: "verify", source: "<your ERB>").)].join("\n")
+          end
+
+          report = check("source" => source)
+          header = if report.start_with?("PASS")
+                     "STEP 5/5 - VERIFY: PASS - the guided build is DONE."
+                   else
+                     "STEP 5/5 - VERIFY: FAIL - not done. Fix the findings and re-run verify."
+                   end
+          [header, "", report].join("\n")
+        end
+
+        # --- host-file probes (best-effort, always graceful) ---
+
+        def read_host_yaml(path)
+          return nil unless File.file?(path)
+
+          require "yaml"
+          YAML.safe_load_file(path, permitted_classes: [Symbol], aliases: true)
+        rescue StandardError
+          nil
+        end
+
+        # Header sniff for the installed theme: the `.style-<name>` scope the
+        # docs switcher uses, or a `poetry theme: <name>` marker. First 4KB
+        # is enough; any read error just means "not detected".
+        def detect_theme(root)
+          %w[app/assets/stylesheets/poetry.css app/assets/stylesheets/application.css
+             app/assets/tailwind/application.css app/assets/builds/poetry.css].each do |rel|
+            path = File.join(root, rel)
+            next unless File.file?(path)
+
+            head = File.read(path, 4096).to_s
+            match = head.match(/\bstyle-(#{THEMES.join("|")})\b/) || head.match(/poetry theme:\s*(\w+)/i)
+            return match[1] if match
+          rescue StandardError
+            next
+          end
+          nil
+        end
+
+        def design_md_present?(root)
+          %w[DESIGN.md config/DESIGN.md app/assets/DESIGN.md].any? { |rel| host_exist?(root, rel) }
+        end
+
+        def host_exist?(root, rel)
+          File.exist?(File.join(root, rel))
         end
 
         def list_blocks

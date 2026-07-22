@@ -32,4 +32,6 @@ rescue LoadError, Poetry::Core::Error
   nil
 end
 
-Poetry::Core::Agent::Server.from_registry(root, icon_names: icon_names).serve
+# app_root (Dir.pwd) is the app the agent runs in: build_page's probe/direct
+# steps read its config/theme, degrading gracefully when they cannot.
+Poetry::Core::Agent::Server.from_registry(root, icon_names: icon_names, app_root: Dir.pwd).serve

@@ -42,6 +42,12 @@ Naming/FileName:
 Style/Documentation:
   Enabled: false
 
+# The Agent::Server constructor aggregates its projected surfaces (entries,
+# catalog, blocks, skills) plus the two roots (registry + host app); six named
+# keyword args read clearer than any grouping object.
+Metrics/ParameterLists:
+  Max: 6
+
 # The fox_tail-derived attribute/stimulus merging methods are inherently dense.
 Metrics/AbcSize:
   Enabled: false
