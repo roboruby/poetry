@@ -51,7 +51,20 @@ module Poetry
         "numbered-section-markers" => [:ast, "the design-rule analogue: sequential 01/02/03 section markers"],
         "repeated-section-kickers" => [:ast, "the design-rule analogue: tracked-caps kicker above every section heading"],
         "hero-eyebrow-chip" => [:ast, "the design-rule analogue: tracked-caps/accent text eyebrow above the h1"],
-        "oversized-h1" => [:ast, "the design-rule analogue: 72px+ display h1 carrying long copy"]
+        "oversized-h1" => [:ast, "the design-rule analogue: 72px+ display h1 carrying long copy"],
+        # Motion floor (a banked lead): perception-physics
+        # rules, theme-independent - they read the utility classes the same
+        # in host ERB (poetry check / design:lint) and in the extracted theme
+        # layer (design:motion self-audit). Only patterns poetry itself never
+        # ships are ENFORCED here, so the floor never false-positives on the
+        # gem's own rendered output. transition-all is pervasive in the
+        # upstream-ported theme layer, so it is a REPORT-ONLY advisory
+        # (transition_all_advisory / design:motion), NOT an enforced rule.
+        # The softer preferences (ease-in-out on enters) and timing TOKENS
+        # are the later tokenize/conformance tiers.
+        "motion-ease-in" => [:ast, "motion floor: ease-in decelerates wrong for UI enters"],
+        "motion-duration-ceiling" => [:ast, "motion floor: UI transition over ~500ms reads as laggy"],
+        "motion-scale-from-zero" => [:ast, "motion floor: scale-from-0 entries erupt from nothing"]
       }.freeze
 
       # Spacing/sizing/type utilities where an arbitrary length is off-scale.
@@ -61,6 +74,19 @@ module Poetry
       GRADIENT = /\Abg-(?:gradient-to-[a-z]+|linear-|radial|conic)/
       SHADOW = /\Ashadow(?:\z|-(?!none)[a-z0-9]+\z)/
       HEADING = /\Ah([1-6])\z/
+
+      # Motion floor: the floor governs TRANSITIONS - discrete state
+      # changes. An element is subject to it when it carries a transition-*
+      # utility (a bare `duration-`/`ease-`/`scale-0` is inert or ambiguous
+      # without one). Continuous keyframe loops (animate-spin, animate-pulse,
+      # animate-caret-blink) legitimately run long/linear and are EXEMPT -
+      # they are animations, not transitions. Durations are milliseconds in
+      # Tailwind (duration-700 = 700ms); the UI transition ceiling is ~500ms.
+      TRANSITION_DECLARED = /\Atransition(?:-|\z)/
+      DURATION_TOKEN = /\Aduration-(\d+)\z/
+      DURATION_ARBITRARY = /\Aduration-\[(\d+(?:\.\d+)?)(m?s)\]\z/
+      SCALE_ZERO = /\Ascale(?:-[xy])?-0\z/
+      UI_DURATION_CEILING_MS = 500
 
       # The lint tree: HTML elements plus poetry_* call blocks as
       # pseudo-nodes, so "Card inside Card" is checkable whether the card is
@@ -189,6 +215,7 @@ module Poetry
           icon_tile_over_heading(child, node.children[index + 1], findings)
           hero_eyebrow_chip(child, node.children[index + 1], findings)
           class_token_rules(child, findings) if child.element?
+          findings.concat(motion_class_findings(child.classes, child.line)) if child.element?
           oversized_h1(child, findings)
           shadow_stack(child, findings)
           wall_of_cards(node, findings) if index.zero?
@@ -246,6 +273,73 @@ module Poetry
           steps = [lower, lower + 2].map { |step| "#{prefix}-#{format("%g", step / 4.0)} = #{step}px" }
           "#{token} is off the spacing/type scale - use the nearest step (#{steps.join(" / ")}) or add a token"
         end
+      end
+
+      # The ENFORCED motion floor (an external skills pack), PUBLIC so the
+      # theme-layer self-audit (design:motion) runs the identical rules over
+      # the @apply utilities it extracts. Only patterns poetry itself never
+      # ships are here, so the floor never false-positives on the gem's own
+      # rendered components. An over-ceiling duration is wrong whatever
+      # triggers it, so it reads the variant-stripped base (data-open:
+      # duration-700 still counts); ease-in and scale-0 are only wrong as the
+      # WHOLE transition or the rest state - a state-scoped data-closed:
+      # ease-in / data-closed:scale-0 is a legitimate exit target, so those
+      # match the bare, unprefixed token only.
+      def motion_class_findings(classes, line)
+        bases = classes.map { |token| token.split(":").last }
+        return [] unless bases.any? { |base| base.match?(TRANSITION_DECLARED) }
+
+        findings = []
+        if classes.include?("ease-in")
+          findings << finding("motion-ease-in", line,
+                              "ease-in accelerates into the rest state - wrong for UI (enters feel " \
+                              "sluggish, exits abrupt); use ease-out for enters, ease-in-out for moves")
+        end
+        if (over = motion_over_ceiling(bases))
+          findings << finding("motion-duration-ceiling", line,
+                              "#{over}ms is above the UI motion ceiling (~#{UI_DURATION_CEILING_MS}ms) - UI " \
+                              "transitions past ~300ms read as laggy; shorten it")
+        end
+        # A bare scale-0 rest state pops from a point - UNLESS it fades in
+        # too (a co-present opacity-0): at scale-0 the element is invisible,
+        # so the erupt is never seen. That is the standard icon crossfade
+        # (rest at scale-0 opacity-0, animate to scale-100 opacity-100), not
+        # slop; only a scale pop without a fade is flagged.
+        if classes.any? { |token| token.match?(SCALE_ZERO) } && !classes.include?("opacity-0")
+          findings << finding("motion-scale-from-zero", line,
+                              "an animated element rests at scale-0 with no opacity fade - scaling up " \
+                              "from nothing erupts into view; start from scale-95, or fade with opacity-0")
+        end
+        findings
+      end
+
+      # The report-only transition-all advisory. transition-all is
+      # pervasive in the upstream-ported theme layer, so enforcing it would
+      # fail poetry's own rendered gates and force a nine-theme re-timing - a
+      # design decision, surfaced by design:motion rather than gated. NOT a
+      # registered RULE (lint never emits it); the message says so.
+      def transition_all_advisory(classes, line)
+        bases = classes.map { |token| token.split(":").last }
+        return [] unless bases.include?("transition-all")
+
+        [finding("motion-transition-all", line,
+                 "transition-all animates every property, including layout; prefer the specific " \
+                 "properties (transition-colors / transition-[color,box-shadow] / transition-transform). " \
+                 "ADVISORY - poetry ships the upstream default here; re-timing is a design decision")]
+      end
+
+      def motion_over_ceiling(bases)
+        bases.each do |base|
+          if (match = base.match(DURATION_TOKEN))
+            ms = match[1].to_i
+          elsif (match = base.match(DURATION_ARBITRARY))
+            ms = match[2] == "s" ? (match[1].to_f * 1000).round : match[1].to_i
+          else
+            next
+          end
+          return ms if ms > UI_DURATION_CEILING_MS
+        end
+        nil
       end
 
       def shadow_stack(node, findings)

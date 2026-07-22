@@ -67,6 +67,72 @@ module Poetry
         assert_match(/p-3\.5 = 14px/, finding.message)
       end
 
+      # --- motion floor -----------------------------------------
+
+      def test_motion_ease_in_but_not_ease_in_out
+        assert_red_green("motion-ease-in",
+                         red: %(<div class="transition ease-in">x</div>),
+                         green: %(<div class="transition ease-out">x</div>))
+        # ease-in-out and ease-linear are softer preferences, not floor fails.
+        assert_empty rules_hit(%(<div class="transition ease-in-out">x</div>))
+      end
+
+      def test_motion_duration_ceiling_named_and_arbitrary
+        assert_red_green("motion-duration-ceiling",
+                         red: %(<div class="transition duration-1000">x</div>),
+                         green: %(<div class="transition duration-300">x</div>))
+        assert_includes rules_hit(%(<div class="transition duration-[800ms]">x</div>)),
+                        "motion-duration-ceiling"
+        # 500ms is the ceiling, not over it (the drawer's data-open enter).
+        refute_includes rules_hit(%(<div class="transition duration-500">x</div>)),
+                        "motion-duration-ceiling"
+      end
+
+      def test_motion_scale_from_zero_only_when_unprefixed_and_unfaded
+        assert_red_green("motion-scale-from-zero",
+                         red: %(<div class="transition scale-0 data-open:scale-100">x</div>),
+                         green: %(<div class="transition scale-95 data-open:scale-100">x</div>))
+        # A state-scoped scale-0 (an exit target) is not a bare rest state.
+        refute_includes rules_hit(%(<div class="transition data-closed:scale-0">x</div>)),
+                        "motion-scale-from-zero"
+        # scale-0 WITH opacity-0 is an icon crossfade (invisible at scale-0),
+        # not a visible pop - the clipboard copy/check swap.
+        refute_includes rules_hit(%(<div class="transition scale-0 opacity-0 data-open:scale-100">x</div>)),
+                        "motion-scale-from-zero"
+      end
+
+      def test_motion_rules_are_inert_without_a_declared_transition
+        # duration/ease/scale alone do nothing without a transition.
+        assert_empty rules_hit(%(<div class="duration-1000 ease-in scale-0">x</div>))
+        # A continuous animation loop is exempt: the floor governs
+        # transitions, not keyframe loops (a blinking caret, a spinner, a
+        # pulse legitimately run long/linear).
+        assert_empty rules_hit(%(<div class="animate-caret-blink duration-1000">x</div>))
+        assert_empty rules_hit(%(<div class="animate-spin duration-1000 ease-linear">x</div>))
+      end
+
+      def test_motion_class_findings_is_reusable_for_the_theme_self_audit
+        findings = DesignLint.motion_class_findings(%w[transition ease-in data-open:duration-700], 42)
+
+        assert_equal %w[motion-duration-ceiling motion-ease-in], findings.map(&:rule).sort
+        assert(findings.all? { |finding| finding.line == 42 })
+      end
+
+      # transition-all is a REPORT-ONLY advisory, never an enforced rule (it
+      # is pervasive in the upstream-ported theme layer); `lint` must never
+      # emit it, and it is not in the RULES registry.
+      def test_transition_all_is_advisory_only_not_an_enforced_rule
+        refute_includes rules_hit(%(<div class="transition-all hover:bg-muted">x</div>)),
+                        "motion-transition-all"
+        refute_includes DesignLint::RULES.keys, "motion-transition-all"
+
+        advisory = DesignLint.transition_all_advisory(%w[hover:transition-all bg-muted], 7)
+
+        assert_equal ["motion-transition-all"], advisory.map(&:rule)
+        assert_equal 7, advisory.first.line
+        assert_empty DesignLint.transition_all_advisory(%w[transition-colors], 1)
+      end
+
       def test_exact_scale_values_get_the_scale_spelling
         finding = DesignLint.lint(%(<div class="w-[200px]">x</div>)).first
 
@@ -281,10 +347,10 @@ module Poetry
       end
 
       def test_rules_registry_documents_every_rule_with_provenance
-        assert_equal 20, DesignLint::RULES.size
+        assert_equal 23, DesignLint::RULES.size
         DesignLint::RULES.each do |id, (tier, provenance)|
           assert_includes %i[ast dom], tier, id
-          assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration|/, provenance,
+          assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration||an external skills pack/, provenance,
                        "#{id} must cite its analogue or the measured run that earned it")
         end
       end
