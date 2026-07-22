@@ -54,4 +54,43 @@ namespace :design do
     puts "design:lint: AST tier clean (#{paths.size} templates); running the DOM tier (dommy)..."
     sh "bundle exec ruby -Itest test/dommy_tier/design_dom_test.rb"
   end
+
+  # The motion self-audit: run the motion floor over the theme
+  # layer's own @apply utilities, where poetry's motion actually lives.
+  # REPORT-ONLY, not a gate: the findings are upstream-ported timings, so
+  # re-timing them is a design decision (it diverges from the faithful N12
+  # port and re-feels all nine themes), surfaced here rather than silently
+  # changed. The floor still GATES host + component ERB through design:lint.
+  desc "Motion self-audit: the motion floor over the theme layer (report-only)"
+  task :motion do
+    poetry_ui_boot!
+    themes = Dir[Poetry::Ui.root.join("themes/*.css").to_s]
+    enforced = []
+    advisories = []
+    themes.each do |path|
+      relative = Pathname.new(path).relative_path_from(Poetry::Ui.root).to_s
+      File.readlines(path).each_with_index do |line, index|
+        classes = line[/@apply\s+([^;]+);/, 1]&.split
+        next unless classes
+
+        Poetry::Core::DesignLint.motion_class_findings(classes, index + 1).each do |f|
+          enforced << f.tap { f.file = relative }
+        end
+        Poetry::Core::DesignLint.transition_all_advisory(classes, index + 1).each do |f|
+          advisories << f.tap { f.file = relative }
+        end
+      end
+    end
+    if enforced.empty?
+      puts "design:motion: theme layer clean against the ENFORCED motion floor (#{themes.size} themes)"
+    else
+      puts Poetry::Core::Check.to_text(enforced)
+      puts "design:motion: #{enforced.size} ENFORCED motion-floor finding(s) - these should not ship"
+    end
+    unless advisories.empty?
+      puts Poetry::Core::Check.to_text(advisories)
+      puts "design:motion: #{advisories.size} transition-all advisory site(s) - REPORT-ONLY " \
+           "(upstream-ported; re-timing to specific transitions is a design decision, not a gate)"
+    end
+  end
 end
