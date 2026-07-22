@@ -26,9 +26,14 @@ score, and does it do so without regressing the other axes?**
   - `poetry`, **control** — the standing poetry belt (`compose`, `check`,
     `describe_*`, `list_*`), no `build_page`.
   - `poetry`, **treatment** — `POETRY_BENCH_GUIDED=1` adds
-    `mcp__poetry__build_page` to the poetry belt. The skill already routes a
-    whole-screen brief to `build_page` (the design skill's `compose` reference,
-    ), so the tool in the belt is the whole treatment. **The raw belt is
+    `mcp__poetry__build_page` to the poetry belt AND routes page briefs to it
+    in the host's AGENTS.md (`Benchmark#guided_routing`). The belt alone is not
+    the treatment: a smoke proved availability does not drive adoption — the
+    agent used `compose` (whose description says "CALL THIS FIRST for every
+    brief"), never `build_page`. So the treatment is the guided **entry**, not
+    the tool's mere presence; that is the hypothesis. The routing is hermetic
+    and guided-run-only — the shipped compose-first doctrine is
+    untouched until an eval result justifies changing it. **The raw belt is
     never touched — the asymmetry is the treatment** (`Benchmark.toolbelt`).
 - **The graded axis is the paired JUDGE:** hierarchy · composition · clarity ·
   brief_fit, forced choice, blind (README honesty rules). The mechanical gates

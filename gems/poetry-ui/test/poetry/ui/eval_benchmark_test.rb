@@ -89,6 +89,31 @@ module Poetry
         end
       end
 
+      def test_parse_generation_stream_extracts_the_tool_trace_and_envelope
+        stream = [
+          { "type" => "system", "subtype" => "init" },
+          { "type" => "assistant", "message" => { "content" => [
+            { "type" => "text", "text" => "planning the page" },
+            { "type" => "tool_use", "name" => "mcp__poetry__build_page" }
+          ] } },
+          { "type" => "assistant", "message" => { "content" => [
+            { "type" => "tool_use", "name" => "mcp__poetry__compose" }
+          ] } },
+          { "type" => "result", "subtype" => "success", "total_cost_usd" => 0.5,
+            "num_turns" => 7, "is_error" => false }
+        ].map { |obj| JSON.generate(obj) }.join("\n")
+
+        envelope, tools = Poetry::Eval::Benchmark.parse_generation_stream(stream)
+
+        assert_equal 7, envelope["num_turns"]
+        assert_equal %w[mcp__poetry__build_page mcp__poetry__compose], tools
+        # A stream with no result object (a crash) yields a nil envelope, and
+        # a garbage line is skipped, never raised.
+        nil_env, = Poetry::Eval::Benchmark.parse_generation_stream("not json\n")
+
+        assert_nil nil_env
+      end
+
       # --- the one-prompt rule ---------------------------------------------
 
       def test_generation_prompt_has_no_arm_parameter_and_never_names_the_house

@@ -178,6 +178,10 @@ module Poetry
             "num_turns" => envelope["num_turns"],
             "duration_s" => (Process.clock_gettime(Process::CLOCK_MONOTONIC) - started).round(1),
             "attempts" => envelope.fetch("poetry_bench_attempts"),
+            # The tool-call tally: build_page adoption is auditable
+            # per unit, so a null composition result is legible (tool unused
+            # vs used-but-ineffective).
+            "tools" => envelope.fetch("poetry_bench_tools", []).tally,
             "artifact" => view.exist? && view.size.positive?
           }
         ensure
@@ -186,6 +190,30 @@ module Poetry
           # downstream stage still sees a complete pair.
           harvest(view, task, arm)
         end
+      end
+
+      # Parse the claude stream-json NDJSON: [result envelope, tool_use
+      # names]. Assistant messages carry the tool_use blocks (the adoption
+      # trace); the lone {"type":"result"} object is the usage envelope.
+      # Pure, so the parse is unit-tested without spawning the CLI.
+      def self.parse_generation_stream(out)
+        envelope = nil
+        tools = []
+        out.each_line do |line|
+          obj = begin
+            JSON.parse(line)
+          rescue JSON::ParserError
+            next
+          end
+          case obj["type"]
+          when "result" then envelope = obj
+          when "assistant"
+            Array(obj.dig("message", "content")).each do |block|
+              tools << block["name"] if block.is_a?(Hash) && block["type"] == "tool_use"
+            end
+          end
+        end
+        [envelope, tools]
       end
 
       # The ONE generation prompt - no arm parameter can exist, so no arm
@@ -406,7 +434,7 @@ module Poetry
         llms = Poetry::Core::LlmsText.new(registry: registry)
         host.join("llms.txt").write(llms.index)
         host.join("llms-full.txt").write(llms.full)
-        host.join("AGENTS.md").write(<<~MD + agents_section_text)
+        host.join("AGENTS.md").write(<<~MD + guided_routing + agents_section_text)
           # AGENTS.md
 
           Rails 8 + Tailwind CSS v4 application. UI is built with the poetry
@@ -426,6 +454,32 @@ module Poetry
         write_bin_check(host)
         write_mcp_config(host)
         write_skills(host)
+      end
+
+      # The guided treatment's routing (POETRY_BENCH_GUIDED=1 only):
+      # the belt carries build_page, but the smoke proved availability alone
+      # does not drive adoption - compose's "CALL THIS FIRST for every brief"
+      # wins. So the treatment ALSO routes page briefs to build_page, stated
+      # first in AGENTS.md. This is the hypothesis the eval tests: does the
+      # guided ENTRY (not just the tool's presence) move composition. It is
+      # hermetic and guided-run-only - the shipped compose-first doctrine
+      # is untouched until an eval result justifies changing it.
+      def guided_routing
+        return "" unless self.class.guided?
+
+        <<~MD
+          ## Building a page? Call build_page FIRST
+
+          For a full PAGE, screen, dashboard, or view - anything beyond a
+          single component - call the poetry MCP `build_page` tool FIRST,
+          before `compose` or any ERB. It runs a guided workflow (probe ->
+          plan -> direct -> snippets -> verify): it plans the page
+          architecture (section order, the states a real screen needs, edge
+          cases), derives the creative direction from the theme, routes you to
+          the source, and gates on `check`. Use `compose` directly only for
+          single-component work.
+
+        MD
       end
 
       # The two Claude Code skills, written exactly as `rails g poetry:skill`
@@ -533,8 +587,14 @@ module Poetry
         # must never leak into either arm.
         mcp_args = ["--strict-mcp-config"]
         mcp_args.push("--mcp-config", ".mcp.json") if host.join(".mcp.json").exist?
+        # stream-json (needs --verbose) so the tool-call TRACE is captured,
+        # not just the final envelope: the question is whether
+        # build_page was USED and moved composition, so per-unit adoption
+        # must be auditable (the eval/guided.md linkable-traces upgrade). The
+        # final {"type":"result"} object carries the same usage fields the
+        # json format returned.
         out, err, status = Open3.capture3(
-          "claude", "-p", prompt, "--output-format", "json",
+          "claude", "-p", prompt, "--output-format", "stream-json", "--verbose",
           "--model", @model, "--max-turns", @max_turns.to_s,
           "--allowedTools", toolbelt, *mcp_args,
           # Skills resolve from the unit host only: without this,
@@ -543,14 +603,11 @@ module Poetry
           "--setting-sources", "project",
           chdir: host.to_s
         )
-        # A failed run still emits an envelope on stdout (exit 1, is_error,
-        # subtype) - parse it first so its spend receipts and its reason is
-        # legible; only a non-envelope crash falls through to raw output.
-        envelope = begin
-          JSON.parse(out)
-        rescue JSON::ParserError
-          nil
-        end
+        # Parse the NDJSON stream: collect tool_use names from assistant
+        # messages, and keep the final result object as the envelope. A
+        # failed run still emits a result object (exit 1, is_error, subtype),
+        # so its spend receipts and its reason stays legible.
+        envelope, tools = self.class.parse_generation_stream(out)
         record_usage(envelope) if envelope
         if envelope&.fetch("subtype", nil) == "error_max_turns"
           raise MaxTurnsError, "max turns (#{@max_turns}) exhausted, " \
@@ -568,7 +625,7 @@ module Poetry
         raise Error, "no envelope in claude output: #{out.to_s[0, 120]}" if envelope.nil?
         raise Error, "claude errored: #{envelope["result"].to_s[0, 200]}" if envelope["is_error"]
 
-        envelope.merge("poetry_bench_attempts" => attempt)
+        envelope.merge("poetry_bench_attempts" => attempt, "poetry_bench_tools" => tools)
       rescue MaxTurnsError
         raise
       rescue Error, JSON::ParserError => e
