@@ -341,6 +341,7 @@ namespace :eval do
       manifest["units"] ||= {}
       manifest["config"] = { "model" => bench.model, "max_turns" => bench.max_turns,
                              "guided" => Poetry::Eval::Benchmark.guided?,
+                             "build_page_available" => Poetry::Eval::Benchmark.build_page_available?,
                              "toolbelts" => Poetry::Eval::Benchmark.resolved_toolbelts }
       prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
 

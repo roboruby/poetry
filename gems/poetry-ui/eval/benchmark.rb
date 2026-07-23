@@ -66,18 +66,28 @@ module Poetry
         "raw_tailwind" => "Read,Glob,Grep,Write,Skill"
       }.freeze
 
-      # The guided treatment: under POETRY_BENCH_GUIDED=1 the poetry
-      # arm's belt also carries build_page (the guided workflow), so the run
-      # measures whether guided entry moves composition where compose alone
-      # did not (79). The control run (flag unset) is the standing
-      # poetry belt. The raw arm is untouched - the asymmetry is the
-      # treatment. The resolved belt is recorded in the manifest so a run is
+      # The guided eval has two orthogonal knobs, because the belt
+      # alone is not the treatment (the trace-smoke proved availability does
+      # not drive adoption - the agent used compose):
+      #
+      #   POETRY_BENCH_BUILD_PAGE=1 - build_page is ALLOWED in the poetry
+      #     belt. Set in BOTH the control and treatment of the guided eval,
+      #     so build_page is advertised-AND-allowed in both and the control
+      #     never wastes turns on a denied attempt (the confound the first
+      #     trial-1 exposed: tools/list advertises build_page to every arm).
+      #   POETRY_BENCH_GUIDED=1 - the host AGENTS.md ROUTES page briefs to
+      #     build_page (guided_routing). Set in the treatment ONLY. This is
+      #     the real treatment: the guided ENTRY, isolated from availability.
+      #
+      # GUIDED implies availability. The raw arm is never touched. The
+      # resolved belt + both flags are recorded in the manifest, so a run is
       # reproducible from its own artifacts. Protocol: eval/guided.md.
+      def self.build_page_available? = ENV["POETRY_BENCH_BUILD_PAGE"] == "1"
       def self.guided? = ENV["POETRY_BENCH_GUIDED"] == "1"
 
       def self.toolbelt(arm)
         belt = TOOLBELTS.fetch(arm)
-        return belt unless arm == "poetry" && guided?
+        return belt unless arm == "poetry" && (build_page_available? || guided?)
 
         "#{belt},mcp__poetry__build_page"
       end

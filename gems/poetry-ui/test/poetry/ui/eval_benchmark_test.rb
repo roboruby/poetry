@@ -55,37 +55,39 @@ module Poetry
 
       # --- the guided treatment (the toolbelt asymmetry) ------------
 
-      def with_guided(value)
-        prior = ENV.fetch("POETRY_BENCH_GUIDED", nil)
-        ENV["POETRY_BENCH_GUIDED"] = value
+      def with_env(vars)
+        prior = vars.to_h { |key, _| [key, ENV.fetch(key, nil)] }
+        vars.each { |key, value| ENV[key] = value }
         yield
       ensure
-        ENV["POETRY_BENCH_GUIDED"] = prior
+        prior.each { |key, value| ENV[key] = value }
       end
 
-      def test_guided_flag_adds_build_page_to_the_poetry_belt_only
-        with_guided(nil) do
-          refute_predicate Poetry::Eval::Benchmark, :guided?
+      def test_build_page_belt_and_guided_routing_are_orthogonal
+        # Neither flag: the standing belt, no build_page (the standing spec).
+        with_env("POETRY_BENCH_BUILD_PAGE" => nil, "POETRY_BENCH_GUIDED" => nil) do
           refute_includes Poetry::Eval::Benchmark.toolbelt("poetry"), "build_page"
         end
-        with_guided("1") do
-          assert_predicate Poetry::Eval::Benchmark, :guided?
-          poetry = Poetry::Eval::Benchmark.toolbelt("poetry")
-
-          assert_includes poetry, "mcp__poetry__build_page"
-          assert_includes poetry, "mcp__poetry__compose", "the treatment ADDS, never replaces"
-          # The raw arm is never touched - the asymmetry IS the treatment.
-          assert_equal Poetry::Eval::Benchmark::TOOLBELTS.fetch("raw_tailwind"),
-                       Poetry::Eval::Benchmark.toolbelt("raw_tailwind")
+        # Availability WITHOUT routing = the guided-eval control: build_page
+        # is allowed in the belt (no denied attempts) but not routed.
+        with_env("POETRY_BENCH_BUILD_PAGE" => "1", "POETRY_BENCH_GUIDED" => nil) do
+          assert_predicate Poetry::Eval::Benchmark, :build_page_available?
+          refute_predicate Poetry::Eval::Benchmark, :guided?
+          assert_includes Poetry::Eval::Benchmark.toolbelt("poetry"), "mcp__poetry__build_page"
+          assert_includes Poetry::Eval::Benchmark.toolbelt("poetry"), "mcp__poetry__compose", "ADDS, never replaces"
+        end
+        # Routing implies availability (the treatment).
+        with_env("POETRY_BENCH_BUILD_PAGE" => nil, "POETRY_BENCH_GUIDED" => "1") do
+          assert_includes Poetry::Eval::Benchmark.toolbelt("poetry"), "mcp__poetry__build_page"
         end
       end
 
-      def test_resolved_toolbelts_records_the_treatment_for_the_manifest
-        with_guided("1") do
+      def test_the_raw_belt_is_never_touched_and_the_manifest_records_the_treatment
+        with_env("POETRY_BENCH_BUILD_PAGE" => "1", "POETRY_BENCH_GUIDED" => "1") do
           resolved = Poetry::Eval::Benchmark.resolved_toolbelts
 
           assert_includes resolved["poetry"], "build_page"
-          refute_includes resolved["raw_tailwind"], "build_page"
+          assert_equal Poetry::Eval::Benchmark::TOOLBELTS.fetch("raw_tailwind"), resolved["raw_tailwind"]
         end
       end
 

@@ -21,20 +21,23 @@ score, and does it do so without regressing the other axes?**
 - **Briefs:** the 12 page-scale briefs in `eval/pagescale.rb`
   (`POETRY_BENCH_SPEC=guided`). Composition is a page-scale property; these are
   the briefs where macrostructure is the graded axis.
-- **Arms, per the benchmark's poetry-vs-raw structure:**
+- **Arms, per the benchmark's poetry-vs-raw structure. Two orthogonal knobs
+  (the confound the first trial-1 exposed: `tools/list` advertises
+  `build_page` to EVERY arm, so a control without it in the belt wasted turns
+  on denied attempts and polluted the adoption count):**
   - `raw_tailwind` — the shared baseline (identical in both runs).
-  - `poetry`, **control** — the standing poetry belt (`compose`, `check`,
-    `describe_*`, `list_*`), no `build_page`.
-  - `poetry`, **treatment** — `POETRY_BENCH_GUIDED=1` adds
-    `mcp__poetry__build_page` to the poetry belt AND routes page briefs to it
-    in the host's AGENTS.md (`Benchmark#guided_routing`). The belt alone is not
-    the treatment: a smoke proved availability does not drive adoption — the
-    agent used `compose` (whose description says "CALL THIS FIRST for every
-    brief"), never `build_page`. So the treatment is the guided **entry**, not
-    the tool's mere presence; that is the hypothesis. The routing is hermetic
-    and guided-run-only — the shipped compose-first doctrine is
-    untouched until an eval result justifies changing it. **The raw belt is
-    never touched — the asymmetry is the treatment** (`Benchmark.toolbelt`).
+  - `poetry`, **control** — `POETRY_BENCH_BUILD_PAGE=1`: `build_page` is
+    ALLOWED in the belt (advertised-and-allowed, so no denied attempts) but
+    NOT routed. The agent falls to `compose` on its own (the smoke: available
+    but unrouted → `compose`, `build_page` unused).
+  - `poetry`, **treatment** — `POETRY_BENCH_GUIDED=1` (implies availability):
+    the host AGENTS.md ROUTES page briefs to `build_page` first
+    (`Benchmark#guided_routing`). **Routing is the sole treatment difference —
+    the guided ENTRY, isolated from availability** — because the belt alone is
+    inert (the smoke: build_page in the belt, unrouted, went unused; routed, it
+    ran 4× the full workflow). Hermetic and guided-run-only; the shipped
+    compose-first doctrine is untouched until a result justifies
+    changing it. The raw belt is never touched.
 - **The graded axis is the paired JUDGE:** hierarchy · composition · clarity ·
   brief_fit, forced choice, blind (README honesty rules). The mechanical gates
   run as usual (cross-arm, portable) but composition is a judged axis.
@@ -72,20 +75,30 @@ score, and does it do so without regressing the other axes?**
 ## Running it (on-demand, real token cost, NEVER CI)
 
 Per the eval cadence: judged runs are per-release / per-milestone, under an
-explicit green-light. Three trials each of control and treatment:
+explicit green-light. Three trials each of control and treatment. **The full
+two-condition chain is too long for one background job (the first trial-1 was
+SIGTERM'd mid-judge), so run each stage separately per condition** rather than
+the chained `eval:benchmark:run`:
 
 ```
-# control (standing belt), trial i of 3
-POETRY_BENCH_SPEC=guided POETRY_BENCH_DATE=<date>-control-<i> bin/rake eval:benchmark:run
-# treatment (belt + build_page), trial i of 3
-POETRY_BENCH_SPEC=guided POETRY_BENCH_GUIDED=1 POETRY_BENCH_DATE=<date>-guided-<i> bin/rake eval:benchmark:run
+# control (build_page allowed, NOT routed), trial i of 3
+env="POETRY_BENCH_SPEC=guided POETRY_BENCH_BUILD_PAGE=1 POETRY_BENCH_DATE=<date>-control-<i>"
+$env bin/rake eval:benchmark:hosts eval:benchmark:generate
+$env bin/rake eval:benchmark:score eval:benchmark:capture
+$env bin/rake eval:benchmark:judge eval:benchmark:aggregate
+# treatment (build_page routed), trial i of 3 — GUIDED=1 implies availability
+env="POETRY_BENCH_SPEC=guided POETRY_BENCH_GUIDED=1 POETRY_BENCH_DATE=<date>-guided-<i>"
+$env bin/rake eval:benchmark:hosts eval:benchmark:generate
+$env bin/rake eval:benchmark:score eval:benchmark:capture
+$env bin/rake eval:benchmark:judge eval:benchmark:aggregate
 ```
 
-`eval:benchmark:run` chains hosts → generate → score → capture → judge →
-aggregate (README). The manifest records `guided` and the resolved toolbelts,
-so a run is reproducible from its own artifacts. Optionally re-validate a
-positive result on the reserved `holdout` stratum
-(`POETRY_BENCH_SPEC=holdout`, its own doctrine) to check it generalized.
+The manifest records `guided`, `build_page_available`, and the resolved
+toolbelts, so a run is reproducible from its own artifacts. Each unit's tool
+tally (stream-json trace) makes `build_page` adoption auditable per brief;
+with the tool allowed in both arms, a recorded call is a real call, not a
+denied attempt. Optionally re-validate a positive result on the reserved
+`holdout` stratum (`POETRY_BENCH_SPEC=holdout`) to check it generalized.
 
 ## Doctrine
 
