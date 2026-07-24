@@ -1,0 +1,26 @@
+{
+  "$description": "Sample Figma variables export (DTCG) with light + dark collection modes, grouped tokens, an alias, a hex string, a DTCG color object, a dimension, and a deliberately-broken alias.",
+  "color": {
+    "light": {
+      "background": { "$type": "color", "$value": "#ffffff" },
+      "foreground": {
+        "$type": "color",
+        "$value": { "colorSpace": "srgb", "components": [0.09, 0.09, 0.09], "alpha": 1, "hex": "#171717" }
+      },
+      "primary": {
+        "DEFAULT": { "$type": "color", "$value": "#1a1a1a" },
+        "foreground": { "$type": "color", "$value": "#fafafa" }
+      },
+      "ring": { "$type": "color", "$value": "{color.light.primary.DEFAULT}" },
+      "muted-foreground": { "$type": "color", "$value": "#8e8e8e" },
+      "ghost": { "$type": "color", "$value": "{color.light.missing}" },
+      "spacing-lg": { "$type": "dimension", "$value": { "value": 24, "unit": "px" } },
+      "radius": { "$type": "dimension", "$value": { "value": 0.625, "unit": "rem" } },
+      "logo": { "$type": "string", "$value": "https://example.com/logo.svg" }
+    },
+    "dark": {
+      "background": { "$type": "color", "$value": "#0a0a0a" },
+      "foreground": { "$type": "color", "$value": "#fafafa" }
+    }
+  }
+}
