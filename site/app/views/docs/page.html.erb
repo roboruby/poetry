@@ -29,10 +29,6 @@
         with no per-component step. To own the source and edit it, copy it into your app:
       </p>
       <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "shell", label: "Copy-in") %>
-      <p class="text-sm text-muted-foreground">
-        Registry (shadcn-interop):
-        <%= poetry_link(href: "/r/#{@entry.slug}.json") { "/r/#{@entry.slug}.json" } %>
-      </p>
     </section>
   <% end %>
 
