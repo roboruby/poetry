@@ -28,6 +28,6 @@ module DocsHelper
   # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
   # every code tab gains the copy affordance.
   def highlight_erb(source)
-    poetry_code_block(code: source, language: "erb", label: "Example source")
+    poetry_code_block(code: source, language: "erb", label: "Example source", line_numbers: true)
   end
 end
