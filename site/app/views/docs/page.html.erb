@@ -15,10 +15,11 @@
     <% end %>
   </header>
 
-  <%# Per-component install (the shadcn docs pattern, reframed for poetry's
-      gem model): the component ships in poetry-ui and is available the moment
-      poetry is installed - the copy-in command is the OWNERSHIP tier, not a
-      requirement. Components only; charts/blocks copy in differently. %>
+  <%# Per-page install (the shadcn docs pattern, reframed for poetry): a
+      component ships in poetry-ui and is available the moment poetry is
+      installed - poetry:add is the OWNERSHIP tier, not a requirement. Charts
+      ship in the separate, optional poetry-charts gem. Blocks are
+      generate-to-own on their own page template (block_page). %>
   <% if @entry.section == "components" %>
     <section class="flex flex-col gap-3">
       <h2 class="text-lg font-medium" id="installation">Installation</h2>
@@ -29,6 +30,16 @@
         with no per-component step. To own the source and edit it, copy it into your app:
       </p>
       <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "shell", label: "Copy-in") %>
+    </section>
+  <% elsif @entry.section == "charts" %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="installation">Installation</h2>
+      <p class="max-w-2xl text-muted-foreground">
+        Charts ship in the separate, optional <code class="text-foreground">poetry-charts</code>
+        gem — not bundled with <code class="text-foreground">poetry-ui</code>. If you
+        don't have it yet, add it and wire it into your app:
+      </p>
+      <%= poetry_code_block(code: "bundle add poetry-charts\nbin/rails g poetry:install --charts", language: "shell", label: "Add charts") %>
     </section>
   <% end %>
 
