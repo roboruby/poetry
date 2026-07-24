@@ -63,6 +63,41 @@
   animation-name: none;
 }
 
+/* CodeBlock single-spacing (CodeBlock): rouge emits a
+   newline after every line so the copy affordance's textContent keeps real
+   line breaks, but .line is display:block (for the full-row .hll tint and the
+   line-number counter), so each newline ALSO renders as a blank line in the
+   <pre> - doubling the spacing and leaving a trailing blank line at the bottom
+   with none at the top. Zero the code's line-height so those inter-line
+   newline boxes collapse to nothing, and restore a line-height on .line so the
+   code stays single-spaced. :has(.line) keeps the rouge-absent plain-text
+   fallback untouched. Copy text is unchanged; top/bottom padding is symmetric.
+   Unlayered, so it beats the text-sm utility line-height by cascade order.
+   The .line value is the code's row spacing (1.5rem = a relaxed single;
+   1.25rem is tight, 1.75rem is airy). */
+[data-slot="code-block-code"]:has(.line) {
+  line-height: 0;
+}
+[data-slot="code-block-code"] .line {
+  line-height: 1.5rem;
+}
+
+/* CodeBlock copy affordance (CodeBlock): the button is a
+   ghost (transparent), so a long code line scrolling under it shows through
+   and the icon blends into the code. Paint it the code panel's OWN surface
+   color so it masks the code beneath while blending into the panel: the panel
+   is bg-muted/30 (muted 30% over --background) in every theme, and this mix is
+   exactly that composite made opaque. On hover it drops to transparent (the
+   shadcn behavior - once you're on it, the melt reads as the interaction).
+   Scoped to the code-block so the standalone ClipboardText button is
+   unaffected. Unlayered, so it wins over the ghost Button's utility bg. */
+[data-slot="code-block"] [data-slot="clipboard-text-copy"] {
+  background-color: color-mix(in oklab, var(--muted) 30%, var(--background));
+}
+[data-slot="code-block"] [data-slot="clipboard-text-copy"]:hover {
+  background-color: transparent;
+}
+
 /* data-selected bridge extension (Base UI Vocabulary §3):
    the vendored shadcn/tailwind.css @custom-variant data-selected matches
    [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare
