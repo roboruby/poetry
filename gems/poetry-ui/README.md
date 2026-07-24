@@ -12,6 +12,7 @@ gems are unpublished.
 # Gemfile
 gem "poetry-core"
 gem "poetry-ui"
+gem "poetry-lucide"     # default icon set
 # gem "poetry-charts"   # optional
 ```
 

@@ -68,29 +68,60 @@ namespace :poetry do
       end
     end
 
-    desc "Import a DESIGN.md into token overrides " \
-         "(app/assets/tailwind/poetry/design-overrides.css; AA enforced at the door, " \
+    desc "Import a design source into token overrides " \
+         "(a DESIGN.md, a Figma/DTCG variables .json, or a Paper/CSS .css theme -> " \
+         "app/assets/tailwind/poetry/design-overrides.css; AA enforced at the door, " \
          "POETRY_DESIGN_FORCE=1 ships failing pairs, POETRY_DESIGN_JSON=1 for a JSON report)"
     task :import, [:path] => :environment do |_task, args|
-      source = args[:path] or abort "poetry:design:import: pass the file - bin/rails 'poetry:design:import[path]'"
-      abort "poetry:design:import: no such file #{source}" unless File.exist?(source)
-
-      doc = Poetry::Core::DesignMd.parse(File.read(source))
-      plan = Poetry::Core::DesignMd::Import.new.plan(doc, force: ENV["POETRY_DESIGN_FORCE"] == "1")
-
-      written = nil
-      if plan.any_overrides?
-        written = Rails.root.join("app/assets/tailwind/poetry/design-overrides.css")
-        written.write(poetry_design_overrides_css(plan, File.basename(source)))
-        poetry_design_wire_overrides
-      end
-
-      if ENV["POETRY_DESIGN_JSON"] == "1"
-        puts JSON.pretty_generate(poetry_design_report_json(plan, written))
-      else
-        puts poetry_design_report(plan, written)
-      end
+      poetry_design_run_import(args[:path], task: "poetry:design:import")
     end
+  end
+
+  # Design-tool token bridges: thin, discoverable entry points onto the SAME
+  # importer. `TokenImport.load` dispatches by extension, so a Figma variables
+  # .json or a Paper "Copy theme" .css runs through the exact AA-gated pipeline
+  # poetry:design:import uses -- imported swatches inherit the contrast law, the
+  # drop-not-fabricate rule, and the dark-mode pins for free.
+  namespace :figma do
+    desc "Import a Figma variables export (DTCG .json) into token overrides " \
+         "(same AA-gated pipeline as poetry:design:import; POETRY_DESIGN_FORCE / POETRY_DESIGN_JSON honored)"
+    task :import, [:path] => :environment do |_task, args|
+      poetry_design_run_import(args[:path], task: "poetry:figma:import")
+    end
+  end
+
+  namespace :paper do
+    desc "Import a Paper 'Copy theme' export (CSS .css) into token overrides " \
+         "(same AA-gated pipeline as poetry:design:import; POETRY_DESIGN_FORCE / POETRY_DESIGN_JSON honored)"
+    task :import, [:path] => :environment do |_task, args|
+      poetry_design_run_import(args[:path], task: "poetry:paper:import")
+    end
+  end
+end
+
+# Shared importer for the DESIGN.md / Figma / Paper entry points: one file in,
+# one AA-gated design-overrides.css out. Poetry::Core::TokenImport.load
+# dispatches by extension (.md -> DesignMd.parse, .json -> Figma/DTCG variables,
+# .css -> Paper/CSS custom properties); everything downstream is the pipeline
+# poetry:design:import already ran, so nothing new decides what ships.
+def poetry_design_run_import(source, task:)
+  abort "#{task}: pass the file - bin/rails '#{task}[path]'" unless source
+  abort "#{task}: no such file #{source}" unless File.exist?(source)
+
+  doc = Poetry::Core::TokenImport.load(source)
+  plan = Poetry::Core::DesignMd::Import.new.plan(doc, force: ENV["POETRY_DESIGN_FORCE"] == "1")
+
+  written = nil
+  if plan.any_overrides?
+    written = Rails.root.join("app/assets/tailwind/poetry/design-overrides.css")
+    written.write(poetry_design_overrides_css(plan, File.basename(source)))
+    poetry_design_wire_overrides
+  end
+
+  if ENV["POETRY_DESIGN_JSON"] == "1"
+    puts JSON.pretty_generate(poetry_design_report_json(plan, written))
+  else
+    puts poetry_design_report(plan, written)
   end
 end
 

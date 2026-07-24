@@ -33,6 +33,12 @@ to prevent).
 - **study** (`references/study.md`) - extract a brand's design DNA into a
   DESIGN.md poetry can import; `redesign` = keep the content, swap the
   fingerprint.
+- **figma** (`references/figma.md`) - bring a Figma design into poetry:
+  import its variables as an AA-gated theme, or translate a selection into
+  components across the Figma + poetry MCPs.
+- **paper** (`references/paper.md`) - bring a paper.design canvas into
+  poetry: import its theme, or translate the canvas across the Paper +
+  poetry MCPs.
 
 ## Working rules
 
