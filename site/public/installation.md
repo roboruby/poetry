@@ -1,4 +1,4 @@
-# Installing poetry in a Rails app — agent instructions
+# Installing poetry in a Rails app - agent instructions
 
 Concise, imperative setup for a coding agent adding poetry to a Rails 8 app
 (importmap + tailwindcss-rails). The human guide is at `/installation`; this
@@ -20,11 +20,11 @@ gem "poetry-lucide"        # default icon set; most components render an icon
 # gem "poetry-charts"      # optional: server-rendered SVG charts
 ```
 
-Then `bundle install`. (The gem named `poetry` is a name-reservation stub —
+Then `bundle install`. (The gem named `poetry` is a name-reservation stub -
 do not install it as the entry point; `poetry-core` + `poetry-ui` are the
 library.)
 
-## 2. Run the installer (idempotent — it is also the upgrade path)
+## 2. Run the installer (idempotent - it is also the upgrade path)
 
 ```bash
 bin/rails g poetry:install --theme default   # themes: default vega nova mira rhea maia luma lyra sera
@@ -50,11 +50,11 @@ For pre-paint dark mode, put `poetry_color_scheme_script` in your layout
 ## 3. Render a component
 
 ```erb
-<%= poetry_button(variant: :primary) { "Save" } %>
+<%= poetry_button(variant: :default) { "Save" } %>
 ```
 
 Every component has a `poetry_<name>` helper. Compose through helpers,
-variants, and theme tokens — never hand-write `cn-*` classes or raw
+variants, and theme tokens - never hand-write `cn-*` classes or raw
 hex/oklch (`poetry check` flags it).
 
 ## 4. Own a component (optional)
