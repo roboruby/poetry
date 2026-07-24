@@ -200,7 +200,7 @@ cn-message-group: identical
 cn-message-header: mechanical (sera minus inline dups)
 cn-message-scroller-content: identical
 cn-native-select: mechanical (sera minus inline dups)
-cn-native-select-icon: mechanical (sera minus inline dups)
+cn-native-select-icon: mechanical (sera minus inline dups); POETRY DEVIATION: right-0 -> right-2.5 (upstream pins the chevron flush to the edge while the box reserves pr-8, so it detaches from the text and reads as misaligned when switching themes; normalized to the ~10px cross-theme chevron inset - the docs theme-switcher consistency call)
 cn-navigation-menu-content: mechanical (sera minus inline dups)
 cn-navigation-menu-link: mechanical (sera minus inline dups)
 cn-navigation-menu-list: identical

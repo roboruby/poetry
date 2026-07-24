@@ -199,7 +199,7 @@ cn-message-group: identical
 cn-message-header: mechanical (maia minus inline dups)
 cn-message-scroller-content: identical
 cn-native-select: mechanical (maia minus inline dups)
-cn-native-select-icon: mechanical (maia minus inline dups)
+cn-native-select-icon: mechanical (maia minus inline dups); POETRY DEVIATION: right-3.5 -> right-2.5 (normalized to the ~10px cross-theme chevron inset - the docs theme-switcher consistency call; mira stays proportional at right-1.5 for its smaller box)
 cn-navigation-menu-content: mechanical (maia minus inline dups)
 cn-navigation-menu-link: mechanical (maia minus inline dups)
 cn-navigation-menu-list: identical
