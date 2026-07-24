@@ -15,6 +15,27 @@
     <% end %>
   </header>
 
+  <%# Per-component install (the shadcn docs pattern, reframed for poetry's
+      gem model): the component ships in poetry-ui and is available the moment
+      poetry is installed - the copy-in command is the OWNERSHIP tier, not a
+      requirement. Components only; charts/blocks copy in differently. %>
+  <% if @entry.section == "components" %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="installation">Installation</h2>
+      <p class="max-w-2xl text-muted-foreground">
+        Included in <code class="text-foreground">poetry-ui</code> — available as
+        <code class="text-foreground">poetry_<%= @entry.slug.tr("-", "_") %></code>
+        the moment you've <%= poetry_link(href: "/installation") { "installed poetry" } %>,
+        with no per-component step. To own the source and edit it, copy it into your app:
+      </p>
+      <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "shell", label: "Copy-in") %>
+      <p class="text-sm text-muted-foreground">
+        Registry (shadcn-interop):
+        <%= poetry_link(href: "/r/#{@entry.slug}.json") { "/r/#{@entry.slug}.json" } %>
+      </p>
+    </section>
+  <% end %>
+
   <% if @examples.any? %>
     <% @examples.each do |name| %>
       <%= docs_example(@entry.section, @entry.slug, name) %>
