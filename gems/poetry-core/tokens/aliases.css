@@ -50,6 +50,19 @@
   --radix-hover-card-content-transform-origin: var(--transform-origin);
 }
 
+/* Accordion resting-keyframe gate (Accordion): the panel
+   keeps data-open the whole time it's open, so the theme's
+   data-open:animate-accordion-down keyframe (poetry-ui themes) re-runs
+   whenever a display:none -> visible toggle restarts CSS animations - an
+   accordion nested in a Tabs panel replays the expand as a flicker on every
+   return to the panel. poetry--core--accordion marks the brief open/close
+   window with data-transitioning; at rest, stop the keyframe so a re-display
+   is inert. Unlayered (this file imports without layer()), so it beats the
+   layer(base) theme animation by cascade-layer order - no !important. */
+[data-slot="accordion-content"]:not([data-transitioning]) {
+  animation-name: none;
+}
+
 /* data-selected bridge extension (Base UI Vocabulary §3):
    the vendored shadcn/tailwind.css @custom-variant data-selected matches
    [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare

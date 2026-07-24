@@ -8,6 +8,12 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // same root. Panels ride the presence helper; the measured
 // --accordion-panel-height var feeds the vendored accordion-down/up
 // keyframes.
+
+// Safety net (ms) for clearing the data-transitioning window when
+// animationend never arrives - reduced motion or a zero-length animation.
+// Comfortably longer than the 0.2s accordion keyframe.
+const TRANSITION_FALLBACK_MS = 400
+
 export default class extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -17,6 +23,9 @@ export default class extends Controller {
     type: { type: String, default: "single" },
     collapsible: { type: Boolean, default: false }
   }
+
+  // panel -> a clear() that ends its data-transitioning window.
+  #transitions = new Map()
 
   toggle(event) {
     const item = event.currentTarget.closest('[data-slot="accordion-item"]')
@@ -36,6 +45,12 @@ export default class extends Controller {
   connect() {
     this.#reflectDisabled()
     this.#reflectTriggers() // server-open items adopt data-panel-open on connect
+  }
+
+  disconnect() {
+    // Flush any in-flight transition window so its timer/listener doesn't
+    // outlive the controller (Turbo teardown, or a test between cases).
+    for (const clear of [...this.#transitions.values()]) clear()
   }
 
   // Base UI trigger parity for the server-rendered state (the #open/#close
@@ -58,6 +73,7 @@ export default class extends Controller {
     if (!panel) return
     panel.hidden = false
     measurePresence(panel, { property: "--accordion-panel-height" })
+    this.#markTransition(panel)
     enterPresence(panel)
   }
 
@@ -69,6 +85,7 @@ export default class extends Controller {
     if (trigger) setState(trigger, "panel-closed")
     if (!panel) return
     measurePresence(panel, { property: "--accordion-panel-height" })
+    this.#markTransition(panel)
     exitPresence(panel, { onRemove: () => { panel.hidden = true } })
   }
 
@@ -85,6 +102,33 @@ export default class extends Controller {
         trigger.removeAttribute("aria-disabled")
       }
     })
+  }
+
+  // The resting-keyframe gate (accordion flicker fix): the panel keeps
+  // data-open the whole time it's open, so the theme's
+  // data-open:animate-accordion-down keyframe would REPLAY every time a
+  // display:none -> visible toggle restarts CSS animations (an accordion
+  // nested in a Tabs panel is the common case - the expand flickers on every
+  // return to the panel). aliases.css stops the keyframe unless
+  // data-transitioning is present; this rides it only for the open/close
+  // window, cleared on animationend (fallback for reduced-motion / zero-length
+  // animations where animationend may not fire).
+  #markTransition(panel) {
+    this.#transitions.get(panel)?.() // supersede any in-flight window
+
+    panel.setAttribute("data-transitioning", "")
+
+    const clear = () => {
+      panel.removeEventListener("animationend", onEnd)
+      clearTimeout(timer)
+      this.#transitions.delete(panel)
+      panel.removeAttribute("data-transitioning")
+    }
+    const onEnd = (event) => { if (event.target === panel) clear() }
+    const timer = setTimeout(clear, TRANSITION_FALLBACK_MS)
+
+    this.#transitions.set(panel, clear)
+    panel.addEventListener("animationend", onEnd)
   }
 
   #items() {

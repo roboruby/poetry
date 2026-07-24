@@ -91,6 +91,24 @@ describe("poetry--core--accordion", () => {
     expect(panel("a").style.getPropertyValue("--accordion-panel-height")).toMatch(/px$/)
   })
 
+  // The resting-keyframe gate (flicker fix): data-transitioning rides only
+  // the open/close window and clears on animationend, so the persistent
+  // data-open:animate-accordion-down keyframe stays inert at rest and cannot
+  // replay when a display:none -> visible toggle (a Tabs panel) re-runs it.
+  it("marks data-transitioning only during the toggle, cleared on animationend", async () => {
+    await mount({ collapsible: true, open: [] })
+    const p = panel("a")
+
+    trigger("a").click() // open
+    expect(p.hasAttribute("data-transitioning")).toBe(true)
+
+    p.dispatchEvent(new Event("animationend")) // the expand keyframe completes
+    expect(p.hasAttribute("data-transitioning")).toBe(false)
+
+    trigger("a").click() // close - the window re-opens for the collapse keyframe
+    expect(p.hasAttribute("data-transitioning")).toBe(true)
+  })
+
   it("dispatches change with the open values", async () => {
     await mount({ type: "multiple" })
     let detail
