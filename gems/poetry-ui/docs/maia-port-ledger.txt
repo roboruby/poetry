@@ -199,7 +199,7 @@ cn-message-group: identical
 cn-message-header: mechanical (maia minus inline dups)
 cn-message-scroller-content: identical
 cn-native-select: mechanical (maia minus inline dups)
-cn-native-select-icon: mechanical (maia minus inline dups); POETRY DEVIATION: right-3.5 -> right-2.5 (normalized to the ~10px cross-theme chevron inset - the docs theme-switcher consistency call; mira stays proportional at right-1.5 for its smaller box)
+cn-native-select-icon: color-only. POETRY DEVIATION: chevron geometry (position/size/translate) is now structural in poetry-core aliases.css (fills the pr-8 gutter, centered) - identical in every theme, ending the per-theme drift. Theme keeps only text-muted-foreground.
 cn-navigation-menu-content: mechanical (maia minus inline dups)
 cn-navigation-menu-link: mechanical (maia minus inline dups)
 cn-navigation-menu-list: identical

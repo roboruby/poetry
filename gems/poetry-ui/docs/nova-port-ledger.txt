@@ -200,7 +200,7 @@ cn-message-group: identical
 cn-message-header: identical
 cn-message-scroller-content: mechanical (nova minus inline dups)
 cn-native-select: mechanical (nova minus inline dups)
-cn-native-select-icon: mechanical (nova minus inline dups)
+cn-native-select-icon: color-only. POETRY DEVIATION: chevron geometry (position/size/translate) is now structural in poetry-core aliases.css (fills the pr-8 gutter, centered) - identical in every theme, ending the per-theme drift. Theme keeps only text-muted-foreground.
 cn-navigation-menu-content: mechanical (nova minus inline dups)
 cn-navigation-menu-link: mechanical (nova minus inline dups)
 cn-navigation-menu-list: identical
