@@ -1,0 +1,11 @@
+<%# Field carries a hint below the control - its id lands in the
+    textarea's aria-describedby, so the guidance is announced, never a
+    bare <p>. Wire everything through field.control_attributes. %>
+<div class="w-80">
+  <%= poetry_field(id: "textarea-bio", label_text: "About you",
+                   hint: "A sentence or two shown on your public profile.") do |field| %>
+    <%= poetry_textarea(name: "bio", rows: 4,
+                        placeholder: "What should people know about you?",
+                        **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

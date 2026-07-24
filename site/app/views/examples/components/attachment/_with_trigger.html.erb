@@ -1,0 +1,8 @@
+<%= poetry_attachment do |attachment| %>
+  <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+  <% attachment.with_title { "annual-report.pdf" } %>
+  <% attachment.with_description { "4.6 MB" } %>
+  <% attachment.with_trigger { tag.span("Preview annual-report.pdf", class: "sr-only") } %>
+  <% attachment.with_action(label: "Download") { poetry_icon(name: :download) } %>
+  <% attachment.with_action(label: "Remove") { poetry_icon(name: :x) } %>
+<% end %>

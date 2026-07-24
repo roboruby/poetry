@@ -1,0 +1,18 @@
+<div class="w-full max-w-md">
+  <%= poetry_message_scroller(id: "scroller-saved", default_scroll_position: :start, class: "h-72 rounded-lg border") do %>
+    <% [
+      "Welcome back. This thread opens right where the conversation began.",
+      "Last session we sketched the onboarding email sequence.",
+      "The first message is a welcome note sent the moment someone signs up.",
+      "The second nudges anyone who has not finished setting up their workspace.",
+      "The third shares a short getting-started walkthrough.",
+      "We also planned to test two subject lines against each other.",
+      "Whichever wins gets promoted to everyone after a week.",
+      "Pick up wherever feels right whenever you are ready."
+    ].each_with_index do |text, i| %>
+      <%= poetry_message_scroller_item(id: "s#{i}") do %>
+        <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm"><%= text %></div>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

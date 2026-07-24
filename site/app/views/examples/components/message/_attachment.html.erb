@@ -1,0 +1,13 @@
+<%# A message can carry a file chip alongside its bubble - poetry_attachment
+    renders the name, type, and size in the content column beneath the text. %>
+<div class="w-full max-w-md">
+  <%= poetry_message(align: :end) do |message| %>
+    <% message.with_footer { "Sent 09:15" } %>
+    <%= poetry_bubble { "Here's the signed contract for your review." } %>
+    <%= poetry_attachment do |attachment| %>
+      <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+      <% attachment.with_title { "service-agreement.pdf" } %>
+      <% attachment.with_description { "248 KB" } %>
+    <% end %>
+  <% end %>
+</div>

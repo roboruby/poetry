@@ -1,0 +1,35 @@
+<%# Nested collapsibles compose a file tree: each folder is its own
+    disclosure, and one collapsible's content simply holds the next. The
+    leading chevron turns a quarter to point down when its folder opens. %>
+<div class="w-full max-w-xs text-sm">
+  <%= poetry_collapsible(open: true) do |root| %>
+    <% root.with_trigger(class: "flex w-full items-center gap-1.5 rounded-md px-2 py-1 font-medium hover:bg-accent [&[aria-expanded=true]>svg:first-child]:rotate-90") do %>
+      <%= poetry_icon(name: :"chevron-right", class: "size-4 shrink-0 text-muted-foreground transition-transform") %>
+      <%= poetry_icon(name: :folder, class: "size-4 shrink-0") %>
+      app
+    <% end %>
+    <div class="ml-3 border-l pl-2">
+      <div class="flex items-center gap-1.5 rounded-md px-2 py-1 text-muted-foreground">
+        <%= poetry_icon(name: :file, class: "size-4 shrink-0") %>
+        application.rb
+      </div>
+      <%= poetry_collapsible do |nested| %>
+        <% nested.with_trigger(class: "flex w-full items-center gap-1.5 rounded-md px-2 py-1 font-medium hover:bg-accent [&[aria-expanded=true]>svg:first-child]:rotate-90") do %>
+          <%= poetry_icon(name: :"chevron-right", class: "size-4 shrink-0 text-muted-foreground transition-transform") %>
+          <%= poetry_icon(name: :folder, class: "size-4 shrink-0") %>
+          components
+        <% end %>
+        <div class="ml-3 border-l pl-2">
+          <div class="flex items-center gap-1.5 rounded-md px-2 py-1 text-muted-foreground">
+            <%= poetry_icon(name: :file, class: "size-4 shrink-0") %>
+            button.rb
+          </div>
+          <div class="flex items-center gap-1.5 rounded-md px-2 py-1 text-muted-foreground">
+            <%= poetry_icon(name: :file, class: "size-4 shrink-0") %>
+            card.rb
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

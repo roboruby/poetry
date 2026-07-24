@@ -1,0 +1,5 @@
+<%# size: :xs is the tightest density - good for dense activity logs. %>
+<%= poetry_item(size: :xs, class: "w-full max-w-md") do |item| %>
+  <% item.with_title { "Build finished" } %>
+  <% item.with_description { "Deployed to staging just now." } %>
+<% end %>

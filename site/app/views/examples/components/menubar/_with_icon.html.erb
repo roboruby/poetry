@@ -1,0 +1,41 @@
+<%# Items render an icon before the label - poetry_icon inside the item block. %>
+<%= poetry_menubar(label: "Document menu") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_item(shortcut: "⌘N") do %>
+      <%= poetry_icon(name: :"file-plus") %><span>New Document</span>
+    <% end %>
+    <% menu.with_item do %>
+      <%= poetry_icon(name: :"folder-open") %><span>Open...</span>
+    <% end %>
+    <% menu.with_item(shortcut: "⌘S") do %>
+      <%= poetry_icon(name: :save) %><span>Save</span>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item do %>
+      <%= poetry_icon(name: :download) %><span>Export as PDF</span>
+    <% end %>
+    <% menu.with_item(shortcut: "⌘P") do %>
+      <%= poetry_icon(name: :printer) %><span>Print...</span>
+    <% end %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Edit" } %>
+    <% menu.with_item(shortcut: "⌘Z") do %>
+      <%= poetry_icon(name: :"undo-2") %><span>Undo</span>
+    <% end %>
+    <% menu.with_item(shortcut: "⇧⌘Z") do %>
+      <%= poetry_icon(name: :"redo-2") %><span>Redo</span>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(shortcut: "⌘X") do %>
+      <%= poetry_icon(name: :scissors) %><span>Cut</span>
+    <% end %>
+    <% menu.with_item(shortcut: "⌘C") do %>
+      <%= poetry_icon(name: :copy) %><span>Copy</span>
+    <% end %>
+    <% menu.with_item(shortcut: "⌘V") do %>
+      <%= poetry_icon(name: :"clipboard-paste") %><span>Paste</span>
+    <% end %>
+  <% end %>
+<% end %>

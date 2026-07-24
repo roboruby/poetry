@@ -1,0 +1,14 @@
+<%# One sender's consecutive run - a single Message carries the avatar and
+    header, and poetry_bubble_group stacks the bubbles beneath them so the
+    identity is shown once for the whole group. %>
+<div class="w-full max-w-md">
+  <%= poetry_message do |message| %>
+    <% message.with_avatar { "OB" } %>
+    <% message.with_header { "Ops Bot" } %>
+    <%= poetry_bubble_group do %>
+      <%= poetry_bubble(variant: :muted) { "The nightly backup completed." } %>
+      <%= poetry_bubble(variant: :muted) { "42 GB archived across three volumes." } %>
+      <%= poetry_bubble(variant: :muted) { "Next run is scheduled for 02:00." } %>
+    <% end %>
+  <% end %>
+</div>

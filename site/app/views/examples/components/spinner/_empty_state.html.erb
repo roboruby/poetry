@@ -1,0 +1,8 @@
+<%# A full-panel loading state: the spinner fills the Empty media slot above a
+    real heading and muted copy, with a cancel action as the content block. %>
+<%= poetry_empty do |empty| %>
+  <% empty.with_media { poetry_spinner(class: "size-8", label: "Preparing your workspace") } %>
+  <% empty.with_title { "Preparing your workspace" } %>
+  <% empty.with_description { "This only takes a moment. We'll drop you in as soon as everything is ready." } %>
+  <%= poetry_button(variant: :outline, size: :sm) { "Cancel" } %>
+<% end %>

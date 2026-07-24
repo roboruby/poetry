@@ -1,0 +1,47 @@
+<%# A trailing actions column: each row's controls live in a dropdown menu
+    behind a compact ellipsis trigger. The last header is labelled for
+    screen readers only so the column still has an accessible name. %>
+<% deployments = [
+     { project: "Marketing site", environment: "Production", status: "Live" },
+     { project: "Billing API", environment: "Staging", status: "Building" },
+     { project: "Docs portal", environment: "Preview", status: "Queued" },
+     { project: "Mobile gateway", environment: "Production", status: "Live" }
+   ] %>
+<div class="w-full max-w-2xl">
+  <%= poetry_table do %>
+    <%= poetry_table_caption { "Recent deployments across your environments." } %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head { "Project" } %>
+        <%= poetry_table_head { "Environment" } %>
+        <%= poetry_table_head { "Status" } %>
+        <%= poetry_table_head(class: "w-12") do %>
+          <span class="sr-only">Actions</span>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <% deployments.each do |deployment| %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { deployment[:project] } %>
+          <%= poetry_table_cell { deployment[:environment] } %>
+          <%= poetry_table_cell { deployment[:status] } %>
+          <%= poetry_table_cell(class: "text-right") do %>
+            <%= poetry_dropdown_menu(align: :end) do |menu| %>
+              <% menu.with_trigger(variant: :ghost, size: :icon, label: "Open actions for #{deployment[:project]}") do %>
+                <%= poetry_icon(name: :ellipsis) %>
+              <% end %>
+              <% menu.with_label { "Actions" } %>
+              <% menu.with_group do |group| %>
+                <% group.with_item do %><%= poetry_icon(name: :user) %>View owner<% end %>
+                <% group.with_item(shortcut: "⌘C") do %><%= poetry_icon(name: :copy) %>Copy deploy ID<% end %>
+              <% end %>
+              <% menu.with_separator %>
+              <% menu.with_item(variant: :destructive) do %><%= poetry_icon(name: :"trash-2") %>Roll back<% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

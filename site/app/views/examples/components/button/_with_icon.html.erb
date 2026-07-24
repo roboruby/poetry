@@ -1,0 +1,19 @@
+<%# Icons ride in the leading/trailing slots (with_leading / with_trailing) -
+    the visible label stays the content block. The icon slot sizes and
+    centers whatever it holds, so poetry_icon needs no extra classes. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_button(variant: :secondary) do |button| %>
+    <% button.with_leading { poetry_icon(name: :download) } %>
+    Export report
+  <% end %>
+
+  <%= poetry_button do |button| %>
+    <% button.with_trailing { poetry_icon(name: :"arrow-right") } %>
+    Continue
+  <% end %>
+
+  <%= poetry_button(variant: :destructive) do |button| %>
+    <% button.with_leading { poetry_icon(name: :"trash-2") } %>
+    Delete file
+  <% end %>
+</div>

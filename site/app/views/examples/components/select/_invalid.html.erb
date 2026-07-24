@@ -1,0 +1,10 @@
+<%# aria-invalid: "true" lands on the trigger (the Field error chain's
+    target), lighting the destructive border and ring - no Select-side
+    code, the theme's aria-invalid: classes do the work. Pair with
+    required: so an empty submit is caught natively too. %>
+<%= poetry_select(placeholder: "Choose a priority", required: true, "aria-label": "Priority", "aria-invalid": "true") do |select| %>
+  <% select.with_item(value: "low") { "Low" } %>
+  <% select.with_item(value: "medium") { "Medium" } %>
+  <% select.with_item(value: "high") { "High" } %>
+  <% select.with_item(value: "urgent") { "Urgent" } %>
+<% end %>

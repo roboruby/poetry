@@ -1,0 +1,10 @@
+<%= poetry_sheet(side: :right, show_close_button: false) do |sheet| %>
+  <% sheet.with_trigger(variant: :outline) { "Review terms" } %>
+  <% sheet.with_title { "Updated usage terms" } %>
+  <% sheet.with_description { "Please choose an option below to continue. There is no dismiss control on this panel." } %>
+  <% sheet.with_footer do %>
+    <%= poetry_button(variant: :outline) { "Decline" } %>
+    <%= poetry_button { "Accept and continue" } %>
+  <% end %>
+  We refreshed the sections covering data retention and export. The changes take effect at the start of your next billing cycle.
+<% end %>

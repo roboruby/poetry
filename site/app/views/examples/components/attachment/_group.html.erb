@@ -1,0 +1,22 @@
+<%= poetry_attachment_group do %>
+  <%= poetry_attachment do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :"file-text") } %>
+    <% attachment.with_title { "onboarding-brief.pdf" } %>
+    <% attachment.with_description { "240 KB" } %>
+  <% end %>
+  <%= poetry_attachment do |attachment| %>
+    <% attachment.with_media(variant: :image) { poetry_icon(name: :image) } %>
+    <% attachment.with_title { "hero-cover.jpg" } %>
+    <% attachment.with_description { "1.8 MB" } %>
+  <% end %>
+  <%= poetry_attachment do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :music) } %>
+    <% attachment.with_title { "welcome-intro.mp3" } %>
+    <% attachment.with_description { "3.1 MB" } %>
+  <% end %>
+  <%= poetry_attachment do |attachment| %>
+    <% attachment.with_media { poetry_icon(name: :film) } %>
+    <% attachment.with_title { "product-demo.mp4" } %>
+    <% attachment.with_description { "12 MB" } %>
+  <% end %>
+<% end %>

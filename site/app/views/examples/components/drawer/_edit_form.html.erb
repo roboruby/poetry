@@ -1,0 +1,18 @@
+<%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Edit account" } %>
+  <% drawer.with_title { "Edit account" } %>
+  <% drawer.with_description { "Update your details and save when you're finished." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button(type: :submit) { "Save changes" } %>
+  <% end %>
+  <div class="grid gap-4">
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "drawer-account-name") { "Full name" } %>
+      <%= poetry_input(name: "name", value: "Jordan Ellis", id: "drawer-account-name") %>
+    </div>
+    <div class="grid gap-2">
+      <%= poetry_label(for_id: "drawer-account-email") { "Email" } %>
+      <%= poetry_input(name: "email", type: "email", value: "jordan@example.com", id: "drawer-account-email") %>
+    </div>
+  </div>
+<% end %>

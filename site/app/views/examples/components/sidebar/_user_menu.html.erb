@@ -1,0 +1,46 @@
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content">
+  <%= poetry_sidebar(collapsible: :icon) do |shell| %>
+    <% shell.with_nav do %>
+      <%= poetry_sidebar_content do %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Platform" } %>
+          <%= poetry_sidebar_menu do %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
+                <%= poetry_icon(name: :"layout-dashboard") %><span>Dashboard</span>
+              <% end %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :"credit-card") %><span>Billing</span>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+      <%= poetry_sidebar_footer do %>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(size: :lg) do %>
+              <%= poetry_avatar(label: "Jamie Doyle") { "JD" } %>
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-semibold">Jamie Doyle</span>
+                <span class="truncate text-xs text-muted-foreground">jamie@northwind.co</span>
+              </div>
+              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% shell.with_inset do %>
+      <div class="flex items-center gap-2 border-b p-3">
+        <%= poetry_sidebar_trigger %>
+        <span class="text-sm font-medium">Dashboard</span>
+      </div>
+      <div class="p-4 text-sm text-muted-foreground">
+        The footer pins the signed-in account with a menu affordance.
+      </div>
+    <% end %>
+  <% end %>
+</div>

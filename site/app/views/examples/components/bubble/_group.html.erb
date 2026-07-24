@@ -1,0 +1,11 @@
+<div class="flex w-full max-w-md flex-col gap-4">
+  <%= poetry_bubble_group do %>
+    <%= poetry_bubble(variant: :secondary) { "Did the nightly export run?" } %>
+    <%= poetry_bubble(variant: :secondary) { "The report still shows yesterday's totals." } %>
+  <% end %>
+
+  <%= poetry_bubble_group do %>
+    <%= poetry_bubble(align: :end) { "It finished a few minutes ago." } %>
+    <%= poetry_bubble(align: :end) { "Refresh once and the new totals should land." } %>
+  <% end %>
+</div>

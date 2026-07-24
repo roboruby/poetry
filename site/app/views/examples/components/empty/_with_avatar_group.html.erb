@@ -1,0 +1,16 @@
+<%# A stack of avatars as the media — poetry_avatar_group in the media slot
+    signals a team or shared space. The default media variant keeps the
+    group visible without the rounded tile. %>
+<%= poetry_empty do |empty| %>
+  <% empty.with_media do %>
+    <%= poetry_avatar_group do %>
+      <%= poetry_avatar(label: "Ada Lovelace") { "AL" } %>
+      <%= poetry_avatar(label: "Annie Easley") { "AE" } %>
+      <%= poetry_avatar(label: "Katherine Johnson") { "KJ" } %>
+      <%= poetry_avatar_group_count { "+4" } %>
+    <% end %>
+  <% end %>
+  <% empty.with_title { "This workspace is quiet" } %>
+  <% empty.with_description { "Invite a few teammates to start collaborating here." } %>
+  <%= poetry_button(size: :sm) { "Invite teammates" } %>
+<% end %>

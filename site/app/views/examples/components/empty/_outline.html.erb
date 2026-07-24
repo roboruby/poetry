@@ -1,0 +1,9 @@
+<%# The empty state framed in its own dashed outline — a self-contained
+    card the container can drop straight into a panel. The border rides on
+    the root via class:; the slots and content block are unchanged. %>
+<%= poetry_empty(media_variant: :icon, class: "rounded-lg border border-dashed p-8") do |empty| %>
+  <% empty.with_media { poetry_icon(name: :bookmark) } %>
+  <% empty.with_title { "No saved views" } %>
+  <% empty.with_description { "Save a filter here to jump back to it in one click." } %>
+  <%= poetry_button(size: :sm, variant: :outline) { "Save this view" } %>
+<% end %>

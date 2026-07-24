@@ -1,0 +1,21 @@
+<%# A wide table would squeeze inside the narrow prose measure. Wrap it in a
+    typeset-scroll div so the table scrolls sideways while the text stays put. %>
+<%= poetry_typeset(class: "max-w-md") do %>
+  <p>Every plan side by side:</p>
+  <div class="typeset-scroll">
+    <table>
+      <thead>
+        <tr>
+          <th>Plan</th><th>Seats</th><th>Storage</th>
+          <th>History</th><th>SSO</th><th>Support</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Starter</td><td>3</td><td>5 GB</td><td>30 days</td><td>No</td><td>Community</td></tr>
+        <tr><td>Team</td><td>25</td><td>100 GB</td><td>1 year</td><td>Yes</td><td>Email</td></tr>
+        <tr><td>Business</td><td>Unlimited</td><td>1 TB</td><td>Forever</td><td>Yes</td><td>Priority</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p>The prose column keeps its narrow rhythm; only the table scrolls.</p>
+<% end %>

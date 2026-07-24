@@ -1,0 +1,17 @@
+<%= poetry_command_dialog(hotkey: "meta+k", placeholder: "Type a command or search…",
+                          title: "Command menu") do |palette| %>
+  <% palette.with_trigger(variant: :outline) do %>
+    <span>Search…</span>
+    <kbd class="ml-2 rounded border bg-muted px-1.5 font-mono text-xs text-muted-foreground">⌘K</kbd>
+  <% end %>
+  <% palette.with_group(heading: "Quick actions") do |group| %>
+    <% group.with_item(value: "new-document", shortcut: "⌘N") { "New document" } %>
+    <% group.with_item(value: "invite-teammate", shortcut: "⌘I") { "Invite teammate" } %>
+  <% end %>
+  <% palette.with_separator %>
+  <% palette.with_group(heading: "Jump to") do |group| %>
+    <% group.with_item(value: "inbox") { "Inbox" } %>
+    <% group.with_item(value: "billing") { "Billing" } %>
+    <% group.with_item(value: "team-settings") { "Team settings" } %>
+  <% end %>
+<% end %>

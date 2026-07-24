@@ -1,0 +1,7 @@
+<%# A tooltip that explains why a disabled control is unavailable. The
+    trigger button renders disabled; the content supplies the missing
+    precondition so the user is not left guessing. %>
+<%= poetry_tooltip do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline, disabled: true) { "Publish" } %>
+  Fill in every required field before publishing
+<% end %>

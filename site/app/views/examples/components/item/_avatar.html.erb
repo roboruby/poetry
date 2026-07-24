@@ -1,0 +1,9 @@
+<%# An avatar in the media slot carries its own round shape, so the row keeps the default media cell. %>
+<%= poetry_item(class: "w-full max-w-md") do |item| %>
+  <% item.with_media { poetry_avatar(label: "Dana Whitfield") { "DW" } } %>
+  <% item.with_title { "Dana Whitfield" } %>
+  <% item.with_description { "Product designer, joined March 2024" } %>
+  <% item.with_actions do %>
+    <%= poetry_button(size: :sm, variant: :outline) { "Message" } %>
+  <% end %>
+<% end %>

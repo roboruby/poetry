@@ -1,0 +1,32 @@
+<div class="w-full max-w-md">
+  <%= poetry_message_scroller(id: "scroller-group", class: "h-80 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "join-priya", anchor: true) do %>
+      <div class="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+        Priya joined the channel
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "g1") do %>
+      <div class="w-fit">
+        <p class="mb-1 text-xs font-medium text-muted-foreground">Priya</p>
+        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Morning! Did the staging deploy finish?</div>
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "g2") do %>
+      <div class="w-fit">
+        <p class="mb-1 text-xs font-medium text-muted-foreground">Marcus</p>
+        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Went green two minutes ago and the smoke tests are passing.</div>
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "join-lena", anchor: true) do %>
+      <div class="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
+        Lena joined the channel
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "g3") do %>
+      <div class="w-fit">
+        <p class="mb-1 text-xs font-medium text-muted-foreground">Lena</p>
+        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Perfect timing. I will start the release checklist now.</div>
+      </div>
+    <% end %>
+  <% end %>
+</div>

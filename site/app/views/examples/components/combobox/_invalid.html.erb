@@ -1,0 +1,8 @@
+<%= poetry_combobox(name: "country", placeholder: "Select a country...",
+                    search_placeholder: "Search countries...",
+                    "aria-label": "Billing country", "aria-invalid": true) do |combobox| %>
+  <% combobox.with_item(value: "us") { "United States" } %>
+  <% combobox.with_item(value: "ca") { "Canada" } %>
+  <% combobox.with_item(value: "mx") { "Mexico" } %>
+  <% combobox.with_item(value: "br") { "Brazil" } %>
+<% end %>

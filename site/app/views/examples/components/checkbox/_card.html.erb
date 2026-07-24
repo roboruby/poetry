@@ -1,0 +1,18 @@
+<%# The whole card is the label. A <button role=checkbox> is a labelable
+    element, so wrapping it in poetry_label (for_id pointing at the box)
+    makes a click anywhere on the card toggle the control. has-[]: variants
+    read the button's aria-checked to light up the selected border. %>
+<%= poetry_label(
+      for_id: "checkbox-card-backups",
+      class: "flex max-w-sm items-start gap-3 rounded-lg border bg-card p-4 " \
+             "cursor-pointer has-[[aria-checked=true]]:border-primary " \
+             "has-[[aria-checked=true]]:bg-primary/5"
+    ) do %>
+  <%= poetry_checkbox(name: "automatic_backups", checked: true, id: "checkbox-card-backups") %>
+  <div class="grid gap-1.5 leading-none">
+    <span class="text-sm font-medium">Automatic backups</span>
+    <span class="text-sm text-muted-foreground">
+      Snapshot your workspace every night and keep the last 30 days.
+    </span>
+  </div>
+<% end %>

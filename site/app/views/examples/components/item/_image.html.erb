@@ -1,0 +1,12 @@
+<%# media_variant: :image sizes and rounds the thumbnail cell automatically. %>
+<%= poetry_item(media_variant: :image, class: "w-full max-w-md") do |item| %>
+  <% item.with_media do %>
+    <%= image_tag "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEVjZvEU9kYIAAAACklEQVR4nGNiAAAABgADNjd8qAAAAABJRU5ErkJggg==",
+                  alt: "Album artwork", class: "size-full object-cover" %>
+  <% end %>
+  <% item.with_title { "Midnight Frequencies" } %>
+  <% item.with_description { "The Wandering Signals, 2024" } %>
+  <% item.with_actions do %>
+    <%= poetry_button(size: :sm, variant: :outline) { "Play" } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,17 @@
+<div class="flex flex-col items-start gap-4">
+  <%= poetry_button_group("aria-label": "Small toolbar") do %>
+    <%= poetry_button(variant: :outline, size: :sm) { "Cut" } %>
+    <%= poetry_button(variant: :outline, size: :sm) { "Copy" } %>
+    <%= poetry_button(variant: :outline, size: :sm) { "Paste" } %>
+  <% end %>
+  <%= poetry_button_group("aria-label": "Default toolbar") do %>
+    <%= poetry_button(variant: :outline) { "Cut" } %>
+    <%= poetry_button(variant: :outline) { "Copy" } %>
+    <%= poetry_button(variant: :outline) { "Paste" } %>
+  <% end %>
+  <%= poetry_button_group("aria-label": "Large toolbar") do %>
+    <%= poetry_button(variant: :outline, size: :lg) { "Cut" } %>
+    <%= poetry_button(variant: :outline, size: :lg) { "Copy" } %>
+    <%= poetry_button(variant: :outline, size: :lg) { "Paste" } %>
+  <% end %>
+</div>

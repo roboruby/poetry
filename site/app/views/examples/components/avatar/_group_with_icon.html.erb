@@ -1,0 +1,11 @@
+<%# The overflow chip's content is arbitrary — swap the "+N" count for an icon.
+    The theme sizes an <svg> inside the count chip automatically. The icon stands
+    alone here, so it carries its own label: for screen readers. %>
+<div class="p-4">
+  <%= poetry_avatar_group do %>
+    <%= poetry_avatar(label: "Katherine Johnson") { "KJ" } %>
+    <%= poetry_avatar(label: "Dorothy Vaughan") { "DV" } %>
+    <%= poetry_avatar(label: "Mary Jackson") { "MJ" } %>
+    <%= poetry_avatar_group_count { poetry_icon(name: :ellipsis, label: "More members") } %>
+  <% end %>
+</div>

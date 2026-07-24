@@ -1,0 +1,17 @@
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "View release notes" } %>
+  <% dialog.with_title { "Release notes" } %>
+  <% dialog.with_description { "Everything that shipped in version 4.0." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button { "Got it" } %>
+  <% end %>
+  <div class="max-h-72 overflow-y-auto pr-2 flex flex-col gap-4 text-sm text-muted-foreground">
+    <p>We rebuilt the sync engine so changes reach every device before you switch tabs. Conflicts now resolve in the background instead of prompting you mid-edit.</p>
+    <p>Search understands whole phrases now, not just single words. Results are grouped by workspace and ranked by how recently you touched each item.</p>
+    <p>Boards gained nested columns, so a single view can hold a quarter of planning without turning into a wall of cards.</p>
+    <p>Keyboard shortcuts are fully remappable from Settings. Import a scheme, tweak the two keys you disagree with, and share the file with your team.</p>
+    <p>Exports keep their formatting on the way out. Tables stay tables, checklists stay checklists, and links survive the trip into plain markdown.</p>
+    <p>Notifications learned to batch. A flurry of edits from one teammate arrives as a single digest instead of a dozen separate pings.</p>
+    <p>Finally, the whole surface got a contrast pass, so text stays legible in bright rooms and dim ones alike.</p>
+  </div>
+<% end %>

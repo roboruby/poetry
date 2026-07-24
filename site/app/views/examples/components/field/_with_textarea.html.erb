@@ -1,0 +1,12 @@
+<%# The quartet hosts any control: the field owns the id and yields
+    control_attributes - splat them onto the textarea, never hand-wire
+    the label/aria pairing. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-summary", label_text: "Release notes",
+                   hint: "Markdown is supported.") do |field| %>
+    <%= poetry_textarea(name: "summary",
+                        placeholder: "What changed in this version?",
+                        rows: 4,
+                        **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

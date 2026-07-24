@@ -1,0 +1,18 @@
+<%# Message-level actions live in the footer slot - ghost icon buttons that
+    act on the bubble above them. Icon-only buttons need label: for their
+    accessible name. %>
+<div class="w-full max-w-md">
+  <%= poetry_message do |message| %>
+    <% message.with_avatar { "AI" } %>
+    <% message.with_header { "Assistant" } %>
+    <% message.with_footer do %>
+      <div class="flex items-center gap-1">
+        <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Copy reply") { poetry_icon(name: :copy) } %>
+        <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Regenerate reply") { poetry_icon(name: :"refresh-cw") } %>
+        <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Good response") { poetry_icon(name: :"thumbs-up") } %>
+        <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Bad response") { poetry_icon(name: :"thumbs-down") } %>
+      </div>
+    <% end %>
+    <%= poetry_bubble(variant: :muted) { "Deploys usually take about four minutes. I'll ping you the moment it's live." } %>
+  <% end %>
+</div>

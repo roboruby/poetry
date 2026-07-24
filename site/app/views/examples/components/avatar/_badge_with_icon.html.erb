@@ -1,0 +1,8 @@
+<%# The badge slot can hold an icon, not just a bare dot — the theme sizes an
+    <svg> inside it. The status meaning still lives in label: (the accessible
+    name); the icon stays decorative. Note the badge glyph shows at default/lg,
+    not sm. %>
+<%= poetry_avatar(size: :lg, label: "Grace Hopper (verified)") do |avatar| %>
+  <% avatar.with_badge { poetry_icon(name: :check) } %>
+  GH
+<% end %>

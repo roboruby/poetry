@@ -1,0 +1,21 @@
+<%# A media-led card: a badge rides the header corner, the body opens
+    with a cover, and the footer holds the call to action. %>
+<%= poetry_card(class: "w-full max-w-sm") do |card| %>
+  <% card.with_title { "Coastal Trail Pass" } %>
+  <% card.with_description { "Seven marked routes along the northern shore." } %>
+  <% card.with_action { poetry_badge { "Featured" } } %>
+
+  <div class="space-y-4">
+    <div class="flex aspect-video items-center justify-center rounded-md bg-muted text-sm text-muted-foreground">
+      Cover image
+    </div>
+    <p class="text-sm text-muted-foreground">
+      One day pass covering every trailhead, the parking lots, and the shuttle
+      loop that runs between them.
+    </p>
+  </div>
+
+  <% card.with_footer do %>
+    <%= poetry_button(class: "w-full") { "Get the pass" } %>
+  <% end %>
+<% end %>

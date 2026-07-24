@@ -1,0 +1,13 @@
+<%# A leading icon sits inside the item block; the theme layer sets the svg size and gap. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Actions" } %>
+  <% menu.with_label { "Document" } %>
+  <% menu.with_separator %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(shortcut: "⌘C") do %><%= poetry_icon(name: :copy) %>Duplicate<% end %>
+    <% group.with_item(shortcut: "⌘D") do %><%= poetry_icon(name: :download) %>Download<% end %>
+    <% group.with_item do %><%= poetry_icon(name: :bookmark) %>Add to favorites<% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive, shortcut: "⌫") do %><%= poetry_icon(name: :"trash-2") %>Delete<% end %>
+<% end %>

@@ -1,0 +1,9 @@
+<%# Checkbox items keep their left-side check indicator; a labeled icon follows it. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Notifications" } %>
+  <% menu.with_label { "Notify me about" } %>
+  <% menu.with_separator %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) do %><%= poetry_icon(name: :inbox) %>Mentions<% end %>
+  <% menu.with_checkbox_item(checked: false, close_on_select: false) do %><%= poetry_icon(name: :calendar) %>Reminders<% end %>
+  <% menu.with_checkbox_item(checked: true, close_on_select: false) do %><%= poetry_icon(name: :star) %>Highlights<% end %>
+<% end %>

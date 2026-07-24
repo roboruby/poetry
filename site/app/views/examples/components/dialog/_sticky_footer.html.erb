@@ -1,0 +1,35 @@
+<%= poetry_dialog do |dialog| %>
+  <% dialog.with_trigger(variant: :outline) { "Manage preferences" } %>
+  <% dialog.with_title { "Notification preferences" } %>
+  <% dialog.with_description { "Choose what reaches you. The action row stays pinned while the list scrolls." } %>
+  <% dialog.with_footer do %>
+    <%= poetry_button(variant: :outline) { "Cancel" } %>
+    <%= poetry_button { "Save preferences" } %>
+  <% end %>
+  <div class="max-h-64 overflow-y-auto pr-1 flex flex-col gap-4 text-sm">
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Mentions</span>
+      <span class="text-muted-foreground">Someone names you in a comment or task.</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Assignments</span>
+      <span class="text-muted-foreground">Work is handed to you or a due date shifts.</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Approvals</span>
+      <span class="text-muted-foreground">A request is waiting on your review.</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Weekly digest</span>
+      <span class="text-muted-foreground">A Monday summary of everything in flight.</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Product updates</span>
+      <span class="text-muted-foreground">New features and the occasional release note.</span>
+    </div>
+    <div class="flex flex-col gap-1">
+      <span class="font-medium text-foreground">Security alerts</span>
+      <span class="text-muted-foreground">Sign-ins from a new device or location.</span>
+    </div>
+  </div>
+<% end %>

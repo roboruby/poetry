@@ -1,0 +1,11 @@
+<%= poetry_resizable(class: "h-48 max-w-2xl rounded-lg border") do |group| %>
+  <% group.with_panel(default_size: 25, min_size: 15) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Files</div>
+  <% end %>
+  <% group.with_panel(default_size: 50) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Editor</div>
+  <% end %>
+  <% group.with_panel(default_size: 25, min_size: 15) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm">Preview</div>
+  <% end %>
+<% end %>

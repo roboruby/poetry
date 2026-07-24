@@ -1,0 +1,7 @@
+<%# An input paired with its action on a single row - the input
+    flexes to fill, the button sits at the trailing edge. %>
+<div class="flex w-96 items-center gap-2">
+  <%= poetry_input(type: "email", name: "email", placeholder: "you@example.com",
+                   "aria-label": "Email address", class: "flex-1") %>
+  <%= poetry_button(type: :submit) { "Subscribe" } %>
+</div>

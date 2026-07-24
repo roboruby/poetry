@@ -1,0 +1,8 @@
+<%= poetry_alert(class: "w-full max-w-xl") do |alert| %>
+  <% alert.with_icon(name: :"circle-alert") %>
+  <% alert.with_title { "Storage almost full" } %>
+  You have used 92% of your workspace. Clear old files or upgrade to keep syncing.
+  <div class="mt-3">
+    <%= poetry_button(size: :sm, variant: :outline) { "Manage storage" } %>
+  </div>
+<% end %>

@@ -1,0 +1,24 @@
+<div class="w-full max-w-md">
+  <%= poetry_message_scroller(id: "scroller-anchored", class: "h-80 rounded-lg border") do %>
+    <%= poetry_message_scroller_item(id: "q1") do %>
+      <div class="ml-auto w-fit rounded-xl bg-primary px-3 py-2 text-sm text-primary-foreground">
+        How do I export this report as a PDF?
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "a1", anchor: true) do %>
+      <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm">
+        Open the report, choose Share, then pick Download as PDF. The file lands in your downloads folder.
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "q2") do %>
+      <div class="ml-auto w-fit rounded-xl bg-primary px-3 py-2 text-sm text-primary-foreground">
+        Can I have it run every Monday instead?
+      </div>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "a2", anchor: true) do %>
+      <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm">
+        Yes. In the report settings, turn on Recurring and set the cadence to weekly. We will email the PDF each Monday morning.
+      </div>
+    <% end %>
+  <% end %>
+</div>

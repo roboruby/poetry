@@ -1,0 +1,32 @@
+<%= poetry_command_dialog(placeholder: "Type a command or search…") do |palette| %>
+  <% palette.with_trigger(variant: :outline) { "Open command menu" } %>
+  <% palette.with_group(heading: "Suggestions") do |group| %>
+    <% group.with_item(value: "calendar", keywords: "date schedule") do %>
+      <%= poetry_icon(name: :calendar) %>
+      Calendar
+    <% end %>
+    <% group.with_item(value: "search-emoji", keywords: "reaction sticker") do %>
+      <%= poetry_icon(name: :smile) %>
+      Search emoji
+    <% end %>
+    <% group.with_item(value: "calculator", keywords: "math numbers") do %>
+      <%= poetry_icon(name: :calculator) %>
+      Calculator
+    <% end %>
+  <% end %>
+  <% palette.with_separator %>
+  <% palette.with_group(heading: "Account") do |group| %>
+    <% group.with_item(value: "profile", shortcut: "⌘P") do %>
+      <%= poetry_icon(name: :user) %>
+      Profile
+    <% end %>
+    <% group.with_item(value: "billing", shortcut: "⌘B") do %>
+      <%= poetry_icon(name: :"credit-card") %>
+      Billing
+    <% end %>
+    <% group.with_item(value: "settings", shortcut: "⌘S") do %>
+      <%= poetry_icon(name: :settings) %>
+      Settings
+    <% end %>
+  <% end %>
+<% end %>

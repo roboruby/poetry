@@ -1,0 +1,17 @@
+<% rows = [
+     { id: "MBR-01", name: "Jordan Lee", role: "Editor" },
+     { id: "MBR-02", name: "Priya Nair", role: "Admin" },
+     { id: "MBR-03", name: "Marco Silva", role: "Viewer" }
+   ]
+   state = Poetry::Ui::DataTable::State.from_params(
+     { sort: "name", dir: "asc" }, sortable: %w[name role]
+   ) %>
+<div class="w-full max-w-2xl">
+  <%= poetry_data_table(rows: rows, state: state, path: ->(params) { "?#{params.to_query}" },
+                        caption: "Team members you can select for bulk actions.",
+                        selectable: ->(row) { row[:id] }) do |table| %>
+    <% table.with_column("Member", key: :name, sortable: true) { |row| row[:name] } %>
+    <% table.with_column("Role", key: :role, sortable: true) { |row| row[:role] } %>
+    <% table.with_column("ID", classes: "text-right") { |row| row[:id] } %>
+  <% end %>
+</div>

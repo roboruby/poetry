@@ -1,0 +1,12 @@
+<%# aria-busy marks the region the loaded content will replace. %>
+<div class="flex w-80 flex-col gap-6" aria-busy="true">
+  <div class="flex flex-col gap-2">
+    <%= poetry_skeleton(class: "h-3.5 w-24") %>
+    <%= poetry_skeleton(class: "h-9 w-full rounded-md") %>
+  </div>
+  <div class="flex flex-col gap-2">
+    <%= poetry_skeleton(class: "h-3.5 w-28") %>
+    <%= poetry_skeleton(class: "h-9 w-full rounded-md") %>
+  </div>
+  <%= poetry_skeleton(class: "h-9 w-28 rounded-md") %>
+</div>

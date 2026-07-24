@@ -1,0 +1,33 @@
+<%= poetry_command(placeholder: "Search timezones…",
+                   "aria-label": "Timezones",
+                   class: "w-full max-w-md rounded-lg border shadow-md " \
+                          "[&_[data-slot=command-list]]:max-h-64") do |command| %>
+  <% command.with_empty { "No timezone matches that search." } %>
+  <% command.with_group(heading: "Timezones") do |group| %>
+    <% group.with_item(value: "auckland") { "Auckland" } %>
+    <% group.with_item(value: "bangkok") { "Bangkok" } %>
+    <% group.with_item(value: "berlin") { "Berlin" } %>
+    <% group.with_item(value: "cairo") { "Cairo" } %>
+    <% group.with_item(value: "chicago") { "Chicago" } %>
+    <% group.with_item(value: "denver") { "Denver" } %>
+    <% group.with_item(value: "dubai") { "Dubai" } %>
+    <% group.with_item(value: "helsinki") { "Helsinki" } %>
+    <% group.with_item(value: "istanbul") { "Istanbul" } %>
+    <% group.with_item(value: "karachi") { "Karachi" } %>
+    <% group.with_item(value: "lagos") { "Lagos" } %>
+    <% group.with_item(value: "lisbon") { "Lisbon" } %>
+    <% group.with_item(value: "london") { "London" } %>
+    <% group.with_item(value: "madrid") { "Madrid" } %>
+    <% group.with_item(value: "mumbai") { "Mumbai" } %>
+    <% group.with_item(value: "nairobi") { "Nairobi" } %>
+    <% group.with_item(value: "oslo") { "Oslo" } %>
+    <% group.with_item(value: "paris") { "Paris" } %>
+    <% group.with_item(value: "reykjavik") { "Reykjavik" } %>
+    <% group.with_item(value: "santiago") { "Santiago" } %>
+    <% group.with_item(value: "seoul") { "Seoul" } %>
+    <% group.with_item(value: "singapore") { "Singapore" } %>
+    <% group.with_item(value: "sydney") { "Sydney" } %>
+    <% group.with_item(value: "tokyo") { "Tokyo" } %>
+    <% group.with_item(value: "toronto") { "Toronto" } %>
+  <% end %>
+<% end %>

@@ -1,0 +1,27 @@
+<%= poetry_command(placeholder: "Type a command or search...",
+                   "aria-label": "Workspace commands",
+                   class: "w-full max-w-md rounded-lg border shadow-md") do |command| %>
+  <% command.with_group(heading: "Create") do |group| %>
+    <% group.with_item(value: "new-file", keywords: %w[document page]) do %>
+      <%= poetry_icon(name: :"file-plus") %><span>New file</span>
+    <% end %>
+    <% group.with_item(value: "new-folder", keywords: %w[directory group]) do %>
+      <%= poetry_icon(name: :"folder-plus") %><span>New folder</span>
+    <% end %>
+    <% group.with_item(value: "upload") do %>
+      <%= poetry_icon(name: :upload) %><span>Upload assets</span>
+    <% end %>
+  <% end %>
+  <% command.with_separator %>
+  <% command.with_group(heading: "Account") do |group| %>
+    <% group.with_item(value: "profile", shortcut: "⌘P") do %>
+      <%= poetry_icon(name: :user) %><span>View profile</span>
+    <% end %>
+    <% group.with_item(value: "invite") do %>
+      <%= poetry_icon(name: :"user-plus") %><span>Invite a teammate</span>
+    <% end %>
+    <% group.with_item(value: "sign-out") do %>
+      <%= poetry_icon(name: :"log-out") %><span>Sign out</span>
+    <% end %>
+  <% end %>
+<% end %>

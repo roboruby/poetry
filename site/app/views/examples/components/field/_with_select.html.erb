@@ -1,0 +1,14 @@
+<%# A Select as the control: control_attributes lands the id on the
+    trigger (the label-for target) and threads aria-describedby to it. %>
+<div class="w-80">
+  <%= poetry_field(id: "field-team", label_text: "Assign to team",
+                   hint: "The owning team gets the notification.") do |field| %>
+    <%= poetry_select(name: "team", placeholder: "Pick a team",
+                      **field.control_attributes.transform_keys(&:to_sym)) do |select| %>
+      <% select.with_item(value: "engineering") { "Engineering" } %>
+      <% select.with_item(value: "design") { "Design" } %>
+      <% select.with_item(value: "support") { "Customer Support" } %>
+      <% select.with_item(value: "operations") { "Operations" } %>
+    <% end %>
+  <% end %>
+</div>

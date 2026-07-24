@@ -1,0 +1,6 @@
+<%= poetry_toggle_group(type: :single, variant: :outline, spacing: 1,
+                        value: "comfortable", label: "Row density") do |group| %>
+  <% group.with_item(value: "compact", class: "rounded-full px-4 text-xs font-medium") { "Compact" } %>
+  <% group.with_item(value: "comfortable", class: "rounded-full px-4 text-xs font-medium") { "Comfortable" } %>
+  <% group.with_item(value: "spacious", class: "rounded-full px-4 text-xs font-medium") { "Spacious" } %>
+<% end %>

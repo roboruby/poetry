@@ -1,0 +1,15 @@
+<%= poetry_button_group("aria-label": "Text formatting") do %>
+  <%= poetry_button(variant: :outline, size: :icon, label: "Bold") do %>
+    <%= poetry_icon(name: :bold) %>
+  <% end %>
+  <%= poetry_button(variant: :outline, size: :icon, label: "Italic") do %>
+    <%= poetry_icon(name: :italic) %>
+  <% end %>
+  <%= poetry_button(variant: :outline, size: :icon, label: "Underline") do %>
+    <%= poetry_icon(name: :underline) %>
+  <% end %>
+  <%= poetry_button_group_separator %>
+  <%= poetry_button(variant: :outline, size: :icon, label: "More options") do %>
+    <%= poetry_icon(name: :ellipsis) %>
+  <% end %>
+<% end %>

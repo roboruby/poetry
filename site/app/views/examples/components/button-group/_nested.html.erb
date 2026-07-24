@@ -1,0 +1,16 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_button_group("aria-label": "Zoom") do %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Zoom out") do %>
+      <%= poetry_icon(name: :"zoom-out") %>
+    <% end %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Zoom in") do %>
+      <%= poetry_icon(name: :"zoom-in") %>
+    <% end %>
+  <% end %>
+  <%= poetry_button_group("aria-label": "View") do %>
+    <%= poetry_button(variant: :outline) { "Reset" } %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "More") do %>
+      <%= poetry_icon(name: :ellipsis) %>
+    <% end %>
+  <% end %>
+</div>

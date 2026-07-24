@@ -1,0 +1,10 @@
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_badge(variant: :info) do %>
+    <%= poetry_spinner(label: "Syncing") %>
+    Syncing
+  <% end %>
+  <%= poetry_badge(variant: :secondary) do %>
+    <%= poetry_spinner(label: "Deploying") %>
+    Deploying
+  <% end %>
+</div>

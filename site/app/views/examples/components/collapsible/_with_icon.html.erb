@@ -1,0 +1,16 @@
+<%# A trigger carrying a trailing chevron that flips when the section opens.
+    The icon rotates off the button's aria-expanded - the same signal the
+    state controller mirrors - so no extra wiring is needed. %>
+<div class="w-full max-w-md">
+  <%= poetry_collapsible do |collapsible| %>
+    <% collapsible.with_trigger(class: "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium hover:bg-accent [&[aria-expanded=true]>svg]:rotate-180") do %>
+      Shipping and returns
+      <%= poetry_icon(name: :"chevron-down", class: "size-4 text-muted-foreground transition-transform") %>
+    <% end %>
+    <div class="px-3 pt-2 text-sm text-muted-foreground">
+      Orders ship within two business days and arrive in five to seven. Returns
+      stay free for thirty days, and we email a prepaid label the moment you
+      start one.
+    </div>
+  <% end %>
+</div>

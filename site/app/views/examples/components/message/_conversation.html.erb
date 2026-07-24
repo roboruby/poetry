@@ -1,0 +1,20 @@
+<%# A short back-and-forth - incoming rows sit at the start with an avatar,
+    and the local user's replies mirror to the end via align: :end on the
+    Message (never on the Bubbles inside it). %>
+<div class="flex w-full max-w-md flex-col gap-4">
+  <%= poetry_message do |message| %>
+    <% message.with_avatar { "SR" } %>
+    <% message.with_header { "Sam Rivera" } %>
+    <%= poetry_bubble(variant: :muted) { "Are we still on for the design sync at noon?" } %>
+  <% end %>
+
+  <%= poetry_message(align: :end) do |message| %>
+    <% message.with_footer { "Delivered 11:58" } %>
+    <%= poetry_bubble { "Yes - I just moved it to the larger room." } %>
+  <% end %>
+
+  <%= poetry_message do |message| %>
+    <% message.with_avatar { "SR" } %>
+    <%= poetry_bubble(variant: :muted) { "Perfect, see you there." } %>
+  <% end %>
+</div>

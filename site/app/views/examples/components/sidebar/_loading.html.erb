@@ -1,0 +1,36 @@
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content">
+  <%= poetry_sidebar(collapsible: :icon) do |shell| %>
+    <% shell.with_nav do %>
+      <%= poetry_sidebar_header do %>
+        <div class="flex items-center gap-2 px-2 py-1">
+          <%= poetry_skeleton(class: "size-6 rounded-md") %>
+          <%= poetry_skeleton(class: "h-4 w-24 rounded-md") %>
+        </div>
+      <% end %>
+      <%= poetry_sidebar_content do %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Platform" } %>
+          <%= poetry_sidebar_menu do %>
+            <% ["w-24", "w-32", "w-20", "w-28", "w-16"].each do |width| %>
+              <%= poetry_sidebar_menu_item do %>
+                <div class="flex h-8 items-center gap-2 rounded-md px-2">
+                  <%= poetry_skeleton(class: "size-4 shrink-0 rounded-md") %>
+                  <%= poetry_skeleton(class: "h-4 #{width} rounded-md") %>
+                </div>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <% shell.with_inset do %>
+      <div class="flex items-center gap-2 border-b p-3">
+        <%= poetry_sidebar_trigger %>
+        <%= poetry_skeleton(class: "h-4 w-28 rounded-md") %>
+      </div>
+      <div class="p-4 text-sm text-muted-foreground">
+        Skeleton rows stand in for menu items while navigation loads.
+      </div>
+    <% end %>
+  <% end %>
+</div>

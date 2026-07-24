@@ -1,0 +1,7 @@
+<%# A Kbd rides the button's trailing slot to advertise the action's
+    shortcut. Kbd is a non-interactive <kbd>, so nesting it in a Button is
+    fine - the visible label stays the content block. %>
+<%= poetry_button(variant: :outline) do |button| %>
+  <% button.with_trailing { poetry_kbd { "⌘S" } } %>
+  Save changes
+<% end %>

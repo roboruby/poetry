@@ -1,0 +1,15 @@
+<%# aria-busy marks the region the loaded content will replace. %>
+<div class="flex w-96 flex-col gap-3" aria-busy="true">
+  <div class="flex items-center gap-4">
+    <%= poetry_skeleton(class: "h-4 w-32") %>
+    <%= poetry_skeleton(class: "h-4 w-24") %>
+    <%= poetry_skeleton(class: "ml-auto h-4 w-16") %>
+  </div>
+  <% 3.times do %>
+    <div class="flex items-center gap-4">
+      <%= poetry_skeleton(class: "h-4 w-32") %>
+      <%= poetry_skeleton(class: "h-4 w-24") %>
+      <%= poetry_skeleton(class: "ml-auto h-4 w-16") %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,15 @@
+<%# A pending validation: the spinner sits in the leading addon while the
+    control stays borderless, so the group keeps a single focus ring through
+    the wait. A muted caption at the trailing edge names what is happening. %>
+<div class="w-80">
+  <%= poetry_label(for_id: "spinner-input-group-coupon", class: "sr-only") { "Coupon code" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_spinner(label: "Validating coupon") %>
+    <% end %>
+    <%= poetry_input_group_input(id: "spinner-input-group-coupon", name: "coupon", value: "SPRING20") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text { "Validating…" } %>
+    <% end %>
+  <% end %>
+</div>

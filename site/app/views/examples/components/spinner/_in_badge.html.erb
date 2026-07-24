@@ -1,0 +1,13 @@
+<%# The spinner rides inside a status Badge to mark live activity. It inherits
+    the badge's text color through currentColor, and label: names the work for
+    assistive tech while the visible word carries the meaning. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_badge(variant: :info) do %>
+    <%= poetry_spinner(label: "Importing contacts") %>
+    Importing
+  <% end %>
+  <%= poetry_badge(variant: :secondary) do %>
+    <%= poetry_spinner(label: "Rebuilding index") %>
+    Rebuilding
+  <% end %>
+</div>

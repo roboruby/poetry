@@ -1,0 +1,11 @@
+<%# Radio items carry a leading icon; the single-select circle indicator stays on the left. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Sort by" } %>
+  <% menu.with_label { "Sort order" } %>
+  <% menu.with_separator %>
+  <% menu.with_radio_group(value: "recent") do |group| %>
+    <% group.with_radio_item(value: "recent") do %><%= poetry_icon(name: :calendar) %>Most recent<% end %>
+    <% group.with_radio_item(value: "name") do %><%= poetry_icon(name: :"arrow-right") %>Name<% end %>
+    <% group.with_radio_item(value: "size") do %><%= poetry_icon(name: :file) %>File size<% end %>
+  <% end %>
+<% end %>

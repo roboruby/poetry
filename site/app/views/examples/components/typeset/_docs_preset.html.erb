@@ -1,0 +1,16 @@
+<%# The preset option rides the root class list: preset: "docs" appends the
+    app-owned typeset-docs class, a looser rhythm tuned for long-form pages. %>
+<%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+  <h1>Deploying for the first time</h1>
+  <p>This guide walks through an initial production deploy. Every step is
+  idempotent, so a run that fails partway is always safe to repeat.</p>
+  <h2>Before you start</h2>
+  <p>You will need a provisioned host and push access to the release branch.</p>
+  <ol>
+    <li>Prepare the database with <code>bin/rails db:prepare</code>.</li>
+    <li>Set <code>SECRET_KEY_BASE</code> in the server environment.</li>
+    <li>Point the load balancer at the freshly booted instances.</li>
+  </ol>
+  <p>The <code>docs</code> preset widens the measure and opens up the spacing,
+  which suits pages a reader moves through top to bottom.</p>
+<% end %>

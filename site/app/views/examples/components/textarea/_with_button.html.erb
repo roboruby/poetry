@@ -1,0 +1,13 @@
+<%# The compose pattern - a textarea wired by Field, then a submit
+    Button. The Field owns the label and aria; the Button carries
+    type: :submit so the form posts the free text. %>
+<form class="grid w-80 gap-3">
+  <%= poetry_field(id: "textarea-reply", label_text: "Leave a reply") do |field| %>
+    <%= poetry_textarea(name: "reply", rows: 4,
+                        placeholder: "Add to the conversation.",
+                        **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+  <div class="flex justify-end">
+    <%= poetry_button(type: :submit) { "Post reply" } %>
+  </div>
+</form>

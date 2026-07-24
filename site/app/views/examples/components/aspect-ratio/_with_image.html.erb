@@ -1,0 +1,7 @@
+<%# The image fills the ratio box and is cropped to fit — size-full object-cover
+    keeps a 16/9 frame no matter the source photo's own dimensions.
+    (Inline gradient stands in for a real photo.) %>
+<% photo = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2NDAiIGhlaWdodD0iMzYwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImciIHgxPSIwIiB5MT0iMCIgeDI9IjEiIHkyPSIxIj48c3RvcCBvZmZzZXQ9IjAiIHN0b3AtY29sb3I9IiM2MzY2ZjEiLz48c3RvcCBvZmZzZXQ9IjAuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQwIiBoZWlnaHQ9IjM2MCIgZmlsbD0idXJsKCNnKSIvPjxjaXJjbGUgY3g9IjUwMCIgY3k9IjkwIiByPSI0NiIgZmlsbD0iI2ZmZmZmZiIgb3BhY2l0eT0iMC44NSIvPjwvc3ZnPg==" %>
+<%= poetry_aspect_ratio(ratio: "16/9", class: "w-80 overflow-hidden rounded-lg border") do %>
+  <img src="<%= photo %>" alt="Sunrise over a coastal ridge" class="size-full object-cover" />
+<% end %>

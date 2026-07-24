@@ -1,0 +1,25 @@
+<%# A form nested in a card - the header names it, the body holds the
+    fields, the footer stacks the submit and provider actions. %>
+<%= poetry_card(class: "w-full max-w-sm") do |card| %>
+  <% card.with_title { "Sign in" } %>
+  <% card.with_description { "Enter your credentials to reach your workspace." } %>
+  <% card.with_action { poetry_button(href: "/signup", variant: :link, size: :sm) { "Create account" } } %>
+
+  <div class="grid gap-4">
+    <%= poetry_field(id: "login-email", label_text: "Email") do |field| %>
+      <%= poetry_input(type: "email", name: "email", placeholder: "you@example.com",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field(id: "login-password", label_text: "Password") do |field| %>
+      <%= poetry_input(type: "password", name: "password",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+  </div>
+
+  <% card.with_footer do %>
+    <div class="flex w-full flex-col gap-2">
+      <%= poetry_button(class: "w-full") { "Sign in" } %>
+      <%= poetry_button(variant: :outline, class: "w-full") { "Continue with GitHub" } %>
+    </div>
+  <% end %>
+<% end %>

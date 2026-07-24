@@ -1,0 +1,16 @@
+<%# Several labels across one form - each control gets its own Label wired
+    by for_id, whatever the control type (text, email, multiline). %>
+<form class="grid w-80 gap-4">
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "label-form-name") { "Name" } %>
+    <%= poetry_input(name: "name", id: "label-form-name", placeholder: "Jane Doe") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "label-form-email") { "Email" } %>
+    <%= poetry_input(name: "email", id: "label-form-email", type: "email", placeholder: "jane@example.com") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "label-form-message") { "Message" } %>
+    <%= poetry_textarea(name: "message", id: "label-form-message", rows: 3, placeholder: "How can we help?") %>
+  </div>
+</form>

@@ -1,0 +1,36 @@
+<%# Rich panel: each link stacks a title over a short description. Title +
+    description grids want viewport: true - the shared morphing card sizes them. %>
+<div class="flex min-h-72 justify-center p-4">
+  <%= poetry_navigation_menu(label: "Platform", viewport: true) do |nav| %>
+    <% nav.with_item("Platform", value: "platform") do %>
+      <div class="grid w-[26rem] grid-cols-2 gap-1 p-2">
+        <%= poetry_navigation_menu_link(href: "#", active: true) do %>
+          <div class="space-y-0.5">
+            <div class="text-sm font-medium">Identity</div>
+            <p class="text-xs text-muted-foreground">Sign-in, sessions, and single sign-on in one place.</p>
+          </div>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#") do %>
+          <div class="space-y-0.5">
+            <div class="text-sm font-medium">Payments</div>
+            <p class="text-xs text-muted-foreground">Charge, invoice, and reconcile without leaving the app.</p>
+          </div>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#") do %>
+          <div class="space-y-0.5">
+            <div class="text-sm font-medium">Messaging</div>
+            <p class="text-xs text-muted-foreground">Email, SMS, and push from a single delivery pipeline.</p>
+          </div>
+        <% end %>
+        <%= poetry_navigation_menu_link(href: "#") do %>
+          <div class="space-y-0.5">
+            <div class="text-sm font-medium">Storage</div>
+            <p class="text-xs text-muted-foreground">Durable object buckets with signed, expiring links.</p>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+    <% nav.with_link("Pricing", href: "#") %>
+    <% nav.with_link("Docs", href: "#") %>
+  <% end %>
+</div>

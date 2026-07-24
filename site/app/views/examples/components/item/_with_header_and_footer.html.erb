@@ -1,0 +1,11 @@
+<%# The header slot sits above the row content; the footer slot sits below it. %>
+<%= poetry_item(variant: :outline, class: "w-full max-w-md") do |item| %>
+  <% item.with_header do %>
+    <%= poetry_badge(variant: :info) { "Renewal" } %>
+  <% end %>
+  <% item.with_title { "Team plan" } %>
+  <% item.with_description { "12 seats, billed annually." } %>
+  <% item.with_footer do %>
+    <span class="text-muted-foreground text-sm">Next charge on August 1.</span>
+  <% end %>
+<% end %>

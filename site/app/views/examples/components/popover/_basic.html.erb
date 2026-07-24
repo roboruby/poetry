@@ -1,0 +1,10 @@
+<%# pb reserves the opened panel's area inside the preview card - the
+    fixed-position layer adds no layout height. %>
+<div class="pb-36">
+<%= poetry_popover(content_class: "w-72") do |popover| %>
+  <% popover.with_trigger(variant: :outline) { "View details" } %>
+  <% popover.with_title { "Aurora workspace" } %>
+  <% popover.with_description { "A shared space for the design and research teams to plan releases." } %>
+  Members can comment, attach files, and track open questions in one place.
+<% end %>
+</div>

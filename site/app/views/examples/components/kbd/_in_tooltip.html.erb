@@ -1,0 +1,9 @@
+<%# A tooltip can name the key that fires an action. The Kbd renders inside
+    the floating content, so the shortcut reads right next to its label. %>
+<%= poetry_tooltip do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline) { "Comment" } %>
+  <span class="inline-flex items-center gap-2">
+    Add comment
+    <%= poetry_kbd { "C" } %>
+  </span>
+<% end %>

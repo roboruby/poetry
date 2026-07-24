@@ -1,0 +1,36 @@
+<%# Row selection inside a table. These boxes drive UI state, not a form,
+    so they run in visual-only mode (no name:) - the documented use for the
+    nameless checkbox. The header box is a select-all parent: an
+    :indeterminate state stands for "some but not all rows selected". Each
+    box gets an accessible name from label:, since there is no visible text
+    beside it. %>
+<div class="w-full max-w-md rounded-lg border">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b">
+        <th class="w-10 p-3 text-left">
+          <%= poetry_checkbox(checked: :indeterminate, label: "Select all invoices") %>
+        </th>
+        <th class="p-3 text-left font-medium text-muted-foreground">Invoice</th>
+        <th class="p-3 text-right font-medium text-muted-foreground">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="border-b">
+        <td class="p-3"><%= poetry_checkbox(checked: true, label: "Select INV-1001") %></td>
+        <td class="p-3">INV-1001</td>
+        <td class="p-3 text-right">$1,250.00</td>
+      </tr>
+      <tr class="border-b">
+        <td class="p-3"><%= poetry_checkbox(label: "Select INV-1002") %></td>
+        <td class="p-3">INV-1002</td>
+        <td class="p-3 text-right">$340.00</td>
+      </tr>
+      <tr>
+        <td class="p-3"><%= poetry_checkbox(checked: true, label: "Select INV-1003") %></td>
+        <td class="p-3">INV-1003</td>
+        <td class="p-3 text-right">$780.00</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

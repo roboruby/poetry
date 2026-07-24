@@ -1,0 +1,11 @@
+<%# invalid: true flags the control with aria-invalid and the data-invalid
+    attribute, so the wrapper and chevron pick up the error styling. Pair it
+    with a message the field can point at. %>
+<div class="grid w-80 gap-2">
+  <%= poetry_label(for_id: "native-select-country") { "Billing country" } %>
+  <%= poetry_native_select(name: "country", id: "native-select-country",
+                           invalid: true,
+                           options: [["Select a country", ""], ["Canada", "ca"], ["Germany", "de"], ["Japan", "jp"]],
+                           selected: "") %>
+  <p class="text-sm text-destructive">Choose a country to continue.</p>
+</div>

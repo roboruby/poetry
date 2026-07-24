@@ -1,0 +1,20 @@
+<%# A related set of checkboxes as one group. The fieldset/legend names the
+    group for assistive tech; each box still owns its Label association. The
+    shared name with the [] idiom collects the checked values into an array,
+    so unchecked_value: nil suppresses the paired hidden input (the array
+    idiom - otherwise every unchecked box would push a stray value). %>
+<fieldset class="flex flex-col gap-3">
+  <legend class="mb-1 text-sm font-medium">Notify me about</legend>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "notify[]", value: "replies", checked: true, unchecked_value: nil, id: "notify-replies") %>
+    <%= poetry_label(for_id: "notify-replies") { "Replies to my comments" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "notify[]", value: "mentions", checked: true, unchecked_value: nil, id: "notify-mentions") %>
+    <%= poetry_label(for_id: "notify-mentions") { "Mentions of my name" } %>
+  </div>
+  <div class="flex items-center gap-3">
+    <%= poetry_checkbox(name: "notify[]", value: "digest", unchecked_value: nil, id: "notify-digest") %>
+    <%= poetry_label(for_id: "notify-digest") { "Weekly activity digest" } %>
+  </div>
+</fieldset>

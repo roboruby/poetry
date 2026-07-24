@@ -1,0 +1,14 @@
+<%# Two inputs share one row via a two-column grid - each still
+    carries its own Label wired by for_id. %>
+<div class="grid w-96 grid-cols-2 gap-4">
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "input-first-name") { "First name" } %>
+    <%= poetry_input(name: "first_name", id: "input-first-name",
+                     placeholder: "Ada") %>
+  </div>
+  <div class="grid gap-2">
+    <%= poetry_label(for_id: "input-last-name") { "Last name" } %>
+    <%= poetry_input(name: "last_name", id: "input-last-name",
+                     placeholder: "Lovelace") %>
+  </div>
+</div>

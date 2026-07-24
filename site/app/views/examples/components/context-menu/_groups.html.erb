@@ -1,0 +1,18 @@
+<%# with_label heads a run of items; with_group scopes a set of related
+    actions, and with_separator rules between the groups. %>
+<%= poetry_context_menu(label: "Document actions") do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click the document" } %>
+  <% menu.with_label { "Edit" } %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(shortcut: "⌘X") { "Cut" } %>
+    <% group.with_item(shortcut: "⌘C") { "Copy" } %>
+    <% group.with_item(shortcut: "⌘V") { "Paste" } %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_label { "Organize" } %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(shortcut: "⌘D") { "Duplicate" } %>
+    <% group.with_item { "Move to folder..." } %>
+    <% group.with_item { "Add to collection" } %>
+  <% end %>
+<% end %>
