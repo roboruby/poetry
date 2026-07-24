@@ -3,7 +3,7 @@
 # Registry.new(descriptions:), so the docs site and the usage skill's charts
 # reference read a single source. Keyed by component_path.
 ---
-poetry/charts/adapter_chart: "The shared data-and-axes foundation every poetry chart is built on."
+poetry/charts/adapter_chart: "The bring-your-own-engine path: a themed mount and chart-spec JSON for a client library (Chart.js, etc.) to draw, instead of poetry's server-side SVG."
 poetry/charts/area_chart: "An area chart for volume or cumulative totals over a continuous axis."
 poetry/charts/bar_chart: "A bar chart for comparing values across categories."
 poetry/charts/composed_chart: "A composed chart layering bars, lines, and areas on shared axes."

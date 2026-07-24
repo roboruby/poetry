@@ -37,7 +37,9 @@ components:
       - radial
       required: true
     slots: []
-    description: The shared data-and-axes foundation every poetry chart is built on.
+    description: 'The bring-your-own-engine path: a themed mount and chart-spec JSON
+      for a client library (Chart.js, etc.) to draw, instead of poetry''s server-side
+      SVG.'
     elements:
     - frame
     - mount
