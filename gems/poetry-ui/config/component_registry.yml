@@ -36,6 +36,8 @@ components:
         item: 0
       yieldless:
       - item
+    description: A vertically stacked set of interactive headings that each reveal
+      a section of content.
     elements:
     - item
     - header
@@ -146,6 +148,7 @@ components:
         icon: 1
     - name: title
       many: false
+    description: A callout that highlights an important inline message.
     elements:
     - title
     - description
@@ -210,6 +213,7 @@ components:
         cancel: 0
       yieldless:
       - cancel
+    description: A modal dialog that interrupts the user and expects a response.
     elements:
     - content
     - header
@@ -287,6 +291,7 @@ components:
       type: string
       required: true
     slots: []
+    description: Locks its content to a fixed width-to-height ratio.
     elements: []
     capsule: e82cf8a38845
     agent_rules:
@@ -356,6 +361,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: A file or image chip showing its name, type, and size.
     elements:
     - media
     - content
@@ -441,6 +447,7 @@ components:
     slots:
     - name: badge
       many: false
+    description: A user's image with an initials fallback.
     elements:
     - image
     - fallback
@@ -495,6 +502,7 @@ components:
       required: true
     options: []
     slots: []
+    description: A small count or status descriptor.
     elements: []
     capsule: df6d977c62f8
     agent_rules:
@@ -535,6 +543,7 @@ components:
       many: true
       setter_args:
         item: 1
+    description: Shows the path to the current page as a trail of links.
     slot_extras:
     - ellipsis
     elements:
@@ -616,6 +625,7 @@ components:
         - align
       yieldless:
       - reactions
+    description: A chat message bubble aligned to its sender.
     elements:
     - group
     - content
@@ -715,6 +725,8 @@ components:
       many: false
     - name: trailing
       many: false
+    description: Triggers an action or event, such as submitting a form or opening
+      a dialog.
     elements: []
     capsule: 2f3c60cb16e5
     agent_rules:
@@ -783,6 +795,7 @@ components:
       required: true
     options: []
     slots: []
+    description: Visually joins adjacent buttons and controls into one group.
     elements:
     - text
     - separator
@@ -823,6 +836,7 @@ components:
       type: integer
       default: 0
     slots: []
+    description: A month grid for selecting single dates or ranges.
     elements:
     - nav
     - nav_button
@@ -939,6 +953,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A container that groups related content and actions.
     elements:
     - header
     - title
@@ -999,6 +1014,7 @@ components:
       - item
       required_content:
         item: the slide
+    description: A slideshow for cycling through content, built on native scroll-snap.
     elements:
     - content
     - content_horizontal
@@ -1081,6 +1097,7 @@ components:
       type: string
       default: '1'
     slots: []
+    description: A control for toggling a single value on or off.
     elements:
     - indicator
     - icon
@@ -1159,6 +1176,7 @@ components:
       type: string
       required: true
     slots: []
+    description: A read-only value with a button to copy it to the clipboard.
     elements:
     - input
     - icon_stack
@@ -1228,6 +1246,8 @@ components:
       type: boolean
       default: false
     slots: []
+    description: A syntax-highlighted code panel with a copy button and optional line
+      numbers.
     elements:
     - pre
     - code
@@ -1289,6 +1309,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: An interactive element that expands and collapses a section of content.
     controllers:
     - identifier: poetry--core--state
       targets:
@@ -1416,6 +1437,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    description: A text input with an autocomplete popover for picking from a list.
     elements:
     - trigger
     - value
@@ -1704,6 +1726,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    description: A command palette for fast, keyboard-driven search and actions.
     elements:
     - input_wrapper
     - input
@@ -1872,6 +1895,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: The command palette in a modal dialog, summonable from anywhere.
     slot_extras:
     - empty
     - group
@@ -2169,6 +2193,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: A menu of actions revealed by right-clicking an element.
     elements:
     - content
     - item
@@ -2440,6 +2465,7 @@ components:
         column: 1
       required_content:
         column: the cell renderer - { |row| ... }
+    description: A table with sorting, row selection, and sticky headers.
     elements:
     - toolbar
     - container
@@ -2523,6 +2549,7 @@ components:
     - name: value
       type:
     slots: []
+    description: A segmented input for typing a date one part at a time.
     elements:
     - group
     - input
@@ -2595,6 +2622,7 @@ components:
       type: string
       default: Pick a date
     slots: []
+    description: A date field that opens a calendar popover for selection.
     elements: []
     capsule: e0f70e04b15c
     controllers:
@@ -2634,6 +2662,8 @@ components:
       type: string
       required: true
     slots: []
+    description: A region that lazily loads its content on visibility, with skeleton
+      and error states.
     controllers:
     - identifier: poetry--core--deferred
       targets:
@@ -2687,6 +2717,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A window overlaid on the page for content that requires attention.
     elements:
     - content
     - header
@@ -2773,6 +2804,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A gesture-driven panel that slides in from a screen edge.
     elements:
     - content
     - handle
@@ -3116,6 +3148,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: A menu of actions or options triggered by a button.
     elements:
     - content
     - item
@@ -3357,6 +3390,7 @@ components:
       many: false
     - name: description
       many: false
+    description: An empty-state placeholder with an icon, message, and actions.
     elements:
     - header
     - media
@@ -3426,6 +3460,7 @@ components:
       type: boolean
       default: false
     slots: []
+    description: Wraps a form control with its label, hint, and validation message.
     elements:
     - hint
     - error
@@ -3495,6 +3530,7 @@ components:
     - name: prompt
       type: string
     slots: []
+    description: A control for selecting, previewing, and removing files to upload.
     elements:
     - dropzone
     - dropzone_disabled
@@ -3609,6 +3645,7 @@ components:
       many: false
       setter_args:
         trigger: 0
+    description: A card that reveals preview content when its trigger is hovered.
     elements:
     - content
     capsule: 4e75d7b14fde
@@ -3723,6 +3760,7 @@ components:
       required: true
       format: icon-name
     slots: []
+    description: Renders an inline SVG icon from the icon set.
     agent_rules:
     - 'Icons are decorative by default (aria-hidden); pass label: when the icon stands
       alone.'
@@ -3755,6 +3793,7 @@ components:
     - name: value
       type: string
     slots: []
+    description: A form control for entering a single line of text.
     elements: []
     capsule: 64b28e72ead3
     controllers:
@@ -3794,6 +3833,7 @@ components:
     styles: []
     options: []
     slots: []
+    description: One bordered surface combining an input with buttons, icons, or add-ons.
     elements:
     - addon
     - addon_inline_start
@@ -3865,6 +3905,7 @@ components:
     - name: value
       type: string
     slots: []
+    description: A fixed-length, segmented input for one-time passcodes.
     elements:
     - input
     - group
@@ -3968,6 +4009,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A generic list row with media, content, and actions.
     elements:
     - media
     - media_default
@@ -4031,6 +4073,7 @@ components:
     styles: []
     options: []
     slots: []
+    description: Displays a keyboard key or shortcut.
     elements: []
     capsule: 27e02c8d2d38
     agent_rules:
@@ -4049,6 +4092,7 @@ components:
     - name: for_id
       type: string
     slots: []
+    description: An accessible caption bound to a form control.
     elements: []
     capsule: 2652e627917b
     agent_rules:
@@ -4081,6 +4125,7 @@ components:
       type: string
       required: true
     slots: []
+    description: A styled navigational hyperlink.
     elements: []
     capsule: e25343f18116
     agent_rules:
@@ -4121,6 +4166,7 @@ components:
       component: poetry/ui/icon
       setter_args:
         icon: 1
+    description: A transcript divider or inline status marker for chat UIs.
     elements:
     - icon
     - content
@@ -4377,6 +4423,7 @@ components:
           required_slots:
             trigger: the top-level menu button
             item: at least one item
+    description: A horizontal bar of menus, like a desktop application menu.
     elements:
     - menu
     - trigger
@@ -4638,6 +4685,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A chat row pairing an author and avatar with message content.
     elements:
     - group
     - avatar
@@ -4702,6 +4750,7 @@ components:
       type: boolean
       default: false
     slots: []
+    description: A streaming-aware transcript that keeps the latest message in view.
     elements:
     - viewport
     - content
@@ -4814,6 +4863,7 @@ components:
         item: 0
       yieldless:
       - item
+    description: A key-value list for labeled attributes on detail pages.
     elements:
     - item
     - label
@@ -4875,6 +4925,7 @@ components:
     - name: value_label
       type: string
     slots: []
+    description: A gauge that shows a quantity within a known range.
     elements: []
     capsule: 328a98df3a37
     agent_rules:
@@ -4923,6 +4974,7 @@ components:
       - sm
       default: default
     slots: []
+    description: A styled wrapper around the real native select control.
     elements:
     - select
     - icon
@@ -4979,6 +5031,7 @@ components:
         item: 1
       yieldless:
       - item
+    description: A site-navigation bar with links and optional dropdown panels.
     slot_extras:
     - link
     elements:
@@ -5165,6 +5218,7 @@ components:
       type: boolean
       default: false
     slots: []
+    description: A numeric input with increment and decrement steppers.
     elements: []
     capsule: 992ce89b2903
     controllers:
@@ -5265,6 +5319,7 @@ components:
       type: integer
       required: true
     slots: []
+    description: Navigation for moving between pages of content.
     elements:
     - content
     - ellipsis
@@ -5346,6 +5401,7 @@ components:
       many: false
     - name: description
       many: false
+    description: Rich floating content anchored to a trigger.
     elements:
     - content
     - header
@@ -5468,6 +5524,7 @@ components:
       type: integer
       required: true
     slots: []
+    description: A determinate progress bar toward task completion.
     elements:
     - track
     - indicator
@@ -5530,6 +5587,7 @@ components:
       many: true
       setter_args:
         item: 0
+    description: A set of options where only one can be selected at a time.
     elements:
     - item
     - indicator
@@ -5630,6 +5688,7 @@ components:
       - panel
       required_content:
         panel: the panel content
+    description: Panels with draggable handles for resizing adjacent regions.
     elements:
     - panel
     - handle
@@ -5688,6 +5747,7 @@ components:
       type: string
       required: true
     slots: []
+    description: A bounded, keyboard-reachable scroll region with styled scrollbars.
     elements:
     - viewport
     capsule: b3212eb76f41
@@ -5738,6 +5798,7 @@ components:
     - name: value
       type: string
     slots: []
+    description: A search input with clear and search affordances.
     elements:
     - input
     capsule: aecc24984d65
@@ -5859,6 +5920,7 @@ components:
         item: 0
         group: 0
         separator: 0
+    description: A dropdown for choosing one option from a list.
     elements:
     - trigger
     - content
@@ -6082,6 +6144,7 @@ components:
     - name: value
       type: string
     slots: []
+    description: A masked secret field with a reveal toggle and a copy button.
     elements:
     - group
     - input
@@ -6183,6 +6246,7 @@ components:
       - vertical
       default: horizontal
     slots: []
+    description: A thin divider between content, decorative or semantic.
     elements: []
     capsule: 359c514388a3
     agent_rules:
@@ -6233,6 +6297,7 @@ components:
       many: false
     - name: footer
       many: false
+    description: A dialog that slides in from a screen edge.
     elements:
     - content
     - header
@@ -6325,6 +6390,7 @@ components:
       many: false
     - name: inset
       many: false
+    description: A collapsible app-shell navigation column.
     elements:
     - wrapper
     - peer
@@ -6505,6 +6571,7 @@ components:
     styles: []
     options: []
     slots: []
+    description: A pulsing placeholder shown while content loads.
     elements: []
     capsule: f4b0700a6dec
     agent_rules:
@@ -6562,6 +6629,7 @@ components:
     - name: values
       type:
     slots: []
+    description: An input for selecting a value or range along a track.
     elements:
     - track
     - range
@@ -6679,6 +6747,7 @@ components:
       type: string
       default: Loading
     slots: []
+    description: An indeterminate loading indicator that announces itself.
     elements: []
     capsule: 547c232b9575
     agent_rules:
@@ -6718,6 +6787,7 @@ components:
       many: false
     - name: media
       many: false
+    description: 'A single KPI: a muted label over a large metric value.'
     elements:
     - label
     - row
@@ -6801,6 +6871,7 @@ components:
       type: string
       default: '1'
     slots: []
+    description: A toggle for turning a setting on or off.
     elements:
     - thumb
     - input
@@ -6867,6 +6938,7 @@ components:
       type: boolean
       default: false
     slots: []
+    description: A semantic table for rows and columns of data.
     elements:
     - container
     - container_sticky
@@ -6941,6 +7013,7 @@ components:
         tab: 1
       yieldless:
       - tab
+    description: A tablist of triggers that switch between content panels.
     elements:
     - list
     - list_default
@@ -7032,6 +7105,7 @@ components:
         tag: 0
       yieldless:
       - tag
+    description: A set of removable chips or tokens.
     elements:
     - label
     - grid
@@ -7113,6 +7187,7 @@ components:
     - name: value
       type: string
     slots: []
+    description: A form control for entering multiple lines of text.
     elements: []
     capsule: ccb23b46547a
     agent_rules:
@@ -7169,6 +7244,7 @@ components:
     - name: value
       type:
     slots: []
+    description: A segmented input for typing a time one part at a time.
     elements:
     - group
     - input
@@ -7239,6 +7315,7 @@ components:
         item: 0
       yieldless:
       - item
+    description: A sequence of dated events as an ordered list.
     elements:
     - item
     - indicator
@@ -7331,6 +7408,7 @@ components:
         action: 0
       yieldless:
       - action
+    description: A brief, auto-dismissing notification message.
     elements:
     - icon
     - body
@@ -7422,6 +7500,7 @@ components:
       type: integer
       default: 3
     slots: []
+    description: The region that stacks and manages toast notifications.
     elements: []
     capsule: 62bf4faba383
     controllers:
@@ -7490,6 +7569,7 @@ components:
       type: boolean
       default: false
     slots: []
+    description: A two-state button that can be pressed on or off.
     elements: []
     capsule: e828a426aa14
     controllers:
@@ -7584,6 +7664,7 @@ components:
         item: 0
       yieldless:
       - item
+    description: A set of toggle buttons for single or multiple selection.
     elements:
     - item
     capsule: b5c1a9940c88
@@ -7707,6 +7788,7 @@ components:
         button: 0
         input: 0
         separator: 0
+    description: A horizontal group of controls that acts as one keyboard tab stop.
     elements: []
     capsule: 77a81ff9c40f
     controllers:
@@ -7785,6 +7867,7 @@ components:
         trigger: 0
       yieldless:
       - trigger
+    description: A floating label describing an element on hover or focus.
     elements:
     - content
     - arrow
@@ -7905,6 +7988,7 @@ components:
       type: string
       required: true
     slots: []
+    description: A hierarchical list of expandable, selectable nodes.
     slot_extras:
     - item
     elements:
@@ -7980,6 +8064,7 @@ components:
     - name: preset
       type: string
     slots: []
+    description: Prose styling for long-form and rendered-markdown content.
     elements: []
     capsule: d236e8297167
     agent_rules:

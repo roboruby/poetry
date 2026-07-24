@@ -1,0 +1,94 @@
+# Per-component one-line descriptions (editorial, hand-authored).
+# Merged into the generated component registry by Poetry::Ui.registry ->
+# Registry.new(descriptions:), so llms.txt, the MCP describe_component, and
+# the docs site all read a single source. Keyed by component_path.
+---
+poetry/ui/accordion: A vertically stacked set of interactive headings that each reveal
+  a section of content.
+poetry/ui/alert: A callout that highlights an important inline message.
+poetry/ui/alert_dialog: A modal dialog that interrupts the user and expects a response.
+poetry/ui/aspect_ratio: Locks its content to a fixed width-to-height ratio.
+poetry/ui/attachment: A file or image chip showing its name, type, and size.
+poetry/ui/avatar: A user's image with an initials fallback.
+poetry/ui/badge: A small count or status descriptor.
+poetry/ui/breadcrumb: Shows the path to the current page as a trail of links.
+poetry/ui/bubble: A chat message bubble aligned to its sender.
+poetry/ui/button: Triggers an action or event, such as submitting a form or opening
+  a dialog.
+poetry/ui/button_group: Visually joins adjacent buttons and controls into one group.
+poetry/ui/calendar: A month grid for selecting single dates or ranges.
+poetry/ui/card: A container that groups related content and actions.
+poetry/ui/carousel: A slideshow for cycling through content, built on native scroll-snap.
+poetry/ui/checkbox: A control for toggling a single value on or off.
+poetry/ui/clipboard_text: A read-only value with a button to copy it to the clipboard.
+poetry/ui/code_block: A syntax-highlighted code panel with a copy button and optional
+  line numbers.
+poetry/ui/collapsible: An interactive element that expands and collapses a section
+  of content.
+poetry/ui/combobox: A text input with an autocomplete popover for picking from a list.
+poetry/ui/command: A command palette for fast, keyboard-driven search and actions.
+poetry/ui/command/dialog: The command palette in a modal dialog, summonable from anywhere.
+poetry/ui/context_menu: A menu of actions revealed by right-clicking an element.
+poetry/ui/data_table: A table with sorting, row selection, and sticky headers.
+poetry/ui/date_field: A segmented input for typing a date one part at a time.
+poetry/ui/date_picker: A date field that opens a calendar popover for selection.
+poetry/ui/deferred: A region that lazily loads its content on visibility, with skeleton
+  and error states.
+poetry/ui/dialog: A window overlaid on the page for content that requires attention.
+poetry/ui/drawer: A gesture-driven panel that slides in from a screen edge.
+poetry/ui/dropdown_menu: A menu of actions or options triggered by a button.
+poetry/ui/empty: An empty-state placeholder with an icon, message, and actions.
+poetry/ui/field: Wraps a form control with its label, hint, and validation message.
+poetry/ui/file_input: A control for selecting, previewing, and removing files to upload.
+poetry/ui/hover_card: A card that reveals preview content when its trigger is hovered.
+poetry/ui/icon: Renders an inline SVG icon from the icon set.
+poetry/ui/input: A form control for entering a single line of text.
+poetry/ui/input_group: One bordered surface combining an input with buttons, icons,
+  or add-ons.
+poetry/ui/input_otp: A fixed-length, segmented input for one-time passcodes.
+poetry/ui/item: A generic list row with media, content, and actions.
+poetry/ui/kbd: Displays a keyboard key or shortcut.
+poetry/ui/label: An accessible caption bound to a form control.
+poetry/ui/link: A styled navigational hyperlink.
+poetry/ui/marker: A transcript divider or inline status marker for chat UIs.
+poetry/ui/menubar: A horizontal bar of menus, like a desktop application menu.
+poetry/ui/message: A chat row pairing an author and avatar with message content.
+poetry/ui/message_scroller: A streaming-aware transcript that keeps the latest message
+  in view.
+poetry/ui/metadata_list: A key-value list for labeled attributes on detail pages.
+poetry/ui/meter: A gauge that shows a quantity within a known range.
+poetry/ui/native_select: A styled wrapper around the real native select control.
+poetry/ui/navigation_menu: A site-navigation bar with links and optional dropdown
+  panels.
+poetry/ui/number_field: A numeric input with increment and decrement steppers.
+poetry/ui/pagination: Navigation for moving between pages of content.
+poetry/ui/popover: Rich floating content anchored to a trigger.
+poetry/ui/progress: A determinate progress bar toward task completion.
+poetry/ui/radio_group: A set of options where only one can be selected at a time.
+poetry/ui/resizable: Panels with draggable handles for resizing adjacent regions.
+poetry/ui/scroll_area: A bounded, keyboard-reachable scroll region with styled scrollbars.
+poetry/ui/search_field: A search input with clear and search affordances.
+poetry/ui/select: A dropdown for choosing one option from a list.
+poetry/ui/sensitive_input: A masked secret field with a reveal toggle and a copy button.
+poetry/ui/separator: A thin divider between content, decorative or semantic.
+poetry/ui/sheet: A dialog that slides in from a screen edge.
+poetry/ui/sidebar: A collapsible app-shell navigation column.
+poetry/ui/skeleton: A pulsing placeholder shown while content loads.
+poetry/ui/slider: An input for selecting a value or range along a track.
+poetry/ui/spinner: An indeterminate loading indicator that announces itself.
+poetry/ui/stat: 'A single KPI: a muted label over a large metric value.'
+poetry/ui/switch: A toggle for turning a setting on or off.
+poetry/ui/table: A semantic table for rows and columns of data.
+poetry/ui/tabs: A tablist of triggers that switch between content panels.
+poetry/ui/tag_group: A set of removable chips or tokens.
+poetry/ui/textarea: A form control for entering multiple lines of text.
+poetry/ui/time_field: A segmented input for typing a time one part at a time.
+poetry/ui/timeline: A sequence of dated events as an ordered list.
+poetry/ui/toast: A brief, auto-dismissing notification message.
+poetry/ui/toaster: The region that stacks and manages toast notifications.
+poetry/ui/toggle: A two-state button that can be pressed on or off.
+poetry/ui/toggle_group: A set of toggle buttons for single or multiple selection.
+poetry/ui/toolbar: A horizontal group of controls that acts as one keyboard tab stop.
+poetry/ui/tooltip: A floating label describing an element on hover or focus.
+poetry/ui/tree: A hierarchical list of expandable, selectable nodes.
+poetry/ui/typeset: Prose styling for long-form and rendered-markdown content.

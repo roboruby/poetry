@@ -106,8 +106,18 @@ module Poetry
           components: components, source_root: root,
           helpers: registry_helpers(component_paths: component_paths),
           blocks: registry_blocks(component_paths: component_paths),
-          helper_args: registry_helper_args
+          helper_args: registry_helper_args,
+          descriptions: registry_descriptions
         )
+      end
+
+      # The editorial per-component descriptions merged into the registry
+      # (component_path => one-liner, from config/component_descriptions.yml).
+      # Absent file -> nil, so a registry without it stays lint-identical, like
+      # every other optional section.
+      def registry_descriptions
+        path = root.join("config/component_descriptions.yml")
+        path.exist? ? YAML.safe_load_file(path) : nil
       end
 
       # The shadcn-interop item projection (Ecosystem v1), boot-free
