@@ -73,13 +73,18 @@ module Poetry
       #   helper). Rest-signatures are omitted (unknowable); the linter
       #   enforces arity only where a key exists, so registries without the
       #   map stay lint-identical.
+      # @param descriptions [Hash, nil] one-line human descriptions per
+      #   component_path (the gem's editorial component_descriptions.yml),
+      #   merged into each entry as "description" - the summary llms.txt, the
+      #   MCP describe_component, and the docs page all read from one source.
       def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil,
-                     helper_args: nil)
+                     helper_args: nil, descriptions: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
         @blocks = blocks
         @helper_args = helper_args
+        @descriptions = descriptions
       end
 
       # The discovered component classes (the registry's working set).
@@ -144,6 +149,12 @@ module Poetry
           "options" => plain(props[:options]),
           "slots" => plain(props[:slots])
         }
+        # The one-line human description (editorial, merged from the gem's
+        # component_descriptions.yml) - the summary llms.txt / describe_component
+        # / the docs page read from this single source.
+        if @descriptions && (description = @descriptions[component.component_path])
+          entry["description"] = description
+        end
         # Hand-rolled with_* conveniences beyond the registered slots
         # (NavigationMenu#with_link) - consumers call them, so check and the
         # agent surfaces must know them.

@@ -30,9 +30,20 @@ module Poetry
       # The lean index: one line per component (+ the blocks catalog).
       def index
         lines = @registry.entries.map do |path, entry|
-          "- #{title(path)}: `#{helper(path)}` - #{surface_summary(entry)}"
+          "- #{title(path)}: `#{helper(path)}` - #{index_summary(entry)}"
         end
         "#{PREAMBLE}\n## Components\n\n#{lines.join("\n")}\n#{blocks_index}"
+      end
+
+      # The index line's summary: the human description leads (what it is),
+      # then the style surface (its variants) in parens so an agent still sees
+      # the options at a glance. Description-less entries fall back to the
+      # surface alone.
+      def index_summary(entry)
+        surface = surface_summary(entry)
+        return surface unless entry["description"]
+
+        surface == "no style attributes" ? entry["description"] : "#{entry["description"]} (#{surface})"
       end
 
       # The full contracts: props, slots, elements, and agent rules - plus
@@ -61,6 +72,7 @@ module Poetry
 
       def component_section(path, entry)
         lines = ["## #{title(path)} (`#{helper(path)}`)", ""]
+        lines << "#{entry["description"]}\n" if entry["description"]
         lines << "Class: #{entry["class_name"]} - BEM block `#{entry["bem_block"]}`."
         if (hint = entry["requires_content"])
           lines << "Content block REQUIRED (#{hint}) - a blockless call raises."

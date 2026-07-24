@@ -867,6 +867,8 @@ module Poetry
         end
 
         def summary(entry)
+          return entry["description"] if entry["description"]
+
           styles = entry["styles"].map { |style| style["variants"] ? style["variants"].join("|") : style["name"] }
           styles.empty? ? "no style attributes" : styles.join("; ")
         end
