@@ -10,7 +10,21 @@ module DocsHelper
            partial: partial,
            source: source.strip,
            name: name,
-           heading: name.tr("_", " ").capitalize
+           heading: name.tr("_", " ").capitalize,
+           note: example_note(section, slug)
+  end
+
+  # A muted note shown IN the preview box (not the copied source), for the
+  # rare example whose server-side render is intentionally blank. The adapter
+  # chart emits a mount + spec for a CLIENT engine (Chart.js, etc.); the docs
+  # never load one (server-SVG is the whole pitch), so its mount is empty.
+  def example_note(section, slug)
+    return unless section == "charts" && slug == "adapter"
+
+    "poetry draws charts as server-side SVG. This adapter is the opt-in path for a client " \
+      "engine (Chart.js, etc.) — it emits a themed mount and chart-spec for your registered " \
+      "adapter to draw into. These docs don't load a client engine, so the mount is empty here; " \
+      "the Code tab shows the mount and spec."
   end
 
   # Example partial names for a page, in filesystem order with "default"

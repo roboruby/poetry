@@ -2,7 +2,10 @@
   <h2 class="text-lg font-medium" id="<%= name.dasherize %>"><%= heading %></h2>
   <%= poetry_tabs(label: "#{heading} example", variant: :line) do |tabs| %>
     <% tabs.with_tab("Preview", value: "preview") do %>
-      <div class="flex min-h-48 items-center justify-center rounded-lg border p-8">
+      <div class="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border p-8">
+        <% if local_assigns[:note].present? %>
+          <p class="max-w-md text-center text-sm text-muted-foreground"><%= note %></p>
+        <% end %>
         <%= render partial %>
       </div>
     <% end %>
