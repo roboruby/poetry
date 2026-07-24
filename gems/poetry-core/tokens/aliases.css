@@ -98,6 +98,38 @@
   background-color: transparent;
 }
 
+/* NativeSelect chevron geometry (NativeSelect): the chevron
+   position is STRUCTURAL, not theme-owned. Letting each theme place/size the
+   icon (cn-native-select-icon) drifted it on every theme switch (mira
+   right-1.5/size-3.5 vs the others right-2.5/size-4), so it moved and resized.
+   Reserve a fixed gutter on the select and make the icon fill exactly that
+   gutter and center the glyph - identical in every theme, by construction, so
+   no per-theme tuning is ever needed again. Unlayered, so it beats BOTH the
+   theme (layer base) and the component's own icon utilities; the theme keeps
+   only the color (text-muted-foreground on cn-native-select-icon). */
+[data-slot="native-select"] {
+  padding-right: 2rem;
+}
+[data-slot="native-select-icon"] {
+  /* Vertical centering via the standard top:50% + translate:-50% idiom, set
+     here structurally (the theme used the same, per-theme). Written as
+     `translate: 0 -50%` NOT `none`/`0`: Tailwind v4 translate utilities set the
+     `translate` PROPERTY, and Lightning CSS strips `translate: none`/`0` as the
+     initial value, which would let the theme's -translate-y-1/2 win. */
+  top: 50%;
+  right: 0;
+  translate: 0 -50%;
+  width: 2rem;
+  height: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+[data-slot="native-select-icon"] > svg {
+  width: 1rem;
+  height: 1rem;
+}
+
 /* data-selected bridge extension (Base UI Vocabulary §3):
    the vendored shadcn/tailwind.css @custom-variant data-selected matches
    [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare
