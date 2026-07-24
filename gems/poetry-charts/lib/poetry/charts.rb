@@ -45,8 +45,17 @@ module Poetry
         # the no-wrapper-yields invariant.
         Poetry::Core::Registry.new(
           source_root: root, helper_args: registry_helper_args,
-          helpers: { "poetry_chart" => { "yields" => "the dispatched chart component" } }
+          helpers: { "poetry_chart" => { "yields" => "the dispatched chart component" } },
+          descriptions: registry_descriptions
         )
+      end
+
+      # The editorial per-chart descriptions merged into the registry
+      # (component_path => one-liner, from config/component_descriptions.yml).
+      # Absent file -> nil, so the registry stays lint-identical without it.
+      def registry_descriptions
+        path = root.join("config/component_descriptions.yml")
+        path.exist? ? YAML.safe_load_file(path) : nil
       end
 
       # The shadcn-interop item projection (Ecosystem v1), boot-free

@@ -1,0 +1,14 @@
+# Per-chart one-line descriptions (editorial, hand-authored).
+# Merged into the generated chart registry by Poetry::Charts.registry ->
+# Registry.new(descriptions:), so the docs site and the usage skill's charts
+# reference read a single source. Keyed by component_path.
+---
+poetry/charts/adapter_chart: "The shared data-and-axes foundation every poetry chart is built on."
+poetry/charts/area_chart: "An area chart for volume or cumulative totals over a continuous axis."
+poetry/charts/bar_chart: "A bar chart for comparing values across categories."
+poetry/charts/composed_chart: "A composed chart layering bars, lines, and areas on shared axes."
+poetry/charts/line_chart: "A line chart for trends over a continuous axis."
+poetry/charts/pie_chart: "A pie chart for showing parts of a whole."
+poetry/charts/radar_chart: "A radar chart for comparing several variables on radial axes."
+poetry/charts/radial_bar_chart: "A radial bar chart with bars wrapped around a circular axis."
+poetry/charts/scatter_chart: "A scatter chart for the relationship between two variables."

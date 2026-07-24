@@ -37,6 +37,7 @@ components:
       - radial
       required: true
     slots: []
+    description: The shared data-and-axes foundation every poetry chart is built on.
     elements:
     - frame
     - mount
@@ -184,6 +185,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: An area chart for volume or cumulative totals over a continuous axis.
     elements:
     - frame
     - svg
@@ -430,6 +432,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A bar chart for comparing values across categories.
     elements:
     - frame
     - svg
@@ -668,6 +671,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A composed chart layering bars, lines, and areas on shared axes.
     elements:
     - frame
     - svg
@@ -1005,6 +1009,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A line chart for trends over a continuous axis.
     elements:
     - frame
     - svg
@@ -1182,6 +1187,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A pie chart for showing parts of a whole.
     slot_extras:
     - py
     elements:
@@ -1335,6 +1341,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A radar chart for comparing several variables on radial axes.
     elements:
     - frame
     - svg
@@ -1507,6 +1514,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A radial bar chart with bars wrapped around a circular axis.
     elements:
     - frame
     - svg
@@ -1714,6 +1722,7 @@ components:
       many: false
       setter_args:
         tooltip: 0
+    description: A scatter chart for the relationship between two variables.
     elements:
     - frame
     - svg
