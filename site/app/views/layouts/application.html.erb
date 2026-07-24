@@ -123,9 +123,14 @@
           <div class="ml-auto flex items-center gap-2">
             <%= render "shared/site_nav" %>
             <%= render "shared/search" %>
+            <%# The theme switcher is itself styled by the theme it switches, so
+                its native-select width would otherwise track each theme's font/
+                padding and jump on change. class: "w-full" overrides the
+                component's w-fit wrapper so the select fills this fixed w-28 -
+                a stable-width control, no horizontal jump between themes. %>
             <div data-controller="style" data-action="change->style#apply" class="w-28">
               <label for="style-switcher" class="sr-only">Component style</label>
-              <%= poetry_native_select(name: "style", id: "style-switcher",
+              <%= poetry_native_select(name: "style", id: "style-switcher", class: "w-full",
                                        options: %w[default vega nova mira rhea maia luma lyra sera].map { |s| [s, s] },
                                        selected: "default") %>
             </div>
