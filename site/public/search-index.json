@@ -168,6 +168,36 @@
     "path": "/optimistic-forms#reconciliation"
   },
   {
+    "title": "Editors",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors"
+  },
+  {
+    "title": "One generator",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#generate"
+  },
+  {
+    "title": "The MCP server",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#mcp"
+  },
+  {
+    "title": "Snippets",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#snippets"
+  },
+  {
+    "title": "Design tools",
+    "page": "Editors",
+    "section": "docs",
+    "path": "/editors#design-tools"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",

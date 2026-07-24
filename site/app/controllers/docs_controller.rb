@@ -5,6 +5,9 @@ class DocsController < ApplicationController
   def installation
   end
 
+  def editors
+  end
+
   def theming
   end
 

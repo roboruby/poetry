@@ -1,0 +1,125 @@
+<% content_for :title, "Editors" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("Editors") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  generate_source = <<~CODE
+    bin/rails g poetry:editor
+  CODE
+  mcp_source = <<~CODE
+    // .mcp.json (Claude Code) / .cursor/mcp.json (Cursor)
+    { "mcpServers": { "poetry": { "command": "bundle", "args": ["exec", "poetry-agent"] } } }
+
+    // .vscode/mcp.json (VS Code)
+    { "servers": { "poetry": { "type": "stdio", "command": "bundle", "args": ["exec", "poetry-agent"] } } }
+  CODE
+  zed_source = <<~CODE
+    // Zed settings.json
+    "context_servers": { "poetry": { "command": { "path": "bundle", "args": ["exec", "poetry-agent"] } } }
+  CODE
+  import_source = <<~CODE
+    bin/rails poetry:figma:import[variables.json]   # a Figma variables export
+    bin/rails poetry:paper:import[paper-theme.css]  # a Paper "Copy theme"
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Editors</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry ships no bespoke extension. It plugs into any MCP-capable editor
+      through a one-line config, and one generator writes those configs plus
+      component snippets for you.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="generate">One generator</h2>
+      <p>
+        <code>poetry:editor</code> writes an MCP config for each editor and a
+        snippet file generated from the component registry. The MCP writes are
+        upserts: a config keeps its other servers, a config that already has
+        poetry is left alone, and a JSONC file poetry cannot parse is reported,
+        never clobbered.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Editor</th><th>What it writes</th><th>Gets</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Claude Code</td><td><code>.mcp.json</code></td><td>MCP</td></tr>
+          <tr><td>Cursor</td><td><code>.cursor/mcp.json</code></td><td>MCP + snippets</td></tr>
+          <tr><td>VS Code</td><td><code>.vscode/mcp.json</code> + <code>.vscode/poetry.code-snippets</code></td><td>MCP + snippets</td></tr>
+          <tr><td>Windsurf</td><td>reads the <code>.vscode</code> snippets</td><td>MCP (paste) + snippets</td></tr>
+          <tr><td>Zed / RubyMine / Neovim</td><td>a printed paste-block</td><td>MCP</td></tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="mcp">The MCP server</h2>
+      <p>
+        poetry's agent surface is a standard stdio MCP server
+        (<code>bundle exec poetry-agent</code>): boot-free, read-only, no SDK.
+        Its nine tools teach an agent the catalog and gate its work. Call
+        <code>compose</code> first, build from primitives, run
+        <code>check</code> last, and take a PASS verdict rather than an eyeball.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: mcp_source, language: "json", label: "MCP config") %>
+    <%= poetry_code_block(code: zed_source, language: "json", label: "Zed") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        RubyMine 2025.2+ is already an MCP client: Settings, then Tools, AI
+        Assistant, Model Context Protocol; add a stdio server running
+        <code>bundle exec poetry-agent</code> or import the
+        <code>.mcp.json</code>.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="snippets">Snippets</h2>
+      <p>
+        <code>.vscode/poetry.code-snippets</code> holds one snippet per
+        <code>poetry_*</code> helper, generated from the committed registry so
+        it never drifts from the shipped catalog. Type a helper name and the
+        snippet expands with the real <code>variant</code> and
+        <code>size</code> values as a choice list, a block form for components
+        that compose through slots, and inline for atoms. One file works in VS
+        Code, Cursor, and Windsurf.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="design-tools">Design tools</h2>
+      <p>
+        With the poetry MCP wired alongside a Figma or Paper MCP, an agent can
+        translate a design into poetry components; the <code>poetry-design</code>
+        skill's <code>figma</code> and <code>paper</code> references are the
+        rulebook. Design tokens come in through the same AA-gated importer a
+        DESIGN.md uses:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: import_source, language: "shell", label: "Import tokens") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A swatch that fails WCAG AA is dropped and reported with the nearest
+        passing value, never shipped.
+      </p>
+    <% end %>
+  </section>
+</div>

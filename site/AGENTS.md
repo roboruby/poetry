@@ -37,7 +37,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (80 components + 13 chart components + 8 blocks)
+## Building UI with poetry (81 components + 13 chart components + 8 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted
@@ -57,10 +57,14 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   did-you-mean, `--json`; needs the `herb` gem in the Gemfile). An edit
   made after your last check is unverified markup - re-run it.
 - Faster: the `poetry` MCP server (`.mcp.json`: command `bundle`, args
-  `["exec", "poetry-agent"]`) serves `compose`, `check`,
-  `describe_component`, `list_components`, `list_blocks`, and
-  `describe_block` from the live registry with no app boot - prefer
-  `compose` to start and its `check` tool when iterating.
+  `["exec", "poetry-agent"]`) serves nine tools from the live registry
+  with no app boot - `compose`, `build_page`, `list_components`,
+  `describe_component`, `check`, `list_blocks`, `describe_block`,
+  `get_skill`, and `guidance`. Prefer `compose` (or `build_page` for a
+  whole screen) to start, and its `check` tool when iterating. Wire it
+  into every editor at once with `bin/rails g poetry:editor` (MCP
+  configs for VS Code / Cursor / Claude Code / Zed / RubyMine plus
+  registry-driven snippets).
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
 - Upgrading poetry gems: after `bundle update`, re-run
@@ -74,16 +78,19 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   with URL state, Field-composed forms) plus a matching controller -
   prefer scaffolding over hand-writing CRUD views.
 - Claude Code skills: `poetry` (component contracts by family) and
-  `poetry-design` (theme / compose / audit / study - the taste layer)
-  live under `.claude/skills/` - load `poetry` whenever writing ERB,
+  `poetry-design` (theme / compose / audit / study / figma / paper -
+  the taste layer) live under `.claude/skills/` - load `poetry` whenever writing ERB,
   and `poetry-design` whenever composing a page or screen, BEFORE
   building (any page task is a design task, not only ones that
   mention design). Install/refresh: `bin/rails g poetry:skill`.
 - Design interop: `bin/rails poetry:design:export` writes this app's
   DESIGN.md (tokens + treatment) for external design skills.
 - Overriding the theme: token-level restyling goes through
-  `poetry:design:import` (design-overrides.css). Host CSS that
-  targets theme-owned `cn-*` classes is allowed ONLY as a declared
+  `poetry:design:import` (design-overrides.css) - which also ingests a
+  Figma variables export (`bin/rails poetry:figma:import[export.json]`)
+  or a Paper "Copy theme" (`bin/rails poetry:paper:import[theme.css]`),
+  dropping any swatch that fails WCAG AA. Host CSS that targets
+  theme-owned `cn-*` classes is allowed ONLY as a declared
   override - a dated, reasoned entry under `overrides:` in
   config/poetry_components.yml (`bin/rails poetry:design:overrides`
   reports drift and prints the paste-ready declaration). Declare

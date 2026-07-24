@@ -36,7 +36,12 @@ class DocsCatalog
               description: "poetry_optimistic_form — the predicted result paints on submit as a " \
                            "server-authored Turbo Stream; the server corrects only on rejection " \
                            "(morph refresh). One vocabulary for prediction and truth, plus the " \
-                           "204/no-redirect server contract.")
+                           "204/no-redirect server contract."),
+    Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
+              description: "bin/rails g poetry:editor wires poetry's MCP server and registry-driven " \
+                           "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \
+                           "Zed, RubyMine): safe MCP-config upserts, a per-editor matrix, and the " \
+                           "Figma / Paper design-tool token bridges.")
   ].freeze
 
   # The interaction demos are the one hand-curated section: full-page

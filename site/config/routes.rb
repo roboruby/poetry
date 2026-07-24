@@ -18,6 +18,7 @@ Rails.application.routes.draw do
   get "optimistic-forms" => "docs#optimistic_forms", as: :optimistic_forms
   post "optimistic-forms/favorite" => "docs#optimistic_favorite", as: :optimistic_favorite
   post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
+  get "editors" => "docs#editors", as: :editors
 
   # The official registry (Ecosystem v1) - shadcn-schema items
   # served live from the gem registries; literal routes before the catch.
