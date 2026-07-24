@@ -994,7 +994,7 @@
 }
 
 .cn-native-select-icon {
-  @apply text-muted-foreground top-1/2 right-3.5 size-4 -translate-y-1/2;
+  @apply text-muted-foreground top-1/2 right-2.5 size-4 -translate-y-1/2;
 }
 
 /* MARK: Pagination */
