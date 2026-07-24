@@ -1,0 +1,9 @@
+<%# Card: each item is its own rounded, bordered card with a gap between
+    them - vs. the flush dividers of the borders example. The root becomes a
+    gapped flex column; each item carries the card classes. Pure class
+    composition, no new API. %>
+<%= poetry_accordion(collapsible: true, open: %w[billing], class: "flex max-w-lg flex-col gap-2") do |accordion| %>
+  <% accordion.with_item(value: "billing", title: "How does billing work?", class: "rounded-lg border bg-card px-4") { "Monthly and annual plans, charged at the start of each cycle - cancel anytime. Every plan includes automatic backups, 24/7 support, and unlimited team members." } %>
+  <% accordion.with_item(value: "security", title: "Is my data secure?", class: "rounded-lg border bg-card px-4") { "Yes. End-to-end encryption, SOC 2 Type II compliance, and regular third-party audits - encrypted at rest and in transit." } %>
+  <% accordion.with_item(value: "integration", title: "What integrations do you support?", class: "rounded-lg border bg-card px-4") { "500+ tools including Slack, Zapier, Salesforce, and HubSpot - plus custom integrations over the REST API and webhooks." } %>
+<% end %>
