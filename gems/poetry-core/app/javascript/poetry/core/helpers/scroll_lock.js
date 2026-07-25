@@ -60,16 +60,3 @@ export function resetScrollLock() {
   locks = 0
   previous = null
 }
-
-// showModal() moves focus into the dialog, and the browser scrolls that
-// newly-focused element into view - which drags the page out from under a
-// fixed, centered modal (an autofocus target far down a long page yanks the
-// background to the top; 2026-07-24 docs-review finding). The pre-open
-// scroll IS the correct resting place: capture it and put it back in the
-// SAME synchronous frame as showModal, so nothing paints between the two and
-// there is no flicker. Callers lockScroll() afterward to freeze it there.
-export function showModalPreservingScroll(dialog) {
-  const { scrollX, scrollY } = window
-  dialog.showModal()
-  window.scrollTo(scrollX, scrollY)
-}

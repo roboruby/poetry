@@ -1,6 +1,5 @@
 import DialogController from "@poetry/controllers/dialog_controller"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
-import { showModalPreservingScroll } from "@poetry/controllers/helpers/scroll_lock"
 
 // The Drawer (N9 W3b): the dialog machinery + the swipe-to-dismiss gesture.
 // Everything hard about the OVERLAY is inherited (native <dialog> platform
@@ -41,7 +40,7 @@ export default class DrawerController extends DialogController {
   #closing = false
 
   open() {
-    showModalPreservingScroll(this.dialogTarget)
+    this.dialogTarget.showModal()
     enterPresence(this.dialogTarget)
     this.lockScroll()
   }
