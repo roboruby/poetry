@@ -115,6 +115,51 @@ module Poetry
           assert disabled.key?("data-disabled")
         end
 
+        def test_link_item_is_the_anchor_itself_not_a_nested_link
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(href: "/profile") { "Profile" }
+          end
+          item = doc(html).css('[data-slot="dropdown-menu-item"]').first
+
+          # The item IS the anchor (role=menuitem on the <a>) - one interactive
+          # element, so it navigates without tripping nested-interactive a11y.
+          assert_equal "a", item.name
+          assert_equal "/profile", item["href"]
+          assert_equal "menuitem", item["role"]
+          assert_equal "-1", item["tabindex"]
+          assert item.key?("data-poetry-collection-item")
+          assert_equal "click->poetry--core--menu#activate", item["data-action"]
+          assert_nil item["target"], "an internal link stays same-tab"
+        end
+
+        def test_external_link_item_opens_a_new_tab_safely
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(href: "https://example.com", external: true) { "Docs" }
+          end
+          item = doc(html).css('[data-slot="dropdown-menu-item"]').first
+
+          assert_equal "a", item.name
+          assert_equal "_blank", item["target"]
+          assert_equal "noopener noreferrer", item["rel"]
+        end
+
+        def test_disabled_link_item_drops_its_href_and_cannot_navigate
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(href: "/admin", disabled: true) { "Admin" }
+          end
+          item = doc(html).css('[data-slot="dropdown-menu-item"]').first
+
+          # Anchors have no native disabled - a disabled link falls back to the
+          # plain menuitem div with no href, so it cannot be followed.
+          assert_equal "div", item.name
+          refute item.key?("href")
+          assert_equal "true", item["aria-disabled"]
+          assert item.key?("data-disabled")
+        end
+
         def test_unknown_item_variant_raises
           assert_raises(ArgumentError) do
             render_menu do |menu|

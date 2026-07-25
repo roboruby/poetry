@@ -103,13 +103,26 @@ module Poetry
           end
 
           shortcut = options.delete(:shortcut)
+          # A link item IS the anchor (role=menuitem on the <a>), never an <a>
+          # nested inside a menuitem div - one interactive element, so it keeps
+          # the APG contract without tripping nested-interactive a11y. A disabled
+          # link drops its href (anchors have no native disabled) and renders as
+          # the plain div, so it cannot navigate.
+          href = options.delete(:href)
+          external = options.delete(:external)
+          disabled = options[:disabled]
           attrs = {
             "data-slot" => "dropdown-menu-item", "role" => "menuitem", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-variant" => variant,
             "class" => Style.css(:item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:inset, :disabled, :text_value, :close_on_select))
-          content_tag(:div, attrs.merge(options)) do
+          link = href && !disabled
+          if link
+            attrs["href"] = href
+            attrs.merge!("target" => "_blank", "rel" => "noopener noreferrer") if external
+          end
+          content_tag(link ? :a : :div, attrs.merge(options)) do
             safe_join([capture(&block), shortcut_span(shortcut)].compact)
           end
         end
@@ -166,6 +179,9 @@ module Poetry
         AGENT_RULES = [
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
           "Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.",
+          "Navigation items pass with_item(href:) (external: for a new tab) - the item renders AS the " \
+          "anchor (role=menuitem on the <a>), so it both navigates and stays one interactive element; " \
+          "never nest a link inside an item.",
           "Icon-only triggers MUST have an accessible name (the composed Button's label: rule).",
           "Never write the state attributes (data-popup-open / data-checked / data-unchecked) without " \
           "their aria twin (aria-expanded / aria-checked) - the controller writes both; agents patching " \
