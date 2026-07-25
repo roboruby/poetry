@@ -13,7 +13,12 @@ module Poetry
         # dialog:not([open]) { display: none } and render the dialog inline
         # while closed (caught by the 2026-07-01 browser pass - invisible
         # to jsdom, which has no UA stylesheet).
-        element :content, "cn-dialog-content relative m-auto open:grid"
+        # No `relative`: a modal <dialog> lives in the top layer, where the
+        # browser drops a `position: relative` back to the UA `absolute` and
+        # pins the panel to the DOCUMENT origin (it then scrolls off-screen
+        # when opened below the fold). Letting position fall through to the
+        # UA `:modal` rule keeps it viewport-fixed and centered.
+        element :content, "cn-dialog-content m-auto open:grid"
 
         element :header, "cn-dialog-header flex flex-col"
         element :title, "cn-dialog-title"

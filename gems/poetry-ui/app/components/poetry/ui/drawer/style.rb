@@ -20,8 +20,13 @@ module Poetry
         # themes/<name>.css carries backdrop:bg-* / backdrop-blur-* on
         # .cn-drawer-content. Only the swipe machinery (transition +
         # opacity calc) stays structural here.
+        # No `relative`: the top layer discards it and the UA reasserts
+        # `absolute`, pinning the drawer to the DOCUMENT edge (it scrolls
+        # off-screen below the fold). The UA `:modal` rule keeps it
+        # viewport-fixed so the direction auto-margins pin it to the viewport
+        # edge; the swipe transform rides on top.
         element :content,
-                "cn-drawer-content relative m-0 open:flex min-h-0 flex-col " \
+                "cn-drawer-content m-0 open:flex min-h-0 flex-col " \
                 "outline-none select-none will-change-transform " \
                 "transition-[transform,opacity] duration-450 ease-[cubic-bezier(0.22,1,0.36,1)] " \
                 "transform-[translate3d(var(--translate-x,0px),var(--translate-y,0px),0)] " \

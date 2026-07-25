@@ -13,7 +13,12 @@ module Poetry
         # dialog:not([open]) { display: none } (the Dialog's 2026-07-01
         # browser-pass lesson, inherited here).
         # w-full rides the theme so the sides' w-3/4 beats it in-layer.
-        element :content, "cn-sheet-content relative open:flex flex-col"
+        # No `relative`: the top layer discards it and the UA reasserts
+        # `absolute`, which pins the sheet to the DOCUMENT edge (it scrolls
+        # off-screen when opened below the fold). The UA `:modal` rule keeps
+        # it viewport-fixed, so the side auto-margins pin it to the viewport
+        # edge as intended.
+        element :content, "cn-sheet-content open:flex flex-col"
 
         # The side branches ride cn-sheet-side-* theme rules (margins,
         # edge borders, sizes, slide animations). Applied to :content by

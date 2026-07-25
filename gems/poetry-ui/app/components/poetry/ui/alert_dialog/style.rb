@@ -9,8 +9,12 @@ module Poetry
       # the explicit server-side media/size layout branches stay inline
       # (the source's group/has- gymnastics remain conditionals, not CSS).
       class Style < Poetry::Core::Style
-        # open:grid, NOT grid (the Dialog's UA display:none lesson).
-        element :content, "cn-alert-dialog-content relative m-auto open:grid"
+        # open:grid, NOT grid (the Dialog's UA display:none lesson). No
+        # `relative`: it is discarded in the top layer (the UA reasserts
+        # `absolute`, pinning the panel to the document origin so it scrolls
+        # off-screen below the fold); the UA `:modal` rule keeps it fixed and
+        # viewport-centered instead. See the parent Dialog.
+        element :content, "cn-alert-dialog-content m-auto open:grid"
 
         element :header, "cn-alert-dialog-header grid grid-rows-[auto_1fr] place-items-center text-center"
         element :header_with_media, "grid-rows-[auto_auto_1fr] gap-x-6"
