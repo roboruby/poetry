@@ -10,9 +10,21 @@ module Poetry
       config.autoload_paths << "#{Poetry::Ui.root}/app/components"
       config.eager_load_paths << "#{Poetry::Ui.root}/app/components"
 
-      initializer "poetry_ui.helpers" do
-        ActiveSupport.on_load(:action_view) do
-          include Poetry::Ui::ComponentsHelper
+      # ComponentsHelper lives in app/helpers (Zeitwerk-autoloaded), so unlike
+      # a lib/ helper it is NOT already loaded at gem-require time. A host gem
+      # that forces ActionView to load *during* initialization - e.g. lexxy /
+      # ActionText prepending to ActionView::Helpers::FormHelper, exactly what
+      # Jumpstart Pro pulls in - fires this on_load hook before the engine's
+      # app/helpers constant is resolvable, raising NameError at boot. Deferring
+      # the hook registration into a to_prepare block runs it only once autoload
+      # paths are wired (and re-runs safely on reload), so the constant always
+      # resolves. (poetry-core's TagHelper avoids this only because it lives in
+      # lib/ and is required eagerly.)
+      initializer "poetry_ui.helpers" do |app|
+        app.config.to_prepare do
+          ActiveSupport.on_load(:action_view) do
+            include Poetry::Ui::ComponentsHelper
+          end
         end
       end
 
