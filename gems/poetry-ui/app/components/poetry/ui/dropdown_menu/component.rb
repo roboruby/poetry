@@ -103,13 +103,16 @@ module Poetry
           end
 
           shortcut = options.delete(:shortcut)
-          # A link item IS the anchor (role=menuitem on the <a>), never an <a>
-          # nested inside a menuitem div - one interactive element, so it keeps
-          # the APG contract without tripping nested-interactive a11y. A disabled
-          # link drops its href (anchors have no native disabled) and renders as
-          # the plain div, so it cannot navigate.
+          # A link/submit item IS the interactive element (role=menuitem on the
+          # <a> or the <button>), never nested inside a menuitem div - one
+          # interactive element, so it keeps the APG contract without tripping
+          # nested-interactive a11y. A disabled link/submit drops its target and
+          # renders as the plain div (anchors/submit-buttons have no menu meaning
+          # once inert).
           href = options.delete(:href)
           external = options.delete(:external)
+          submit = options.delete(:submit)
+          method = options.delete(:method)
           disabled = options[:disabled]
           attrs = {
             "data-slot" => "dropdown-menu-item", "role" => "menuitem", "tabindex" => "-1",
@@ -117,14 +120,24 @@ module Poetry
             "class" => Style.css(:item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:inset, :disabled, :text_value, :close_on_select))
+          content = safe_join([capture(&block), shortcut_span(shortcut)].compact)
+
+          if submit && !disabled
+            # button_to's form is display:contents (transparent); the submit
+            # button IS the menuitem, POSTing with CSRF + the method override -
+            # the a11y-clean way to run a DELETE/POST action from a menu. The
+            # block form renders a <button> (the string form renders an <input>).
+            return helpers.button_to(submit,
+                                     { method: method || :post, form: { class: "contents" } }
+                                       .merge(attrs).merge(options)) { content }
+          end
+
           link = href && !disabled
           if link
             attrs["href"] = href
             attrs.merge!("target" => "_blank", "rel" => "noopener noreferrer") if external
           end
-          content_tag(link ? :a : :div, attrs.merge(options)) do
-            safe_join([capture(&block), shortcut_span(shortcut)].compact)
-          end
+          content_tag(link ? :a : :div, attrs.merge(options)) { content }
         end
 
         def checkbox_item_part(**options, &block)
@@ -179,9 +192,10 @@ module Poetry
         AGENT_RULES = [
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
           "Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.",
-          "Navigation items pass with_item(href:) (external: for a new tab) - the item renders AS the " \
-          "anchor (role=menuitem on the <a>), so it both navigates and stays one interactive element; " \
-          "never nest a link inside an item.",
+          "Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a " \
+          "DELETE) passes with_item(submit:, method:). The item renders AS the anchor / submit button " \
+          "(role=menuitem on the <a> or <button>) - one interactive element - so NEVER nest a link_to or " \
+          "button_to inside an item.",
           "Icon-only triggers MUST have an accessible name (the composed Button's label: rule).",
           "Never write the state attributes (data-popup-open / data-checked / data-unchecked) without " \
           "their aria twin (aria-expanded / aria-checked) - the controller writes both; agents patching " \

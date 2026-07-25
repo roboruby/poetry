@@ -160,6 +160,29 @@ module Poetry
           assert item.key?("data-disabled")
         end
 
+        def test_submit_item_is_the_button_in_a_transparent_form
+          html = render_menu do |menu|
+            menu.with_trigger { "Open" }
+            menu.with_item(submit: "/users/sign_out", method: :delete) { "Sign out" }
+          end
+          item = doc(html).css('[data-slot="dropdown-menu-item"]').first
+          form = item.ancestors("form").first
+
+          # The item IS the submit button (role=menuitem on the <button>) - one
+          # interactive element - inside button_to's transparent (contents) form.
+          assert_equal "button", item.name
+          assert_equal "menuitem", item["role"]
+          assert_equal "-1", item["tabindex"]
+          assert item.key?("data-poetry-collection-item")
+          assert_equal "click->poetry--core--menu#activate", item["data-action"]
+
+          refute_nil form, "the submit item is wrapped in a form"
+          assert_equal "/users/sign_out", form["action"]
+          assert_includes form["class"].to_s, "contents"
+          method_override = form.css('input[name="_method"]').first
+          assert_equal "delete", method_override["value"], "the DELETE method override rides a hidden field"
+        end
+
         def test_unknown_item_variant_raises
           assert_raises(ArgumentError) do
             render_menu do |menu|

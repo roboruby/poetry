@@ -3216,9 +3216,10 @@ components:
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
       it with radio items.
-    - 'Navigation items pass with_item(href:) (external: for a new tab) - the item
-      renders AS the anchor (role=menuitem on the <a>), so it both navigates and stays
-      one interactive element; never nest a link inside an item.'
+    - 'Navigation items pass with_item(href:) (external: for a new tab); a form action
+      (sign-out, a DELETE) passes with_item(submit:, method:). The item renders AS
+      the anchor / submit button (role=menuitem on the <a> or <button>) - one interactive
+      element - so NEVER nest a link_to or button_to inside an item.'
     - 'Icon-only triggers MUST have an accessible name (the composed Button''s label:
       rule).'
     - Never write the state attributes (data-popup-open / data-checked / data-unchecked)
