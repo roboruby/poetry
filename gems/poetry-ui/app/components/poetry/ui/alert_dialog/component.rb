@@ -12,9 +12,10 @@ module Poetry
       # cancel->close deliberately ignores dismissibleValue, exactly Radix
       # AlertDialog's behavior (outside interaction prevented, escape
       # allowed). Deltas from Dialog: explicit role=alertdialog, title AND
-      # description both required, typed action/cancel Button slots (cancel
-      # takes initial focus per APG), no X close button, and the source's
-      # size variant + media well.
+      # description both required, typed action/cancel Button slots (both
+      # dismiss the dialog through the shared controller; cancel takes
+      # initial focus per APG), no X close button, and the source's size
+      # variant + media well.
       class Component < Poetry::Core::Component
         SIZES = %i[default sm].freeze
 
@@ -62,16 +63,20 @@ module Poetry
         # Optional icon/illustration well (the v4 source addition).
         renders_one :media
         # The confirming choice - a typed Button slot with the source
-        # default (callers override to :destructive for deletes).
+        # default (callers override to :destructive for deletes). Closes the
+        # shared dialog on activation, exactly like Radix AlertDialogAction
+        # (a caller passing their own data-action opts out of the auto-close).
         renders_one :action, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-action" }.merge(options[:data] || {})
+          options[:data] = { slot: "alert-dialog-action", action: stimulus.action(:close) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
         # The safe way out - outline (source default) and the INITIAL focus:
         # the native <dialog> focus heuristic honors autofocus (APG: focus
-        # the least-destructive action).
+        # the least-destructive action). Like Radix AlertDialogCancel it
+        # dismisses the dialog through the shared controller - without this
+        # wiring the modal is unclosable except by Esc.
         renders_one :cancel, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-cancel" }.merge(options[:data] || {})
+          options[:data] = { slot: "alert-dialog-cancel", action: stimulus.action(:close) }.merge(options[:data] || {})
           Button::Component.new(variant: :outline, autofocus: true, **options, &block)
         }
 

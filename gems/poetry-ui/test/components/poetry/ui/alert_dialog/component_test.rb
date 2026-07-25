@@ -130,9 +130,26 @@ module Poetry
           html = render_alert
           fragment = doc(html)
 
-          # The choice must be explicit - no icon-only close, deliberate.
-          assert_predicate fragment.css('button[data-action="poetry--core--dialog#close"]'), :empty?
+          # The choice must be explicit - no icon-only close in the corner,
+          # deliberate. The dismiss lives in the footer (cancel/action), so
+          # the header carries no button and nothing is a dedicated close.
+          header = fragment.css('[data-slot="alert-dialog-header"]').first
+
+          assert_predicate header.css("button"), :empty?
+          assert_predicate fragment.css('[data-slot="alert-dialog-close"]'), :empty?
           assert_predicate fragment.css('[aria-label="Close"]'), :empty?
+        end
+
+        def test_cancel_and_action_close_the_shared_dialog
+          fragment = doc(render_alert)
+          cancel = fragment.css('[data-slot="alert-dialog-cancel"]').first
+          action = fragment.css('[data-slot="alert-dialog-action"]').first
+
+          # Both footer choices dismiss the native <dialog> through the shared
+          # controller (Radix AlertDialogCancel / AlertDialogAction both
+          # close). Without this the modal is unclosable except by Esc.
+          assert_equal "poetry--core--dialog#close", cancel["data-action"]
+          assert_equal "poetry--core--dialog#close", action["data-action"]
         end
 
         def test_aria_labelledby_and_describedby_are_always_wired
