@@ -39,7 +39,7 @@ const record = (type, target) => {
   return seen
 }
 
-const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = true, dir = "ltr", link = false } = {}) => `
+const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = true, dir = "ltr", link = false, submit = false } = {}) => `
   <div id="shell" dir="${dir}">
     <div id="root" data-slot="dropdown-menu" data-component="dropdown-menu"
          data-controller="poetry--core--menu"
@@ -52,6 +52,8 @@ const menuMarkup = ({ open = false, modal = true, loop = false, closeOnSelect = 
               data-action="poetry--core--menu#toggle keydown->poetry--core--menu#triggerKeydown">Open</button>
       <div id="content" data-slot="dropdown-menu-content" role="menu" aria-orientation="vertical"
            aria-labelledby="trigger" tabindex="-1" data-closed hidden>
+        ${submit ? `<button id="item-submit" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
+             data-poetry-collection-item data-action="click->poetry--core--menu#activate">Sign out</button>` : ""}
         ${link ? `<a id="item-link" href="/go" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
              data-poetry-collection-item data-action="click->poetry--core--menu#activate">Home</a>` : ""}
         <div id="item-profile" data-slot="dropdown-menu-item" role="menuitem" tabindex="-1"
@@ -342,6 +344,23 @@ describe("poetry--core--menu", () => {
 
       // The keyboard path routed through item.click() so the anchor navigates
       // (Turbo-intercepted in a real app); non-link items never dispatch a click.
+      expect(clicks.length).toBe(1)
+    })
+
+    it("Enter on a submit (button) item acts through the button (a synthetic click)", async () => {
+      await mount({ submit: true })
+      await openWithKey("ArrowDown") // opens + focuses the FIRST item - the submit button
+      expect(document.activeElement).toBe(el("item-submit"))
+
+      const clicks = []
+      el("item-submit").addEventListener("click", (event) => {
+        event.preventDefault() // a real button would submit its form here
+        clicks.push(event)
+      })
+
+      press(el("item-submit"), "Enter")
+      await nextFrame()
+
       expect(clicks.length).toBe(1)
     })
 

@@ -220,7 +220,7 @@ export default class MenuController extends Controller {
 
         if (!item || this.#isDisabled(item)) return
         if (item.matches(SUB_TRIGGER_SELECTOR)) this.#showSub(item, { focusFirst: true })
-        else if (this.#isLink(item)) item.click() // a link item navigates through its anchor; the synthetic click also closes the menu
+        else if (this.#isNativeItem(item)) item.click() // link/submit items act through the element itself; the synthetic click also closes the menu
         else this.#activate(item)
 
         return
@@ -392,12 +392,13 @@ export default class MenuController extends Controller {
     this.#hide("item-press")
   }
 
-  // A link item is a native anchor wearing role=menuitem: click and Enter/Space
-  // navigate through the anchor itself (Turbo intercepts it), never a JS-only
-  // activate. Keyboard routes through a synthetic item.click() so the same path
-  // fires - no recursion, since activate() never calls click().
-  #isLink(item) {
-    return item.tagName === "A" && item.hasAttribute("href")
+  // A NATIVE item is an anchor (link) or a button (form submit) wearing
+  // role=menuitem: click and Enter/Space act through the element itself - the
+  // browser navigates / submits (Turbo-intercepted), never a JS-only activate.
+  // Keyboard routes through a synthetic item.click() so the same path fires -
+  // no recursion, since activate() never calls click().
+  #isNativeItem(item) {
+    return item.matches("a[href], button")
   }
 
   // aria-checked and data-checked/data-unchecked are written TOGETHER, never separately.
