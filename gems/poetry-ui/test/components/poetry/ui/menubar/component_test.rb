@@ -239,6 +239,24 @@ module Poetry
           assert_equal "true", shortcut["aria-hidden"], "shortcut is a visual hint only (family rule)"
         end
 
+        def test_link_and_submit_items_render_as_anchor_and_button
+          html = render_bar do |bar|
+            bar.with_menu do |menu|
+              menu.with_trigger { "File" }
+              menu.with_item(href: "/open") { "Open" }
+              menu.with_item(submit: "/close", method: :delete) { "Close" }
+            end
+          end
+          link, submit = doc(html).css('[data-slot="menubar-item"]').to_a
+
+          assert_equal "a", link.name
+          assert_equal "/open", link["href"]
+          assert_equal "menuitem", link["role"]
+
+          assert_equal "button", submit.name
+          refute_nil submit.ancestors("form").first, "the submit item is wrapped in a form"
+        end
+
         def test_duplicate_radio_values_raise
           error = assert_raises(ArgumentError) do
             render_bar do |bar|

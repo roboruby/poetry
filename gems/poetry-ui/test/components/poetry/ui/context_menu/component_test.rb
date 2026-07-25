@@ -156,6 +156,24 @@ module Poetry
           assert_equal "click->poetry--core--menu#activate", item["data-action"]
         end
 
+        def test_link_and_submit_items_render_as_anchor_and_button
+          html = render_menu do |menu|
+            menu.with_trigger { "Surface" }
+            menu.with_item(href: "/open") { "Open" }
+            menu.with_item(submit: "/archive", method: :delete) { "Archive" }
+          end
+          link, submit = doc(html).css('[data-slot="context-menu-item"]').to_a
+
+          # Link/submit items ARE the anchor / submit button (role=menuitem), a11y-clean.
+          assert_equal "a", link.name
+          assert_equal "/open", link["href"]
+          assert_equal "menuitem", link["role"]
+
+          assert_equal "button", submit.name
+          assert_equal "menuitem", submit["role"]
+          refute_nil submit.ancestors("form").first, "the submit item is wrapped in a form"
+        end
+
         def test_item_options_variant_inset_disabled_shortcut
           html = render_menu do |menu|
             menu.with_trigger { "Surface" }

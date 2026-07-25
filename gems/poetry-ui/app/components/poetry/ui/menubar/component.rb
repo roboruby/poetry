@@ -100,15 +100,34 @@ module Poetry
           end
 
           shortcut = options.delete(:shortcut)
+          # A link/submit item IS the interactive element (role=menuitem on the
+          # <a> or <button>) - one interactive element, a11y-clean; the menu
+          # controller acts through it on click + keyboard. See DropdownMenu.
+          href = options.delete(:href)
+          external = options.delete(:external)
+          submit = options.delete(:submit)
+          method = options.delete(:method)
+          disabled = options[:disabled]
           attrs = {
             "data-slot" => "menubar-item", "role" => "menuitem", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-variant" => variant,
             "class" => Style.css(:item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:inset, :disabled, :text_value, :close_on_select))
-          content_tag(:div, attrs.merge(options)) do
-            safe_join([capture(&block), shortcut_span(shortcut)].compact)
+          content = safe_join([capture(&block), shortcut_span(shortcut)].compact)
+
+          if submit && !disabled
+            return helpers.button_to(submit,
+                                     { method: method || :post, form: { class: "contents" } }
+                                       .merge(attrs).merge(options)) { content }
           end
+
+          link = href && !disabled
+          if link
+            attrs["href"] = href
+            attrs.merge!("target" => "_blank", "rel" => "noopener noreferrer") if external
+          end
+          content_tag(link ? :a : :div, attrs.merge(options)) { content }
         end
 
         def checkbox_item_part(**options, &block)
