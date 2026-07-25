@@ -1,5 +1,6 @@
 import DialogController from "@poetry/controllers/dialog_controller"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { showModalPreservingScroll } from "@poetry/controllers/helpers/scroll_lock"
 
 // The Sheet (N9 W5b commit 1): the dialog machinery + the presence-hold
 // close its dictionary was waiting on since W3b - the Drawer's animated
@@ -14,7 +15,7 @@ export default class SheetController extends DialogController {
   #closing = false
 
   open() {
-    this.dialogTarget.showModal()
+    showModalPreservingScroll(this.dialogTarget)
     enterPresence(this.dialogTarget)
     this.lockScroll()
   }

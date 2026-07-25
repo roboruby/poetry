@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { watchMobile } from "@poetry/controllers/helpers/breakpoint"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState } from "@poetry/controllers/helpers/state"
+import { showModalPreservingScroll } from "@poetry/controllers/helpers/scroll_lock"
 
 // The Sidebar state machine (N9 W5 + the W5b mobile mode): expand/collapse
 // coordination for the app shell. The COLLAPSE itself is pure CSS - the
@@ -116,7 +117,7 @@ export default class SidebarController extends Controller {
     if (this.#mobileOpen || !this.hasMobileInnerTarget) return
 
     while (this.innerTarget.firstChild) this.mobileInnerTarget.appendChild(this.innerTarget.firstChild)
-    this.mobileDialogTarget.showModal()
+    showModalPreservingScroll(this.mobileDialogTarget)
     enterPresence(this.mobileDialogTarget)
     this.#previousOverflow = document.body.style.overflow
     document.body.style.overflow = "hidden"

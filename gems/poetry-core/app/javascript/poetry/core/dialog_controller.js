@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
 import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
-import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
+import { lockScroll, unlockScroll, showModalPreservingScroll } from "@poetry/controllers/helpers/scroll_lock"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // The native-dialog primitive: borrow the PLATFORM overlay -
@@ -91,7 +91,7 @@ export default class extends Controller {
   }
 
   open() {
-    this.dialogTarget.showModal()
+    showModalPreservingScroll(this.dialogTarget)
     setState(this.dialogTarget, "open")
     this.lockScroll()
   }
