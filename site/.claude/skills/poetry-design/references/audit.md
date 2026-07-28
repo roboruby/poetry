@@ -17,7 +17,7 @@ with a clean `poetry:check` run AFTER the final edit, never before it.
 
 ## The design-lint rules (what each catches)
 
-Every finding names its fix in the message. The twenty rules:
+Every finding names its fix in the message. The 23 rules:
 
 - `card-in-card` - a Card nested in a Card; flatten to one containment level.
 - `icon-tile-over-heading` - the decorative icon-in-a-tile stacked above
@@ -57,6 +57,23 @@ Every finding names its fix in the message. The twenty rules:
   the heading or cut it (badge announcement pills are fine).
 - `oversized-h1` - display-size type (text-7xl+) carrying 40+ characters;
   shorten the headline or step the size down.
+
+Motion floor (perception physics, theme-independent - they read the motion
+utilities an element carries):
+
+- `motion-ease-in` - a bare `ease-in` on a transition; ease-in decelerates
+  into rest, wrong for UI. Use `ease-out` for enters, `ease-in-out` for
+  moves (a state-scoped `data-closed:ease-in` exit is fine).
+- `motion-duration-ceiling` - a UI transition over ~500ms (`duration-700`,
+  `duration-1000`, `duration-[800ms]`); past ~300ms UI reads as laggy.
+- `motion-scale-from-zero` - an animated element resting at `scale-0`; it
+  erupts from nothing. Start from `scale-95` with opacity, not zero.
+
+`transition-all` is a REPORT-ONLY advisory (`bin/rake design:motion`), not a
+gate: it animates every property including layout, so prefer the specific
+transition (`transition-colors`, `transition-[color,box-shadow]`,
+`transition-transform`). poetry ships the upstream default, so re-timing it
+is a design decision, surfaced rather than enforced.
 
 ## Score it (deterministic)
 

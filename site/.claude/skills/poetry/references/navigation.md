@@ -5,12 +5,14 @@ not suggestions. Options are keywords; content is the block.
 
 ## breadcrumb (`poetry_breadcrumb`)
 
+Shows the path to the current page as a trail of links.
+
 Class: Poetry::Ui::Breadcrumb::Component - BEM block `poetry-ui-breadcrumb`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
-Slots: items (many).
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly), separator (with_separator yields NOTHING to the block - no |param|, write content directly; with_separator keywords: icon: ONLY).
 - PART `breadcrumb` - The <nav> landmark (aria-label=breadcrumb) around the trail
 - PART `breadcrumb-list` - The <ol> laying crumbs and separators out as one wrapping row
-- PART `breadcrumb-item` - One <li> of the trail - wraps a link, the current page, or the ellipsis
+- PART `breadcrumb-item` - One <li> of the trail - wraps a link, the current page, the ellipsis, or a block item's own content (a dropdown crumb, a custom link)
 - PART `breadcrumb-link` - A crumb with href: - a real <a> to an ancestor page
 - PART `breadcrumb-page` - The current page (the item without href:) - aria-current=page, not a link
 - PART `breadcrumb-separator` - The chevron <li> between crumbs - presentational, aria-hidden
@@ -19,8 +21,12 @@ In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP 
 - RULE: Declare the trail with with_item(label, href:) - never hand-build the nav/ol/li chain.
 - RULE: The current page is the item WITHOUT href: (it renders aria-current=page, not a link).
 - RULE: Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
+- RULE: A BLOCK item (with_item { ... }) renders your content inside the <li> - the seat for a dropdown crumb or a custom-rendered link; you own its semantics (aria-current only applies to label items).
+- RULE: with_separator(icon: :dot) - or a block - replaces the chevron in EVERY gap; the default chevron RTL-flips, a custom glyph is used as given.
 
 ## navigation_menu (`poetry_navigation_menu`)
+
+A site-navigation bar with links and optional dropdown panels.
 
 Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_menu`.
 - `label:` (string) - required
@@ -46,6 +52,8 @@ In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_
 
 ## pagination (`poetry_pagination`)
 
+Navigation for moving between pages of content.
+
 Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
 - `current:` (integer) - required
 - `current_variant:` (symbol) - one of outline|filled, default "outline"
@@ -64,6 +72,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: The current page is aria-current=page; current_variant: :outline (upstream parity, default) or :filled (the primary treatment - unambiguous active state); the rest are ghost links.
 
 ## sidebar (`poetry_sidebar`)
+
+A collapsible app-shell navigation column.
 
 Class: Poetry::Ui::Sidebar::Component - BEM block `poetry-ui-sidebar`.
 Slot REQUIRED: with_nav (the sidebar column) - a call without it raises.
@@ -98,6 +108,8 @@ In blocks: `app-shell` - for a screen, start from the block (MCP compose/describ
 - RULE: Menu entries are poetry_sidebar_menu_button(href:) links (active: marks the current route) - navigation navigates.
 
 ## tabs (`poetry_tabs`)
+
+A tablist of triggers that switch between content panels.
 
 Class: Poetry::Ui::Tabs::Component - BEM block `poetry-ui-tabs`.
 Slot REQUIRED: with_tab (at least one tab) - a call without it raises.

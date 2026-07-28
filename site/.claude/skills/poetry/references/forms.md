@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## button (`poetry_button`)
 
+Triggers an action or event, such as submitting a form or opening a dialog.
+
 Class: Poetry::Ui::Button::Component - BEM block `poetry-ui-button`.
 REQUIRED - one of a content block / with_leading / with_trailing / loading: (nothing visible renders without one - label: is only the accessible name); a call satisfying none raises.
 - `size:` (symbol) - one of default|xs|sm|lg|icon|icon-xs|icon-sm|icon-lg, default "default", required
@@ -31,6 +33,8 @@ In blocks: `action-bar`, `app-shell`, `data-index`, `destructive-panel`, `page-h
 
 ## button_group (`poetry_button_group`)
 
+Visually joins adjacent buttons and controls into one group.
+
 Class: Poetry::Ui::ButtonGroup::Component - BEM block `poetry-ui-button_group`.
 Content block REQUIRED (its member controls) - a blockless call raises.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
@@ -42,6 +46,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: A visual divider between members is poetry_button_group_separator, not a styled border.
 
 ## calendar (`poetry_calendar`)
+
+A month grid for selecting single dates or ranges.
 
 Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
 - `mode:` (symbol) - default "single"
@@ -66,6 +72,8 @@ Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
 
 ## checkbox (`poetry_checkbox`)
 
+A control for toggling a single value on or off.
+
 Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - `checked:` (checked_state) - default false
 - `disabled:` (boolean) - default false
@@ -86,6 +94,8 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - RULE: Don't suppress unchecked_value unless using the array idiom - an unchecked box that submits nothing silently keeps the old server value.
 
 ## combobox (`poetry_combobox`)
+
+A text input with an autocomplete popover for picking from a list.
 
 Class: Poetry::Ui::Combobox::Component - BEM block `poetry-ui-combobox`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
@@ -143,6 +153,8 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 
 ## date_field (`poetry_date_field`)
 
+A segmented input for typing a date one part at a time.
+
 Class: Poetry::Ui::DateField::Component - BEM block `poetry-ui-date_field`.
 - `described_by:` (string)
 - `disabled:` (boolean) - default false
@@ -168,6 +180,8 @@ Class: Poetry::Ui::DateField::Component - BEM block `poetry-ui-date_field`.
 
 ## date_picker (`poetry_date_picker`)
 
+A date field that opens a calendar popover for selection.
+
 Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - `label:` (string)
 - `mode:` (symbol) - default "single"
@@ -181,6 +195,8 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - RULE: For an always-visible grid use Calendar directly - DatePicker is the field+popover form.
 
 ## field (`poetry_field`)
+
+Wraps a form control with its label, hint, and validation message.
 
 Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - `orientation:` (symbol) - one of vertical|horizontal, default "vertical", required
@@ -199,6 +215,8 @@ Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
 - RULE: orientation: :horizontal is the boolean-control layout (checkbox/switch left, label + hint stacked right) - text inputs and groups stay vertical.
 
 ## file_input (`poetry_file_input`)
+
+A control for selecting, previewing, and removing files to upload.
 
 Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
 - `variant:` (symbol) - one of input|dropzone, default "input"
@@ -226,6 +244,8 @@ Class: Poetry::Ui::FileInput::Component - BEM block `poetry-ui-file_input`.
 
 ## input (`poetry_input`)
 
+A form control for entering a single line of text.
+
 Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 - `disabled:` (boolean) - default false
 - `invalid:` (boolean) - default false
@@ -242,6 +262,8 @@ Class: Poetry::Ui::Input::Component - BEM block `poetry-ui-input`.
 
 ## input_group (`poetry_input_group`)
 
+One bordered surface combining an input with buttons, icons, or add-ons.
+
 Class: Poetry::Ui::InputGroup::Component - BEM block `poetry-ui-input_group`.
 Content block REQUIRED (its control + addons) - a blockless call raises.
 - PART `input-group` - The bordered group surface (role=group) - wears the border, the focus-within ring, and the invalid ring for the borderless control inside
@@ -252,6 +274,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: The group is a surface, not a label - the control still needs its Label/Field pairing.
 
 ## input_otp (`poetry_input_otp`)
+
+A fixed-length, segmented input for one-time passcodes.
 
 Class: Poetry::Ui::InputOtp::Component - BEM block `poetry-ui-input_otp`.
 - `disabled:` (boolean) - default false
@@ -279,6 +303,8 @@ Class: Poetry::Ui::InputOtp::Component - BEM block `poetry-ui-input_otp`.
 
 ## label (`poetry_label`)
 
+An accessible caption bound to a form control.
+
 Class: Poetry::Ui::Label::Component - BEM block `poetry-ui-label`.
 - `for_id:` (string)
 - PART `label` - The <label> element itself - for= rides it (dropped in group mode, where the group names itself via aria-labelledby at this label's id)
@@ -286,6 +312,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: Every control gets a Label wired via for_id - placeholder text is never the label.
 
 ## native_select (`poetry_native_select`)
+
+A styled wrapper around the real native select control.
 
 Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`.
 - `disabled:` (boolean) - default false
@@ -304,6 +332,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: The fast path is options: [[label, value], ...] + selected:; a content block overrides it.
 
 ## number_field (`poetry_number_field`)
+
+A numeric input with increment and decrement steppers.
 
 Class: Poetry::Ui::NumberField::Component - BEM block `poetry-ui-number_field`.
 - `described_by:` (string)
@@ -338,6 +368,8 @@ Class: Poetry::Ui::NumberField::Component - BEM block `poetry-ui-number_field`.
 
 ## radio_group (`poetry_radio_group`)
 
+A set of options where only one can be selected at a time.
+
 Class: Poetry::Ui::RadioGroup::Component - BEM block `poetry-ui-radio_group`.
 Slot REQUIRED: with_item (at least one radio item) - a call without it raises.
 - `disabled:` (boolean) - default false
@@ -365,6 +397,8 @@ Slots: items (many).
 
 ## search_field (`poetry_search_field`)
 
+A search input with clear and search affordances.
+
 Class: Poetry::Ui::SearchField::Component - BEM block `poetry-ui-search_field`.
 - `described_by:` (string)
 - `disabled:` (boolean) - default false
@@ -386,6 +420,8 @@ Class: Poetry::Ui::SearchField::Component - BEM block `poetry-ui-search_field`.
 - RULE: Pair with a Label/Field for the accessible name, or pass label: standalone.
 
 ## select (`poetry_select`)
+
+A dropdown for choosing one option from a list.
 
 Class: Poetry::Ui::Select::Component - BEM block `poetry-ui-select`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
@@ -434,6 +470,8 @@ Slots: trigger, items (many; types item|group|separator - one with_<type> setter
 
 ## sensitive_input (`poetry_sensitive_input`)
 
+A masked secret field with a reveal toggle and a copy button.
+
 Class: Poetry::Ui::SensitiveInput::Component - BEM block `poetry-ui-sensitive_input`.
 - `copy:` (boolean) - default false
 - `described_by:` (string)
@@ -459,6 +497,8 @@ Class: Poetry::Ui::SensitiveInput::Component - BEM block `poetry-ui-sensitive_in
 - RULE: Values re-mask on blur BY DESIGN - do not fight it with reveal-state persistence.
 
 ## slider (`poetry_slider`)
+
+An input for selecting a value or range along a track.
 
 Class: Poetry::Ui::Slider::Component - BEM block `poetry-ui-slider`.
 - `described_by:` (string)
@@ -491,6 +531,8 @@ Class: Poetry::Ui::Slider::Component - BEM block `poetry-ui-slider`.
 
 ## switch (`poetry_switch`)
 
+A toggle for turning a setting on or off.
+
 Class: Poetry::Ui::Switch::Component - BEM block `poetry-ui-switch`.
 - `size:` (symbol) - one of default|sm, default "default", required
 - `checked:` (boolean) - default false
@@ -512,6 +554,8 @@ Class: Poetry::Ui::Switch::Component - BEM block `poetry-ui-switch`.
 
 ## textarea (`poetry_textarea`)
 
+A form control for entering multiple lines of text.
+
 Class: Poetry::Ui::Textarea::Component - BEM block `poetry-ui-textarea`.
 - `disabled:` (boolean) - default false
 - `invalid:` (boolean) - default false
@@ -526,6 +570,8 @@ Class: Poetry::Ui::Textarea::Component - BEM block `poetry-ui-textarea`.
 - RULE: Do not set native required - required flows as aria-required via Field.
 
 ## time_field (`poetry_time_field`)
+
+A segmented input for typing a time one part at a time.
 
 Class: Poetry::Ui::TimeField::Component - BEM block `poetry-ui-time_field`.
 - `described_by:` (string)
@@ -553,6 +599,8 @@ Class: Poetry::Ui::TimeField::Component - BEM block `poetry-ui-time_field`.
 
 ## toggle (`poetry_toggle`)
 
+A two-state button that can be pressed on or off.
+
 Class: Poetry::Ui::Toggle::Component - BEM block `poetry-ui-toggle`.
 - `size:` (symbol) - one of default|sm|lg, default "default", required
 - `variant:` (symbol) - one of default|outline, default "default", required
@@ -569,6 +617,8 @@ Class: Poetry::Ui::Toggle::Component - BEM block `poetry-ui-toggle`.
 - RULE: Pressed visual is accent - don't override data-pressed colors per-instance (theme-level only).
 
 ## toggle_group (`poetry_toggle_group`)
+
+A set of toggle buttons for single or multiple selection.
 
 Class: Poetry::Ui::ToggleGroup::Component - BEM block `poetry-ui-toggle_group`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.

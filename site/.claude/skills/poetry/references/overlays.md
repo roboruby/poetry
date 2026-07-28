@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## alert_dialog (`poetry_alert_dialog`)
 
+A modal dialog that interrupts the user and expects a response.
+
 Class: Poetry::Ui::AlertDialog::Component - BEM block `poetry-ui-alert_dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 Slot REQUIRED: with_description (the alertdialog must explain itself) - a call without it raises.
@@ -26,6 +28,8 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - RULE: Cancel keeps variant: :outline; do not make cancel visually primary.
 
 ## command (`poetry_command`)
+
+A command palette for fast, keyboard-driven search and actions.
 
 Class: Poetry::Ui::Command::Component - BEM block `poetry-ui-command`.
 REQUIRED - one of id: / aria-label: / aria-labelledby: / aria: (the input's accessible name); a call satisfying none raises.
@@ -63,6 +67,8 @@ Slots: empty, loading, items (many; types item|group|separator - one with_<type>
 
 ## command_dialog (`poetry_command_dialog`)
 
+The command palette in a modal dialog, summonable from anywhere.
+
 Class: Poetry::Ui::Command::DialogComponent - BEM block `poetry-ui-command-dialog`.
 - `description:` (string) - default "dynamic"
 - `dismissible:` (boolean) - default true
@@ -89,6 +95,8 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - RULE: Item wiring is Command's: act on poetry:command:select; close the dialog in the listener if the action should dismiss the palette.
 
 ## context_menu (`poetry_context_menu`)
+
+A menu of actions revealed by right-clicking an element.
 
 Class: Poetry::Ui::ContextMenu::Component - BEM block `poetry-ui-context_menu`.
 Slot REQUIRED: with_trigger (the right-click surface) - a call without it raises.
@@ -129,6 +137,8 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 
 ## dialog (`poetry_dialog`)
 
+A window overlaid on the page for content that requires attention.
+
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
@@ -146,6 +156,8 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - RULE: Destructive confirmations pair a destructive Button in the footer - never auto-submit.
 
 ## drawer (`poetry_drawer`)
+
+A gesture-driven panel that slides in from a screen edge.
 
 Class: Poetry::Ui::Drawer::Component - BEM block `poetry-ui-drawer`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
@@ -169,6 +181,8 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - RULE: Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, never the only way out.
 
 ## dropdown_menu (`poetry_dropdown_menu`)
+
+A menu of actions or options triggered by a button.
 
 Class: Poetry::Ui::DropdownMenu::Component - BEM block `poetry-ui-dropdown_menu`.
 Slot REQUIRED: with_trigger (the menu button) - a call without it raises.
@@ -202,6 +216,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
 - RULE: Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.
+- RULE: Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a DELETE) passes with_item(submit:, method:). The item renders AS the anchor / submit button (role=menuitem on the <a> or <button>) - one interactive element - so NEVER nest a link_to or button_to inside an item.
 - RULE: Icon-only triggers MUST have an accessible name (the composed Button's label: rule).
 - RULE: Never write the state attributes (data-popup-open / data-checked / data-unchecked) without their aria twin (aria-expanded / aria-checked) - the controller writes both; agents patching DOM must too.
 - RULE: Destructive items use variant: :destructive AND still confirm irreversible actions via a dialog.
@@ -211,6 +226,8 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - RULE: Critical actions must exist somewhere reachable without JS (menus are JS-required interaction).
 
 ## hover_card (`poetry_hover_card`)
+
+A card that reveals preview content when its trigger is hovered.
 
 Class: Poetry::Ui::HoverCard::Component - BEM block `poetry-ui-hover_card`.
 Slot REQUIRED: with_trigger (the enriched link) - a call without it raises.
@@ -239,6 +256,8 @@ Slots: trigger.
 - RULE: Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first open.
 
 ## menubar (`poetry_menubar`)
+
+A horizontal bar of menus, like a desktop application menu.
 
 Class: Poetry::Ui::Menubar::Component - BEM block `poetry-ui-menubar`.
 Slot REQUIRED: with_menu (at least one menu) - a call without it raises.
@@ -274,6 +293,8 @@ Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the t
 
 ## popover (`poetry_popover`)
 
+Rich floating content anchored to a trigger.
+
 Class: Poetry::Ui::Popover::Component - BEM block `poetry-ui-popover`.
 Slot REQUIRED: with_trigger (the panel's control) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
@@ -304,6 +325,8 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 
 ## sheet (`poetry_sheet`)
 
+A dialog that slides in from a screen edge.
+
 Class: Poetry::Ui::Sheet::Component - BEM block `poetry-ui-sheet`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "right", required
@@ -324,6 +347,8 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - RULE: Do not rebuild a centered Dialog with a Sheet; use Dialog.
 
 ## tooltip (`poetry_tooltip`)
+
+A floating label describing an element on hover or focus.
 
 Class: Poetry::Ui::Tooltip::Component - BEM block `poetry-ui-tooltip`.
 Slot REQUIRED: with_trigger (the described control) - a call without it raises.

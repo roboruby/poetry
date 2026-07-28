@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## attachment (`poetry_attachment`)
 
+A file or image chip showing its name, type, and size.
+
 Class: Poetry::Ui::Attachment::Component - BEM block `poetry-ui-attachment`.
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
 - `size:` (symbol) - one of default|sm|xs, default "default", required
@@ -25,6 +27,8 @@ Slots: media (with_media yields NOTHING to the block - no |param|, write content
 
 ## bubble (`poetry_bubble`)
 
+A chat message bubble aligned to its sender.
+
 Class: Poetry::Ui::Bubble::Component - BEM block `poetry-ui-bubble`.
 - `variant:` (symbol) - one of default|secondary|muted|tinted|outline|ghost|destructive, default "default", required
 - `align:` (symbol) - one of start|end, default "start"
@@ -42,6 +46,8 @@ Slots: reactions (with_reactions yields NOTHING to the block - no |param|, write
 
 ## message (`poetry_message`)
 
+A chat row pairing an author and avatar with message content.
+
 Class: Poetry::Ui::Message::Component - BEM block `poetry-ui-message`.
 - `align:` (symbol) - one of start|end, default "start"
 Slots: avatar, header, footer.
@@ -56,6 +62,8 @@ Slots: avatar, header, footer.
 - RULE: Timestamps and delivery state belong in the footer slot (it lifts the avatar automatically).
 
 ## message_scroller (`poetry_message_scroller`)
+
+A streaming-aware transcript that keeps the latest message in view.
 
 Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scroller`.
 - `auto_scroll:` (boolean) - default true

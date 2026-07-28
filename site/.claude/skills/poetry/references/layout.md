@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## aspect_ratio (`poetry_aspect_ratio`)
 
+Locks its content to a fixed width-to-height ratio.
+
 Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
 - `ratio:` (string) - required
 - PART `aspect-ratio` - The ratio-locked box - the content block fills it | vars: --ratio (always - the ratio: fraction verbatim ('16/9'), consumed by the theme's aspect-ratio rule)
@@ -12,6 +14,8 @@ Class: Poetry::Ui::AspectRatio::Component - BEM block `poetry-ui-aspect_ratio`.
 - RULE: The child fills the box itself (size-full object-cover on an image).
 
 ## resizable (`poetry_resizable`)
+
+Panels with draggable handles for resizing adjacent regions.
 
 Class: Poetry::Ui::Resizable::Component - BEM block `poetry-ui-resizable`.
 Slot REQUIRED: with_panel (at least two panels) - a call without it raises.
@@ -28,6 +32,8 @@ Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write 
 - RULE: Nest a group inside a panel for two-axis layouts - groups self-scope.
 
 ## scroll_area (`poetry_scroll_area`)
+
+A bounded, keyboard-reachable scroll region with styled scrollbars.
 
 Class: Poetry::Ui::ScrollArea::Component - BEM block `poetry-ui-scroll_area`.
 Content block REQUIRED (what scrolls) - a blockless call raises.

@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## accordion (`poetry_accordion`)
 
+A vertically stacked set of interactive headings that each reveal a section of content.
+
 Class: Poetry::Ui::Accordion::Component - BEM block `poetry-ui-accordion`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `collapsible:` (boolean) - default false
@@ -13,9 +15,9 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `type:` (symbol) - one of single|multiple, default "single"
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `accordion` - The list root - both controllers (the open-set machine and roving focus) ride here | states: data-orientation=vertical (always vertical - the only axis the accordion ships)
-- PART `accordion-item` - One value-keyed section wrapping its header and panel | states: data-open (the item is expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (the item is collapsed); data-value (the item's open-state key (always present))
+- PART `accordion-item` - One value-keyed section wrapping its header and panel | states: data-open (the item is expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (the item is collapsed); data-value (the item's open-state key (always present)); data-disabled (with_item(disabled: true) - the item is locked (styling hook; the trigger carries the native disabled attribute))
 - PART `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button
-- PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (Base UI trigger parity, controller-written; absent while closed))
+- PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (Base UI trigger parity, controller-written; absent while closed)); data-disabled (with_item(disabled: true) - stamped beside the native disabled attribute; roving focus filters it out at query time)
 - PART `accordion-content` - The role=region panel - the presence animation and the measured height var ride here | states: data-open (panel is open or entering); data-closed (panel is closed or animating out (hidden lands after the exit finishes)) | vars: --accordion-panel-height (the measured content height (controller-written) that feeds the accordion-down/up keyframes)
 - WIRING `poetry--core--accordion`: values collapsible, type; actions toggle; events poetry--core--accordion:change
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
@@ -24,8 +26,11 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.
 - RULE: heading_level: fits the page outline (h3 default) - the trigger button lives inside it.
 - RULE: The chevron is built in - never add another indicator icon to the trigger.
+- RULE: disabled: true on with_item locks that item (native disabled on the trigger; roving focus skips it).
 
 ## avatar (`poetry_avatar`)
+
+A user's image with an initials fallback.
 
 Class: Poetry::Ui::Avatar::Component - BEM block `poetry-ui-avatar`.
 Content block REQUIRED (the initials fallback) - a blockless call raises.
@@ -45,17 +50,22 @@ In blocks: `app-shell` - for a screen, start from the block (MCP compose/describ
 
 ## badge (`poetry_badge`)
 
+A small count or status descriptor.
+
 Class: Poetry::Ui::Badge::Component - BEM block `poetry-ui-badge`.
 Content block REQUIRED (the visible status text) - a blockless call raises.
 - `variant:` (symbol) - one of default|secondary|destructive|outline|success|warning|info, default "default", required
-- PART `badge` - The status pill itself (a <span>) - the whole component is this one element | states: data-variant=default|secondary|destructive|outline|success|warning|info (always - the resolved variant)
+- `href:` (string)
+- PART `badge` - The status pill itself (a <span>; a real <a> when href: is given) - the whole component is this one element | states: data-variant=default|secondary|destructive|outline|success|warning|info (always - the resolved variant)
 In blocks: `data-index`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
-- RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions.
+- RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions. The one interactive form is href:, which renders the badge AS a real link (a navigational chip - the themes' [a&]:hover treatments activate).
 - RULE: The visible text is the content block: render ... { "beta" } - there is no label: option.
 - RULE: Pick the variant by intent (destructive = error states; success/warning/info = record status, e.g. Fulfilled/Processing/Syncing), never by color preference.
 - RULE: Status badges on one surface read as a SET: keep one treatment family per table/list - the soft trio (+ outline for neutral) together, or the solid pair together; never a solid destructive pill inside a soft status column (design lint flags the mix).
 
 ## card (`poetry_card`)
+
+A container that groups related content and actions.
 
 Class: Poetry::Ui::Card::Component - BEM block `poetry-ui-card`.
 - `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
@@ -74,6 +84,8 @@ In blocks: `app-shell`, `section-card`, `stepper` - for a screen, start from the
 
 ## carousel (`poetry_carousel`)
 
+A slideshow for cycling through content, built on native scroll-snap.
+
 Class: Poetry::Ui::Carousel::Component - BEM block `poetry-ui-carousel`.
 Slot REQUIRED: with_item (at least one slide) - a call without it raises.
 - `label:` (string) - required
@@ -90,6 +102,8 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: Size slides with item classes (basis-full default; basis-1/3 for a strip).
 
 ## clipboard_text (`poetry_clipboard_text`)
+
+A read-only value with a button to copy it to the clipboard.
 
 Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_text`.
 - `described_by:` (string)
@@ -109,6 +123,8 @@ Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_tex
 
 ## code_block (`poetry_code_block`)
 
+A syntax-highlighted code panel with a copy button and optional line numbers.
+
 Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
 - `code:` (string) - required
 - `copy:` (boolean) - default true
@@ -126,6 +142,8 @@ Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
 
 ## collapsible (`poetry_collapsible`)
 
+An interactive element that expands and collapses a section of content.
+
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
 Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
 - `open:` (boolean) - default false
@@ -140,6 +158,8 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - RULE: For URL-controlled disclosure without JS, render open: from params - the same markup serves both.
 
 ## data_table (`poetry_data_table`)
+
+A table with sorting, row selection, and sticky headers.
 
 Class: Poetry::Ui::DataTable::Component - BEM block `poetry-ui-data_table`.
 Slot REQUIRED: with_column (at least one column) - a call without it raises.
@@ -170,6 +190,8 @@ In blocks: `action-bar` - for a screen, start from the block (MCP compose/descri
 
 ## empty (`poetry_empty`)
 
+An empty-state placeholder with an icon, message, and actions.
+
 Class: Poetry::Ui::Empty::Component - BEM block `poetry-ui-empty`.
 - `media_variant:` (symbol) - one of default|icon, default "default"
 - `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
@@ -186,6 +208,8 @@ Slots: media, title, description.
 - RULE: media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon in with_media.
 
 ## item (`poetry_item`)
+
+A generic list row with media, content, and actions.
 
 Class: Poetry::Ui::Item::Component - BEM block `poetry-ui-item`.
 - `size:` (symbol) - one of default|sm|xs, default "default", required
@@ -207,6 +231,8 @@ Slots: media, title, description, actions, header, footer.
 
 ## metadata_list (`poetry_metadata_list`)
 
+A key-value list for labeled attributes on detail pages.
+
 Class: Poetry::Ui::MetadataList::Component - BEM block `poetry-ui-metadata_list`.
 Slot REQUIRED: with_item (at least one item (label: plus the value block)) - a call without it raises.
 - `columns:` (symbol) - one of one|two|three, default "one"
@@ -222,6 +248,8 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: For editable facts pair each value with its edit affordance inside the item block; the list itself stays read-only vocabulary.
 
 ## meter (`poetry_meter`)
+
+A gauge that shows a quantity within a known range.
 
 Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
 - `label:` (string) - required
@@ -240,6 +268,8 @@ Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
 - RULE: value_label: replaces the visible readout verbatim ("3 of 4 seats"); without it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 deprecated it on role=meter; aria-valuenow carries the value.
 
 ## stat (`poetry_stat`)
+
+A single KPI: a muted label over a large metric value.
 
 Class: Poetry::Ui::Stat::Component - BEM block `poetry-ui-stat`.
 Content block REQUIRED (the metric value) - a blockless call raises.
@@ -260,6 +290,8 @@ Slots: description, media.
 - RULE: A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts).
 
 ## table (`poetry_table`)
+
+A semantic table for rows and columns of data.
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
 - `container_class:` (string)
@@ -282,6 +314,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 
 ## tag_group (`poetry_tag_group`)
 
+A set of removable chips or tokens.
+
 Class: Poetry::Ui::TagGroup::Component - BEM block `poetry-ui-tag_group`.
 - `label:` (string) - required
 - `name:` (string)
@@ -299,7 +333,30 @@ Slots: tags (many; with_tag yields NOTHING to the block - no |param|, write cont
 - RULE: Removal is cancelable: listen for poetry:tag-group:remove and preventDefault to own the removal server-side (Turbo re-render).
 - RULE: Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup - a TagGroup holds items that exist until removed.
 
+## timeline (`poetry_timeline`)
+
+A sequence of dated events as an ordered list.
+
+Class: Poetry::Ui::Timeline::Component - BEM block `poetry-ui-timeline`.
+Slot REQUIRED: with_item (at least one item (title:, with the description as its block)) - a call without it raises.
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical"
+Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- PART `timeline` - The <ol> root - the event sequence | states: data-orientation=vertical|horizontal (always - the layout axis)
+- PART `timeline-item` - One event (<li>): indicator + rail segment + header + description | states: data-completed (the step is done - recolors its indicator and rail segment)
+- PART `timeline-indicator` - The decorative marker on the rail - a dot, or icon:'s glyph (aria-hidden; the sequence lives in the list semantics)
+- PART `timeline-separator` - The decorative rail segment toward the next item - hidden on the last
+- PART `timeline-header` - The title/time row
+- PART `timeline-title` - The event's name
+- PART `timeline-time` - The event's <time> - muted, small
+- PART `timeline-content` - Muted description under the header (the item's block)
+- RULE: A sequence of dated events (activity feed, order status, deploy history) is a Timeline - never a hand-rolled stack of dots and left borders (this is the <ol> the sequence owes its readers).
+- RULE: Each with_item takes title:, optional time: (renders a <time>), optional icon: (swaps the dot for a glyph), completed: for progress - the description is the block.
+- RULE: completed: colors the item's indicator and its rail segment - mark every step up to the current one, not just the latest.
+- RULE: orientation: :horizontal lays the steps left-to-right (an order tracker); the vertical default reads as a feed. For steps the USER advances through, use Stepper - a Timeline records, it never navigates.
+
 ## toolbar (`poetry_toolbar`)
+
+A horizontal group of controls that acts as one keyboard tab stop.
 
 Class: Poetry::Ui::Toolbar::Component - BEM block `poetry-ui-toolbar`.
 Slot REQUIRED: with_button (at least one control (with_button / with_input)) - a call without it raises.
@@ -316,6 +373,8 @@ Slots: items (many; types button|input|separator - one with_<type> setter each, 
 
 ## tree (`poetry_tree`)
 
+A hierarchical list of expandable, selectable nodes.
+
 Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
 - `label:` (string) - required
 - PART `tree` - The treegrid container (role=treegrid, the accessible name) - roving focus, expansion keys, and typeahead ride here; rows are FLAT siblings
@@ -330,6 +389,8 @@ Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
 - RULE: Navigation destinations take href: (the label renders as a link); a Tree is not a menu - actions belong to DropdownMenu, picking to Select/Combobox.
 
 ## typeset (`poetry_typeset`)
+
+Prose styling for long-form and rendered-markdown content.
 
 Class: Poetry::Ui::Typeset::Component - BEM block `poetry-ui-typeset`.
 Content block REQUIRED (the rendered prose HTML) - a blockless call raises.

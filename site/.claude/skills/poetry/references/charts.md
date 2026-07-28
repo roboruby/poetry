@@ -6,6 +6,8 @@ chart type as its one positional argument.
 
 ## adapter_chart (`poetry_adapter_chart`)
 
+The bring-your-own-engine path: a themed mount and chart-spec JSON for a client library (Chart.js, etc.) to draw, instead of poetry's server-side SVG.
+
 Class: Poetry::Charts::AdapterChart::Component - BEM block `poetry-charts-adapter_chart`.
 - `axes:` ()
 - `config:` () - required
@@ -21,6 +23,8 @@ Class: Poetry::Charts::AdapterChart::Component - BEM block `poetry-charts-adapte
 - RULE: Prefer the default engine; adapters are for engine-specific needs (e.g. >10k points on canvas).
 
 ## area_chart (`poetry_area_chart`)
+
+An area chart for volume or cumulative totals over a continuous axis.
 
 Class: Poetry::Charts::AreaChart::Component - BEM block `poetry-charts-area_chart`.
 - `animate:` (boolean) - default true
@@ -60,6 +64,8 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 
 ## bar_chart (`poetry_bar_chart`)
 
+A bar chart for comparing values across categories.
+
 Class: Poetry::Charts::BarChart::Component - BEM block `poetry-charts-bar_chart`.
 - `animate:` (boolean) - default true
 - `animation_begin:` (integer) - default 0
@@ -98,6 +104,8 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - RULE: Entrance animation is on by default (recharts parity); animate: false for a static chart. Reduced-motion users always get the finished chart.
 
 ## composed_chart (`poetry_composed_chart`)
+
+A composed chart layering bars, lines, and areas on shared axes.
 
 Class: Poetry::Charts::ComposedChart::Component - BEM block `poetry-charts-composed_chart`.
 - `animate:` (boolean) - default true
@@ -165,6 +173,8 @@ Class: Poetry::Charts::LegendContent::Component - BEM block `poetry-charts-legen
 
 ## line_chart (`poetry_line_chart`)
 
+A line chart for trends over a continuous axis.
+
 Class: Poetry::Charts::LineChart::Component - BEM block `poetry-charts-line_chart`.
 - `animate:` (boolean) - default true
 - `animation_begin:` (integer) - default 0
@@ -204,6 +214,8 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 
 ## pie_chart (`poetry_pie_chart`)
 
+A pie chart for showing parts of a whole.
+
 Class: Poetry::Charts::PieChart::Component - BEM block `poetry-charts-pie_chart`.
 - `animate:` (boolean) - default true
 - `animation_begin:` (integer) - default 400
@@ -232,6 +244,8 @@ Slots: pies (many; with_pie keywords: data_key:, data:, name_key:, inner_radius:
 - RULE: Entrance animation is on by default (recharts parity); animate: false for a static chart. Reduced-motion users always get the finished chart.
 
 ## radar_chart (`poetry_radar_chart`)
+
+A radar chart for comparing several variables on radial axes.
 
 Class: Poetry::Charts::RadarChart::Component - BEM block `poetry-charts-radar_chart`.
 - `animate:` (boolean) - default true
@@ -266,6 +280,8 @@ Slots: radars (many; with_radar keywords: data_key:, fill_opacity:, stroke_width
 - RULE: Entrance animation is on by default (recharts parity); animate: false for a static chart. Reduced-motion users always get the finished chart.
 
 ## radial_bar_chart (`poetry_radial_bar_chart`)
+
+A radial bar chart with bars wrapped around a circular axis.
 
 Class: Poetry::Charts::RadialBarChart::Component - BEM block `poetry-charts-radial_bar_chart`.
 - `animate:` (boolean) - default true
@@ -303,6 +319,8 @@ Slots: radial_bars (many; with_radial_bar keywords: data_key:, stack:, backgroun
 - RULE: Entrance animation is on by default (recharts parity); animate: false for a static chart. Reduced-motion users always get the finished chart.
 
 ## scatter_chart (`poetry_scatter_chart`)
+
+A scatter chart for the relationship between two variables.
 
 Class: Poetry::Charts::ScatterChart::Component - BEM block `poetry-charts-scatter_chart`.
 - `animate:` (boolean) - default true

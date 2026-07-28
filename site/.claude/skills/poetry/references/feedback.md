@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## alert (`poetry_alert`)
 
+A callout that highlights an important inline message.
+
 Class: Poetry::Ui::Alert::Component - BEM block `poetry-ui-alert`.
 - `variant:` (symbol) - one of default|destructive, default "default", required
 Slots: icon (takes poetry_icon props, not a block), title.
@@ -17,6 +19,8 @@ In blocks: `destructive-panel` - for a screen, start from the block (MCP compose
 
 ## deferred (`poetry_deferred`)
 
+A region that lazily loads its content on visibility, with skeleton and error states.
+
 Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
 - `loading:` (symbol) - default "lazy"
 - `src:` (string) - required
@@ -28,6 +32,8 @@ Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
 - RULE: The block is the placeholder (a Skeleton renders when absent); failure shows a retryable error card automatically - never hand-wire loading or error states around it.
 
 ## progress (`poetry_progress`)
+
+A determinate progress bar toward task completion.
 
 Class: Poetry::Ui::Progress::Component - BEM block `poetry-ui-progress`.
 - `label:` (string) - required
@@ -45,12 +51,16 @@ Class: Poetry::Ui::Progress::Component - BEM block `poetry-ui-progress`.
 
 ## skeleton (`poetry_skeleton`)
 
+A pulsing placeholder shown while content loads.
+
 Class: Poetry::Ui::Skeleton::Component - BEM block `poetry-ui-skeleton`.
 - PART `skeleton` - The pulsing placeholder box itself - sized entirely by utility classes
 - RULE: Skeleton is a loading placeholder - size it with classes (h-4 w-32); it has no content of its own.
 - RULE: Mark the live region that will replace it (aria-busy on the container), not the skeleton.
 
 ## spinner (`poetry_spinner`)
+
+An indeterminate loading indicator that announces itself.
 
 Class: Poetry::Ui::Spinner::Component - BEM block `poetry-ui-spinner`.
 - `label:` (string) - default "Loading"
@@ -59,6 +69,8 @@ Class: Poetry::Ui::Spinner::Component - BEM block `poetry-ui-spinner`.
 - RULE: Set label: for the loading context ('Saving…'); the default is 'Loading'.
 
 ## toast (`poetry_toast`)
+
+A brief, auto-dismissing notification message.
 
 Class: Poetry::Ui::Toast::Component - BEM block `poetry-ui-toast`.
 Slot REQUIRED: with_title (the message) - a call without it raises.
@@ -79,6 +91,8 @@ Slots: title, description, action (takes poetry_button props, not a block; with_
 - RULE: Toasts are supplementary: never the only place an outcome is recorded.
 
 ## toaster (`poetry_toaster`)
+
+The region that stacks and manages toast notifications.
 
 Class: Poetry::Ui::Toaster::Component - BEM block `poetry-ui-toaster`.
 - `position:` (symbol) - one of top-left|top-center|top-right|bottom-left|bottom-center|bottom-right, default "bottom-right", required

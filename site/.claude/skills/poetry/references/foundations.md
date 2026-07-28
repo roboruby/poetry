@@ -5,6 +5,8 @@ not suggestions. Options are keywords; content is the block.
 
 ## icon (`poetry_icon`)
 
+Renders an inline SVG icon from the icon set.
+
 Class: Poetry::Ui::Icon::Component - BEM block `poetry-ui-icon`.
 - `label:` (string)
 - `library:` (symbol)
@@ -16,6 +18,8 @@ In blocks: `action-bar`, `app-shell`, `data-index`, `destructive-panel`, `page-h
 
 ## kbd (`poetry_kbd`)
 
+Displays a keyboard key or shortcut.
+
 Class: Poetry::Ui::Kbd::Component - BEM block `poetry-ui-kbd`.
 Content block REQUIRED (the key text) - a blockless call raises.
 - PART `kbd` - The <kbd> element itself - the key text renders here
@@ -23,6 +27,8 @@ Content block REQUIRED (the key text) - a blockless call raises.
 - RULE: For a chord (⌘+K) render one Kbd per key inside an inline-flex row.
 
 ## link (`poetry_link`)
+
+A styled navigational hyperlink.
 
 Class: Poetry::Ui::Link::Component - BEM block `poetry-ui-link`.
 - `underline:` (symbol) - one of hover|always|none, default "hover"
@@ -36,6 +42,8 @@ In blocks: `section-card`, `top-nav` - for a screen, start from the block (MCP c
 - RULE: external: true handles target/rel safely - never hand-write target=_blank.
 
 ## marker (`poetry_marker`)
+
+A transcript divider or inline status marker for chat UIs.
 
 Class: Poetry::Ui::Marker::Component - BEM block `poetry-ui-marker`.
 - `variant:` (symbol) - one of default|separator|border, default "default", required
@@ -51,6 +59,8 @@ Slots: icon (takes poetry_icon props, not a block).
 - RULE: Use variant: :separator for date/section breaks; :border under pinned headers.
 
 ## separator (`poetry_separator`)
+
+A thin divider between content, decorative or semantic.
 
 Class: Poetry::Ui::Separator::Component - BEM block `poetry-ui-separator`.
 - `decorative:` (boolean) - default true

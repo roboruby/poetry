@@ -16,6 +16,14 @@ arrives with none of them, and reading this checklist does not transfer
 them (measured: screens built from scratch after reading it composed no
 better than screens built without it).
 
+For a whole SCREEN, prefer the `build_page` tool over `compose`: it runs
+the guided workflow (probe -> plan -> direct -> snippets -> verify), so the
+page architecture (section order, the states a real screen handles, the
+edge cases), the theme-derived direction, and the source all arrive in
+order, and it finishes on the executable `check` gate. `compose` is the
+single-step router build_page calls at its snippets step; reach for it
+directly for a quick route or a lone component.
+
 ## The five mechanics
 
 1. **Containment.** Give each functional region a boundary the eye can
