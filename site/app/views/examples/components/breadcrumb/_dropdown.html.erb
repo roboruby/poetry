@@ -1,0 +1,21 @@
+<%# A middle crumb can BE a dropdown: a block item hands the <li> to your
+    content, and the ghost trigger is restyled to read as breadcrumb text
+    (h-auto p-0, muted, no hover surface). %>
+<%= poetry_breadcrumb do |crumb| %>
+  <% crumb.with_item("Home", href: "#dropdown") %>
+  <% crumb.with_item do %>
+    <%= poetry_dropdown_menu(align: :start) do |menu| %>
+      <% menu.with_trigger(variant: :ghost, size: :sm,
+                           class: "h-auto gap-1 p-0 font-normal text-muted-foreground hover:bg-transparent hover:text-foreground") do %>
+        Components
+        <%= poetry_icon(name: :"chevron-down", class: "size-3.5") %>
+      <% end %>
+      <% menu.with_group do |group| %>
+        <% group.with_item { "Documentation" } %>
+        <% group.with_item { "Themes" } %>
+        <% group.with_item { "GitHub" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% crumb.with_item("Breadcrumb") %>
+<% end %>

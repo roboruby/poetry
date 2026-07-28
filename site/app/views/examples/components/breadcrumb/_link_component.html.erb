@@ -1,0 +1,15 @@
+<%# Upstream's "link component" section swaps the framework router's <Link>
+    into a crumb; in Rails every <a> is already Turbo-driven, so
+    with_item(href:) IS the router link. Reach for a block item when the
+    anchor needs your own helper - link_to with Turbo options, extra data
+    attributes - and style it as a crumb with two utilities. %>
+<%= poetry_breadcrumb do |crumb| %>
+  <% crumb.with_item do %>
+    <%= link_to "Home", "#link-component", class: "transition-colors hover:text-foreground" %>
+  <% end %>
+  <% crumb.with_item do %>
+    <%= link_to "Components", "#link-component", class: "transition-colors hover:text-foreground",
+                data: { turbo_prefetch: false } %>
+  <% end %>
+  <% crumb.with_item("Breadcrumb") %>
+<% end %>

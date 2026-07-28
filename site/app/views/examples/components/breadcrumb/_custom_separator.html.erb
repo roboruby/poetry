@@ -1,0 +1,9 @@
+<%# with_separator swaps the chevron in EVERY gap - an icon name, or a
+    block for arbitrary content. The default chevron RTL-flips; a custom
+    glyph is used exactly as given. %>
+<%= poetry_breadcrumb do |crumb| %>
+  <% crumb.with_separator(icon: :dot) %>
+  <% crumb.with_item("Home", href: "#custom-separator") %>
+  <% crumb.with_item("Components", href: "#custom-separator") %>
+  <% crumb.with_item("Breadcrumb") %>
+<% end %>

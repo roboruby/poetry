@@ -552,6 +552,24 @@
     "path": "/components/breadcrumb#collapsed"
   },
   {
+    "title": "Custom separator",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#custom-separator"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#dropdown"
+  },
+  {
+    "title": "Link component",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#link-component"
+  },
+  {
     "title": "Bubble",
     "page": "Bubble",
     "section": "components",
