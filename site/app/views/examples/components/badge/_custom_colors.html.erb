@@ -1,0 +1,11 @@
+<%# One-off brand colors WITHOUT a new variant (upstream badge#custom-colors):
+    utility classes on class: beat the theme's base-layer variant surface,
+    so bg-*/text-* pairs recolor the pill per scheme. Reach for the status
+    variants first - this is the escape hatch for colors outside them. %>
+<div class="flex flex-wrap gap-2">
+  <%= poetry_badge(class: "bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300") { "Blue" } %>
+  <%= poetry_badge(class: "bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-300") { "Green" } %>
+  <%= poetry_badge(class: "bg-sky-50 text-sky-700 dark:bg-sky-950 dark:text-sky-300") { "Sky" } %>
+  <%= poetry_badge(class: "bg-purple-50 text-purple-700 dark:bg-purple-950 dark:text-purple-300") { "Purple" } %>
+  <%= poetry_badge(class: "bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-300") { "Red" } %>
+</div>

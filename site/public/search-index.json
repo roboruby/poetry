@@ -492,6 +492,18 @@
     "path": "/components/badge#default"
   },
   {
+    "title": "Custom colors",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#custom-colors"
+  },
+  {
+    "title": "Link",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#link"
+  },
+  {
     "title": "Status",
     "page": "Badge",
     "section": "components",
