@@ -754,6 +754,8 @@ components:
       ONLY the accessible name.'
     - 'Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).'
     - 'Link-styled actions use variant: :link - not <a> with button classes.'
+    - 'Navigation wearing button styling: pass href: (renders a real <a>; tag: :a
+      is implied) - never onclick navigation.'
     - 'Loading via loading: - never a manual disabled + spinner.'
     - Never nest an interactive element inside a Button.
     - Pick the variant by intent; one primary (default) action per view.

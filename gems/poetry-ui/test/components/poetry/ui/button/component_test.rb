@@ -143,6 +143,17 @@ module Poetry
           refute_includes html, "href="
         end
 
+        def test_href_alone_implies_the_anchor
+          # The Badge/menu-item convention: an href on a native <button>
+          # would be silently dropped (the docs landing page shipped that
+          # dead button), so href: switches the tag by itself.
+          html = render_button(href: "/pricing")
+
+          assert_includes html, "<a "
+          assert_includes html, 'href="/pricing"'
+          refute_includes html, "type="
+        end
+
         # -- Slots -------------------------------------------------------------
 
         def test_leading_and_trailing_icon_slots_render_decoratively

@@ -22,6 +22,8 @@ module Poetry
           "The visible text is the content block: poetry_button { \"Save\" }. label: is ONLY the accessible name.",
           "Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).",
           "Link-styled actions use variant: :link - not <a> with button classes.",
+          "Navigation wearing button styling: pass href: (renders a real <a>; tag: :a is implied) - " \
+          "never onclick navigation.",
           "Loading via loading: - never a manual disabled + spinner.",
           "Never nest an interactive element inside a Button.",
           "Pick the variant by intent; one primary (default) action per view."
@@ -89,8 +91,11 @@ module Poetry
           size.to_s.start_with?("icon")
         end
 
+        # href: implies the anchor (the Badge/menu-item convention): an
+        # href on a native <button> would be silently DROPPED - the docs
+        # landing page shipped exactly that dead button before this line.
         def link_tag?
-          tag == :a
+          tag == :a || href.present?
         end
 
         def root_tag
