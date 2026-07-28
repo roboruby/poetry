@@ -1,7 +1,9 @@
 <%# A middle crumb can BE a dropdown: a block item hands the <li> to your
     content, and the ghost trigger is restyled to read as breadcrumb text
-    (h-auto p-0, muted, no hover surface). %>
+    (h-auto p-0, muted, no hover surface). Dot separators keep the trail
+    quiet around the interactive crumb - the two features compose. %>
 <%= poetry_breadcrumb do |crumb| %>
+  <% crumb.with_separator(icon: :dot) %>
   <% crumb.with_item("Home", href: "#dropdown") %>
   <% crumb.with_item do %>
     <%= poetry_dropdown_menu(align: :start) do |menu| %>
