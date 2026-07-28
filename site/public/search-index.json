@@ -660,6 +660,18 @@
     "path": "/components/button#as-link"
   },
   {
+    "title": "Button group",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#button-group"
+  },
+  {
+    "title": "Link",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#link"
+  },
+  {
     "title": "Loading",
     "page": "Button",
     "section": "components",

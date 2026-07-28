@@ -1,5 +1,7 @@
-<%# href: renders a real anchor with button styling - navigation stays
-    navigation (no onclick handlers). %>
+<%# href: renders a real anchor wearing full button styling - the Rails
+    equivalent of upstream's buttonVariants-on-<a>. Navigation stays
+    navigation (no onclick handlers), and every variant works. %>
 <div class="flex items-center gap-2">
+  <%= poetry_button(href: "#as-link") { "Login" } %>
   <%= poetry_button(href: "/charts/area", variant: :outline) { "Go to charts" } %>
 </div>

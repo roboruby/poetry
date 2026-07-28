@@ -1,0 +1,8 @@
+<%# Adjacent actions join into ONE visual control via poetry_button_group -
+    borders collapse between neighbors. The full surface (separators, text,
+    split buttons) lives on the Button Group page. %>
+<%= poetry_button_group("aria-label": "Message actions") do %>
+  <%= poetry_button(variant: :outline) { "Archive" } %>
+  <%= poetry_button(variant: :outline) { "Report" } %>
+  <%= poetry_button(variant: :outline) { "Snooze" } %>
+<% end %>
