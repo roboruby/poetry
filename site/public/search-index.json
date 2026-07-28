@@ -204,6 +204,12 @@
     "path": "/components/accordion"
   },
   {
+    "title": "Installation",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#installation"
+  },
+  {
     "title": "Default",
     "page": "Accordion",
     "section": "components",
@@ -214,6 +220,12 @@
     "page": "Accordion",
     "section": "components",
     "path": "/components/accordion#borders"
+  },
+  {
+    "title": "Card",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#card"
   },
   {
     "title": "Disabled",
@@ -240,10 +252,22 @@
     "path": "/components/alert"
   },
   {
+    "title": "Installation",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#installation"
+  },
+  {
     "title": "Default",
     "page": "Alert",
     "section": "components",
     "path": "/components/alert#default"
+  },
+  {
+    "title": "Custom colors",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#custom-colors"
   },
   {
     "title": "Destructive",
@@ -252,10 +276,28 @@
     "path": "/components/alert#destructive"
   },
   {
+    "title": "With action",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#with-action"
+  },
+  {
+    "title": "With icon",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#with-icon"
+  },
+  {
     "title": "Alert Dialog",
     "page": "Alert Dialog",
     "section": "components",
     "path": "/components/alert-dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#installation"
   },
   {
     "title": "Default",
@@ -270,10 +312,28 @@
     "path": "/components/alert-dialog#small"
   },
   {
+    "title": "Small with media",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#small-with-media"
+  },
+  {
+    "title": "With media",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#with-media"
+  },
+  {
     "title": "Aspect Ratio",
     "page": "Aspect Ratio",
     "section": "components",
     "path": "/components/aspect-ratio"
+  },
+  {
+    "title": "Installation",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#installation"
   },
   {
     "title": "Default",
@@ -294,10 +354,22 @@
     "path": "/components/aspect-ratio#square"
   },
   {
+    "title": "With image",
+    "page": "Aspect Ratio",
+    "section": "components",
+    "path": "/components/aspect-ratio#with-image"
+  },
+  {
     "title": "Attachment",
     "page": "Attachment",
     "section": "components",
     "path": "/components/attachment"
+  },
+  {
+    "title": "Installation",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#installation"
   },
   {
     "title": "Default",
@@ -306,10 +378,22 @@
     "path": "/components/attachment#default"
   },
   {
+    "title": "Group",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#group"
+  },
+  {
     "title": "Idle dropzone",
     "page": "Attachment",
     "section": "components",
     "path": "/components/attachment#idle-dropzone"
+  },
+  {
+    "title": "Sizes",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#sizes"
   },
   {
     "title": "States",
@@ -324,10 +408,22 @@
     "path": "/components/attachment#vertical-with-actions"
   },
   {
+    "title": "With trigger",
+    "page": "Attachment",
+    "section": "components",
+    "path": "/components/attachment#with-trigger"
+  },
+  {
     "title": "Avatar",
     "page": "Avatar",
     "section": "components",
     "path": "/components/avatar"
+  },
+  {
+    "title": "Installation",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#installation"
   },
   {
     "title": "Default",
@@ -342,10 +438,28 @@
     "path": "/components/avatar#badge"
   },
   {
+    "title": "Badge with icon",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#badge-with-icon"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#dropdown"
+  },
+  {
     "title": "Group",
     "page": "Avatar",
     "section": "components",
     "path": "/components/avatar#group"
+  },
+  {
+    "title": "Group with icon",
+    "page": "Avatar",
+    "section": "components",
+    "path": "/components/avatar#group-with-icon"
   },
   {
     "title": "Sizes",
@@ -366,10 +480,22 @@
     "path": "/components/badge"
   },
   {
+    "title": "Installation",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#installation"
+  },
+  {
     "title": "Default",
     "page": "Badge",
     "section": "components",
     "path": "/components/badge#default"
+  },
+  {
+    "title": "Status",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#status"
   },
   {
     "title": "Variants",
@@ -378,10 +504,28 @@
     "path": "/components/badge#variants"
   },
   {
+    "title": "With icon",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#with-icon"
+  },
+  {
+    "title": "With spinner",
+    "page": "Badge",
+    "section": "components",
+    "path": "/components/badge#with-spinner"
+  },
+  {
     "title": "Breadcrumb",
     "page": "Breadcrumb",
     "section": "components",
     "path": "/components/breadcrumb"
+  },
+  {
+    "title": "Installation",
+    "page": "Breadcrumb",
+    "section": "components",
+    "path": "/components/breadcrumb#installation"
   },
   {
     "title": "Default",
@@ -402,10 +546,22 @@
     "path": "/components/bubble"
   },
   {
+    "title": "Installation",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#installation"
+  },
+  {
     "title": "Default",
     "page": "Bubble",
     "section": "components",
     "path": "/components/bubble#default"
+  },
+  {
+    "title": "Group",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#group"
   },
   {
     "title": "Quick replies",
@@ -432,6 +588,12 @@
     "path": "/components/button"
   },
   {
+    "title": "Installation",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#installation"
+  },
+  {
     "title": "Default",
     "page": "Button",
     "section": "components",
@@ -444,10 +606,28 @@
     "path": "/components/button#as-link"
   },
   {
+    "title": "Loading",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#loading"
+  },
+  {
+    "title": "Rounded",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#rounded"
+  },
+  {
     "title": "Sizes",
     "page": "Button",
     "section": "components",
     "path": "/components/button#sizes"
+  },
+  {
+    "title": "With icon",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#with-icon"
   },
   {
     "title": "Button Group",
@@ -456,10 +636,40 @@
     "path": "/components/button-group"
   },
   {
+    "title": "Installation",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#installation"
+  },
+  {
     "title": "Default",
     "page": "Button Group",
     "section": "components",
     "path": "/components/button-group#default"
+  },
+  {
+    "title": "Input action",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#input-action"
+  },
+  {
+    "title": "Nested",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#nested"
+  },
+  {
+    "title": "Separator",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#separator"
+  },
+  {
+    "title": "Sizes",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#sizes"
   },
   {
     "title": "Text prefix",
@@ -474,10 +684,22 @@
     "path": "/components/button-group#vertical"
   },
   {
+    "title": "With select",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#with-select"
+  },
+  {
     "title": "Calendar",
     "page": "Calendar",
     "section": "components",
     "path": "/components/calendar"
+  },
+  {
+    "title": "Installation",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#installation"
   },
   {
     "title": "Default",
@@ -492,6 +714,12 @@
     "path": "/components/calendar#bounded"
   },
   {
+    "title": "Custom cell size",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#custom-cell-size"
+  },
+  {
     "title": "Range",
     "page": "Calendar",
     "section": "components",
@@ -504,10 +732,28 @@
     "path": "/components/card"
   },
   {
+    "title": "Installation",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#installation"
+  },
+  {
     "title": "Default",
     "page": "Card",
     "section": "components",
     "path": "/components/card#default"
+  },
+  {
+    "title": "Login form",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#login-form"
+  },
+  {
+    "title": "Terms of service",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#terms-of-service"
   },
   {
     "title": "With action and footer",
@@ -516,10 +762,22 @@
     "path": "/components/card#with-action-and-footer"
   },
   {
+    "title": "With media",
+    "page": "Card",
+    "section": "components",
+    "path": "/components/card#with-media"
+  },
+  {
     "title": "Carousel",
     "page": "Carousel",
     "section": "components",
     "path": "/components/carousel"
+  },
+  {
+    "title": "Installation",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#installation"
   },
   {
     "title": "Default",
@@ -534,10 +792,22 @@
     "path": "/components/carousel#strip"
   },
   {
+    "title": "Vertical",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#vertical"
+  },
+  {
     "title": "Checkbox",
     "page": "Checkbox",
     "section": "components",
     "path": "/components/checkbox"
+  },
+  {
+    "title": "Installation",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#installation"
   },
   {
     "title": "Default",
@@ -546,10 +816,22 @@
     "path": "/components/checkbox#default"
   },
   {
+    "title": "Card",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#card"
+  },
+  {
     "title": "Disabled",
     "page": "Checkbox",
     "section": "components",
     "path": "/components/checkbox#disabled"
+  },
+  {
+    "title": "Group",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#group"
   },
   {
     "title": "In a field",
@@ -558,16 +840,34 @@
     "path": "/components/checkbox#in-a-field"
   },
   {
+    "title": "In a table",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#in-a-table"
+  },
+  {
     "title": "States",
     "page": "Checkbox",
     "section": "components",
     "path": "/components/checkbox#states"
   },
   {
+    "title": "With description",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#with-description"
+  },
+  {
     "title": "Clipboard Text",
     "page": "Clipboard Text",
     "section": "components",
     "path": "/components/clipboard-text"
+  },
+  {
+    "title": "Installation",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#installation"
   },
   {
     "title": "Default",
@@ -588,6 +888,12 @@
     "path": "/components/code-block"
   },
   {
+    "title": "Installation",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#installation"
+  },
+  {
     "title": "Default",
     "page": "Code Block",
     "section": "components",
@@ -606,10 +912,22 @@
     "path": "/components/collapsible"
   },
   {
+    "title": "Installation",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#installation"
+  },
+  {
     "title": "Default",
     "page": "Collapsible",
     "section": "components",
     "path": "/components/collapsible#default"
+  },
+  {
+    "title": "File tree",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#file-tree"
   },
   {
     "title": "Initially open",
@@ -618,16 +936,46 @@
     "path": "/components/collapsible#initially-open"
   },
   {
+    "title": "Settings panel",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#settings-panel"
+  },
+  {
+    "title": "With icon",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#with-icon"
+  },
+  {
     "title": "Combobox",
     "page": "Combobox",
     "section": "components",
     "path": "/components/combobox"
   },
   {
+    "title": "Installation",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#installation"
+  },
+  {
     "title": "Default",
     "page": "Combobox",
     "section": "components",
     "path": "/components/combobox#default"
+  },
+  {
+    "title": "Custom items",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#custom-items"
+  },
+  {
+    "title": "Disabled",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#disabled"
   },
   {
     "title": "Disabled options",
@@ -640,6 +988,12 @@
     "page": "Combobox",
     "section": "components",
     "path": "/components/combobox#grouped"
+  },
+  {
+    "title": "Invalid",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#invalid"
   },
   {
     "title": "Multiple",
@@ -660,10 +1014,22 @@
     "path": "/components/combobox#wide"
   },
   {
+    "title": "With icon",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#with-icon"
+  },
+  {
     "title": "Command",
     "page": "Command",
     "section": "components",
     "path": "/components/command"
+  },
+  {
+    "title": "Installation",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#installation"
   },
   {
     "title": "Default",
@@ -684,6 +1050,18 @@
     "path": "/components/command#initial-value"
   },
   {
+    "title": "Scrollable",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#scrollable"
+  },
+  {
+    "title": "With icons",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#with-icons"
+  },
+  {
     "title": "Zero match",
     "page": "Command",
     "section": "components",
@@ -694,6 +1072,12 @@
     "page": "Command Dialog",
     "section": "components",
     "path": "/components/command-dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#installation"
   },
   {
     "title": "Default",
@@ -708,10 +1092,34 @@
     "path": "/components/command-dialog#empty-state"
   },
   {
+    "title": "Hotkey",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#hotkey"
+  },
+  {
+    "title": "Scrollable",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#scrollable"
+  },
+  {
+    "title": "With icons",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#with-icons"
+  },
+  {
     "title": "Context Menu",
     "page": "Context Menu",
     "section": "components",
     "path": "/components/context-menu"
+  },
+  {
+    "title": "Installation",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#installation"
   },
   {
     "title": "Default",
@@ -738,10 +1146,22 @@
     "path": "/components/context-menu#focusable-surface"
   },
   {
+    "title": "Groups",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#groups"
+  },
+  {
     "title": "Rtl",
     "page": "Context Menu",
     "section": "components",
     "path": "/components/context-menu#rtl"
+  },
+  {
+    "title": "With icon",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#with-icon"
   },
   {
     "title": "Data Table",
@@ -750,10 +1170,22 @@
     "path": "/components/data-table"
   },
   {
+    "title": "Installation",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#installation"
+  },
+  {
     "title": "Default",
     "page": "Data Table",
     "section": "components",
     "path": "/components/data-table#default"
+  },
+  {
+    "title": "Cell formatting",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#cell-formatting"
   },
   {
     "title": "Empty",
@@ -768,10 +1200,22 @@
     "path": "/components/data-table#filtered-and-paginated"
   },
   {
+    "title": "Selectable",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#selectable"
+  },
+  {
     "title": "Date Field",
     "page": "Date Field",
     "section": "components",
     "path": "/components/date-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#installation"
   },
   {
     "title": "Default",
@@ -792,10 +1236,22 @@
     "path": "/components/date-picker"
   },
   {
+    "title": "Installation",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#installation"
+  },
+  {
     "title": "Default",
     "page": "Date Picker",
     "section": "components",
     "path": "/components/date-picker#default"
+  },
+  {
+    "title": "Date of birth",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#date-of-birth"
   },
   {
     "title": "Preselected",
@@ -816,6 +1272,12 @@
     "path": "/components/deferred"
   },
   {
+    "title": "Installation",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#installation"
+  },
+  {
     "title": "Default",
     "page": "Deferred",
     "section": "components",
@@ -826,6 +1288,12 @@
     "page": "Dialog",
     "section": "components",
     "path": "/components/dialog"
+  },
+  {
+    "title": "Installation",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#installation"
   },
   {
     "title": "Default",
@@ -840,16 +1308,46 @@
     "path": "/components/dialog#confirmation"
   },
   {
+    "title": "Scrollable content",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#scrollable-content"
+  },
+  {
+    "title": "Sticky footer",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#sticky-footer"
+  },
+  {
     "title": "Drawer",
     "page": "Drawer",
     "section": "components",
     "path": "/components/drawer"
   },
   {
+    "title": "Installation",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#installation"
+  },
+  {
     "title": "Default",
     "page": "Drawer",
     "section": "components",
     "path": "/components/drawer#default"
+  },
+  {
+    "title": "Edit form",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#edit-form"
+  },
+  {
+    "title": "Nested",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#nested"
   },
   {
     "title": "Right edge",
@@ -864,10 +1362,28 @@
     "path": "/components/dropdown-menu"
   },
   {
+    "title": "Installation",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#installation"
+  },
+  {
     "title": "Default",
     "page": "Dropdown Menu",
     "section": "components",
     "path": "/components/dropdown-menu#default"
+  },
+  {
+    "title": "Account switcher",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#account-switcher"
+  },
+  {
+    "title": "Checkbox with icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#checkbox-with-icons"
   },
   {
     "title": "Checkboxes",
@@ -888,10 +1404,22 @@
     "path": "/components/dropdown-menu#radio-group"
   },
   {
+    "title": "Radio with icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#radio-with-icons"
+  },
+  {
     "title": "Rtl",
     "page": "Dropdown Menu",
     "section": "components",
     "path": "/components/dropdown-menu#rtl"
+  },
+  {
+    "title": "With icons",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#with-icons"
   },
   {
     "title": "Empty",
@@ -900,10 +1428,40 @@
     "path": "/components/empty"
   },
   {
+    "title": "Installation",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#installation"
+  },
+  {
     "title": "Default",
     "page": "Empty",
     "section": "components",
     "path": "/components/empty#default"
+  },
+  {
+    "title": "Background",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#background"
+  },
+  {
+    "title": "Outline",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#outline"
+  },
+  {
+    "title": "With avatar",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-avatar"
+  },
+  {
+    "title": "With avatar group",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-avatar-group"
   },
   {
     "title": "With icon and actions",
@@ -912,16 +1470,34 @@
     "path": "/components/empty#with-icon-and-actions"
   },
   {
+    "title": "With input",
+    "page": "Empty",
+    "section": "components",
+    "path": "/components/empty#with-input"
+  },
+  {
     "title": "Field",
     "page": "Field",
     "section": "components",
     "path": "/components/field"
   },
   {
+    "title": "Installation",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#installation"
+  },
+  {
     "title": "Default",
     "page": "Field",
     "section": "components",
     "path": "/components/field#default"
+  },
+  {
+    "title": "Horizontal switch",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#horizontal-switch"
   },
   {
     "title": "With error",
@@ -936,10 +1512,40 @@
     "path": "/components/field#with-hint"
   },
   {
+    "title": "With radio group",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-radio-group"
+  },
+  {
+    "title": "With select",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-select"
+  },
+  {
+    "title": "With slider",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-slider"
+  },
+  {
+    "title": "With textarea",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#with-textarea"
+  },
+  {
     "title": "File Input",
     "page": "File Input",
     "section": "components",
     "path": "/components/file-input"
+  },
+  {
+    "title": "Installation",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#installation"
   },
   {
     "title": "Default",
@@ -960,6 +1566,12 @@
     "path": "/components/hover-card"
   },
   {
+    "title": "Installation",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#installation"
+  },
+  {
     "title": "Default",
     "page": "Hover Card",
     "section": "components",
@@ -978,10 +1590,22 @@
     "path": "/components/hover-card#side-right"
   },
   {
+    "title": "Side top",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#side-top"
+  },
+  {
     "title": "Icon",
     "page": "Icon",
     "section": "components",
     "path": "/components/icon"
+  },
+  {
+    "title": "Installation",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#installation"
   },
   {
     "title": "Default",
@@ -1002,6 +1626,12 @@
     "path": "/components/input"
   },
   {
+    "title": "Installation",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#installation"
+  },
+  {
     "title": "Default",
     "page": "Input",
     "section": "components",
@@ -1014,10 +1644,28 @@
     "path": "/components/input#disabled"
   },
   {
+    "title": "File",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#file"
+  },
+  {
+    "title": "Grid",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#grid"
+  },
+  {
     "title": "Invalid",
     "page": "Input",
     "section": "components",
     "path": "/components/input#invalid"
+  },
+  {
+    "title": "With button",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#with-button"
   },
   {
     "title": "With value",
@@ -1032,6 +1680,12 @@
     "path": "/components/input-group"
   },
   {
+    "title": "Installation",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#installation"
+  },
+  {
     "title": "Default",
     "page": "Input Group",
     "section": "components",
@@ -1044,16 +1698,40 @@
     "path": "/components/input-group#textarea-block"
   },
   {
+    "title": "Textarea header",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#textarea-header"
+  },
+  {
     "title": "With button",
     "page": "Input Group",
     "section": "components",
     "path": "/components/input-group#with-button"
   },
   {
+    "title": "With spinner",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#with-spinner"
+  },
+  {
+    "title": "With text",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#with-text"
+  },
+  {
     "title": "Input Otp",
     "page": "Input Otp",
     "section": "components",
     "path": "/components/input-otp"
+  },
+  {
+    "title": "Installation",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#installation"
   },
   {
     "title": "Default",
@@ -1066,6 +1744,12 @@
     "page": "Input Otp",
     "section": "components",
     "path": "/components/input-otp#alphanumeric"
+  },
+  {
+    "title": "Four digits",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#four-digits"
   },
   {
     "title": "Groupings",
@@ -1092,10 +1776,22 @@
     "path": "/components/item"
   },
   {
+    "title": "Installation",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#installation"
+  },
+  {
     "title": "Default",
     "page": "Item",
     "section": "components",
     "path": "/components/item#default"
+  },
+  {
+    "title": "Avatar",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#avatar"
   },
   {
     "title": "Group",
@@ -1104,16 +1800,46 @@
     "path": "/components/item#group"
   },
   {
+    "title": "Image",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#image"
+  },
+  {
+    "title": "Link",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#link"
+  },
+  {
     "title": "Outline with icon and actions",
     "page": "Item",
     "section": "components",
     "path": "/components/item#outline-with-icon-and-actions"
   },
   {
+    "title": "With header and footer",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#with-header-and-footer"
+  },
+  {
+    "title": "Xs",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#xs"
+  },
+  {
     "title": "Kbd",
     "page": "Kbd",
     "section": "components",
     "path": "/components/kbd"
+  },
+  {
+    "title": "Installation",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#installation"
   },
   {
     "title": "Default",
@@ -1134,10 +1860,34 @@
     "path": "/components/kbd#command"
   },
   {
+    "title": "In button",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#in-button"
+  },
+  {
+    "title": "In tooltip",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#in-tooltip"
+  },
+  {
+    "title": "Search hint",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#search-hint"
+  },
+  {
     "title": "Label",
     "page": "Label",
     "section": "components",
     "path": "/components/label"
+  },
+  {
+    "title": "Installation",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#installation"
   },
   {
     "title": "Default",
@@ -1152,16 +1902,34 @@
     "path": "/components/label#disabled"
   },
   {
+    "title": "Form",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#form"
+  },
+  {
     "title": "With checkbox",
     "page": "Label",
     "section": "components",
     "path": "/components/label#with-checkbox"
   },
   {
+    "title": "With description",
+    "page": "Label",
+    "section": "components",
+    "path": "/components/label#with-description"
+  },
+  {
     "title": "Link",
     "page": "Link",
     "section": "components",
     "path": "/components/link"
+  },
+  {
+    "title": "Installation",
+    "page": "Link",
+    "section": "components",
+    "path": "/components/link#installation"
   },
   {
     "title": "Default",
@@ -1194,10 +1962,28 @@
     "path": "/components/marker"
   },
   {
+    "title": "Installation",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#installation"
+  },
+  {
     "title": "Default",
     "page": "Marker",
     "section": "components",
     "path": "/components/marker#default"
+  },
+  {
+    "title": "Interactive",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#interactive"
+  },
+  {
+    "title": "Shimmer",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#shimmer"
   },
   {
     "title": "Status",
@@ -1224,6 +2010,12 @@
     "path": "/components/menubar"
   },
   {
+    "title": "Installation",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#installation"
+  },
+  {
     "title": "Default",
     "page": "Menubar",
     "section": "components",
@@ -1242,10 +2034,22 @@
     "path": "/components/menubar#rtl"
   },
   {
+    "title": "With icon",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#with-icon"
+  },
+  {
     "title": "Message",
     "page": "Message",
     "section": "components",
     "path": "/components/message"
+  },
+  {
+    "title": "Installation",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#installation"
   },
   {
     "title": "Default",
@@ -1254,10 +2058,34 @@
     "path": "/components/message#default"
   },
   {
+    "title": "Actions",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#actions"
+  },
+  {
     "title": "Align end",
     "page": "Message",
     "section": "components",
     "path": "/components/message#align-end"
+  },
+  {
+    "title": "Attachment",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#attachment"
+  },
+  {
+    "title": "Conversation",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#conversation"
+  },
+  {
+    "title": "Grouped",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#grouped"
   },
   {
     "title": "With footer",
@@ -1272,10 +2100,34 @@
     "path": "/components/message-scroller"
   },
   {
+    "title": "Installation",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#installation"
+  },
+  {
     "title": "Default",
     "page": "Message Scroller",
     "section": "components",
     "path": "/components/message-scroller#default"
+  },
+  {
+    "title": "Anchored turns",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#anchored-turns"
+  },
+  {
+    "title": "Group chat",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#group-chat"
+  },
+  {
+    "title": "Open at start",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#open-at-start"
   },
   {
     "title": "Without jump button",
@@ -1288,6 +2140,12 @@
     "page": "Metadata List",
     "section": "components",
     "path": "/components/metadata-list"
+  },
+  {
+    "title": "Installation",
+    "page": "Metadata List",
+    "section": "components",
+    "path": "/components/metadata-list#installation"
   },
   {
     "title": "Default",
@@ -1308,6 +2166,12 @@
     "path": "/components/meter"
   },
   {
+    "title": "Installation",
+    "page": "Meter",
+    "section": "components",
+    "path": "/components/meter#installation"
+  },
+  {
     "title": "Default",
     "page": "Meter",
     "section": "components",
@@ -1326,6 +2190,12 @@
     "path": "/components/native-select"
   },
   {
+    "title": "Installation",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#installation"
+  },
+  {
     "title": "Default",
     "page": "Native Select",
     "section": "components",
@@ -1336,6 +2206,12 @@
     "page": "Native Select",
     "section": "components",
     "path": "/components/native-select#grouped"
+  },
+  {
+    "title": "Invalid",
+    "page": "Native Select",
+    "section": "components",
+    "path": "/components/native-select#invalid"
   },
   {
     "title": "Small disabled",
@@ -1350,6 +2226,12 @@
     "path": "/components/navigation-menu"
   },
   {
+    "title": "Installation",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#installation"
+  },
+  {
     "title": "Default",
     "page": "Navigation Menu",
     "section": "components",
@@ -1362,10 +2244,28 @@
     "path": "/components/navigation-menu#viewport"
   },
   {
+    "title": "With descriptions",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#with-descriptions"
+  },
+  {
+    "title": "With icon",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#with-icon"
+  },
+  {
     "title": "Number Field",
     "page": "Number Field",
     "section": "components",
     "path": "/components/number-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#installation"
   },
   {
     "title": "Default",
@@ -1390,6 +2290,12 @@
     "page": "Pagination",
     "section": "components",
     "path": "/components/pagination"
+  },
+  {
+    "title": "Installation",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#installation"
   },
   {
     "title": "Default",
@@ -1422,10 +2328,28 @@
     "path": "/components/popover"
   },
   {
+    "title": "Installation",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#installation"
+  },
+  {
     "title": "Default",
     "page": "Popover",
     "section": "components",
     "path": "/components/popover#default"
+  },
+  {
+    "title": "Align",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#align"
+  },
+  {
+    "title": "Basic",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#basic"
   },
   {
     "title": "Modal",
@@ -1458,6 +2382,12 @@
     "path": "/components/progress"
   },
   {
+    "title": "Installation",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#installation"
+  },
+  {
     "title": "Default",
     "page": "Progress",
     "section": "components",
@@ -1482,10 +2412,22 @@
     "path": "/components/radio-group"
   },
   {
+    "title": "Installation",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#installation"
+  },
+  {
     "title": "Default",
     "page": "Radio Group",
     "section": "components",
     "path": "/components/radio-group#default"
+  },
+  {
+    "title": "Cards",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#cards"
   },
   {
     "title": "Disabled",
@@ -1512,10 +2454,22 @@
     "path": "/components/radio-group#invalid"
   },
   {
+    "title": "With description",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#with-description"
+  },
+  {
     "title": "Resizable",
     "page": "Resizable",
     "section": "components",
     "path": "/components/resizable"
+  },
+  {
+    "title": "Installation",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#installation"
   },
   {
     "title": "Default",
@@ -1530,6 +2484,12 @@
     "path": "/components/resizable#nested"
   },
   {
+    "title": "Three panels",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#three-panels"
+  },
+  {
     "title": "Vertical",
     "page": "Resizable",
     "section": "components",
@@ -1540,6 +2500,12 @@
     "page": "Scroll Area",
     "section": "components",
     "path": "/components/scroll-area"
+  },
+  {
+    "title": "Installation",
+    "page": "Scroll Area",
+    "section": "components",
+    "path": "/components/scroll-area#installation"
   },
   {
     "title": "Default",
@@ -1560,6 +2526,12 @@
     "path": "/components/search-field"
   },
   {
+    "title": "Installation",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#installation"
+  },
+  {
     "title": "Default",
     "page": "Search Field",
     "section": "components",
@@ -1578,6 +2550,12 @@
     "path": "/components/select"
   },
   {
+    "title": "Installation",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#installation"
+  },
+  {
     "title": "Default",
     "page": "Select",
     "section": "components",
@@ -1594,6 +2572,12 @@
     "page": "Select",
     "section": "components",
     "path": "/components/select#disabled"
+  },
+  {
+    "title": "Invalid",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#invalid"
   },
   {
     "title": "Scrollable",
@@ -1620,6 +2604,12 @@
     "path": "/components/sensitive-input"
   },
   {
+    "title": "Installation",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#installation"
+  },
+  {
     "title": "Default",
     "page": "Sensitive Input",
     "section": "components",
@@ -1638,10 +2628,28 @@
     "path": "/components/separator"
   },
   {
+    "title": "Installation",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#installation"
+  },
+  {
     "title": "Default",
     "page": "Separator",
     "section": "components",
     "path": "/components/separator#default"
+  },
+  {
+    "title": "List",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#list"
+  },
+  {
+    "title": "Menu",
+    "page": "Separator",
+    "section": "components",
+    "path": "/components/separator#menu"
   },
   {
     "title": "Vertical semantic",
@@ -1656,6 +2664,12 @@
     "path": "/components/sheet"
   },
   {
+    "title": "Installation",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#installation"
+  },
+  {
     "title": "Default",
     "page": "Sheet",
     "section": "components",
@@ -1666,6 +2680,12 @@
     "page": "Sheet",
     "section": "components",
     "path": "/components/sheet#form"
+  },
+  {
+    "title": "No close button",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#no-close-button"
   },
   {
     "title": "Sides",
@@ -1680,10 +2700,22 @@
     "path": "/components/sidebar"
   },
   {
+    "title": "Installation",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#installation"
+  },
+  {
     "title": "Default",
     "page": "Sidebar",
     "section": "components",
     "path": "/components/sidebar#default"
+  },
+  {
+    "title": "Loading",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#loading"
   },
   {
     "title": "Offcanvas collapsed",
@@ -1692,10 +2724,34 @@
     "path": "/components/sidebar#offcanvas-collapsed"
   },
   {
+    "title": "Submenu",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#submenu"
+  },
+  {
+    "title": "User menu",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#user-menu"
+  },
+  {
+    "title": "Workspace switcher",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#workspace-switcher"
+  },
+  {
     "title": "Skeleton",
     "page": "Skeleton",
     "section": "components",
     "path": "/components/skeleton"
+  },
+  {
+    "title": "Installation",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#installation"
   },
   {
     "title": "Default",
@@ -1716,16 +2772,46 @@
     "path": "/components/skeleton#block"
   },
   {
+    "title": "Card",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#card"
+  },
+  {
     "title": "Composed",
     "page": "Skeleton",
     "section": "components",
     "path": "/components/skeleton#composed"
   },
   {
+    "title": "Form",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#form"
+  },
+  {
+    "title": "Table",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#table"
+  },
+  {
+    "title": "Text",
+    "page": "Skeleton",
+    "section": "components",
+    "path": "/components/skeleton#text"
+  },
+  {
     "title": "Slider",
     "page": "Slider",
     "section": "components",
     "path": "/components/slider"
+  },
+  {
+    "title": "Installation",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#installation"
   },
   {
     "title": "Default",
@@ -1764,10 +2850,34 @@
     "path": "/components/spinner"
   },
   {
+    "title": "Installation",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#installation"
+  },
+  {
     "title": "Default",
     "page": "Spinner",
     "section": "components",
     "path": "/components/spinner#default"
+  },
+  {
+    "title": "Empty state",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#empty-state"
+  },
+  {
+    "title": "In badge",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#in-badge"
+  },
+  {
+    "title": "In input group",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#in-input-group"
   },
   {
     "title": "Large",
@@ -1788,6 +2898,12 @@
     "path": "/components/stat"
   },
   {
+    "title": "Installation",
+    "page": "Stat",
+    "section": "components",
+    "path": "/components/stat#installation"
+  },
+  {
     "title": "Default",
     "page": "Stat",
     "section": "components",
@@ -1806,16 +2922,34 @@
     "path": "/components/switch"
   },
   {
+    "title": "Installation",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#installation"
+  },
+  {
     "title": "Default",
     "page": "Switch",
     "section": "components",
     "path": "/components/switch#default"
   },
   {
+    "title": "Card",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#card"
+  },
+  {
     "title": "In a field",
     "page": "Switch",
     "section": "components",
     "path": "/components/switch#in-a-field"
+  },
+  {
+    "title": "Invalid",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#invalid"
   },
   {
     "title": "Rtl",
@@ -1842,10 +2976,22 @@
     "path": "/components/table"
   },
   {
+    "title": "Installation",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#installation"
+  },
+  {
     "title": "Default",
     "page": "Table",
     "section": "components",
     "path": "/components/table#default"
+  },
+  {
+    "title": "Actions",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#actions"
   },
   {
     "title": "Minimal",
@@ -1866,6 +3012,12 @@
     "path": "/components/tabs"
   },
   {
+    "title": "Installation",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#installation"
+  },
+  {
     "title": "Default",
     "page": "Tabs",
     "section": "components",
@@ -1884,10 +3036,22 @@
     "path": "/components/tabs#vertical"
   },
   {
+    "title": "With icon",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#with-icon"
+  },
+  {
     "title": "Tag Group",
     "page": "Tag Group",
     "section": "components",
     "path": "/components/tag-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#installation"
   },
   {
     "title": "Default",
@@ -1906,6 +3070,12 @@
     "page": "Textarea",
     "section": "components",
     "path": "/components/textarea"
+  },
+  {
+    "title": "Installation",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#installation"
   },
   {
     "title": "Default",
@@ -1932,6 +3102,18 @@
     "path": "/components/textarea#invalid"
   },
   {
+    "title": "With button",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#with-button"
+  },
+  {
+    "title": "With hint",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#with-hint"
+  },
+  {
     "title": "With label",
     "page": "Textarea",
     "section": "components",
@@ -1942,6 +3124,12 @@
     "page": "Time Field",
     "section": "components",
     "path": "/components/time-field"
+  },
+  {
+    "title": "Installation",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#installation"
   },
   {
     "title": "Default",
@@ -1960,6 +3148,12 @@
     "page": "Timeline",
     "section": "components",
     "path": "/components/timeline"
+  },
+  {
+    "title": "Installation",
+    "page": "Timeline",
+    "section": "components",
+    "path": "/components/timeline#installation"
   },
   {
     "title": "Default",
@@ -1986,6 +3180,12 @@
     "path": "/components/toast"
   },
   {
+    "title": "Installation",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#installation"
+  },
+  {
     "title": "Default",
     "page": "Toast",
     "section": "components",
@@ -2010,6 +3210,12 @@
     "path": "/components/toaster"
   },
   {
+    "title": "Installation",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#installation"
+  },
+  {
     "title": "Default",
     "page": "Toaster",
     "section": "components",
@@ -2026,6 +3232,12 @@
     "page": "Toggle",
     "section": "components",
     "path": "/components/toggle"
+  },
+  {
+    "title": "Installation",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#installation"
   },
   {
     "title": "Default",
@@ -2064,10 +3276,22 @@
     "path": "/components/toggle-group"
   },
   {
+    "title": "Installation",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#installation"
+  },
+  {
     "title": "Default",
     "page": "Toggle Group",
     "section": "components",
     "path": "/components/toggle-group#default"
+  },
+  {
+    "title": "Custom",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#custom"
   },
   {
     "title": "Disabled",
@@ -2094,10 +3318,22 @@
     "path": "/components/toggle-group#spaced"
   },
   {
+    "title": "Vertical",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#vertical"
+  },
+  {
     "title": "Toolbar",
     "page": "Toolbar",
     "section": "components",
     "path": "/components/toolbar"
+  },
+  {
+    "title": "Installation",
+    "page": "Toolbar",
+    "section": "components",
+    "path": "/components/toolbar#installation"
   },
   {
     "title": "Default",
@@ -2112,10 +3348,22 @@
     "path": "/components/tooltip"
   },
   {
+    "title": "Installation",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#installation"
+  },
+  {
     "title": "Default",
     "page": "Tooltip",
     "section": "components",
     "path": "/components/tooltip#default"
+  },
+  {
+    "title": "Disabled trigger",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#disabled-trigger"
   },
   {
     "title": "Open",
@@ -2136,6 +3384,12 @@
     "path": "/components/tooltip#side-bottom"
   },
   {
+    "title": "Sides",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#sides"
+  },
+  {
     "title": "With label",
     "page": "Tooltip",
     "section": "components",
@@ -2146,6 +3400,12 @@
     "page": "Tree",
     "section": "components",
     "path": "/components/tree"
+  },
+  {
+    "title": "Installation",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#installation"
   },
   {
     "title": "Default",
@@ -2166,6 +3426,12 @@
     "path": "/components/typeset"
   },
   {
+    "title": "Installation",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#installation"
+  },
+  {
     "title": "Default",
     "page": "Typeset",
     "section": "components",
@@ -2178,16 +3444,40 @@
     "path": "/components/typeset#chat-preset"
   },
   {
+    "title": "Docs preset",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#docs-preset"
+  },
+  {
     "title": "Not typeset",
     "page": "Typeset",
     "section": "components",
     "path": "/components/typeset#not-typeset"
   },
   {
+    "title": "Overrides",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#overrides"
+  },
+  {
+    "title": "Responsive table",
+    "page": "Typeset",
+    "section": "components",
+    "path": "/components/typeset#responsive-table"
+  },
+  {
     "title": "Adapter Chart",
     "page": "Adapter Chart",
     "section": "charts",
     "path": "/charts/adapter"
+  },
+  {
+    "title": "Installation",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#installation"
   },
   {
     "title": "Default",
@@ -2200,6 +3490,12 @@
     "page": "Area Chart",
     "section": "charts",
     "path": "/charts/area"
+  },
+  {
+    "title": "Installation",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#installation"
   },
   {
     "title": "Default",
@@ -2218,6 +3514,12 @@
     "page": "Bar Chart",
     "section": "charts",
     "path": "/charts/bar"
+  },
+  {
+    "title": "Installation",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#installation"
   },
   {
     "title": "Default",
@@ -2274,6 +3576,12 @@
     "path": "/charts/composed"
   },
   {
+    "title": "Installation",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#installation"
+  },
+  {
     "title": "Default",
     "page": "Composed Chart",
     "section": "charts",
@@ -2290,6 +3598,12 @@
     "page": "Line Chart",
     "section": "charts",
     "path": "/charts/line"
+  },
+  {
+    "title": "Installation",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#installation"
   },
   {
     "title": "Default",
@@ -2346,6 +3660,12 @@
     "path": "/charts/pie"
   },
   {
+    "title": "Installation",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#installation"
+  },
+  {
     "title": "Default",
     "page": "Pie Chart",
     "section": "charts",
@@ -2392,6 +3712,12 @@
     "page": "Radar Chart",
     "section": "charts",
     "path": "/charts/radar"
+  },
+  {
+    "title": "Installation",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#installation"
   },
   {
     "title": "Default",
@@ -2448,6 +3774,12 @@
     "path": "/charts/radial-bar"
   },
   {
+    "title": "Installation",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#installation"
+  },
+  {
     "title": "Default",
     "page": "Radial Bar Chart",
     "section": "charts",
@@ -2488,6 +3820,12 @@
     "page": "Scatter Chart",
     "section": "charts",
     "path": "/charts/scatter"
+  },
+  {
+    "title": "Installation",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#installation"
   },
   {
     "title": "Default",
