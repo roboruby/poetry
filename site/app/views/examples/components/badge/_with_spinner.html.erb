@@ -1,10 +1,13 @@
+<%# The badge is a flex row, so DOM order picks the spinner's side -
+    leading on the first pill, trailing on the second; the theme's gap
+    and [&>svg] sizing apply either way. %>
 <div class="flex flex-wrap items-center gap-2">
   <%= poetry_badge(variant: :info) do %>
     <%= poetry_spinner(label: "Syncing") %>
     Syncing
   <% end %>
   <%= poetry_badge(variant: :secondary) do %>
-    <%= poetry_spinner(label: "Deploying") %>
     Deploying
+    <%= poetry_spinner(label: "Deploying") %>
   <% end %>
 </div>
