@@ -546,6 +546,17 @@ components:
       many: true
       setter_args:
         item: 1
+      yieldless:
+      - item
+    - name: separator
+      many: false
+      setter_args:
+        separator: 0
+      setter_kwargs:
+        separator:
+        - icon
+      yieldless:
+      - separator
     description: Shows the path to the current page as a trail of links.
     slot_extras:
     - ellipsis
@@ -563,6 +574,11 @@ components:
     - 'The current page is the item WITHOUT href: (it renders aria-current=page, not
       a link).'
     - Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.
+    - A BLOCK item (with_item { ... }) renders your content inside the <li> - the
+      seat for a dropdown crumb or a custom-rendered link; you own its semantics (aria-current
+      only applies to label items).
+    - 'with_separator(icon: :dot) - or a block - replaces the chevron in EVERY gap;
+      the default chevron RTL-flips, a custom glyph is used as given.'
     required_slots:
       item: at least one item
     parts:
@@ -571,8 +587,8 @@ components:
     - name: breadcrumb-list
       description: The <ol> laying crumbs and separators out as one wrapping row
     - name: breadcrumb-item
-      description: One <li> of the trail - wraps a link, the current page, or the
-        ellipsis
+      description: One <li> of the trail - wraps a link, the current page, the ellipsis,
+        or a block item's own content (a dropdown crumb, a custom link)
     - name: breadcrumb-link
       description: 'A crumb with href: - a real <a> to an ancestor page'
     - name: breadcrumb-page

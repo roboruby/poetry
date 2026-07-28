@@ -85,6 +85,37 @@ module Poetry
         assert_raises(ArgumentError) { render_inline(Breadcrumb::Component.new) }
       end
 
+      def test_breadcrumb_custom_separator_replaces_the_chevron_in_every_gap
+        html = render_inline(Breadcrumb::Component.new) do |crumb|
+          crumb.with_separator(icon: :dot)
+          crumb.with_item("Home", href: "/")
+          crumb.with_item("Components", href: "/components")
+          crumb.with_item("Breadcrumb")
+        end
+
+        separators = html.css('[data-slot="breadcrumb-separator"]')
+
+        assert_equal 2, separators.length
+        assert(separators.all? { |li| li.css("svg").any? })
+        assert_empty html.css('[data-slot="breadcrumb-separator"] .cn-rtl-flip'),
+                     "the RTL flip belongs to the default chevron only"
+      end
+
+      def test_breadcrumb_block_item_renders_caller_content_inside_the_li
+        html = render_inline(Breadcrumb::Component.new) do |crumb|
+          crumb.with_item("Home", href: "/")
+          crumb.with_item { "<button type=\"button\">Components</button>".html_safe }
+          crumb.with_item("Breadcrumb")
+        end
+
+        items = html.css('[data-slot="breadcrumb-item"]')
+
+        assert_equal 3, items.length
+        assert_equal 1, items[1].css("button").length, "the block content IS the item"
+        assert_empty items[1].css('[data-slot="breadcrumb-link"], [data-slot="breadcrumb-page"]'),
+                     "a block item carries neither link nor page semantics"
+      end
+
       # -- Progress -------------------------------------------------------------
 
       def test_progress_announces_its_value_and_sizes_the_indicator

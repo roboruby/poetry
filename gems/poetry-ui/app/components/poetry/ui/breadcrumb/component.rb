@@ -18,14 +18,20 @@ module Poetry
         AGENT_RULES = [
           "Declare the trail with with_item(label, href:) - never hand-build the nav/ol/li chain.",
           "The current page is the item WITHOUT href: (it renders aria-current=page, not a link).",
-          "Collapse a long middle with with_ellipsis - it announces 'More' to screen readers."
+          "Collapse a long middle with with_ellipsis - it announces 'More' to screen readers.",
+          "A BLOCK item (with_item { ... }) renders your content inside the <li> - the seat for a " \
+          "dropdown crumb or a custom-rendered link; you own its semantics (aria-current only " \
+          "applies to label items).",
+          "with_separator(icon: :dot) - or a block - replaces the chevron in EVERY gap; the default " \
+          "chevron RTL-flips, a custom glyph is used as given."
         ].freeze
 
-        Entry = Data.define(:label, :href, :ellipsis)
+        Entry = Data.define(:label, :href, :ellipsis, :block)
 
         part "breadcrumb", "The <nav> landmark (aria-label=breadcrumb) around the trail"
         part "breadcrumb-list", "The <ol> laying crumbs and separators out as one wrapping row"
-        part "breadcrumb-item", "One <li> of the trail - wraps a link, the current page, or the ellipsis"
+        part "breadcrumb-item", "One <li> of the trail - wraps a link, the current page, the ellipsis, " \
+                                "or a block item's own content (a dropdown crumb, a custom link)"
         part "breadcrumb-link", "A crumb with href: - a real <a> to an ancestor page"
         part "breadcrumb-page", "The current page (the item without href:) - aria-current=page, not a link"
         part "breadcrumb-separator", "The chevron <li> between crumbs - presentational, aria-hidden"
@@ -33,11 +39,22 @@ module Poetry
                                     "sr-only 'More' announces it"
 
         # Items append to one ordered trail so crumbs and an ellipsis
-        # interleave in declaration order.
-        renders_many :items, lambda { |label = nil, href: nil, ellipsis: false|
-          entries << Entry.new(label: label, href: href, ellipsis: ellipsis)
+        # interleave in declaration order. A block makes the <li>'s content
+        # caller-owned (upstream's composed crumbs: dropdown, custom link).
+        renders_many :items, lambda { |label = nil, href: nil, ellipsis: false, &block|
+          entries << Entry.new(label: label, href: href, ellipsis: ellipsis, block: block)
           nil
         }
+
+        # The separator glyph for EVERY gap (upstream breadcrumb#separator):
+        # an icon name, or a block for arbitrary content. Absent, the default
+        # chevron renders (with its RTL flip - a custom glyph is used as given).
+        renders_one :separator, lambda { |icon: nil, &block|
+          @separator_block = icon ? proc { render Icon::Component.new(name: icon) } : block
+          nil
+        }
+
+        attr_reader :separator_block
 
         def with_ellipsis
           with_item(ellipsis: true)
