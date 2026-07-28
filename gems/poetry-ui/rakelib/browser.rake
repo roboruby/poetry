@@ -281,6 +281,92 @@ namespace :test do
     end
 
     puts "visual: #{compared} screenshots match test/visual_baselines (tolerance #{POETRY_VISUAL_PIXEL_TOLERANCE})"
+
+    # Only a FULL green walk re-stamps the cross-repo input manifest -
+    # a POETRY_VISUAL_ONLY run hasn't verified the rest of the corpus.
+    if only.nil?
+      poetry_ui_golden_manifest_path.write(poetry_ui_golden_input_manifest)
+      puts "goldens: input manifest stamped (#{poetry_ui_golden_manifest_path.relative_path_from(Poetry::Ui.root)})"
+    end
+  end
+end
+
+# ---------------------------------------------------------------------------
+# rake goldens:verify_inputs
+# ---------------------------------------------------------------------------
+
+# The cross-repo render surface: everything browser:assets compiles or copies
+# out of poetry-core into the preview pages. A core-side change here moves
+# golden pixels with NO poetry-ui commit to flag it - a poetry-core change
+# (the code_block single-spacing fix in tokens/aliases.css) shipped exactly
+# that way and left three goldens stale for four days. The manifest below is
+# stamped by a full green rake test:visual; the cheap default-gate check
+# fails as soon as core has moved since.
+def poetry_ui_golden_input_manifest
+  require "digest"
+
+  core = Poetry::Core.root
+  files = %w[
+    tokens/tokens.css
+    tokens/tailwind-theme.css
+    tokens/aliases.css
+    vendor/tw-animate-css/tw-animate.css
+    vendor/shadcn-tailwind/tailwind.css
+    node_modules/@hotwired/stimulus/dist/stimulus.js
+  ] + Dir.glob("app/javascript/poetry/core/**/*.js", base: core).sort
+
+  lines = files.map do |rel|
+    path = core.join(rel)
+    "poetry-core/#{rel} #{path.exist? ? Digest::SHA256.file(path).hexdigest : "absent"}"
+  end
+  require "tailwindcss/ruby"
+  lines << "tailwindcss-ruby #{Gem.loaded_specs["tailwindcss-ruby"]&.version || "absent"}"
+  lines.join("\n") << "\n"
+end
+
+def poetry_ui_golden_manifest_path
+  Poetry::Ui.root.join("test/visual_baselines/.inputs_manifest")
+end
+
+namespace :goldens do
+  desc "Verify poetry-core's render inputs (tokens/vendor CSS, controllers JS, stimulus dist, " \
+       "tailwind version) still match what the visual goldens were blessed under - cheap, " \
+       "no Chrome; a full green rake test:visual re-stamps the manifest"
+  task :verify_inputs do
+    poetry_ui_boot!
+
+    stamp = poetry_ui_golden_manifest_path
+    unless stamp.exist?
+      abort "goldens: no input manifest at #{stamp} - run a full bundle exec rake test:visual (Chrome) to stamp it"
+    end
+
+    expected = stamp.read.lines.to_h { |line| line.chomp.split(" ", 2) }
+    actual = poetry_ui_golden_input_manifest.lines.to_h { |line| line.chomp.split(" ", 2) }
+
+    drifted = (expected.keys | actual.keys).filter_map do |key|
+      next if expected[key] == actual[key]
+
+      status = if expected[key].nil? then "new input"
+               elsif actual[key].nil? then "removed"
+               else "changed"
+               end
+      "#{key}: #{status}"
+    end
+
+    unless drifted.empty?
+      abort <<~MSG
+        goldens: poetry-core render inputs changed since the goldens were last blessed:
+          #{drifted.join("\n  ")}
+        The preview stylesheet/controllers compile from poetry-core at run time, so
+        these changes can move golden pixels with no poetry-ui commit. Run a FULL
+        bundle exec rake test:visual (needs Chrome): a green walk re-stamps this
+        manifest automatically; regressions mean the core change moved pixels -
+        review and re-bless deliberately (VISUAL_REBASELINE=1, or delete the stale
+        goldens and re-run).
+      MSG
+    end
+
+    puts "goldens: render inputs match the blessed manifest (#{actual.size} inputs)"
   end
 end
 
