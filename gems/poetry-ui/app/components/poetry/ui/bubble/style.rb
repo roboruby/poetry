@@ -28,11 +28,18 @@ module Poetry
                           "group-data-[align=end]/bubble:self-end " \
                           "[button]:text-left [button,a]:transition-colors [button,a]:outline-none"
 
-        # The side x align positioning stays inline (translate mechanism);
-        # the pill treatment rides .cn-bubble-reactions.
+        # The side x align positioning stays inline (mechanism); the pill
+        # treatment rides .cn-bubble-reactions. Fixed offsets, NOT translate
+        # (upstream's translate-y-3/4): translate makes the pill the
+        # CONTAINING BLOCK for fixed-position descendants, so a tooltip or
+        # popover composed into the reactions slot anchored to the pill and
+        # clamped to its width (upstream survives this because Base UI
+        # portals overlay content to <body>; poetry positions in place).
+        # -4.5 = 18px = 75% of the one-line pill height the themes pin -
+        # pixel-identical to the translate for every pill poetry renders.
         element :reactions, "cn-bubble-reactions absolute z-10 flex w-fit shrink-0 items-center " \
-                            "justify-center data-[side=top]:top-0 data-[side=top]:-translate-y-3/4 " \
-                            "data-[side=bottom]:bottom-0 data-[side=bottom]:translate-y-3/4 " \
+                            "justify-center data-[side=top]:-top-4.5 " \
+                            "data-[side=bottom]:-bottom-4.5 " \
                             "data-[align=start]:left-3 data-[align=end]:right-3"
       end
     end

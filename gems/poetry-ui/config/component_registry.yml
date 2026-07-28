@@ -649,7 +649,7 @@ components:
     - group
     - content
     - reactions
-    capsule: 2a423d154712
+    capsule: 0dbec63bcb69
     agent_rules:
     - One Bubble per message; stack a sender's run inside poetry_bubble_group.
     - 'Quick replies are tag: :button (with the caller''s data-action) or tag: :a
