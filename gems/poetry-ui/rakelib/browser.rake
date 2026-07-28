@@ -223,9 +223,15 @@ namespace :test do
   # -------------------------------------------------------------------------
 
   desc "Screenshot every registry component's preview examples and compare against " \
-       "test/visual_baselines (VISUAL_REBASELINE=1 re-records; not in the default gate - needs Chrome)"
+       "test/visual_baselines (VISUAL_REBASELINE=1 re-records; POETRY_VISUAL_ONLY=name,... " \
+       "filters to specific <component>--<example> shots; not in the default gate - needs Chrome)"
   task visual: :"browser:assets" do
     require "fileutils"
+
+    # Surgical re-records: when one preview changes deliberately, re-shooting
+    # its baseline shouldn't cost a full-corpus walk per theme. A filtered
+    # run is NOT the gate - it compares/records only what it names.
+    only = ENV["POETRY_VISUAL_ONLY"]&.split(",")&.map(&:strip)
 
     session = poetry_ui_browser_session
     # Per-theme goldens (N12): the default set stays flat (no churn); each
@@ -244,6 +250,8 @@ namespace :test do
     compared = 0
 
     poetry_ui_preview_pages.each do |component, example, url|
+      next if only && !only.include?("#{component}--#{example}")
+
       name = "#{component}--#{example}.png"
       baseline = baseline_dir.join(name)
       poetry_ui_visit_preview(session, url)
