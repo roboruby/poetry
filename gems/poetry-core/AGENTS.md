@@ -16,6 +16,19 @@ internals) the component gems build on.
   drift (regen with the matching `:generate`)
 - `bundle exec rubocop`
 
+## Cross-repo render surface
+
+poetry-ui compiles its preview stylesheet and copies its controllers FROM
+THIS REPO at run time. Changes under `tokens/*.css`, `vendor/**`, or
+`app/javascript/poetry/core/**` move poetry-ui's golden pixels with no
+poetry-ui commit — this repo's gates never run that visual suite (a
+code_block single-spacing fix once went out this way and left three goldens
+stale for four days). After touching any of those paths, run poetry-ui's
+`bundle exec rake test:visual` (Chrome) in the same working session and
+re-bless deliberately if pixels moved; poetry-ui's `goldens:verify_inputs`
+default-gate check will catch the drift there regardless, by hashing these
+files against the manifest stamped at last bless.
+
 ## Design interop + slop rules (N14)
 
 - `Poetry::Core::DesignMd` — DESIGN.md serialize/parse (google-labs front
