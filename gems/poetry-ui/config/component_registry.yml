@@ -500,14 +500,17 @@ components:
       - info
       default: default
       required: true
-    options: []
+    options:
+    - name: href
+      type: string
     slots: []
     description: A small count or status descriptor.
     elements: []
     capsule: df6d977c62f8
     agent_rules:
     - Badges are non-interactive status labels - never attach click handlers; use
-      Button for actions.
+      Button for actions. The one interactive form is href:, which renders the badge
+      AS a real link (a navigational chip - the themes' [a&]:hover treatments activate).
     - 'The visible text is the content block: render ... { "beta" } - there is no
       label: option.'
     - Pick the variant by intent (destructive = error states; success/warning/info
@@ -519,8 +522,8 @@ components:
     requires_content: the visible status text
     parts:
     - name: badge
-      description: The status pill itself (a <span>) - the whole component is this
-        one element
+      description: 'The status pill itself (a <span>; a real <a> when href: is given)
+        - the whole component is this one element'
       states:
       - attr: data-variant
         condition: always - the resolved variant

@@ -54,6 +54,17 @@ module Poetry
         assert_match(/content block/, error.message)
       end
 
+      def test_badge_is_a_span_by_default_and_a_real_link_with_href
+        span = render_inline(Badge::Component.new) { "New" }
+        link = render_inline(Badge::Component.new(href: "/changelog", variant: :secondary)) { "v2.0" }
+
+        assert_equal "span", span.css('[data-slot="badge"]').first.name
+        anchor = link.css('a[data-slot="badge"]').first
+
+        assert_equal "/changelog", anchor["href"]
+        assert_equal "secondary", anchor["data-variant"], "variant styling survives the anchor form"
+      end
+
       # -- Alert --------------------------------------------------------------
 
       def test_alert_default_is_polite_status

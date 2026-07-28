@@ -13,7 +13,9 @@ module Poetry
         VARIANTS = %i[default secondary destructive outline success warning info].freeze
 
         AGENT_RULES = [
-          "Badges are non-interactive status labels - never attach click handlers; use Button for actions.",
+          "Badges are non-interactive status labels - never attach click handlers; use Button for " \
+          "actions. The one interactive form is href:, which renders the badge AS a real link " \
+          "(a navigational chip - the themes' [a&]:hover treatments activate).",
           "The visible text is the content block: render ... { \"beta\" } - there is no label: option.",
           "Pick the variant by intent (destructive = error states; success/warning/info = record " \
           "status, e.g. Fulfilled/Processing/Syncing), never by color preference.",
@@ -24,11 +26,17 @@ module Poetry
 
         style :variant, default: :default, required: true, variants: VARIANTS
 
+        # Badge-as-link (upstream badge#link parity): href: renders the pill
+        # as a real <a> - the theme layer already ships the [a&]:hover
+        # treatments for exactly this element.
+        option :href, :string
+
         # A status label with no text is an invisible sliver (browser pass,
         # 2026-07-01 - a stray label: attribute rendered an empty pill).
         requires_content "the visible status text"
 
-        part "badge", "The status pill itself (a <span>) - the whole component is this one element",
+        part "badge", "The status pill itself (a <span>; a real <a> when href: is given) - " \
+                      "the whole component is this one element",
              states: {
                "data-variant" => { condition: "always - the resolved variant",
                                    values: VARIANTS.map(&:to_s) }
@@ -39,13 +47,13 @@ module Poetry
         end
 
         def call
-          content_tag(:span, content, **root_attributes.to_attributes)
+          content_tag(href.present? ? :a : :span, content, **root_attributes.to_attributes)
         end
 
         def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "badge", "data-variant" => variant }.merge(component_data_attributes)
-          )
+          attrs = { "data-slot" => "badge", "data-variant" => variant }
+          attrs["href"] = href if href.present?
+          html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
         end
       end
     end

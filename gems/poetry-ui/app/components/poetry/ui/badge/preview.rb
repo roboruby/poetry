@@ -20,6 +20,12 @@ module Poetry
           render_component(variant: :outline) { "Beta" }
         end
 
+        # Badge-as-link (upstream badge#link parity): a real <a>, so the
+        # axe walk covers the anchor treatment and its contrast.
+        def link
+          render_component(href: "#changelog") { "v2.0 release notes" }
+        end
+
         # The status vocabulary (Blocks v1.1): soft tints on the status
         # tokens - the axe walk holds every theme's treatment to AA here.
         def success
