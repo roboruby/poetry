@@ -1,0 +1,30 @@
+<%# The reactions pill overlays an edge: side:/align: pick which one
+    (default bottom/end). label: is REQUIRED - it names the cluster for
+    screen readers. A reaction can be a real control, not just an emoji:
+    the destructive bubble carries a ghost Button reply. %>
+<div class="flex w-full max-w-sm flex-col gap-8">
+  <%= poetry_bubble(variant: :muted, align: :end) do |bubble| %>
+    <% bubble.with_reactions(label: "Reactions: thumbs up, surprised", align: :start) do %>
+      <span>👍</span><span>😮</span>
+    <% end %>
+    I don't need tests, I know my code works.
+  <% end %>
+  <%= poetry_bubble(variant: :muted) do |bubble| %>
+    <% bubble.with_reactions(label: "Reactions: eyes, rocket, and 2 more") do %>
+      <span>👀</span><span>🚀</span><span>+2</span>
+    <% end %>
+    Bold. Fine, I'll add some tests. I'll let you know when they're done.
+  <% end %>
+  <%= poetry_bubble(align: :end) do |bubble| %>
+    <% bubble.with_reactions(label: "Reactions: party popper, clapping hands", side: :top, align: :start) do %>
+      <span>🎉</span><span>👏</span>
+    <% end %>
+    Tests passed on the first try. All 142 of them. Looking good!
+  <% end %>
+  <%= poetry_bubble(variant: :destructive) do |bubble| %>
+    <% bubble.with_reactions(label: "Confirm running the command") do %>
+      <%= poetry_button(variant: :ghost, size: :xs) { "Yes, run it" } %>
+    <% end %>
+    Are you sure I can run this command?
+  <% end %>
+</div>

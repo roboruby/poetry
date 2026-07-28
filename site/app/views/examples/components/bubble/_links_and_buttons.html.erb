@@ -1,0 +1,11 @@
+<%# Quick replies are real controls: tag: :button carries the caller's
+    data-action, tag: :a + href: is a navigational reply - never a click
+    handler on a div. %>
+<div class="flex w-full max-w-sm flex-col gap-6">
+  <%= poetry_bubble(variant: :muted) { "How can I help you today?" } %>
+  <%= poetry_bubble_group(class: "items-end") do %>
+    <%= poetry_bubble(variant: :tinted, align: :end, tag: :button) { "I forgot my password" } %>
+    <%= poetry_bubble(variant: :tinted, align: :end, tag: :button) { "I need help with my subscription" } %>
+    <%= poetry_bubble(variant: :tinted, align: :end, tag: :a, href: "#links-and-buttons") { "Something else. Talk to a human." } %>
+  <% end %>
+</div>

@@ -588,10 +588,28 @@
     "path": "/components/bubble#default"
   },
   {
+    "title": "Collapsible",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#collapsible"
+  },
+  {
     "title": "Group",
     "page": "Bubble",
     "section": "components",
     "path": "/components/bubble#group"
+  },
+  {
+    "title": "Links and buttons",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#links-and-buttons"
+  },
+  {
+    "title": "Popover",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#popover"
   },
   {
     "title": "Quick replies",
@@ -600,16 +618,22 @@
     "path": "/components/bubble#quick-replies"
   },
   {
+    "title": "Reactions",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#reactions"
+  },
+  {
+    "title": "Tooltip",
+    "page": "Bubble",
+    "section": "components",
+    "path": "/components/bubble#tooltip"
+  },
+  {
     "title": "Variants",
     "page": "Bubble",
     "section": "components",
     "path": "/components/bubble#variants"
-  },
-  {
-    "title": "With reactions",
-    "page": "Bubble",
-    "section": "components",
-    "path": "/components/bubble#with-reactions"
   },
   {
     "title": "Button",

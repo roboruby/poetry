@@ -1,0 +1,18 @@
+<%# A reaction can open a popover - error details on demand: the
+    destructive bubble stays terse, the popover carries the diagnosis.
+    pb reserves the opened panel's area inside the preview card. %>
+<div class="flex w-full max-w-sm flex-col gap-4 pb-32">
+  <%= poetry_bubble(align: :end) { "Run the build script." } %>
+  <%= poetry_bubble(variant: :destructive) do |bubble| %>
+    <% bubble.with_reactions(label: "Error details") do %>
+      <%= poetry_popover(content_class: "w-80") do |popover| %>
+        <% popover.with_trigger(variant: :ghost, size: :"icon-xs", label: "Show error details") do %>
+          <%= poetry_icon(name: :info) %>
+        <% end %>
+        <% popover.with_title { "Command failed with exit code 1" } %>
+        <% popover.with_description { "ENOENT: no such file or directory, open pnpm-lock.yaml" } %>
+      <% end %>
+    <% end %>
+    Failed to run the command.
+  <% end %>
+</div>
