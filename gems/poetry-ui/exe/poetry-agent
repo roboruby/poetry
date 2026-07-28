@@ -8,13 +8,16 @@
 # describe_block) - all read-only. Boot-free: it reads the committed
 # registry, so it starts instantly (no Rails).
 #
-# NOTE: poetry-core ships a same-named exe (for apps without poetry-ui);
-# when both gems are bundled, bundler resolves the bare `poetry-agent` to
-# THIS one - which is why it must carry the full catalog itself. The
-# blocks-gate run (2026-07-09) learned that the hard way: this exe lacked
-# the icon-name injection, so every MCP check ran shape-only and a
-# `:filter` guess (lucide renamed it to funnel) sailed through to a
-# render crash the icon-membership tier existed to prevent.
+# NOTE: poetry-core ships a same-named exe (for apps without poetry-ui),
+# and NOTHING guarantees which one a bare `poetry-agent` resolves to when
+# both gems are bundled: rubygems binstubs hardcode a gem name (last
+# install wins) and version-manager shims add another layer. The doctrine
+# is therefore PARITY - both exes must project the same agent surface;
+# core's exe soft-requires poetry/ui and serves the same skills/helpers.
+# The blocks-gate run (2026-07-09) learned the shadow lesson the hard way:
+# this exe lacked the icon-name injection, so every MCP check ran
+# shape-only and a `:filter` guess (lucide renamed it to funnel) sailed
+# through to a render crash the icon-membership tier existed to prevent.
 #
 # Wire it up (Claude Code), from an app that has poetry installed:
 #   claude mcp add poetry -- bundle exec poetry-agent
