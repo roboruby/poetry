@@ -543,6 +543,60 @@ describe("poetry--core--menu", () => {
     })
   })
 
+  describe("hover highlight (focus follows the pointer)", () => {
+    it("pointerover on an enabled item focuses it - the themes' focus: styling IS the hover highlight", async () => {
+      await mount()
+      await openWithPointer()
+
+      pointerover(el("item-profile"))
+
+      expect(document.activeElement).toBe(el("item-profile"))
+    })
+
+    it("pointerover on a DISABLED item clears the highlight to the menu instead", async () => {
+      await mount()
+      await openWithPointer()
+
+      pointerover(el("item-profile"))
+      pointerover(el("item-disabled"), el("item-profile"))
+
+      expect(document.activeElement).toBe(el("content"))
+    })
+
+    it("leaving the items for blank space hands focus back to the menu (highlight clears)", async () => {
+      await mount()
+      await openWithPointer()
+
+      pointerover(el("item-profile"))
+      pointerout(el("item-profile"), el("content"))
+
+      expect(document.activeElement).toBe(el("content"))
+    })
+
+    it("item-to-item travel keeps the highlight on the entered item", async () => {
+      await mount()
+      await openWithPointer()
+
+      pointerover(el("item-profile"))
+      pointerout(el("item-profile"), el("item-archive"))
+      pointerover(el("item-archive"), el("item-profile"))
+
+      expect(document.activeElement).toBe(el("item-archive"))
+    })
+
+    it("touch pointers never hover-highlight (tap semantics)", async () => {
+      await mount()
+      await openWithPointer()
+      const before = document.activeElement
+
+      const touchOver = new MouseEvent("pointerover", { bubbles: true })
+      Object.defineProperty(touchOver, "pointerType", { value: "touch" })
+      el("item-profile").dispatchEvent(touchOver)
+
+      expect(document.activeElement).toBe(before)
+    })
+  })
+
   describe("submenus", () => {
     it("ArrowRight on a sub-trigger opens the sub (data-popup-open/data-open + aria-expanded on both halves) and focuses its first item", async () => {
       await mount()
@@ -602,10 +656,9 @@ describe("poetry--core--menu", () => {
       expect(el("sub-a-trigger").hasAttribute("data-popup-open")).toBe(false)
     })
 
-    it("hover opens after the 100ms intent delay WITHOUT moving focus; leaving closes after 300ms", async () => {
+    it("hover opens after the 100ms intent delay; highlight stays on the TRIGGER (focus never dives into the sub); leaving closes after 300ms", async () => {
       await mount()
       await openWithPointer()
-      const focusedBefore = document.activeElement
 
       vi.useFakeTimers()
 
@@ -614,7 +667,7 @@ describe("poetry--core--menu", () => {
 
       await vi.advanceTimersByTimeAsync(100)
       expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
-      expect(document.activeElement).toBe(focusedBefore)
+      expect(document.activeElement).toBe(el("sub-a-trigger"))
 
       pointerout(el("sub-a-trigger"), el("item-profile"))
       pointerover(el("item-profile"), el("sub-a-trigger"))

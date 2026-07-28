@@ -23,6 +23,12 @@ const click = (element) =>
 const pressEscape = () =>
   window.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true }))
 
+const pointerover = (element, relatedTarget = null) =>
+  element.dispatchEvent(new MouseEvent("pointerover", { bubbles: true, relatedTarget }))
+
+const pointerout = (element, relatedTarget = null) =>
+  element.dispatchEvent(new MouseEvent("pointerout", { bubbles: true, relatedTarget }))
+
 const FRUITS = [
   ["apple", "Apple"],
   ["banana", "Banana"],
@@ -270,6 +276,46 @@ describe("poetry--core--select", () => {
 
       press(el("item-banana"), "ArrowDown")
       expect(document.activeElement).toBe(el("item-cherry")) // blueberry filtered
+    })
+  })
+
+  describe("hover highlight (focus follows the pointer)", () => {
+    it("pointerover on an enabled option focuses it - the themes' focus: styling IS the hover highlight", async () => {
+      await open()
+
+      pointerover(el("item-cherry"))
+
+      expect(document.activeElement).toBe(el("item-cherry"))
+    })
+
+    it("pointerover on a DISABLED option clears the highlight to the content instead", async () => {
+      application.stop()
+      application = await mount({ value: "banana", disabledValues: ["blueberry"] })
+      await open()
+
+      pointerover(el("item-blueberry"))
+
+      expect(document.activeElement).toBe(el("content"))
+    })
+
+    it("leaving an option for blank space hands focus back to the content (highlight clears)", async () => {
+      await open()
+
+      pointerover(el("item-cherry"))
+      pointerout(el("item-cherry"), el("viewport"))
+
+      expect(document.activeElement).toBe(el("content"))
+    })
+
+    it("touch pointers never hover-highlight (tap semantics)", async () => {
+      await open()
+      const before = document.activeElement
+
+      const touchOver = new MouseEvent("pointerover", { bubbles: true })
+      Object.defineProperty(touchOver, "pointerType", { value: "touch" })
+      el("item-cherry").dispatchEvent(touchOver)
+
+      expect(document.activeElement).toBe(before)
     })
   })
 

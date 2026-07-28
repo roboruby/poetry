@@ -678,6 +678,8 @@ export default class MenuController extends Controller {
     if (subTrigger) {
       if (!related || !subTrigger.contains(related)) this.#subPointerEnter(subTrigger)
 
+      this.#pointerHighlight(subTrigger, event)
+
       return
     }
 
@@ -691,6 +693,20 @@ export default class MenuController extends Controller {
     if (!menu) return
 
     for (const open of this.#openSubTriggersIn(menu, { level: menu })) this.#scheduleSubClose(open)
+
+    this.#pointerHighlight(item, event, menu)
+  }
+
+  // Focus follows the pointer (Base UI/Radix menu semantics): the themes
+  // style item highlight through focus: alone - no :hover rule - so hover
+  // highlight IS this focus move. A disabled item clears the highlight
+  // instead (the menu takes focus back), and touch pointers never
+  // hover-highlight (tap semantics).
+  #pointerHighlight(item, event, menu = item.closest(MENU_SELECTOR)) {
+    if (event.pointerType === "touch") return
+
+    if (this.#isDisabled(item)) menu?.focus()
+    else if (document.activeElement !== item) item.focus()
   }
 
   #onPointerout = (event) => {
@@ -713,6 +729,17 @@ export default class MenuController extends Controller {
       if (owner && !(related && owner.contains(related)) && owner.hasAttribute("data-popup-open")) {
         this.#scheduleSubClose(owner)
       }
+    }
+
+    // Leaving a plain item for blank space hands focus back to its menu so
+    // the hover highlight clears (Radix parity). Item-to-item travel skips
+    // this - the entering item's pointerover refocuses anyway - and an open
+    // sub-trigger keeps its data-popup-open styling regardless.
+    const item = target.closest(ITEM_SELECTOR)
+
+    if (item && !item.matches(SUB_TRIGGER_SELECTOR) && document.activeElement === item &&
+        (!related || !related.closest(ITEM_SELECTOR))) {
+      item.closest(MENU_SELECTOR)?.focus()
     }
   }
 

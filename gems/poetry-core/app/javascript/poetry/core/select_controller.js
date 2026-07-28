@@ -643,10 +643,40 @@ export default class SelectController extends Controller {
     this.#listen(content, "keydown", (event) => this.keydown(event))
     this.#listen(content, "click", this.#onClick)
     this.#listen(content, "scroll", () => this.syncScrollButtons())
+    this.#listen(content, "pointerover", this.#onPointerover)
+    this.#listen(content, "pointerout", this.#onPointerout)
     this.#listen(content, "poetry--core--dismissable:dismiss", this.#onDismiss)
     this.#listen(content, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
     this.#listen(content, "poetry--core--focus-scope:mount-auto-focus", this.#onMountAutoFocus)
     this.#listen(content, "poetry--core--focus-scope:unmount-auto-focus", this.#onUnmountAutoFocus)
+  }
+
+  // Focus follows the pointer (the menu family's hover-highlight rule,
+  // Radix Select-exact): themes style option highlight through focus:
+  // alone, so hover highlight IS this focus move. Disabled options clear
+  // it; touch pointers never hover-highlight.
+  #onPointerover = (event) => {
+    if (event.pointerType === "touch") return
+
+    const target = event.target instanceof Element ? event.target : null
+    const item = target?.closest(ITEM_SELECTOR)
+
+    if (!item) return
+
+    if (this.#isDisabled(item)) this.#content()?.focus()
+    else if (document.activeElement !== item) item.focus()
+  }
+
+  // Leaving an option for blank space hands focus back to the content so
+  // the highlight clears; option-to-option travel refocuses via pointerover.
+  #onPointerout = (event) => {
+    const target = event.target instanceof Element ? event.target : null
+    const item = target?.closest(ITEM_SELECTOR)
+    const related = event.relatedTarget instanceof Element ? event.relatedTarget : null
+
+    if (item && document.activeElement === item && (!related || !related.closest(ITEM_SELECTOR))) {
+      this.#content()?.focus()
+    }
   }
 
   #listen(target, type, listener) {
