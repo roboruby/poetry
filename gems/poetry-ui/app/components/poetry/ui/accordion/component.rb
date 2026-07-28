@@ -74,7 +74,8 @@ module Poetry
                          "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options }
           item_attrs["data-disabled"] = "" if disabled
           content_tag(:div, **item_attrs) do
-            safe_join([accordion_header(item_id, title, open_item, disabled), accordion_panel(item_id, open_item, &block)])
+            safe_join([accordion_header(item_id, title, open_item, disabled: disabled),
+                       accordion_panel(item_id, open_item, &block)])
           end
         }
 
@@ -105,7 +106,7 @@ module Poetry
           @instance_id ||= "poetry-accordion-#{SecureRandom.hex(4)}"
         end
 
-        def accordion_header(item_id, title, open_item, disabled = false)
+        def accordion_header(item_id, title, open_item, disabled: false)
           trigger_attrs = {
             type: "button", id: "#{item_id}-trigger", class: css(:trigger),
             # No state attribute on the trigger: the controller reflects only

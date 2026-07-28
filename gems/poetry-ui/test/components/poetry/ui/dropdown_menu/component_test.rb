@@ -180,6 +180,7 @@ module Poetry
           assert_equal "/users/sign_out", form["action"]
           assert_includes form["class"].to_s, "contents"
           method_override = form.css('input[name="_method"]').first
+
           assert_equal "delete", method_override["value"], "the DELETE method override rides a hidden field"
         end
 

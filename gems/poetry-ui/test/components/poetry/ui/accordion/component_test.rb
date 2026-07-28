@@ -91,6 +91,7 @@ module Poetry
           end.to_html
 
           item = html[/<div[^>]*data-slot="accordion-item"[^>]*>/]
+
           assert_includes item, "cn-accordion-item"
           assert_includes item, "border-b px-4 last:border-b-0"
         end

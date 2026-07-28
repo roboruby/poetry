@@ -95,7 +95,7 @@ module Poetry
 
         private
 
-        def item_part(**options, &block)
+        def item_part(**options, &)
           variant = (options.delete(:variant) || :default).to_sym
           unless ITEM_VARIANTS.include?(variant)
             raise ArgumentError,
@@ -120,7 +120,7 @@ module Poetry
             "class" => Style.css(:item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:inset, :disabled, :text_value, :close_on_select))
-          content = safe_join([capture(&block), shortcut_span(shortcut)].compact)
+          content = safe_join([capture(&), shortcut_span(shortcut)].compact)
 
           if submit && !disabled
             # button_to's form is display:contents (transparent); the submit
@@ -135,7 +135,10 @@ module Poetry
           link = href && !disabled
           if link
             attrs["href"] = href
-            attrs.merge!("target" => "_blank", "rel" => "noopener noreferrer") if external
+            if external
+              attrs["target"] = "_blank"
+              attrs["rel"] = "noopener noreferrer"
+            end
           end
           content_tag(link ? :a : :div, attrs.merge(options)) { content }
         end
