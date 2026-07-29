@@ -27,6 +27,14 @@ module Poetry
           end
         end
 
+        # The corner rig for popup wrappers (select / dropdown-menu /
+        # popover render a Stimulus wrapper around their trigger, unlike
+        # upstream fragments): first, middle, and last positions each
+        # prove the theme chains reach the trigger THROUGH its wrapper.
+        def popup_triggers
+          render_with_template(template: "poetry/ui/button_group/popup_triggers_preview")
+        end
+
         private
 
         def button(text, **)

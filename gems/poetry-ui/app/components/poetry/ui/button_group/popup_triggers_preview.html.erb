@@ -1,0 +1,21 @@
+<%# Popup wrappers at every group position: select FIRST (rounded left,
+    square right), dropdown-menu MIDDLE (square both, collapsed border),
+    popover LAST (square left, rounded right). %>
+<%= poetry_button_group("aria-label": "Popup trigger corners") do %>
+  <%= poetry_select(placeholder: "USD", "aria-label": "Currency") do |select| %>
+    <% select.with_item(value: "usd") { "USD" } %>
+    <% select.with_item(value: "eur") { "EUR" } %>
+  <% end %>
+  <%= poetry_dropdown_menu do |menu| %>
+    <% menu.with_trigger(variant: :outline) { "Actions" } %>
+    <% menu.with_item { "Duplicate" } %>
+    <% menu.with_item { "Archive" } %>
+  <% end %>
+  <%= poetry_popover do |popover| %>
+    <% popover.with_trigger(variant: :outline, size: :icon, label: "Open details") do %>
+      <%= poetry_icon(name: :"chevron-down") %>
+    <% end %>
+    <% popover.with_title { "Details" } %>
+    <% popover.with_description { "The popover trigger sits last in the group." } %>
+  <% end %>
+<% end %>
