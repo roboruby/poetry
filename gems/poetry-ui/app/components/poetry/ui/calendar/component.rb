@@ -21,21 +21,32 @@ module Poetry
           "The grid is server-rendered - it shows a valid month with no JS; the controller adds " \
           "navigation + selection.",
           "For a text-field + popover, use DatePicker (it composes this) - a bare Calendar is the " \
-          "always-visible grid."
+          "always-visible grid.",
+          "caption_layout: :dropdown swaps the month label for month + year selects (jump " \
+          "navigation); the year list derives from min:/max: when both are set, else ten years " \
+          "around the initial month.",
+          "week_numbers: true adds the ISO week column (each row's Thursday decides the number)."
         ].freeze
 
         CONTROLLER = %i[poetry core calendar].freeze
         MODES = %i[single range].freeze
+        CAPTION_LAYOUTS = %i[label dropdown].freeze
 
         option :name, :string
         option :mode, :symbol, default: :single
         option :week_start, :integer, default: 0 # 0 = Sunday
+        option :caption_layout, :symbol, default: :label
+        option :week_numbers, :boolean, default: false
 
         part "calendar", "Root wrapper - the calendar controller (navigation, selection, roving " \
                          "arrow keys) rides here"
         part "calendar-nav", "The header row - previous/next month Buttons around the caption"
         part "calendar-caption", "The month label ('July 2026') - the controller rewrites it on " \
-                                 "navigation from the localized month names"
+                                 "navigation from the localized month names; under " \
+                                 "caption_layout: :dropdown it holds the month/year NativeSelect " \
+                                 "pair instead (the controller reflects navigation into them)"
+        part "calendar-week-number", "The ISO week column (week_numbers:) - a columnheader stub " \
+                                     "plus one muted rowheader number per week; non-interactive"
         part "calendar-grid", "The role=grid - the weekday header row plus six week rows " \
                               "(42 cells, always full weeks)"
         part "calendar-weekdays", "The role=row of weekday column headers"
@@ -60,6 +71,10 @@ module Poetry
         def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **) # rubocop:disable Metrics/ParameterLists
           super(**)
           raise ArgumentError, "unknown mode #{mode.inspect} (one of #{MODES.join(", ")})" unless MODES.include?(mode)
+          unless CAPTION_LAYOUTS.include?(caption_layout)
+            raise ArgumentError, "unknown caption_layout #{caption_layout.inspect} " \
+                                 "(one of #{CAPTION_LAYOUTS.join(", ")})"
+          end
 
           if range?
             @range_start, @range_end = parse_range(selected)
@@ -104,6 +119,26 @@ module Poetry
 
         def caption
           @month.strftime("%B %Y")
+        end
+
+        def dropdown_caption? = caption_layout == :dropdown
+
+        def month_options
+          Date::MONTHNAMES.compact.each_with_index.map { |label, index| [label, index + 1] }
+        end
+
+        # min:/max: pin the year list when both are given; otherwise ten
+        # years either side of the initial month (the demo-friendly default;
+        # bound it deliberately via min:/max: in real pickers).
+        def year_options
+          years = @min && @max ? (@min.year..@max.year) : ((@month.year - 10)..(@month.year + 10))
+          years.map { |year| [year.to_s, year] }
+        end
+
+        # The ISO week of a displayed row: its Thursday decides (ISO 8601),
+        # which stays correct under any week_start.
+        def iso_week(week)
+          week.find { |date| date.cwday == 4 }.cweek
         end
 
         # Exactly one day is the tab stop: the selection (the range start

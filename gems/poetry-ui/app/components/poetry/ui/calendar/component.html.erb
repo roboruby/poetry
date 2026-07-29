@@ -3,7 +3,24 @@
     <%= render Poetry::Ui::Button::Component.new(**previous_options) do |button| %>
       <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-left") } %>
     <% end %>
-    <div data-slot="calendar-caption" data-poetry--core--calendar-target="caption" class="<%= css(:caption) %>"><%= caption %></div>
+    <% if dropdown_caption? %>
+      <%# No caption target here: the controller reflects navigation into
+          the selects (data-calendar-unit) instead of rewriting text. %>
+      <div data-slot="calendar-caption" class="<%= css(:caption_dropdowns) %>">
+        <%= render Poetry::Ui::NativeSelect::Component.new(
+              size: :sm, label: "Month", options: month_options, selected: @month.month,
+              "data-calendar-unit" => "month",
+              "data-action" => "change->poetry--core--calendar#jump"
+            ) %>
+        <%= render Poetry::Ui::NativeSelect::Component.new(
+              size: :sm, label: "Year", options: year_options, selected: @month.year,
+              "data-calendar-unit" => "year",
+              "data-action" => "change->poetry--core--calendar#jump"
+            ) %>
+      </div>
+    <% else %>
+      <div data-slot="calendar-caption" data-poetry--core--calendar-target="caption" class="<%= css(:caption) %>"><%= caption %></div>
+    <% end %>
     <%= render Poetry::Ui::Button::Component.new(**next_options) do |button| %>
       <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
     <% end %>
@@ -11,12 +28,18 @@
   <div role="grid" data-slot="calendar-grid" class="<%= css(:grid) %>"
        <%= tag.attributes(**{ "data-action" => "keydown->poetry--core--calendar#keydown" }) %>>
     <div role="row" data-slot="calendar-weekdays" class="<%= css(:weekdays) %>">
+      <% if week_numbers %>
+        <div role="columnheader" data-slot="calendar-week-number" class="<%= css(:weekday) %>"><span class="sr-only">Week</span></div>
+      <% end %>
       <% weekday_labels.each do |label| %>
         <div role="columnheader" data-slot="calendar-weekday" class="<%= css(:weekday) %>"><%= label %></div>
       <% end %>
     </div>
     <% cells.each_slice(7) do |week| %>
       <div role="row" data-slot="calendar-week" class="<%= css(:week) %>">
+        <% if week_numbers %>
+          <div role="rowheader" data-slot="calendar-week-number" class="<%= css(:weekday) %>"><%= iso_week(week) %></div>
+        <% end %>
         <% week.each do |date| %>
           <%= content_tag(:div, cell_attributes(date)) do %>
             <%= content_tag(:button, day_attributes(date)) do %>

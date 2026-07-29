@@ -18,6 +18,10 @@ module Poetry
         element :nav, "flex items-center justify-between gap-1 pb-2"
         element :nav_button, "size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
         element :caption, "cn-calendar-caption flex-1 text-center select-none"
+        # The dropdown caption (caption_layout: :dropdown) - the NativeSelect
+        # pair centered where the label sits; the selects carry their own
+        # themed treatment.
+        element :caption_dropdowns, "flex flex-1 items-center justify-center gap-1.5"
 
         element :grid, "w-full border-collapse"
         element :weekdays, "flex"

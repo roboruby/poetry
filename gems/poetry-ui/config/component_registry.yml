@@ -848,11 +848,17 @@ components:
     bem_block: poetry-ui-calendar
     styles: []
     options:
+    - name: caption_layout
+      type: symbol
+      default: label
     - name: mode
       type: symbol
       default: single
     - name: name
       type: string
+    - name: week_numbers
+      type: boolean
+      default: false
     - name: week_start
       type: integer
       default: 0
@@ -862,13 +868,14 @@ components:
     - nav
     - nav_button
     - caption
+    - caption_dropdowns
     - grid
     - weekdays
     - weekday
     - week
     - day_cell
     - day
-    capsule: 8e6c907c6369
+    capsule: 8d57c2213a13
     controllers:
     - identifier: poetry--core--calendar
       targets:
@@ -889,6 +896,7 @@ components:
       - selected
       - weekStart
       actions:
+      - jump
       - keydown
       - nextMonth
       - previousMonth
@@ -907,6 +915,11 @@ components:
       adds navigation + selection.
     - For a text-field + popover, use DatePicker (it composes this) - a bare Calendar
       is the always-visible grid.
+    - 'caption_layout: :dropdown swaps the month label for month + year selects (jump
+      navigation); the year list derives from min:/max: when both are set, else ten
+      years around the initial month.'
+    - 'week_numbers: true adds the ISO week column (each row''s Thursday decides the
+      number).'
     parts:
     - name: calendar
       description: Root wrapper - the calendar controller (navigation, selection,
@@ -914,8 +927,13 @@ components:
     - name: calendar-nav
       description: The header row - previous/next month Buttons around the caption
     - name: calendar-caption
-      description: The month label ('July 2026') - the controller rewrites it on navigation
-        from the localized month names
+      description: 'The month label (''July 2026'') - the controller rewrites it on
+        navigation from the localized month names; under caption_layout: :dropdown
+        it holds the month/year NativeSelect pair instead (the controller reflects
+        navigation into them)'
+    - name: calendar-week-number
+      description: The ISO week column (week_numbers:) - a columnheader stub plus
+        one muted rowheader number per week; non-interactive
     - name: calendar-grid
       description: The role=grid - the weekday header row plus six week rows (42 cells,
         always full weeks)

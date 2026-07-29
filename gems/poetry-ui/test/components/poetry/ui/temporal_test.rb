@@ -136,6 +136,36 @@ module Poetry
         assert_match(/unknown mode/, error.message)
       end
 
+      def test_calendar_week_numbers_render_iso_rowheaders
+        html = render_calendar(week_numbers: true)
+
+        rows = html.css('[role="rowheader"][data-slot="calendar-week-number"]')
+
+        # June 2026 shows ISO weeks 23-28 (each row's Thursday decides).
+        assert_equal(%w[23 24 25 26 27 28], rows.map { |cell| cell.text.strip })
+        assert_equal 1, html.css('[role="columnheader"][data-slot="calendar-week-number"]').length,
+                     "the header row gains the week column stub"
+      end
+
+      def test_calendar_dropdown_caption_renders_the_native_select_pair
+        html = render_calendar(caption_layout: :dropdown, min: "2025-01-01", max: "2027-12-31")
+
+        units = html.css("[data-calendar-unit]")
+
+        assert_equal(%w[month year], units.map { |unit| unit["data-calendar-unit"] })
+        assert_equal "June", html.css('[data-calendar-unit="month"] option[selected]').first.text
+        assert_equal %w[2025 2026 2027], html.css('[data-calendar-unit="year"] option').map { |o| o["value"] },
+                     "min/max pin the year list"
+        assert_empty html.css('[data-poetry--core--calendar-target="caption"]'),
+                     "dropdown mode replaces the text caption target"
+      end
+
+      def test_unknown_caption_layout_teaches
+        error = assert_raises(ArgumentError) { render_calendar(caption_layout: :fancy) }
+
+        assert_match(/unknown caption_layout/, error.message)
+      end
+
       # -- DatePicker -----------------------------------------------------------
 
       def test_the_date_picker_is_a_popover_wrapping_a_calendar
