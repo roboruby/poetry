@@ -18,7 +18,13 @@ import { Controller } from "@hotwired/stimulus"
 // renders as a plain selected single day; the range vocabulary appears
 // only once the range completes.
 //
-// Still deferred: dropdown caption, week numbers, multiple months.
+// Dropdown caption (caption_layout: :dropdown): the selects live in
+// [data-calendar-unit=month|year] NativeSelect wrappers - #jump reads them,
+// #render reflects navigation back into them (no caption target in that
+// mode). Week numbers: one role=rowheader per week; each row's Thursday
+// decides the ISO number (matches Ruby Date#cweek under any week_start).
+//
+// Still deferred: multiple months.
 const DAY_SELECTOR = '[data-slot="calendar-day"]'
 const MS_PER_DAY = 86400000
 
@@ -61,6 +67,17 @@ export default class CalendarController extends Controller {
 
   nextMonth() {
     this.#goTo(this.#shiftMonth(1))
+  }
+
+  // Action: change->...#jump on the caption's month/year select wrappers.
+  jump() {
+    const read = (unit) => this.element.querySelector(`[data-calendar-unit="${unit}"] select`)?.value
+    const month = read("month")
+    const year = read("year")
+
+    if (!month || !year) return
+
+    this.#goTo(`${year}-${String(month).padStart(2, "0")}`)
   }
 
   // Action: click->poetry--core--calendar#select on each day button.
@@ -183,7 +200,40 @@ export default class CalendarController extends Controller {
     })
 
     if (this.hasCaptionTarget) this.captionTarget.textContent = this.#captionText()
+    this.#reflectDropdowns()
+    this.#reflectWeekNumbers(cells)
     this.#reflectSelection()
+  }
+
+  // The dropdown caption follows navigation (prev/next must move the
+  // selects too, not just the grid).
+  #reflectDropdowns() {
+    const [year, month] = this.monthValue.split("-").map(Number)
+
+    for (const wrapper of this.element.querySelectorAll("[data-calendar-unit]")) {
+      const select = wrapper.querySelector("select")
+
+      if (select) select.value = String(wrapper.dataset.calendarUnit === "month" ? month : year)
+    }
+  }
+
+  // One rowheader per week; the row's Thursday decides the ISO number
+  // (mirrors Ruby's Date#cweek, stable under any week_start).
+  #reflectWeekNumbers(cells) {
+    const numbers = this.element.querySelectorAll('[role="rowheader"][data-slot="calendar-week-number"]')
+
+    numbers.forEach((cell, row) => {
+      const thursday = cells.slice(row * 7, row * 7 + 7).find((c) => c.date.getUTCDay() === 4)
+
+      cell.textContent = String(this.#isoWeek(thursday.date))
+    })
+  }
+
+  #isoWeek(thursday) {
+    const yearStart = Date.UTC(thursday.getUTCFullYear(), 0, 1)
+    const dayOfYear = (thursday.getTime() - yearStart) / MS_PER_DAY + 1
+
+    return Math.ceil(dayOfYear / 7)
   }
 
   #reflectSelection() {

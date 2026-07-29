@@ -99,6 +99,7 @@
     "classes": [],
     "methods": [
       "connect",
+      "jump",
       "keydown",
       "nextMonth",
       "previousMonth",

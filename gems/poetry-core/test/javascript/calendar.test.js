@@ -179,6 +179,70 @@ describe("poetry--core--calendar", () => {
     // The month never flipped while refusing.
     expect(el("cal").querySelector("[data-poetry--core--calendar-target=caption]").textContent).toBe("June 2026")
   })
+
+  describe("dropdown caption (caption_layout: :dropdown)", () => {
+    // The server-rendered select pair, as the ERB template ships it: the
+    // NativeSelect wrappers carry data-calendar-unit + the change action.
+    const dropdowns = () => {
+      el("cal").querySelector("[data-poetry--core--calendar-target=caption]")?.remove()
+      el("cal").insertAdjacentHTML("afterbegin", `
+        <div id="caption-dropdowns">
+          <span data-calendar-unit="month" data-action="change->poetry--core--calendar#jump">
+            <select id="month-select">${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}</select>
+          </span>
+          <span data-calendar-unit="year" data-action="change->poetry--core--calendar#jump">
+            <select id="year-select">${[2025, 2026, 2027].map((y) => `<option value="${y}">${y}</option>`).join("")}</select>
+          </span>
+        </div>`)
+      el("month-select").value = "6"
+      el("year-select").value = "2026"
+    }
+
+    it("changing the selects jumps the grid to that month", async () => {
+      application = await mount()
+      dropdowns()
+      await nextFrame()
+
+      el("month-select").value = "1"
+      el("year-select").value = "2027"
+      el("year-select").dispatchEvent(new Event("change", { bubbles: true }))
+
+      expect(dayFor("2027-01-15")).toBeTruthy()
+    })
+
+    it("prev/next navigation reflects back into the selects", async () => {
+      application = await mount()
+      dropdowns()
+      await nextFrame()
+
+      el("next").click()
+
+      expect(el("month-select").value).toBe("7")
+      expect(el("year-select").value).toBe("2026")
+    })
+  })
+
+  describe("week numbers", () => {
+    const weekNumbers = () => {
+      // Six rowheaders, as the ERB template ships them (server-rendered
+      // with the June 2026 values; the controller rewrites on navigation).
+      el("cal").insertAdjacentHTML("beforeend",
+        `<div id="weeks">${[23, 24, 25, 26, 27, 28].map((n) => `<div role="rowheader" data-slot="calendar-week-number">${n}</div>`).join("")}</div>`)
+    }
+
+    it("navigation rewrites the ISO numbers from each row's Thursday", async () => {
+      application = await mount()
+      weekNumbers()
+      await nextFrame()
+
+      el("next").click() // July 2026: rows lead Jun 28; Thursdays Jul 2..Aug 6
+
+      const numbers = [...document.querySelectorAll('[role="rowheader"][data-slot="calendar-week-number"]')]
+        .map((c) => c.textContent)
+
+      expect(numbers).toEqual(["27", "28", "29", "30", "31", "32"])
+    })
+  })
 })
 
 // -- range mode (N9 D1): the addToRange transcription + the range wire ------
