@@ -1,0 +1,5 @@
+<%# caption_layout: :dropdown swaps the month label for a NativeSelect
+    pair - jump navigation for far-away dates. min:/max: pin the year
+    list (without them it spans ten years around the initial month). %>
+<%= poetry_calendar(caption_layout: :dropdown, min: "2020-01-01", max: "2030-12-31",
+                    class: "rounded-lg border") %>

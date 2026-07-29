@@ -810,10 +810,28 @@
     "path": "/components/calendar#custom-cell-size"
   },
   {
+    "title": "Date and time",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#date-and-time"
+  },
+  {
+    "title": "Month and year selector",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#month-and-year-selector"
+  },
+  {
     "title": "Range",
     "page": "Calendar",
     "section": "components",
     "path": "/components/calendar#range"
+  },
+  {
+    "title": "Week numbers",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#week-numbers"
   },
   {
     "title": "Card",
