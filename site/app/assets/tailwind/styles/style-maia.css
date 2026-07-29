@@ -375,6 +375,14 @@
   @apply rounded-md text-sm leading-none font-normal hover:bg-accent hover:text-accent-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:text-muted-foreground disabled:opacity-50 data-today:bg-muted data-today:text-foreground data-outside:text-muted-foreground data-selected:bg-primary data-selected:text-primary-foreground data-selected:hover:bg-primary data-selected:hover:text-primary-foreground data-range-start:rounded-l-md data-range-start:bg-primary data-range-start:text-primary-foreground data-range-middle:rounded-none data-range-middle:bg-muted data-range-middle:text-foreground data-range-end:rounded-r-md data-range-end:bg-primary data-range-end:text-primary-foreground;
 }
 
+[data-slot="calendar-dropdown"] {
+  @apply has-focus:border-ring border-input has-focus:ring-ring/50 border has-focus:ring-[3px];
+}
+
+[data-slot="calendar-caption-label"] {
+  @apply h-8 pr-2 pl-3;
+}
+
 /* MARK: Card */
 .cn-card {
   @apply ring-foreground/10 bg-card text-card-foreground gap-(--card-spacing) overflow-hidden rounded-2xl py-(--card-spacing) text-sm ring-1 [--card-spacing:--spacing(6)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl;
