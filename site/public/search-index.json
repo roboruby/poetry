@@ -720,10 +720,22 @@
     "path": "/components/button-group#input-action"
   },
   {
+    "title": "Input group",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#input-group"
+  },
+  {
     "title": "Nested",
     "page": "Button Group",
     "section": "components",
     "path": "/components/button-group#nested"
+  },
+  {
+    "title": "Popover",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#popover"
   },
   {
     "title": "Separator",
@@ -738,6 +750,12 @@
     "path": "/components/button-group#sizes"
   },
   {
+    "title": "Split",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#split"
+  },
+  {
     "title": "Text prefix",
     "page": "Button Group",
     "section": "components",
@@ -748,6 +766,12 @@
     "page": "Button Group",
     "section": "components",
     "path": "/components/button-group#vertical"
+  },
+  {
+    "title": "With dropdown",
+    "page": "Button Group",
+    "section": "components",
+    "path": "/components/button-group#with-dropdown"
   },
   {
     "title": "With select",

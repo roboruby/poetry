@@ -350,11 +350,11 @@
 }
 
 .cn-button-group-orientation-horizontal {
-  @apply [&>[data-slot]:not(:has(~[data-slot]))]:rounded-none! [&>[data-slot=select]:not(:has(~[data-slot]))_[data-slot=select-trigger]]:rounded-none!;
+  @apply [&>[data-slot]:not(:has(~[data-slot]))]:rounded-none! [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-none!;
 }
 
 .cn-button-group-orientation-vertical {
-  @apply flex-col [&>[data-slot]:not(:has(~[data-slot]))]:rounded-none! [&>[data-slot=select]:not(:has(~[data-slot]))_[data-slot=select-trigger]]:rounded-none!;
+  @apply flex-col [&>[data-slot]:not(:has(~[data-slot]))]:rounded-none! [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-none!;
 }
 
 .cn-button-group-text {

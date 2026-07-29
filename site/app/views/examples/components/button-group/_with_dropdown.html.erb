@@ -1,0 +1,18 @@
+<%# A split action: the labeled button acts, the joined chevron opens the
+    menu. The dropdown's wrapper is a full group member - the theme chains
+    reach its trigger for the corner math. %>
+<%= poetry_button_group("aria-label": "Follow actions") do %>
+  <%= poetry_button(variant: :outline) { "Follow" } %>
+  <%= poetry_dropdown_menu(align: :end) do |menu| %>
+    <% menu.with_trigger(variant: :outline, size: :icon, label: "More follow options") do %>
+      <%= poetry_icon(name: :"chevron-down") %>
+    <% end %>
+    <% menu.with_group do |group| %>
+      <% group.with_item do %><%= poetry_icon(name: :"volume-off") %>Mute conversation<% end %>
+      <% group.with_item do %><%= poetry_icon(name: :check) %>Mark as read<% end %>
+      <% group.with_item do %><%= poetry_icon(name: :share) %>Share thread<% end %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(variant: :destructive) do %><%= poetry_icon(name: :"user-round-x") %>Block user<% end %>
+  <% end %>
+<% end %>

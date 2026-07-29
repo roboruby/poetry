@@ -1,0 +1,17 @@
+<%# The popover's wrapper is a full group member, like select and
+    dropdown - square joints, rounded outer edge on its trigger. %>
+<div class="pb-40">
+<%= poetry_button_group("aria-label": "Copilot") do %>
+  <%= poetry_button(variant: :outline) do %>
+    <%= poetry_icon(name: :bot) %>
+    Copilot
+  <% end %>
+  <%= poetry_popover(content_class: "w-72") do |popover| %>
+    <% popover.with_trigger(variant: :outline, size: :icon, label: "Open Copilot options") do %>
+      <%= poetry_icon(name: :"chevron-down") %>
+    <% end %>
+    <% popover.with_title { "Start a new task with Copilot" } %>
+    <% popover.with_description { "Describe your task in natural language." } %>
+  <% end %>
+<% end %>
+</div>
