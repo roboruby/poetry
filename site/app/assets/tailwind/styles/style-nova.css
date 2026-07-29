@@ -340,11 +340,11 @@
 }
 
 .cn-button-group-orientation-horizontal {
-  @apply *:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0;
+  @apply *:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>[data-slot=select]:has(~[data-slot])_[data-slot=select-trigger]]:rounded-r-none [&>[data-slot=select]:not(:has(~[data-slot]))_[data-slot=select-trigger]]:rounded-r-md! [&>[data-slot]~[data-slot=select]_[data-slot=select-trigger]]:rounded-l-none [&>[data-slot]~[data-slot=select]_[data-slot=select-trigger]]:border-l-0;
 }
 
 .cn-button-group-orientation-vertical {
-  @apply flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0;
+  @apply flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>[data-slot=select]:has(~[data-slot])_[data-slot=select-trigger]]:rounded-b-none [&>[data-slot=select]:not(:has(~[data-slot]))_[data-slot=select-trigger]]:rounded-b-md! [&>[data-slot]~[data-slot=select]_[data-slot=select-trigger]]:rounded-t-none [&>[data-slot]~[data-slot=select]_[data-slot=select-trigger]]:border-t-0;
 }
 
 .cn-button-group-text {
