@@ -188,9 +188,11 @@ describe("poetry--core--calendar", () => {
       el("cal").insertAdjacentHTML("afterbegin", `
         <div id="caption-dropdowns">
           <span data-calendar-unit="month" data-action="change->poetry--core--calendar#jump">
+            <span data-slot="calendar-dropdown-value" id="month-label">June</span>
             <select id="month-select">${Array.from({ length: 12 }, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join("")}</select>
           </span>
           <span data-calendar-unit="year" data-action="change->poetry--core--calendar#jump">
+            <span data-slot="calendar-dropdown-value" id="year-label">2026</span>
             <select id="year-select">${[2025, 2026, 2027].map((y) => `<option value="${y}">${y}</option>`).join("")}</select>
           </span>
         </div>`)
@@ -210,7 +212,7 @@ describe("poetry--core--calendar", () => {
       expect(dayFor("2027-01-15")).toBeTruthy()
     })
 
-    it("prev/next navigation reflects back into the selects", async () => {
+    it("prev/next navigation reflects back into the selects AND their visible labels", async () => {
       application = await mount()
       dropdowns()
       await nextFrame()
@@ -219,6 +221,8 @@ describe("poetry--core--calendar", () => {
 
       expect(el("month-select").value).toBe("7")
       expect(el("year-select").value).toBe("2026")
+      expect(el("month-label").textContent).toBe("July")
+      expect(el("year-label").textContent).toBe("2026")
     })
   })
 

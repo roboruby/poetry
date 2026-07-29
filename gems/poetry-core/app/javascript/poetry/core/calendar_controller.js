@@ -18,11 +18,14 @@ import { Controller } from "@hotwired/stimulus"
 // renders as a plain selected single day; the range vocabulary appears
 // only once the range completes.
 //
-// Dropdown caption (caption_layout: :dropdown): the selects live in
-// [data-calendar-unit=month|year] NativeSelect wrappers - #jump reads them,
-// #render reflects navigation back into them (no caption target in that
-// mode). Week numbers: one role=rowheader per week; each row's Thursday
-// decides the ISO number (matches Ruby Date#cweek under any week_start).
+// Dropdown caption (caption_layout: :dropdown), the upstream overlay
+// pattern: each [data-calendar-unit=month|year] wrapper holds a visible
+// text label (calendar-dropdown-value) with the real select stretched
+// invisibly over it - #jump reads the selects, #render reflects
+// navigation back into both select values AND label text (no caption
+// target in that mode). Week numbers: one role=rowheader per week; each
+// row's Thursday decides the ISO number (matches Ruby Date#cweek under
+// any week_start).
 //
 // Still deferred: multiple months.
 const DAY_SELECTOR = '[data-slot="calendar-day"]'
@@ -206,14 +209,18 @@ export default class CalendarController extends Controller {
   }
 
   // The dropdown caption follows navigation (prev/next must move the
-  // selects too, not just the grid).
+  // selects too, not just the grid). The visible label span mirrors the
+  // select (the overlay pattern: the select is invisible on top).
   #reflectDropdowns() {
     const [year, month] = this.monthValue.split("-").map(Number)
 
     for (const wrapper of this.element.querySelectorAll("[data-calendar-unit]")) {
+      const monthly = wrapper.dataset.calendarUnit === "month"
       const select = wrapper.querySelector("select")
+      const label = wrapper.querySelector("[data-slot=\"calendar-dropdown-value\"]")
 
-      if (select) select.value = String(wrapper.dataset.calendarUnit === "month" ? month : year)
+      if (select) select.value = String(monthly ? month : year)
+      if (label) label.textContent = monthly ? this.monthNamesValue[month - 1] : String(year)
     }
   }
 
