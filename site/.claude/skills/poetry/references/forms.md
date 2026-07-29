@@ -27,6 +27,7 @@ In blocks: `action-bar`, `app-shell`, `data-index`, `destructive-panel`, `page-h
 - RULE: The visible text is the content block: poetry_button { "Save" }. label: is ONLY the accessible name.
 - RULE: Icon-only buttons (size: :icon*) MUST pass label: (the accessible name).
 - RULE: Link-styled actions use variant: :link - not <a> with button classes.
+- RULE: Navigation wearing button styling: pass href: (renders a real <a>; tag: :a is implied) - never onclick navigation.
 - RULE: Loading via loading: - never a manual disabled + spinner.
 - RULE: Never nest an interactive element inside a Button.
 - RULE: Pick the variant by intent; one primary (default) action per view.
@@ -50,12 +51,18 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 A month grid for selecting single dates or ranges.
 
 Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
+- `caption_layout:` (symbol) - default "label"
 - `mode:` (symbol) - default "single"
 - `name:` (string)
+- `week_numbers:` (boolean) - default false
 - `week_start:` (integer) - default 0
 - PART `calendar` - Root wrapper - the calendar controller (navigation, selection, roving arrow keys) rides here
 - PART `calendar-nav` - The header row - previous/next month Buttons around the caption
-- PART `calendar-caption` - The month label ('July 2026') - the controller rewrites it on navigation from the localized month names
+- PART `calendar-caption` - The month label ('July 2026') - the controller rewrites it on navigation from the localized month names; under caption_layout: :dropdown it holds the month/year NativeSelect pair instead (the controller reflects navigation into them)
+- PART `calendar-week-number` - The ISO week column (week_numbers:) - a columnheader stub plus one muted rowheader number per week; non-interactive
+- PART `calendar-dropdown` - One caption dropdown unit (caption_layout: :dropdown) - the visible label with the real <select> stretched invisibly over it (the upstream overlay pattern) | states: data-calendar-unit=month|year (always - which unit this select drives)
+- PART `calendar-caption-label` - The visible text + chevron of a caption dropdown (aria-hidden - the overlaid select carries the value)
+- PART `calendar-dropdown-value` - The label's text span - the controller rewrites it on navigation (month name or year)
 - PART `calendar-grid` - The role=grid - the weekday header row plus six week rows (42 cells, always full weeks)
 - PART `calendar-weekdays` - The role=row of weekday column headers
 - PART `calendar-weekday` - One role=columnheader two-letter day label
@@ -63,12 +70,14 @@ Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
 - PART `calendar-day-cell` - The role=gridcell wrapper - aria-selected lives HERE (the ARIA grid contract; it is not valid on the button)
 - PART `calendar-day` - One day <button> - the selection vocabulary and the roving tab stop ride here | states: data-date (always - the day's ISO date (the controller's selection key)); data-selected (the day is the single-mode pick, or a start-only range pick (bare; a complete range wears the range-* trio instead)); data-range-start (the day starts a COMPLETE range); data-range-end (the day ends a COMPLETE range); data-range-middle (the day sits strictly inside a complete range); data-today (the day is today (aria-current=date rides along)); data-outside (the day belongs to a neighbouring month (leading/trailing fill))
 - PART `calendar-day-label` - The day-number span inside the button
-- WIRING `poetry--core--calendar`: targets caption, day, endInput, grid, input, startInput; values max, min, mode, month, monthNames, rangeEnd, rangeStart, selected, weekStart; actions keydown, nextMonth, previousMonth, select; events poetry--core--calendar:change
+- WIRING `poetry--core--calendar`: targets caption, day, endInput, grid, input, startInput; values max, min, mode, month, monthNames, rangeEnd, rangeStart, selected, weekStart; actions jump, keydown, nextMonth, previousMonth, select; events poetry--core--calendar:change
 - RULE: name: makes it a form control (the chosen date posts as an ISO string in a hidden input; range mode posts name[start] + name[end]).
 - RULE: month:/selected:/today accept a Date or an ISO string; min:/max: bound the selectable range.
 - RULE: mode: :range selects a span - selected: takes a Date..Date Range, [start, end], or {start:, end:}; the second click completes, click-before-start swaps, re-click clears.
 - RULE: The grid is server-rendered - it shows a valid month with no JS; the controller adds navigation + selection.
 - RULE: For a text-field + popover, use DatePicker (it composes this) - a bare Calendar is the always-visible grid.
+- RULE: caption_layout: :dropdown swaps the month label for month + year selects (jump navigation); the year list derives from min:/max: when both are set, else ten years around the initial month.
+- RULE: week_numbers: true adds the ISO week column (each row's Thursday decides the number).
 
 ## checkbox (`poetry_checkbox`)
 

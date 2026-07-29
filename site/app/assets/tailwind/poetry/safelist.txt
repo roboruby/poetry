@@ -47,6 +47,8 @@
 [&>span:last-child]:truncate
 [&>svg]:pointer-events-none
 [&>svg]:shrink-0
+[&>svg]:size-3.5
+[&>svg]:text-muted-foreground
 [&[aria-expanded=true]>svg]:rotate-180
 [&[aria-orientation=horizontal]>div]:rotate-90
 [&_.line]:block
@@ -887,6 +889,8 @@ has-[>[data-align=block-start]]:h-auto
 has-[>a,>button]:hover:bg-muted/50
 has-[>textarea]:h-auto
 has-[select:disabled]:opacity-50
+has-[select:focus-visible]:ring-[3px]
+has-[select:focus-visible]:ring-ring/50
 has-data-[slot=card-action]:grid-cols-[1fr_auto]
 has-data-[variant=inset]:bg-sidebar
 has-disabled:opacity-50
