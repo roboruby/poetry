@@ -353,7 +353,7 @@
 }
 
 .cn-button-group-separator {
-  @apply bg-input;
+  @apply bg-input!;
 }
 
 /* MARK: Calendar */
