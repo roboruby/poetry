@@ -1,28 +1,32 @@
-<%# Date AND time: the calendar picks the day, paired time fields in the
-    card footer pick the hours - three named form values ready to post
-    (date, time_from, time_to). %>
-<%= poetry_card(class: "w-fit") do |card| %>
-  <%= poetry_calendar(name: "date", selected: Date.new(Date.today.year, Date.today.month, 12)) %>
-  <% card.with_footer do %>
-    <div class="grid w-full gap-3 border-t pt-4">
+<%# Date AND time (upstream calendar#date-and-time): the calendar goes
+    transparent + unpadded so the Card provides the one frame; the footer
+    carries the divider; the native picker indicator is hidden so the
+    leading clock is the only icon. Three named values post together. %>
+<%= poetry_card(class: "mx-auto w-fit") do |card| %>
+  <%= poetry_calendar(name: "date", selected: Date.new(Date.today.year, Date.today.month, 12),
+                      class: "bg-transparent p-0") %>
+  <% card.with_footer(class: "border-t") do %>
+    <div class="grid w-full gap-4">
       <div class="grid gap-1.5">
-        <%= poetry_label(for_id: "time-from") { "Start time" } %>
+        <%= poetry_label(for_id: "time-from") { "Start Time" } %>
         <%= poetry_input_group do %>
-          <%= poetry_input_group_input(id: "time-from", name: "time_from", type: "time",
-                                       step: "1", value: "10:30:00") %>
-          <%= poetry_input_group_addon(align: :"inline-end") do %>
-            <%= poetry_icon(name: :clock) %>
+          <%= poetry_input_group_addon do %>
+            <%= poetry_icon(name: :"clock-2") %>
           <% end %>
+          <%= poetry_input_group_input(id: "time-from", name: "time_from", type: "time", step: "1",
+                                       value: "10:30:00",
+                                       class: "appearance-none [&::-webkit-calendar-picker-indicator]:hidden") %>
         <% end %>
       </div>
       <div class="grid gap-1.5">
-        <%= poetry_label(for_id: "time-to") { "End time" } %>
+        <%= poetry_label(for_id: "time-to") { "End Time" } %>
         <%= poetry_input_group do %>
-          <%= poetry_input_group_input(id: "time-to", name: "time_to", type: "time",
-                                       step: "1", value: "12:30:00") %>
-          <%= poetry_input_group_addon(align: :"inline-end") do %>
-            <%= poetry_icon(name: :clock) %>
+          <%= poetry_input_group_addon do %>
+            <%= poetry_icon(name: :"clock-2") %>
           <% end %>
+          <%= poetry_input_group_input(id: "time-to", name: "time_to", type: "time", step: "1",
+                                       value: "12:30:00",
+                                       class: "appearance-none [&::-webkit-calendar-picker-indicator]:hidden") %>
         <% end %>
       </div>
     </div>
