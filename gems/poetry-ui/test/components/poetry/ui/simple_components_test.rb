@@ -112,6 +112,16 @@ module Poetry
         assert_includes html, "has-data-[slot=card-action]:grid-cols-[1fr_auto]"
       end
 
+      def test_card_footer_accepts_a_class_merge
+        html = render_inline(Card::Component.new) do |card|
+          card.with_footer(class: "border-t") { "Meta" }
+          "Body"
+        end.to_html
+
+        assert_match(/data-slot="card-footer" class="[^"]*border-t/, html)
+        assert_includes html, "Meta"
+      end
+
       def test_card_without_header_parts_renders_no_header
         html = render_inline(Card::Component.new) { "Body only" }.to_html
 

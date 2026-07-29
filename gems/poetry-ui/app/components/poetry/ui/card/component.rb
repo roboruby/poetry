@@ -33,7 +33,15 @@ module Poetry
         renders_one :title
         renders_one :description
         renders_one :action
-        renders_one :footer
+        # class: merges into the footer div (upstream CardFooter className -
+        # the border-t divider variant is the canonical use).
+        renders_one :footer, lambda { |**options, &block|
+          @footer_class = options[:class]
+          @footer_block = block
+          nil
+        }
+
+        attr_reader :footer_class, :footer_block
 
         def header?
           title? || description? || action?

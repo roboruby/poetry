@@ -1011,6 +1011,10 @@ components:
       many: false
     - name: footer
       many: false
+      setter_args:
+        footer: 0
+      yieldless:
+      - footer
     description: A container that groups related content and actions.
     elements:
     - header

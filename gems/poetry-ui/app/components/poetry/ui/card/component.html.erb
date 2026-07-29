@@ -7,5 +7,5 @@
     </div>
   <% end %>
   <div data-slot="card-content" class="<%= css(:content) %>"><%= content %></div>
-  <% if footer? %><div data-slot="card-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
+  <% if footer? %><div data-slot="card-footer" class="<%= css(:footer, class: footer_class) %>"><%= capture(&footer_block) if footer_block %></div><% end %>
 <% end %>
