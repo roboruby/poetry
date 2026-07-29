@@ -147,7 +147,7 @@ module Poetry
                      "the header row gains the week column stub"
       end
 
-      def test_calendar_dropdown_caption_renders_the_native_select_pair
+      def test_calendar_dropdown_caption_renders_the_overlay_select_pair
         html = render_calendar(caption_layout: :dropdown, min: "2025-01-01", max: "2027-12-31")
 
         units = html.css("[data-calendar-unit]")
@@ -158,6 +158,15 @@ module Poetry
                      "min/max pin the year list"
         assert_empty html.css('[data-poetry--core--calendar-target="caption"]'),
                      "dropdown mode replaces the text caption target"
+
+        # The overlay pattern: visible text label (aria-hidden - the select
+        # carries the value), the real select invisible on top.
+        month = html.css('[data-calendar-unit="month"]').first
+
+        assert_equal "June", month.css('[data-slot="calendar-dropdown-value"]').first.text
+        assert_equal "true", month.css('[data-slot="calendar-caption-label"]').first["aria-hidden"]
+        assert_includes month.css("select").first["class"], "opacity-0"
+        assert_equal "Month", month.css("select").first["aria-label"]
       end
 
       def test_unknown_caption_layout_teaches

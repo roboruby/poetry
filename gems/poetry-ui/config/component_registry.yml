@@ -869,13 +869,16 @@ components:
     - nav_button
     - caption
     - caption_dropdowns
+    - dropdown_root
+    - dropdown_select
+    - dropdown_label
     - grid
     - weekdays
     - weekday
     - week
     - day_cell
     - day
-    capsule: 8d57c2213a13
+    capsule: 9f255af15b4c
     controllers:
     - identifier: poetry--core--calendar
       targets:
@@ -934,6 +937,22 @@ components:
     - name: calendar-week-number
       description: The ISO week column (week_numbers:) - a columnheader stub plus
         one muted rowheader number per week; non-interactive
+    - name: calendar-dropdown
+      description: 'One caption dropdown unit (caption_layout: :dropdown) - the visible
+        label with the real <select> stretched invisibly over it (the upstream overlay
+        pattern)'
+      states:
+      - attr: data-calendar-unit
+        condition: always - which unit this select drives
+        values:
+        - month
+        - year
+    - name: calendar-caption-label
+      description: The visible text + chevron of a caption dropdown (aria-hidden -
+        the overlaid select carries the value)
+    - name: calendar-dropdown-value
+      description: The label's text span - the controller rewrites it on navigation
+        (month name or year)
     - name: calendar-grid
       description: The role=grid - the weekday header row plus six week rows (42 cells,
         always full weeks)

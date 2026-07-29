@@ -5,18 +5,26 @@
     <% end %>
     <% if dropdown_caption? %>
       <%# No caption target here: the controller reflects navigation into
-          the selects (data-calendar-unit) instead of rewriting text. %>
+          the selects and their visible labels (data-calendar-unit /
+         ). Upstream's overlay pattern: the label span
+          is what you SEE (aria-hidden - the select carries the value);
+          the real select sits invisibly on top. %>
       <div data-slot="calendar-caption" class="<%= css(:caption_dropdowns) %>">
-        <%= render Poetry::Ui::NativeSelect::Component.new(
-              size: :sm, label: "Month", options: month_options, selected: @month.month,
-              "data-calendar-unit" => "month",
-              "data-action" => "change->poetry--core--calendar#jump"
-            ) %>
-        <%= render Poetry::Ui::NativeSelect::Component.new(
-              size: :sm, label: "Year", options: year_options, selected: @month.year,
-              "data-calendar-unit" => "year",
-              "data-action" => "change->poetry--core--calendar#jump"
-            ) %>
+        <% { "month" => [month_options, @month.month, "Month", Date::MONTHNAMES[@month.month]],
+             "year" => [year_options, @month.year, "Year", @month.year.to_s] }.each do |unit, (options, current, label, text)| %>
+          <span data-slot="calendar-dropdown" data-calendar-unit="<%= unit %>" class="<%= css(:dropdown_root) %>"
+                <%= tag.attributes("data-action" => "change->poetry--core--calendar#jump") %>>
+            <span data-slot="calendar-caption-label" aria-hidden="true" class="<%= css(:dropdown_label) %>">
+              <span data-slot="calendar-dropdown-value"><%= text %></span>
+              <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-down") %>
+            </span>
+            <select aria-label="<%= label %>" class="<%= css(:dropdown_select) %>">
+              <% options.each do |(option_label, value)| %>
+                <option value="<%= value %>" <%= "selected" if value == current %>><%= option_label %></option>
+              <% end %>
+            </select>
+          </span>
+        <% end %>
       </div>
     <% else %>
       <div data-slot="calendar-caption" data-poetry--core--calendar-target="caption" class="<%= css(:caption) %>"><%= caption %></div>

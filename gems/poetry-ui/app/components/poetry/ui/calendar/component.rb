@@ -47,6 +47,17 @@ module Poetry
                                  "pair instead (the controller reflects navigation into them)"
         part "calendar-week-number", "The ISO week column (week_numbers:) - a columnheader stub " \
                                      "plus one muted rowheader number per week; non-interactive"
+        part "calendar-dropdown", "One caption dropdown unit (caption_layout: :dropdown) - the " \
+                                  "visible label with the real <select> stretched invisibly over " \
+                                  "it (the upstream overlay pattern)",
+             states: {
+               "data-calendar-unit" => { condition: "always - which unit this select drives",
+                                         values: %w[month year] }
+             }
+        part "calendar-caption-label", "The visible text + chevron of a caption dropdown " \
+                                       "(aria-hidden - the overlaid select carries the value)"
+        part "calendar-dropdown-value", "The label's text span - the controller rewrites it on " \
+                                        "navigation (month name or year)"
         part "calendar-grid", "The role=grid - the weekday header row plus six week rows " \
                               "(42 cells, always full weeks)"
         part "calendar-weekdays", "The role=row of weekday column headers"

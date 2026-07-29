@@ -18,10 +18,23 @@ module Poetry
         element :nav, "flex items-center justify-between gap-1 pb-2"
         element :nav_button, "size-(--cell-size) p-0 select-none aria-disabled:opacity-50"
         element :caption, "cn-calendar-caption flex-1 text-center select-none"
-        # The dropdown caption (caption_layout: :dropdown) - the NativeSelect
-        # pair centered where the label sits; the selects carry their own
-        # themed treatment.
-        element :caption_dropdowns, "flex flex-1 items-center justify-center gap-1.5"
+        # The dropdown caption (caption_layout: :dropdown), upstream's
+        # overlay pattern: the visible part is TEXT + a small chevron; the
+        # real <select> stretches invisibly over it. Most themes leave the
+        # root chromeless (maia/lyra add a border via
+        # .cn-calendar-dropdown-root); the focus ring here is poetry's
+        # structural a11y floor - an invisible select still needs a
+        # visible focus.
+        element :caption_dropdowns, "flex flex-1 items-center justify-center gap-1.5 text-sm font-medium"
+        # (No cn-calendar-dropdown-root/caption-label names: only maia/lyra
+        # theme this surface upstream - the breadcrumb doctrine, a cn name
+        # the other themes cannot compile does not ship; maia/lyra restyle
+        # via the data-slot hooks instead.)
+        element :dropdown_root, "relative rounded-md " \
+                                "has-[select:focus-visible]:ring-[3px] has-[select:focus-visible]:ring-ring/50"
+        element :dropdown_select, "absolute inset-0 opacity-0"
+        element :dropdown_label, "flex select-none items-center gap-1 text-sm " \
+                                 "font-medium [&>svg]:size-3.5 [&>svg]:text-muted-foreground"
 
         element :grid, "w-full border-collapse"
         element :weekdays, "flex"
