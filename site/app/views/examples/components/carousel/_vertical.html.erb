@@ -1,7 +1,7 @@
 <%= poetry_carousel(label: "Release milestones", orientation: :vertical, class: "mx-auto my-14 grid h-64 w-52") do |carousel| %>
-  <% ["Draft the plan", "Ship the beta", "Gather feedback", "Cut the release"].each_with_index do |milestone, n| %>
+  <% ["Draft the plan", "Ship the beta", "Gather feedback", "Fix the papercuts", "Polish the docs", "Cut the release"].each_with_index do |milestone, n| %>
     <% carousel.with_item do %>
-      <div class="flex h-full flex-col items-center justify-center gap-1 rounded-md border bg-muted p-4 text-center">
+      <div class="flex h-28 flex-col items-center justify-center gap-1 rounded-md border bg-muted p-4 text-center">
         <span class="text-xs font-medium text-muted-foreground">Week <%= n + 1 %></span>
         <span class="text-sm font-semibold"><%= milestone %></span>
       </div>
