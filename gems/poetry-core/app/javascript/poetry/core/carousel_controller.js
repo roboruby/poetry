@@ -3,10 +3,12 @@ import { Controller } from "@hotwired/stimulus"
 // The Carousel engine (N9 W4), decided NATIVE: no embla - the platform's
 // scroll-snap owns the physics (touch, momentum, snapping, overscroll),
 // and this controller adds only what CSS can't: prev/next paging, button
-// state, and arrow keys. Navigation is scrollIntoView on the TARGET slide
-// (RTL- and transform-safe: geometry via bounding rects, never
-// scrollLeft sign conventions). Deferred with embla's machinery: loop
-// (it clones slides), autoplay, and the plugin API.
+// state, and arrow keys. Navigation scrolls the VIEWPORT by a bounding-
+// rect delta (RTL- and transform-safe: never scrollLeft sign
+// conventions) - not scrollIntoView, whose alignment bubbles to
+// scrollable ancestors and whose "nearest" no-ops when several slides
+// fit the viewport at once (the vertical stack). Deferred with embla's
+// machinery: loop (it clones slides), autoplay, and the plugin API.
 const SLIDE_SELECTOR = '[data-slot="carousel-item"]'
 
 export default class CarouselController extends Controller {
@@ -72,10 +74,24 @@ export default class CarouselController extends Controller {
   #scrollTo(index) {
     const slides = this.#slides()
     const target = slides[Math.max(0, Math.min(slides.length - 1, index))]
+    if (!target) return
 
-    target?.scrollIntoView?.({
-      behavior: "smooth", block: "nearest",
-      inline: this.orientationValue === "vertical" ? "nearest" : "start"
+    // Rect delta start-aligns the target inside the viewport alone.
+    // Subtracting scroll-margin lands on the slide's SNAP position (the
+    // items carry negative scroll-margin to cancel their gutter from the
+    // snap area), so the smooth scroll and the CSS snap agree.
+    const vertical = this.orientationValue === "vertical"
+    const rect = target.getBoundingClientRect()
+    const viewport = this.viewportTarget.getBoundingClientRect()
+    const style = getComputedStyle(target)
+    const delta = vertical
+      ? rect.top - (parseFloat(style.scrollMarginTop) || 0) - viewport.top
+      : rect.left - (parseFloat(style.scrollMarginLeft) || 0) - viewport.left
+
+    this.viewportTarget.scrollBy?.({
+      behavior: "smooth",
+      left: vertical ? 0 : delta,
+      top: vertical ? delta : 0
     })
     // Button state also syncs from the scroll events the smooth scroll
     // emits; this immediate pass covers environments without them.
@@ -108,9 +124,24 @@ export default class CarouselController extends Controller {
     const last = this.#slides().length - 1
 
     if (this.hasPreviousTarget) this.previousTarget.disabled = index <= 0
-    if (this.hasNextTarget) this.nextTarget.disabled = index >= last
+    if (this.hasNextTarget) this.nextTarget.disabled = index >= last || this.#atEnd()
 
     this.dispatch("select", { detail: { index } })
+  }
+
+  // Embla trims snap points the scroller cannot reach (containScroll);
+  // native scroll keeps them, so next must ALSO disable at max scroll -
+  // otherwise trailing slides that cannot start-align (multi-visible
+  // layouts) leave a live button that does nothing. Math.abs keeps the
+  // check RTL-safe (scrollLeft runs negative there).
+  #atEnd() {
+    const viewport = this.viewportTarget
+    const vertical = this.orientationValue === "vertical"
+    const max = vertical
+      ? viewport.scrollHeight - viewport.clientHeight
+      : viewport.scrollWidth - viewport.clientWidth
+
+    return max > 0 && Math.abs(vertical ? viewport.scrollTop : viewport.scrollLeft) >= max - 1
   }
 
   #slides() {
