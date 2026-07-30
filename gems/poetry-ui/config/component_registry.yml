@@ -1478,6 +1478,9 @@ components:
       default: false
     - name: search_placeholder
       type: string
+    - name: show_clear
+      type: boolean
+      default: false
     - name: side
       type: symbol
       variants:
@@ -1522,10 +1525,14 @@ components:
     - chip
     - chip_remove
     - chip_input
+    - clear_anchor
+    - clear
+    - clear_icon
+    - trigger_icon_swap
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: b0f3a227d2a2
+    capsule: 26cd53ee3a02
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -1537,6 +1544,7 @@ components:
       actions:
       - chipKeydown
       - chipsPointerdown
+      - clear
       - close
       - inputKeydown
       - nativeChanged
@@ -1608,10 +1616,10 @@ components:
       with hidden inputs.'
     - Do not put interactive elements inside options (an option IS the interactive
       unit).
-    - Deselection in single mode is include_blank (a visible blank option), never
-      a re-click toggle - committing the already-selected value closes without change.
-      In multiple, re-committing IS the deselect gesture (chip-remove is its pointer
-      twin).
+    - 'Deselection in single mode is include_blank (a visible blank option) or show_clear:
+      (the trigger-side X, Base UI''s showClear - single mode only), never a re-click
+      toggle - committing the already-selected value closes without change. In multiple,
+      re-committing IS the deselect gesture (chip-remove is its pointer twin).'
     required_slots:
       item: at least one item
     parts:
@@ -1672,6 +1680,12 @@ components:
           it - one knob, two surfaces)
       - name: "--anchor-height"
         description: popper - the trigger's measured height
+    - name: combobox-clear
+      description: 'The show_clear: deselection X - a trigger sibling seated over
+        the chevron slot; pressing it commits the blank value and returns focus to
+        the trigger. Wears the html hidden attribute while no value is committed (the
+        controller flips it on every commit; the chevron swap derives from that one
+        flip in CSS)'
     - name: command
       description: The embedded engine root - Command's anatomy rendered here against
         its own controller (composition at the markup contract)

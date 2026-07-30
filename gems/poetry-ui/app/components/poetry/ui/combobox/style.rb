@@ -63,6 +63,30 @@ module Poetry
         # min-width and placeholder color are theme-side.
         element :chip_input, "cn-combobox-chip-input flex-1 bg-transparent outline-none"
 
+        # The show_clear: positioning wrapper - shrink-wraps the trigger so
+        # the absolute X seats against the TRIGGER's edge, not the
+        # full-width root (the root is a block; end-2 against it lands at
+        # the page edge). Rendered ONLY when show_clear - every other
+        # instance keeps its wrapper-free markup.
+        element :clear_anchor, "relative inline-flex"
+
+        # The show_clear: X (Base UI Combobox.Clear): a trigger SIBLING
+        # (button-in-button is invalid) absolutely seated over the chevron
+        # slot (px-3 gutter + size-4 icon -> a size-6 hitbox at end-2
+        # centers on it). Structural-only chrome, like the chevron itself.
+        element :clear, "absolute end-2 top-1/2 flex size-6 -translate-y-1/2 items-center " \
+                        "justify-center rounded-sm opacity-50 outline-none transition-opacity " \
+                        "hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-[3px] " \
+                        "focus-visible:ring-ring/50 disabled:pointer-events-none"
+        element :clear_icon, "size-4"
+
+        # The chevron half of the clear swap: while the sibling X is
+        # showable (not [hidden]), the chevron goes INVISIBLE - visibility,
+        # never display, so it keeps its flex box and the value text never
+        # slides under the absolute X (the item_indicator_state pattern).
+        element :trigger_icon_swap,
+                "[[data-slot=combobox-trigger]:has(+[data-slot=combobox-clear]:not([hidden]))_&]:invisible"
+
         # The source's inline lucide icon classes, named per part. The
         # double chevron is the combobox tell (Select wears chevron-down).
         element :trigger_icon, "size-4 opacity-50"

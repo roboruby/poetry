@@ -296,9 +296,10 @@ module Poetry
           "multiple> posts name[] (the [] is appended for you), selection TOGGLES with the popup " \
           "staying open, and chips replace the trigger - never fake multi with hidden inputs.",
           "Do not put interactive elements inside options (an option IS the interactive unit).",
-          "Deselection in single mode is include_blank (a visible blank option), never a re-click " \
-          "toggle - committing the already-selected value closes without change. In multiple, " \
-          "re-committing IS the deselect gesture (chip-remove is its pointer twin)."
+          "Deselection in single mode is include_blank (a visible blank option) or show_clear: (the " \
+          "trigger-side X, Base UI's showClear - single mode only), never a re-click toggle - " \
+          "committing the already-selected value closes without change. In multiple, re-committing " \
+          "IS the deselect gesture (chip-remove is its pointer twin)."
         ].freeze
 
         # The trigger-bound ARIA surface: Field's control_attributes (and
@@ -322,6 +323,12 @@ module Poetry
         # delta vs Select's modal: true. true restores the focus-scope trap
         # for dialog-critical pickers.
         option :modal, :boolean, default: false
+        # Base UI's showClear (single mode only): the trigger-side
+        # deselection X - swaps in over the chevrons while a value is
+        # committed, commits the blank value through the pipeline. Forces
+        # the blank native option so the cleared state serializes as ""
+        # (the include_blank contract).
+        option :show_clear, :boolean, default: false
         # Forwarded to the embedded engine: false = server-driven options
         # (the async Turbo-frame recipe).
         option :filter, :boolean, default: true
@@ -377,6 +384,11 @@ module Poetry
                                    "tracks it - one knob, two surfaces)",
                "--anchor-height" => "popper - the trigger's measured height"
              }
+        part "combobox-clear", "The show_clear: deselection X - a trigger sibling seated over " \
+                               "the chevron slot; pressing it commits the blank value and " \
+                               "returns focus to the trigger. Wears the html hidden attribute " \
+                               "while no value is committed (the controller flips it on every " \
+                               "commit; the chevron swap derives from that one flip in CSS)"
         part "command", "The embedded engine root - Command's anatomy rendered here against its " \
                         "own controller (composition at the markup contract)"
         part "command-input-wrapper", "The input row - search icon + filter input above the list"
@@ -487,6 +499,11 @@ module Poetry
 
         def before_render
           raise ArgumentError, "Combobox requires at least one item (with_item / with_group)" unless items?
+
+          if show_clear && multiple
+            raise ArgumentError, "show_clear: is single-mode only - multiple already has per-chip " \
+                                 "removal and the closed-popup Escape wipe"
+          end
 
           return if named?
 
@@ -736,9 +753,28 @@ module Poetry
         end
 
         # The double chevron is the combobox tell (source-exact; Select
-        # wears chevron-down).
+        # wears chevron-down). show_clear adds the swap class: the chevron
+        # goes invisible (keeping its box) while the sibling X is showable.
         def chevrons
-          render(Icon::Component.new(name: :"chevrons-up-down", class: Style.css(:trigger_icon)))
+          classes = classnames(Style.css(:trigger_icon), (Style.css(:trigger_icon_swap) if show_clear))
+          render(Icon::Component.new(name: :"chevrons-up-down", class: classes))
+        end
+
+        # The show_clear: X - a SIBLING of the trigger (button-in-button is
+        # invalid HTML), absolutely seated over the chevron slot. Server
+        # renders the truthful initial state (hidden with no value); the
+        # controller flips it on every commit.
+        def clear_button
+          attrs = {
+            "data-slot" => "combobox-clear", "type" => "button",
+            "aria-label" => t("poetry.combobox.clear"), "class" => css(:clear)
+          }
+          attrs["hidden"] = true unless selected_label
+          attrs["disabled"] = true if disabled
+          attrs.merge!(combobox_stimulus { |combobox| combobox.with_action(:clear, on: :click) })
+          content_tag(:button, attrs) do
+            render(Icon::Component.new(name: :x, class: Style.css(:clear_icon)))
+          end
         end
 
         # One chip: a div taking REAL focus (tabindex=-1, styled by
@@ -844,7 +880,10 @@ module Poetry
         # selected flags flip to array inclusion.
         def native_options
           rendered = []
-          if !multiple && (placeholder.present? || selected_label.nil?)
+          # show_clear forces the blank option even while a value is
+          # committed - the cleared state must serialize as "" (a native
+          # select with no blank option cannot rest on nothing).
+          if !multiple && (placeholder.present? || selected_label.nil? || show_clear)
             rendered << tag.option(placeholder.to_s, value: "", selected: selected_label.nil? || nil)
           end
           option_set.entries.each do |entry|

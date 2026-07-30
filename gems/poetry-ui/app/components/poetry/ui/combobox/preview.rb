@@ -31,6 +31,17 @@ module Poetry
           end
         end
 
+        # show_clear (Base UI showClear): the trigger-side deselection X
+        # swaps in over the chevrons while a value is committed - the
+        # golden pins the swap (X visible, chevron box kept but invisible).
+        def clear
+          render_component(name: "framework", value: "next.js", show_clear: true,
+                           placeholder: "Select framework...", search_placeholder: "Search framework...",
+                           "aria-label": "Framework") do |combobox|
+            FRAMEWORKS.each { |value, label| combobox.with_item(value: value) { label } }
+          end
+        end
+
         # Groups keep Command's heading anatomy; the filter hides a group
         # when all its options hide.
         def grouped

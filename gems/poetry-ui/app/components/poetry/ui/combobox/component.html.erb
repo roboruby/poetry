@@ -9,7 +9,14 @@
 <% end %>
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
   <%= native_select %>
-  <%= multiple ? chips_frame : trigger_button %>
+  <% if show_clear %>
+    <%# The clear anchor shrink-wraps the trigger (the root is full-width
+        block); the X rides as the trigger's IMMEDIATE next sibling - the
+        chevron-swap CSS keys on that adjacency. %>
+    <span class="<%= css(:clear_anchor) %>"><%= trigger_button %><%= clear_button %></span>
+  <% else %>
+    <%= multiple ? chips_frame : trigger_button %>
+  <% end %>
   <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(content_attributes).to_attributes) do %>
     <% if multiple %>
       <%# MULTIPLE: the popup holds ONLY the listbox (the input lives

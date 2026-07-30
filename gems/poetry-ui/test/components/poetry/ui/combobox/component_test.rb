@@ -456,6 +456,57 @@ module Poetry
           assert_includes html, "cn-combobox-trigger"
           assert_includes html, "cn-combobox-content"
         end
+
+        # -- show_clear (Base UI Combobox.Clear) ---------------------------------
+
+        def test_show_clear_renders_the_x_as_the_triggers_immediate_sibling
+          fragment = doc(render_combobox(show_clear: true, value: "next.js"))
+          clear = fragment.css('button[data-slot="combobox-clear"]').first
+
+          refute_nil clear
+          assert_equal "button", clear["type"]
+          assert_equal "Clear selection", clear["aria-label"]
+          assert_includes clear["data-action"], "poetry--core--combobox#clear"
+          refute clear.has_attribute?("hidden"), "a committed value shows the X"
+          # The chevron-swap CSS keys on trigger + clear ADJACENCY.
+          trigger = fragment.css('[data-slot="combobox-trigger"]').first
+
+          assert_equal clear, trigger.next_element
+          # The chevron keeps its box: the swap class rides the icon.
+          assert_includes trigger.css("svg").last["class"], ":invisible"
+        end
+
+        def test_show_clear_starts_hidden_without_a_value_and_skips_the_swap_class_when_off
+          fragment = doc(render_combobox(show_clear: true))
+
+          assert fragment.css('[data-slot="combobox-clear"]').first.has_attribute?("hidden"),
+                 "no value - the X starts hidden (the controller flips it on every commit)"
+
+          plain = doc(render_combobox)
+
+          assert_empty plain.css('[data-slot="combobox-clear"]')
+          refute_includes plain.css('[data-slot="combobox-trigger"] svg').last["class"], ":invisible"
+        end
+
+        def test_show_clear_forces_the_blank_native_option_and_rides_disabled
+          fragment = doc(render_combobox(show_clear: true, value: "next.js", placeholder: nil))
+          blanks = fragment.css('[data-slot="combobox-native"] option[value=""]')
+
+          assert_equal 1, blanks.length, "the cleared state must serialize as \"\""
+          refute blanks.first.has_attribute?("selected"), "the committed value keeps its selection"
+
+          disabled = doc(render_combobox(show_clear: true, value: "next.js", disabled: true))
+
+          assert disabled.css('[data-slot="combobox-clear"]').first.has_attribute?("disabled")
+        end
+
+        def test_show_clear_is_single_mode_only
+          error = assert_raises(ArgumentError) do
+            render_combobox(show_clear: true, multiple: true, name: "stack")
+          end
+
+          assert_match(/single-mode only/, error.message)
+        end
       end
     end
   end

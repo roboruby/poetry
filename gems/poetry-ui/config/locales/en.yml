@@ -3,6 +3,7 @@ en:
     button:
       loading: "Loading…"
     combobox:
+      clear: "Clear selection"
       empty: "No results found."
       filter_label: "Filter options"
       remove: "Remove %{label}"
