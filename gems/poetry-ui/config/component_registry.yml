@@ -1596,6 +1596,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input;
@@ -2354,6 +2355,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - NEVER make a context menu the only path to an action - it is an invisible affordance;
@@ -3297,6 +3299,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
@@ -3775,6 +3778,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - Use poetry_hover_card - never hand-roll hover-div previews.
@@ -4592,6 +4596,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     - identifier: poetry--core--roving-focus
       targets: []
@@ -5170,6 +5175,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - 'label: is REQUIRED (the nav landmark''s accessible name).'
@@ -5531,6 +5537,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     agent_rules:
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
@@ -6046,6 +6053,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     - identifier: poetry--core--select
       targets: []
@@ -7982,6 +7990,7 @@ components:
       - reposition
       - setAnchor
       - setAnchorElement
+      - strategyValueChanged
       events: []
     - identifier: poetry--core--tooltip
       targets: []
