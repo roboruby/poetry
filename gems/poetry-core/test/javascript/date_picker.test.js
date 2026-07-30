@@ -63,3 +63,51 @@ describe("poetry--core--date-picker", () => {
     expect(closeSpy).not.toHaveBeenCalled()
   })
 })
+
+// The PORTALED coordination (docs/portal-on-open.md S2 - the event
+// bridge's first production consumer): the calendar's change fires INSIDE
+// popover content that portal-on-open moved to body, and the picker's
+// root data-action still hears it because the bridge re-dispatches from
+// the home position. Without the bridge this exact wiring goes deaf.
+describe("poetry--core--date-picker through the portal bridge", () => {
+  const nested = () => `
+    <div id="picker" data-controller="poetry--core--date-picker"
+         data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
+      <div id="pop" data-slot="popover" data-component="popover"
+           data-controller="poetry--core--popover">
+        <button id="trigger" type="button" data-slot="popover-trigger"
+                aria-haspopup="dialog" aria-controls="content" aria-expanded="false"
+                data-action="poetry--core--popover#toggle">
+          <span id="label" data-poetry--core--date-picker-target="label">Pick a date</span>
+        </button>
+        <div id="content" data-slot="popover-content" role="dialog" tabindex="-1" data-closed hidden>
+          <div id="calendar">grid</div>
+        </div>
+      </div>
+    </div>`
+
+  it("a pick inside the PORTALED popover formats the label and closes it", async () => {
+    document.body.innerHTML = nested()
+    const application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+
+    el("trigger").click()
+    await nextFrame()
+
+    expect(el("content").parentNode).toBe(document.body, "the popover portaled")
+
+    el("calendar").dispatchEvent(
+      new CustomEvent("poetry--core--calendar:change", { bubbles: true, detail: { value: "2026-06-20" } })
+    )
+    await nextFrame()
+
+    expect(el("label").textContent).toBe("June 20, 2026")
+    expect(el("content").hasAttribute("data-closed")).toBe(true)
+    expect(el("content").parentNode).toBe(el("pop"), "close restored the content home")
+
+    application.stop()
+    document.body.replaceChildren()
+    await nextFrame()
+  })
+})

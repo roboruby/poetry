@@ -200,7 +200,15 @@ export default class PopperController extends Controller {
     )
 
     if (middlewareData.hide) {
-      const hidden = Boolean(middlewareData.hide.referenceHidden)
+      // Never write the hide verdict onto CLOSED content: a closed-era
+      // pass measures a display:none box (garbage geometry), and its
+      // stale visibility:hidden lingers into the open MICROTASK, where
+      // Chrome silently refuses focus-scope's mount focus (the popover
+      // first-open race - pre-existing, surfaced by the S2 portal
+      // proofs). While content is hidden the verdict resolves to
+      // visible, which routes through the clear/restore branch below so
+      // every open starts clean.
+      const hidden = !content.hidden && Boolean(middlewareData.hide.referenceHidden)
 
       content.style.visibility = hidden ? "hidden" : ""
 
