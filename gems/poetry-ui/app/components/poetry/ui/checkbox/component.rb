@@ -30,6 +30,11 @@ module Poetry
           "Every checkbox needs an accessible name: a Label/Field for= association (preferred) or label:.",
           "Indeterminate is set programmatically/server-side only - no user gesture produces it; use it " \
           "for select-all parents.",
+          "Select-all recipe: wrap parent + rows in data-controller=\"poetry--core--checkbox-group\" with " \
+          "data-action=\"poetry:checkbox:change->poetry--core--checkbox-group#changed\"; mark the parent " \
+          "box data: {\"poetry--core--checkbox-group-target\": \"all\"} and each row box target \"item\" - " \
+          "the parent fans out, rows re-derive checked/unchecked/indeterminate (DataTable's selectable: " \
+          "already does this for its own rows).",
           "Instant-effect settings use Switch; pressed UI tools use Toggle; one-of-N uses RadioGroup.",
           "NEVER write the checked attributes (data-checked/data-unchecked/data-indeterminate) without " \
           "aria-checked and the input's checked property (the controller writes all three; agents " \
