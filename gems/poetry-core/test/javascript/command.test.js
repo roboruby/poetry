@@ -509,5 +509,23 @@ describe("poetry--core--command", () => {
       expect(visibleValues()).toEqual(ALL_VALUES)
       expect(highlightedId()).toBe("item-calendar")
     })
+
+    it("a reset under a HIDDEN popup never unhides the empty part (the reopen 'No results' flash)", async () => {
+      const command = application.getControllerForElementAndIdentifier(el("root"), "poetry--core--command")
+
+      type("cal")
+      expect(el("empty").hidden).toBe(true)
+
+      // The host's close path hides the whole popup FIRST, then resets the
+      // query - items above the list must not count as filtered out.
+      el("root").hidden = true
+      command.reset()
+      await wait(150)
+
+      expect(el("empty").hidden).toBe(true)
+      expect(el("input").value).toBe("")
+
+      el("root").hidden = false
+    })
   })
 })

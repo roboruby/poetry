@@ -455,9 +455,19 @@ export default class CommandController extends Controller {
     return item.hasAttribute("data-disabled") || item.getAttribute("aria-disabled") === "true"
   }
 
-  // An item is hidden when itself or any ancestor (its group, a
-  // server-hidden frame) carries the hidden attribute.
+  // An item is hidden when itself or any ancestor UP TO THE LIST (its
+  // group, a server-hidden frame) carries the hidden attribute. The walk
+  // stops at the list ON PURPOSE: the close-time reset() runs after the
+  // host hid the whole popup, and counting that ancestor made every item
+  // "hidden" - zero visible - so the pass UNHID the empty part and every
+  // reopen flashed "No results found." until the first keystroke.
   #isHidden(item) {
-    return item.closest("[hidden]") !== null
+    const list = this.#list()
+
+    for (let node = item; node && node !== list; node = node.parentElement) {
+      if (node.hidden) return true
+    }
+
+    return false
   }
 }

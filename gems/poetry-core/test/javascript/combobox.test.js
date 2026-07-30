@@ -488,6 +488,21 @@ describe("poetry--core--combobox", () => {
 
       expect(document.getElementById("content")).toBe(null)
     })
+
+    it("reopening after a close never flashes the empty part (the close-time reset under a hidden popup)", async () => {
+      await open()
+      expect(el("empty").hidden).toBe(true)
+
+      pressEscape()
+      await nextFrame()
+
+      expect(el("empty").hidden).toBe(true, "the close-time query reset must not unhide it")
+
+      await open()
+
+      expect(el("empty").hidden).toBe(true)
+      expect(el("item-next.js").hidden).toBe(false)
+    })
   })
 })
 
