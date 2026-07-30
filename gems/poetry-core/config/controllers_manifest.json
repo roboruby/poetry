@@ -135,6 +135,20 @@
       "poetry--core--carousel:select"
     ]
   },
+  "poetry--core--checkbox-group": {
+    "targets": [
+      "all",
+      "item"
+    ],
+    "values": {},
+    "classes": [],
+    "methods": [
+      "changed"
+    ],
+    "events": [
+      "poetry:checkbox-group:change"
+    ]
+  },
   "poetry--core--checked": {
     "targets": [],
     "values": {

@@ -27,6 +27,7 @@ import HoverCardController from "@poetry/controllers/hover_card_controller"
 import ToastController from "@poetry/controllers/toast_controller"
 import ToasterController from "@poetry/controllers/toaster_controller"
 import CheckedController from "@poetry/controllers/checked_controller"
+import CheckboxGroupController from "@poetry/controllers/checkbox_group_controller"
 import PressedController from "@poetry/controllers/pressed_controller"
 import ToggleGroupController from "@poetry/controllers/toggle_group_controller"
 import RadioGroupController from "@poetry/controllers/radio_group_controller"
@@ -77,6 +78,7 @@ export { default as HoverCardController } from "@poetry/controllers/hover_card_c
 export { default as ToastController } from "@poetry/controllers/toast_controller"
 export { default as ToasterController } from "@poetry/controllers/toaster_controller"
 export { default as CheckedController } from "@poetry/controllers/checked_controller"
+export { default as CheckboxGroupController } from "@poetry/controllers/checkbox_group_controller"
 export { default as PressedController } from "@poetry/controllers/pressed_controller"
 export { default as ToggleGroupController } from "@poetry/controllers/toggle_group_controller"
 export { default as RadioGroupController } from "@poetry/controllers/radio_group_controller"
@@ -140,6 +142,7 @@ export const controllers = {
   "poetry--core--toast": ToastController,
   "poetry--core--toaster": ToasterController,
   "poetry--core--checked": CheckedController,
+  "poetry--core--checkbox-group": CheckboxGroupController,
   "poetry--core--pressed": PressedController,
   "poetry--core--toggle-group": ToggleGroupController,
   "poetry--core--radio-group": RadioGroupController,

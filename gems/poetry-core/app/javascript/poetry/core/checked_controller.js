@@ -107,7 +107,8 @@ export default class CheckedController extends Controller {
   }
 
   // set(true | false | "indeterminate") reaches all three states (the
-  // select-all recipe re-enters indeterminate this way).
+  // select-all recipe - checkbox_group_controller - re-enters
+  // indeterminate this way).
   set(state) {
     if (this.#disabled()) return
 
