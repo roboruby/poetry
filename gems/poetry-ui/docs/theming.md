@@ -171,3 +171,31 @@ poetry-idiom, what was dropped and why) live in
 `docs/<theme>-port-ledger.txt` and each fragment's header comment. The
 port pipeline itself (detector, per-theme plans, writer, thin-body scan)
 is banked in `script/theme_port/`.
+
+## Portals and scoped themes
+
+Popper-family overlays (tooltip, hover card, popover, select, combobox,
+the menus) **portal to `<body>` while open** and return home on close
+(`docs/portal-on-open.md` in poetry-core). With a normal install this is
+invisible to theming: one theme loads globally, so a body-level popup
+matches the same rules it matched in place. The docs-site style switcher
+is equally unaffected — it keeps its `style-<name>` class on `<html>`,
+and `<body>` is inside that scope.
+
+The one setup that needs a knob is a host that scopes a theme to a
+SUBTREE (a themed section inside a differently-themed page). A popup
+portaled to `<body>` would leave that scope, so point it at a container
+inside the scope instead:
+
+```erb
+<div class="my-scoped-theme">
+  <div id="scoped-overlays"></div>
+  <%= poetry_popover(..., "data-poetry-portal-container": "scoped-overlays") %>
+</div>
+```
+
+`data-poetry-portal-container` names the portal target by id (the Base
+UI / Radix `container` prop, attribute-shaped) and rides the component
+root. Pick a container that no `overflow: hidden` ancestor clips and no
+transformed ancestor captures — those two escapes are most of what the
+portal buys.
