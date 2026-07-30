@@ -69,6 +69,7 @@ export default class CommandController extends Controller {
   #connected = false
   #passTimer = null
   #statusTimer = null
+  #delegatedList = null
 
   connect() {
     // Reconcile-on-connect (Turbo morph/stream safe): a non-empty input
@@ -79,6 +80,21 @@ export default class CommandController extends Controller {
       this.#pass({ silent: true })
     } else {
       this.#seat({ silent: true })
+    }
+
+    // Portal delegation (docs/portal-on-open.md): Stimulus scopes
+    // data-actions to the controller's subtree, so the per-item
+    // activate/pointerHighlight actions go DEAD when the popup portals
+    // out of it (Combobox multiple mounts this engine on the ROOT while
+    // the listbox moves to body). The listeners ride the LIST node - they
+    // travel with the portal; in-scope items remain the actions' job
+    // (#delegatedItem guards the double-fire).
+    const list = this.#list()
+
+    if (list) {
+      list.addEventListener("click", this.#onListClick)
+      list.addEventListener("pointermove", this.#onListPointermove)
+      this.#delegatedList = list
     }
 
     this.#connected = true
@@ -92,6 +108,33 @@ export default class CommandController extends Controller {
 
     this.#passTimer = null
     this.#statusTimer = null
+
+    if (this.#delegatedList) {
+      this.#delegatedList.removeEventListener("click", this.#onListClick)
+      this.#delegatedList.removeEventListener("pointermove", this.#onListPointermove)
+      this.#delegatedList = null
+    }
+  }
+
+  #onListClick = (event) => {
+    const item = this.#delegatedItem(event)
+
+    if (item && !this.#isDisabled(item)) this.#activate(item)
+  }
+
+  #onListPointermove = (event) => {
+    const item = this.#delegatedItem(event)
+
+    if (item && !this.#isDisabled(item) && !this.#isHidden(item)) this.#highlight(item, { scroll: false })
+  }
+
+  #delegatedItem(event) {
+    if (!(event.target instanceof Element)) return null
+    // In-scope items are the Stimulus actions' job - delegation exists
+    // only for items the portal moved OUT of this controller's subtree.
+    if (this.element.contains(event.target)) return null
+
+    return event.target.closest(ITEM_SELECTOR)
   }
 
   // --- the filter pass (input action) ---
@@ -262,7 +305,11 @@ export default class CommandController extends Controller {
 
     const visibleItems = items.filter((item) => !this.#isHidden(item))
     const visible = visibleItems.length
-    const empty = this.element.querySelector(EMPTY_SELECTOR)
+    // List-scoped first: in Combobox's multiple mode this engine rides the
+    // ROOT while portal-on-open moves the popup (list + empty + status) to
+    // body - element scoping goes blind there; the list resolves by the
+    // input's aria-controls id, and the parts around it hang off it.
+    const empty = list.querySelector(EMPTY_SELECTOR) ?? this.element.querySelector(EMPTY_SELECTOR)
 
     if (empty) empty.hidden = visible !== 0
 
@@ -359,7 +406,11 @@ export default class CommandController extends Controller {
   // / data-one / data-other with a %{count} placeholder) so the engine
   // stays i18n-free.
   #announce(visible) {
-    const status = this.element.querySelector(STATUS_SELECTOR)
+    // Element scope first (the bare palette), then beside the resolved
+    // list - Combobox multiple portals the popup (status included) out of
+    // this engine's root subtree (docs/portal-on-open.md).
+    const status = this.element.querySelector(STATUS_SELECTOR) ??
+      this.#list()?.parentElement?.querySelector(STATUS_SELECTOR)
 
     if (!status) return
 

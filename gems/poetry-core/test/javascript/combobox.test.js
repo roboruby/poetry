@@ -80,7 +80,8 @@ const markup = ({ value = "", open = false, modal = false, showClear = false } =
           <span id="status" data-slot="command-status" role="status" aria-live="polite"></span>
         </div>
       </div>
-    </div>`
+    </div>
+    <button id="after">after</button>`
 }
 
 const controller = (application) =>
@@ -332,16 +333,31 @@ describe("poetry--core--combobox", () => {
       expect(document.activeElement).toBe(el("trigger"))
     })
 
-    it("Tab closes WITHOUT commit and lets focus proceed (Popover semantics - the Select delta)", async () => {
+    it("Tab closes WITHOUT commit and lands focus AFTER the trigger (D6 - the popup lives at body)", async () => {
       await open()
 
       const event = press(el("input"), "Tab")
       await nextFrame()
 
-      expect(event.defaultPrevented).toBe(false) // focus proceeds naturally
+      // The portaled popup cannot let focus proceed naturally (it would
+      // land at body's end) - the close re-routes it to where the
+      // un-portaled DOM would have: the next tabbable after the trigger.
+      expect(event.defaultPrevented).toBe(true)
+      expect(document.activeElement).toBe(el("after"))
       expect(el("content").hidden).toBe(true)
       expect(el("native").value).toBe("sveltekit")
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
+    })
+
+    it("Shift+Tab closes WITHOUT commit and lands focus ON the trigger (D6)", async () => {
+      await open()
+
+      const event = press(el("input"), "Tab", { shiftKey: true })
+      await nextFrame()
+
+      expect(event.defaultPrevented).toBe(true)
+      expect(document.activeElement).toBe(el("trigger"))
+      expect(el("content").hidden).toBe(true)
     })
 
     it("modal: true leaves Tab to the focus-scope trap (the popup stays open)", async () => {
@@ -431,6 +447,46 @@ describe("poetry--core--combobox", () => {
 
       expect(ariaSelected()).toEqual(["false", "true", "false", "false", "false"]) // committed value unmoved
       expect(el("native").value).toBe("sveltekit")
+    })
+  })
+
+  describe("portal-on-open (docs/portal-on-open.md S4)", () => {
+    it("open portals the content to body + flips popper to absolute; a commit restores both", async () => {
+      await open()
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+      expect(document.activeElement).toBe(el("input"), "the typing session starts inside the portaled popup")
+
+      click(el("item-remix"))
+      await nextFrame()
+
+      expect(el("native").value).toBe("remix")
+      expect(el("content").hidden).toBe(true)
+      expect(el("content").parentNode).toBe(el("root"))
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+    })
+
+    it("a server-pinned open combobox portals one frame after connect (the popper cache order)", async () => {
+      application.stop()
+      application = await mount({ value: "sveltekit", open: true })
+
+      // (the deferral itself is a rAF - too fast to assert against
+      // jsdom's 16ms rAF timer without flaking; the OUTCOME is the pin)
+      await new Promise((resolve) => setTimeout(resolve, 40))
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+    })
+
+    it("disconnecting an open combobox never strands content at body (drop-never-strand)", async () => {
+      await open()
+      expect(el("content").parentNode).toBe(document.body)
+
+      el("root").remove()
+      await nextFrame()
+
+      expect(document.getElementById("content")).toBe(null)
     })
   })
 })
@@ -772,6 +828,47 @@ describe("poetry--core--combobox (multiple)", () => {
       expect(nativeSelected()).toEqual(["next.js", "nuxt.js"]) // native keeps option order
       expect(el("root").getAttribute("data-poetry--core--combobox-value-value"))
         .toBe('["nuxt.js","next.js"]')
+    })
+  })
+
+  describe("portal-on-open (docs/portal-on-open.md S4 - the ROOT-mounted engine over a portaled popup)", () => {
+    it("the popup portals while the chips field stays home; the engine still filters the portaled list", async () => {
+      await openMultiple()
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("chips").closest("#root")).toBe(el("root"), "the anchor field never moves")
+
+      el("input").value = "re"
+      el("input").dispatchEvent(new Event("input", { bubbles: true }))
+      await nextFrame()
+
+      // the ROOT-mounted engine reaches the body-level list via the
+      // input's aria-controls id - hiding, highlight, empty all live
+      expect(el("item-remix").hasAttribute("hidden")).toBe(false)
+      expect(el("item-next.js").hasAttribute("hidden")).toBe(true)
+      expect(el("item-remix").hasAttribute("data-highlighted")).toBe(true)
+    })
+
+    it("clicking an item in the PORTALED list commits via delegation (Stimulus actions unscope at body)", async () => {
+      await openMultiple()
+      expect(el("content").parentNode).toBe(document.body)
+
+      click(el("item-astro"))
+      await nextFrame()
+
+      expect(nativeSelected()).toContain("astro")
+      expect(el("content").hidden).toBe(false, "multiple keeps the popup open on select")
+    })
+
+    it("Tab from the HOME-side chips input closes and proceeds naturally (no D6 re-route)", async () => {
+      await openMultiple()
+
+      const event = press(el("input"), "Tab")
+      await nextFrame()
+
+      expect(event.defaultPrevented).toBe(false)
+      expect(el("content").hidden).toBe(true)
+      expect(el("content").parentNode).toBe(el("root"))
     })
   })
 })

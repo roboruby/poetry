@@ -1,8 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
+import { isPortaled, portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
+import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
 // The Combobox ORCHESTRATOR (Combobox): Select's shell
 // x Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin
@@ -70,6 +72,7 @@ const COMMAND_IDENTIFIER = "poetry--core--command"
 // NO roving-focus (the popup is Command's activedescendant session - the
 // family's first popup without it).
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable"]
+const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 export default class ComboboxController extends Controller {
   // The events this controller dispatches (manifest surface;
@@ -129,15 +132,35 @@ export default class ComboboxController extends Controller {
     this.#connected = true
 
     if (this.#isOpen()) {
-      if (content) this.#activateLayers(content)
+      if (content) {
+        this.#activateLayers(content)
+        this.#portalPinned(content)
+      }
       this.openValue = true
     } else if (this.openValue) {
       this.#show("trigger-press")
     }
   }
 
+  // The reconcile path portals ONE FRAME LATE: connect order within a boot
+  // is unordered, and portaling before the sibling popper's connect would
+  // rob it of its content target before it could cache the node.
+  #portalPinned(content) {
+    window.requestAnimationFrame(() => {
+      if (!this.#connected || !this.#isOpen()) return
+
+      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.element.setAttribute(POPPER_STRATEGY, "absolute")
+    })
+  }
+
   disconnect() {
     this.#connected = false
+
+    // Never leave content stranded at the container (drop-never-strand).
+    const content = this.#content()
+
+    if (content) restoreContent(content)
 
     for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
 
@@ -417,6 +440,14 @@ export default class ComboboxController extends Controller {
 
     const expander = this.#expander()
 
+    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // enter presence (reparenting mid-animation restarts it), re-anchor
+    // absolute - static under compositor scroll, transform-immune. In
+    // multiple mode only the popup (listbox) moves; the chips field with
+    // its inline input stays home as the popper anchor.
+    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.element.setAttribute(POPPER_STRATEGY, "absolute")
+
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
     if (seed) content.setAttribute("data-open-seed", seed)
@@ -477,6 +508,10 @@ export default class ComboboxController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
+        // Home AFTER the exit finished and hidden landed (D4); focus
+        // return is focus-scope's ref-based job, indifferent to the move.
+        restoreContent(content)
+        this.element.setAttribute(POPPER_STRATEGY, "fixed")
         this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
         // Reset the query so reopen starts clean (the React demo got this
         // from remounting; persistent DOM does it deliberately).
@@ -733,10 +768,41 @@ export default class ComboboxController extends Controller {
   // semantics - THE delta vs Select's Tab-inert). modal:true leaves Tab to
   // the focus-scope trap instead. Everything else inside the popup is
   // Command's activedescendant map - no second keyboard map lives here.
+  //
+  // D6 (docs/portal-on-open.md): a Tab originating INSIDE the portaled
+  // popup would proceed from body's end, not from the combobox - close
+  // (unchanged) and place focus where the un-portaled DOM would have
+  // landed it: the trigger on Shift+Tab, the next tabbable after it on
+  // Tab (the react-aria rule). Multiple mode's typing surface is the
+  // chips input at HOME, so its Tab-out proceeds naturally, untouched.
   #onKeydown = (event) => {
     if (event.key !== "Tab" || this.modalValue || !this.#isOpen()) return
 
+    const content = this.#content()
+    const fromPortaled = Boolean(content) && isPortaled(content) &&
+      event.target instanceof Element && content.contains(event.target)
+
     this.#hide("focus-out", { restoreFocus: false })
+
+    if (!fromPortaled) return
+
+    const anchor = this.#trigger()
+
+    if (!anchor) return
+
+    event.preventDefault()
+
+    if (event.shiftKey) {
+      anchor.focus()
+      return
+    }
+
+    const tabbables = tabbableWithin(document.body)
+    const next = tabbables
+      .slice(tabbables.indexOf(anchor) + 1)
+      .find((element) => !content.contains(element))
+
+    ;(next ?? anchor).focus()
   }
 
   // A press on the combobox's OWN trigger is the toggle's job (the popover
@@ -817,8 +883,11 @@ export default class ComboboxController extends Controller {
 
   // The trigger's aria-controls points at the LISTBOX (the a11y-true
   // relationship); the popup container is its closest content wrapper.
+  // Multiple has no trigger - the chips frame's inline input carries the
+  // same aria-controls (and sits HOME, so this read survives the portal).
   #listbox() {
-    const id = this.#trigger()?.getAttribute("aria-controls")
+    const id = this.#trigger()?.getAttribute("aria-controls") ??
+      this.#chips()?.querySelector(INPUT_SELECTOR)?.getAttribute("aria-controls")
 
     return id ? document.getElementById(id) : null
   }
