@@ -608,8 +608,18 @@ module Poetry
           attrs.merge!(trigger_stimulus_attributes)
           attrs.merge!(trigger_aria_attributes)
           content_tag(:button, attrs) do
-            safe_join([trigger, value_display, chevrons].compact)
+            safe_join([leading_content, chevrons])
           end
+        end
+
+        # A custom trigger slot (leading icon) GROUPS with the value display
+        # - three bare children under justify-between would strand the text
+        # mid-row (icon left, text center, chevrons right). Slot-less
+        # triggers keep the flat two-child markup byte-identical.
+        def leading_content
+          return value_display unless trigger?
+
+          content_tag(:span, safe_join([trigger, value_display]), "class" => Style.css(:trigger_leading))
         end
 
         # The chips FIELD (multiple: - replaces the trigger, Base UI's

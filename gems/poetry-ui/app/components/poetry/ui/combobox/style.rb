@@ -21,6 +21,12 @@ module Poetry
         # The value DISPLAY truncates inside the fixed-width trigger.
         element :value, "truncate"
 
+        # The leading group (with_trigger only): a custom icon is a PREFIX
+        # to the value, not a third justify-between child - grouped, the
+        # chevrons stay the row's other end. min-w-0 keeps the value's
+        # truncate working inside the flex group.
+        element :trigger_leading, "flex min-w-0 items-center gap-2"
+
         # The popup: Popover's chrome retuned per the demo (p-0 - the
         # Command brings its own padding); the anchor-width binding stays
         # inline (popper measures the anchor and sets the generic var).

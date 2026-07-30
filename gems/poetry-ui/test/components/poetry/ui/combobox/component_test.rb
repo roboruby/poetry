@@ -457,6 +457,27 @@ module Poetry
           assert_includes html, "cn-combobox-content"
         end
 
+        def test_a_custom_trigger_icon_groups_with_the_value_display
+          fragment = doc(render_combobox { |combobox|
+            combobox.with_trigger { "<svg data-icon></svg>".html_safe }
+            combobox.with_item(value: "next.js") { "Next.js" }
+          })
+          trigger = fragment.css('[data-slot="combobox-trigger"]').first
+          value = trigger.css('[data-slot="combobox-value"]').first
+          group = value.parent
+
+          assert_equal "span", group.name, "icon + value share a leading group under justify-between"
+          assert_includes group["class"], "min-w-0", "truncate must keep working inside the flex group"
+          assert_predicate group.css("svg[data-icon]"), :any?, "the slot content rides the same group"
+          # the chevrons stay OUTSIDE the group - the row's other end
+          assert_equal trigger, group.parent
+
+          # slot-less triggers keep the flat two-child markup byte-identical
+          plain = doc(render_combobox).css('[data-slot="combobox-value"]').first
+
+          assert_equal "button", plain.parent.name
+        end
+
         # -- show_clear (Base UI Combobox.Clear) ---------------------------------
 
         def test_show_clear_renders_the_x_as_the_triggers_immediate_sibling

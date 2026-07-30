@@ -1516,6 +1516,7 @@ components:
     elements:
     - trigger
     - value
+    - trigger_leading
     - content
     - input_scale
     - item_indicator
@@ -1532,7 +1533,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: 26cd53ee3a02
+    capsule: eb0896234742
     controllers:
     - identifier: poetry--core--combobox
       targets: []
