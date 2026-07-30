@@ -108,6 +108,7 @@
 [[data-copied]_&]:scale-0
 [[data-copied]_&]:scale-100
 [[data-disabled]_&]:pointer-events-none
+[[data-slot=combobox-trigger]:has(+[data-slot=combobox-clear]:not([hidden]))_&]:invisible
 [[data-state=masked]:not([data-disabled])_&]:cursor-pointer
 [[data-state=masked]:not([data-disabled])_&]:pointer-events-auto
 [[data-state=masked]_&]:flex
@@ -683,6 +684,7 @@ flex-col-reverse
 flex-row
 flex-wrap
 focus-visible:border-ring
+focus-visible:opacity-100
 focus-visible:outline-1
 focus-visible:outline-hidden
 focus-visible:outline-ring
@@ -1209,6 +1211,7 @@ transition-[width]
 transition-all
 transition-colors
 transition-none
+transition-opacity
 transition-transform
 translate-x-px
 translate-y-[calc(-50%_-_2px)]

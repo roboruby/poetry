@@ -98,6 +98,7 @@ Class: Poetry::Ui::Checkbox::Component - BEM block `poetry-ui-checkbox`.
 - RULE: Always give it a name: in forms - a checkbox without one submits nothing (visual-only mode is for controlled UI like DataTable row selection ONLY).
 - RULE: Every checkbox needs an accessible name: a Label/Field for= association (preferred) or label:.
 - RULE: Indeterminate is set programmatically/server-side only - no user gesture produces it; use it for select-all parents.
+- RULE: Select-all recipe: wrap parent + rows in data-controller="poetry--core--checkbox-group" with data-action="poetry:checkbox:change->poetry--core--checkbox-group#changed"; mark the parent box data: {"poetry--core--checkbox-group-target": "all"} and each row box target "item" - the parent fans out, rows re-derive checked/unchecked/indeterminate (DataTable's selectable: already does this for its own rows).
 - RULE: Instant-effect settings use Switch; pressed UI tools use Toggle; one-of-N uses RadioGroup.
 - RULE: NEVER write the checked attributes (data-checked/data-unchecked/data-indeterminate) without aria-checked and the input's checked property (the controller writes all three; agents patching DOM must too).
 - RULE: Don't suppress unchecked_value unless using the array idiom - an unchecked box that submits nothing silently keeps the old server value.
@@ -122,6 +123,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `placeholder:` (string)
 - `required:` (boolean) - default false
 - `search_placeholder:` (string)
+- `show_clear:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
 - `value:` (string)
@@ -132,6 +134,7 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside | states: data-placeholder (no option is committed (bare; the controller toggles it on every commit)); data-popup-open (the popup is open (bare while open, absent while closed - the controller flips it with the open state))
 - PART `combobox-value` - The value display span - the selected option's label, or the placeholder | states: data-placeholder (placeholder: is given - carries the placeholder text so the controller can restore it)
 - PART `combobox-content` - The popper-positioned popup housing the embedded Command anatomy - open/closed and the resolved placement ride here | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side - server-rendered from side:, rewritten to the resolved side by popper on open); data-align=start|center|end (the placement alignment - server-rendered from align:, rewritten by popper on open) | vars: --transform-origin (popper - the animation origin matching the resolved placement); --available-width (popper - viewport space available to the popup post-flip); --available-height (popper - viewport space available to the popup post-flip); --anchor-width (popper - the trigger's measured width (the popup width tracks it - one knob, two surfaces)); --anchor-height (popper - the trigger's measured height)
+- PART `combobox-clear` - The show_clear: deselection X - a trigger sibling seated over the chevron slot; pressing it commits the blank value and returns focus to the trigger. Wears the html hidden attribute while no value is committed (the controller flips it on every commit; the chevron swap derives from that one flip in CSS)
 - PART `command` - The embedded engine root - Command's anatomy rendered here against its own controller (composition at the markup contract)
 - PART `command-input-wrapper` - The input row - search icon + filter input above the list
 - PART `command-search-icon` - Decorative search glyph beside the input
@@ -148,7 +151,7 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip | states: data-placeholder (the selection is empty (bare; the controller flips it on every commit - the toolbar role departs with it)); data-disabled (disabled: is set - every chip mutation is gated); data-remove-label (always - the localized chip-remove template (a literal label placeholder the controller interpolates for client-built chips))
 - PART `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button | states: data-value (always - the chip's committed value (the native <option> twin)); data-disabled (disabled: is set (chip focus is blocked entirely))
 - PART `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press
-- WIRING `poetry--core--combobox`: values modal, multiple, open, value; actions chipKeydown, chipsPointerdown, close, inputKeydown, nativeChanged, open, openValueChanged, removeChip, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
+- WIRING `poetry--core--combobox`: values modal, multiple, open, value; actions chipKeydown, chipsPointerdown, clear, close, inputKeydown, nativeChanged, open, openValueChanged, removeChip, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
@@ -158,7 +161,7 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - RULE: Async options: filter: false + the Turbo-frame ?q= recipe - AND the frame must render the twin native <option> for every committable item (the recipe's one hard rule).
 - RULE: multiple: true is the multi-select/chips mode: value: takes an ARRAY, the native <select multiple> posts name[] (the [] is appended for you), selection TOGGLES with the popup staying open, and chips replace the trigger - never fake multi with hidden inputs.
 - RULE: Do not put interactive elements inside options (an option IS the interactive unit).
-- RULE: Deselection in single mode is include_blank (a visible blank option), never a re-click toggle - committing the already-selected value closes without change. In multiple, re-committing IS the deselect gesture (chip-remove is its pointer twin).
+- RULE: Deselection in single mode is include_blank (a visible blank option) or show_clear: (the trigger-side X, Base UI's showClear - single mode only), never a re-click toggle - committing the already-selected value closes without change. In multiple, re-committing IS the deselect gesture (chip-remove is its pointer twin).
 
 ## date_field (`poetry_date_field`)
 
