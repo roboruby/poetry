@@ -456,4 +456,57 @@ describe("poetry--core--select", () => {
       expect(el("content").hidden).toBe(true)
     })
   })
+
+  describe("portal-on-open (docs/portal-on-open.md S3)", () => {
+    it("open portals the content to body + flips popper to absolute; close restores both and focus returns", async () => {
+      await open()
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+      // the selected option holds REAL focus inside the portaled listbox
+      expect(document.activeElement).toBe(el("item-banana"))
+
+      pressEscape()
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("content").parentNode).toBe(el("root"))
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+      expect(document.activeElement).toBe(el("trigger"))
+    })
+
+    it("an item press inside the PORTALED listbox still commits through the native-first pipeline", async () => {
+      await open()
+      expect(el("content").parentNode).toBe(document.body)
+
+      click(el("item-cherry"))
+      await nextFrame()
+
+      expect(el("native").value).toBe("cherry")
+      expect(el("content").hidden).toBe(true)
+      expect(el("content").parentNode).toBe(el("root"))
+    })
+
+    it("a server-pinned open select portals one frame after connect (the popper cache order)", async () => {
+      application.stop()
+      application = await mount({ value: "banana", open: true })
+
+      // (the deferral itself is a rAF - too fast to assert against
+      // jsdom's 16ms rAF timer without flaking; the OUTCOME is the pin)
+      await new Promise((resolve) => setTimeout(resolve, 40))
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+    })
+
+    it("disconnecting an open select never strands content at body (drop-never-strand)", async () => {
+      await open()
+      expect(el("content").parentNode).toBe(document.body)
+
+      document.getElementById("root").remove()
+      await nextFrame()
+
+      expect(document.getElementById("content")).toBe(null)
+    })
+  })
 })
