@@ -1092,7 +1092,7 @@ components:
     - control_previous_vertical
     - control_next_horizontal
     - control_next_vertical
-    capsule: beb112a14afe
+    capsule: e498e4887de0
     controllers:
     - identifier: poetry--core--carousel
       targets:

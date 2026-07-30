@@ -21,8 +21,13 @@ module Poetry
         element :track_vertical, "-mt-4 flex-col"
 
         element :item, "min-w-0 shrink-0 grow-0 basis-full snap-start"
-        element :item_horizontal, "pl-4"
-        element :item_vertical, "pt-4"
+        # The negative scroll-margin cancels the gutter from the snap area:
+        # native snap-start (and scrollIntoView) aligns the item's BORDER
+        # box, which includes the pl-4 gutter - without it, every slide
+        # after the first snaps 16px short and its trailing edge clips.
+        # Embla never had this seam (it translates by measured offsets).
+        element :item_horizontal, "pl-4 -scroll-ml-4"
+        element :item_vertical, "pt-4 -scroll-mt-4"
 
         element :control, "absolute touch-manipulation rounded-full"
         element :control_previous_horizontal, "inset-y-0 -left-12 my-auto"
