@@ -9,10 +9,15 @@ module Poetry
       # the trigger, and the closed trigger typeaheads without opening
       # (native parity). Asserts ride data-open/aria-expanded/the native
       # value - the Base UI contract, not markup internals.
+      #
+      # CONTENT RESOLVES THROUGH THE ID PAIR, document-wide: portal-on-open
+      # moves the open listbox to body (docs/portal-on-open.md), so root
+      # scoping stops holding for content and its items - the trigger's
+      # aria-controls id is the production controllers' own resolution
+      # rule, and id-anchored selectors keep Capybara's waiting semantics.
       class Select < Tester
         def open?(wait: 0)
-          part?("select-content", wait: wait) &&
-            !hidden_part("select-content")["data-open"].nil?
+          session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
         rescue Capybara::ElementNotFound
           false
         end
@@ -28,13 +33,13 @@ module Poetry
             press(trigger)
           end
 
-          root.assert_selector("[data-slot='select-content'][data-open][data-side]")
+          session.assert_selector("##{content_id}[data-slot='select-content'][data-open][data-side]")
           self
         end
 
         def close
           keys(:escape) if open?
-          root.assert_selector("[data-slot='select-content'][data-closed]", visible: :all)
+          session.assert_selector("##{content_id}[data-closed]", visible: :all)
           self
         end
 
@@ -50,7 +55,7 @@ module Poetry
             press(option(text))
           end
 
-          root.assert_selector("[data-slot='select-content'][data-closed]", visible: :all)
+          session.assert_selector("##{content_id}[data-closed]", visible: :all)
           self
         end
 
@@ -67,7 +72,7 @@ module Poetry
 
         def options
           open unless open?
-          parts("select-item").map(&:text)
+          content.all("[data-slot='select-item']").map(&:text)
         end
 
         private
@@ -75,28 +80,39 @@ module Poetry
         # Bounded highlight walk: at most one pass over the items - a
         # missing/mistyped label raises instead of arrowing forever.
         def walk_highlight_to(text)
-          (parts("select-item").size + 1).times do
+          items = content.all("[data-slot='select-item']")
+
+          (items.size + 1).times do
             return if highlighted_text == text
 
             keys(:down)
           end
 
           raise Capybara::ElementNotFound,
-                "no option #{text.inspect} reached by ArrowDown - options: #{parts("select-item").map(&:text).inspect}"
+                "no option #{text.inspect} reached by ArrowDown - options: #{items.map(&:text).inspect}"
         end
 
         def trigger
           part("select-trigger")
         end
 
+        # The trigger's aria-controls names the listbox wherever it sits.
+        def content_id
+          @content_id ||= trigger["aria-controls"]
+        end
+
+        def content
+          session.find("##{content_id}", visible: :all)
+        end
+
         def option(text)
-          root.find("[data-slot='select-item']", text: text, exact_text: true)
+          content.find("[data-slot='select-item']", text: text, exact_text: true)
         end
 
         # Select's active option is REAL FOCUS (the Radix-parity delta vs
         # the menu family, which marks data-highlighted).
         def highlighted_text
-          root.find("[data-slot='select-item']:focus", wait: 1).text
+          content.find("[data-slot='select-item']:focus", wait: 1).text
         rescue Capybara::ElementNotFound
           nil
         end

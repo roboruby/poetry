@@ -43,9 +43,12 @@ module Poetry
           root.all(slot_selector(slot), **)
         end
 
-        # Overlay contents portal-free in poetry (server-rendered in
-        # place), but visibility flips via hidden/data-open - look through
-        # visibility so "the closed content" is still addressable.
+        # Overlay content PORTALS to body while open (portal-on-open,
+        # docs/portal-on-open.md) - root-scoped lookups only hold for
+        # closed content and non-overlay parts. Component testers resolve
+        # open content document-wide through the trigger's aria-controls
+        # id (the production controllers' own rule); visibility flips via
+        # hidden/data-open, so look through visibility for closed content.
         def hidden_part(slot)
           root.find(slot_selector(slot), visible: :all)
         end
