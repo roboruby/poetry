@@ -99,6 +99,7 @@
 [--translate-x:var(--drawer-swipe-movement-x,0px)]
 [--translate-y:calc(-1*var(--drawer-swipe-movement-y,0px))]
 [--translate-y:var(--drawer-swipe-movement-y,0px)]
+[.border-t]:pt-6
 [:not([data-selected])>&]:hidden
 [[data-copied]_&]:opacity-0
 [[data-copied]_&]:opacity-100
