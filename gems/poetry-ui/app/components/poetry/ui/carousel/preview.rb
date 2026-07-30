@@ -3,8 +3,9 @@
 module Poetry
   module Ui
     module Carousel
-      # The Carousel preview: full-width slides and a multi-slide strip.
-      # The -left-12/-right-12 controls need gutter room (px-14).
+      # The Carousel preview: full-width slides, a responsive gallery, the
+      # spacing trio, and the vertical stack. The -left-12/-right-12
+      # controls need gutter room (px-14).
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component(label: "Featured artwork", class: "mx-14 w-64") do |carousel|
@@ -17,11 +18,15 @@ module Poetry
           end
         end
 
-        def strip
-          render_component(label: "Related items", class: "mx-14 w-96") do |carousel|
-            6.times do |n|
-              carousel.with_item(classes: "basis-1/3") do
-                tag.div((n + 1).to_s, class: "flex h-24 items-center justify-center rounded-md border bg-muted")
+        # The Sizes gallery (absorbs the old strip preview): responsive
+        # per-item bases, mirroring the docs example - the golden pins the
+        # rig-width rendering.
+        def sizes
+          render_component(label: "Gallery sizes", class: "mx-14 w-96") do |carousel|
+            5.times do |n|
+              carousel.with_item(classes: "basis-1/2 lg:basis-1/3") do
+                tag.div((n + 1).to_s,
+                        class: "flex aspect-square items-center justify-center rounded-md border bg-muted text-2xl")
               end
             end
           end
