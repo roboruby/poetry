@@ -288,6 +288,20 @@ describe("poetry--core--popper", () => {
     expect(floating.arrow).toHaveBeenCalledWith({ element: arrowElement })
   })
 
+  it("flipping strategyValue live re-arms autoUpdate and repositions in the new coordinate space", async () => {
+    const { root, content } = await mount()
+
+    expect(content.style.position).toBe("fixed")
+    expect(floating.autoUpdate).toHaveBeenCalledTimes(1)
+
+    root.setAttribute(`data-${ID}-strategy-value`, "absolute")
+    await nextFrame() // value callbacks ride the attribute MutationObserver
+
+    expect(floating.autoUpdate).toHaveBeenCalledTimes(2)
+    expect(stopAutoUpdate).toHaveBeenCalledTimes(1)
+    expect(content.style.position).toBe("absolute")
+  })
+
   it("reposition() re-runs computePosition", async () => {
     const { controller } = await mount()
 

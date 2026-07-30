@@ -104,6 +104,16 @@ export default class PopperController extends Controller {
     this.#start()
   }
 
+  // Reactive strategy (the portal seam, docs/portal-on-open.md D3): a
+  // consumer flips fixed <-> absolute when it portals/restores content;
+  // re-arming repositions in the new coordinate space immediately.
+  strategyValueChanged() {
+    if (!this.#connected) return
+
+    this.#stop()
+    this.#start()
+  }
+
   // Manual re-run for consumers whose geometry changed outside autoUpdate's
   // sensors (e.g. content swapped by a Turbo Stream). Returns the update
   // promise so callers can await settlement.

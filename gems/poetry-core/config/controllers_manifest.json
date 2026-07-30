@@ -917,7 +917,8 @@
       "disconnect",
       "reposition",
       "setAnchor",
-      "setAnchorElement"
+      "setAnchorElement",
+      "strategyValueChanged"
     ],
     "events": []
   },

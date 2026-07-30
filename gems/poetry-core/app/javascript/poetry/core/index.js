@@ -3,6 +3,7 @@
 // pins this tree; zero build) and this same tree as the npm package for
 // esbuild / Vite / jsbundling hosts. Never requires a bundler.
 
+import { registerBridgeEvents } from "@poetry/controllers/helpers/portal"
 import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
@@ -169,6 +170,12 @@ export const controllers = {
   "poetry--core--scroll-spy": ScrollSpyController,
   "poetry--core--optimistic-form": OptimisticFormController
 }
+
+// The portal event bridge stays honest against the manifest surface: the
+// union of every controller's declared `static events` is the bridged
+// list (docs/portal-on-open.md D5). Registered here so portal.js never
+// imports the controllers (no cycle).
+registerBridgeEvents(Object.values(controllers).flatMap((controller) => controller.events ?? []))
 
 // The bundler-host one-liner: registers every poetry controller on the
 // host's Stimulus application (importmap hosts get the same registrations
