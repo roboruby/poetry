@@ -361,4 +361,49 @@ describe("poetry--core--tooltip", () => {
       expect(closes).toEqual([{ reason: "none" }])
     })
   })
+
+  describe("portal-on-open (docs/portal-on-open.md S1)", () => {
+    it("open portals the content to body + flips popper to absolute; close restores both", async () => {
+      await mount({ delay: 0 })
+
+      pointer(el("a-trigger"), "pointermove")
+
+      expectOpen("a-content")
+      expect(el("a-content").parentNode).toBe(document.body)
+      expect(el("root-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+      // the id pair keeps resolving across the move - describedby is live
+      expect(el("a-trigger").getAttribute("aria-describedby")).toBe("a-content")
+
+      pointer(el("a-trigger"), "pointerdown") // activate-dismisses, closes immediately
+      await nextFrame()
+
+      expectClosed("a-content")
+      expect(el("a-content").parentNode).toBe(el("root-a"))
+      expect(el("root-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+    })
+
+    it("a server-pinned open tooltip portals one frame after connect (the popper cache order)", async () => {
+      await mount({ tooltips: { a: { open: true } } })
+
+      // still home immediately after boot...
+      expect(el("a-content").parentNode).toBe(el("root-a"))
+
+      await new Promise((resolve) => setTimeout(resolve, 40)) // jsdom rAF is a ~16ms timer
+
+      expect(el("a-content").parentNode).toBe(document.body)
+      expect(el("root-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+    })
+
+    it("disconnecting an open tooltip never strands content at body (drop-never-strand)", async () => {
+      await mount({ delay: 0 })
+
+      pointer(el("a-trigger"), "pointermove")
+      expect(el("a-content").parentNode).toBe(document.body)
+
+      el("host").replaceChildren() // the whole component subtree goes away
+      await nextFrame()
+
+      expect(document.getElementById("a-content")).toBe(null)
+    })
+  })
 })

@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
@@ -28,6 +29,7 @@ const EVENT_PREFIX = "poetry:tooltip"
 const WILL_OPEN_EVENT = "poetry:tooltip:will-open"
 
 const DISMISSABLE = "poetry--core--dismissable"
+const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 // Provider defaults: delayDuration 0 is the shadcn provider override of
 // Radix's 700 (kept, source-exact); skipDelayDuration 300 is Radix's.
@@ -108,6 +110,12 @@ export default class TooltipController extends Controller {
     }
 
     this.#dropScrollListener()
+
+    // Never leave content stranded at the container: if the root subtree
+    // was removed the placeholder is gone and restore DROPS the node.
+    const content = this.#content()
+
+    if (content) restoreContent(content)
 
     for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
 
@@ -227,6 +235,14 @@ export default class TooltipController extends Controller {
 
     this.#scope().openCount += 1
 
+    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE any
+    // visual state lands (reparenting later would restart the enter
+    // animation), then re-anchor absolute - static under compositor
+    // scroll, transformed-ancestor immune. The strategy attribute write
+    // re-arms popper's autoUpdate against the new ancestors.
+    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.element.setAttribute(POPPER_STRATEGY, "absolute")
+
     const trigger = this.#trigger()
 
     content.hidden = false
@@ -279,6 +295,10 @@ export default class TooltipController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
+        // Home AFTER the exit finished and hidden landed - never
+        // mid-animation, never a visible flash (D4).
+        restoreContent(content)
+        this.element.setAttribute(POPPER_STRATEGY, "fixed")
         trigger?.removeAttribute("aria-describedby")
         this.#removeControllers(content, [DISMISSABLE])
         this.#dropScrollListener()
@@ -301,6 +321,19 @@ export default class TooltipController extends Controller {
     this.#addControllers(content, [DISMISSABLE])
     this.#armScrollListener()
     this.#scope().openCount += 1
+    this.#portalPinned(content)
+  }
+
+  // The reconcile path portals ONE FRAME LATE: connect order within a boot
+  // is unordered, and portaling before the sibling popper's connect would
+  // rob it of its content target before it could cache the node.
+  #portalPinned(content) {
+    window.requestAnimationFrame(() => {
+      if (!this.#connected || !this.#isOpen()) return
+
+      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.element.setAttribute(POPPER_STRATEGY, "absolute")
+    })
   }
 
   // --- the close-intent grace (hoverable content) ---

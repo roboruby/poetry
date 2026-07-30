@@ -78,12 +78,19 @@ export function restoreContent(content) {
   portaled.delete(content)
   for (const [type, listener] of state.bridges) content.removeEventListener(type, listener)
 
-  if (state.placeholder.isConnected) {
-    state.placeholder.replaceWith(content)
+  // Home-aliveness reads the parent ELEMENT, never the comment: dommy's
+  // QuickJS DOM has no Comment#isConnected (undefined reads as "origin
+  // gone" and silently DROPS live content - the dommy tier caught it).
+  // replaceChild over ChildNode.replaceWith for the same reason.
+  const home = state.placeholder.parentNode
+
+  if (home?.isConnected) {
+    home.replaceChild(content, state.placeholder)
     return true
   }
 
   // The origin is gone (a morph replaced it) - drop, never strand.
+  state.placeholder.parentNode?.removeChild(state.placeholder)
   content.remove()
   return false
 }

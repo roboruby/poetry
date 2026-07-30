@@ -335,4 +335,48 @@ describe("poetry--core--hover-card", () => {
       expect(closes).toEqual([{ reason: "none" }])
     })
   })
+
+  describe("portal-on-open (docs/portal-on-open.md S1)", () => {
+    it("open portals the content to body + flips popper to absolute; close restores both", async () => {
+      await mount()
+
+      el("hc-trigger").focus() // focus opens immediately
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-open")).toBe(true)
+      expect(el("hc-content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+
+      el("hc-trigger").blur() // closes immediately
+      await nextFrame()
+
+      expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
+      expect(el("hc-content").parentNode).toBe(el("root"))
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+    })
+
+    it("a server-pinned open card portals one frame after connect (the popper cache order)", async () => {
+      await mount({ open: true })
+
+      expect(el("hc-content").parentNode).toBe(el("root"))
+
+      await new Promise((resolve) => setTimeout(resolve, 40)) // jsdom rAF is a ~16ms timer
+
+      expect(el("hc-content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+    })
+
+    it("disconnecting an open card never strands content at body (drop-never-strand)", async () => {
+      await mount()
+
+      el("hc-trigger").focus()
+      await nextFrame()
+      expect(el("hc-content").parentNode).toBe(document.body)
+
+      el("host").replaceChildren()
+      await nextFrame()
+
+      expect(document.getElementById("hc-content")).toBe(null)
+    })
+  })
 })

@@ -77,6 +77,7 @@ export default class PopperController extends Controller {
 
   #stopAutoUpdate = null
   #anchorElement = null
+  #contentElement = null
   #generation = 0
   #connected = false
   #hidPointerEvents = false
@@ -361,7 +362,18 @@ export default class PopperController extends Controller {
   }
 
   #content() {
-    return this.hasContentTarget ? this.contentTarget : this.element
+    if (this.hasContentTarget) {
+      this.#contentElement = this.contentTarget
+      return this.contentTarget
+    }
+
+    // The portal seam (docs/portal-on-open.md): while content is portaled
+    // out, the Stimulus target no longer matches (targets scope to the
+    // controller's subtree) - the cached node keeps being positioned.
+    // Without the cache the fallback would position the ROOT.
+    if (this.#contentElement?.isConnected) return this.#contentElement
+
+    return this.element
   }
 
   // The Tier-4 Arrow is markup-only: an explicit arrow target wins, else any

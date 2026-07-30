@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
@@ -27,6 +28,7 @@ const CONTENT_SELECTOR = '[data-slot="hover-card-content"]'
 const EVENT_PREFIX = "poetry:hover-card"
 
 const DISMISSABLE = "poetry--core--dismissable"
+const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 export default class HoverCardController extends Controller {
   // The events this controller dispatches (manifest surface;
@@ -73,6 +75,11 @@ export default class HoverCardController extends Controller {
     this.#cancelExit?.()
     this.#cancelExit = null
     this.#restoreBodyUserSelect() // never strand suppressed selection (teardown contract)
+
+    // Never leave content stranded at the container (drop-never-strand).
+    const content = this.#content()
+
+    if (content) restoreContent(content)
 
     for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
 
@@ -152,6 +159,12 @@ export default class HoverCardController extends Controller {
 
     const trigger = this.#trigger()
 
+    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // enter presence (reparenting mid-animation restarts it), re-anchor
+    // absolute - static under compositor scroll, transform-immune.
+    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.element.setAttribute(POPPER_STRATEGY, "absolute")
+
     content.hidden = false
     if (trigger) setState(trigger, "popup-open")
     enterPresence(content)
@@ -185,6 +198,9 @@ export default class HoverCardController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
+        // Home AFTER the exit finished and hidden landed (D4).
+        restoreContent(content)
+        this.element.setAttribute(POPPER_STRATEGY, "fixed")
         this.#removeControllers(content, [DISMISSABLE])
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
@@ -197,6 +213,16 @@ export default class HoverCardController extends Controller {
 
     this.#activateLayer(content)
     this.#stripTabbables(content)
+
+    // ONE FRAME LATE (the tooltip's reconcile rule): portaling before the
+    // sibling popper's connect would rob it of its content target before
+    // it could cache the node.
+    window.requestAnimationFrame(() => {
+      if (!this.#connected || !this.#isOpen()) return
+
+      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.element.setAttribute(POPPER_STRATEGY, "absolute")
+    })
   }
 
   #activateLayer(content) {
