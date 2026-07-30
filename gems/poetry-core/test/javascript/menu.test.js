@@ -776,4 +776,60 @@ describe("poetry--core--menu", () => {
       expect(document.body.style.pointerEvents).toBe("")
     })
   })
+
+  describe("portal-on-open (docs/portal-on-open.md S5)", () => {
+    it("open portals the content to body + flips popper absolute on the root AND every sub; close restores all", async () => {
+      await mount()
+      await openWithPointer()
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+      // each sub hosts its own popper - one coordinate space for the family
+      expect(el("sub-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+      expect(el("sub-b").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+
+      el("item-profile").focus()
+      click(el("item-profile")) // activate closes (close_on_select default)
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(el("content").parentNode).toBe(el("root"))
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+      expect(el("sub-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
+    })
+
+    it("a submenu opens INSIDE the portaled parent (it rides the move, delegation intact)", async () => {
+      await mount()
+      await openWithKey("ArrowDown")
+
+      el("sub-a-trigger").focus()
+      press(el("sub-a-trigger"), "ArrowRight")
+
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+      expect(el("content").contains(el("sub-a-content"))).toBe(true)
+      expect(el("content").parentNode).toBe(document.body)
+    })
+
+    it("a server-pinned open menu portals one frame after connect (the popper cache order)", async () => {
+      await mount({ open: true })
+
+      // (the deferral itself is a rAF - too fast to assert against
+      // jsdom's 16ms rAF timer without flaking; the OUTCOME is the pin)
+      await new Promise((resolve) => setTimeout(resolve, 40))
+
+      expect(el("content").parentNode).toBe(document.body)
+      expect(el("root").getAttribute("data-poetry--core--popper-strategy-value")).toBe("absolute")
+    })
+
+    it("disconnecting an open menu never strands content at body (drop-never-strand)", async () => {
+      await mount()
+      await openWithPointer()
+      expect(el("content").parentNode).toBe(document.body)
+
+      el("host").replaceChildren()
+      await nextFrame()
+
+      expect(document.getElementById("content")).toBe(null)
+    })
+  })
 })

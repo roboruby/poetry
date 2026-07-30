@@ -145,6 +145,26 @@ describe("helpers/portal", () => {
     restoreContent(content)
   })
 
+  it("stamps the home-effective dir across the move and un-stamps on restore", () => {
+    el("root").setAttribute("dir", "rtl")
+    const content = el("content")
+
+    portalContent(content)
+
+    expect(content.getAttribute("dir")).toBe("rtl") // closest([dir]) still resolves at body
+
+    restoreContent(content)
+
+    expect(content.hasAttribute("dir")).toBe(false) // the stamp never outlives the portal
+
+    // a content declaring its OWN dir is never touched
+    content.setAttribute("dir", "ltr")
+    portalContent(content)
+    restoreContent(content)
+
+    expect(content.getAttribute("dir")).toBe("ltr")
+  })
+
   it("drops the content instead of stranding it when the origin vanished (morph guard)", () => {
     const content = el("content")
 

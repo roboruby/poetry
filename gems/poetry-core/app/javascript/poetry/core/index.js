@@ -181,6 +181,11 @@ registerBridgeEvents(Object.values(controllers).flatMap((controller) => controll
 // host's Stimulus application (importmap hosts get the same registrations
 // via the engine's pins + this same call in their controllers/index.js).
 export function registerPoetryControllers(application) {
+  // Belt and braces with the module-scope registration above: any boot
+  // path that reaches this call gets the portal bridge list even if it
+  // never evaluated this module's top level (idempotent - a Set).
+  registerBridgeEvents(Object.values(controllers).flatMap((controller) => controller.events ?? []))
+
   for (const [identifier, controller] of Object.entries(controllers)) {
     application.register(identifier, controller)
   }

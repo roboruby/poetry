@@ -54,6 +54,23 @@ export function portalContent(content, { container = document.body } = {}) {
   const placeholder = document.createComment("poetry-portal")
 
   content.parentNode.insertBefore(placeholder, content)
+
+  // Direction survives the move: dir inherits through the DOM, so a body
+  // portal would silently flip a locally-RTL subtree back to the document
+  // direction - menu arrow semantics (directionOf walks closest [dir])
+  // and every CSS logical property inside the popup key on it. Stamp the
+  // home-effective dir when the content declares none; restore un-stamps.
+  let stampedDir = false
+
+  if (!content.hasAttribute("dir")) {
+    const dir = content.closest("[dir]")?.getAttribute("dir")
+
+    if (dir) {
+      content.setAttribute("dir", dir)
+      stampedDir = true
+    }
+  }
+
   container.append(content)
 
   const bridges = []
@@ -65,7 +82,7 @@ export function portalContent(content, { container = document.body } = {}) {
     bridges.push([type, listener])
   }
 
-  portaled.set(content, { placeholder, bridges })
+  portaled.set(content, { placeholder, bridges, stampedDir })
   installCacheNet()
   return true
 }
@@ -77,6 +94,7 @@ export function restoreContent(content) {
 
   portaled.delete(content)
   for (const [type, listener] of state.bridges) content.removeEventListener(type, listener)
+  if (state.stampedDir) content.removeAttribute("dir")
 
   // Home-aliveness reads the parent ELEMENT, never the comment: dommy's
   // QuickJS DOM has no Comment#isConnected (undefined reads as "origin

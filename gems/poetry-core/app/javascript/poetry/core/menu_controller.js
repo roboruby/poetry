@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { collectionItems } from "@poetry/controllers/helpers/collection"
 import { directionOf } from "@poetry/controllers/helpers/direction"
+import { portalContent, resolvePortalContainer, restoreContent } from "@poetry/controllers/helpers/portal"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { createTypeahead } from "@poetry/controllers/helpers/typeahead"
@@ -60,6 +61,7 @@ const ROVING = "poetry--core--roving-focus"
 const ROVING_ACTION = `keydown->${ROVING}#keydown`
 const CONTENT_LAYER_CONTROLLERS = ["poetry--core--focus-scope", "poetry--core--dismissable", ROVING]
 const SUB_LAYER_CONTROLLERS = ["poetry--core--dismissable", ROVING]
+const POPPER_STRATEGY = "data-poetry--core--popper-strategy-value"
 
 // Hover intent (the contract's spec): open after 100ms of rest on a
 // sub-trigger; close 300ms after the pointer leaves the sub pair - entering
@@ -103,15 +105,35 @@ export default class MenuController extends Controller {
     // Reconcile-on-connect: the server may own the open state (Turbo Stream
     // re-render). DOM attributes win; the layer stack catches up.
     if (this.#isOpen()) {
-      if (content) this.#activateLayers(content)
+      if (content) {
+        this.#activateLayers(content)
+        this.#portalPinned(content)
+      }
       this.openValue = true
     } else if (this.openValue) {
       this.#show("trigger-press", { focus: false })
     }
   }
 
+  // The reconcile path portals ONE FRAME LATE: connect order within a boot
+  // is unordered, and portaling before the sibling popper's connect would
+  // rob it of its content target before it could cache the node.
+  #portalPinned(content) {
+    window.requestAnimationFrame(() => {
+      if (!this.#connected || !this.#isOpen()) return
+
+      portalContent(content, { container: resolvePortalContainer(this.element) })
+      this.#setStrategy(content, "absolute")
+    })
+  }
+
   disconnect() {
     this.#connected = false
+
+    // Never leave content stranded at the container (drop-never-strand).
+    const content = this.#content()
+
+    if (content) restoreContent(content)
 
     for (const [target, type, listener] of this.#wired) target.removeEventListener(type, listener)
 
@@ -280,6 +302,15 @@ export default class MenuController extends Controller {
 
     const trigger = this.#trigger()
 
+    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // enter presence (reparenting mid-animation restarts it), re-anchor
+    // absolute - static under compositor scroll, transform-immune. Subs
+    // ride INSIDE the content (their poppers travel with it) but must
+    // share the coordinate space: a fixed sub detaches from an absolute
+    // parent during scroll.
+    portalContent(content, { container: resolvePortalContainer(this.element) })
+    this.#setStrategy(content, "absolute")
+
     content.hidden = false
     content.setAttribute("data-open-reason", reason)
     if (seed) content.setAttribute("data-open-seed", seed)
@@ -332,10 +363,24 @@ export default class MenuController extends Controller {
       onRemove: () => {
         this.#cancelExit = null
         content.hidden = true
+        // Home AFTER the exit finished and hidden landed (D4); focus
+        // return is focus-scope's ref-based job, indifferent to the move.
+        restoreContent(content)
+        this.#setStrategy(content, "fixed")
         this.#removeControllers(content, CONTENT_LAYER_CONTROLLERS)
         this.dispatch("closed", { prefix: EVENT_PREFIX, detail: { reason } })
       }
     })
+  }
+
+  // The root popper rides this.element; each sub hosts its OWN popper on
+  // its wrapper inside the content - one coordinate space for the family.
+  #setStrategy(content, strategy) {
+    this.element.setAttribute(POPPER_STRATEGY, strategy)
+
+    for (const sub of content.querySelectorAll(SUB_SELECTOR)) {
+      sub.setAttribute(POPPER_STRATEGY, strategy)
+    }
   }
 
   // Initial focus per the family data-open-reason contract: trigger-press ->
