@@ -55,6 +55,7 @@ const TRIGGER_SELECTOR = '[data-slot="combobox-trigger"]'
 const NATIVE_SELECTOR = '[data-slot="combobox-native"]'
 const VALUE_SELECTOR = '[data-slot="combobox-value"]'
 const CONTENT_SELECTOR = '[data-slot="combobox-content"]'
+const CLEAR_SELECTOR = '[data-slot="combobox-clear"]'
 const CHIPS_SELECTOR = '[data-slot="combobox-chips"]'
 const CHIP_SELECTOR = '[data-slot="combobox-chip"]'
 const CHIP_REMOVE_SELECTOR = '[data-slot="combobox-chip-remove"]'
@@ -341,6 +342,20 @@ export default class ComboboxController extends Controller {
     this.#input()?.focus()
   }
 
+  // --- the show_clear X (its click action) ---
+
+  // The trigger-side deselection surface (Base UI Combobox.Clear): commit
+  // the blank value through the pipeline, then hand focus to the trigger -
+  // the X hides itself once the value empties, and a focused hidden
+  // button would drop focus to body. Single mode only (the component
+  // raises on multiple; the guard here is belt and braces).
+  clear() {
+    if (this.multipleValue) return
+
+    if (this.#applied !== "") this.#apply("")
+    this.#trigger()?.focus()
+  }
+
   // --- programmatic API ---
 
   open(reason = "trigger-press", { seed = "" } = {}) {
@@ -567,6 +582,10 @@ export default class ComboboxController extends Controller {
     if (display) display.textContent = label ?? this.#placeholder
 
     this.#trigger()?.toggleAttribute("data-placeholder", !selected)
+    // The show_clear X follows the VALUE (not the matched item - the async
+    // recipe can commit values whose item is not rendered); the chevron
+    // swap derives from this one flip in CSS.
+    this.#clearButton()?.toggleAttribute("hidden", value === "")
 
     if (!silent) {
       this.dispatch("change", { prefix: EVENT_PREFIX, detail: { value, label, previous } })
@@ -843,6 +862,10 @@ export default class ComboboxController extends Controller {
 
   #chips() {
     return this.element.querySelector(CHIPS_SELECTOR)
+  }
+
+  #clearButton() {
+    return this.element.querySelector(CLEAR_SELECTOR)
   }
 
   // Live chips only - the <template> skeleton's content is inert and

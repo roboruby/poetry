@@ -35,7 +35,7 @@ const FRAMEWORKS = [
   ["astro", "Astro"]
 ]
 
-const markup = ({ value = "", open = false, modal = false } = {}) => {
+const markup = ({ value = "", open = false, modal = false, showClear = false } = {}) => {
   const selectedLabel = FRAMEWORKS.find(([v]) => v === value)?.[1]
   return `
     <button id="outside">outside</button>
@@ -55,6 +55,9 @@ const markup = ({ value = "", open = false, modal = false } = {}) => {
               data-action="poetry--core--combobox#toggle keydown->poetry--core--combobox#triggerKeydown">
         <span id="display" data-slot="combobox-value" data-placeholder="Select framework…">${selectedLabel ?? "Select framework…"}</span>
       </button>
+      ${showClear ? `
+      <button type="button" id="clear" data-slot="combobox-clear" aria-label="Clear selection"
+              ${value ? "" : "hidden"} data-action="poetry--core--combobox#clear"></button>` : ""}
       <div id="content" data-slot="combobox-content" tabindex="-1" data-closed ${open ? "" : "hidden"}>
         <div id="command" data-slot="command" data-controller="poetry--core--command">
           <div data-slot="command-input-wrapper">
@@ -251,6 +254,64 @@ describe("poetry--core--combobox", () => {
       expect(el("content").hidden).toBe(true)
       expect(el("native").value).toBe("sveltekit")
       expect(changes).toBe(0)
+    })
+  })
+
+  describe("the show_clear X (Base UI Combobox.Clear)", () => {
+    beforeEach(async () => {
+      application.stop()
+      application = await mount({ value: "sveltekit", showClear: true })
+    })
+
+    it("clicking the X commits the blank value through the pipeline and hands focus to the trigger", async () => {
+      const sequence = []
+      el("native").addEventListener("change", () => sequence.push(["native-change", el("native").value]))
+      el("root").addEventListener("poetry:combobox:change", (event) => sequence.push(["change", event.detail]))
+
+      expect(el("clear").hidden).toBe(false)
+
+      click(el("clear"))
+      await nextFrame()
+
+      expect(el("native").value).toBe("")
+      expect(sequence[0]).toEqual(["native-change", ""]) // native BEFORE the poetry event
+      expect(sequence[1][1]).toEqual({ value: "", label: null, previous: "sveltekit" })
+      expect(ariaSelected()).toEqual(["false", "false", "false", "false", "false"])
+      expect(dataSelected()).toEqual([false, false, false, false, false])
+      expect(el("display").textContent).toBe("Select framework…")
+      expect(el("trigger").hasAttribute("data-placeholder")).toBe(true)
+      expect(el("clear").hidden).toBe(true) // the X hides itself once the value empties
+      expect(document.activeElement).toBe(el("trigger"))
+    })
+
+    it("the X follows the value: shown again by the next commit", async () => {
+      click(el("clear"))
+      await nextFrame()
+      expect(el("clear").hidden).toBe(true)
+
+      await open()
+      click(el("item-remix"))
+      await nextFrame()
+
+      expect(el("native").value).toBe("remix")
+      expect(el("clear").hidden).toBe(false)
+    })
+
+    it("clearing an already-empty value is a no-op (no change events)", async () => {
+      application.stop()
+      application = await mount({ showClear: true })
+
+      let changes = 0
+      el("root").addEventListener("poetry:combobox:change", () => { changes += 1 })
+      el("native").addEventListener("change", () => { changes += 1 })
+
+      expect(el("clear").hidden).toBe(true)
+
+      click(el("clear"))
+      await nextFrame()
+
+      expect(changes).toBe(0)
+      expect(document.activeElement).toBe(el("trigger"))
     })
   })
 

@@ -216,6 +216,7 @@
     "methods": [
       "chipKeydown",
       "chipsPointerdown",
+      "clear",
       "close",
       "connect",
       "disconnect",
