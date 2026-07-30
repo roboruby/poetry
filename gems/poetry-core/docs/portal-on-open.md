@@ -3,6 +3,13 @@
 Approved 2026-07-30 ("match upstream's architecture - we shouldn't be
 diverging from it"). One mechanism, rolled out consumer by consumer.
 
+**SHIPPED IN FULL 2026-07-30** - S0 through S5 landed in order (+ the
+poetry-ui tester/dommy
+commits alongside each). Every popper consumer portals; the headline
+scroll-detach measurement went 40px -> 0px live. The decisions below
+held; the shipped record at the bottom lists what the build ADDED to
+them.
+
 ## Why
 
 - **Scroll jiggle (the trigger for this build).** Fixed-strategy popups
@@ -73,23 +80,55 @@ component CSS. Subtree-scoped HOST apps are covered by D2 below.
   `<dialog>` family (native top layer). Toasts already use the top-layer
   exemption.
 
-## Rollout slices (each lands with full gates before the next)
+## Rollout slices (each landed with full gates before the next)
 
-- **S0 - mechanism.** `helpers/portal.js` + popper strategy coupling +
-  the event bridge + `turbo:before-cache` net. Vitest for: move/restore
-  round-trip, placeholder-gone guard, container override, bridge
-  re-dispatch, strategy flip.
-- **S1 - tooltip + hover_card.** No focus machinery, pure anchoring -
-  proves positioning + scroll-static with least choreography.
-- **S2 - popover** (date_picker rides along - verify its close-on-pick).
-- **S3 - select** (roving focus + typeahead; modal:true default).
-- **S4 - combobox** (activedescendant session, chips/multiple, the
-  show_clear X press = outside-press veto check).
-- **S5 - menu family:** dropdown_menu, context_menu (point anchor),
-  menubar (coordinator).
-- **S6 - docs + ledger pass.** Docs pages re-verified per style + dark;
-  gotchas notes updated (transformed-ancestor entry gains "fixed by
-  portal"); memory + SETUP untouched (no operational change).
+- **S0 - mechanism.** SHIPPED. `helpers/portal.js` + popper
+  strategy coupling + the event bridge + `turbo:before-cache` net.
+- **S1 - tooltip + hover_card.** SHIPPED.
+- **S2 - popover** (+ date_picker riding). SHIPPED.
+- **S3 - select** (aligned mode rides unchanged). SHIPPED.
+- **S4 - combobox** (both modes; D6 landed here). SHIPPED.
+- **S5 - menu family** (dropdown, context menu, menubar). SHIPPED
+  (complete).
+- **S6 - docs + ledger pass.** DONE: per-style + dark sweep green
+  (portaled content themed in all styles, style flip live while open),
+  theming doc gained the D2 container section, gotchas ledgers updated.
+
+## The shipped record - what the build added to the plan
+
+- **Popper content cache.** Stimulus targets unscope when content
+  portals; the old fallback would have positioned the ROOT. Popper
+  caches the resolved node while connected (S1).
+- **One-frame-late pinned reconcile.** Connect order within a boot is
+  unordered; portaling before the sibling popper's connect robs it of
+  the target before it can cache. Server-pinned opens portal on rAF.
+- **The first-open focus race fix** (pre-existing, surfaced by S2's
+  live proofs): closed-era popper passes parked visibility:hidden
+  inline, and Chrome silently refuses focus into a hidden subtree at
+  the open microtask. The hide verdict now resolves visible while
+  content.hidden.
+- **The delegation pattern** (S4): Stimulus data-ACTIONS also unscope
+  under a portal. A controller whose scope splits (engine home, parts
+  portaled - combobox multiple) carries delegated listeners on the
+  portaled node itself, guarded so in-scope elements stay the actions'
+  job. The menu engine had this shape from birth.
+- **The dir stamp** (S5): dir inherits through the DOM; a body portal
+  flips a locally-RTL subtree back to the document direction.
+  portalContent stamps the home-effective dir, restore un-stamps.
+- **Bridge registration hardening** (S5): a boot path that never
+  evaluates index.js's top level (the dommy flattener) got an EMPTY
+  bridge list. registerPoetryControllers registers it too (idempotent).
+- **Bridged event.target is the home anchor.** A DOM re-dispatch cannot
+  fake target. Listeners above portaled content read detail.item (the
+  documented payload) or the clone's portalTarget.
+- **The test-scoping family** (five sightings): index pairing, tester
+  root scoping, dommy state helpers, target scoping, action scoping -
+  every trigger/content association must resolve through the id pair
+  (aria-controls), never through document order or subtree scoping.
+- **Parked, pre-existing, portal-unrelated:** the docs aligned-select
+  example bails to popper positioning identically pre/post portal
+  (A/B-confirmed) - why aligned doesn't engage there is an open
+  question for another day.
 
 ## Per-slice acceptance
 
