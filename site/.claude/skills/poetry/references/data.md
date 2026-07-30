@@ -69,7 +69,7 @@ A container that groups related content and actions.
 
 Class: Poetry::Ui::Card::Component - BEM block `poetry-ui-card`.
 - `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
-Slots: title, description, action, footer.
+Slots: title, description, action, footer (with_footer yields NOTHING to the block - no |param|, write content directly).
 - PART `card` - Root container - the vertical flex stack
 - PART `card-header` - The title row grid - gains a trailing auto column when card-action is present
 - PART `card-title` - The heading (title_tag, h3 by default)
