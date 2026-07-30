@@ -91,6 +91,7 @@ Slot REQUIRED: with_item (at least one slide) - a call without it raises.
 - `label:` (string) - required
 - `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
 - `show_controls:` (boolean) - default true
+- `track_classes:` (string)
 Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly; with_item keywords: classes: ONLY; with_item REQUIRES a content block (the slide)).
 - PART `carousel` - The role=region root - the controller (paging, button state, arrow keys) rides here | states: data-orientation=horizontal|vertical (the scroll axis)
 - PART `carousel-content` - The viewport - a real scroll-snap container (tabindex=0); the platform owns the physics
@@ -99,7 +100,8 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - RULE: label: is REQUIRED - the carousel region's accessible name.
 - RULE: Declare slides with with_item - the component stamps the slide roles (role=group + aria-roledescription=slide).
 - RULE: Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard even before JS - never gate content behind the buttons alone.
-- RULE: Size slides with item classes (basis-full default; basis-1/3 for a strip).
+- RULE: Size slides with item classes (basis-full default; basis-1/2 lg:basis-1/3 for a gallery).
+- RULE: Change slide spacing as a TRIO: track_classes: "-ml-1" plus item classes "pl-1 -scroll-ml-1" - the gutter padding and its snap scroll-margin move together.
 
 ## clipboard_text (`poetry_clipboard_text`)
 
