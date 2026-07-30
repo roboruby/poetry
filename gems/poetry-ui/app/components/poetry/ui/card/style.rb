@@ -15,7 +15,7 @@ module Poetry
         element :description, "cn-card-description"
         element :action, "col-start-2 row-span-2 row-start-1 self-start justify-self-end"
         element :content, "cn-card-content"
-        element :footer, "cn-card-footer flex items-center"
+        element :footer, "cn-card-footer flex items-center [.border-t]:pt-6"
       end
     end
   end

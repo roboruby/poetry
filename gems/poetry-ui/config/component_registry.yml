@@ -1023,7 +1023,7 @@ components:
     - action
     - content
     - footer
-    capsule: bec58bbd7225
+    capsule: 193d896af096
     agent_rules:
     - Compose with the slots (title/description/action/footer) - never rebuild the
       header grid by hand.
