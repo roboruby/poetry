@@ -22,10 +22,14 @@ module DommyTier
     end
 
     def tooltip_state(harness, index = 0)
+      # Content resolves through the trigger's id pair, never by index:
+      # portal-on-open moves open content to body, so document order no
+      # longer matches trigger order (the production controllers pair by
+      # id for the same reason).
       harness.evaluate(<<~JS)
         (() => {
           const trigger = document.querySelectorAll('[data-slot="tooltip-trigger"]')[#{index}];
-          const content = document.querySelectorAll('[data-slot="tooltip-content"]')[#{index}];
+          const content = document.getElementById(trigger.id.replace(/-trigger$/, "-content"));
           const contentState = content.hasAttribute("data-open") ? "open"
             : content.hasAttribute("data-closed") ? "closed" : "none";
           return [trigger.hasAttribute("data-popup-open"), contentState,
