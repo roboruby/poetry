@@ -1,9 +1,0 @@
-<%= poetry_carousel(label: "Related items", class: "mx-14 w-96") do |carousel| %>
-  <% 6.times do |n| %>
-    <% carousel.with_item(classes: "basis-1/3") do %>
-      <div class="flex h-24 items-center justify-center rounded-md border bg-muted">
-        <%= n + 1 %>
-      </div>
-    <% end %>
-  <% end %>
-<% end %>
