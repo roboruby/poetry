@@ -8,10 +8,16 @@ module Poetry
       # closes on commit and the native select serializes, multiple keeps
       # the popover open, grows chips, and serializes name[] through a
       # native select-multiple.
+      #
+      # CONTENT RESOLVES THROUGH THE ID PAIR, document-wide: portal-on-open
+      # moves the open popup to body (docs/portal-on-open.md), so root
+      # scoping stops holding for the content and its items. The trigger
+      # (single) or the chips inline input (multiple) carries aria-controls
+      # naming the listbox; the content wrapper is its ancestor -
+      # id-anchored selectors keep Capybara's waiting semantics.
       class Combobox < Tester
         def open?(wait: 0)
-          part?("combobox-content", wait: wait) &&
-            !hidden_part("combobox-content")["data-open"].nil?
+          session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
         rescue Capybara::ElementNotFound
           false
         end
@@ -27,20 +33,22 @@ module Poetry
             press(trigger)
           end
 
-          root.assert_selector("[data-slot='combobox-content'][data-open][data-side]")
+          session.assert_selector("##{content_id}[data-slot='combobox-content'][data-open][data-side]")
           self
         end
 
         def close
           keys(:escape) if open?
-          root.assert_selector("[data-slot='combobox-content'][data-closed]", visible: :all)
+          session.assert_selector("##{content_id}[data-closed]", visible: :all)
           self
         end
 
-        # Type into the filter input (opens first when closed).
+        # Type into the filter input (opens first when closed). Single mode
+        # keeps the input inside the (portaled) popup; multiple keeps it
+        # inline in the chips field at home.
         def filter(query)
           open
-          part("command-input").set(query)
+          filter_input.set(query)
           self
         end
 
@@ -80,26 +88,50 @@ module Poetry
         # Bounded highlight walk: at most one pass over the items - a
         # missing/mistyped label raises instead of arrowing forever.
         def walk_highlight_to(text)
-          (parts("command-item").size + 1).times do
+          items = content.all("[data-slot='command-item']", visible: :all)
+
+          (items.size + 1).times do
             return if highlighted_text == text
 
             keys(:down)
           end
 
           raise Capybara::ElementNotFound,
-                "no option #{text.inspect} reached by ArrowDown - options: #{parts("command-item").map(&:text).inspect}"
+                "no option #{text.inspect} reached by ArrowDown - options: #{items.map(&:text).inspect}"
         end
 
         def trigger
           part("combobox-trigger")
         end
 
+        # The aria-controls anchor stays HOME in both modes: the trigger
+        # button (single) or the chips frame's inline input (multiple).
+        def list_id
+          @list_id ||= root.first(
+            "[data-slot='combobox-trigger'], [data-slot='combobox-chips'] [data-slot='command-input']",
+            minimum: 1, visible: :all
+          )["aria-controls"]
+        end
+
+        def content_id
+          @content_id ||= session.find("##{list_id}", visible: :all)
+                                 .ancestor("[data-slot='combobox-content']", visible: :all)[:id]
+        end
+
+        def content
+          session.find("##{content_id}", visible: :all)
+        end
+
+        def filter_input
+          content.first("[data-slot='command-input']", minimum: 0, visible: :all) || part("command-input")
+        end
+
         def option(text)
-          root.find("[data-slot='command-item']", text: text, exact_text: true)
+          content.find("[data-slot='command-item']", text: text, exact_text: true)
         end
 
         def highlighted_text
-          root.find("[data-slot='command-item'][data-highlighted]", wait: 1).text
+          content.find("[data-slot='command-item'][data-highlighted]", wait: 1).text
         rescue Capybara::ElementNotFound
           nil
         end
