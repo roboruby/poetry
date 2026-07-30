@@ -181,7 +181,10 @@ module DommyTier
   end
 
   def js_digest
-    sources = [STIMULUS_UMD] + helper_files + controller_files
+    # This file is part of the recipe: the bundle TEMPLATE (registration
+    # tail, flattening rules) lives here, so an edit to it must invalidate
+    # the cache exactly like a source change.
+    sources = [Pathname.new(__FILE__), STIMULUS_UMD] + helper_files + controller_files
     Digest::SHA256.hexdigest(sources.map { |path| "#{path}:#{File.mtime(path).to_f}" }.join("\n"))[0, 16]
   end
 
@@ -223,6 +226,12 @@ module DommyTier
       for (const [identifier, controller] of Object.entries(globalThis.__poetryControllers)) {
         window.__poetryApp.register(identifier, controller);
       }
+      // The portal event bridge list (docs/portal-on-open.md D5): index.js
+      // registers it at module scope, but the flattened bundle never runs
+      // index.js - mirror the registration or bridged events (menubar's
+      // edge-navigate, date-picker's calendar change) go silently deaf.
+      registerBridgeEvents(Object.values(globalThis.__poetryControllers)
+        .flatMap((controller) => controller.events ?? []));
     JS
   end
 

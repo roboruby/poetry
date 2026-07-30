@@ -7,10 +7,15 @@ module Poetry
       # focus in the menu, arrows move data-highlighted, Enter activates
       # the highlighted item, Escape closes with focus returned to the
       # trigger.
+      #
+      # CONTENT RESOLVES THROUGH THE ID PAIR, document-wide: portal-on-open
+      # moves the open menu to body (docs/portal-on-open.md), so root
+      # scoping stops holding for the content and its items - the trigger's
+      # aria-controls id is the production controllers' own resolution
+      # rule, and id-anchored selectors keep Capybara's waiting semantics.
       class Menu < Tester
         def open?(wait: 0)
-          part?("dropdown-menu-content", wait: wait) &&
-            !hidden_part("dropdown-menu-content")["data-open"].nil?
+          session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
         rescue Capybara::ElementNotFound
           false
         end
@@ -26,13 +31,13 @@ module Poetry
             press(trigger)
           end
 
-          root.assert_selector("[data-slot='dropdown-menu-content'][data-open][data-side]")
+          session.assert_selector("##{content_id}[data-slot='dropdown-menu-content'][data-open][data-side]")
           self
         end
 
         def close
           keys(:escape) if open?
-          root.assert_selector("[data-slot='dropdown-menu-content'][data-closed]", visible: :all)
+          session.assert_selector("##{content_id}[data-closed]", visible: :all)
           self
         end
 
@@ -52,7 +57,7 @@ module Poetry
 
         def items
           open unless open?
-          parts("dropdown-menu-item").map(&:text)
+          content.all("[data-slot='dropdown-menu-item']").map(&:text)
         end
 
         private
@@ -60,7 +65,9 @@ module Poetry
         # Bounded highlight walk: at most one pass over the items - a
         # missing/mistyped label raises instead of arrowing forever.
         def walk_highlight_to(text)
-          (parts("dropdown-menu-item").size + 1).times do
+          list = content.all("[data-slot='dropdown-menu-item']")
+
+          (list.size + 1).times do
             return if highlighted_text == text
 
             keys(:down)
@@ -68,21 +75,30 @@ module Poetry
 
           raise Capybara::ElementNotFound,
                 "no option #{text.inspect} reached by ArrowDown - " \
-                "options: #{parts("dropdown-menu-item").map(&:text).inspect}"
+                "options: #{list.map(&:text).inspect}"
         end
 
         def trigger
           part("dropdown-menu-trigger")
         end
 
+        # The trigger's aria-controls names the menu wherever it sits.
+        def content_id
+          @content_id ||= trigger["aria-controls"]
+        end
+
+        def content
+          session.find("##{content_id}", visible: :all)
+        end
+
         # Substring match, not exact: menu items legitimately carry more
         # than their label (shortcut glyphs, badges).
         def item(text)
-          root.find("[data-slot='dropdown-menu-item']", text: text, match: :first)
+          content.find("[data-slot='dropdown-menu-item']", text: text, match: :first)
         end
 
         def highlighted_text
-          root.find("[data-slot='dropdown-menu-item'][data-highlighted]", wait: 1).text
+          content.find("[data-slot='dropdown-menu-item'][data-highlighted]", wait: 1).text
         rescue Capybara::ElementNotFound
           nil
         end

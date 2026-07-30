@@ -89,7 +89,10 @@ module DommyTier
       harness.execute(<<~JS)
         window.__selects = [];
         document.addEventListener("poetry:menu:select", (event) => {
-          window.__selects.push(event.detail.value ?? event.target.textContent.trim());
+          // detail.item, never event.target: above the portaled content the
+          // event is the bridge's home-path clone, whose target is the
+          // home-side anchor (docs/portal-on-open.md D5).
+          window.__selects.push(event.detail.value ?? event.detail.item.textContent.trim());
         });
         document.querySelector('[data-slot="dropdown-menu-trigger"]')
           .dispatchEvent(new MouseEvent("click", { bubbles: true }));

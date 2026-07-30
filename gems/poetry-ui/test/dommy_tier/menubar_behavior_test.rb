@@ -28,10 +28,14 @@ module DommyTier
     end
 
     def bar_state(harness)
+      # Contents resolve through each trigger's aria-controls id, never by
+      # document order: portal-on-open moves an open menu's content to
+      # body, so index pairing stops matching trigger order (the
+      # production controllers pair by id for the same reason).
       harness.evaluate(<<~JS)
         (() => {
           const triggers = Array.from(document.querySelectorAll('[data-slot="menubar-trigger"]'));
-          const contents = Array.from(document.querySelectorAll('[data-slot="menubar-content"]'));
+          const contents = triggers.map((t) => document.getElementById(t.getAttribute("aria-controls")));
           const active = document.activeElement;
           const stateOf = (el) => el.hasAttribute("data-open") ? "open"
             : el.hasAttribute("data-closed") ? "closed" : "none";
