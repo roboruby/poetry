@@ -71,6 +71,25 @@ module Poetry
         assert_includes default["class"], "basis-full"
       end
 
+      def test_carousel_spacing_trio_replaces_the_gutter_on_both_sides
+        html = render_inline(Carousel::Component.new(label: "Tight", track_classes: "-ml-1")) do |carousel|
+          carousel.with_item(classes: "basis-1/2 pl-1 -scroll-ml-1 lg:basis-1/3") { "slide" }
+        end
+
+        track = html.css('[data-slot="carousel-content"] > div').first
+
+        assert_includes track["class"], "-ml-1"
+        refute_includes track["class"], "-ml-4", "track_classes wins the margin conflict"
+
+        item = html.css('[data-slot="carousel-item"]').first
+
+        assert_includes item["class"], "pl-1"
+        refute_includes item["class"], "pl-4"
+        assert_includes item["class"], "-scroll-ml-1", "padding and snap scroll-margin move together"
+        refute_includes item["class"], "-scroll-ml-4"
+        assert_includes item["class"], "lg:basis-1/3", "responsive variants pass through untouched"
+      end
+
       # -- Resizable ------------------------------------------------------------
 
       def render_group(**options)

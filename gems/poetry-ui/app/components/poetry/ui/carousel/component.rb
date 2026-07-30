@@ -20,7 +20,9 @@ module Poetry
           "(role=group + aria-roledescription=slide).",
           "Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard even " \
           "before JS - never gate content behind the buttons alone.",
-          "Size slides with item classes (basis-full default; basis-1/3 for a strip)."
+          "Size slides with item classes (basis-full default; basis-1/2 lg:basis-1/3 for a gallery).",
+          "Change slide spacing as a TRIO: track_classes: \"-ml-1\" plus item classes " \
+          "\"pl-1 -scroll-ml-1\" - the gutter padding and its snap scroll-margin move together."
         ].freeze
 
         CONTROLLER = %i[poetry core carousel].freeze
@@ -31,6 +33,10 @@ module Poetry
         option :label, :string, required: true
         option :orientation, :symbol, default: :horizontal
         option :show_controls, :boolean, default: true
+        # Track-level utility overrides (upstream's CarouselContent
+        # className) - the spacing idiom: track_classes: "-ml-1" pairs
+        # with item classes "pl-1 -scroll-ml-1".
+        option :track_classes, :string
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 

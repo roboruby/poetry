@@ -27,6 +27,20 @@ module Poetry
           end
         end
 
+        # The spacing trio (track_classes + per-item pl/-scroll-ml): the
+        # track margin, the gutter padding, and the snap scroll-margin
+        # move together - this preview pins the tightened geometry.
+        def spacing
+          render_component(label: "Tight gallery", track_classes: "-ml-1", class: "mx-14 w-80") do |carousel|
+            5.times do |n|
+              carousel.with_item(classes: "basis-1/3 pl-1 -scroll-ml-1") do
+                tag.div((n + 1).to_s,
+                        class: "flex aspect-square items-center justify-center rounded-md border bg-muted text-xl")
+              end
+            end
+          end
+        end
+
         # Vertical stack, upstream's orientation proportions: fixed-height
         # slides (the auto-height track cannot resolve percentage bases),
         # two visible, enough roster to page. The -top-12/-bottom-12
