@@ -92,10 +92,14 @@ module Poetry
         end
 
         def item_attributes(slide)
+          # class: rides the merger so caller classes WIN on conflicts -
+          # a raw join left basis-1/3 vs the dictionary's basis-full to
+          # the compiled sheet's cascade order (which picked basis-full,
+          # silently breaking the documented strip sizing).
           {
             "role" => "group", "aria-roledescription" => "slide", "data-slot" => "carousel-item",
-            "class" => [css(:item), css(vertical? ? :item_vertical : :item_horizontal),
-                        slide.classes].compact.join(" ")
+            "class" => css(:item, class: [css(vertical? ? :item_vertical : :item_horizontal),
+                                          slide.classes].compact)
           }
         end
 

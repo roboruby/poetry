@@ -57,6 +57,20 @@ module Poetry
         assert_raises(ArgumentError) { render_inline(Carousel::Component.new(label: "A")) }
       end
 
+      def test_carousel_item_classes_beat_the_dictionary_on_conflicts
+        html = render_inline(Carousel::Component.new(label: "Strip")) do |carousel|
+          carousel.with_item(classes: "basis-1/3") { "sized" }
+          carousel.with_item { "default" }
+        end
+
+        sized, default = html.css('[data-slot="carousel-item"]')
+
+        assert_includes sized["class"], "basis-1/3"
+        refute_includes sized["class"], "basis-full",
+                        "the caller's basis must WIN, not ride the cascade lottery"
+        assert_includes default["class"], "basis-full"
+      end
+
       # -- Resizable ------------------------------------------------------------
 
       def render_group(**options)

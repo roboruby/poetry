@@ -26,6 +26,22 @@ module Poetry
             end
           end
         end
+
+        # Vertical stack, upstream's orientation proportions: fixed-height
+        # slides (the auto-height track cannot resolve percentage bases),
+        # two visible, enough roster to page. The -top-12/-bottom-12
+        # controls need gutter room (my-14).
+        def vertical
+          render_component(label: "Release milestones", orientation: :vertical,
+                           class: "mx-auto my-14 grid h-64 w-52") do |carousel|
+            6.times do |n|
+              carousel.with_item do
+                tag.div("Week #{n + 1}",
+                        class: "flex h-28 items-center justify-center rounded-md border bg-muted text-sm font-semibold")
+              end
+            end
+          end
+        end
       end
     end
   end
