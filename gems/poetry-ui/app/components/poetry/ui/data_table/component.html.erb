@@ -17,7 +17,7 @@
       <%= render Poetry::Ui::Table::Component.new(sticky_header: sticky_header, container_class: container_class,
                                                   scroll_label: scroll_label.presence || caption) do %>
         <% if caption.present? %>
-          <caption data-slot="table-caption" class="<%= Poetry::Ui::Table::Style.css(:caption) %>"><%= caption %></caption>
+          <caption data-slot="table-caption" class="<%= Poetry::Ui::Table::Style.css(:caption, class: css(:caption)) %>"><%= caption %></caption>
         <% end %>
         <thead data-slot="table-header" class="<%= Poetry::Ui::Table::Style.css(:header) %>">
           <tr data-slot="table-row" class="<%= Poetry::Ui::Table::Style.css(:row) %>">

@@ -2570,9 +2570,10 @@ components:
     - container
     - footer
     - empty
+    - caption
     - checkbox
     - select_cell
-    capsule: 3c75c408cd2d
+    capsule: 52597f06dcb0
     controllers:
     - identifier: poetry--core--table-selection
       targets:

@@ -13,6 +13,13 @@ module Poetry
                             "[&_tr[data-selected]]:bg-muted/50"
         element :footer, "cn-data-table-footer"
         element :empty, "cn-data-table-empty"
+
+        # POETRY ADDITION: the caption lives INSIDE the bordered container
+        # (a <caption> cannot leave its <table>), so Table's mt-4 needs a
+        # matching bottom margin or the text hugs the frame's border.
+        # Upstream never composes this - its bordered data-table demo has
+        # no caption; its captioned table demo has no border.
+        element :caption, "mb-4"
         # Selection: native checkboxes on the token accent; the
         # selected-row wash rides the container (rows are controller-
         # marked data-selected).

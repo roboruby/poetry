@@ -33,6 +33,9 @@ module Poetry
           html = render_table(caption: "Recent notes")
 
           assert_equal "Recent notes", html.css("caption").text.strip
+          # The caption sits INSIDE the bordered container: Table's mt-4
+          # plus the data-table's own mb-4, or it hugs the frame's border.
+          assert_includes html.css("caption").first["class"].split, "mb-4"
           assert_equal(%w[Title Author], html.css("th").map { |th| th.text.strip })
           assert_equal(%w[Beta Ada], html.css("tbody tr").first.css("td").map { |td| td.text.strip })
         end
