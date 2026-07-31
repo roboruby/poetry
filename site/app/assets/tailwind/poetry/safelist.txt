@@ -18,6 +18,7 @@
 -ml-4
 -mr-0.5
 -mt-4
+-mx-3
 -right-12
 -scroll-ml-4
 -scroll-mt-4
@@ -952,6 +953,7 @@ max-w-none
 max-w-sm
 max-w-xl
 mb-0
+mb-4
 mb-auto
 md:after:hidden
 md:block
