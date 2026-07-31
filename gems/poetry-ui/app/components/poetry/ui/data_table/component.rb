@@ -171,7 +171,7 @@ module Poetry
         def sort_link_options(column)
           {
             tag: :a, href: path_for(state.toggle_params(column.key)),
-            variant: :ghost, size: :sm,
+            variant: :ghost, size: :sm, class: Style.css(:sort_link),
             data: { slot: "data-table-sort" }
           }
         end

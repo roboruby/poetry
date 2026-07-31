@@ -2571,9 +2571,10 @@ components:
     - footer
     - empty
     - caption
+    - sort_link
     - checkbox
     - select_cell
-    capsule: 52597f06dcb0
+    capsule: 74f41e572b2b
     controllers:
     - identifier: poetry--core--table-selection
       targets:

@@ -65,6 +65,9 @@ module Poetry
           assert_equal "a", link.name, "keyboard, middle-click, and share all need a real href"
           assert_includes link["href"], "sort=title"
           assert_includes link["href"], "dir=desc", "clicking the active asc column toggles to desc"
+          # The ghost padding compensation: label text sits ON the column's
+          # data text, not 12px off it.
+          assert_includes link["class"].split, "-mx-3"
         end
 
         def test_the_filter_form_is_a_labelled_get_search_carrying_the_sort
