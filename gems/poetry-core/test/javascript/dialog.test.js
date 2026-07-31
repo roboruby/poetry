@@ -153,6 +153,32 @@ describe("poetry--core--dialog", () => {
       expect(dlg.open).toBe(false)
     })
 
+    // The docs-search collision: two dialogs claiming one descriptor must
+    // degrade to first-registered-wins, not both toggling open.
+    it("a duplicate binding degrades to first-registered-wins", async () => {
+      application.stop()
+      document.body.style.overflow = ""
+      document.body.innerHTML = `
+        <div id="root">
+          <div data-controller="poetry--core--dialog"
+               data-poetry--core--dialog-hotkey-value="meta+k">
+            <dialog id="first" data-poetry--core--dialog-target="dialog"></dialog>
+          </div>
+          <div data-controller="poetry--core--dialog"
+               data-poetry--core--dialog-hotkey-value="meta+k">
+            <dialog id="second" data-poetry--core--dialog-target="dialog"></dialog>
+          </div>
+        </div>`
+      application = Application.start()
+      registerPoetryControllers(application)
+      await nextFrame()
+
+      press("k", { metaKey: true })
+
+      expect(document.getElementById("first").open).toBe(true)
+      expect(document.getElementById("second").open).toBe(false)
+    })
+
     it("a bare key or a wrong modifier never triggers", async () => {
       application.stop()
       application = await mountWithHotkey()

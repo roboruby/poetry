@@ -24,8 +24,10 @@ export default class extends Controller {
   connect() {
     if (this.keysValue === "") return
 
+    // defaultPrevented gate: a key another hotkey consumer (dialog
+    // hotkey, another instance) already claimed stays claimed.
     this.#onKeydown = (event) => {
-      if (!matchesHotkey(event, this.keysValue)) return
+      if (event.defaultPrevented || !matchesHotkey(event, this.keysValue)) return
       if (isEditingTarget(event) && !this.#modified(event)) return
 
       event.preventDefault()

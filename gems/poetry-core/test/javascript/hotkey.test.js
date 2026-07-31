@@ -56,7 +56,15 @@ describe("poetry--core--hotkey", () => {
     await nextFrame()
   })
 
-  afterEach(() => application.stop())
+  // application.stop() does not DISCONNECT live controllers - clear the
+  // body while the application still observes so each test's window
+  // listener is actually removed (a leaked listener claims the key first
+  // and the defaultPrevented gate makes the fresh one defer to it).
+  afterEach(async () => {
+    document.body.innerHTML = ""
+    await nextFrame()
+    application.stop()
+  })
 
   it("clicks the host, prevents default, and honors a pressed-event veto", async () => {
     document.body.innerHTML = `
@@ -78,6 +86,22 @@ describe("poetry--core--hotkey", () => {
     window.dispatchEvent(key({ key: "k", metaKey: true }))
 
     expect(clicks).toBe(1)
+  })
+
+  it("leaves a key another consumer already claimed (defaultPrevented) alone", async () => {
+    document.body.innerHTML = `
+      <button id="palette" data-controller="poetry--core--hotkey"
+              data-poetry--core--hotkey-keys-value="meta+k">Palette</button>`
+    await nextFrame()
+
+    let clicks = 0
+    document.getElementById("palette").addEventListener("click", () => { clicks += 1 })
+
+    const claimed = key({ key: "k", metaKey: true })
+    claimed.preventDefault()
+    window.dispatchEvent(claimed)
+
+    expect(clicks).toBe(0)
   })
 
   it("single-key descriptors stay inert while typing; combos fire everywhere", async () => {

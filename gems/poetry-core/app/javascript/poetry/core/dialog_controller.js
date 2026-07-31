@@ -35,8 +35,10 @@ export default class extends Controller {
 
     if (this.hotkeyValue === "") return
 
+    // defaultPrevented gate: two dialogs bound to the same descriptor
+    // degrade to first-registered-wins instead of both toggling open.
     this.#onHotkey = (event) => {
-      if (!this.#matchesHotkey(event)) return
+      if (event.defaultPrevented || !this.#matchesHotkey(event)) return
 
       event.preventDefault()
       this.toggle()
