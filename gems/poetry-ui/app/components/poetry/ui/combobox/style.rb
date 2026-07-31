@@ -38,6 +38,11 @@ module Poetry
         # layer, exactly as the class merger used to).
         element :input_scale, "h-9"
 
+        # POETRY ADDITION (Command's precedent): the label wrapper is
+        # layout-transparent - it mirrors the item's own row (preflight
+        # blockifies svg, so a bare span would stack an icon above its text).
+        element :item_text, "flex min-w-0 items-center gap-2"
+
         # The committed-value check: TRAILING ms-auto per the demo (not
         # Select's absolute right-2 gutter) - the family RTL fix.
         element :item_indicator, "cn-combobox-item-indicator ms-auto flex items-center justify-center"

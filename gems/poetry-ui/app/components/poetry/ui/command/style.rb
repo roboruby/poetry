@@ -39,6 +39,11 @@ module Poetry
                        "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
                        "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
+        # POETRY ADDITION: the label wrapper is layout-transparent - it
+        # mirrors the item's own row (preflight blockifies svg, so a bare
+        # span would stack an icon above its text).
+        element :item_text, "flex min-w-0 items-center gap-2"
+
         element :shortcut, "cn-command-shortcut"
 
         element :separator, "cn-command-separator"

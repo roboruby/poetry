@@ -1519,6 +1519,7 @@ components:
     - trigger_leading
     - content
     - input_scale
+    - item_text
     - item_indicator
     - item_indicator_state
     - native
@@ -1533,7 +1534,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: eb0896234742
+    capsule: 0b0d78e2e373
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -1824,6 +1825,7 @@ components:
     - group
     - heading
     - item
+    - item_text
     - shortcut
     - separator
     - status
@@ -1831,7 +1833,7 @@ components:
     - search_icon
     - dialog_content
     - dialog_overrides
-    capsule: 86d624b30458
+    capsule: e73d58715288
     controllers:
     - identifier: poetry--core--command
       targets: []

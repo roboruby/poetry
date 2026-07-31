@@ -136,7 +136,8 @@ module Poetry
         # excluded; icons contribute no textContent; icon-rich content
         # overrides via filter_value:/keywords:).
         def label_part
-          content_tag(:span, content, "data-slot" => "command-item-text")
+          content_tag(:span, content, "data-slot" => "command-item-text",
+                                      "class" => Style.css(:item_text))
         end
 
         # Presentational only - Command never binds the hinted key (the

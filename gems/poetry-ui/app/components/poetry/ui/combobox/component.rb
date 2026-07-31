@@ -180,7 +180,8 @@ module Poetry
           attrs["data-filter-value"] = @filter_value if @filter_value
           attrs["data-always-render"] = "" if @always_render
           content_tag(:div, attrs.merge(@extra_attributes)) do
-            safe_join([content_tag(:span, label_html, "data-slot" => "command-item-text"),
+            safe_join([content_tag(:span, label_html, "data-slot" => "command-item-text",
+                                                      "class" => Style.css(:item_text)),
                        item_indicator])
           end
         end
