@@ -48,6 +48,35 @@ export function isPortaled(content) {
   return portaled.has(content)
 }
 
+// Containment that follows portals HOME: a node inside portaled content
+// counts as inside `container` when the content's home position does.
+// Focus-scope's trap keys on this - a portaled sub level is outside the
+// root content's subtree but logically inside its tree (Radix scopes the
+// trap over the React tree, which portals preserve; the DOM one doesn't).
+export function logicallyContains(container, node) {
+  let current = node
+
+  while (current) {
+    if (container.contains(current)) return true
+
+    const content = portaledAncestorOf(current)
+
+    if (!content) return false
+
+    current = portaled.get(content).placeholder.parentNode
+  }
+
+  return false
+}
+
+function portaledAncestorOf(node) {
+  for (let el = node instanceof Element ? node : node?.parentElement; el; el = el.parentElement) {
+    if (portaled.has(el)) return el
+  }
+
+  return null
+}
+
 export function portalContent(content, { container = document.body } = {}) {
   if (portaled.has(content) || !content.parentNode) return false
 

@@ -798,7 +798,7 @@ describe("poetry--core--menu", () => {
       expect(el("sub-a").getAttribute("data-poetry--core--popper-strategy-value")).toBe("fixed")
     })
 
-    it("a submenu opens INSIDE the portaled parent (it rides the move, delegation intact)", async () => {
+    it("a submenu portals to body on ITS open (inside the content it is clipped by the menu's own scroller) and homes on close", async () => {
       await mount()
       await openWithKey("ArrowDown")
 
@@ -806,8 +806,56 @@ describe("poetry--core--menu", () => {
       press(el("sub-a-trigger"), "ArrowRight")
 
       expect(el("sub-a-content").hasAttribute("data-open")).toBe(true)
+      expect(el("sub-a-content").parentNode).toBe(document.body)
+      expect(el("content").contains(el("sub-a-content"))).toBe(false)
+      // The modal scrim (body pointer-events none) no longer covers it via
+      // inheritance - the portaled sub carries its own auto.
+      expect(el("sub-a-content").style.pointerEvents).toBe("auto")
+
+      // ArrowLeft closes the level - the sub homes back inside its wrapper.
+      press(document.activeElement ?? el("sub-a-content"), "ArrowLeft")
+      await nextFrame()
+      await nextFrame()
+
+      expect(el("sub-a-content").hasAttribute("data-open")).toBe(false)
       expect(el("content").contains(el("sub-a-content"))).toBe(true)
-      expect(el("content").parentNode).toBe(document.body)
+      expect(el("sub-a-content").style.pointerEvents).toBe("")
+    })
+
+    it("root close homes a still-open portaled sub along with the content", async () => {
+      await mount()
+      await openWithKey("ArrowDown")
+
+      el("sub-a-trigger").focus()
+      press(el("sub-a-trigger"), "ArrowRight")
+
+      expect(el("sub-a-content").parentNode).toBe(document.body)
+
+      click(el("trigger"))
+      await nextFrame()
+      await nextFrame()
+
+      expect(document.querySelectorAll("body > [data-slot$=sub-content]").length).toBe(0)
+      expect(el("content").contains(el("sub-a-content"))).toBe(true)
+      expect(el("root").contains(el("content"))).toBe(true)
+    })
+
+    it("a click on a portaled sub item still activates (the wired delegation)", async () => {
+      await mount()
+      await openWithKey("ArrowDown")
+
+      el("sub-a-trigger").focus()
+      press(el("sub-a-trigger"), "ArrowRight")
+
+      expect(el("sub-a-content").parentNode).toBe(document.body)
+
+      const selects = record("poetry:menu:select", el("root"))
+
+      el("sub-a-email").click()
+      await nextFrame()
+
+      expect(selects.length).toBe(1)
+      expect(el("content").hasAttribute("data-open")).toBe(false)
     })
 
     it("a server-pinned open menu portals one frame after connect (the popper cache order)", async () => {

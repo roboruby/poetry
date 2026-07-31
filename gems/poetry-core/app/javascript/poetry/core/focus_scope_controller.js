@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 import { ensureFocusGuards, removeFocusGuards } from "@poetry/controllers/helpers/focus_guards"
+import { logicallyContains } from "@poetry/controllers/helpers/portal"
 
 // The overlay focus scope (Tier 2, P2): traps Tab/Shift+Tab within the
 // subtree, loops at the edges, and - the part to get exact - snapshots
@@ -134,7 +135,9 @@ export default class FocusScopeController extends Controller {
   // programmatic move, a click outside) is yanked back to the last focused
   // element within the scope.
   #handleFocusin(event) {
-    if (this.element.contains(event.target)) {
+    // Logical containment: a portaled sub level (menus portal each sub on
+    // its own open) sits outside the scope's SUBTREE but inside its tree.
+    if (logicallyContains(this.element, event.target)) {
       this.#lastFocusedWithin = event.target
       return
     }

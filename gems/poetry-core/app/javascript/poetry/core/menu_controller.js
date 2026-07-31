@@ -94,6 +94,7 @@ export default class MenuController extends Controller {
   #typeahead = createTypeahead()
   #subOpenTimers = new Map()
   #subCloseTimers = new Map()
+  #portaledSubs = new Set()
 
   connect() {
     const content = this.#content()
@@ -130,7 +131,15 @@ export default class MenuController extends Controller {
   disconnect() {
     this.#connected = false
 
-    // Never leave content stranded at the container (drop-never-strand).
+    // Never leave content stranded at the container (drop-never-strand) -
+    // portaled subs first, their placeholders live inside the root content.
+    for (const subContent of this.#portaledSubs) {
+      restoreContent(subContent)
+      subContent.style.pointerEvents = ""
+    }
+
+    this.#portaledSubs.clear()
+
     const content = this.#content()
 
     if (content) restoreContent(content)
@@ -304,10 +313,9 @@ export default class MenuController extends Controller {
 
     // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
-    // absolute - static under compositor scroll, transform-immune. Subs
-    // ride INSIDE the content (their poppers travel with it) but must
-    // share the coordinate space: a fixed sub detaches from an absolute
-    // parent during scroll.
+    // absolute - static under compositor scroll, transform-immune. Each
+    // SUB level portals on its own open (#showSub) - kept inside, the
+    // absolute sub is clipped by the content's overflow-y-auto scroller.
     portalContent(content, { container: resolvePortalContainer(this.element) })
     this.#setStrategy(content, "absolute")
 
@@ -542,6 +550,21 @@ export default class MenuController extends Controller {
         if (sibling !== subTrigger) this.#closeSubTree(sibling, { focusTrigger: false })
       }
 
+      // Portal the sub level like the root (docs/portal-on-open.md): left
+      // absolute INSIDE the content it is clipped by the menu's own
+      // overflow-y-auto scroller - the flyout opens invisible (upstream
+      // portals every sub level for the same reason). Native events no
+      // longer bubble through the root content from the container, so the
+      // delegated listeners ride the portaled node too - the bridge
+      // carries only poetry events home.
+      portalContent(subContent, { container: resolvePortalContainer(this.element) })
+      this.#portaledSubs.add(subContent)
+      this.#wireSub(subContent)
+      // The modal scrim is body pointer-events none + per-layer auto; the
+      // sub inherited the root layer's auto while inside it - at the
+      // container it must carry its own.
+      subContent.style.pointerEvents = "auto"
+
       subContent.hidden = false
       subTrigger.setAttribute("aria-expanded", "true")
       setState(subTrigger, "popup-open")
@@ -579,6 +602,11 @@ export default class MenuController extends Controller {
       exitPresence(subContent, {
         onRemove: () => {
           subContent.hidden = true
+          // Home AFTER the exit finished and hidden landed (D4).
+          restoreContent(subContent)
+          subContent.style.pointerEvents = ""
+          this.#portaledSubs.delete(subContent)
+          this.#unwireSub(subContent)
           this.#removeControllers(subContent, SUB_LAYER_CONTROLLERS)
         }
       })
@@ -654,6 +682,30 @@ export default class MenuController extends Controller {
   #listen(target, type, listener) {
     target.addEventListener(type, listener)
     this.#wired.push([target, type, listener])
+  }
+
+  // The portaled sub is self-sufficient: while at the container it no
+  // longer bubbles through the root content, and item data-actions are out
+  // of scope (the S4 lesson) - so the native delegation AND the sub's own
+  // dismissable events ride the portaled node. The bridge still re-emits
+  // the dismissable pair from home (the wrapper), where level resolution
+  // finds no sub content and the duplicate no-ops.
+  #wireSub(subContent) {
+    this.#listen(subContent, "keydown", (event) => this.keydown(event))
+    this.#listen(subContent, "click", this.#onClick)
+    this.#listen(subContent, "pointerover", this.#onPointerover)
+    this.#listen(subContent, "pointerout", this.#onPointerout)
+    this.#listen(subContent, "poetry--core--dismissable:dismiss", this.#onDismiss)
+    this.#listen(subContent, "poetry--core--dismissable:interact-outside", this.#onInteractOutside)
+  }
+
+  #unwireSub(subContent) {
+    this.#wired = this.#wired.filter(([target, type, listener]) => {
+      if (target !== subContent) return true
+
+      target.removeEventListener(type, listener)
+      return false
+    })
   }
 
   #onClick = (event) => {
