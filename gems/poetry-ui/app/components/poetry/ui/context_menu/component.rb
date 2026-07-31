@@ -11,6 +11,7 @@ module Poetry
       POPPER = %i[poetry core popper].freeze
       ITEM_VARIANTS = %i[default destructive].freeze
       DIRS = %i[ltr rtl].freeze
+      SIDES = %i[top right bottom left].freeze
 
       # Shared attribute builders for the item union - mixed into the root
       # Component and the nested Sub / Group / RadioGroup parts so every
@@ -174,10 +175,11 @@ module Poetry
       # right-click/long-press SURFACE, not a button. The surface is NOT a
       # widget: no role, no aria-haspopup, not in the tab order (unless
       # focusable_surface: opts in); with no JS the browser-native context
-      # menu appears untouched (the suite's strongest PE story). Position
-      # is FORCED (side right / align start / offset 2, Radix parity) -
-      # context menus anchor at the pointer via popper's virtual-anchor
-      # mode, written by the thin poetry--core--context-menu controller.
+      # menu appears untouched (the suite's strongest PE story). Position:
+      # side: is API (Base UI parity - ContextMenuContent exposes side,
+      # default right); align start / offset 2 stay fixed - context menus
+      # anchor at the pointer via popper's virtual-anchor mode, written by
+      # the thin poetry--core--context-menu controller.
       class Component < Poetry::Core::Component
         include ItemSlots
 
@@ -188,7 +190,8 @@ module Poetry
           "menu is DropdownMenu.",
           "Do not add aria-haspopup or a role to the trigger surface; do not make it focusable except " \
           "via focusable_surface: true.",
-          "Do not try to set side/align/side_offset - context menus anchor at the pointer, always.",
+          "side: picks which side of the pointer the menu opens toward (top/right/bottom/left, default " \
+          ":right); align and offsets are not API - collisions still flip the side.",
           "Wrap the whole logical object (row/card) as the trigger surface, not a fragment.",
           "Destructive items use variant: :destructive AND still confirm irreversible actions via a dialog.",
           "shortcut: is a visual hint only - it does NOT bind the key.",
@@ -202,8 +205,10 @@ module Poetry
         option :label, :string
         option :focusable_surface, :boolean, default: false
         option :dir, :symbol
+        option :side, :symbol, default: :right
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
+        validates :side, inclusion: { in: SIDES }
 
         part "context-menu", "Root wrapper hosting the context-menu + menu + popper controllers " \
                              "around the surface and content"
@@ -219,8 +224,8 @@ module Poetry
              states: {
                "data-open" => "menu is open (presence flips the pair at runtime)",
                "data-closed" => "menu is closed or animating out (the server-rendered state)",
-               "data-side" => { condition: "the placement side (forced right initially; popper re-writes " \
-                                           "it after collision flips)",
+               "data-side" => { condition: "the placement side (the side: option, default right; popper " \
+                                           "re-writes it after collision flips)",
                                 values: %w[top right bottom left] },
                "data-align" => { condition: "the alignment (forced start initially; popper re-resolves it)",
                                  values: %w[start center end] }
@@ -344,8 +349,8 @@ module Poetry
             "aria-label" => label.presence || t("poetry.context_menu.menu_label_fallback"),
             "tabindex" => "-1",
             "data-slot" => "context-menu-content", (open ? "data-open" : "data-closed") => "",
-            # The FORCED initial placement (re-resolved live by popper).
-            "data-side" => "right", "data-align" => "start",
+            # The initial placement (side: option; re-resolved live by popper).
+            "data-side" => side.to_s, "data-align" => "start",
             "class" => css(:content)
           }.merge(popper_stimulus { |popper| popper.with_target(:content) })
           attrs["hidden"] = true unless open
@@ -379,9 +384,9 @@ module Poetry
           menu.with_value(:modal, modal)
           popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
           popper.register_controller
-          # side right / side_offset 2 / align start FORCED, not API (Radix
-          # omits these props on ContextMenu.Content); collisions still flip.
-          popper.with_value(:side, :right)
+          # side: is API (Base UI parity); align start / side_offset 2 stay
+          # fixed; collisions still flip the side.
+          popper.with_value(:side, side)
           popper.with_value(:align, :start)
           popper.with_value(:side_offset, 2)
           popper.with_value(:avoid_collisions, true)

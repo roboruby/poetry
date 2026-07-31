@@ -34,11 +34,26 @@ module Poetry
           assert_equal "false", root["data-poetry--core--context-menu-disabled-value"]
           assert_equal "false", root["data-poetry--core--menu-open-value"]
           assert_equal "true", root["data-poetry--core--menu-modal-value"]
-          # side right / align start / side_offset 2 are FORCED (no API).
+          # side: defaults right; align start / side_offset 2 stay fixed.
           assert_equal "right", root["data-poetry--core--popper-side-value"]
           assert_equal "start", root["data-poetry--core--popper-align-value"]
           assert_equal "2", root["data-poetry--core--popper-side-offset-value"]
           assert_equal "true", root["data-poetry--core--popper-avoid-collisions-value"]
+        end
+
+        # side: is API (Base UI parity - ContextMenuContent exposes side);
+        # it seeds BOTH the popper value and the content's data-side.
+        def test_side_option_seeds_popper_and_content
+          html = render_menu(side: :top)
+          fragment = doc(html)
+
+          assert_equal "top",
+                       fragment.css('[data-slot="context-menu"]').first["data-poetry--core--popper-side-value"]
+          assert_equal "top", fragment.css('[data-slot="context-menu-content"]').first["data-side"]
+        end
+
+        def test_side_defaults_to_right_on_the_content
+          assert_equal "right", doc(render_menu).css('[data-slot="context-menu-content"]').first["data-side"]
         end
 
         def test_trigger_is_a_role_less_surface_not_a_button

@@ -2081,6 +2081,14 @@ components:
     - name: open
       type: boolean
       default: false
+    - name: side
+      type: symbol
+      variants:
+      - top
+      - right
+      - bottom
+      - left
+      default: right
     slots:
     - name: items
       many: true
@@ -2368,8 +2376,8 @@ components:
       opening a menu is DropdownMenu.
     - 'Do not add aria-haspopup or a role to the trigger surface; do not make it focusable
       except via focusable_surface: true.'
-    - Do not try to set side/align/side_offset - context menus anchor at the pointer,
-      always.
+    - 'side: picks which side of the pointer the menu opens toward (top/right/bottom/left,
+      default :right); align and offsets are not API - collisions still flip the side.'
     - Wrap the whole logical object (row/card) as the trigger surface, not a fragment.
     - 'Destructive items use variant: :destructive AND still confirm irreversible
       actions via a dialog.'
@@ -2401,8 +2409,8 @@ components:
       - attr: data-closed
         condition: menu is closed or animating out (the server-rendered state)
       - attr: data-side
-        condition: the placement side (forced right initially; popper re-writes it
-          after collision flips)
+        condition: 'the placement side (the side: option, default right; popper re-writes
+          it after collision flips)'
         values:
         - top
         - right
