@@ -130,6 +130,32 @@ component CSS. Subtree-scoped HOST apps are covered by D2 below.
   (A/B-confirmed) - why aligned doesn't engage there is an open
   question for another day.
 
+### S7 (2026-07-31): sub levels portal too - the invisible-submenu correction
+
+S5's "subs ride INSIDE the content" decision was wrong: a
+position:absolute sub inside the root content is clipped by the
+content's own `overflow-y-auto` scroller (fixed subs escaped ancestor
+clipping pre-portal; upstream portals every sub level for exactly this
+reason). Every submenu in the family opened INVISIBLE - data-open set,
+popper positioned, painted behind the clip. No tier caught it: dommy has
+no layout, no golden captures an open sub, and rect-based live checks
+lie (getBoundingClientRect ignores clipping - hit-test with
+elementFromPoint instead). Found by a user on the docs page.
+
+The fix mirrors the root recipe per sub level (#showSub/#closeSubTree),
+plus three seams the root never needed:
+- **Native delegation rides the portaled node** (#wireSub): root-content
+  bubbling is gone and item data-actions are out of scope; the
+  dismissable pair is wired direct - its bridged home duplicate targets
+  the wrapper, resolves no level, and no-ops.
+- **The modal scrim is per-layer:** body pointer-events none + inline
+  auto on each layer. The sub inherited the root layer's auto while
+  inside it; portaled to body it carries its own.
+- **focus-scope containment goes logical:** `logicallyContains` in
+  portal.js follows placeholders home, so the trap keeps portaled sub
+  levels (Radix scopes the trap over the React tree, which portals
+  preserve; a DOM subtree check yanked focus straight back out).
+
 ## Per-slice acceptance
 
 1. **Scroll-static proof (the headline):** with the popup open,
