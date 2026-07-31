@@ -153,7 +153,7 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press
 - WIRING `poetry--core--combobox`: values modal, multiple, open, value; actions chipKeydown, chipsPointerdown, clear, close, inputKeydown, nativeChanged, open, openValueChanged, removeChip, setValue, toggle, triggerKeydown, valueValueChanged; events poetry:combobox:change, poetry:combobox:closed, poetry:combobox:open, poetry:combobox:select
 - WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
+- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
 - RULE: Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; this component IS that wiring, with the form story done right.
 - RULE: Combobox picks VALUES. Filter-then-ACT is bare Command; short known lists are Select; free text is Input.
 - RULE: Every Combobox MUST be named (Field label via id: or aria-label) - a nameless bare combobox fails at render.
@@ -468,7 +468,7 @@ Slots: trigger, items (many; types item|group|separator - one with_<type> setter
 - PART `select-item-indicator` - The check gutter - server-rendered always; the parent item's data-selected absence hides it
 - PART `select-item-text` - The option's label span - the value display copies from it
 - PART `select-separator` - Decorative divider between options (aria-hidden)
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
+- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
 - WIRING `poetry--core--select`: values alignItemWithTrigger, loop, modal, open, typeaheadTimeout, value; actions close, commit, keydown, nativeChanged, open, openValueChanged, scrollHoldStart, scrollHoldStop, setValue, syncScrollButtons, toggle, triggerKeydown, valueValueChanged; events poetry:select:change, poetry:select:closed, poetry:select:open, poetry:select:select
 - RULE: Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never fake a select with DropdownMenu radio items bound to a hidden field.
 - RULE: Options are VALUES. If activating an option should DO something beyond setting a value, it's a DropdownMenu item.

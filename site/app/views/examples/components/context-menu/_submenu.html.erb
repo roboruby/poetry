@@ -1,0 +1,19 @@
+<%# with_sub nests a full menu level - its own trigger row, items,
+    separators, and variants - and submenus recurse. %>
+<%= poetry_context_menu do |menu| %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Right-click here" } %>
+  <% menu.with_group do |group| %>
+    <% group.with_item(shortcut: "⌘C") { "Copy" } %>
+    <% group.with_item(shortcut: "⌘X") { "Cut" } %>
+  <% end %>
+  <% menu.with_sub do |sub| %>
+    <% sub.with_trigger { "More Tools" } %>
+    <% sub.with_item { "Save Page..." } %>
+    <% sub.with_item { "Create Shortcut..." } %>
+    <% sub.with_item { "Name Window..." } %>
+    <% sub.with_separator %>
+    <% sub.with_item { "Developer Tools" } %>
+    <% sub.with_separator %>
+    <% sub.with_item(variant: :destructive) { "Delete" } %>
+  <% end %>
+<% end %>

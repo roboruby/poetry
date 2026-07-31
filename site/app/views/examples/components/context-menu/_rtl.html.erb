@@ -1,9 +1,0 @@
-<%# dir: :rtl flips the submenu side. %>
-<%= poetry_context_menu(dir: :rtl) do |menu| %>
-  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "انقر بزر الماوس الأيمن" } %>
-  <% menu.with_item { "فتح" } %>
-  <% menu.with_sub do |sub| %>
-    <% sub.with_trigger { "المزيد" } %>
-    <% sub.with_item { "استيراد" } %>
-  <% end %>
-<% end %>

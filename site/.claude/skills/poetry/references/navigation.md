@@ -43,7 +43,7 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - PART `navigation-menu-link` - A REAL destination link - top-level (with_link) or a panel entry (poetry_navigation_menu_link) | states: data-active (the current page (active: true))
 In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING `poetry--core--navigation-menu`: values closeDelay, openDelay; actions cancelClose, focusLeft, keydown, scheduleClose, scheduleOpen, toggle
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement
+- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
 - RULE: label: is REQUIRED (the nav landmark's accessible name).
 - RULE: with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a top-level destination - use links for pages, panels for groups of links.
 - RULE: Panel content is poetry_navigation_menu_link entries (active: marks the current page) - never buttons; navigation navigates.
