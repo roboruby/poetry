@@ -1,8 +1,8 @@
-<%= poetry_command_dialog(hotkey: "meta+k", placeholder: "Type a command or search…",
+<%= poetry_command_dialog(hotkey: "meta+j", placeholder: "Type a command or search…",
                           title: "Command menu") do |palette| %>
   <% palette.with_trigger(variant: :outline) do %>
     <span>Search…</span>
-    <kbd class="ml-2 rounded border bg-muted px-1.5 font-mono text-xs text-muted-foreground">⌘K</kbd>
+    <kbd class="ml-2 rounded border bg-muted px-1.5 font-mono text-xs text-muted-foreground">⌘J</kbd>
   <% end %>
   <% palette.with_group(heading: "Quick actions") do |group| %>
     <% group.with_item(value: "new-document", shortcut: "⌘N") { "New document" } %>
