@@ -4,7 +4,10 @@
     focused surface. The browser synthesizes the contextmenu event either
     way — poetry binds no key itself. %>
 <%= poetry_context_menu(focusable_surface: true, label: "Row actions") do |menu| %>
-  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] items-center justify-center rounded-md border border-dashed text-sm select-none") { "Focusable row (Shift+F10 · VoiceOver: VO+Shift+M)" } %>
+  <% menu.with_trigger(tag: :div, class: "flex h-[150px] w-[300px] flex-col items-center justify-center gap-1 rounded-md border border-dashed text-sm select-none") do %>
+    <span>Focusable row</span>
+    <span class="text-xs text-muted-foreground">Shift+F10 &middot; VoiceOver VO+Shift+M</span>
+  <% end %>
   <% menu.with_item { "Rename" } %>
   <% menu.with_item { "Duplicate" } %>
 <% end %>
