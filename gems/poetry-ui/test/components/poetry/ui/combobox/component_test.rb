@@ -458,10 +458,10 @@ module Poetry
         end
 
         def test_a_custom_trigger_icon_groups_with_the_value_display
-          fragment = doc(render_combobox { |combobox|
+          fragment = doc(render_combobox do |combobox|
             combobox.with_trigger { "<svg data-icon></svg>".html_safe }
             combobox.with_item(value: "next.js") { "Next.js" }
-          })
+          end)
           trigger = fragment.css('[data-slot="combobox-trigger"]').first
           value = trigger.css('[data-slot="combobox-value"]').first
           group = value.parent
