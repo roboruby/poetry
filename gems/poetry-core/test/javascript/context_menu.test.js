@@ -143,6 +143,44 @@ describe("poetry--core--context-menu", () => {
     })
   })
 
+  // Base UI parity: while open, the trigger's document-level listener (its
+  // backdrop stand-in) swallows native context menus everywhere - including
+  // the popup's own items (upstream's measured gap).
+  describe("native-menu suppression while open", () => {
+    it("while open, contextmenu on an item or anywhere on the page is suppressed", async () => {
+      await mount()
+      contextmenu(el("trigger"), { x: 100, y: 100 })
+      await nextFrame()
+
+      expect(contextmenu(el("item-rename"), { x: 110, y: 120 })).toBe(false)
+      expect(contextmenu(document.body, { x: 700, y: 500 })).toBe(false)
+    })
+
+    it("after close, right-clicks elsewhere pass through natively again", async () => {
+      await mount()
+      contextmenu(el("trigger"), { x: 100, y: 100 })
+      await nextFrame()
+
+      application.getControllerForElementAndIdentifier(el("root"), "poetry--core--menu").close("escape-key")
+      await nextFrame()
+      await nextFrame()
+
+      expect(el("content").hidden).toBe(true)
+      expect(contextmenu(document.body, { x: 700, y: 500 })).toBe(true)
+    })
+
+    it("disconnect removes the document listener", async () => {
+      await mount()
+      contextmenu(el("trigger"), { x: 100, y: 100 })
+      await nextFrame()
+
+      el("host").replaceChildren()
+      await nextFrame()
+
+      expect(contextmenu(document.body, { x: 700, y: 500 })).toBe(true)
+    })
+  })
+
   describe("the long-press path (touch/pen only)", () => {
     it("pointerdown opens at the press point after the 700ms default, with data-pressing feedback during the window", async () => {
       await mount()

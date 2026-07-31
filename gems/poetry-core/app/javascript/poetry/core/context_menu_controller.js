@@ -40,9 +40,12 @@ export default class ContextMenuController extends Controller {
   }
 
   #timer = null
+  #suppressNative = null
+  #onMenuClosed = null
 
   disconnect() {
     this.#clearLongPress()
+    this.#stopSuppressingNative()
   }
 
   disabledValueChanged(disabled) {
@@ -97,10 +100,45 @@ export default class ContextMenuController extends Controller {
 
     if (input === "keyboard") this.#menu()?.open("list-navigation", { seed: "first" })
     else this.#menu()?.open("trigger-press")
+    this.#suppressNativeWhileOpen()
     this.dispatch("open", {
       prefix: EVENT_PREFIX,
       detail: { x: point?.x ?? null, y: point?.y ?? null, input }
     })
+  }
+
+  // --- native-menu suppression while open ---
+
+  // Base UI parity: ContextMenuTrigger keeps a document-level contextmenu
+  // listener while open - its viewport-covering backdrop swallows the
+  // native menu everywhere outside the popup. poetry renders no backdrop
+  // element, so the document listener IS the backdrop here; it deliberately
+  // covers the popup itself too (upstream's measured gap: right-clicking an
+  // item of the OPEN menu still spawns the native menu over it). Second
+  // right-clicks on the surface stay live - the trigger's own handler runs
+  // first and re-captures the point.
+  #suppressNativeWhileOpen() {
+    if (this.#suppressNative) return
+
+    this.#suppressNative = (event) => {
+      if (this.#isOpen()) event.preventDefault()
+    }
+    this.#onMenuClosed = () => {
+      // A reopen during the previous close's exit presence keeps the
+      // suppressor - the eventual real close dispatches closed again.
+      if (!this.#isOpen()) this.#stopSuppressingNative()
+    }
+    document.addEventListener("contextmenu", this.#suppressNative)
+    this.element.addEventListener("poetry:menu:closed", this.#onMenuClosed)
+  }
+
+  #stopSuppressingNative() {
+    if (!this.#suppressNative) return
+
+    document.removeEventListener("contextmenu", this.#suppressNative)
+    this.element.removeEventListener("poetry:menu:closed", this.#onMenuClosed)
+    this.#suppressNative = null
+    this.#onMenuClosed = null
   }
 
   // A keyboard-synthesized contextmenu carries unreliable coordinates
