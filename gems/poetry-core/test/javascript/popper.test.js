@@ -274,6 +274,24 @@ describe("poetry--core--popper", () => {
     expect(content.style.pointerEvents).toBe("")
   })
 
+  it("never writes the hide verdict onto CLOSED content - and clears stale writes (the first-open focus race)", async () => {
+    result.middlewareData = { hide: { referenceHidden: true } }
+    const { content, controller } = await mount()
+
+    // an open-era hide verdict landed...
+    expect(content.style.visibility).toBe("hidden")
+    expect(content.style.pointerEvents).toBe("none")
+
+    // ...then the popup closes: a closed-era pass must RESET, not re-assert
+    // (a stale visibility:hidden would refuse focus-scope's mount focus on
+    // the next open - Chrome will not focus into a hidden subtree).
+    content.hidden = true
+    await controller.reposition()
+
+    expect(content.style.visibility).toBe("")
+    expect(content.style.pointerEvents).toBe("")
+  })
+
   it("positions and rotates a [data-slot=popper-arrow] target", async () => {
     result.placement = "bottom"
     result.middlewareData = { arrow: { x: 3 } }
