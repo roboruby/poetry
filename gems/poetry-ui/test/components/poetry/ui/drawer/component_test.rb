@@ -117,6 +117,20 @@ module Poetry
                           "[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)]"
         end
 
+        def test_bottom_sheets_size_to_content_not_the_max_height_cap
+          down = render_drawer.css("dialog").first["class"].split
+
+          # h-fit, never h-auto: the UA :modal sets top:0 AND bottom:0, and
+          # an abspos box with both insets and height:auto SOLVES height to
+          # fill (CSS2 10.6.4) - h-auto blew every bottom sheet up to its
+          # max-h cap (2026-08-01 browser pass, one-line body 557px tall).
+          assert_includes down, "h-fit"
+          refute_includes down, "h-auto"
+          right = render_drawer(direction: :right).css("dialog").first["class"].split
+
+          assert_includes right, "h-auto", "edge panels DO fill the viewport axis"
+        end
+
         def test_the_parents_show_close_button_is_hidden_from_the_contract
           # A Drawer renders no corner X (vaul parity), so the inherited
           # Dialog option must not project - a listed option the template

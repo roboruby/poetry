@@ -51,12 +51,19 @@ module Poetry
         # travels the extra inset so the exit still clears the viewport.
         # rhea/mira/luma/maia ship --spacing(2), like their source styles.
         variant :direction, {
+          # down/up wear h-fit, never h-auto: the UA :modal sets top:0 AND
+          # bottom:0, and an abspos box with both insets and height:auto
+          # SOLVES height to fill (CSS2 10.6.4) - h-auto blew every bottom
+          # sheet up to its max-h cap. fit-content restores the UA's own
+          # content sizing; the auto margin still bottom-anchors. The
+          # x-axis directions keep h-auto: there fill IS the intent, the
+          # edge panel runs the full viewport.
           down: "cn-drawer-direction-down mt-auto mb-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
-                "h-auto w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
+                "h-fit w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
                 "[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] " \
                 "[--translate-y:var(--drawer-swipe-movement-y,0px)]",
           up: "cn-drawer-direction-up mb-auto mt-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
-              "h-auto w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
+              "h-fit w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
               "[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] " \
               "[--translate-y:calc(-1*var(--drawer-swipe-movement-y,0px))]",
           left: "cn-drawer-direction-left mr-auto ml-(--drawer-inset,0px) my-(--drawer-inset,0px) " \
