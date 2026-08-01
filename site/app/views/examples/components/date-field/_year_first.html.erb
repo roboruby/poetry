@@ -1,5 +1,5 @@
-<%# Segment order follows the field's locale (Intl.formatToParts): en-CA
-    writes ISO year-month-day, so the segments rearrange themselves - the
-    submitted form value is ISO yyyy-mm-dd in every locale either way. %>
+<%# Segment order follows the field's locale. Pass locale: to pin one -
+    en-CA writes ISO year-month-day, so the segments rearrange
+    themselves. The submitted value is ISO yyyy-mm-dd in every locale. %>
 <%= poetry_date_field(name: "report[generated_on]", label: "Generated on", locale: "en-CA",
                       value: Date.new(2026, 3, 9), class: "w-64") %>
