@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
+import { resetScrollLock } from "@poetry/controllers/helpers/scroll_lock"
 
 // poetry--core--drawer JS-unit: the swipe gesture + the presence-hold
 // close, on top of the inherited dialog machinery. What this file proves:
@@ -16,13 +17,15 @@ import { registerPoetryControllers } from "@poetry/controllers"
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const el = (id) => document.getElementById(id)
 
-const markup = ({ direction = "down", inner = "" } = {}) => `
+const markup = ({ direction = "down", modal = true, inner = "" } = {}) => `
   <div id="root" data-controller="poetry--core--drawer"
-       data-poetry--core--drawer-direction-value="${direction}">
+       data-poetry--core--drawer-direction-value="${direction}"
+       data-poetry--core--drawer-modal-value="${modal}">
     <button id="trigger" type="button" data-action="click->poetry--core--drawer#open">Open</button>
     <dialog id="dialog" data-slot="drawer-content" data-closed
             data-poetry--core--drawer-target="dialog"
             data-action="cancel->poetry--core--drawer#close click->poetry--core--drawer#backdropClose
+                         keydown->poetry--core--drawer#escapeClose
                          pointerdown->poetry--core--drawer#swipeStart pointermove->poetry--core--drawer#swipeMove
                          pointerup->poetry--core--drawer#swipeEnd pointercancel->poetry--core--drawer#swipeCancel">
       <div data-slot="drawer-swipe-handle" id="handle" aria-hidden="true"></div>
@@ -38,6 +41,7 @@ async function mount(html) {
   if (!HTMLDialogElement.prototype.showModal || HTMLDialogElement.prototype.__vitestShim) {
     HTMLDialogElement.prototype.__vitestShim = true
     HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", "") }
+    HTMLDialogElement.prototype.show = function () { this.setAttribute("open", "") }
     HTMLDialogElement.prototype.close = function () { this.removeAttribute("open") }
   }
   Element.prototype.setPointerCapture ||= () => {}
@@ -169,5 +173,73 @@ describe("poetry--core--drawer", () => {
 
     expect(dialog.style.getPropertyValue("--drawer-swipe-progress")).toBe("")
     expect(dialog.style.getPropertyValue("--drawer-swipe-strength")).toBe("")
+  })
+
+  it("a modal drawer leaves Esc to the native cancel - escapeClose no-ops", async () => {
+    el("inner-button").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    )
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("open")).toBe(true)
+  })
+})
+
+// modal: false - the source's modal={false}: show() instead of
+// showModal(), page interactive, no scroll lock, Esc via escapeClose
+// (a non-modal dialog never fires cancel).
+describe("poetry--core--drawer non-modal", () => {
+  let application
+
+  beforeEach(async () => {
+    resetScrollLock()
+    document.body.style.overflow = ""
+    application = await mount(markup({ direction: "right", modal: false }))
+    return async () => {
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("opens with show() - no top layer entry, no scroll lock", async () => {
+    const dialog = el("dialog")
+    const show = vi.spyOn(dialog, "show")
+    const showModal = vi.spyOn(dialog, "showModal")
+
+    el("trigger").click()
+    await nextFrame()
+
+    expect(show).toHaveBeenCalledOnce()
+    expect(showModal).not.toHaveBeenCalled()
+    expect(dialog.hasAttribute("data-open")).toBe(true)
+    expect(document.body.style.overflow).toBe("")
+  })
+
+  it("Escape closes it through the animated path", async () => {
+    el("trigger").click()
+    await nextFrame()
+
+    el("inner-button").dispatchEvent(
+      new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    )
+    await nextFrame()
+
+    const dialog = el("dialog")
+
+    expect(dialog.hasAttribute("open")).toBe(false)
+    expect(dialog.hasAttribute("data-closed")).toBe(true)
+  })
+
+  it("a claimed Escape stays claimed - defaultPrevented is respected", async () => {
+    el("trigger").click()
+    await nextFrame()
+
+    const event = new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true })
+    event.preventDefault()
+    el("inner-button").dispatchEvent(event)
+    await nextFrame()
+
+    expect(el("dialog").hasAttribute("open")).toBe(true)
   })
 })

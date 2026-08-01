@@ -33,16 +33,40 @@ const HANDLE = '[data-slot="drawer-swipe-handle"]'
 export default class DrawerController extends DialogController {
   static values = {
     // The dismissal direction (matches the Base UI swipeDirection).
-    direction: { type: String, default: "down" }
+    direction: { type: String, default: "down" },
+    // Source parity: modal={false} opens with show() instead of
+    // showModal() - no top layer, no ::backdrop, no focus trap, no
+    // scroll lock. The page behind stays fully interactive.
+    modal: { type: Boolean, default: true }
   }
 
   #swipe = null
   #closing = false
 
   open() {
-    this.dialogTarget.showModal()
+    if (this.modalValue) {
+      this.dialogTarget.showModal()
+      this.lockScroll()
+    } else {
+      // show() skips the top layer, so the UA :modal positioning is
+      // gone too - the component pins the panel with fixed/inset
+      // classes instead. close() stays balanced: unlockScroll no-ops
+      // through the instance #locked flag when nothing was locked.
+      this.dialogTarget.show()
+    }
     enterPresence(this.dialogTarget)
-    this.lockScroll()
+  }
+
+  // Action (wired by the component only when modal: false):
+  // keydown->poetry--core--drawer#escapeClose on the <dialog>. A
+  // non-modal dialog never fires cancel, so Esc needs its own exit
+  // while focus is inside; modal drawers ride the native cancel.
+  escapeClose(event) {
+    if (this.modalValue) return
+    if (event.key !== "Escape" || event.defaultPrevented) return
+
+    event.preventDefault()
+    this.close()
   }
 
   close(event) {

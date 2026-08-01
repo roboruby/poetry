@@ -444,6 +444,10 @@
       "direction": {
         "type": "String",
         "default": "down"
+      },
+      "modal": {
+        "type": "Boolean",
+        "default": true
       }
     },
     "classes": [],
@@ -452,6 +456,7 @@
       "close",
       "connect",
       "disconnect",
+      "escapeClose",
       "lockScroll",
       "open",
       "swipeCancel",
