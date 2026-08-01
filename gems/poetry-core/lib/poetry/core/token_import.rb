@@ -168,7 +168,7 @@ module Poetry
         end
 
         def detect_mode(path)
-          hit = path.map { |s| MODES[s.to_s.downcase] }.compact.last
+          hit = path.filter_map { |s| MODES[s.to_s.downcase] }.last
           hit || "light"
         end
 
@@ -291,7 +291,7 @@ module Poetry
         # Drop a leading Tailwind `color-` namespace so `--color-primary` and
         # `--primary` both land on the `primary` role.
         def css_role(var)
-          normalize(var.sub(/\Acolor-/, ""))
+          normalize(var.delete_prefix("color-"))
         end
 
         def resolve_css_value(raw, vars, depth = 0)
