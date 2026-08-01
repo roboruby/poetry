@@ -109,6 +109,18 @@ module Poetry
           refute_predicate doc(render_sheet(show_close_button: false)).css('[data-slot="sheet-close"]'), :any?
         end
 
+        def test_the_root_wrapper_never_wears_the_side_chrome
+          html = render_sheet(side: :right)
+          root = doc(html).css('[data-slot="sheet"]').first
+
+          # Same leak as the Drawer's direction chrome: the side branch
+          # belongs to the <dialog>; on the wrapper the theme's ml-auto/
+          # w-3/4/border-l would misplace it in the host's flow.
+          assert_empty (root["class"] || "").split.grep(/cn-sheet-side/),
+                       "side chrome leaked onto the non-visual root"
+          assert_includes doc(html).css("dialog").first["class"].split, "cn-sheet-side-right"
+        end
+
         def test_dismissible_false_flows_to_the_inherited_controller_value
           root = doc(render_sheet(dismissible: false)).css('[data-slot="sheet"]').first
 

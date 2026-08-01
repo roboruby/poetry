@@ -104,6 +104,21 @@ module Poetry
           stimulus.action(:close)
         end
 
+        # The dialog-family root wrapper is NON-VISUAL - the <dialog> is
+        # the visual root. The style resolver renders variant branches only
+        # at the dictionary root, so subclasses with a root-level style
+        # axis (Sheet's side:, Drawer's direction:) merge the branch into
+        # :content themselves - and the inherited html_attributes would
+        # paint the same branch on the in-flow wrapper too (the closed
+        # Drawer drew its themed border + w-full across the docs mounts).
+        # Only the tailwind resolution is stripped: in :bem mode the root
+        # block--modifier tokens ARE the host's styling contract.
+        def html_attributes
+          return super unless Poetry::Core::Config.current.css_mode == :tailwind
+
+          @html_attributes.merge(class: classnames(@html_attributes[:class]))
+        end
+
         private
 
         # A manifest-validated Builder for descriptor strings (pure - never

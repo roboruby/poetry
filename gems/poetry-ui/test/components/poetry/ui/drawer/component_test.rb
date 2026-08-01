@@ -84,6 +84,25 @@ module Poetry
           end
         end
 
+        def test_the_root_wrapper_never_wears_the_direction_chrome
+          html = render_drawer(class: "my-drawer")
+
+          root = html.css('[data-slot="drawer"]').first
+          root_classes = (root["class"] || "").split
+
+          # The resolver renders the direction variant at the dictionary
+          # root; it belongs to the <dialog> only. On the in-flow wrapper
+          # the themed border drew a line across the docs mounts and
+          # w-full broke their centering (2026-08-01 browser pass).
+          assert_empty root_classes.grep(/drawer-direction|w-full|mt-auto/),
+                       "direction chrome leaked onto the non-visual root"
+          assert_includes root_classes, "my-drawer", "caller classes still land on the root"
+          dialog_classes = html.css("dialog").first["class"].split
+
+          assert_includes dialog_classes, "cn-drawer-direction-down"
+          assert_includes dialog_classes, "w-full"
+        end
+
         def test_the_parents_show_close_button_is_hidden_from_the_contract
           # A Drawer renders no corner X (vaul parity), so the inherited
           # Dialog option must not project - a listed option the template
