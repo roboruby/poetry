@@ -1,0 +1,31 @@
+<%# The upstream actions-column recipe: each row's controls live behind a
+    compact ellipsis trigger in the trailing column. The header keeps an
+    sr-only label so the column stays named for screen readers. %>
+<% rows = [
+     { number: "INV-001", customer: "Acme", amount: "$250.00" },
+     { number: "INV-002", customer: "Globex", amount: "$1,150.00" },
+     { number: "INV-003", customer: "Initech", amount: "$420.00" }
+   ]
+   state = Poetry::Ui::DataTable::State.from_params(
+     { sort: "number", dir: "asc" }, sortable: %w[number customer]
+   ) %>
+<div class="w-full max-w-2xl">
+  <%= poetry_data_table(rows: rows, state: state, path: ->(params) { "?#{params.to_query}" },
+                        caption: "Invoices with per-row actions.") do |table| %>
+    <% table.with_column("Invoice", key: :number, sortable: true) { |row| row[:number] } %>
+    <% table.with_column("Customer", key: :customer, sortable: true) { |row| row[:customer] } %>
+    <% table.with_column("Amount", classes: "text-right") { |row| row[:amount] } %>
+    <% table.with_column(tag.span("Actions", class: "sr-only"), classes: "w-12 text-right") do |row| %>
+      <%= poetry_dropdown_menu(align: :end) do |menu| %>
+        <% menu.with_trigger(variant: :ghost, size: :icon, label: "Open actions for #{row[:number]}") do %>
+          <%= poetry_icon(name: :ellipsis) %>
+        <% end %>
+        <% menu.with_label { "Actions" } %>
+        <% menu.with_item(shortcut: "⌘C") { "Copy invoice ID" } %>
+        <% menu.with_separator %>
+        <% menu.with_item { "View customer" } %>
+        <% menu.with_item { "View invoice details" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>
