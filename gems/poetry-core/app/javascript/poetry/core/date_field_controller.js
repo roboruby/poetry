@@ -48,6 +48,7 @@ export default class DateFieldController extends Controller {
 
   #value = null // IncompleteDate
   #segments = [] // [{ element, type }]
+  #segmentDigits = {} // per-type display width, measured from the locale
   #entered = "" // digit accumulator for the focused segment
   #compositionSnapshot = null
   #dayPeriodNames = null // { am, pm }
@@ -78,6 +79,7 @@ export default class DateFieldController extends Controller {
     this.inputTarget?.removeAttribute("tabindex")
     this.inputTarget?.removeAttribute("aria-hidden")
     this.#segments = []
+    this.#segmentDigits = {}
   }
 
   // Clicking the group's blank space lands on the earliest unfilled
@@ -118,7 +120,11 @@ export default class DateFieldController extends Controller {
 
   #buildSegments() {
     const formatter = new Intl.DateTimeFormat(this.#locale(), this.#formatterOptions())
-    const parts = formatter.formatToParts(new Date(2020, 10, 22, 13, 45, 30))
+    // A SINGLE-DIGIT probe (March 3rd, 9:45:05): each part's rendered
+    // length IS the locale's digit style - "3" under en-US, "03" under
+    // en-CA - so the display padding below can mirror it. A two-digit
+    // probe would read every locale as 2-digit.
+    const parts = formatter.formatToParts(new Date(2020, 2, 3, 9, 45, 5))
     const editable = EDITABLE[this.#kind]
     const fragment = document.createDocumentFragment()
 
@@ -133,6 +139,12 @@ export default class DateFieldController extends Controller {
 
       if (editable.includes(type)) {
         const segment = this.#createSegment(type)
+
+        // The locale's own width for the padded types (year stays
+        // unpadded - "y" numeric everywhere real years are 4 digits).
+        if (type === "month" || type === "day" || type === "hour") {
+          this.#segmentDigits[type] = part.value.length
+        }
 
         this.#segments.push({ element: segment, type })
         fragment.appendChild(segment)
@@ -309,7 +321,7 @@ export default class DateFieldController extends Controller {
   }
 
   #displayNumber(type, value) {
-    const digits = type === "minute" || type === "second" ? 2 : 1
+    const digits = this.#segmentDigits[type] ?? (type === "minute" || type === "second" ? 2 : 1)
 
     return new Intl.NumberFormat(this.#locale(), {
       minimumIntegerDigits: digits, useGrouping: false

@@ -15,9 +15,9 @@ const IDENTIFIER = "poetry--core--date-field"
 
 const el = (id) => document.getElementById(id)
 
-const fieldMarkup = ({ type = "date", value = "", extra = "" } = {}) => `
+const fieldMarkup = ({ type = "date", value = "", extra = "", locale = "en-US" } = {}) => `
   <div id="field" data-controller="${IDENTIFIER}"
-       data-${IDENTIFIER}-locale-value="en-US"
+       data-${IDENTIFIER}-locale-value="${locale}"
        data-${IDENTIFIER}-placeholder-value="${type === "date" ? "2026-07-13" : "12:00"}"
        data-${IDENTIFIER}-labels-value='{"empty":"Empty","year":"year","month":"month","day":"day","hour":"hour","minute":"minute","second":"second","dayPeriod":"AM/PM"}'
        data-${IDENTIFIER}-placeholders-value='{"year":"yyyy","month":"mm","day":"dd","hour":"--","minute":"--","second":"--"}'
@@ -93,6 +93,17 @@ describe("poetry--core--date-field", () => {
       expect(segment("day").textContent).toBe("9")
       expect(segment("month").getAttribute("aria-valuetext")).toContain("March")
       expect(segment("month").hasAttribute("data-placeholder")).toBe(false)
+    })
+
+    it("a year-first locale reorders the segments AND keeps its digit style (en-CA pads to 2026-03-09)", async () => {
+      await mount({ locale: "en-CA", value: "2026-03-09" })
+
+      expect(segments().map((s) => s.getAttribute("data-type"))).toEqual(["year", "month", "day"])
+      // The locale's own digit width, measured from the single-digit
+      // probe: en-CA renders 2-digit month/day, en-US stays 1-digit.
+      expect(segment("month").textContent).toBe("03")
+      expect(segment("day").textContent).toBe("09")
+      expect(segment("year").textContent).toBe("2026")
     })
 
     it("a time field builds hour/minute/dayPeriod under the en-US twelve-hour cycle", async () => {
