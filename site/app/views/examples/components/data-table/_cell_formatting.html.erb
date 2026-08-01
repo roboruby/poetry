@@ -11,8 +11,8 @@
   <%= poetry_data_table(rows: rows, state: state, path: ->(params) { "?#{params.to_query}" },
                         caption: "Recent orders with status pills and right-aligned totals.") do |table| %>
     <% table.with_column("Order", key: :order, sortable: true) { |row| row[:order] } %>
-    <% table.with_column("Channel", key: :channel, sortable: true) { |row| row[:channel] } %>
-    <% table.with_column("Status") { |row| poetry_badge(variant: row[:status]) { labels[row[:status]] } } %>
+    <% table.with_column("Channel", key: :channel, sortable: true, classes: "text-center") { |row| row[:channel] } %>
+    <% table.with_column("Status", classes: "text-center") { |row| poetry_badge(variant: row[:status]) { labels[row[:status]] } } %>
     <% table.with_column("Total", classes: "text-right tabular-nums") { |row| row[:total] } %>
   <% end %>
 </div>

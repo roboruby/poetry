@@ -11,7 +11,7 @@
                         caption: "Team members you can select for bulk actions.",
                         selectable: ->(row) { row[:id] }) do |table| %>
     <% table.with_column("Member", key: :name, sortable: true) { |row| row[:name] } %>
-    <% table.with_column("Role", key: :role, sortable: true) { |row| row[:role] } %>
+    <% table.with_column("Role", key: :role, sortable: true, classes: "text-center") { |row| row[:role] } %>
     <% table.with_column("ID", classes: "text-right") { |row| row[:id] } %>
   <% end %>
 </div>

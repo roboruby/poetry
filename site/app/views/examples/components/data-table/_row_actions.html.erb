@@ -13,7 +13,7 @@
   <%= poetry_data_table(rows: rows, state: state, path: ->(params) { "?#{params.to_query}" },
                         caption: "Invoices with per-row actions.") do |table| %>
     <% table.with_column("Invoice", key: :number, sortable: true) { |row| row[:number] } %>
-    <% table.with_column("Customer", key: :customer, sortable: true) { |row| row[:customer] } %>
+    <% table.with_column("Customer", key: :customer, sortable: true, classes: "text-center") { |row| row[:customer] } %>
     <% table.with_column("Amount", classes: "text-right") { |row| row[:amount] } %>
     <% table.with_column(tag.span("Actions", class: "sr-only"), classes: "w-12 text-right") do |row| %>
       <%= poetry_dropdown_menu(align: :end) do |menu| %>
