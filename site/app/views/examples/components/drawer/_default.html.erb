@@ -1,9 +1,36 @@
-<%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
-  <% drawer.with_trigger(variant: :outline) { "Open drawer" } %>
-  <% drawer.with_title { "Move goal" } %>
-  <% drawer.with_description { "Set your daily activity goal." } %>
+<%# The upstream demo: a right-edge drawer picking a delivery slot.
+    direction: is the DISMISS direction - :right slides in from (and
+    swipes out to) the right edge. The Cancel button is the DrawerClose
+    equivalent: any button inside the drawer can close it by targeting
+    the controller's close action. %>
+<% slots = [
+     ["asap", "Standard delivery", "25–35 min · Driver assigned now", "Fastest"],
+     ["17:00", "5:00 PM – 5:15 PM", "Prep starts at 4:45 PM", nil],
+     ["17:30", "5:30 PM – 5:45 PM", "Good if you're heading home", nil],
+     ["18:00", "6:00 PM – 6:15 PM", "Most popular · High demand", nil],
+     ["18:30", "6:30 PM – 6:45 PM", "Last slot before kitchen closes", nil]
+   ] %>
+<%= poetry_drawer(direction: :right) do |drawer| %>
+  <% drawer.with_trigger(variant: :secondary) { "Open drawer" } %>
+  <% drawer.with_title { "Pick a delivery time" } %>
+  <% drawer.with_description { "We'll prepare your order as soon as possible." } %>
   <% drawer.with_footer do %>
-    <%= poetry_button { "Submit" } %>
+    <%= poetry_button { "Confirm delivery time" } %>
+    <%= poetry_button(variant: :outline, data: { action: "click->poetry--core--drawer#close" }) { "Cancel" } %>
   <% end %>
-  Drag the handle down to dismiss.
+  <%= poetry_radio_group(name: "delivery_time", value: "asap", label: "Delivery time", class: "gap-2") do |group| %>
+    <% slots.each do |value, title, detail, badge| %>
+      <% group.with_item(
+           value: value, class: "mt-0.5 self-start",
+           label: tag.span(class: "grid gap-1 leading-snug") {
+             safe_join([
+               tag.span(class: "flex items-center gap-2 text-sm font-medium") {
+                 safe_join([title, badge ? poetry_badge(variant: :secondary) { badge } : nil].compact)
+               },
+               tag.span(detail, class: "text-sm text-muted-foreground")
+             ])
+           }
+         ) %>
+    <% end %>
+  <% end %>
 <% end %>
