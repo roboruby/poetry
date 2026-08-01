@@ -224,6 +224,31 @@ module Poetry
                "the wrapped calendar paints the span server-side"
       end
 
+      def test_the_input_variant_renders_an_input_group_with_the_picker_wiring
+        html = render_inline(DatePicker::Component.new(name: "sub_on", variant: :input,
+                                                       label: "Subscription date",
+                                                       value: "2026-06-01", month: "2026-06-01"))
+
+        input = html.css('input[data-poetry--core--date-picker-target="input"]').first
+
+        assert input, "the visible text input is the picker's input target"
+        assert_equal "June 1, 2026", input["value"]
+        assert_nil input["name"], "the visible input never carries the form name"
+        assert_includes input["data-action"], "input->poetry--core--date-picker#inputChanged"
+        assert_includes input["data-action"], "keydown->poetry--core--date-picker#inputKeydown"
+        # The calendar's hidden ISO input stays THE form value.
+        assert_equal "2026-06-01", html.css('input[type="hidden"][name="sub_on"]').first["value"]
+        assert html.css('[data-slot="input-group"]').first, "wrapped in an InputGroup"
+      end
+
+      def test_the_input_variant_is_single_mode_only
+        error = assert_raises(ArgumentError) do
+          render_inline(DatePicker::Component.new(name: "stay", variant: :input, mode: :range))
+        end
+
+        assert_match(/single-mode/, error.message)
+      end
+
       def test_the_date_picker_requires_a_name
         error = assert_raises(ArgumentError) { render_inline(DatePicker::Component.new) }
 

@@ -17,6 +17,8 @@ module Poetry
           "name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).",
           "value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.",
           "min:/max: bound the selectable range; the label + placeholder are the trigger's text.",
+          "variant: :input renders a text field with a calendar button - typed parseable dates " \
+          "re-select the calendar; single mode only.",
           "For an always-visible grid use Calendar directly - DatePicker is the field+popover form."
         ].freeze
 
@@ -26,6 +28,11 @@ module Poetry
         option :mode, :symbol, default: :single
         option :placeholder, :string, default: "Pick a date"
         option :label, :string # the trigger's accessible name (aria-label)
+        # :button (the default trigger) or :input - upstream's
+        # date-picker-input recipe: an InputGroup whose text input accepts a
+        # typed date (parseable text re-selects the calendar) with a
+        # calendar icon-button opening the popover. Single mode only.
+        option :variant, :symbol, default: :button
 
         # ONE owned part: DatePicker is composition - the Popover owns the
         # overlay, the Calendar owns the grid + the form value, the trigger
@@ -50,8 +57,12 @@ module Poetry
 
         def range? = mode == :range
 
+        def input_variant? = variant == :input
+
         def before_render
           raise ArgumentError, "DatePicker requires name: (the form field)" if name.blank?
+          raise ArgumentError, "DatePicker variant: must be :button or :input" unless %i[button input].include?(variant)
+          raise ArgumentError, "DatePicker variant: :input is single-mode only" if input_variant? && range?
         end
 
         # Range mode joins the pair with SHORT month names ("Jun 5, 2026 -
@@ -133,6 +144,34 @@ module Poetry
           attrs.to_attributes
         end
         public :label_target_attributes
+
+        # The input variant's text field: the picker's input target plus the
+        # typed-date sync and ArrowDown-opens actions. It carries NO name -
+        # the calendar's hidden ISO input stays THE form value.
+        def input_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          picker = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
+          picker.with_target(:input)
+          picker.with_action(:input_changed, on: :input)
+          picker.with_action(:input_keydown, on: :keydown)
+          attrs.to_attributes.merge(
+            "value" => (formatted if value), "placeholder" => placeholder,
+            "aria-label" => label.presence || "Date"
+          ).compact
+        end
+        public :input_attributes
+
+        # The addon's icon button IS the popover trigger - InputGroup's own
+        # icon-xs chrome on Popover's wired Button.
+        def input_trigger_options
+          style = Poetry::Ui::InputGroup::Style
+          {
+            variant: :ghost, label: label.presence || "Choose date",
+            class: [style.css(:button), style.css(:button_icon_xs)].join(" "),
+            "data-size": "icon-xs", data: { slot: "date-picker-trigger" }
+          }
+        end
+        public :input_trigger_options
       end
     end
   end

@@ -19,6 +19,12 @@ module Poetry
                            placeholder: "Pick a date range",
                            value: %w[2026-06-09 2026-06-18], month: "2026-06-01")
         end
+
+        def input
+          render_component(name: "subscription_on", variant: :input, label: "Subscription date",
+                           placeholder: "June 1, 2026", value: "2026-06-01", month: "2026-06-01",
+                           class: "w-64")
+        end
       end
     end
   end
