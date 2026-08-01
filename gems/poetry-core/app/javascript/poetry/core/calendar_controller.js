@@ -57,11 +57,13 @@ export default class CalendarController extends Controller {
   }
 
   #today = null
+  #booted = false
 
   connect() {
     // The server rendered the initial month correctly; just sync the
     // selected/today vocabulary in case selected was set programmatically.
     this.#reflectSelection()
+    this.#booted = true
   }
 
   previousMonth() {
@@ -183,6 +185,21 @@ export default class CalendarController extends Controller {
   #goTo(month) {
     this.monthValue = month
     this.#render()
+  }
+
+  // The DOM is the store (the anchor-point precedent): external writes to
+  // selected/month - the DatePicker input variant syncs typed dates this
+  // way - re-render on change. The #booted gate skips the init echo (the
+  // server's own paint - Stimulus fires initial value callbacks BEFORE
+  // connect, and a connect-era render would restamp data-today with the
+  // client clock over the server's pinned one). Internal writes re-render
+  // once more; the in-place cell diff makes that free.
+  selectedValueChanged() {
+    if (this.#booted) this.#render()
+  }
+
+  monthValueChanged() {
+    if (this.#booted) this.#render()
   }
 
   // Rewrite the day buttons for the visible month IN PLACE (42 cells,

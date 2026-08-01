@@ -54,6 +54,59 @@ describe("poetry--core--date-picker", () => {
     expect(closeSpy).toHaveBeenCalled()
   })
 
+  it("the input variant: picking writes the input, typing syncs the calendar, ArrowDown opens", async () => {
+    application.stop()
+    document.body.replaceChildren()
+    await nextFrame()
+
+    // A compact REAL calendar (June 2026, grid leads Sunday May 31) so the
+    // typed-date sync exercises the reactive calendar values end to end.
+    const day = (i) => {
+      const iso = new Date(Date.UTC(2026, 4, 31 + i)).toISOString().slice(0, 10)
+      return `<div role="gridcell" aria-selected="false">
+                <button type="button" data-slot="calendar-day" data-poetry--core--calendar-target="day"
+                        data-date="${iso}" tabindex="-1" data-action="click->poetry--core--calendar#select">
+                  <span data-slot="calendar-day-label">x</span></button></div>`
+    }
+    document.body.innerHTML = `
+      <div id="picker" data-controller="poetry--core--date-picker"
+           data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
+        <input id="din" type="text" data-poetry--core--date-picker-target="input"
+               data-action="input->poetry--core--date-picker#inputChanged keydown->poetry--core--date-picker#inputKeydown">
+        <div id="pop" data-controller="poetry--core--popover"></div>
+        <div id="cal" data-controller="poetry--core--calendar"
+             data-poetry--core--calendar-month-value="2026-06">
+          <div data-poetry--core--calendar-target="caption">June 2026</div>
+          <input type="hidden" id="cal-input" data-poetry--core--calendar-target="input" value="">
+          <div data-poetry--core--calendar-target="grid">${Array.from({ length: 42 }, (_, i) => day(i)).join("")}</div>
+        </div>
+      </div>`
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+
+    const input = el("din")
+
+    input.value = "June 20, 2026"
+    input.dispatchEvent(new Event("input", { bubbles: true }))
+    await nextFrame()
+
+    expect(el("cal-input").value).toBe("2026-06-20")
+
+    el("picker").dispatchEvent(new CustomEvent("poetry--core--calendar:change", {
+      bubbles: true, detail: { value: "2026-06-05" }
+    }))
+
+    expect(input.value).toBe("June 5, 2026")
+
+    const popover = application.getControllerForElementAndIdentifier(el("pop"), "poetry--core--popover")
+    const openSpy = vi.spyOn(popover, "open").mockImplementation(() => {})
+
+    input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true, cancelable: true }))
+
+    expect(openSpy).toHaveBeenCalled()
+  })
+
   it("range mode joins the pair with SHORT month names (two long-month dates outgrow the trigger)", async () => {
     application.stop()
     document.body.replaceChildren()

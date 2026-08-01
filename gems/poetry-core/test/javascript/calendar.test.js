@@ -349,6 +349,22 @@ describe("poetry--core--calendar range mode", () => {
     expect(el("end-input").value).toBe("2026-06-15")
   })
 
+  it("external selected/month writes re-render (the DatePicker input-sync contract: the DOM is the store)", async () => {
+    application = await mount({ selected: "2026-06-09" })
+    const controller = application.getControllerForElementAndIdentifier(el("cal"), "poetry--core--calendar")
+
+    controller.selectedValue = "2026-06-20"
+    await nextFrame()
+
+    expect(dayFor("2026-06-20").closest('[role="gridcell"]').getAttribute("aria-selected")).toBe("true")
+    expect(el("input").value).toBe("2026-06-20")
+
+    controller.monthValue = "2026-07"
+    await nextFrame()
+
+    expect(el("cal").querySelector("[data-poetry--core--calendar-target=caption]").textContent).toBe("July 2026")
+  })
+
   it("the range vocabulary survives month navigation (offscreen endpoints)", async () => {
     application = await mountRange({ start: "2026-06-20", end: "2026-07-10" })
     await nextFrame()

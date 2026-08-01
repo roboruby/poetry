@@ -101,9 +101,11 @@
       "connect",
       "jump",
       "keydown",
+      "monthValueChanged",
       "nextMonth",
       "previousMonth",
-      "select"
+      "select",
+      "selectedValueChanged"
     ],
     "events": [
       "poetry--core--calendar:change"
@@ -338,6 +340,7 @@
   },
   "poetry--core--date-picker": {
     "targets": [
+      "input",
       "label"
     ],
     "values": {
@@ -356,6 +359,8 @@
     },
     "classes": [],
     "methods": [
+      "inputChanged",
+      "inputKeydown",
       "picked"
     ],
     "events": []

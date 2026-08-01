@@ -7,7 +7,7 @@ import { Controller } from "@hotwired/stimulus"
 // (b) close the popover so the pick feels complete. Everything hard is
 // already done by poetry--core--calendar and poetry--core--popover.
 export default class DatePickerController extends Controller {
-  static targets = ["label"]
+  static targets = ["label", "input"]
   static values = {
     placeholder: { type: String, default: "Pick a date" },
     mode: { type: String, default: "single" },
@@ -35,7 +35,51 @@ export default class DatePickerController extends Controller {
     if (this.hasLabelTarget) {
       this.labelTarget.textContent = iso ? this.#format(iso) : this.placeholderValue
     }
+    if (this.hasInputTarget && iso) this.inputTarget.value = this.#format(iso)
     if (iso) this.#closePopover()
+  }
+
+  // --- the input variant (upstream's date-picker-input recipe) ---
+
+  // Typing syncs the calendar: a parseable date re-selects and re-months
+  // it through the reactive calendar values (the DOM is the store), and
+  // the calendar's own render refreshes the hidden ISO form value.
+  // Unparseable text changes nothing - exactly upstream's isValidDate.
+  inputChanged() {
+    if (!this.hasInputTarget) return
+
+    const parsed = new Date(this.inputTarget.value)
+
+    if (Number.isNaN(parsed.getTime())) return
+
+    const pad = (n) => String(n).padStart(2, "0")
+    const iso = `${parsed.getFullYear()}-${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())}`
+    const calendar = this.#calendar()
+
+    if (!calendar) return
+
+    calendar.monthValue = iso.slice(0, 7)
+    calendar.selectedValue = iso
+  }
+
+  // ArrowDown from the input opens the calendar (upstream's affordance).
+  inputKeydown(event) {
+    if (event.key !== "ArrowDown") return
+
+    event.preventDefault()
+    this.#popover()?.open()
+  }
+
+  #calendar() {
+    const root = this.element.querySelector('[data-controller~="poetry--core--calendar"]')
+
+    return root && this.application.getControllerForElementAndIdentifier(root, "poetry--core--calendar")
+  }
+
+  #popover() {
+    const root = this.element.querySelector('[data-controller~="poetry--core--popover"]')
+
+    return root && this.application.getControllerForElementAndIdentifier(root, "poetry--core--popover")
   }
 
   #format(iso) {
@@ -50,11 +94,6 @@ export default class DatePickerController extends Controller {
   }
 
   #closePopover() {
-    const popover = this.element.querySelector('[data-controller~="poetry--core--popover"]')
-    if (!popover) return
-
-    const controller =
-      this.application.getControllerForElementAndIdentifier(popover, "poetry--core--popover")
-    controller?.close("item-press")
+    this.#popover()?.close("item-press")
   }
 }
