@@ -571,24 +571,27 @@
 }
 
 /* MARK: Drawer */
+/* Floating drawer (source .cn-drawer-popup): --drawer-inset gaps the
+   viewport edges, so the surface rounds and borders on ALL sides; the
+   per-direction rules repeat the radius so they never re-square it. */
 .cn-drawer-content {
-  @apply bg-popover text-xs/relaxed text-popover-foreground backdrop:bg-black/80 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  @apply bg-popover text-xs/relaxed text-popover-foreground rounded-xl border border-popover [--drawer-inset:--spacing(2)] backdrop:bg-black/80 supports-backdrop-filter:backdrop:backdrop-blur-xs dark:border-border;
 }
 
 .cn-drawer-direction-down {
-  @apply rounded-t-xl border-t;
+  @apply rounded-xl;
 }
 
 .cn-drawer-direction-up {
-  @apply rounded-b-xl border-b;
+  @apply rounded-xl;
 }
 
 .cn-drawer-direction-left {
-  @apply rounded-r-xl border-r;
+  @apply rounded-xl;
 }
 
 .cn-drawer-direction-right {
-  @apply rounded-l-xl border-l;
+  @apply rounded-xl;
 }
 
 .cn-drawer-swipe-handle {
@@ -596,7 +599,7 @@
 }
 
 .cn-drawer-header {
-  @apply gap-1 p-4 md:text-left;
+  @apply gap-1 p-4 pb-0 md:text-left;
 }
 
 .cn-drawer-footer {
