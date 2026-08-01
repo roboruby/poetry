@@ -195,6 +195,7 @@ Class: Poetry::Ui::DateField::Component - BEM block `poetry-ui-date_field`.
 A date field that opens a calendar popover for selection.
 
 Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
+- `caption_layout:` (symbol) - default "label"
 - `label:` (string)
 - `mode:` (symbol) - default "single"
 - `name:` (string) - required

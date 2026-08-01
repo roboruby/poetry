@@ -143,6 +143,7 @@ A window overlaid on the page for content that requires attention.
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
+- `show_close_button:` (boolean) - default true
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - PART `dialog` - Root wrapper around the trigger and the <dialog> element
 - PART `dialog-content` - The <dialog> panel - positioning, animation, and the open state ride here | states: data-open (panel is open (the controller flips the pair at runtime)); data-closed (panel is closed or animating out (the server-rendered state))
@@ -154,6 +155,7 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
 - RULE: Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).
+- RULE: show_close_button: false removes the corner X - keep a footer action (Esc still closes).
 - RULE: Destructive confirmations pair a destructive Button in the footer - never auto-submit.
 
 ## drawer (`poetry_drawer`)
