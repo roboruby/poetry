@@ -1,0 +1,16 @@
+<%# The date-and-time pair: a DatePicker beside a TimeField, each under
+    its own label. Two form fields - the date submits ISO from the picker,
+    the time from the segmented field. The picker's accessible name is its
+    label: option (for_id: nil is the group-label form). %>
+<div class="flex items-end gap-4">
+  <div class="flex flex-col gap-2">
+    <%= poetry_label(for_id: nil) { "Date" } %>
+    <%= poetry_date_picker(name: "meeting[on]", label: "Meeting date",
+                           placeholder: "Select date", value: "2026-06-12", month: "2026-06-01") %>
+  </div>
+  <div class="flex flex-col gap-2">
+    <%= poetry_label(for_id: "meeting-time") { "Time" } %>
+    <%= poetry_time_field(name: "meeting[at]", id: "meeting-time", label: "Meeting time",
+                          value: "10:30", class: "w-32") %>
+  </div>
+</div>

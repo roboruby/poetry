@@ -70,7 +70,7 @@ Class: Poetry::Ui::Calendar::Component - BEM block `poetry-ui-calendar`.
 - PART `calendar-day-cell` - The role=gridcell wrapper - aria-selected lives HERE (the ARIA grid contract; it is not valid on the button)
 - PART `calendar-day` - One day <button> - the selection vocabulary and the roving tab stop ride here | states: data-date (always - the day's ISO date (the controller's selection key)); data-selected (the day is the single-mode pick, or a start-only range pick (bare; a complete range wears the range-* trio instead)); data-range-start (the day starts a COMPLETE range); data-range-end (the day ends a COMPLETE range); data-range-middle (the day sits strictly inside a complete range); data-today (the day is today (aria-current=date rides along)); data-outside (the day belongs to a neighbouring month (leading/trailing fill))
 - PART `calendar-day-label` - The day-number span inside the button
-- WIRING `poetry--core--calendar`: targets caption, day, endInput, grid, input, startInput; values max, min, mode, month, monthNames, rangeEnd, rangeStart, selected, weekStart; actions jump, keydown, nextMonth, previousMonth, select; events poetry--core--calendar:change
+- WIRING `poetry--core--calendar`: targets caption, day, endInput, grid, input, startInput; values max, min, mode, month, monthNames, rangeEnd, rangeStart, selected, weekStart; actions jump, keydown, monthValueChanged, nextMonth, previousMonth, select, selectedValueChanged; events poetry--core--calendar:change
 - RULE: name: makes it a form control (the chosen date posts as an ISO string in a hidden input; range mode posts name[start] + name[end]).
 - RULE: month:/selected:/today accept a Date or an ISO string; min:/max: bound the selectable range.
 - RULE: mode: :range selects a span - selected: takes a Date..Date Range, [start, end], or {start:, end:}; the second click completes, click-before-start swaps, re-click clears.
@@ -199,11 +199,13 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - `mode:` (symbol) - default "single"
 - `name:` (string) - required
 - `placeholder:` (string) - default "Pick a date"
+- `variant:` (symbol) - default "button"
 - PART `date-picker` - Root wrapper - the glue controller (formats the trigger label, closes on pick) around the composed Popover + Calendar
-- WIRING `poetry--core--date-picker`: targets label; values locale, mode, placeholder; actions picked
+- WIRING `poetry--core--date-picker`: targets input, label; values locale, mode, placeholder; actions inputChanged, inputKeydown, picked
 - RULE: name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).
 - RULE: value: preselects a date (a Date or ISO string) - the trigger shows it formatted, no JS needed.
 - RULE: min:/max: bound the selectable range; the label + placeholder are the trigger's text.
+- RULE: variant: :input renders a text field with a calendar button - typed parseable dates re-select the calendar; single mode only.
 - RULE: For an always-visible grid use Calendar directly - DatePicker is the field+popover form.
 
 ## field (`poetry_field`)
