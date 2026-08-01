@@ -42,20 +42,30 @@ module Poetry
         # direction's closed transform, with the controller's positive
         # movement mapped onto the axis (negative directions invert it).
         # The corner/edge treatment rides cn-drawer-direction-*.
+        # --drawer-inset (theme-owned; upstream's "floats the drawer from
+        # the viewport edges", default 0px = flush) gaps every non-anchored
+        # edge: the anchored side swaps its 0-margin for the inset, the
+        # cross axis swaps its explicit size (w-full/h-full) for auto so
+        # the UA's inset:0 over-constraint fills viewport-minus-margins
+        # (identical to the full size at 0px), and the closed transform
+        # travels the extra inset so the exit still clears the viewport.
+        # rhea/mira/luma/maia ship --spacing(2), like their source styles.
         variant :direction, {
-          down: "cn-drawer-direction-down mt-auto mb-0 h-auto w-full max-w-none " \
-                "max-h-[calc(100dvh-6rem)] " \
-                "[--closed-transform:translate3d(0,calc(100%+2px),0)] " \
+          down: "cn-drawer-direction-down mt-auto mb-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
+                "h-auto w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
+                "[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] " \
                 "[--translate-y:var(--drawer-swipe-movement-y,0px)]",
-          up: "cn-drawer-direction-up mb-auto mt-0 h-auto w-full max-w-none " \
-              "max-h-[calc(100dvh-6rem)] " \
-              "[--closed-transform:translate3d(0,calc(-100%-2px),0)] " \
+          up: "cn-drawer-direction-up mb-auto mt-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
+              "h-auto w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
+              "[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] " \
               "[--translate-y:calc(-1*var(--drawer-swipe-movement-y,0px))]",
-          left: "cn-drawer-direction-left mr-auto ml-0 h-full max-h-none w-3/4 sm:max-w-sm " \
-                "[--closed-transform:translate3d(calc(-100%-2px),0,0)] " \
+          left: "cn-drawer-direction-left mr-auto ml-(--drawer-inset,0px) my-(--drawer-inset,0px) " \
+                "h-auto max-h-none w-3/4 sm:max-w-sm " \
+                "[--closed-transform:translate3d(calc(-100%-var(--drawer-inset,0px)-2px),0,0)] " \
                 "[--translate-x:calc(-1*var(--drawer-swipe-movement-x,0px))]",
-          right: "cn-drawer-direction-right ml-auto mr-0 h-full max-h-none w-3/4 sm:max-w-sm " \
-                 "[--closed-transform:translate3d(calc(100%+2px),0,0)] " \
+          right: "cn-drawer-direction-right ml-auto mr-(--drawer-inset,0px) my-(--drawer-inset,0px) " \
+                 "h-auto max-h-none w-3/4 sm:max-w-sm " \
+                 "[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)] " \
                  "[--translate-x:var(--drawer-swipe-movement-x,0px)]"
         }
 

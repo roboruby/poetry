@@ -100,7 +100,21 @@ module Poetry
           dialog_classes = html.css("dialog").first["class"].split
 
           assert_includes dialog_classes, "cn-drawer-direction-down"
-          assert_includes dialog_classes, "w-full"
+          assert_includes dialog_classes, "mt-auto"
+        end
+
+        def test_the_direction_geometry_reads_the_theme_inset
+          dialog = render_drawer(direction: :right).css("dialog").first["class"]
+
+          # Upstream's --drawer-inset contract (default 0px = flush): a
+          # theme floats the drawer off the viewport edges by setting the
+          # var (rhea/mira/luma/maia ship --spacing(2), like their source
+          # styles); the closed transform travels the extra inset so the
+          # exit still clears the viewport.
+          assert_includes dialog, "mr-(--drawer-inset,0px)"
+          assert_includes dialog, "my-(--drawer-inset,0px)"
+          assert_includes dialog,
+                          "[--closed-transform:translate3d(calc(100%+var(--drawer-inset,0px)+2px),0,0)]"
         end
 
         def test_the_parents_show_close_button_is_hidden_from_the_contract

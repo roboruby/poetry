@@ -582,7 +582,9 @@
 
 /* MARK: Drawer */
 .cn-drawer-content {
-  @apply bg-popover text-sm text-popover-foreground shadow-lg backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs;
+  /* Flush drawer - the explicit stance for the dictionary's
+     var(--drawer-inset) read (floating themes ship --spacing(2)). */
+  @apply bg-popover text-sm text-popover-foreground shadow-lg backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs [--drawer-inset:0px];
 }
 
 .cn-drawer-direction-down {
