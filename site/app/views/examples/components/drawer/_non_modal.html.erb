@@ -1,0 +1,13 @@
+<%# modal: false leaves the page interactive while the drawer is open -
+    no scrim, no focus trap, no scroll lock. There is no backdrop to
+    click, so pointer dismissal is off by nature; Esc (while focus is
+    inside), the swipe, and the wired Close button still exit. %>
+<%= poetry_drawer(direction: :right, modal: false) do |drawer| %>
+  <% drawer.with_trigger(variant: :outline) { "Non modal" } %>
+  <% drawer.with_title { "Non-modal drawer" } %>
+  <% drawer.with_description { "The page behind stays interactive." } %>
+  <% drawer.with_footer do %>
+    <%= poetry_button(data: { action: "click->poetry--core--drawer#close" }) { "Close" } %>
+  <% end %>
+  <div class="h-80 w-full rounded-2xl bg-muted"></div>
+<% end %>
