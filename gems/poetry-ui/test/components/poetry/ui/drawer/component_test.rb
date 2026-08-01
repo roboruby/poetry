@@ -131,6 +131,33 @@ module Poetry
           assert_includes right, "h-auto", "edge panels DO fill the viewport axis"
         end
 
+        def test_non_modal_restates_the_top_layer_positioning_and_wires_esc
+          html = render_drawer(modal: false, direction: :right)
+
+          root = html.css('[data-slot="drawer"]').first
+
+          assert_equal "false", root["data-poetry--core--drawer-modal-value"]
+          dialog = html.css("dialog").first
+          classes = dialog["class"].split
+
+          # show() skips the top layer, so the UA :modal fixed/inset:0
+          # must be explicit for the direction margins to keep working.
+          assert_includes classes, "fixed"
+          assert_includes classes, "inset-0"
+          assert_includes classes, "z-50"
+          # No cancel event outside the top layer - Esc rides keydown.
+          assert_includes dialog["data-action"], "keydown->poetry--core--drawer#escapeClose"
+        end
+
+        def test_modal_drawers_keep_the_top_layer_contract_unchanged
+          html = render_drawer
+          dialog = html.css("dialog").first
+
+          refute_includes dialog["class"].split, "fixed"
+          refute_includes dialog["data-action"], "escapeClose"
+          assert_equal "true", html.css('[data-slot="drawer"]').first["data-poetry--core--drawer-modal-value"]
+        end
+
         def test_the_parents_show_close_button_is_hidden_from_the_contract
           # A Drawer renders no corner X (vaul parity), so the inherited
           # Dialog option must not project - a listed option the template

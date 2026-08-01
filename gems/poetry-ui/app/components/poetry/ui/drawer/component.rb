@@ -24,7 +24,9 @@ module Poetry
           "show_swipe_handle: true renders the grab pill - use it on bottom sheets so the " \
           "gesture is discoverable.",
           "Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, " \
-          "never the only way out."
+          "never the only way out.",
+          "modal: false keeps the page interactive (no scrim, no focus trap) - pair a wired " \
+          "footer close; Esc while focus is inside still exits."
         ].freeze
 
         CONTROLLER = %i[poetry core drawer].freeze
@@ -34,6 +36,13 @@ module Poetry
         style :direction, default: :down, required: true, variants: DIRECTIONS
 
         option :show_swipe_handle, :boolean, default: false
+
+        # Source parity: modal={false}. Non-modal opens with show() - no
+        # top layer, no scrim, no focus trap, no scroll lock; the page
+        # behind stays interactive. Esc (while focus is inside), the
+        # swipe, and any wired close button still exit; there is no
+        # backdrop to click, so pointer dismissal is off by nature.
+        option :modal, :boolean, default: true
 
         # The parent's show_close_button does not apply: a Drawer has no
         # corner X (source parity - vaul closes by swipe, backdrop, or
@@ -90,6 +99,7 @@ module Poetry
                 drawer.register_controller
                 drawer.with_value(:dismissible, dismissible)
                 drawer.with_value(:direction, direction)
+                drawer.with_value(:modal, modal)
               end)
               .merge(component_data_attributes)
           )
@@ -100,7 +110,12 @@ module Poetry
         # and ::backdrop inherits them (the overlay fade rides along).
         def dialog_attributes
           attrs = {
-            "class" => css(:content, class: Style.direction(direction)),
+            # Non-modal show() skips the top layer, so the UA :modal
+            # positioning (fixed + inset:0) must be re-stated explicitly -
+            # the direction margins and over-constraint sizing then work
+            # exactly as they do in the top layer.
+            "class" => css(:content, class: [Style.direction(direction),
+                                             ("fixed inset-0 z-50" unless modal)].compact.join(" ")),
             "data-slot" => "drawer-content",
             "data-swipe-direction" => direction,
             "data-closed" => "",
@@ -109,6 +124,9 @@ module Poetry
             drawer.with_target(:dialog)
             drawer.with_action(:close, on: :cancel)
             drawer.with_action(:backdrop_close, on: :click)
+            # A non-modal dialog never fires cancel - Esc rides its own
+            # keydown exit (guarded controller-side to modal: false).
+            drawer.with_action(:escape_close, on: :keydown) unless modal
             drawer.with_action(:swipe_start, on: :pointerdown)
             drawer.with_action(:swipe_move, on: :pointermove)
             drawer.with_action(:swipe_end, on: :pointerup)
