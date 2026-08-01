@@ -9,11 +9,13 @@
     </div>
     <%= content %>
     <% if footer? %><div data-slot="dialog-footer" class="<%= css(:footer) %>"><%= footer %></div><% end %>
-    <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
-                                                 label: t("poetry.dialog.close"),
-                                                 class: css(:close),
-                                                 data: { action: close_action }) do %>
-      <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+    <% if show_close_button %>
+      <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
+                                                   label: t("poetry.dialog.close"),
+                                                   class: css(:close),
+                                                   data: { action: close_action }) do %>
+        <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
+      <% end %>
     <% end %>
   <% end %>
 <% end %>

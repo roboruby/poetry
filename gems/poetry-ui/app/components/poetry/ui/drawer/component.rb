@@ -35,6 +35,15 @@ module Poetry
 
         option :show_swipe_handle, :boolean, default: false
 
+        # The parent's show_close_button does not apply: a Drawer has no
+        # corner X (source parity - vaul closes by swipe, backdrop, or
+        # footer actions), so the inherited option is hidden from
+        # introspection. A projected option the template ignores would be
+        # a contract lie.
+        def self.option_attributes
+          super - %i[show_close_button]
+        end
+
         part "drawer", "Root wrapper around the trigger and the <dialog> element"
         part "drawer-content", "The <dialog> popup - the edge chrome, presence animation, and " \
                                "the swipe contract all ride here (::backdrop inherits the " \

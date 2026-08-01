@@ -49,6 +49,7 @@ max-w-xl
 md:grid-cols-3
 min-h-64
 min-h-72
+min-w-0
 min-w-8
 ms-auto
 mt-6
@@ -96,6 +97,7 @@ text-xs
 tracking-tight
 transition-[height]
 transition-[opacity,translate]
+truncate
 w-64
 w-80
 w-96

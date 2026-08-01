@@ -2817,6 +2817,9 @@ components:
     - name: dismissible
       type: boolean
       default: true
+    - name: show_close_button
+      type: boolean
+      default: true
     slots:
     - name: trigger
       many: false
@@ -2861,6 +2864,8 @@ components:
       needs explaining.
     - 'Confirmations that must not be lost use dismissible: false (backdrop clicks
       stop closing).'
+    - 'show_close_button: false removes the corner X - keep a footer action (Esc still
+      closes).'
     - Destructive confirmations pair a destructive Button in the footer - never auto-submit.
     required_slots:
       title: the accessible name

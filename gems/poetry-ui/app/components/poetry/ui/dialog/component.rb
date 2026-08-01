@@ -14,6 +14,7 @@ module Poetry
           "Open dialogs with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.",
           "Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).",
+          "show_close_button: false removes the corner X - keep a footer action (Esc still closes).",
           "Destructive confirmations pair a destructive Button in the footer - never auto-submit."
         ].freeze
 
@@ -23,6 +24,11 @@ module Poetry
         CONTROLLER = %i[poetry core dialog].freeze
 
         option :dismissible, :boolean, default: true
+
+        # Source parity: showCloseButton - false drops the corner X (the
+        # forced-choice recipe: footer actions and Esc remain). Sheet
+        # inherits this.
+        option :show_close_button, :boolean, default: true
 
         part "dialog", "Root wrapper around the trigger and the <dialog> element"
         part "dialog-content", "The <dialog> panel - positioning, animation, and the open " \

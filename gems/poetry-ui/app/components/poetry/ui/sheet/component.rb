@@ -10,9 +10,9 @@ module Poetry
       # focus return), the poetry--core--dialog controller (the data-open/
       # data-closed pair,
       # coordinate-discriminated backdrop dismissal, scroll lock,
-      # dismissible:), and the required title. The deltas: the side style
-      # (edge-anchored margins replace the parent's m-auto centering), the
-      # source's slide-in animation, and show_close_button.
+      # dismissible:, show_close_button:), and the required title. The
+      # deltas: the side style (edge-anchored margins replace the parent's
+      # m-auto centering) and the source's slide-in animation.
       class Component < Dialog::Component
         SIDES = %i[top right bottom left].freeze
 
@@ -32,9 +32,6 @@ module Poetry
         # THE Sheet delta - a physical direction (source parity: right
         # stays right in RTL).
         style :side, default: :right, required: true, variants: SIDES
-
-        # Source parity: showCloseButton.
-        option :show_close_button, :boolean, default: true
 
         part "sheet", "Root wrapper around the trigger and the <dialog> element"
         part "sheet-content", "The <dialog> panel, anchored to a screen edge - the slide " \

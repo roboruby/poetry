@@ -76,6 +76,15 @@ module Poetry
           assert_includes html, 'data-action="poetry--core--dialog#close"'
         end
 
+        def test_show_close_button_false_removes_the_corner_x
+          html = render_dialog(show_close_button: false)
+
+          refute_includes html, 'data-action="poetry--core--dialog#close"'
+          refute_includes html, 'aria-label="Close"'
+          # Esc still closes - the <dialog> cancel wiring is untouched.
+          assert_includes html, "cancel->poetry--core--dialog#close"
+        end
+
         def test_dismissible_false_flows_to_the_controller_value
           html = render_dialog(dismissible: false)
 
