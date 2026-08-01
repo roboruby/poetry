@@ -884,6 +884,7 @@ h-9
 h-96
 h-[calc(100%-1px)]
 h-auto
+h-fit
 h-full
 h-max
 h-px

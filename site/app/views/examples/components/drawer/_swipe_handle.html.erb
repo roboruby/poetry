@@ -1,12 +1,13 @@
 <%# show_swipe_handle: true renders the grab pill - use it on bottom
     sheets so the gesture is discoverable. A drag may always start on
-    the pill, handle or not. %>
+    the pill, handle or not. The Close button targets the controller's
+    close action (the DrawerClose equivalent). %>
 <%= poetry_drawer(show_swipe_handle: true) do |drawer| %>
-  <% drawer.with_trigger(variant: :outline) { "Open bottom drawer" } %>
-  <% drawer.with_title { "Move goal" } %>
-  <% drawer.with_description { "Set your daily activity goal." } %>
+  <% drawer.with_trigger(variant: :secondary) { "Open bottom drawer" } %>
+  <% drawer.with_title { "Drawer" } %>
+  <% drawer.with_description { "Drawer with a swipe handle." } %>
   <% drawer.with_footer do %>
-    <%= poetry_button { "Submit" } %>
+    <%= poetry_button(data: { action: "click->poetry--core--drawer#close" }) { "Close" } %>
   <% end %>
-  Drag the handle down to dismiss.
+  <div class="h-80 w-full rounded-2xl bg-muted"></div>
 <% end %>
