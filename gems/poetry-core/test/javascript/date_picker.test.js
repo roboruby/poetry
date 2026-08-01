@@ -11,8 +11,9 @@ import { registerPoetryControllers } from "@poetry/controllers"
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const el = (id) => document.getElementById(id)
 
-const markup = () => `
+const markup = ({ mode = "" } = {}) => `
   <div id="picker" data-controller="poetry--core--date-picker"
+       ${mode ? `data-poetry--core--date-picker-mode-value="${mode}"` : ""}
        data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
     <button id="trigger" type="button">
       <span id="label" data-poetry--core--date-picker-target="label">Pick a date</span>
@@ -51,6 +52,22 @@ describe("poetry--core--date-picker", () => {
 
     expect(el("label").textContent).toBe("June 20, 2026")
     expect(closeSpy).toHaveBeenCalled()
+  })
+
+  it("range mode joins the pair with SHORT month names (two long-month dates outgrow the trigger)", async () => {
+    application.stop()
+    document.body.replaceChildren()
+    await nextFrame()
+    document.body.innerHTML = markup({ mode: "range" })
+    application = Application.start()
+    registerPoetryControllers(application)
+    await nextFrame()
+
+    el("picker").dispatchEvent(new CustomEvent("poetry--core--calendar:change", {
+      bubbles: true, detail: { start: "2026-06-09", end: "2026-06-18" }
+    }))
+
+    expect(el("label").textContent).toBe("Jun 9, 2026 – Jun 18, 2026")
   })
 
   it("a cleared value restores the placeholder and leaves the popover open", () => {

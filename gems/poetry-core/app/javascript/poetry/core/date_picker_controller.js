@@ -40,9 +40,12 @@ export default class DatePickerController extends Controller {
 
   #format(iso) {
     // Parse as UTC noon so the local-timezone render never rolls the day.
+    // Range labels use SHORT month names (the server formats %b for the
+    // same reason: two long-month dates outgrow the trigger).
     const date = new Date(`${iso}T12:00:00Z`)
     return date.toLocaleDateString(this.localeValue, {
-      year: "numeric", month: "long", day: "numeric", timeZone: "UTC"
+      year: "numeric", month: this.modeValue === "range" ? "short" : "long",
+      day: "numeric", timeZone: "UTC"
     })
   }
 
