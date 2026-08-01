@@ -33,6 +33,10 @@ module Poetry
         # typed date (parseable text re-selects the calendar) with a
         # calendar icon-button opening the popover. Single mode only.
         option :variant, :symbol, default: :button
+        # Forwarded to the wrapped Calendar: :dropdown swaps the caption for
+        # month + year selects (the date-of-birth recipe - min:/max: bound
+        # the year list).
+        option :caption_layout, :symbol, default: :label
 
         # ONE owned part: DatePicker is composition - the Popover owns the
         # overlay, the Calendar owns the grid + the form value, the trigger
@@ -82,6 +86,7 @@ module Poetry
         def calendar_options
           selected = range? ? [@range_start, @range_end].compact.presence : @value
           { name: name, mode: (:range if range?), selected: selected,
+            caption_layout: (caption_layout unless caption_layout == :label),
             min: @min, max: @max, month: @month || @value || @range_start }.compact
         end
 

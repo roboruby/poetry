@@ -241,6 +241,15 @@ module Poetry
         assert html.css('[data-slot="input-group"]').first, "wrapped in an InputGroup"
       end
 
+      def test_caption_layout_forwards_to_the_wrapped_calendar
+        html = render_inline(DatePicker::Component.new(name: "dob", caption_layout: :dropdown,
+                                                       min: "1920-01-01", max: "2008-12-31",
+                                                       month: "1990-01-01"))
+
+        assert_predicate html.css('[data-slot="calendar-dropdown"]'), :any?,
+                         "the date-of-birth recipe: month + year selects in the caption"
+      end
+
       def test_the_input_variant_is_single_mode_only
         error = assert_raises(ArgumentError) do
           render_inline(DatePicker::Component.new(name: "stay", variant: :input, mode: :range))

@@ -2713,6 +2713,9 @@ components:
     bem_block: poetry-ui-date_picker
     styles: []
     options:
+    - name: caption_layout
+      type: symbol
+      default: label
     - name: label
       type: string
     - name: mode
