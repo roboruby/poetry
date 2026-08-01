@@ -213,7 +213,10 @@ module Poetry
 
         label = html.css('[data-poetry--core--date-picker-target="label"]').first
 
-        assert_equal "June 9, 2026 – June 18, 2026", label.text.strip
+        # SHORT month names for ranges (upstream's LLL dd convention) - two
+        # long-month dates outgrow the trigger; the trigger also runs wider.
+        assert_equal "Jun 9, 2026 – Jun 18, 2026", label.text.strip
+        assert_includes html.css('[data-slot="date-picker"] button').first["class"].split, "w-72"
         assert_equal "range",
                      html.css('[data-slot="date-picker"]').first["data-poetry--core--date-picker-mode-value"]
         assert_equal "2026-06-09", html.css('input[name="stay[start]"]').first["value"]

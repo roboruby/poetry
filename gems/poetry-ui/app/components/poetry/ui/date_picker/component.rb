@@ -54,13 +54,15 @@ module Poetry
           raise ArgumentError, "DatePicker requires name: (the form field)" if name.blank?
         end
 
-        # Range mode joins the pair ("March 5, 2026 - March 12, 2026"); a
+        # Range mode joins the pair with SHORT month names ("Jun 5, 2026 -
+        # Jun 12, 2026" - upstream's range demo formats LLL dd for the same
+        # reason: two long-month dates outgrow any reasonable trigger); a
         # start-only value shows one date (the rdp/shadcn convention).
         def formatted
           if range?
             return placeholder unless @range_start
 
-            [@range_start, @range_end].compact.map { |date| date.strftime("%B %-d, %Y") }.join(" – ")
+            [@range_start, @range_end].compact.map { |date| date.strftime("%b %-d, %Y") }.join(" – ")
           else
             @value ? @value.strftime("%B %-d, %Y") : placeholder
           end
@@ -83,7 +85,10 @@ module Poetry
           {
             variant: :outline,
             label: label.presence,
-            class: "w-56 justify-start font-normal #{"text-muted-foreground" unless value}".strip,
+            # Range triggers run wider (two dates + the dash; upstream sizes
+            # its range demo up the same way).
+            class: "#{range? ? "w-72" : "w-56"} justify-start font-normal " \
+                   "#{"text-muted-foreground" unless value}".strip,
             data: { slot: "date-picker-trigger" }
           }.compact
         end
