@@ -718,6 +718,12 @@
   @apply gap-x-3;
 }
 
+/* Row layout: the label + hint pair packs at the theme's
+   cn-field-content rhythm; the field gap keeps the column axis. */
+.cn-field-orientation-responsive {
+  @apply @md/field-group:gap-y-1.5;
+}
+
 .cn-field-set {
   @apply gap-6 has-[>.cn-field-group-choices]:gap-3 has-[>[data-slot=radio-group]]:gap-3;
 }

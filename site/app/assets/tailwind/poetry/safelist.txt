@@ -28,12 +28,16 @@
 -translate-x-px
 -translate-y-1/2
 @container/field-group
+@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:col-start-2
+@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:row-span-2
+@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:row-start-1
+@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:self-center
 @md/field-group:[&>[data-slot=field-error]]:col-start-1
 @md/field-group:[&>[data-slot=field-hint]]:col-start-1
 @md/field-group:[&>[data-slot=label]]:col-start-1
 @md/field-group:[&>[data-slot=label]]:row-start-1
+@md/field-group:[&>[data-slot=label]]:self-center
 @md/field-group:grid-cols-[1fr_auto]
-@md/field-group:items-center
 [&+[data-slot=item-content]]:flex-none
 [&::-webkit-search-cancel-button]:hidden
 [&::-webkit-search-decoration]:hidden
