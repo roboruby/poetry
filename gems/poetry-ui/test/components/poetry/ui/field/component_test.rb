@@ -61,6 +61,11 @@ module Poetry
           assert_includes root["class"], "@md/field-group:grid-cols-[1fr_auto]"
           assert_includes root["class"], "@md/field-group:[&>[data-slot=label]]:col-start-1"
           assert_includes root["class"], "@md/field-group:[&>[data-slot=field-hint]]:col-start-1"
+          # The control spans the label+hint pair and centers against it
+          # (upstream's FieldContent geometry on the flat quartet DOM).
+          assert_includes root["class"],
+                          "@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint]," \
+                          "[data-slot=field-error])]:row-span-2"
           refute_match(/(?<!field-group:)grid-cols-\[1fr_auto\]/, root["class"],
                        "responsive placement must stay behind the @container gate")
         end

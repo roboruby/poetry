@@ -3604,7 +3604,7 @@ components:
     elements:
     - hint
     - error
-    capsule: 85018510c13c
+    capsule: 1aaa37ea0a25
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
