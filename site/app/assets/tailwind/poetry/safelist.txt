@@ -101,7 +101,7 @@
 [--translate-x:calc(-1*var(--drawer-swipe-movement-x,0px))]
 [--translate-x:var(--drawer-swipe-movement-x,0px)]
 [--translate-y:calc(-1*var(--drawer-swipe-movement-y,0px))]
-[--translate-y:var(--drawer-swipe-movement-y,0px)]
+[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y,0px))]
 [.border-t]:pt-6
 [:not([data-selected])>&]:hidden
 [[data-copied]_&]:opacity-0
@@ -652,6 +652,8 @@ data-invalid:border-destructive
 data-invalid:ring-destructive/20
 data-open:opacity-100
 data-open:translate-y-0
+data-snap-points:h-dvh
+data-snap-points:max-h-none
 data-starting-style:opacity-0
 data-starting-style:transform-(--closed-transform)
 data-swiping:backdrop:transition-none

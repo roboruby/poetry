@@ -168,22 +168,24 @@ Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `dismissible:` (boolean) - default true
 - `modal:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
+- `snap_points:` ()
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
 - PART `drawer` - Root wrapper around the trigger and the <dialog> element
-- PART `drawer-content` - The <dialog> popup - the edge chrome, presence animation, and the swipe contract all ride here (::backdrop inherits the swipe vars, so the overlay fade rides along) | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-swipe-direction=down|up|left|right (always - the dismiss direction); data-swiping (a pointer drag is tracking (transitions go duration-0 - the drawer follows the finger)); data-starting-style (the enter transition's first frame (the presence helper's two-frame trick)); data-ending-style (held through the exit transition before the native close()) | vars: --drawer-swipe-movement-x (px dragged toward a left/right dismissal (controller-written during swipes)); --drawer-swipe-movement-y (px dragged toward an up/down dismissal (controller-written during swipes)); --drawer-swipe-progress (0..1 fraction of the dismiss travel (the backdrop fade rides it)); --drawer-swipe-strength (remaining-travel factor set on release - scales the exit duration so a mostly-swiped drawer closes fast)
+- PART `drawer-content` - The <dialog> popup - the edge chrome, presence animation, and the swipe contract all ride here (::backdrop inherits the swipe vars, so the overlay fade rides along) | states: data-open (popup is open (the controller flips the pair at runtime)); data-closed (popup is closed or animating out (the server-rendered state)); data-swipe-direction=down|up|left|right (always - the dismiss direction); data-swiping (a pointer drag is tracking (transitions go duration-0 - the drawer follows the finger)); data-snap-points (snap_points: present - the popup runs full-height and --drawer-snap-point-offset rests it at the current point); data-starting-style (the enter transition's first frame (the presence helper's two-frame trick)); data-ending-style (held through the exit transition before the native close()) | vars: --drawer-swipe-movement-x (px dragged toward a left/right dismissal (controller-written during swipes)); --drawer-swipe-movement-y (px dragged toward an up/down dismissal (controller-written during swipes)); --drawer-swipe-progress (0..1 fraction of the dismiss travel (the backdrop fade rides it)); --drawer-swipe-strength (remaining-travel factor set on release - scales the exit duration so a mostly-swiped drawer closes fast)
 - PART `drawer-swipe-handle` - The grab pill (show_swipe_handle: true, aria-hidden) - a drag may always start on it
 - PART `drawer-header` - Title block at the top of the popup
 - PART `drawer-title` - The heading - the drawer's accessible name (required slot)
 - PART `drawer-description` - Muted copy under the title, wired to aria-describedby
 - PART `drawer-body` - The scrollable content region between header and footer
 - PART `drawer-footer` - Action row pinned to the bottom of the popup
-- WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey, modal; actions backdropClose, close, escapeClose, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
+- WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey, modal, snapPoints; actions backdropClose, close, escapeClose, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: direction: is the DISMISS direction: :down is the mobile bottom sheet (the default); left/right make an edge panel - prefer Sheet on desktop.
 - RULE: show_swipe_handle: true renders the grab pill - use it on bottom sheets so the gesture is discoverable.
 - RULE: Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, never the only way out.
 - RULE: modal: false keeps the page interactive (no scrim, no focus trap) - pair a wired footer close; Esc while focus is inside still exits.
+- RULE: snap_points: ["31rem", 1] snaps a bottom sheet between preset heights (ascending fractions or px/rem lengths; opens at the first) - direction: :down only.
 
 ## dropdown_menu (`poetry_dropdown_menu`)
 
