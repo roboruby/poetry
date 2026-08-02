@@ -60,8 +60,9 @@ module Poetry
           # edge panel runs the full viewport.
           down: "cn-drawer-direction-down mt-auto mb-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
                 "h-fit w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
+                "data-snap-points:h-dvh data-snap-points:max-h-none " \
                 "[--closed-transform:translate3d(0,calc(100%+var(--drawer-inset,0px)+2px),0)] " \
-                "[--translate-y:var(--drawer-swipe-movement-y,0px)]",
+                "[--translate-y:calc(var(--drawer-snap-point-offset,0px)+var(--drawer-swipe-movement-y,0px))]",
           up: "cn-drawer-direction-up mb-auto mt-(--drawer-inset,0px) mx-(--drawer-inset,0px) " \
               "h-fit w-auto max-w-none max-h-[calc(100dvh-6rem)] " \
               "[--closed-transform:translate3d(0,calc(-100%-var(--drawer-inset,0px)-2px),0)] " \

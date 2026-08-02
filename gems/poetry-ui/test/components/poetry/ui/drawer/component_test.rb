@@ -158,6 +158,36 @@ module Poetry
           assert_equal "true", html.css('[data-slot="drawer"]').first["data-poetry--core--drawer-modal-value"]
         end
 
+        def test_snap_points_stamp_the_sizing_attribute_and_the_value
+          html = render_drawer(snap_points: ["31rem", 1])
+
+          dialog = html.css("dialog").first
+
+          assert dialog.key?("data-snap-points"), "the dictionary's full-height sizing hook"
+          root = html.css('[data-slot="drawer"]').first
+
+          assert_equal '["31rem",1]', root["data-poetry--core--drawer-snap-points-value"]
+        end
+
+        def test_snap_points_teach_their_bounds
+          error = assert_raises(ArgumentError) do
+            render_drawer(snap_points: [0.4], direction: :right)
+          end
+
+          assert_match(/:down only/, error.message)
+          error = assert_raises(ArgumentError) { render_drawer(snap_points: [0, "31vh"]) }
+
+          assert_match(/fractions in \(0, 1\]/, error.message)
+        end
+
+        def test_plain_drawers_carry_no_snap_surface
+          html = render_drawer
+          dialog = html.css("dialog").first
+
+          refute dialog.key?("data-snap-points")
+          assert_nil html.css('[data-slot="drawer"]').first["data-poetry--core--drawer-snap-points-value"]
+        end
+
         def test_the_parents_show_close_button_is_hidden_from_the_contract
           # A Drawer renders no corner X (vaul parity), so the inherited
           # Dialog option must not project - a listed option the template

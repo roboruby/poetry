@@ -68,6 +68,8 @@ module Poetry
         "complete" => "OTP complete marker (JS)",
         "completed" => "timeline progress marker (server-rendered)",
         "swiping" => "drawer swipe drag marker (poetry--core--drawer writes it; toast swipe reserved)",
+        "snap-points" => "drawer snap-points marker (server-rendered when snap_points: is present; " \
+                         "drives the dictionary's full-height sizing, 2026-08-01)",
         "starting-style" => "presence enter hook (presence.js enterPresence - one painted frame, " \
                             "the Base UI transition idiom; Drawer is the first consumer)",
         "ending-style" => "presence exit hook (presence.js exitPresence - rides the whole exit)",

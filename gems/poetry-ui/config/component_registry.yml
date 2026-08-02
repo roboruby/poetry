@@ -2912,6 +2912,8 @@ components:
     - name: show_swipe_handle
       type: boolean
       default: false
+    - name: snap_points
+      type:
     slots:
     - name: trigger
       many: false
@@ -2935,7 +2937,7 @@ components:
     - title
     - description
     - body
-    capsule: 3cc9865cac8a
+    capsule: 96ddd8c0f355
     controllers:
     - identifier: poetry--core--drawer
       targets:
@@ -2945,6 +2947,7 @@ components:
       - dismissible
       - hotkey
       - modal
+      - snapPoints
       actions:
       - backdropClose
       - close
@@ -2969,6 +2972,8 @@ components:
       never the only way out.
     - 'modal: false keeps the page interactive (no scrim, no focus trap) - pair a
       wired footer close; Esc while focus is inside still exits.'
+    - 'snap_points: ["31rem", 1] snaps a bottom sheet between preset heights (ascending
+      fractions or px/rem lengths; opens at the first) - direction: :down only.'
     required_slots:
       title: the accessible name
     parts:
@@ -2993,6 +2998,9 @@ components:
       - attr: data-swiping
         condition: a pointer drag is tracking (transitions go duration-0 - the drawer
           follows the finger)
+      - attr: data-snap-points
+        condition: 'snap_points: present - the popup runs full-height and --drawer-snap-point-offset
+          rests it at the current point'
       - attr: data-starting-style
         condition: the enter transition's first frame (the presence helper's two-frame
           trick)

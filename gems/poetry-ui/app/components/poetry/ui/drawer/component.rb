@@ -26,7 +26,9 @@ module Poetry
           "Esc and the backdrop still dismiss (the platform trap) - the swipe is an addition, " \
           "never the only way out.",
           "modal: false keeps the page interactive (no scrim, no focus trap) - pair a wired " \
-          "footer close; Esc while focus is inside still exits."
+          "footer close; Esc while focus is inside still exits.",
+          "snap_points: [\"31rem\", 1] snaps a bottom sheet between preset heights (ascending " \
+          "fractions or px/rem lengths; opens at the first) - direction: :down only."
         ].freeze
 
         CONTROLLER = %i[poetry core drawer].freeze
@@ -43,6 +45,15 @@ module Poetry
         # swipe, and any wired close button still exit; there is no
         # backdrop to click, so pointer dismissal is off by nature.
         option :modal, :boolean, default: true
+
+        # Source parity: snapPoints - preset resting heights for a bottom
+        # sheet, ascending: fractions of the full height (0..1] or CSS
+        # px/rem lengths (the source's ["31rem", 1]). The popup runs
+        # full-height and opens at the first point; drags move between
+        # points, below the first dismisses. direction: :down only.
+        option :snap_points, ActiveModel::Type::Value.new
+
+        SNAP_POINT_LENGTH = /\A\d+(\.\d+)?(px|rem)\z/
 
         # The parent's show_close_button does not apply: a Drawer has no
         # corner X (source parity - vaul closes by swipe, backdrop, or
@@ -64,6 +75,8 @@ module Poetry
                                            values: DIRECTIONS.map(&:to_s) },
                "data-swiping" => "a pointer drag is tracking (transitions go duration-0 - the " \
                                  "drawer follows the finger)",
+               "data-snap-points" => "snap_points: present - the popup runs full-height and " \
+                                     "--drawer-snap-point-offset rests it at the current point",
                "data-starting-style" => "the enter transition's first frame (the presence " \
                                         "helper's two-frame trick)",
                "data-ending-style" => "held through the exit transition before the native " \
@@ -90,6 +103,8 @@ module Poetry
 
         def before_render
           raise ArgumentError, "Drawer requires with_title (the accessible name)" unless title?
+
+          validate_snap_points! if snap_points.present?
         end
 
         def root_attributes
@@ -100,6 +115,7 @@ module Poetry
                 drawer.with_value(:dismissible, dismissible)
                 drawer.with_value(:direction, direction)
                 drawer.with_value(:modal, modal)
+                drawer.with_value(:snap_points, snap_points.to_json) if snap_points.present?
               end)
               .merge(component_data_attributes)
           )
@@ -132,11 +148,29 @@ module Poetry
             drawer.with_action(:swipe_end, on: :pointerup)
             drawer.with_action(:swipe_cancel, on: :pointercancel)
           end)
+          # The attribute drives the dictionary's full-height sizing; the
+          # controller reads the value for the offset physics.
+          attrs["data-snap-points"] = "" if snap_points.present?
           attrs["aria-describedby"] = description_id if description?
           attrs
         end
 
         private
+
+        def validate_snap_points!
+          unless direction == :down
+            raise ArgumentError, "Drawer snap_points: is a bottom-sheet recipe - direction: :down only"
+          end
+
+          valid = snap_points.is_a?(Array) && snap_points.any? && snap_points.all? do |point|
+            (point.is_a?(Numeric) && point.positive? && point <= 1) ||
+              (point.is_a?(String) && point.match?(SNAP_POINT_LENGTH))
+          end
+          return if valid
+
+          raise ArgumentError, "Drawer snap_points: entries are fractions in (0, 1] or CSS " \
+                               'px/rem lengths ("31rem", "400px"), ascending'
+        end
 
         # The Dialog parent resolves its CONTROLLER lexically, so every
         # builder entry point re-declares here in Drawer's scope - including
