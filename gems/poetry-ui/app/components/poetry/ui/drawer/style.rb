@@ -12,7 +12,8 @@ module Poetry
       # merger keeps collapsing m-0 against the side margins exactly as
       # before (the split-side conflict rule, applied by keeping the
       # conflict on the inline side this time). Corners/edges/surface ride
-      # the theme. Deferred scope unchanged (snap points, nested stack).
+      # the theme. Snap points landed 2026-08-01; nested-stack visuals
+      # and bleed stay deferred.
       class Style < Poetry::Core::Style
         # open:flex, not flex: never defeat the UA's dialog:not([open])
         # display:none (the Dialog browser-pass lesson).

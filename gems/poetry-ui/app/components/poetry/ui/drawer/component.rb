@@ -11,8 +11,9 @@ module Poetry
       # presence machinery) and the drawer chrome (edge-rounded popup,
       # transition-driven enter/exit, the optional swipe handle).
       #
-      # Deferred with their machinery (the W3b scope walls): snap points,
-      # nested drawer stacking, bleed.
+      # Snap points shipped 2026-08-01 (snap_points:, the first W3b
+      # deferral to land); still deferred with their machinery: nested
+      # drawer stacking visuals, bleed.
       class Component < Dialog::Component
         DIRECTIONS = %i[down up left right].freeze
 
