@@ -709,6 +709,46 @@
   @apply gap-x-3;
 }
 
+.cn-field-set {
+  @apply gap-6 has-[>.cn-field-group-choices]:gap-3 has-[>[data-slot=radio-group]]:gap-3;
+}
+
+.cn-field-legend {
+  @apply mb-3 font-medium data-[variant=legend]:text-base data-[variant=label]:text-sm;
+}
+
+.cn-field-group {
+  @apply gap-6 *:data-[slot=field-group]:gap-4;
+}
+
+.cn-field-group-choices {
+  @apply gap-3;
+}
+
+.cn-field-content {
+  @apply gap-1;
+}
+
+.cn-field-label {
+  @apply has-data-checked:bg-input/30 gap-2 leading-snug;
+}
+
+.cn-field-label-card {
+  @apply rounded-2xl border p-4;
+}
+
+.cn-field-title {
+  @apply gap-2 leading-snug text-sm font-medium;
+}
+
+.cn-field-separator {
+  @apply -my-2 h-5 text-sm;
+}
+
+.cn-field-separator-content {
+  @apply px-2 text-muted-foreground;
+}
+
 /* MARK: HoverCard */
 .cn-hover-card-content {
   @apply data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/5 dark:ring-foreground/10 bg-popover text-popover-foreground w-72 rounded-3xl p-4 text-sm shadow-lg ring-1 duration-100;

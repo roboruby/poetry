@@ -1,0 +1,19 @@
+<%# orientation: :responsive is container-driven: stacked by default,
+    label-left / control-right once the FieldGroup container passes the
+    md mark. Resize the window to see it flip. %>
+<div class="w-full max-w-lg">
+  <%= poetry_fieldset(legend: "Profile", hint: "Fill in your profile information.") do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "field-name", label_text: "Name",
+                       hint: "Provide your full name for identification.",
+                       orientation: :responsive) do |field| %>
+        <%= poetry_input(name: "name", placeholder: "Evil Rabbit", class: "@md/field-group:w-56",
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <div class="flex flex-col gap-2 @md/field-group:flex-row">
+        <%= poetry_button(type: :submit) { "Submit" } %>
+        <%= poetry_button(variant: :outline) { "Cancel" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

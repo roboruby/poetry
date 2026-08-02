@@ -1,0 +1,24 @@
+<%# A real <fieldset> named by a real <legend> (legend: is required - the
+    group's accessible name); hint: describes the group and the FieldGroup
+    inside owns the stacking rhythm. %>
+<div class="w-full max-w-sm">
+  <%= poetry_fieldset(legend: "Address information",
+                      hint: "We need your address to deliver your order.") do %>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "fieldset-street", label_text: "Street address") do |field| %>
+        <%= poetry_input(name: "street", placeholder: "123 Main St",
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <div class="grid grid-cols-2 gap-4">
+        <%= poetry_field(id: "fieldset-city", label_text: "City") do |field| %>
+          <%= poetry_input(name: "city", placeholder: "New York",
+                           **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= poetry_field(id: "fieldset-zip", label_text: "Postal code") do |field| %>
+          <%= poetry_input(name: "zip", placeholder: "90502",
+                           **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

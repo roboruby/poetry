@@ -1,0 +1,33 @@
+<%# FieldGroup stacks whole sections; FieldSeparator divides them. Each
+    section is a Fieldset with a label-sized legend over its own run of
+    toggles. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group do %>
+    <%= poetry_fieldset(legend: "Responses", legend_variant: :label,
+                        hint: "Get notified when responses to long requests finish.") do %>
+      <%= poetry_field_group(variant: :choices) do %>
+        <%= poetry_field(id: "field-push-responses", label_text: "Push notifications",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "push_responses", checked: true, disabled: true,
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_field_separator %>
+    <%= poetry_fieldset(legend: "Tasks", legend_variant: :label,
+                        hint: "Get notified when tasks you've created have updates.") do %>
+      <%= poetry_field_group(variant: :choices) do %>
+        <%= poetry_field(id: "field-push-tasks", label_text: "Push notifications",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "push_tasks",
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= poetry_field(id: "field-email-tasks", label_text: "Email notifications",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "email_tasks",
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

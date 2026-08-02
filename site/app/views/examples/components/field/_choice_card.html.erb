@@ -1,0 +1,15 @@
+<%# Choice cards: radio items with variant: :card render title +
+    description inside a selectable bordered label - the whole card
+    toggles the radio. %>
+<div class="w-full max-w-xs">
+  <%= poetry_fieldset(legend: "Compute environment", legend_variant: :label,
+                      hint: "Select the compute environment for your cluster.") do %>
+    <%= poetry_radio_group(name: "compute", value: "kubernetes",
+                           label: "Compute environment") do |group| %>
+      <% group.with_item(value: "kubernetes", label: "Kubernetes", variant: :card,
+                         description: "Run GPU workloads on a K8s cluster.") %>
+      <% group.with_item(value: "vm", label: "Virtual Machine", variant: :card,
+                         description: "Access a cluster to run GPU workloads.") %>
+    <% end %>
+  <% end %>
+</div>

@@ -214,20 +214,52 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 Wraps a form control with its label, hint, and validation message.
 
 Class: Poetry::Ui::Field::Component - BEM block `poetry-ui-field`.
-- `orientation:` (symbol) - one of vertical|horizontal, default "vertical", required
+- `orientation:` (symbol) - one of vertical|horizontal|responsive, default "vertical", required
 - `error:` (string)
 - `group:` (boolean) - default false
 - `hint:` (string)
 - `id:` (string) - required
 - `label_text:` (string)
 - `required:` (boolean) - default false
-- PART `field` - The quartet's grid root - label, control, hint, and error stack inside | states: data-invalid=true|false (always - true when error: is present, else false); data-orientation=vertical|horizontal (always - the resolved orientation (horizontal is the boolean-control layout))
+- PART `field` - The quartet's grid root - label, control, hint, and error stack inside | states: data-invalid=true|false (always - true when error: is present, else false); data-orientation=vertical|horizontal|responsive (always - the resolved orientation (horizontal is the boolean-control layout))
 - PART `field-hint` - The hint <p> - its id lands in the control's aria-describedby
 - PART `field-error` - The error <p> - present only when error: is set; its id leads the control's aria-describedby
 - PART `checkbox-input` - A nested Checkbox's hidden native input - the toggle renders as a wrapper-free fragment, so its sibling form store sits directly in the field's DOM (the horizontal boolean-control layout)
 - RULE: Wire the control with field.control_attributes - never hand-write aria-describedby.
 - RULE: Error text arrives via error: (from model errors upstream) - never a bare red <p>.
 - RULE: orientation: :horizontal is the boolean-control layout (checkbox/switch left, label + hint stacked right) - text inputs and groups stay vertical.
+- RULE: orientation: :responsive stacks by default and flips label-left / control-right once its poetry_field_group container passes the md mark - the settings-page recipe (it needs that FieldGroup ancestor to measure against).
+
+## field_group (`poetry_field_group`)
+
+Class: Poetry::Ui::FieldGroup::Component - BEM block `poetry-ui-field_group`.
+- `variant:` (symbol) - one of default|choices, default "default", required
+- PART `field-group` - The stacking container - fields, fieldsets, and separators render as direct children; also the @container responsive fields measure against
+- RULE: Stack Fields (and Fieldsets) with poetry_field_group - the theme owns the rhythm; never hand-space a form column with gap utilities.
+- RULE: variant: :choices packs a run of horizontal checkbox/switch fields tighter (the upstream checkbox-group form).
+- RULE: Field's orientation: :responsive is container-driven: it needs a FieldGroup ancestor to measure against - without one it stays stacked.
+
+## field_separator (`poetry_field_separator`)
+
+Class: Poetry::Ui::FieldSeparator::Component - BEM block `poetry-ui-field_separator`.
+- PART `field-separator` - The divider row - a decorative Separator drawn across it | states: data-content=true|false (always - whether the inline caption renders)
+- PART `field-separator-content` - The inline caption span (block content) - sits on the line, backed by the page background
+- RULE: Divides stacked fields inside a poetry_field_group - not a general-purpose rule (that is poetry_separator).
+- RULE: Pass a block for the inline caption form ("Or continue with") - the caption sits on the line, backed by the page background.
+
+## fieldset (`poetry_fieldset`)
+
+Class: Poetry::Ui::Fieldset::Component - BEM block `poetry-ui-fieldset`.
+- `hint:` (string)
+- `legend:` (string) - required
+- `legend_variant:` (symbol) - one of legend|label, default "legend"
+- PART `field-set` - The <fieldset> root - legend, optional hint, then the fields
+- PART `field-legend` - The <legend> - the group's accessible name | states: data-variant=legend|label (always - the legend's size treatment)
+- PART `field-set-hint` - Muted description under the legend (hint:)
+- RULE: A run of related fields gets poetry_fieldset with legend: - the group's accessible name (a bare <div> around fields tells AT nothing).
+- RULE: legend_variant: :label renders the legend at label size - use it when the group is one setting explained by its rows (checkbox/switch runs).
+- RULE: hint: is the muted description under the legend; per-field hints stay on the fields.
+- RULE: Stack the fields inside with poetry_field_group - never hand-spaced flex columns.
 
 ## file_input (`poetry_file_input`)
 
@@ -399,12 +431,17 @@ Slots: items (many).
 - PART `radio-group` - The role=radiogroup root - one Tab stop; items (and their label-pairing rows) render as direct children | states: data-disabled (disabled: is set on the root - every item disables with it)
 - PART `radio-group-item` - A button[role=radio] per item - carries its own hidden native radio as a sibling | states: data-checked (the checked item (the controller writes the pair and aria-checked together on every item)); data-unchecked (every other item); data-disabled (the item (or the whole group) is disabled - also the roving-focus collection filter); data-value (always - the item's value (keys the checked-value machine))
 - PART `radio-group-indicator` - Centering span holding the checked dot - hidden (the native attribute, toggled by the controller) while unchecked
+- PART `radio-group-card` - The choice-card row (variant: :card) - a <label> for= the radio button, so the whole card toggles; the checked treatments key on data-checked inside it
+- PART `radio-group-card-content` - Text column of a choice-card item (variant: :card) - title and description stack inside the card label
+- PART `radio-group-card-title` - The choice card's title line (the item label:)
+- PART `radio-group-card-description` - Muted copy under the choice card's title (description:)
 - WIRING `poetry--core--radio-group`: targets input; values value; actions check, entryCheck, setValue, valueValueChanged; events poetry:radio-group:change
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - RULE: Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.
 - RULE: Every item MUST have a unique value: (ArgumentError on duplicates).
 - RULE: The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup is an APG violation (ArgumentError).
 - RULE: Pair every item with a visible label (item label: renders the Label for= pairing) - a bare dot is not an option.
+- RULE: variant: :card renders the choice-card row (title + description: inside a selectable bordered label) - the pick-a-plan pattern; the whole card toggles the radio.
 - RULE: NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked (the controller writes both; agents patching DOM must too).
 - RULE: Do not use RadioGroup for navigation or immediate actions; checking must not submit or navigate by itself.
 - RULE: 7+ options: use Select instead.

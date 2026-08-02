@@ -1,0 +1,18 @@
+<%# FieldGroup owns the stacking rhythm - fields, fieldsets, and
+    separators render as direct children. It is also the @container scope
+    responsive fields measure against. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group do %>
+    <%= poetry_field(id: "group-email", label_text: "Email") do |field| %>
+      <%= poetry_input(type: "email", name: "email",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field(id: "group-password", label_text: "Password",
+                     hint: "Must be at least 8 characters.") do |field| %>
+      <%= poetry_input(type: "password", name: "password",
+                       **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+    <%= poetry_field_separator do %>Or continue with<% end %>
+    <%= poetry_button(variant: :outline, class: "w-full") { "Login with Google" } %>
+  <% end %>
+</div>

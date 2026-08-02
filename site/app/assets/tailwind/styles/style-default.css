@@ -709,11 +709,11 @@
 
 /* MARK: Field */
 .cn-field {
-  @apply gap-2;
+  @apply gap-2 data-[invalid=true]:text-destructive;
 }
 
 .cn-field-description {
-  @apply text-sm text-muted-foreground;
+  @apply text-sm text-muted-foreground [[data-variant=legend]+&]:-mt-1.5;
 }
 
 .cn-field-error {
@@ -722,6 +722,46 @@
 
 .cn-field-orientation-horizontal {
   @apply gap-x-3;
+}
+
+.cn-field-set {
+  @apply gap-6 has-[>.cn-field-group-choices]:gap-3 has-[>[data-slot=radio-group]]:gap-3;
+}
+
+.cn-field-legend {
+  @apply mb-3 font-medium data-[variant=legend]:text-base data-[variant=label]:text-sm;
+}
+
+.cn-field-group {
+  @apply gap-7 *:data-[slot=field-group]:gap-4;
+}
+
+.cn-field-group-choices {
+  @apply gap-3;
+}
+
+.cn-field-content {
+  @apply gap-1.5;
+}
+
+.cn-field-label {
+  @apply gap-2 leading-snug;
+}
+
+.cn-field-label-card {
+  @apply rounded-md border p-4 has-data-checked:border-primary has-data-checked:bg-primary/5 dark:has-data-checked:bg-primary/10;
+}
+
+.cn-field-title {
+  @apply gap-2 text-sm leading-snug font-medium;
+}
+
+.cn-field-separator {
+  @apply -my-2 h-5 text-sm;
+}
+
+.cn-field-separator-content {
+  @apply px-2 text-muted-foreground;
 }
 
 /* MARK: HoverCard */

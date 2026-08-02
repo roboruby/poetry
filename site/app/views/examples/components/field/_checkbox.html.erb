@@ -1,0 +1,39 @@
+<%# Checkbox runs: variant: :choices packs the horizontal fields tighter,
+    the label-sized legend names the run, and a lone toggle keeps its
+    hint stacked beside the box. %>
+<div class="w-full max-w-xs">
+  <%= poetry_field_group do %>
+    <%= poetry_fieldset(legend: "Show these items on the desktop", legend_variant: :label,
+                        hint: "Select the items you want to show.") do %>
+      <%= poetry_field_group(variant: :choices) do %>
+        <%= poetry_field(id: "field-disks", label_text: "Hard disks",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "disks", checked: true,
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= poetry_field(id: "field-external", label_text: "External disks",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "external",
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= poetry_field(id: "field-cds", label_text: "CDs, DVDs, and iPods",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "cds",
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+        <%= poetry_field(id: "field-servers", label_text: "Connected servers",
+                         orientation: :horizontal) do |field| %>
+          <%= poetry_checkbox(name: "servers",
+                              **field.control_attributes.transform_keys(&:to_sym)) %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_field_separator %>
+    <%= poetry_field(id: "field-sync", label_text: "Sync Desktop & Documents folders",
+                     hint: "Folders sync with iCloud Drive - access them from other devices.",
+                     orientation: :horizontal) do |field| %>
+      <%= poetry_checkbox(name: "sync", checked: true,
+                          **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% end %>
+  <% end %>
+</div>
