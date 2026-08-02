@@ -1,0 +1,69 @@
+<%# Every menu surface in one place: labeled groups, shortcuts, checkbox toggles,
+    a radio theme picker, and submenus nested two deep. close_on_select: false
+    keeps toggle rows from dismissing the menu. %>
+<%= poetry_dropdown_menu(align: :start) do |menu| %>
+  <% menu.with_trigger(variant: :outline) { "Complex Menu" } %>
+  <% menu.with_group do |file_menu| %>
+    <% file_menu.with_label { "File" } %>
+    <% file_menu.with_item(shortcut: "⌘N") do %><%= poetry_icon(name: :file) %>New File<% end %>
+    <% file_menu.with_item(shortcut: "⇧⌘N") do %><%= poetry_icon(name: :folder) %>New Folder<% end %>
+    <% file_menu.with_sub do |recent| %>
+      <% recent.with_trigger do %><%= poetry_icon(name: :"folder-open") %>Open Recent<% end %>
+      <% recent.with_label { "Recent Projects" } %>
+      <% recent.with_item do %><%= poetry_icon(name: :"file-code") %>Project Alpha<% end %>
+      <% recent.with_item do %><%= poetry_icon(name: :"file-code") %>Project Beta<% end %>
+      <% recent.with_sub do |more| %>
+        <% more.with_trigger do %><%= poetry_icon(name: :ellipsis) %>More Projects<% end %>
+        <% more.with_item do %><%= poetry_icon(name: :"file-code") %>Project Gamma<% end %>
+        <% more.with_item do %><%= poetry_icon(name: :"file-code") %>Project Delta<% end %>
+      <% end %>
+      <% recent.with_separator %>
+      <% recent.with_item do %><%= poetry_icon(name: :"folder-search") %>Browse...<% end %>
+    <% end %>
+    <% file_menu.with_separator %>
+    <% file_menu.with_item(shortcut: "⌘S") do %><%= poetry_icon(name: :save) %>Save<% end %>
+    <% file_menu.with_item(shortcut: "⇧⌘E") do %><%= poetry_icon(name: :download) %>Export<% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_group do |view_menu| %>
+    <% view_menu.with_label { "View" } %>
+    <% view_menu.with_checkbox_item(checked: true, close_on_select: false) do %><%= poetry_icon(name: :eye) %>Show Sidebar<% end %>
+    <% view_menu.with_checkbox_item(checked: false, close_on_select: false) do %><%= poetry_icon(name: :"panels-top-left") %>Show Status Bar<% end %>
+    <% view_menu.with_sub do |theme| %>
+      <% theme.with_trigger do %><%= poetry_icon(name: :palette) %>Theme<% end %>
+      <% theme.with_label { "Appearance" } %>
+      <% theme.with_radio_group(value: "light") do |appearance| %>
+        <% appearance.with_radio_item(value: "light") do %><%= poetry_icon(name: :sun) %>Light<% end %>
+        <% appearance.with_radio_item(value: "dark") do %><%= poetry_icon(name: :moon) %>Dark<% end %>
+        <% appearance.with_radio_item(value: "system") do %><%= poetry_icon(name: :monitor) %>System<% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_group do |account| %>
+    <% account.with_label { "Account" } %>
+    <% account.with_item(shortcut: "⇧⌘P") do %><%= poetry_icon(name: :user) %>Profile<% end %>
+    <% account.with_item do %><%= poetry_icon(name: :"credit-card") %>Billing<% end %>
+    <% account.with_sub do |settings| %>
+      <% settings.with_trigger do %><%= poetry_icon(name: :settings) %>Settings<% end %>
+      <% settings.with_label { "Preferences" } %>
+      <% settings.with_item do %><%= poetry_icon(name: :keyboard) %>Keyboard Shortcuts<% end %>
+      <% settings.with_item do %><%= poetry_icon(name: :languages) %>Language<% end %>
+      <% settings.with_sub do |alerts| %>
+        <% alerts.with_trigger do %><%= poetry_icon(name: :bell) %>Notifications<% end %>
+        <% alerts.with_label { "Notification Types" } %>
+        <% alerts.with_checkbox_item(checked: true, close_on_select: false) do %><%= poetry_icon(name: :bell) %>Push Notifications<% end %>
+        <% alerts.with_checkbox_item(checked: true, close_on_select: false) do %><%= poetry_icon(name: :mail) %>Email Notifications<% end %>
+      <% end %>
+      <% settings.with_separator %>
+      <% settings.with_item do %><%= poetry_icon(name: :shield) %>Privacy & Security<% end %>
+    <% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_group do |help| %>
+    <% help.with_item do %><%= poetry_icon(name: :"circle-question-mark") %>Help & Support<% end %>
+    <% help.with_item do %><%= poetry_icon(name: :"file-text") %>Documentation<% end %>
+  <% end %>
+  <% menu.with_separator %>
+  <% menu.with_item(variant: :destructive, shortcut: "⇧⌘Q") do %><%= poetry_icon(name: :"log-out") %>Sign Out<% end %>
+<% end %>
