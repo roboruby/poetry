@@ -1,21 +1,23 @@
-// Body scroll-lock with scrollbar-gutter compensation (an upstream review
+// Body scroll-lock with scrollbar-width compensation (an upstream review
 // finding, 2026-07-12): bare `overflow: hidden` shifts the whole layout by
 // the scrollbar width the moment an overlay opens on a scrollable page.
 // The gap is measured BEFORE locking and paid back as body padding-right.
 // Refcounted so stacked overlays (a dialog opened from a sheet) lock once
 // and restore only when the LAST one closes - per-instance saved values
 // break on out-of-order closes.
+//
+// Why not scrollbar-gutter: stable (react-aria's preference, this
+// helper's original primary)? Measured 2026-08-01 with classic
+// scrollbars: Chrome drops the viewport's rail AND its reserved gutter
+// the moment the viewport's used overflow computes to hidden - whether
+// the pair sits on the root, propagates from body, or the gutter was set
+// permanently - so the page shifted by the scrollbar width anyway (the
+// exact wiggle the strategy existed to stop). The body-padding payback
+// is the only compensation the viewport honors; its known cost
+// (position:fixed elements aren't compensated) matches the source's
+// RemoveScroll behavior.
 let locks = 0
 let previous = null
-
-// Preferred gutter strategy (react-aria's rule): `scrollbar-gutter: stable`
-// on the ROOT reserves the rail at the viewport itself, so position:fixed
-// elements (toasts, floating headers) hold still too - body padding only
-// compensates in-flow content. Feature-detected; the padding path stays as
-// the fallback.
-function supportsScrollbarGutter() {
-  return typeof CSS !== "undefined" && CSS.supports?.("scrollbar-gutter: stable") === true
-}
 
 export function lockScroll() {
   locks += 1
@@ -29,16 +31,11 @@ export function lockScroll() {
   const overflow = document.body.style.overflow
   previous = {
     overflow: overflow === "hidden" ? "" : overflow,
-    paddingRight: document.body.style.paddingRight,
-    scrollbarGutter: document.documentElement.style.scrollbarGutter
+    paddingRight: document.body.style.paddingRight
   }
   if (gap > 0) {
-    if (supportsScrollbarGutter()) {
-      document.documentElement.style.scrollbarGutter = "stable"
-    } else {
-      const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0
-      document.body.style.paddingRight = `${current + gap}px`
-    }
+    const current = parseFloat(getComputedStyle(document.body).paddingRight) || 0
+    document.body.style.paddingRight = `${current + gap}px`
   }
   document.body.style.overflow = "hidden"
 }
@@ -51,7 +48,6 @@ export function unlockScroll() {
 
   document.body.style.overflow = previous.overflow
   document.body.style.paddingRight = previous.paddingRight
-  document.documentElement.style.scrollbarGutter = previous.scrollbarGutter
   previous = null
 }
 
