@@ -58,6 +58,19 @@ module Poetry
           end
         end
 
+        # The choice-card items (variant: :card): title + description
+        # inside a selectable bordered label - the whole card toggles the
+        # radio (the upstream Choice Card recipe).
+        def choice_cards
+          render_component(name: "compute", value: "kubernetes", label: "Compute environment",
+                           class: "w-80") do |group|
+            group.with_item(value: "kubernetes", label: "Kubernetes", variant: :card,
+                            description: "Run GPU workloads on a K8s cluster.")
+            group.with_item(value: "vm", label: "Virtual Machine", variant: :card,
+                            description: "Access a cluster to run GPU workloads.")
+          end
+        end
+
         # @!endgroup
 
         # @!group Recipes

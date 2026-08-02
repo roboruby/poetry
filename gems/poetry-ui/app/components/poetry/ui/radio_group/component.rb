@@ -33,6 +33,8 @@ module Poetry
           "APG violation (ArgumentError).",
           "Pair every item with a visible label (item label: renders the Label for= pairing) - a bare " \
           "dot is not an option.",
+          "variant: :card renders the choice-card row (title + description: inside a selectable " \
+          "bordered label) - the pick-a-plan pattern; the whole card toggles the radio.",
           "NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked (the " \
           "controller writes both; agents patching DOM must too).",
           "Do not use RadioGroup for navigation or immediate actions; checking must not submit or " \
@@ -86,14 +88,40 @@ module Poetry
         part "radio-group-indicator", "Centering span holding the checked dot - hidden (the " \
                                       "native attribute, toggled by the controller) while " \
                                       "unchecked"
+        part "radio-group-card", "The choice-card row (variant: :card) - a <label> for= the " \
+                                 "radio button, so the whole card toggles; the checked " \
+                                 "treatments key on data-checked inside it"
+        part "radio-group-card-content", "Text column of a choice-card item (variant: :card) - " \
+                                         "title and description stack inside the card label"
+        part "radio-group-card-title", "The choice card's title line (the item label:)"
+        part "radio-group-card-description", "Muted copy under the choice card's title " \
+                                             "(description:)"
+
+        ITEM_VARIANTS = %i[default card].freeze
 
         # One item per option: a real button[role=radio] carrying its own
         # hidden native radio; label: renders the demo's item+Label row.
-        renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false, **options|
+        # variant: :card renders the choice-card row instead - title (+
+        # optional description:) inside a selectable bordered label, the
+        # radio pinned to the right (upstream's FieldLabel-wrapping-Field
+        # Choice Card recipe, flattened onto the label).
+        renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
+                                       description: nil, variant: :default, **options|
+          unless ITEM_VARIANTS.include?(variant)
+            raise ArgumentError,
+                  "unknown RadioGroup item variant #{variant.inspect} - known: #{ITEM_VARIANTS.join(", ")}"
+          end
+
           item_value = register_item_value!(value)
           item_id = id.presence || "#{control_id}-#{slug(item_value)}"
           item_disabled = disabled || self.disabled
           item = radio_item(item_value, item_id, item_disabled, options)
+
+          next card_row(item, item_id, label, description) if variant == :card
+
+          if description.present?
+            raise ArgumentError, "RadioGroup description: rides the choice-card form - pass variant: :card"
+          end
 
           next item if label.blank?
 
@@ -158,6 +186,31 @@ module Poetry
         # No raw user string becomes an id/selector fragment.
         def slug(value)
           value.gsub(/[^a-zA-Z0-9_-]+/, "-")
+        end
+
+        # The choice-card row: the whole card IS a label (for= the radio
+        # button, native label->button activation), title + description
+        # stacked left, the radio right. A plain <label> with its own
+        # radio-group-card slot, NOT the Label component - a nested
+        # data-component boundary would hand this subtree's part
+        # ownership to Label (the part-contract walker attributes DOM to
+        # the nearest component). The checked/bordered treatments ride
+        # the theme's cn-field-label rules off the item's data-checked
+        # inside.
+        def card_row(item, item_id, label, description)
+          raise ArgumentError, "RadioGroup card items need label: (the card title)" if label.blank?
+
+          text = content_tag(:div, "data-slot" => "radio-group-card-content", class: css(:card_content)) do
+            parts = [content_tag(:div, label, "data-slot" => "radio-group-card-title",
+                                              class: css(:card_title))]
+            if description.present?
+              parts << content_tag(:p, description, "data-slot" => "radio-group-card-description",
+                                                    class: css(:card_description))
+            end
+            safe_join(parts)
+          end
+          content_tag(:label, safe_join([text, item]),
+                      "data-slot" => "radio-group-card", "for" => item_id, class: css(:card))
         end
 
         def named?

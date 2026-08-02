@@ -208,6 +208,68 @@ module Poetry
           assert_includes item["class"], "size-5"
           refute_includes item["class"], "size-4"
         end
+
+        def render_cards(**options)
+          render_inline(Component.new(name: "compute", label: "Compute environment",
+                                      value: "kubernetes", **options)) do |group|
+            group.with_item(value: "kubernetes", label: "Kubernetes", variant: :card,
+                            description: "Run GPU workloads on a K8s cluster.")
+            group.with_item(value: "vm", label: "Virtual Machine", variant: :card)
+          end.to_html
+        end
+
+        def test_card_items_render_the_whole_card_as_the_label
+          fragment = doc(render_cards)
+          cards = fragment.css("label[data-slot=radio-group-card]")
+
+          assert_equal 2, cards.length
+          card = cards.first
+
+          # The card IS the label: for= targets the radio button, so a
+          # click anywhere on it checks via native label->button activation.
+          assert_equal card.at_css("button[role=radio]")["id"], card["for"]
+          assert_includes card["class"], "cn-field-label-card"
+          assert_equal "Kubernetes", card.at_css("[data-slot=radio-group-card-title]").text
+          assert_equal "Run GPU workloads on a K8s cluster.",
+                       card.at_css("[data-slot=radio-group-card-description]").text
+          # Text column first, radio pinned after it (upstream choice-card
+          # order) - and the button stays INSIDE the label.
+          assert card.at_css("button[role=radio][data-checked]"),
+                 "the checked treatments key on data-checked inside the card label"
+        end
+
+        def test_card_description_is_optional_but_the_title_is_not
+          card = doc(render_cards).css("label[data-slot=radio-group-card]").last
+
+          assert_equal "Virtual Machine", card.at_css("[data-slot=radio-group-card-title]").text
+          assert_nil card.at_css("[data-slot=radio-group-card-description]")
+
+          assert_raises(ArgumentError, "card without label: must teach") do
+            render_inline(Component.new(name: "x", label: "X")) do |group|
+              group.with_item(value: "a", variant: :card)
+            end
+          end
+        end
+
+        def test_description_without_card_variant_teaches
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(name: "x", label: "X")) do |group|
+              group.with_item(value: "a", label: "A", description: "text")
+            end
+          end
+
+          assert_includes error.message, "variant: :card"
+        end
+
+        def test_unknown_item_variant_teaches
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(name: "x", label: "X")) do |group|
+              group.with_item(value: "a", label: "A", variant: :tile)
+            end
+          end
+
+          assert_includes error.message, "known: default, card"
+        end
       end
     end
   end

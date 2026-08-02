@@ -28,6 +28,16 @@ module Poetry
                       input_options: { type: "email", name: "work_email" })
         end
 
+        # The container-driven layout: stacked by default, label-left /
+        # control-right once the FieldGroup container passes the md mark
+        # (the sidecar wraps this one in the FieldGroup @container scope).
+        def responsive
+          render_with(component: Component.new(id: "field-display-name", label_text: "Display name",
+                                               hint: "Shown on your public profile.",
+                                               orientation: :responsive),
+                      input_options: { name: "display_name" }, group: true)
+        end
+
         # The boolean-control layout: control left, label + hint stacked
         # right, box centered on the label line (the checkbox/switch field
         # pattern upstream demos with orientation=horizontal).

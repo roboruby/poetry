@@ -28,6 +28,22 @@ module Poetry
         # The item+Label pairing row (radio-group-demo parity) rendered
         # when an item passes label:.
         element :row, "flex items-center gap-3"
+
+        # The choice-card row (item variant: :card): the card IS the
+        # label, wearing the Field family's cn-field-label hooks so one
+        # theme rule styles choice cards wherever they appear. Upstream
+        # nests FieldLabel > Field > FieldContent; poetry flattens the
+        # row onto the label (cn-field-label-card carries the border/
+        # padding the nested [data-slot=field] selectors keyed upstream).
+        # cn-label rides along because the card is a plain <label>, not
+        # the Label component (part-ownership: a nested data-component
+        # boundary would hand the card slots to Label).
+        element :card, "cn-label cn-field-label cn-field-label-card flex w-full items-center " \
+                       "select-none has-data-disabled:opacity-50"
+        element :card_content, "cn-field-content group/field-content flex flex-1 flex-col " \
+                               "leading-snug"
+        element :card_title, "cn-field-title flex w-fit items-center"
+        element :card_description, "cn-field-description"
       end
     end
   end

@@ -45,8 +45,24 @@ module Poetry
         def test_orientation_is_a_registry_surfaced_style
           orientation = Component.prop_definitions[:styles].find { |style| style[:name] == :orientation }
 
-          assert_equal %i[vertical horizontal], orientation[:variants]
+          assert_equal %i[vertical horizontal responsive], orientation[:variants]
           assert_equal :vertical, orientation[:default]
+        end
+
+        def test_responsive_is_container_gated_and_stacked_by_default
+          root = doc(render_field(orientation: :responsive)).at_css("[data-slot=field]")
+
+          assert_equal "responsive", root["data-orientation"]
+          assert_includes root["class"], "cn-field-orientation-responsive"
+          # Every layout flip rides the FieldGroup container query - below
+          # the md mark (or outside any field-group scope) the field is a
+          # plain vertical stack, so all placement classes carry the
+          # container prefix and none appear bare.
+          assert_includes root["class"], "@md/field-group:grid-cols-[1fr_auto]"
+          assert_includes root["class"], "@md/field-group:[&>[data-slot=label]]:col-start-1"
+          assert_includes root["class"], "@md/field-group:[&>[data-slot=field-hint]]:col-start-1"
+          refute_match(/(?<!field-group:)grid-cols-\[1fr_auto\]/, root["class"],
+                       "responsive placement must stay behind the @container gate")
         end
 
         def test_the_aria_quartet_survives_orientation

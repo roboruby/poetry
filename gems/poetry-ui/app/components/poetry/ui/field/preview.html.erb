@@ -1,7 +1,8 @@
 <%# Shared template for every Field preview example: render the field with
     a real Input wired through control_attributes - the canonical host
-    composition (see eval/arms/form_field/poetry.html.erb). %>
-<div class="p-4">
+    composition (see eval/arms/form_field/poetry.html.erb). group: wraps
+    the field in the FieldGroup @container scope responsive fields key on. %>
+<% field_markup = capture do %>
   <%= render component do |field| %>
     <% if local_assigns[:checkbox_options] %>
       <%= render Poetry::Ui::Checkbox::Component.new(**checkbox_options,
@@ -10,5 +11,14 @@
       <%= render Poetry::Ui::Input::Component.new(**input_options,
                                                   **field.control_attributes.transform_keys(&:to_sym)) %>
     <% end %>
+  <% end %>
+<% end %>
+<div class="p-4">
+  <% if local_assigns[:group] %>
+    <%= render Poetry::Ui::FieldGroup::Component.new do %>
+      <%= field_markup %>
+    <% end %>
+  <% else %>
+    <%= field_markup %>
   <% end %>
 </div>

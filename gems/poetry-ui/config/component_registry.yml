@@ -3580,6 +3580,7 @@ components:
       variants:
       - vertical
       - horizontal
+      - responsive
       default: vertical
       required: true
     options:
@@ -3603,13 +3604,16 @@ components:
     elements:
     - hint
     - error
-    capsule: c8d4718aa305
+    capsule: 85018510c13c
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
       <p>.'
     - 'orientation: :horizontal is the boolean-control layout (checkbox/switch left,
       label + hint stacked right) - text inputs and groups stay vertical.'
+    - 'orientation: :responsive stacks by default and flips label-left / control-right
+      once its poetry_field_group container passes the md mark - the settings-page
+      recipe (it needs that FieldGroup ancestor to measure against).'
     parts:
     - name: field
       description: The quartet's grid root - label, control, hint, and error stack
@@ -3626,6 +3630,7 @@ components:
         values:
         - vertical
         - horizontal
+        - responsive
     - name: field-hint
       description: The hint <p> - its id lands in the control's aria-describedby
     - name: field-error
@@ -3635,6 +3640,103 @@ components:
       description: A nested Checkbox's hidden native input - the toggle renders as
         a wrapper-free fragment, so its sibling form store sits directly in the field's
         DOM (the horizontal boolean-control layout)
+  poetry/ui/field_group:
+    class_name: Poetry::Ui::FieldGroup::Component
+    identifier: poetry--ui--field_group
+    bem_block: poetry-ui-field_group
+    styles:
+    - name: variant
+      type: symbol
+      variants:
+      - default
+      - choices
+      default: default
+      required: true
+    options: []
+    slots: []
+    elements: []
+    capsule: 3a6d6c901a2d
+    agent_rules:
+    - Stack Fields (and Fieldsets) with poetry_field_group - the theme owns the rhythm;
+      never hand-space a form column with gap utilities.
+    - 'variant: :choices packs a run of horizontal checkbox/switch fields tighter
+      (the upstream checkbox-group form).'
+    - 'Field''s orientation: :responsive is container-driven: it needs a FieldGroup
+      ancestor to measure against - without one it stays stacked.'
+    parts:
+    - name: field-group
+      description: The stacking container - fields, fieldsets, and separators render
+        as direct children; also the @container responsive fields measure against
+  poetry/ui/field_separator:
+    class_name: Poetry::Ui::FieldSeparator::Component
+    identifier: poetry--ui--field_separator
+    bem_block: poetry-ui-field_separator
+    styles: []
+    options: []
+    slots: []
+    elements:
+    - content
+    capsule: 568b511b71b3
+    agent_rules:
+    - Divides stacked fields inside a poetry_field_group - not a general-purpose rule
+      (that is poetry_separator).
+    - Pass a block for the inline caption form ("Or continue with") - the caption
+      sits on the line, backed by the page background.
+    parts:
+    - name: field-separator
+      description: The divider row - a decorative Separator drawn across it
+      states:
+      - attr: data-content
+        condition: always - whether the inline caption renders
+        values:
+        - 'true'
+        - 'false'
+    - name: field-separator-content
+      description: The inline caption span (block content) - sits on the line, backed
+        by the page background
+  poetry/ui/fieldset:
+    class_name: Poetry::Ui::Fieldset::Component
+    identifier: poetry--ui--fieldset
+    bem_block: poetry-ui-fieldset
+    styles: []
+    options:
+    - name: hint
+      type: string
+    - name: legend
+      type: string
+      required: true
+    - name: legend_variant
+      type: symbol
+      variants:
+      - legend
+      - label
+      default: legend
+    slots: []
+    elements:
+    - legend
+    - hint
+    capsule: ded27f98b84a
+    agent_rules:
+    - 'A run of related fields gets poetry_fieldset with legend: - the group''s accessible
+      name (a bare <div> around fields tells AT nothing).'
+    - 'legend_variant: :label renders the legend at label size - use it when the group
+      is one setting explained by its rows (checkbox/switch runs).'
+    - 'hint: is the muted description under the legend; per-field hints stay on the
+      fields.'
+    - Stack the fields inside with poetry_field_group - never hand-spaced flex columns.
+    parts:
+    - name: field-set
+      description: The <fieldset> root - legend, optional hint, then the fields
+    - name: field-legend
+      description: The <legend> - the group's accessible name
+      states:
+      - attr: data-variant
+        condition: always - the legend's size treatment
+        values:
+        - legend
+        - label
+    - name: field-set-hint
+      description: Muted description under the legend (hint:)
   poetry/ui/file_input:
     class_name: Poetry::Ui::FileInput::Component
     identifier: poetry--ui--file_input
@@ -5737,7 +5839,11 @@ components:
     - dot
     - input
     - row
-    capsule: 7c28cae8a192
+    - card
+    - card_content
+    - card_title
+    - card_description
+    capsule: fa7a3e1f8bcb
     controllers:
     - identifier: poetry--core--radio-group
       targets:
@@ -5768,6 +5874,8 @@ components:
       is an APG violation (ArgumentError).'
     - 'Pair every item with a visible label (item label: renders the Label for= pairing)
       - a bare dot is not an option.'
+    - 'variant: :card renders the choice-card row (title + description: inside a selectable
+      bordered label) - the pick-a-plan pattern; the whole card toggles the radio.'
     - NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked
       (the controller writes both; agents patching DOM must too).
     - Do not use RadioGroup for navigation or immediate actions; checking must not
@@ -5801,6 +5909,17 @@ components:
     - name: radio-group-indicator
       description: Centering span holding the checked dot - hidden (the native attribute,
         toggled by the controller) while unchecked
+    - name: radio-group-card
+      description: 'The choice-card row (variant: :card) - a <label> for= the radio
+        button, so the whole card toggles; the checked treatments key on data-checked
+        inside it'
+    - name: radio-group-card-content
+      description: 'Text column of a choice-card item (variant: :card) - title and
+        description stack inside the card label'
+    - name: radio-group-card-title
+      description: The choice card's title line (the item label:)
+    - name: radio-group-card-description
+      description: Muted copy under the choice card's title (description:)
   poetry/ui/resizable:
     class_name: Poetry::Ui::Resizable::Component
     identifier: poetry--ui--resizable
@@ -8496,6 +8615,9 @@ helper_args:
   poetry_dropdown_menu: 0
   poetry_empty: 0
   poetry_field: 0
+  poetry_field_group: 0
+  poetry_field_separator: 0
+  poetry_fieldset: 0
   poetry_file_input: 0
   poetry_hover_card: 0
   poetry_icon: 0

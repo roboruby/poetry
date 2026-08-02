@@ -15,10 +15,13 @@ module Poetry
           "Wire the control with field.control_attributes - never hand-write aria-describedby.",
           "Error text arrives via error: (from model errors upstream) - never a bare red <p>.",
           "orientation: :horizontal is the boolean-control layout (checkbox/switch left, " \
-          "label + hint stacked right) - text inputs and groups stay vertical."
+          "label + hint stacked right) - text inputs and groups stay vertical.",
+          "orientation: :responsive stacks by default and flips label-left / control-right " \
+          "once its poetry_field_group container passes the md mark - the settings-page " \
+          "recipe (it needs that FieldGroup ancestor to measure against)."
         ].freeze
 
-        ORIENTATIONS = %i[vertical horizontal].freeze
+        ORIENTATIONS = %i[vertical horizontal responsive].freeze
 
         # Upstream fieldVariants' orientation axis. Horizontal is the
         # boolean-control pattern: the control lands in the first grid

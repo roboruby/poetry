@@ -70,5 +70,26 @@
         <% end %>
       <% end %>
     </div>
+    <%# A run of related fields is a Fieldset (legend names the group);
+        FieldGroup owns the stacking rhythm and the @container scope
+        responsive fields key on; FieldSeparator divides the runs. %>
+    <div class="max-w-md px-4 pb-4">
+      <%= poetry_fieldset(legend: "Notifications", legend_variant: :label,
+                          hint: "Where deploy alerts land.") do %>
+        <%= poetry_field_group(variant: :choices) do %>
+          <%= poetry_field(id: "shell-notify-email", label_text: "Email",
+                           orientation: :horizontal) do |field| %>
+            <%= poetry_checkbox(name: "notify_email", checked: true,
+                                **field.control_attributes.transform_keys(&:to_sym)) %>
+          <% end %>
+          <%= poetry_field_separator %>
+          <%= poetry_field(id: "shell-notify-slack", label_text: "Slack",
+                           orientation: :horizontal) do |field| %>
+            <%= poetry_checkbox(name: "notify_slack",
+                                **field.control_attributes.transform_keys(&:to_sym)) %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
   <% end %>
 <% end %>

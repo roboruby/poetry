@@ -22,7 +22,8 @@ module Poetry
                       poetry/ui/deferred poetry/ui/dialog poetry/ui/drawer
                       poetry/ui/dropdown_menu
                       poetry/ui/empty
-                      poetry/ui/field poetry/ui/file_input
+                      poetry/ui/field poetry/ui/field_group poetry/ui/field_separator
+                      poetry/ui/fieldset poetry/ui/file_input
                       poetry/ui/hover_card
                       poetry/ui/icon poetry/ui/input poetry/ui/input_group poetry/ui/input_otp poetry/ui/item
                       poetry/ui/kbd

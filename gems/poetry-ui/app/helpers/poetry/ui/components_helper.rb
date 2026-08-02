@@ -560,6 +560,24 @@ module Poetry
         render(Poetry::Ui::Field::Component.new(**), &)
       end
 
+      # The Field family's group layer: a run of related fields inside a
+      # real <fieldset>, named by legend: (a real <legend>).
+      def poetry_fieldset(**, &)
+        render(Poetry::Ui::Fieldset::Component.new(**), &)
+      end
+
+      # Stacks fields/fieldsets with the theme's rhythm; also the
+      # @container scope Field's orientation: :responsive measures against.
+      def poetry_field_group(**, &)
+        render(Poetry::Ui::FieldGroup::Component.new(**), &)
+      end
+
+      # Divider between stacked fields; pass a block for the inline
+      # caption form ("Or continue with").
+      def poetry_field_separator(**, &)
+        render(Poetry::Ui::FieldSeparator::Component.new(**), &)
+      end
+
       # Void control (no content block) - the label is EXTERNAL (Label/Field
       # for= the button id) or label: (the aria-label fallback).
       def poetry_checkbox(**)
