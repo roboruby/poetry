@@ -37,11 +37,19 @@ export default class DrawerController extends DialogController {
     // Source parity: modal={false} opens with show() instead of
     // showModal() - no top layer, no ::backdrop, no focus trap, no
     // scroll lock. The page behind stays fully interactive.
-    modal: { type: Boolean, default: true }
+    modal: { type: Boolean, default: true },
+    // Source parity: snapPoints - preset resting heights for a bottom
+    // sheet (direction down only), ascending: fractions of the full
+    // height (0..1] or CSS lengths ("31rem", "400px"). The popup runs
+    // full-height (the dictionary's data-snap-points sizing) and
+    // --drawer-snap-point-offset hides the rest; opens at the first
+    // point, drags move between points, below the first dismisses.
+    snapPoints: { type: Array, default: [] }
   }
 
   #swipe = null
   #closing = false
+  #snapIndex = 0
 
   open() {
     if (this.modalValue) {
@@ -54,6 +62,9 @@ export default class DrawerController extends DialogController {
       // through the instance #locked flag when nothing was locked.
       this.dialogTarget.show()
     }
+    // The first snap offset must be in place BEFORE the enter transition
+    // starts, so the sheet slides up to its compact peek, not to full.
+    if (this.#snapping()) this.#applySnap(0)
     enterPresence(this.dialogTarget)
   }
 
@@ -115,10 +126,14 @@ export default class DrawerController extends DialogController {
     if (!swipe || event.pointerId !== swipe.pointerId) return
 
     const start = this.#axis() === "y" ? swipe.startY : swipe.startX
-    const movement = Math.max(0, this.#sign() * (this.#along(event) - start))
+    // Snap-pointed sheets drag BOTH ways: negative movement (up to the
+    // current offset) expands toward fuller points. Plain drawers keep
+    // the toward-dismissal clamp.
+    const floor = this.#snapping() ? -this.#currentSnapOffset() : 0
+    const movement = Math.max(floor, this.#sign() * (this.#along(event) - start))
 
     if (!swipe.dragging) {
-      if (movement < SWIPE_SLOP) return
+      if (Math.abs(movement) < SWIPE_SLOP) return
 
       swipe.dragging = true
       this.dialogTarget.setAttribute("data-swiping", "")
@@ -141,6 +156,7 @@ export default class DrawerController extends DialogController {
 
     this.#swipe = null
     if (!swipe.dragging) return
+    if (this.#snapping()) return this.#settleSnap(swipe)
 
     const progress = swipe.movement / this.#size()
 
@@ -167,6 +183,79 @@ export default class DrawerController extends DialogController {
     this.#writeSwipeVars(0)
   }
 
+  // --- snap points -----------------------------------------------------------
+
+  #snapping() {
+    return this.directionValue === "down" && this.snapPointsValue.length > 0
+  }
+
+  // A point is a fraction of the full (100dvh) height, or a CSS length
+  // in px/rem (the source's ["31rem", 1] vocabulary).
+  #snapVisible(point, height) {
+    if (typeof point === "number") return point * height
+
+    const value = parseFloat(point)
+    if (String(point).endsWith("rem")) {
+      const rootSize = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16
+      return value * rootSize
+    }
+    return value
+  }
+
+  // Hidden-height offsets, one per point: index 0 (the compact peek)
+  // hides the most; the last point shows the most.
+  #snapOffsets() {
+    const height = this.#size()
+    return this.snapPointsValue.map((point) => {
+      return Math.max(0, height - Math.min(height, this.#snapVisible(point, height)))
+    })
+  }
+
+  #currentSnapOffset() {
+    return parseFloat(this.dialogTarget.style.getPropertyValue("--drawer-snap-point-offset")) || 0
+  }
+
+  #applySnap(index) {
+    this.#snapIndex = index
+    this.dialogTarget.style.setProperty("--drawer-snap-point-offset", `${this.#snapOffsets()[index]}px`)
+  }
+
+  // Release physics between points: a flick moves one point in its
+  // direction (past the first point -> dismiss); a slow release settles
+  // on the nearest point, or dismisses once it sits past half the
+  // compact peek's visible height (the plain drawer's threshold, taken
+  // against the peek rather than the full sheet).
+  #settleSnap(swipe) {
+    const height = this.#size()
+    const offsets = this.#snapOffsets()
+    const position = this.#currentSnapOffset() + swipe.movement
+    const peekVisible = Math.max(1, height - offsets[0])
+    let target
+
+    if (Math.abs(swipe.velocity) >= DISMISS_VELOCITY) {
+      target = this.#snapIndex + (swipe.velocity > 0 ? -1 : 1)
+    } else {
+      target = offsets.reduce((best, offset, index) => {
+        return Math.abs(position - offset) < Math.abs(position - offsets[best]) ? index : best
+      }, 0)
+      if (position - offsets[0] >= peekVisible * DISMISS_PROGRESS) target = -1
+    }
+
+    this.dialogTarget.removeAttribute("data-swiping")
+    if (target < 0) {
+      const progress = Math.min(1, Math.max(0, (position - offsets[0]) / peekVisible))
+      const strength = Math.max(MIN_STRENGTH, Math.min(1, 1 - progress))
+      this.dialogTarget.style.setProperty("--drawer-swipe-strength", String(strength))
+      this.close()
+    } else {
+      const index = Math.min(target, offsets.length - 1)
+      requestAnimationFrame(() => {
+        this.#applySnap(index)
+        this.#writeSwipeVars(0)
+      })
+    }
+  }
+
   // --- geometry --------------------------------------------------------------
 
   #axis() {
@@ -190,7 +279,14 @@ export default class DrawerController extends DialogController {
   #writeSwipeVars(movement) {
     const dialog = this.dialogTarget
     dialog.style.setProperty(`--drawer-swipe-movement-${this.#axis()}`, `${movement}px`)
-    dialog.style.setProperty("--drawer-swipe-progress", String(movement / this.#size()))
+    // Progress measures travel toward DISMISSAL only: for snap-pointed
+    // sheets that travel starts at the compact peek (expanded positions
+    // clamp to 0, so the backdrop never fades while snapping fuller);
+    // for plain drawers the base is 0 and this stays movement / size.
+    const dismissBase = this.#snapping() ? this.#snapOffsets()[0] : 0
+    const travel = Math.max(1, this.#size() - dismissBase)
+    const progress = (this.#currentSnapOffset() + movement - dismissBase) / travel
+    dialog.style.setProperty("--drawer-swipe-progress", String(Math.min(1, Math.max(0, progress))))
   }
 
   #resetSwipeVars() {
@@ -199,6 +295,7 @@ export default class DrawerController extends DialogController {
     dialog.style.removeProperty("--drawer-swipe-movement-y")
     dialog.style.removeProperty("--drawer-swipe-progress")
     dialog.style.removeProperty("--drawer-swipe-strength")
+    dialog.style.removeProperty("--drawer-snap-point-offset")
     dialog.removeAttribute("data-swiping")
   }
 

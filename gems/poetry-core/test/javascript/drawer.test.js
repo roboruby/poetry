@@ -17,10 +17,11 @@ import { resetScrollLock } from "@poetry/controllers/helpers/scroll_lock"
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const el = (id) => document.getElementById(id)
 
-const markup = ({ direction = "down", modal = true, inner = "" } = {}) => `
+const markup = ({ direction = "down", modal = true, snap = null, inner = "" } = {}) => `
   <div id="root" data-controller="poetry--core--drawer"
        data-poetry--core--drawer-direction-value="${direction}"
-       data-poetry--core--drawer-modal-value="${modal}">
+       data-poetry--core--drawer-modal-value="${modal}"
+       ${snap ? `data-poetry--core--drawer-snap-points-value='${JSON.stringify(snap)}'` : ""}>
     <button id="trigger" type="button" data-action="click->poetry--core--drawer#open">Open</button>
     <dialog id="dialog" data-slot="drawer-content" data-closed
             data-poetry--core--drawer-target="dialog"
@@ -241,5 +242,95 @@ describe("poetry--core--drawer non-modal", () => {
     await nextFrame()
 
     expect(el("dialog").hasAttribute("open")).toBe(true)
+  })
+})
+
+// Snap points (source parity: snapPoints) - a down sheet with preset
+// resting heights: opens at the compact peek, drags BOTH ways between
+// points, dismisses only past the peek's half. Height 400 here, points
+// [0.25, 1] -> offsets [300, 0]; "5rem" = 80px under the 16px root.
+describe("poetry--core--drawer snap points", () => {
+  let application
+
+  const settle = async () => {
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()))
+    await nextFrame()
+  }
+
+  const drag = async (movements) => {
+    const [[startY, startTime = 0], ...rest] = movements
+    pointer("pointerdown", el("handle"), { y: startY, time: startTime })
+    for (const [y, time] of rest) {
+      pointer("pointermove", el("dialog"), { y, time })
+    }
+  }
+
+  const mountSnap = async (snap) => {
+    application = await mount(markup({ snap }))
+    Object.defineProperty(el("dialog"), "offsetHeight", { value: 400, configurable: true })
+    el("trigger").click()
+    await nextFrame()
+  }
+
+  beforeEach(() => {
+    return async () => {
+      application.stop()
+      document.body.replaceChildren()
+      await nextFrame()
+    }
+  })
+
+  it("opens at the first snap point", async () => {
+    await mountSnap([0.25, 1])
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("300px")
+    // Progress stays unwritten until a drag - the backdrop calc's
+    // var(--drawer-swipe-progress, 0) fallback reads it as zero.
+    expect(dialog.style.getPropertyValue("--drawer-swipe-progress")).toBe("")
+  })
+
+  it("CSS-length points resolve px and rem against the root font size", async () => {
+    await mountSnap(["5rem", "150px"])
+
+    expect(el("dialog").style.getPropertyValue("--drawer-snap-point-offset")).toBe("320px")
+  })
+
+  it("an up-drag settles on the nearest fuller point", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[350, 0], [100, 40]]) // -250px of the 300px offset
+    pointer("pointerup", el("dialog"), { y: 100, time: 900 }) // slow release
+    await settle()
+
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("0px")
+    expect(dialog.style.getPropertyValue("--drawer-swipe-movement-y")).toBe("0px")
+    expect(dialog.hasAttribute("open")).toBe(true)
+  })
+
+  it("a down-flick from the full point steps down one snap, never out", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[350, 0], [100, 40]])
+    pointer("pointerup", el("dialog"), { y: 100, time: 900 })
+    await settle()
+
+    await drag([[100, 1000], [180, 1010]]) // fast: 80px in 10ms
+    pointer("pointerup", el("dialog"), { y: 180, time: 1010 })
+    await settle()
+
+    const dialog = el("dialog")
+
+    expect(dialog.style.getPropertyValue("--drawer-snap-point-offset")).toBe("300px")
+    expect(dialog.hasAttribute("open")).toBe(true)
+  })
+
+  it("released past half the peek dismisses", async () => {
+    await mountSnap([0.25, 1])
+    await drag([[300, 0], [360, 200]]) // +60 of the 100px peek, slow
+    pointer("pointerup", el("dialog"), { y: 360, time: 900 })
+    await settle()
+
+    expect(el("dialog").hasAttribute("open")).toBe(false)
   })
 })

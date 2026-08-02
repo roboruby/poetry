@@ -448,6 +448,10 @@
       "modal": {
         "type": "Boolean",
         "default": true
+      },
+      "snapPoints": {
+        "type": "Array",
+        "default": []
       }
     },
     "classes": [],
