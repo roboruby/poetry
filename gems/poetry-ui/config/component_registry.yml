@@ -4037,7 +4037,7 @@ components:
     slots: []
     description: A form control for entering a single line of text.
     elements: []
-    capsule: 64b28e72ead3
+    capsule: 6c6f930e4e44
     controllers:
     - identifier: poetry--core--mask
       targets: []

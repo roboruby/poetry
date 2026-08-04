@@ -31,6 +31,9 @@ module Poetry
           # flat quartet DOM. Outside a @container/field-group scope the
           # query never fires and the field stays vertical (upstream
           # parity: "container-aware parents").
+          # rubocop:disable Layout/LineLength -- each line is one indivisible
+          # utility token, and Tailwind scans this literal source (an
+          # interpolated shared prefix would silently drop the CSS).
           responsive: "cn-field-orientation-responsive " \
                       "@md/field-group:grid-cols-[1fr_auto] " \
                       "@md/field-group:[&>[data-slot=label]]:col-start-1 " \
@@ -42,6 +45,7 @@ module Poetry
                       "@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:row-start-1 " \
                       "@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:row-span-2 " \
                       "@md/field-group:[&>:not([data-slot=label],[data-slot=field-hint],[data-slot=field-error])]:self-center"
+          # rubocop:enable Layout/LineLength
         }
 
         element :hint, "cn-field-description"
