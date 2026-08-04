@@ -61,6 +61,22 @@ module Poetry
           assert_nil trigger["aria-describedby"]
         end
 
+        def test_variant_trigger_renders_through_button_but_stays_a_real_link
+          html = render_card do |card|
+            card.with_trigger(href: "https://github.com/nextjs", variant: :outline) { "Left" }
+            "This hover card appears on the left side of the trigger."
+          end
+          trigger = doc(html).css('a[data-slot="hover-card-trigger"]').first
+
+          assert trigger, "the button-styled trigger is STILL an <a> (Button's href-implies-anchor)"
+          assert_equal "https://github.com/nextjs", trigger["href"]
+          assert_includes trigger["class"], "cn-button-variant-outline"
+          # The full hover-card wiring rides along untouched.
+          assert_equal "anchor", trigger["data-poetry--core--popper-target"]
+          assert_includes trigger["data-action"], "pointerenter->poetry--core--hover-card#pointerEnter"
+          assert_nil trigger["aria-haspopup"]
+        end
+
         def test_content_is_a_role_less_hidden_panel_with_the_structural_id_pair
           html = render_card
           trigger = doc(html).css('[data-slot="hover-card-trigger"]').first

@@ -3886,6 +3886,8 @@ components:
       many: false
       setter_args:
         trigger: 0
+      yieldless:
+      - trigger
     description: A card that reveals preview content when its trigger is hovered.
     elements:
     - content
@@ -3934,8 +3936,9 @@ components:
       a hover card MUST exist at the trigger link''s destination (or another keyboard/touch-reachable
       surface). The card is pointer-only enrichment - keyboard and touch users never
       see inside it.'
-    - The trigger must be a REAL link with a real href - it is the fallback, the touch
-      path, and the keyboard path all at once.
+    - 'The trigger must be a REAL link with a real href - it is the fallback, the
+      touch path, and the keyboard path all at once. For a button LOOK, pass variant:/size:
+      (renders through Button, still an <a> via href:) - never swap the tag to :button.'
     - NO interactive elements inside the card - they get tabindex=-1 stripped and
       become pointer-only traps. Actions belong in a Popover or at the destination.
     - Don't add aria-expanded/haspopup to the trigger - advertising an unreachable

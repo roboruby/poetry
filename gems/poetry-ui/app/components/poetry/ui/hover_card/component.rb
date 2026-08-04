@@ -34,7 +34,8 @@ module Poetry
           "MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). " \
           "The card is pointer-only enrichment - keyboard and touch users never see inside it.",
           "The trigger must be a REAL link with a real href - it is the fallback, the touch path, and " \
-          "the keyboard path all at once.",
+          "the keyboard path all at once. For a button LOOK, pass variant:/size: (renders through " \
+          "Button, still an <a> via href:) - never swap the tag to :button.",
           "NO interactive elements inside the card - they get tabindex=-1 stripped and become " \
           "pointer-only traps. Actions belong in a Popover or at the destination.",
           "Don't add aria-expanded/haspopup to the trigger - advertising an unreachable surface is " \
@@ -95,7 +96,12 @@ module Poetry
         # aria-haspopup/expanded/describedby - the card is invisible to
         # the accessibility tree on purpose. Built as a lazy anatomy part
         # (rendered at render time, not at with_trigger time).
-        renders_one :trigger, lambda { |href: nil, tag: :a, **options|
+        #
+        # variant:/size: route through Button::Component (the tooltip
+        # convention) - Button's href-implies-anchor keeps the trigger a
+        # REAL <a> wearing button styling, so the reachable-elsewhere
+        # contract holds (the upstream sides demo look, contract intact).
+        renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
           @trigger_href = href
           attrs = {
             "id" => trigger_id, "data-slot" => "hover-card-trigger"
@@ -103,6 +109,10 @@ module Poetry
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
+          if options.key?(:variant) || options.key?(:size)
+            next Button::Component.new(href: href, **attrs, **options, &block)
+          end
+
           attrs["href"] = href if href.present?
           Trigger.new(tag_name: tag, attributes: attrs.merge(options))
         }
