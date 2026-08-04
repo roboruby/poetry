@@ -699,6 +699,10 @@ ease-linear
 empty:hidden
 end-2
 field-sizing-content
+file:bg-transparent
+file:border-0
+file:inline-flex
+file:text-foreground
 fill-current
 fill-foreground
 fixed
