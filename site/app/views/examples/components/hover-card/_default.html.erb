@@ -2,7 +2,7 @@
     so the card feels instant on a lone trigger). Real pages with inline
     text links want the 600ms default back - accidental opens while
     mousing across prose feel broken. %>
-<%= poetry_hover_card(open_delay: 10, close_delay: 100, content_class: "flex w-64 flex-col gap-0.5 text-sm") do |card| %>
+<%= poetry_hover_card(open_delay: 10, close_delay: 100, content_class: "flex w-64 flex-col gap-0.5") do |card| %>
   <% card.with_trigger(href: "https://github.com/nextjs", class: "text-sm font-medium underline-offset-4 hover:underline") { "Hover Here" } %>
   <div class="font-semibold">@nextjs</div>
   <div>The React Framework - created and maintained by @vercel.</div>
