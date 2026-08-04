@@ -28,9 +28,9 @@ module Poetry
           # ONE shared Attributes instance: token-concatenated, not overwritten.
           assert_equal "poetry--core--hover-card poetry--core--popper", root["data-controller"]
           assert_equal "false", root["data-poetry--core--hover-card-open-value"]
-          # Radix Root defaults kept: openDelay 700 / closeDelay 300 (the
-          # closeDelay IS the grace window - no polygon at these delays).
-          assert_equal "700", root["data-poetry--core--hover-card-open-delay-value"]
+          # Base UI PreviewCard defaults: openDelay 600 / closeDelay 300
+          # (the closeDelay IS the grace window - no polygon at these delays).
+          assert_equal "600", root["data-poetry--core--hover-card-open-delay-value"]
           assert_equal "300", root["data-poetry--core--hover-card-close-delay-value"]
           assert_equal "bottom", root["data-poetry--core--popper-side-value"]
           assert_equal "center", root["data-poetry--core--popper-align-value"]

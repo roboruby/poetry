@@ -3869,7 +3869,7 @@ components:
       default: false
     - name: open_delay
       type: integer
-      default: 700
+      default: 600
     - name: side
       type: symbol
       variants:

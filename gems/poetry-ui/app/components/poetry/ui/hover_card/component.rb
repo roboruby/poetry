@@ -48,7 +48,7 @@ module Poetry
         # hidden until hover, so the fetch fires on first open for free;
         # the component block (if any) becomes the frame's placeholder.
         option :defer, :string
-        option :open_delay, :integer, default: 700 # Radix Root default (shadcn passes nothing)
+        option :open_delay, :integer, default: 600 # Base UI PreviewCard OPEN_DELAY
         option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
         option :side, :symbol, default: :bottom
         option :align, :symbol, default: :center # shadcn Content default
