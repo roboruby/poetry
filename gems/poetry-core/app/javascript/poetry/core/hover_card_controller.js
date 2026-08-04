@@ -5,9 +5,9 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
 // The HoverCard controller (the popper-consumer trio's thinnest machine):
-// pointer-only enrichment behind a LINK. Two timers (open 700 / close 300
-// over the trigger+content pair, re-enter cancels - the grace window, no
-// polygon: Radix HoverCard's own mechanism), the touch double-guard
+// pointer-only enrichment behind a LINK. Two timers (open 600 / close 300,
+// Base UI PreviewCard's OPEN_DELAY/CLOSE_DELAY, over the trigger+content
+// pair, re-enter cancels - the grace window, no polygon), the touch double-guard
 // (pointerType 'touch' no-ops AND touchstart preventDefaults so a tap can
 // never synthesize a focus-open - a tap just navigates the link), the focus
 // mirror (trigger focus opens immediately / blur closes - a keyboard user
@@ -37,7 +37,7 @@ export default class HoverCardController extends Controller {
 
   static values = {
     open: { type: Boolean, default: false },
-    openDelay: { type: Number, default: 700 },
+    openDelay: { type: Number, default: 600 },
     closeDelay: { type: Number, default: 300 }
   }
 

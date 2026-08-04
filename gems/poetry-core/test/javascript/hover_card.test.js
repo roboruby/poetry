@@ -37,7 +37,7 @@ const record = (type, target) => {
   return seen
 }
 
-const markup = ({ open = false, openDelay = 700, closeDelay = 300 } = {}) => `
+const markup = ({ open = false, openDelay = 600, closeDelay = 300 } = {}) => `
   <div id="root" data-slot="hover-card" data-component="hover-card"
        data-controller="poetry--core--hover-card"
        data-poetry--core--hover-card-open-value="${open}"
@@ -80,7 +80,7 @@ describe("poetry--core--hover-card", () => {
     await nextFrame()
   }
 
-  describe("the pointer path (700/300 Radix defaults)", () => {
+  describe("the pointer path (600/300 Base UI PreviewCard defaults)", () => {
     it("pointerenter opens after open_delay: data-open, the dismissable token, the strip, poetry:hover-card:open", async () => {
       await mount()
       const opens = record("poetry:hover-card:open", el("root"))
@@ -88,7 +88,7 @@ describe("poetry--core--hover-card", () => {
       vi.useFakeTimers()
       pointer(el("hc-trigger"), "pointerenter")
 
-      await vi.advanceTimersByTimeAsync(699)
+      await vi.advanceTimersByTimeAsync(599)
       expect(el("hc-content").hasAttribute("data-closed")).toBe(true)
 
       await vi.advanceTimersByTimeAsync(1)
@@ -107,7 +107,7 @@ describe("poetry--core--hover-card", () => {
 
       vi.useFakeTimers()
       pointer(el("hc-trigger"), "pointerenter")
-      await vi.advanceTimersByTimeAsync(700)
+      await vi.advanceTimersByTimeAsync(600)
 
       pointer(el("hc-trigger"), "pointerleave")
       await vi.advanceTimersByTimeAsync(299)

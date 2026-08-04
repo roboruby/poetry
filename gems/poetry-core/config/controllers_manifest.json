@@ -546,7 +546,7 @@
       },
       "openDelay": {
         "type": "Number",
-        "default": 700
+        "default": 600
       },
       "closeDelay": {
         "type": "Number",
