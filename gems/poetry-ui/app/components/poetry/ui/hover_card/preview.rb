@@ -45,7 +45,9 @@ module Poetry
         def profile_example(**options)
           render_component(content_class: "w-80", **options) do |card|
             card.with_trigger(href: "https://github.com/nextjs", class: "text-sm font-medium underline-offset-4 hover:underline") { "@nextjs" }
-            tag.div(class: "flex flex-col gap-1 text-sm") do
+            # No text size here - the card's type scale is theme-owned
+            # (.cn-hover-card-content; mira/lyra run text-xs/relaxed).
+            tag.div(class: "flex flex-col gap-1") do
               tag.h4("@nextjs", class: "font-semibold") +
                 tag.p("The React Framework - created and maintained by @vercel.") +
                 tag.div("Joined December 2021", class: "text-xs text-muted-foreground")
