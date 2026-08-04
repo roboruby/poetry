@@ -245,10 +245,10 @@ Slot REQUIRED: with_trigger (the enriched link) - a call without it raises.
 - `content_class:` (string)
 - `defer:` (string)
 - `open:` (boolean) - default false
-- `open_delay:` (integer) - default 700
+- `open_delay:` (integer) - default 600
 - `side:` (symbol) - one of top|right|bottom|left, default "bottom"
 - `side_offset:` (integer) - default 4
-Slots: trigger.
+Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `hover-card` - Root wrapper around the trigger link and the panel
 - PART `hover-card-trigger` - The enriched link itself - simultaneously the no-JS fallback, the touch path, and the keyboard path | states: data-popup-open (bare while the card is open; absent while closed (Base UI absence-is-the-state))
 - PART `hover-card-content` - The role-less preview panel (invisible to AT on purpose) - positioning, animation, and the open state ride here | states: data-open (card is open (the controller flips the pair at runtime)); data-closed (card is closed (the server-rendered state; hidden rides along)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the panel (popper, post-flip)); --available-height (viewport space left for the panel (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
@@ -256,7 +256,7 @@ Slots: trigger.
 - WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
 - RULE: THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). The card is pointer-only enrichment - keyboard and touch users never see inside it.
-- RULE: The trigger must be a REAL link with a real href - it is the fallback, the touch path, and the keyboard path all at once.
+- RULE: The trigger must be a REAL link with a real href - it is the fallback, the touch path, and the keyboard path all at once. For a button LOOK, pass variant:/size: (renders through Button, still an <a> via href:) - never swap the tag to :button.
 - RULE: NO interactive elements inside the card - they get tabindex=-1 stripped and become pointer-only traps. Actions belong in a Popover or at the destination.
 - RULE: Don't add aria-expanded/haspopup to the trigger - advertising an unreachable surface is worse than silence (Radix-aligned).
 - RULE: Never use HoverCard for hints (Tooltip) or for content users act on (Popover).

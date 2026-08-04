@@ -1,0 +1,15 @@
+<%# The side: option decides where the panel settles around the trigger
+    (data-side re-resolves live on collision). Triggers stay real links -
+    here each one points at this section's own anchor, the demo being its
+    own destination. variant: :outline wears Button styling on the <a>. %>
+<div class="flex flex-wrap items-center justify-center gap-2">
+  <% %i[left top bottom right].each do |side| %>
+    <%= poetry_hover_card(side: side, open_delay: 100, close_delay: 100) do |card| %>
+      <% card.with_trigger(href: "#sides", variant: :outline, class: "capitalize") { side.to_s } %>
+      <div class="flex flex-col gap-1">
+        <h4 class="font-medium">Hover Card</h4>
+        <p>This hover card appears on the <%= side %> side of the trigger.</p>
+      </div>
+    <% end %>
+  <% end %>
+</div>
