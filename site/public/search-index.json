@@ -1980,16 +1980,34 @@
     "path": "/components/input#disabled"
   },
   {
+    "title": "Field",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#field"
+  },
+  {
     "title": "File",
     "page": "Input",
     "section": "components",
     "path": "/components/input#file"
   },
   {
+    "title": "Form",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#form"
+  },
+  {
     "title": "Grid",
     "page": "Input",
     "section": "components",
     "path": "/components/input#grid"
+  },
+  {
+    "title": "Inline",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#inline"
   },
   {
     "title": "Invalid",
@@ -2008,12 +2026,6 @@
     "page": "Input",
     "section": "components",
     "path": "/components/input#with-badge"
-  },
-  {
-    "title": "With button",
-    "page": "Input",
-    "section": "components",
-    "path": "/components/input#with-button"
   },
   {
     "title": "With value",
