@@ -1,0 +1,40 @@
+<%# The icon-button family: any size: :icon* squares the button and
+    REQUIRES label: (the accessible name; the icon itself stays
+    decorative). Every variant wears it, and the dedicated icon-xs ->
+    icon-lg ladder parallels the text sizes. %>
+<div class="flex flex-col items-center gap-4">
+  <div class="flex flex-wrap items-center gap-2">
+    <%= poetry_button(size: :icon, label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    <%= poetry_button(variant: :secondary, size: :icon, label: "Settings") do %>
+      <%= poetry_icon(name: :settings) %>
+    <% end %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Share") do %>
+      <%= poetry_icon(name: :share) %>
+    <% end %>
+    <%= poetry_button(variant: :ghost, size: :icon, label: "More") do %>
+      <%= poetry_icon(name: :ellipsis) %>
+    <% end %>
+    <%= poetry_button(variant: :destructive, size: :icon, label: "Delete") do %>
+      <%= poetry_icon(name: :trash) %>
+    <% end %>
+    <%= poetry_button(variant: :link, size: :icon, label: "Open link") do %>
+      <%= poetry_icon(name: :"external-link") %>
+    <% end %>
+  </div>
+  <div class="flex flex-wrap items-center gap-2">
+    <%= poetry_button(variant: :outline, size: :"icon-xs", label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    <%= poetry_button(variant: :outline, size: :"icon-sm", label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    <%= poetry_button(variant: :outline, size: :icon, label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+    <%= poetry_button(variant: :outline, size: :"icon-lg", label: "Add") do %>
+      <%= poetry_icon(name: :plus) %>
+    <% end %>
+  </div>
+</div>

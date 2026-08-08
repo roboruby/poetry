@@ -666,6 +666,12 @@
     "path": "/components/button#button-group"
   },
   {
+    "title": "Icon buttons",
+    "page": "Button",
+    "section": "components",
+    "path": "/components/button#icon-buttons"
+  },
+  {
     "title": "Link",
     "page": "Button",
     "section": "components",
