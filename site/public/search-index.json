@@ -1974,6 +1974,12 @@
     "path": "/components/input#default"
   },
   {
+    "title": "Button group",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#button-group"
+  },
+  {
     "title": "Disabled",
     "page": "Input",
     "section": "components",
