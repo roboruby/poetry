@@ -1,0 +1,14 @@
+<%# Upstream input-required through the Field quartet. The asterisk is
+    the sighted mark only (aria-hidden); field required: carries the
+    announcement as aria-required on the control - never the native
+    attribute (no UA bubbles, no double announcement). %>
+<div class="w-80">
+  <%= poetry_field(id: "input-required", required: true,
+                   hint: "This field must be filled out.") do |field| %>
+    <%= poetry_label(for_id: "input-required") do %>
+      Required Field <span class="text-destructive" aria-hidden="true">*</span>
+    <% end %>
+    <%= poetry_input(name: "required_field", placeholder: "This field is required",
+                     **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

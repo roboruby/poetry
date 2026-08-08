@@ -1998,6 +1998,18 @@
     "path": "/components/input#invalid"
   },
   {
+    "title": "Required",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#required"
+  },
+  {
+    "title": "With badge",
+    "page": "Input",
+    "section": "components",
+    "path": "/components/input#with-badge"
+  },
+  {
     "title": "With button",
     "page": "Input",
     "section": "components",
