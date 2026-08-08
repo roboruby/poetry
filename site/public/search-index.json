@@ -894,10 +894,16 @@
     "path": "/components/carousel#default"
   },
   {
-    "title": "Strip",
+    "title": "Sizes",
     "page": "Carousel",
     "section": "components",
-    "path": "/components/carousel#strip"
+    "path": "/components/carousel#sizes"
+  },
+  {
+    "title": "Spacing",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#spacing"
   },
   {
     "title": "Vertical",
@@ -1074,6 +1080,18 @@
     "path": "/components/combobox#default"
   },
   {
+    "title": "Auto highlight",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#auto-highlight"
+  },
+  {
+    "title": "Clear button",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#clear-button"
+  },
+  {
     "title": "Custom items",
     "page": "Combobox",
     "section": "components",
@@ -1236,6 +1254,12 @@
     "path": "/components/context-menu#default"
   },
   {
+    "title": "Checkboxes",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#checkboxes"
+  },
+  {
     "title": "Destructive",
     "page": "Context Menu",
     "section": "components",
@@ -1260,10 +1284,22 @@
     "path": "/components/context-menu#groups"
   },
   {
-    "title": "Rtl",
+    "title": "Radio",
     "page": "Context Menu",
     "section": "components",
-    "path": "/components/context-menu#rtl"
+    "path": "/components/context-menu#radio"
+  },
+  {
+    "title": "Sides",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#sides"
+  },
+  {
+    "title": "Submenu",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#submenu"
   },
   {
     "title": "With icon",
@@ -1308,6 +1344,12 @@
     "path": "/components/data-table#filtered-and-paginated"
   },
   {
+    "title": "Row actions",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#row-actions"
+  },
+  {
     "title": "Selectable",
     "page": "Data Table",
     "section": "components",
@@ -1338,6 +1380,12 @@
     "path": "/components/date-field#with-range"
   },
   {
+    "title": "Year first",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#year-first"
+  },
+  {
     "title": "Date Picker",
     "page": "Date Picker",
     "section": "components",
@@ -1362,6 +1410,12 @@
     "path": "/components/date-picker#date-of-birth"
   },
   {
+    "title": "Input",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#input"
+  },
+  {
     "title": "Preselected",
     "page": "Date Picker",
     "section": "components",
@@ -1372,6 +1426,12 @@
     "page": "Date Picker",
     "section": "components",
     "path": "/components/date-picker#range"
+  },
+  {
+    "title": "With time",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#with-time"
   },
   {
     "title": "Deferred",
@@ -1416,6 +1476,12 @@
     "path": "/components/dialog#confirmation"
   },
   {
+    "title": "No close button",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#no-close-button"
+  },
+  {
     "title": "Scrollable content",
     "page": "Dialog",
     "section": "components",
@@ -1458,10 +1524,34 @@
     "path": "/components/drawer#nested"
   },
   {
-    "title": "Right edge",
+    "title": "Non modal",
     "page": "Drawer",
     "section": "components",
-    "path": "/components/drawer#right-edge"
+    "path": "/components/drawer#non-modal"
+  },
+  {
+    "title": "Position",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#position"
+  },
+  {
+    "title": "Responsive",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#responsive"
+  },
+  {
+    "title": "Snap points",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#snap-points"
+  },
+  {
+    "title": "Swipe handle",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#swipe-handle"
   },
   {
     "title": "Dropdown Menu",
@@ -1482,10 +1572,10 @@
     "path": "/components/dropdown-menu#default"
   },
   {
-    "title": "Account switcher",
+    "title": "Avatar",
     "page": "Dropdown Menu",
     "section": "components",
-    "path": "/components/dropdown-menu#account-switcher"
+    "path": "/components/dropdown-menu#avatar"
   },
   {
     "title": "Checkbox with icons",
@@ -1498,6 +1588,12 @@
     "page": "Dropdown Menu",
     "section": "components",
     "path": "/components/dropdown-menu#checkboxes"
+  },
+  {
+    "title": "Complex",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#complex"
   },
   {
     "title": "Inset and disabled",
@@ -1602,10 +1698,40 @@
     "path": "/components/field#default"
   },
   {
+    "title": "Checkbox",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#checkbox"
+  },
+  {
+    "title": "Choice card",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#choice-card"
+  },
+  {
+    "title": "Fieldset",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#fieldset"
+  },
+  {
+    "title": "Group",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#group"
+  },
+  {
     "title": "Horizontal switch",
     "page": "Field",
     "section": "components",
     "path": "/components/field#horizontal-switch"
+  },
+  {
+    "title": "Responsive",
+    "page": "Field",
+    "section": "components",
+    "path": "/components/field#responsive"
   },
   {
     "title": "With error",
@@ -1642,6 +1768,78 @@
     "page": "Field",
     "section": "components",
     "path": "/components/field#with-textarea"
+  },
+  {
+    "title": "Field Group",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group"
+  },
+  {
+    "title": "Installation",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#default"
+  },
+  {
+    "title": "Choices",
+    "page": "Field Group",
+    "section": "components",
+    "path": "/components/field-group#choices"
+  },
+  {
+    "title": "Field Separator",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator"
+  },
+  {
+    "title": "Installation",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#default"
+  },
+  {
+    "title": "With caption",
+    "page": "Field Separator",
+    "section": "components",
+    "path": "/components/field-separator#with-caption"
+  },
+  {
+    "title": "Fieldset",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset"
+  },
+  {
+    "title": "Installation",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#default"
+  },
+  {
+    "title": "Label legend",
+    "page": "Fieldset",
+    "section": "components",
+    "path": "/components/fieldset#label-legend"
   },
   {
     "title": "File Input",
@@ -1692,16 +1890,10 @@
     "path": "/components/hover-card#custom-delays"
   },
   {
-    "title": "Side right",
+    "title": "Sides",
     "page": "Hover Card",
     "section": "components",
-    "path": "/components/hover-card#side-right"
-  },
-  {
-    "title": "Side top",
-    "page": "Hover Card",
-    "section": "components",
-    "path": "/components/hover-card#side-top"
+    "path": "/components/hover-card#sides"
   },
   {
     "title": "Icon",
@@ -1722,10 +1914,40 @@
     "path": "/components/icon#default"
   },
   {
+    "title": "Animated",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#animated"
+  },
+  {
+    "title": "Colors",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#colors"
+  },
+  {
     "title": "Labeled",
     "page": "Icon",
     "section": "components",
     "path": "/components/icon#labeled"
+  },
+  {
+    "title": "Sizes",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#sizes"
+  },
+  {
+    "title": "Stroke width",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#stroke-width"
+  },
+  {
+    "title": "With tooltip",
+    "page": "Icon",
+    "section": "components",
+    "path": "/components/icon#with-tooltip"
   },
   {
     "title": "Input",

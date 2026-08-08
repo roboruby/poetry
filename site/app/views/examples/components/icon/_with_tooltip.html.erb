@@ -1,0 +1,23 @@
+<%# The icon-button pattern: Button's label: carries the accessible name
+    (required on size: :icon), the tooltip mirrors it for sighted hover
+    (aria-describedby lands on open). The icon itself stays decorative. %>
+<div class="flex flex-wrap items-center gap-1">
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :ghost, size: :icon, label: "Notifications") do %>
+      <%= poetry_icon(name: :bell) %>
+    <% end %>
+    Notifications
+  <% end %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :ghost, size: :icon, label: "Archive") do %>
+      <%= poetry_icon(name: :archive) %>
+    <% end %>
+    Archive
+  <% end %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :ghost, size: :icon, label: "Move to trash") do %>
+      <%= poetry_icon(name: :trash) %>
+    <% end %>
+    Move to trash
+  <% end %>
+</div>

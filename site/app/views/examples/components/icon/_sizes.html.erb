@@ -1,0 +1,12 @@
+<%# Standalone icons render at Lucide's intrinsic 24px box (the svg
+    carries width/height="24"); a size-* utility beats the presentation
+    attributes. Inside poetry components the component's own svg sizing
+    wins regardless - this ladder is for icons standing alone. %>
+<div class="flex flex-wrap items-end gap-4">
+  <%= poetry_icon(name: :feather, class: "size-3") %>
+  <%= poetry_icon(name: :feather, class: "size-4") %>
+  <%= poetry_icon(name: :feather, class: "size-5") %>
+  <%= poetry_icon(name: :feather) %>
+  <%= poetry_icon(name: :feather, class: "size-8") %>
+  <%= poetry_icon(name: :feather, class: "size-10") %>
+</div>

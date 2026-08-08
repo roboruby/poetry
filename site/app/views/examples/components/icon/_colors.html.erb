@@ -1,0 +1,8 @@
+<%# Lucide draws with stroke="currentColor", so an icon inherits the text
+    color around it. Semantic text-* tokens keep the tint on-theme across
+    every style and color scheme with a single class. %>
+<div class="flex flex-wrap items-center gap-4">
+  <%= poetry_icon(name: :"circle-check", class: "text-primary") %>
+  <%= poetry_icon(name: :info, class: "text-muted-foreground") %>
+  <%= poetry_icon(name: :"triangle-alert", class: "text-destructive") %>
+</div>
