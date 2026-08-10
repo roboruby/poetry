@@ -4176,6 +4176,12 @@
     "path": "/charts/area#legend-toggle"
   },
   {
+    "title": "Wiring",
+    "page": "Area Chart",
+    "section": "charts",
+    "path": "/charts/area#wiring"
+  },
+  {
     "title": "Bar Chart",
     "page": "Bar Chart",
     "section": "charts",
@@ -4236,6 +4242,12 @@
     "path": "/charts/bar#stacked"
   },
   {
+    "title": "Wiring",
+    "page": "Bar Chart",
+    "section": "charts",
+    "path": "/charts/bar#wiring"
+  },
+  {
     "title": "Composed Chart",
     "page": "Composed Chart",
     "section": "charts",
@@ -4258,6 +4270,12 @@
     "page": "Composed Chart",
     "section": "charts",
     "path": "/charts/composed#full-mix"
+  },
+  {
+    "title": "Wiring",
+    "page": "Composed Chart",
+    "section": "charts",
+    "path": "/charts/composed#wiring"
   },
   {
     "title": "Line Chart",
@@ -4320,6 +4338,12 @@
     "path": "/charts/line#step"
   },
   {
+    "title": "Wiring",
+    "page": "Line Chart",
+    "section": "charts",
+    "path": "/charts/line#wiring"
+  },
+  {
     "title": "Pie Chart",
     "page": "Pie Chart",
     "section": "charts",
@@ -4372,6 +4396,12 @@
     "page": "Pie Chart",
     "section": "charts",
     "path": "/charts/pie#stacked"
+  },
+  {
+    "title": "Wiring",
+    "page": "Pie Chart",
+    "section": "charts",
+    "path": "/charts/pie#wiring"
   },
   {
     "title": "Radar Chart",
@@ -4434,6 +4464,12 @@
     "path": "/charts/radar#multiple"
   },
   {
+    "title": "Wiring",
+    "page": "Radar Chart",
+    "section": "charts",
+    "path": "/charts/radar#wiring"
+  },
+  {
     "title": "Radial Bar Chart",
     "page": "Radial Bar Chart",
     "section": "charts",
@@ -4482,6 +4518,12 @@
     "path": "/charts/radial-bar#text"
   },
   {
+    "title": "Wiring",
+    "page": "Radial Bar Chart",
+    "section": "charts",
+    "path": "/charts/radial-bar#wiring"
+  },
+  {
     "title": "Scatter Chart",
     "page": "Scatter Chart",
     "section": "charts",
@@ -4516,6 +4558,12 @@
     "page": "Scatter Chart",
     "section": "charts",
     "path": "/charts/scatter#reference-zones"
+  },
+  {
+    "title": "Wiring",
+    "page": "Scatter Chart",
+    "section": "charts",
+    "path": "/charts/scatter#wiring"
   },
   {
     "title": "Action bar",
