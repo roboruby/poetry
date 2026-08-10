@@ -10,7 +10,7 @@
     <% else %>
       <%= content %>
     <% end %>
-    <span data-slot="tooltip-arrow" data-poetry--core--popper-target="arrow" aria-hidden="true">
+    <span data-slot="tooltip-arrow" aria-hidden="true" <%= tag.attributes(**stimulus_attributes_for(:arrow)) %>>
       <span class="<%= css(:arrow) %>"></span>
     </span>
   <% end %>

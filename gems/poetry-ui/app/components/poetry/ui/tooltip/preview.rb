@@ -59,6 +59,15 @@ module Poetry
             "Opens after 700ms"
           end
         end
+
+        # disable_hoverable_content: true - pointing at the card itself
+        # never holds it open (the strict hover mode).
+        def not_hoverable
+          render_component(disable_hoverable_content: true) do |tooltip|
+            tooltip.with_trigger(variant: :outline) { "Hover" }
+            "Closes the moment you leave the trigger"
+          end
+        end
       end
     end
   end

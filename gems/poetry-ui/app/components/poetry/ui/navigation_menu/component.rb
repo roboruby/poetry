@@ -29,8 +29,44 @@ module Poetry
           "(the top-nav block shows the viewport pattern)."
         ].freeze
 
-        CONTROLLER = %i[poetry core navigation_menu].freeze
-        POPPER = %i[poetry core popper].freeze
+        use_stimulus do
+          on :root do
+            controller :navigation_menu do
+              register
+              action :keydown, on: :keydown
+              action :focus_left, on: :focusout
+            end
+            # The whole positioning engine is viewport-gated.
+            controller :popper, if: :viewport do
+              register
+              value :side, "bottom"
+              value :align, "start"
+              value :side_offset, 6
+              value :strategy, "absolute"
+            end
+          end
+          # Hover intent per panel-bearing item (the call site gates
+          # per-entry - plain links carry no wiring).
+          on :item do
+            controller :navigation_menu do
+              action :schedule_open, on: :pointerenter
+              action :schedule_close, on: :pointerleave
+            end
+          end
+          on :trigger do
+            controller(:navigation_menu) { action :toggle, on: :click }
+          end
+          # BOTH controllers on ONE element - the declaration retires the
+          # survey's one structural Accordion-lesson violation (two
+          # separate Attributes merged with plain Hash#merge).
+          on :positioner do
+            controller(:popper) { target :content }
+            controller :navigation_menu do
+              action :cancel_close, on: :pointerenter
+              action :schedule_close, on: :pointerleave
+            end
+          end
+        end
 
         # required: the hand raise in before_render carries the message;
         # the flag carries the fact to the registry (: the floating
@@ -127,7 +163,7 @@ module Poetry
               # The mode marker the dictionary's group-data-[viewport=false]
               # chrome keys on.
               "data-viewport" => viewport.to_s
-            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -136,7 +172,7 @@ module Poetry
             "data-slot" => "navigation-menu-item", "data-value" => entry.value,
             "class" => css(:item)
           }
-          attrs.merge!(item_stimulus_attributes) if entry.panel
+          attrs.merge!(stimulus_attributes_for(:item)) if entry.panel
           attrs
         end
 
@@ -145,7 +181,7 @@ module Poetry
             "type" => "button", "data-slot" => "navigation-menu-trigger",
             "aria-expanded" => "false", "aria-controls" => panel_id(entry),
             "class" => "#{css(:trigger)} group"
-          }.merge(trigger_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:trigger))
         end
 
         def panel_attributes(entry)
@@ -169,13 +205,7 @@ module Poetry
             "data-slot" => "navigation-menu-positioner", "hidden" => true,
             "class" => css(:positioner)
           }
-          popper = Poetry::Core::HTML::Attributes.new
-          Poetry::Core::Stimulus::Builder.new(POPPER, popper).with_target(:content)
-          nav = Poetry::Core::HTML::Attributes.new
-          builder = Poetry::Core::Stimulus::Builder.new(CONTROLLER, nav)
-          builder.with_action(:cancel_close, on: :pointerenter)
-          builder.with_action(:schedule_close, on: :pointerleave)
-          attrs.merge(popper.to_attributes).merge(nav.to_attributes)
+          attrs.merge(stimulus_attributes_for(:positioner))
         end
 
         def panel_id(entry)
@@ -186,38 +216,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-nav-#{SecureRandom.hex(4)}"
-        end
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          nav = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          nav.register_controller
-          nav.with_action(:keydown, on: :keydown)
-          nav.with_action(:focus_left, on: :focusout)
-          if viewport
-            popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-            popper.register_controller
-            popper.with_value(:side, "bottom")
-            popper.with_value(:align, "start")
-            popper.with_value(:side_offset, 6)
-            popper.with_value(:strategy, "absolute")
-          end
-          attrs.to_attributes
-        end
-
-        def item_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          nav = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          nav.with_action(:schedule_open, on: :pointerenter)
-          nav.with_action(:schedule_close, on: :pointerleave)
-          attrs.to_attributes
-        end
-
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          nav = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          nav.with_action(:toggle, on: :click)
-          attrs.to_attributes
         end
       end
     end

@@ -6,8 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      TOOLTIP = %i[poetry core tooltip].freeze
-      POPPER = %i[poetry core popper].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
@@ -58,6 +56,46 @@ module Poetry
         # The bubble's class merge seam (caller classes win on conflicts).
         option :content_class, :string
 
+        use_stimulus do
+          on :root do
+            controller :tooltip do
+              register
+              value :open
+              # Inherit-from-provider: unset renders NO attribute - the
+              # controller falls back to [data-slot=tooltip-provider].
+              value :delay_duration, unless: -> { delay_duration.nil? }
+              value :disable_hoverable_content, unless: -> { disable_hoverable_content.nil? }
+            end
+            controller :popper do
+              register
+              value :side
+              value :align
+              value :side_offset
+            end
+          end
+          # The Radix trigger handlers, ported: pointermove opens (touch
+          # excluded, once per hover), pointerdown/click close, focus opens
+          # instantly / blur closes.
+          on :trigger do
+            controller :tooltip do
+              action :pointer_move, on: :pointermove
+              action :pointer_leave, on: :pointerleave
+              action :pointer_down, on: :pointerdown
+              action :click_close, on: :click
+              action :focus_open, on: :focus
+              action :blur_close, on: :blur
+            end
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+          # The arrow target (previously a hand-written string in the ERB).
+          on :arrow do
+            controller(:popper) { target :arrow }
+          end
+        end
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
@@ -102,7 +140,7 @@ module Poetry
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "tooltip-trigger"
-          }.merge(trigger_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:trigger))
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
@@ -136,7 +174,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "tooltip" }
-              .merge(root_stimulus_attributes)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -152,7 +190,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -161,50 +199,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-tooltip-#{SecureRandom.hex(4)}"
-        end
-
-        # BOTH controllers build into ONE Attributes instance (the
-        # Accordion lesson). The inherit-from-provider values render NO
-        # attribute when unset - the controller falls back to the
-        # [data-slot=tooltip-provider] ancestor's config.
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          tooltip = Poetry::Core::Stimulus::Builder.new(TOOLTIP, attrs)
-          tooltip.register_controller
-          tooltip.with_value(:open, open)
-          tooltip.with_value(:delay_duration, delay_duration) unless delay_duration.nil?
-          unless disable_hoverable_content.nil?
-            tooltip.with_value(:disable_hoverable_content, disable_hoverable_content)
-          end
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          attrs.to_attributes
-        end
-
-        # The Radix trigger handlers, ported: pointermove opens (touch
-        # excluded, once per hover), pointerdown/click close (activation
-        # dismisses the hint), focus opens instantly / blur closes.
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          tooltip = Poetry::Core::Stimulus::Builder.new(TOOLTIP, attrs)
-          tooltip.with_action(:pointer_move, on: :pointermove)
-          tooltip.with_action(:pointer_leave, on: :pointerleave)
-          tooltip.with_action(:pointer_down, on: :pointerdown)
-          tooltip.with_action(:click_close, on: :click)
-          tooltip.with_action(:focus_open, on: :focus)
-          tooltip.with_action(:blur_close, on: :blur)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
         end
       end
     end

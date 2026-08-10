@@ -6,8 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      POPOVER = %i[poetry core popover].freeze
-      POPPER = %i[poetry core popper].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
@@ -57,6 +55,38 @@ module Poetry
         # class: styles the wrapper, not the panel).
         option :content_class, :string
 
+        use_stimulus do
+          on :root do
+            controller :popover do
+              register
+              value :open
+              value :modal
+            end
+            controller :popper do
+              register
+              # The trigger anchors by id selector; an anchor part
+              # overrides it with the anchor TARGET (render-time decision -
+              # slots may be set in any order, so the trigger itself
+              # carries no popper target).
+              value :anchor, from: :trigger_anchor_selector, unless: :anchor?
+              value :side
+              value :align
+              value :side_offset
+              value :align_offset
+              value :avoid_collisions
+            end
+          end
+          on :trigger do
+            controller(:popover) { action :toggle, on: :click }
+          end
+          on :anchor_part do
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+        end
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
@@ -97,7 +127,7 @@ module Poetry
           wiring = {
             "id" => trigger_id, "data-slot" => "popover-trigger",
             "aria-haspopup" => "dialog", "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(trigger_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:trigger))
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
@@ -110,7 +140,7 @@ module Poetry
         # anchor value (targets beat selectors in popper's fallback chain).
         renders_one :anchor, lambda { |**options, &block|
           attrs = { "data-slot" => "popover-anchor" }
-                  .merge(popper_stimulus { |popper| popper.with_target(:anchor) })
+                  .merge(stimulus_attributes_for(:anchor_part))
           content_tag(:div, attrs.merge(options)) { capture(&block) }
         }
 
@@ -162,7 +192,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "popover" }
-              .merge(root_stimulus_attributes)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -174,7 +204,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           if title?
             attrs["aria-labelledby"] = title_id
           elsif label.present?
@@ -194,41 +224,7 @@ module Poetry
           @instance_id ||= "poetry-popover-#{SecureRandom.hex(4)}"
         end
 
-        # BOTH controllers build into ONE Attributes instance - a plain
-        # Hash#merge of two would overwrite data-controller instead of
-        # token-concatenating it (the Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          popover = Poetry::Core::Stimulus::Builder.new(POPOVER, attrs)
-          popover.register_controller
-          popover.with_value(:open, open)
-          popover.with_value(:modal, modal)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          # The trigger anchors by id selector; an anchor part overrides it
-          # with the anchor TARGET (render-time decision - slots may be set
-          # in any order, so the trigger itself carries no popper target).
-          popper.with_value(:anchor, "##{trigger_id}") unless anchor?
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          popper.with_value(:align_offset, align_offset)
-          popper.with_value(:avoid_collisions, avoid_collisions)
-          attrs.to_attributes
-        end
-
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          popover = Poetry::Core::Stimulus::Builder.new(POPOVER, attrs)
-          popover.with_action(:toggle, on: :click)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
-        end
+        def trigger_anchor_selector = "##{trigger_id}"
       end
     end
   end

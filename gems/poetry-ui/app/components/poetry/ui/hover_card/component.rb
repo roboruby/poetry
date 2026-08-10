@@ -6,8 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      HOVER_CARD = %i[poetry core hover_card].freeze
-      POPPER = %i[poetry core popper].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
@@ -60,6 +58,41 @@ module Poetry
         # overrides the source w-64).
         option :content_class, :string
 
+        use_stimulus do
+          on :root do
+            controller :hover_card do
+              register
+              value :open
+              value :open_delay
+              value :close_delay
+            end
+            controller :popper do
+              register
+              value :side
+              value :align
+              value :side_offset
+              value :align_offset
+              value :avoid_collisions
+            end
+          end
+          # The Radix trigger handlers, ported: pointerenter/leave pair
+          # timers (touch excluded), focus opens immediately / blur closes,
+          # and the touchstart guard (a tap navigates, never focus-opens).
+          on :trigger do
+            controller :hover_card do
+              action :pointer_enter, on: :pointerenter
+              action :pointer_leave, on: :pointerleave
+              action :focus_open, on: :focus
+              action :blur_close, on: :blur
+              action :touch_guard, on: :touchstart
+            end
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+        end
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
@@ -105,7 +138,7 @@ module Poetry
           @trigger_href = href
           attrs = {
             "id" => trigger_id, "data-slot" => "hover-card-trigger"
-          }.merge(trigger_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:trigger))
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
@@ -150,7 +183,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "hover-card" }
-              .merge(root_stimulus_attributes)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -162,7 +195,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content, class: content_class)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -171,49 +204,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-hover-card-#{SecureRandom.hex(4)}"
-        end
-
-        # BOTH controllers build into ONE Attributes instance (the
-        # Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          hover_card = Poetry::Core::Stimulus::Builder.new(HOVER_CARD, attrs)
-          hover_card.register_controller
-          hover_card.with_value(:open, open)
-          hover_card.with_value(:open_delay, open_delay)
-          hover_card.with_value(:close_delay, close_delay)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          popper.with_value(:align_offset, align_offset)
-          popper.with_value(:avoid_collisions, avoid_collisions)
-          attrs.to_attributes
-        end
-
-        # The Radix trigger handlers, ported: pointerenter/leave pair
-        # timers (touch excluded), focus opens immediately / blur closes
-        # (a keyboard user SEES the card), and the touchstart guard
-        # (preventDefault so a tap can never synthesize a focus-open - it
-        # just navigates the link).
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          hover_card = Poetry::Core::Stimulus::Builder.new(HOVER_CARD, attrs)
-          hover_card.with_action(:pointer_enter, on: :pointerenter)
-          hover_card.with_action(:pointer_leave, on: :pointerleave)
-          hover_card.with_action(:focus_open, on: :focus)
-          hover_card.with_action(:blur_close, on: :blur)
-          hover_card.with_action(:touch_guard, on: :touchstart)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
         end
       end
 

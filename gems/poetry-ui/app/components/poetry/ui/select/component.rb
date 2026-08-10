@@ -6,8 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      SELECT = %i[poetry core select].freeze
-      POPPER = %i[poetry core popper].freeze
       SIZES = %i[sm default].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
@@ -50,20 +48,11 @@ module Poetry
       module Helpers
         private
 
-        def select_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(SELECT, attrs)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
-        end
-
+        # Hosts must expose #item_wiring (the root Component computes it
+        # from its :item declaration; Group receives it at construction).
         def item_component(**)
-          Item.new(option_set: option_set, selected_value: selected_value, **)
+          Item.new(option_set: option_set, selected_value: selected_value,
+                   item_wiring: item_wiring, **)
         end
 
         def separator_part(**options)
@@ -98,8 +87,9 @@ module Poetry
 
         attr_reader :option_set, :selected_value
 
-        def initialize(option_set:, selected_value:, value:, **options)
+        def initialize(option_set:, selected_value:, value:, item_wiring: {}, **options)
           super()
+          @item_wiring = item_wiring
           @option_set = option_set
           @selected_value = selected_value
           @value = value.to_s
@@ -119,7 +109,7 @@ module Poetry
             "data-poetry-collection-item" => "", "data-value" => @value,
             "aria-selected" => selected.to_s,
             "class" => Style.css(:item, class: @extra_attributes.delete(:class))
-          }.merge(select_stimulus { |select| select.with_action(:commit, on: :click) })
+          }.merge(@item_wiring)
           # Base UI selected state: bare data-selected on the committed
           # option, NOTHING while unselected (absence IS the state).
           attrs["data-selected"] = "" if selected
@@ -207,6 +197,53 @@ module Poetry
         validates :align, inclusion: { in: ALIGNS }
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
+        use_stimulus do
+          on :root do
+            controller :select do
+              register
+              value :open
+              value :value, from: :value_string
+              value :modal
+              value :loop
+              value :align_item_with_trigger
+            end
+            controller :popper do
+              register
+              value :side
+              value :align
+              value :side_offset
+              value :avoid_collisions
+            end
+          end
+          on :trigger do
+            controller :select do
+              action :toggle, on: :click
+              action :trigger_keydown, on: :keydown
+            end
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+          # Every option row (root-level and grouped) - the anatomy
+          # classes receive it as item_wiring at construction.
+          on :item do
+            controller(:select) { action :commit, on: :click }
+          end
+          on :native do
+            controller(:select) { action :native_changed, on: :change }
+          end
+          on :viewport do
+            controller(:select) { action :sync_scroll_buttons, on: :scroll }
+          end
+          on :scroll_button do
+            controller :select do
+              action :scroll_hold_start, on: :pointerenter
+              action :scroll_hold_stop, on: :pointerleave
+            end
+          end
+        end
+
         part "select", "Root wrapper carrying both controllers (select + popper) and the " \
                        "optional dir attribute"
         part "select-native", "The visually-hidden native <select> - the serialization truth " \
@@ -288,7 +325,8 @@ module Poetry
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           group: {
             renders: lambda { |**options|
-              Group.new(option_set: option_set, selected_value: selected_value, **options)
+              Group.new(option_set: option_set, selected_value: selected_value,
+                        item_wiring: item_wiring, **options)
             },
             as: :group
           },
@@ -349,7 +387,7 @@ module Poetry
           root = { "data-slot" => "select" }
           root["dir"] = dir.to_s if dir
           html_attributes.merge_if_not_set(
-            root.merge(root_stimulus_attributes).merge(component_data_attributes)
+            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -365,7 +403,7 @@ module Poetry
           attrs["name"] = name if name.present?
           attrs["required"] = true if required
           attrs["disabled"] = true if disabled
-          attrs.merge!(select_stimulus { |select| select.with_action(:native_changed, on: :change) })
+          attrs.merge!(stimulus_attributes_for(:native))
           content_tag(:select, native_options, attrs)
         end
 
@@ -381,7 +419,7 @@ module Poetry
           attrs["data-popup-open"] = "" if open
           attrs["data-placeholder"] = "" unless selected_label
           attrs["disabled"] = true if disabled
-          attrs.merge!(trigger_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:trigger))
           attrs.merge!(trigger_aria_attributes)
           content_tag(:button, attrs) do
             safe_join([trigger, value_display, chevron].compact)
@@ -399,7 +437,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -409,7 +447,7 @@ module Poetry
             "data-slot" => "select-viewport", "role" => "listbox",
             "aria-labelledby" => @trigger_aria["labelledby"].presence || trigger_id,
             "class" => css(:viewport)
-          }.merge(select_stimulus { |select| select.with_action(:sync_scroll_buttons, on: :scroll) })
+          }.merge(stimulus_attributes_for(:viewport))
         end
 
         # Scroll affordances render ALWAYS but hidden - the controller owns
@@ -420,10 +458,7 @@ module Poetry
           attrs = {
             "data-slot" => "select-scroll-#{direction}-button", "aria-hidden" => "true",
             "hidden" => true, "class" => Style.css(:scroll_button)
-          }.merge(select_stimulus do |select|
-            select.with_action(:scroll_hold_start, on: :pointerenter)
-            select.with_action(:scroll_hold_stop, on: :pointerleave)
-          end)
+          }.merge(stimulus_attributes_for(:scroll_button))
           content_tag(:div, attrs) do
             render(Icon::Component.new(name: :"chevron-#{direction}", class: Style.css(:scroll_icon)))
           end
@@ -487,32 +522,10 @@ module Poetry
         # BOTH controllers build into ONE Attributes instance - a plain
         # Hash#merge of two would overwrite data-controller instead of
         # token-concatenating it (the Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          select = Poetry::Core::Stimulus::Builder.new(SELECT, attrs)
-          select.register_controller
-          select.with_value(:open, open)
-          select.with_value(:value, value.to_s)
-          select.with_value(:modal, modal)
-          select.with_value(:loop, loop)
-          select.with_value(:align_item_with_trigger, align_item_with_trigger)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          popper.with_value(:avoid_collisions, avoid_collisions)
-          attrs.to_attributes
-        end
+        def value_string = value.to_s
 
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          select = Poetry::Core::Stimulus::Builder.new(SELECT, attrs)
-          select.with_action(:toggle, on: :click)
-          select.with_action(:trigger_keydown, on: :keydown)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+        def item_wiring
+          @item_wiring ||= stimulus_attributes_for(:item)
         end
       end
 
@@ -524,10 +537,11 @@ module Poetry
       class Group < ViewComponent::Base
         include Helpers
 
-        attr_reader :option_set, :selected_value
+        attr_reader :option_set, :selected_value, :item_wiring
 
-        def initialize(option_set:, selected_value:, label: nil, **extra_attributes)
+        def initialize(option_set:, selected_value:, label: nil, item_wiring: {}, **extra_attributes)
           super()
+          @item_wiring = item_wiring
           @option_set = option_set
           @selected_value = selected_value
           @label_text = label

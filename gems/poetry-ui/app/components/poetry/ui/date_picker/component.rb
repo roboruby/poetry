@@ -22,7 +22,28 @@ module Poetry
           "For an always-visible grid use Calendar directly - DatePicker is the field+popover form."
         ].freeze
 
-        CONTROLLER = %i[poetry core date_picker].freeze
+        use_stimulus do
+          on :root do
+            controller :date_picker do
+              register
+              value :placeholder
+              value :mode, "range", if: :range?
+              action :picked, on: event(:calendar, :change)
+            end
+          end
+          on :label do
+            controller(:date_picker) { target :label }
+          end
+          # The input variant's text field: the picker's input target plus
+          # the typed-date sync and ArrowDown-opens actions.
+          on :input do
+            controller :date_picker do
+              target :input
+              action :input_changed, on: :input
+              action :input_keydown, on: :keydown
+            end
+          end
+        end
 
         option :name, :string, required: true
         option :mode, :symbol, default: :single
@@ -93,7 +114,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "date-picker", "class" => css }
-              .merge(root_stimulus_attributes).merge(component_data_attributes)
+              .merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -132,21 +153,8 @@ module Poetry
           end
         end
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          picker = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          picker.register_controller
-          picker.with_value(:placeholder, placeholder)
-          picker.with_value(:mode, "range") if range?
-          picker.with_action(:picked, on: "poetry--core--calendar:change")
-          attrs.to_attributes
-        end
-
         def label_target_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          picker = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          picker.with_target(:label)
-          attrs.to_attributes
+          stimulus_attributes_for(:label)
         end
         public :label_target_attributes
 
@@ -154,12 +162,7 @@ module Poetry
         # typed-date sync and ArrowDown-opens actions. It carries NO name -
         # the calendar's hidden ISO input stays THE form value.
         def input_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          picker = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          picker.with_target(:input)
-          picker.with_action(:input_changed, on: :input)
-          picker.with_action(:input_keydown, on: :keydown)
-          attrs.to_attributes.merge(
+          stimulus_attributes_for(:input).merge(
             "value" => (formatted if value), "placeholder" => placeholder,
             "aria-label" => label.presence || "Date"
           ).compact
