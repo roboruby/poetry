@@ -1,1 +1,14 @@
-<%= poetry_marker(announce: :status, class: "w-full max-w-md") { "Searching the web…" } %>
+<%# Upstream marker-status: in-flight lines with a Spinner riding the
+    block icon slot. The aria-hidden icon cell hides the Spinner's own
+    status role - the marker root (announce: :status) does the
+    announcing. %>
+<div class="flex w-full max-w-sm flex-col gap-8">
+  <%= poetry_marker(announce: :status) do |marker| %>
+    <% marker.with_icon { poetry_spinner } %>
+    Compacting conversation
+  <% end %>
+  <%= poetry_marker(variant: :separator, announce: :status) do |marker| %>
+    <% marker.with_icon { poetry_spinner } %>
+    Running tests
+  <% end %>
+</div>

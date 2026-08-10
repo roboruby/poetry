@@ -2526,10 +2526,22 @@
     "path": "/components/marker#default"
   },
   {
-    "title": "Interactive",
+    "title": "Border",
     "page": "Marker",
     "section": "components",
-    "path": "/components/marker#interactive"
+    "path": "/components/marker#border"
+  },
+  {
+    "title": "Links and buttons",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#links-and-buttons"
+  },
+  {
+    "title": "Separator",
+    "page": "Marker",
+    "section": "components",
+    "path": "/components/marker#separator"
   },
   {
     "title": "Shimmer",

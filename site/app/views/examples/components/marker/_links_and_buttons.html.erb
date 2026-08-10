@@ -1,0 +1,13 @@
+<%# Upstream marker-link-button: a marker can BE a link or a button -
+    tag: renders the root as <a>/<button>, the label stays the marker
+    content (the dictionary underlines link markers on hover). %>
+<div class="flex w-full max-w-sm flex-col gap-8">
+  <%= poetry_marker(tag: :a, href: "#links-and-buttons") do |marker| %>
+    <% marker.with_icon(name: :"git-branch") %>
+    View the pull request
+  <% end %>
+  <%= poetry_marker(tag: :button, type: :button, class: "cursor-pointer transition-colors hover:text-foreground") do |marker| %>
+    <% marker.with_icon(name: :"rotate-ccw") %>
+    Revert this change
+  <% end %>
+</div>
