@@ -1,20 +1,22 @@
-<%# A short back-and-forth - incoming rows sit at the start with an avatar,
-    and the local user's replies mirror to the end via align: :end on the
-    Message (never on the Bubbles inside it). %>
+<%# A short back-and-forth between two people - each side carries its
+    own avatar (the two stand-in photos), incoming rows at the start,
+    the local user's replies mirrored via align: :end on the Message
+    (never on the Bubbles inside it). %>
 <div class="flex w-full max-w-md flex-col gap-4">
   <%= poetry_message do |message| %>
-    <% message.with_avatar { "SR" } %>
+    <% message.with_avatar { poetry_avatar(src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMGQ5NDg4Ii8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiMwMjg0YzciLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM2NWEzMGQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=", label: "Sam Rivera") { "SR" } } %>
     <% message.with_header { "Sam Rivera" } %>
     <%= poetry_bubble(variant: :muted) { "Are we still on for the design sync at noon?" } %>
   <% end %>
 
   <%= poetry_message(align: :end) do |message| %>
+    <% message.with_avatar { poetry_avatar(src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjM2NmYxIi8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=", label: "You") { "ME" } } %>
     <% message.with_footer { "Delivered 11:58" } %>
     <%= poetry_bubble { "Yes - I just moved it to the larger room." } %>
   <% end %>
 
   <%= poetry_message do |message| %>
-    <% message.with_avatar { "SR" } %>
+    <% message.with_avatar { poetry_avatar(src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjMGQ5NDg4Ii8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiMwMjg0YzciLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM2NWEzMGQiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=", label: "Sam Rivera") { "SR" } } %>
     <%= poetry_bubble(variant: :muted) { "Perfect, see you there." } %>
   <% end %>
 </div>

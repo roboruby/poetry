@@ -1,0 +1,21 @@
+<%# Upstream message-markdown, the Rails way: render assistant markdown
+    app-side (Commonmarker, Kramdown...) and place the HTML in a ghost
+    bubble so the response reads unframed; user messages stay plain
+    bubbles. Static HTML stands in for the rendered markdown here. %>
+<div class="flex w-full max-w-md flex-col gap-8">
+  <%= poetry_message(align: :end) do |message| %>
+    <%= poetry_bubble { "How do I render markdown in a message?" } %>
+  <% end %>
+  <%= poetry_message do |message| %>
+    <%= poetry_bubble(variant: :ghost) do %>
+      <div class="space-y-2">
+        <p>Here's how to render markdown in a message:</p>
+        <ol class="list-decimal space-y-1 pl-5">
+          <li>Render assistant text through your app-side <strong>markdown pipeline</strong>.</li>
+          <li>Keep user messages as plain text.</li>
+          <li>Use a <code>ghost</code> bubble so the response is unframed.</li>
+        </ol>
+      </div>
+    <% end %>
+  <% end %>
+</div>

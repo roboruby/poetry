@@ -2670,10 +2670,16 @@
     "path": "/components/message#grouped"
   },
   {
-    "title": "With footer",
+    "title": "Header and footer",
     "page": "Message",
     "section": "components",
-    "path": "/components/message#with-footer"
+    "path": "/components/message#header-and-footer"
+  },
+  {
+    "title": "Markdown",
+    "page": "Message",
+    "section": "components",
+    "path": "/components/message#markdown"
   },
   {
     "title": "Message Scroller",
