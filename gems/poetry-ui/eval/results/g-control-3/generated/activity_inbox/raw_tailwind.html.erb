@@ -1,0 +1,277 @@
+<section aria-labelledby="activity-heading" class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6 lg:px-8">
+  <header class="flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h1 id="activity-heading" class="text-xl font-semibold tracking-tight text-gray-900">Activity</h1>
+      <p class="mt-1 text-sm text-gray-500">Mentions, assignments, and status changes across your workspace.</p>
+    </div>
+    <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
+      <span class="h-1.5 w-1.5 rounded-full bg-indigo-600" aria-hidden="true"></span>
+      6 unread
+    </span>
+  </header>
+
+  <fieldset class="m-0 mt-6 flex flex-wrap items-center gap-2 border-0 p-0">
+    <legend class="sr-only">Filter activity by type</legend>
+
+    <input type="radio" name="activity-filter" id="filter-all" class="peer/all sr-only" checked>
+    <label for="filter-all" class="cursor-pointer rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 peer-checked/all:border-gray-900 peer-checked/all:bg-gray-900 peer-checked/all:text-white">
+      All
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-mention" class="peer/mention sr-only">
+    <label for="filter-mention" class="cursor-pointer rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 peer-checked/mention:border-gray-900 peer-checked/mention:bg-gray-900 peer-checked/mention:text-white">
+      Mentions
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-assignment" class="peer/assignment sr-only">
+    <label for="filter-assignment" class="cursor-pointer rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 peer-checked/assignment:border-gray-900 peer-checked/assignment:bg-gray-900 peer-checked/assignment:text-white">
+      Assignments
+    </label>
+
+    <input type="radio" name="activity-filter" id="filter-status" class="peer/status sr-only">
+    <label for="filter-status" class="cursor-pointer rounded-full border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 peer-checked/status:border-gray-900 peer-checked/status:bg-gray-900 peer-checked/status:text-white">
+      Status changes
+    </label>
+
+    <ul class="mt-6 w-full basis-full divide-y divide-gray-100 border-t border-gray-100 peer-checked/mention:[&_[data-type=assignment]]:hidden peer-checked/mention:[&_[data-type=status]]:hidden peer-checked/assignment:[&_[data-type=mention]]:hidden peer-checked/assignment:[&_[data-type=status]]:hidden peer-checked/status:[&_[data-type=mention]]:hidden peer-checked/status:[&_[data-type=assignment]]:hidden">
+
+      <li data-type="mention" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-1" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">PS</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-semibold">Priya Shah</span> mentioned you in <span class="font-medium text-gray-700">&ldquo;Q3 Roadmap&rdquo;</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" /></svg>
+              Mention
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-22T09:40:00">5m ago</time>
+          </p>
+        </div>
+        <label for="read-1" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="assignment" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-2" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-amber-100 text-sm font-semibold text-amber-700">DL</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900">You were assigned to <span class="font-medium text-gray-700">&ldquo;Fix checkout timeout bug&rdquo;</span> by <span class="font-semibold">Dana Lin</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+              Assignment
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-22T09:23:00">22m ago</time>
+          </p>
+        </div>
+        <label for="read-2" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="status" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-3" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">DR</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-medium text-gray-700">&ldquo;Design review&rdquo;</span> moved to <span class="font-semibold">In Review</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+              Status change
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-22T08:40:00">1h ago</time>
+          </p>
+        </div>
+        <label for="read-3" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="mention" class="relative flex items-start gap-3 border-l-4 border-transparent py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-4" class="peer/read sr-only" checked>
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">JL</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-semibold">Jordan Lee</span> mentioned you in <span class="font-medium text-gray-700">&ldquo;Sprint retro notes&rdquo;</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" /></svg>
+              Mention
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-22T06:40:00">3h ago</time>
+          </p>
+        </div>
+        <label for="read-4" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="assignment" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-5" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-teal-100 text-sm font-semibold text-teal-700">MK</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900">You were assigned to <span class="font-medium text-gray-700">&ldquo;Update API docs&rdquo;</span> by <span class="font-semibold">Maya Khan</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+              Assignment
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-22T04:40:00">5h ago</time>
+          </p>
+        </div>
+        <label for="read-5" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="status" class="relative flex items-start gap-3 border-l-4 border-transparent py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-6" class="peer/read sr-only" checked>
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">MB</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-medium text-gray-700">&ldquo;Mobile app release&rdquo;</span> marked <span class="font-semibold">Done</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+              Status change
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-21T09:40:00">1d ago</time>
+          </p>
+        </div>
+        <label for="read-6" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="mention" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-7" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-fuchsia-100 text-sm font-semibold text-fuchsia-700">AK</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-semibold">Alex Kim</span> mentioned you in <span class="font-medium text-gray-700">&ldquo;Customer escalation #482&rdquo;</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" /></svg>
+              Mention
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-21T08:10:00">1d ago</time>
+          </p>
+        </div>
+        <label for="read-7" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="assignment" class="relative flex items-start gap-3 border-l-4 border-transparent py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-8" class="peer/read sr-only" checked>
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-amber-100 text-sm font-semibold text-amber-700">RT</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900">You were reassigned from <span class="font-medium text-gray-700">&ldquo;Legacy data migration&rdquo;</span> by <span class="font-semibold">Ravi Toor</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 font-medium text-amber-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M18 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0ZM3 19.235v-.11a6.375 6.375 0 0 1 12.75 0v.109A12.318 12.318 0 0 1 9.374 21c-2.331 0-4.512-.645-6.374-1.766Z" /></svg>
+              Assignment
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-20T09:40:00">2d ago</time>
+          </p>
+        </div>
+        <label for="read-8" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="status" class="relative flex items-start gap-3 border-l-4 border-indigo-500 bg-indigo-50/40 py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-9" class="peer/read sr-only">
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-red-100 text-sm font-semibold text-red-700">!</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-medium text-gray-700">&ldquo;Billing service incident&rdquo;</span> changed to <span class="font-semibold">Resolved</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+              Status change
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-20T08:40:00">2d ago</time>
+          </p>
+        </div>
+        <label for="read-9" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+
+      <li data-type="mention" class="relative flex items-start gap-3 border-l-4 border-transparent py-4 pl-4 pr-2 transition-colors has-[:checked]:border-transparent has-[:checked]:bg-transparent">
+        <input type="checkbox" id="read-10" class="peer/read sr-only" checked>
+        <span class="sr-only peer-checked/read:hidden">Unread</span>
+        <span class="mt-2 h-2 w-2 flex-none rounded-full bg-indigo-600 peer-checked/read:hidden" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">SO</span>
+        <div class="min-w-0 flex-1 peer-checked/read:opacity-60">
+          <p class="truncate text-sm text-gray-900"><span class="font-semibold">Sam Ortiz</span> mentioned you in <span class="font-medium text-gray-700">&ldquo;Hiring plan doc&rdquo;</span></p>
+          <p class="mt-1 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+            <span class="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0Zm0 0c0 1.657 1.007 3 2.25 3S21 13.657 21 12a9 9 0 1 0-2.636 6.364M16.5 12V8.25" /></svg>
+              Mention
+            </span>
+            <span aria-hidden="true">&middot;</span>
+            <time datetime="2026-07-19T09:40:00">3d ago</time>
+          </p>
+        </div>
+        <label for="read-10" class="inline-flex h-8 w-8 flex-none cursor-pointer items-center justify-center rounded-full border border-gray-300 text-gray-400 transition hover:border-indigo-400 hover:text-indigo-500 peer-checked/read:border-indigo-600 peer-checked/read:bg-indigo-600 peer-checked/read:text-white">
+          <span class="sr-only">Mark as read</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4 w-4"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+        </label>
+        <a href="#" class="inline-flex h-8 flex-none items-center rounded-full border border-gray-300 px-3 text-xs font-medium text-gray-600 transition hover:bg-gray-50">Open</a>
+      </li>
+    </ul>
+  </fieldset>
+
+  <div class="flex flex-col items-center gap-2 border-t border-gray-100 py-10 text-center">
+    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" /></svg>
+    </span>
+    <p class="text-sm font-medium text-gray-900">You&rsquo;re all caught up</p>
+    <p class="max-w-sm text-sm text-gray-500">No more activity to show. New mentions, assignments, and status changes will appear here as they happen.</p>
+  </div>
+</section>

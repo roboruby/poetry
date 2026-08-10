@@ -1,0 +1,233 @@
+<main class="mx-auto max-w-6xl px-6 py-10">
+  <%# Header: name, status, description, actions %>
+  <header class="flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold text-gray-900">Atlas Platform Migration</h1>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-800">
+          <span class="h-1.5 w-1.5 rounded-full bg-blue-600"></span>
+          In Progress
+        </span>
+      </div>
+      <p class="mt-3 max-w-2xl text-sm leading-6 text-gray-600">
+        Migrate the core platform services from the legacy monolith to the new
+        modular architecture, including billing, auth, and reporting
+        subsystems, with zero downtime for existing customers.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <a
+        href="#edit-project"
+        class="inline-flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+      >
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-8.5 8.5a2 2 0 0 1-.878.507l-3.06.874a.5.5 0 0 1-.618-.618l.874-3.06a2 2 0 0 1 .507-.878l8.5-8.5Z" />
+        </svg>
+        Edit
+      </a>
+
+      <details class="relative">
+        <summary class="inline-flex list-none items-center gap-1.5 rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-red-700 shadow-sm hover:bg-red-50 [&::-webkit-details-marker]:hidden">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M9 2a1 1 0 0 0-.894.553L7.382 4H4a1 1 0 0 0 0 2v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6a1 1 0 1 0 0-2h-3.382l-.724-1.447A1 1 0 0 0 11 2H9ZM7 8a1 1 0 0 1 2 0v6a1 1 0 1 1-2 0V8Zm5-1a1 1 0 0 0-1 1v6a1 1 0 1 0 2 0V8a1 1 0 0 0-1-1Z" clip-rule="evenodd" />
+          </svg>
+          Archive
+        </summary>
+        <div class="absolute right-0 z-10 mt-2 w-72 rounded-md border border-gray-200 bg-white p-4 shadow-lg">
+          <p class="text-sm text-gray-700">
+            Archiving hides this project from active lists. It can be
+            restored later from the archive.
+          </p>
+          <div class="mt-3 flex justify-end gap-2">
+            <a href="#cancel" class="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 hover:bg-gray-100">Cancel</a>
+            <button type="button" class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-700">
+              Confirm archive
+            </button>
+          </div>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <%# Owner and key dates %>
+    <aside class="lg:col-span-1">
+      <section aria-labelledby="owner-heading" class="rounded-lg border border-gray-200 p-5">
+        <h2 id="owner-heading" class="text-sm font-semibold text-gray-900">Owner</h2>
+        <div class="mt-3 flex items-center gap-3">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
+            JL
+          </span>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-gray-900">Jordan Lee</p>
+            <p class="truncate text-sm text-gray-500">Product Manager</p>
+          </div>
+        </div>
+
+        <h2 class="mt-6 text-sm font-semibold text-gray-900">Key dates</h2>
+        <dl class="mt-3 divide-y divide-gray-100 text-sm">
+          <div class="flex items-center justify-between py-2">
+            <dt class="text-gray-500">Created</dt>
+            <dd class="font-medium text-gray-900">Jan 14, 2026</dd>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <dt class="text-gray-500">Start date</dt>
+            <dd class="font-medium text-gray-900">Feb 1, 2026</dd>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <dt class="text-gray-500">Target completion</dt>
+            <dd class="font-medium text-gray-900">Sep 30, 2026</dd>
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <dt class="text-gray-500">Last updated</dt>
+            <dd class="font-medium text-gray-900">Jul 20, 2026</dd>
+          </div>
+        </dl>
+      </section>
+    </aside>
+
+    <div class="space-y-8 lg:col-span-2">
+      <%# Milestone timeline %>
+      <section aria-labelledby="milestones-heading" class="rounded-lg border border-gray-200 p-5">
+        <h2 id="milestones-heading" class="text-sm font-semibold text-gray-900">Milestones</h2>
+
+        <ol class="mt-5">
+          <li class="relative flex gap-4 pb-6">
+            <span class="absolute left-[7px] top-4 h-full w-px bg-gray-200" aria-hidden="true"></span>
+            <span class="relative z-10 mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-green-600 bg-green-600"></span>
+            <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">Discovery &amp; planning</p>
+                <p class="text-sm text-gray-500">Requirements gathering and technical design sign-off.</p>
+              </div>
+              <div class="shrink-0 text-right">
+                <p class="text-sm text-gray-500">Feb 15, 2026</p>
+                <span class="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Completed</span>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative flex gap-4 pb-6">
+            <span class="absolute left-[7px] top-4 h-full w-px bg-gray-200" aria-hidden="true"></span>
+            <span class="relative z-10 mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-green-600 bg-green-600"></span>
+            <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">Infrastructure setup</p>
+                <p class="text-sm text-gray-500">Provision environments and CI/CD pipelines for the new stack.</p>
+              </div>
+              <div class="shrink-0 text-right">
+                <p class="text-sm text-gray-500">Apr 1, 2026</p>
+                <span class="mt-1 inline-block rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-800">Completed</span>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative flex gap-4 pb-6">
+            <span class="absolute left-[7px] top-4 h-full w-px bg-gray-200" aria-hidden="true"></span>
+            <span class="relative z-10 mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-blue-600 bg-white"></span>
+            <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">Core migration</p>
+                <p class="text-sm text-gray-500">Move billing, auth, and reporting services to the new platform.</p>
+              </div>
+              <div class="shrink-0 text-right">
+                <p class="text-sm text-gray-500">Jul 31, 2026</p>
+                <span class="mt-1 inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">In progress</span>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative flex gap-4 pb-6">
+            <span class="absolute left-[7px] top-4 h-full w-px bg-gray-200" aria-hidden="true"></span>
+            <span class="relative z-10 mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-gray-300 bg-white"></span>
+            <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">QA &amp; hardening</p>
+                <p class="text-sm text-gray-500">Load testing, security review, and bug bash.</p>
+              </div>
+              <div class="shrink-0 text-right">
+                <p class="text-sm text-gray-500">Sep 1, 2026</p>
+                <span class="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Upcoming</span>
+              </div>
+            </div>
+          </li>
+
+          <li class="relative flex gap-4">
+            <span class="relative z-10 mt-1 h-4 w-4 shrink-0 rounded-full border-2 border-gray-300 bg-white"></span>
+            <div class="flex min-w-0 flex-1 items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium text-gray-900">Launch</p>
+                <p class="text-sm text-gray-500">General availability and legacy system decommission.</p>
+              </div>
+              <div class="shrink-0 text-right">
+                <p class="text-sm text-gray-500">Sep 30, 2026</p>
+                <span class="mt-1 inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Upcoming</span>
+              </div>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <%# Five most recent tasks %>
+      <section aria-labelledby="tasks-heading" class="rounded-lg border border-gray-200 p-5">
+        <h2 id="tasks-heading" class="text-sm font-semibold text-gray-900">Recent tasks</h2>
+
+        <div class="mt-4 overflow-x-auto">
+          <table class="w-full min-w-[32rem] text-left text-sm">
+            <thead>
+              <tr class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
+                <th scope="col" class="py-2 pr-4 font-medium">Task</th>
+                <th scope="col" class="py-2 pr-4 font-medium">Assignee</th>
+                <th scope="col" class="py-2 pr-4 font-medium">Due date</th>
+                <th scope="col" class="py-2 pr-0 font-medium">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+              <tr>
+                <td class="py-3 pr-4 font-medium text-gray-900">Migrate billing service to new schema</td>
+                <td class="py-3 pr-4 text-gray-600">Priya Nair</td>
+                <td class="py-3 pr-4 text-gray-600">Jul 25, 2026</td>
+                <td class="py-3 pr-0">
+                  <span class="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">In progress</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-medium text-gray-900">Write integration tests for auth service</td>
+                <td class="py-3 pr-4 text-gray-600">Sam Okafor</td>
+                <td class="py-3 pr-4 text-gray-600">Jul 26, 2026</td>
+                <td class="py-3 pr-0">
+                  <span class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Not started</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-medium text-gray-900">Review infra cost projections</td>
+                <td class="py-3 pr-4 text-gray-600">Jordan Lee</td>
+                <td class="py-3 pr-4 text-gray-600">Jul 24, 2026</td>
+                <td class="py-3 pr-0">
+                  <span class="inline-block rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">Blocked</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-medium text-gray-900">Update API documentation</td>
+                <td class="py-3 pr-4 text-gray-600">Priya Nair</td>
+                <td class="py-3 pr-4 text-gray-600">Jul 28, 2026</td>
+                <td class="py-3 pr-0">
+                  <span class="inline-block rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800">In progress</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-medium text-gray-900">Coordinate stakeholder demo</td>
+                <td class="py-3 pr-4 text-gray-600">Sam Okafor</td>
+                <td class="py-3 pr-4 text-gray-600">Jul 30, 2026</td>
+                <td class="py-3 pr-0">
+                  <span class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">Not started</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>

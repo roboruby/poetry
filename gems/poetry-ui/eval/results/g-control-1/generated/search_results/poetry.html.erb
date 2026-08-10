@@ -1,0 +1,178 @@
+<div class="mx-auto max-w-5xl space-y-8 p-6">
+  <header class="space-y-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Search") %>
+    <% end %>
+
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Search results</h1>
+      <p class="text-sm text-muted-foreground">
+        7 results for <span class="font-medium text-foreground">&ldquo;deployment&rdquo;</span>
+      </p>
+    </div>
+
+    <form action="/search" method="get" class="max-w-xl">
+      <%= poetry_search_field(name: "q", value: "deployment", label: "Search projects, documents, and people", placeholder: "Search projects, documents, and people…") %>
+    </form>
+
+    <%= poetry_separator %>
+  </header>
+
+  <section aria-labelledby="group-projects-heading" class="space-y-4">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <%= poetry_icon(name: :folder) %>
+        <h2 id="group-projects-heading" class="text-lg font-semibold tracking-tight">Projects</h2>
+      </div>
+      <%= poetry_badge(variant: :secondary) { "3 results" } %>
+    </div>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Atlas Deployment Pipeline" } %>
+        <% item.with_description do %>
+          Automates the <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> process across staging and production environments, including rollback hooks.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Owner") { "Priya Shah" } %>
+            <% list.with_item(label: "Updated") { "3 days ago" } %>
+            <% list.with_item(label: "Status") { poetry_badge(variant: :success) { "Active" } } %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Deployment Readiness Q3" } %>
+        <% item.with_description do %>
+          Tracking checklist for the Q3 <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> window, owners, and go/no-go criteria.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Owner") { "Marcus Lee" } %>
+            <% list.with_item(label: "Updated") { "1 week ago" } %>
+            <% list.with_item(label: "Status") { poetry_badge(variant: :warning) { "Planning" } } %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :folder) } %>
+        <% item.with_title { "Blue-Green Deployment Rollout" } %>
+        <% item.with_description do %>
+          Infrastructure plan for a zero-downtime <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> strategy across the edge fleet.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Owner") { "Priya Shah" } %>
+            <% list.with_item(label: "Updated") { "2 days ago" } %>
+            <% list.with_item(label: "Status") { poetry_badge(variant: :success) { "Active" } } %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="group-documents-heading" class="space-y-4">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <%= poetry_icon(name: :"file-text") %>
+        <h2 id="group-documents-heading" class="text-lg font-semibold tracking-tight">Documents</h2>
+      </div>
+      <%= poetry_badge(variant: :secondary) { "4 results" } %>
+    </div>
+
+    <%= poetry_item_group do %>
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Deployment Runbook.pdf" } %>
+        <% item.with_description do %>
+          Step-by-step <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> instructions for on-call engineers, including rollback triggers.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Folder") { "Engineering Docs" } %>
+            <% list.with_item(label: "Updated") { "Yesterday" } %>
+            <% list.with_item(label: "Size") { "1.2 MB" } %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Production Deployment Checklist" } %>
+        <% item.with_description do %>
+          Pre-flight checklist reviewed before every production <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark>.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Folder") { "Engineering Docs" } %>
+            <% list.with_item(label: "Updated") { "4 days ago" } %>
+            <% list.with_item(label: "Size") { "340 KB" } %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Deployment Rollback Procedure" } %>
+        <% item.with_description do %>
+          Emergency steps for reverting a failed <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> to the last known-good release.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Folder") { "Runbooks" } %>
+            <% list.with_item(label: "Updated") { "2 weeks ago" } %>
+            <% list.with_item(label: "Size") { "512 KB" } %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= poetry_item_separator %>
+
+      <%= poetry_item(tag: :a, href: "#", media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"file-text") } %>
+        <% item.with_title { "Zero-Downtime Deployment Guide" } %>
+        <% item.with_description do %>
+          Best practices for staged rollouts and canary <mark class="rounded-sm bg-primary/15 px-0.5 font-medium text-foreground">deployment</mark> across regions.
+        <% end %>
+        <div class="mt-2">
+          <%= poetry_metadata_list(orientation: :horizontal, columns: :three) do |list| %>
+            <% list.with_item(label: "Folder") { "Engineering Docs" } %>
+            <% list.with_item(label: "Updated") { "3 weeks ago" } %>
+            <% list.with_item(label: "Size") { "2.4 MB" } %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </section>
+
+  <section aria-labelledby="group-people-heading" class="space-y-4">
+    <div class="flex items-center justify-between gap-4">
+      <div class="flex items-center gap-2">
+        <%= poetry_icon(name: :user) %>
+        <h2 id="group-people-heading" class="text-lg font-semibold tracking-tight">People</h2>
+      </div>
+      <%= poetry_badge(variant: :secondary) { "0 results" } %>
+    </div>
+
+    <div class="rounded-lg border border-dashed p-8">
+      <%= poetry_empty(media_variant: :icon) do |empty| %>
+        <% empty.with_media { poetry_icon(name: :user, label: "No people found") } %>
+        <% empty.with_title { "No people matched “deployment”" } %>
+        <% empty.with_description { "Try a name, team, or role instead — or browse the matching projects and documents above." } %>
+      <% end %>
+    </div>
+  </section>
+</div>

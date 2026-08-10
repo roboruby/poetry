@@ -1,0 +1,209 @@
+<%
+  roles = ["Owner", "Admin", "Member", "Viewer"]
+
+  members = [
+    { name: "Priya Natarajan", email: "priya.n@northwind.io", role: "Owner", last_active: "Active now", online: true },
+    { name: "Marcus Webb", email: "marcus.webb@northwind.io", role: "Admin", last_active: "Active now", online: true },
+    { name: "Sofia Reyes", email: "sofia.reyes@northwind.io", role: "Admin", last_active: "34 minutes ago", online: false },
+    { name: "Devon Achebe", email: "devon.achebe@northwind.io", role: "Member", last_active: "2 hours ago", online: false },
+    { name: "Lena Kowalski", email: "lena.k@northwind.io", role: "Member", last_active: "Yesterday at 6:12 PM", online: false },
+    { name: "Tomás Alvarez", email: "tomas.alvarez@northwind.io", role: "Member", last_active: "2 days ago", online: false },
+    { name: "Grace Kim", email: "grace.kim@northwind.io", role: "Viewer", last_active: "5 days ago", online: false },
+    { name: "Owen Fitzgerald", email: "owen.f@northwind.io", role: "Member", last_active: "3 weeks ago", online: false },
+  ]
+
+  pending_invitations = [
+    { email: "hannah.brooks@northwind.io", role: "Admin", invited_at: "Invited 2 days ago by Priya Natarajan" },
+    { email: "raj.mehta@northwind.io", role: "Member", invited_at: "Invited 5 days ago by Marcus Webb" },
+    { email: "chloe.dupont@northwind.io", role: "Viewer", invited_at: "Invited 1 week ago by Priya Natarajan" },
+  ]
+
+  avatar_palette = [
+    "bg-indigo-100 text-indigo-700",
+    "bg-rose-100 text-rose-700",
+    "bg-emerald-100 text-emerald-700",
+    "bg-amber-100 text-amber-700",
+    "bg-sky-100 text-sky-700",
+    "bg-fuchsia-100 text-fuchsia-700",
+  ]
+
+  role_badge_classes = {
+    "Owner" => "bg-purple-100 text-purple-700",
+    "Admin" => "bg-blue-100 text-blue-700",
+    "Member" => "bg-slate-100 text-slate-700",
+    "Viewer" => "bg-amber-100 text-amber-700",
+  }
+
+  initials_for = ->(full_name) { full_name.split.map { |part| part[0] }.first(2).join.upcase }
+%>
+
+<div class="min-h-full bg-slate-50 py-10">
+  <div class="mx-auto max-w-5xl px-6">
+    <header class="mb-8 flex items-start justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Members</h1>
+        <p class="mt-1 text-sm text-slate-500">Manage who has access to this workspace, their roles, and outstanding invitations.</p>
+      </div>
+      <p class="mt-1 shrink-0 text-sm text-slate-500">
+        <span class="font-medium text-slate-900"><%= members.size %></span> members
+      </p>
+    </header>
+
+    <section class="mb-8 rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="invite-heading">
+      <details class="group">
+        <summary class="flex cursor-pointer list-none items-center justify-between gap-4 px-6 py-4 [&::-webkit-details-marker]:hidden">
+          <span class="flex flex-col">
+            <span id="invite-heading" class="text-base font-semibold text-slate-900">Invite a teammate</span>
+            <span class="text-sm text-slate-500">Send an email invitation and assign a role.</span>
+          </span>
+          <span class="inline-flex shrink-0 items-center gap-2 rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white group-open:bg-slate-100 group-open:text-slate-600">
+            <span class="group-open:hidden">Invite member</span>
+            <span class="hidden group-open:inline">Close</span>
+          </span>
+        </summary>
+
+        <form method="post" action="#" class="flex flex-wrap items-end gap-4 border-t border-slate-100 px-6 py-5">
+          <div class="min-w-[260px] flex-1">
+            <label for="invite-email" class="block text-sm font-medium text-slate-700">Email address</label>
+            <input
+              type="email"
+              id="invite-email"
+              name="invitation[email]"
+              required
+              placeholder="name@company.com"
+              class="mt-1 block w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            >
+          </div>
+
+          <div class="w-44">
+            <label for="invite-role" class="block text-sm font-medium text-slate-700">Role</label>
+            <select
+              id="invite-role"
+              name="invitation[role]"
+              class="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+            >
+              <% roles.each do |role| %>
+                <option value="<%= role %>" <%= "selected" if role == "Member" %>><%= role %></option>
+              <% end %>
+            </select>
+          </div>
+
+          <button
+            type="submit"
+            class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2"
+          >
+            Send invitation
+          </button>
+        </form>
+      </details>
+    </section>
+
+    <section class="mb-10 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="members-heading">
+      <div class="flex items-center justify-between gap-4 border-b border-slate-100 px-6 py-4">
+        <h2 id="members-heading" class="text-base font-semibold text-slate-900">Current members</h2>
+
+        <form role="search" method="get" action="#" class="relative w-72">
+          <label for="member-search" class="sr-only">Search members by name or email</label>
+          <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M9 3.5a5.5 5.5 0 1 0 3.38 9.86l3.63 3.63a.75.75 0 1 0 1.06-1.06l-3.63-3.63A5.5 5.5 0 0 0 9 3.5Zm-4 5.5a4 4 0 1 1 8 0 4 4 0 0 1-8 0Z" fill="currentColor"/>
+          </svg>
+          <input
+            type="search"
+            id="member-search"
+            name="q"
+            placeholder="Search by name or email"
+            class="w-full rounded-lg border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-200"
+          >
+        </form>
+      </div>
+
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Name</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Role</th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Last active</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100 bg-white">
+          <% members.each_with_index do |member, index| %>
+            <tr class="hover:bg-slate-50">
+              <td class="px-6 py-3">
+                <div class="flex items-center gap-3">
+                  <span class="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold <%= avatar_palette[index % avatar_palette.length] %>">
+                    <%= initials_for.call(member[:name]) %>
+                    <% if member[:online] %>
+                      <span class="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white" aria-hidden="true"></span>
+                    <% end %>
+                  </span>
+                  <div class="min-w-0">
+                    <p class="truncate text-sm font-medium text-slate-900"><%= member[:name] %></p>
+                    <p class="truncate text-sm text-slate-500"><%= member[:email] %></p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-3">
+                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-medium <%= role_badge_classes[member[:role]] %>">
+                  <%= member[:role] %>
+                </span>
+              </td>
+              <td class="whitespace-nowrap px-6 py-3 text-sm text-slate-500">
+                <%= member[:last_active] %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="rounded-xl border border-slate-200 bg-white shadow-sm" aria-labelledby="pending-heading">
+      <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
+        <h2 id="pending-heading" class="text-base font-semibold text-slate-900">Pending invitations</h2>
+        <span class="text-sm text-slate-500"><%= pending_invitations.size %> pending</span>
+      </div>
+
+      <% if pending_invitations.any? %>
+        <ul class="divide-y divide-slate-100">
+          <% pending_invitations.each_with_index do |invitation, index| %>
+            <li class="flex items-center justify-between gap-4 px-6 py-4">
+              <div class="flex items-center gap-3 min-w-0">
+                <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-semibold <%= avatar_palette[(index + 3) % avatar_palette.length] %>">
+                  <%= initials_for.call(invitation[:email].split("@").first.tr(".", " ")) %>
+                </span>
+                <div class="min-w-0">
+                  <p class="truncate text-sm font-medium text-slate-900"><%= invitation[:email] %></p>
+                  <p class="truncate text-sm text-slate-500">
+                    <span class="inline-flex rounded-full px-2 py-0.5 text-xs font-medium <%= role_badge_classes[invitation[:role]] %>"><%= invitation[:role] %></span>
+                    <span class="ml-1"><%= invitation[:invited_at] %></span>
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex shrink-0 items-center gap-2">
+                <form method="post" action="#">
+                  <button
+                    type="submit"
+                    class="rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+                  >
+                    Resend
+                  </button>
+                </form>
+                <form method="post" action="#">
+                  <input type="hidden" name="_method" value="delete">
+                  <button
+                    type="submit"
+                    class="rounded-lg border border-red-200 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-300"
+                  >
+                    Revoke
+                  </button>
+                </form>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="px-6 py-10 text-center text-sm text-slate-500">No pending invitations.</p>
+      <% end %>
+    </section>
+  </div>
+</div>

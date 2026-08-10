@@ -1,0 +1,182 @@
+<%
+  stats = [
+    { label: "Active projects", value: "12", delta: "+3", direction: :up, note: "vs last month" },
+    { label: "Tasks completed this week", value: "84", delta: "+12%", direction: :up, note: "vs last week" },
+    { label: "Overdue items", value: "7", delta: "-3", direction: :down_good, note: "vs last week" },
+    { label: "Team velocity", value: "38 pts", delta: "+5%", direction: :up, note: "per week, 4-wk avg" },
+  ]
+
+  activity = [
+    { actor: "Priya Nair", initials: "PN", color: "bg-violet-600", action: "completed", target: "Checkout redesign QA pass", project: "Storefront Revamp", time: "12 min ago" },
+    { actor: "Diego Alvarez", initials: "DA", color: "bg-sky-600", action: "moved", target: "API rate limiting", project: "Platform Hardening", time: "48 min ago", detail: "In Progress → Review" },
+    { actor: "Sam Okafor", initials: "SO", color: "bg-amber-600", action: "flagged", target: "Vendor contract renewal", project: "Ops Migration", time: "1 hr ago", detail: "marked overdue" },
+    { actor: "Lena Kowalski", initials: "LK", color: "bg-emerald-600", action: "commented on", target: "Onboarding email sequence", project: "Lifecycle Marketing", time: "2 hr ago" },
+    { actor: "Priya Nair", initials: "PN", color: "bg-violet-600", action: "completed", target: "Mobile nav accessibility fixes", project: "Storefront Revamp", time: "3 hr ago" },
+    { actor: "Marcus Webb", initials: "MW", color: "bg-rose-600", action: "created", target: "Q3 retro action items", project: "Team Ops", time: "5 hr ago" },
+    { actor: "Diego Alvarez", initials: "DA", color: "bg-sky-600", action: "completed", target: "Load test staging cluster", project: "Platform Hardening", time: "yesterday" },
+    { actor: "Sam Okafor", initials: "SO", color: "bg-amber-600", action: "reassigned", target: "Warehouse ERP cutover", project: "Ops Migration", time: "yesterday", detail: "to Lena Kowalski" },
+  ]
+
+  projects = [
+    { name: "Storefront Revamp", owner: "PN", color: "bg-violet-600", status: "On track", status_color: "bg-emerald-100 text-emerald-700", pct: 78, done: 39, total: 50, due: "Aug 8" },
+    { name: "Platform Hardening", owner: "DA", color: "bg-sky-600", status: "On track", status_color: "bg-emerald-100 text-emerald-700", pct: 61, done: 22, total: 36, due: "Aug 22" },
+    { name: "Ops Migration", owner: "SO", color: "bg-amber-600", status: "At risk", status_color: "bg-amber-100 text-amber-800", pct: 44, done: 18, total: 41, due: "Jul 29" },
+    { name: "Lifecycle Marketing", owner: "LK", color: "bg-emerald-600", status: "On track", status_color: "bg-emerald-100 text-emerald-700", pct: 85, done: 34, total: 40, due: "Jul 31" },
+    { name: "Team Ops", owner: "MW", color: "bg-rose-600", status: "Overdue", status_color: "bg-red-100 text-red-700", pct: 30, done: 6, total: 20, due: "Jul 18" },
+    { name: "Data Warehouse v2", owner: "DA", color: "bg-sky-600", status: "On track", status_color: "bg-emerald-100 text-emerald-700", pct: 52, done: 27, total: 52, due: "Sep 5" },
+  ]
+%>
+
+<div class="min-h-full bg-slate-50 px-6 py-8 lg:px-10">
+  <div class="mx-auto max-w-7xl">
+
+    <header class="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Analytics overview</h1>
+        <p class="mt-1 text-sm text-slate-500">Workspace performance across all active projects.</p>
+      </div>
+      <form class="flex items-center gap-2">
+        <label for="range" class="text-sm font-medium text-slate-600">Date range</label>
+        <select id="range" name="range" class="rounded-md border border-slate-300 bg-white py-1.5 pl-3 pr-8 text-sm text-slate-700 shadow-sm focus:border-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200">
+          <option>Last 7 days</option>
+          <option selected>Last 30 days</option>
+          <option>This quarter</option>
+          <option>Year to date</option>
+        </select>
+      </form>
+    </header>
+
+    <!-- Headline stats -->
+    <section aria-label="Headline metrics" class="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <% stats.each do |s| %>
+        <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <p class="text-sm font-medium text-slate-500"><%= s[:label] %></p>
+          <div class="mt-2 flex items-baseline gap-2">
+            <p class="text-3xl font-semibold tracking-tight text-slate-900"><%= s[:value] %></p>
+            <span class="inline-flex items-center gap-0.5 text-sm font-medium <%= s[:direction] == :down_good ? 'text-emerald-600' : (s[:direction] == :up ? 'text-emerald-600' : 'text-red-600') %>">
+              <% if s[:direction] == :down_good %>
+                <svg viewBox="0 0 20 20" fill="currentColor" class="size-3.5"><path fill-rule="evenodd" d="M10 17a.75.75 0 0 1-.75-.75V5.56L5.03 9.78a.75.75 0 0 1-1.06-1.06l5.5-5.5a.75.75 0 0 1 1.06 0l5.5 5.5a.75.75 0 1 1-1.06 1.06L10.75 5.56v10.69A.75.75 0 0 1 10 17Z" clip-rule="evenodd" transform="rotate(180 10 10)"/></svg>
+              <% else %>
+                <svg viewBox="0 0 20 20" fill="currentColor" class="size-3.5"><path fill-rule="evenodd" d="M10 3a.75.75 0 0 1 .75.75v10.69l4.22-4.22a.75.75 0 1 1 1.06 1.06l-5.5 5.5a.75.75 0 0 1-1.06 0l-5.5-5.5a.75.75 0 1 1 1.06-1.06l4.22 4.22V3.75A.75.75 0 0 1 10 3Z" clip-rule="evenodd"/></svg>
+              <% end %>
+              <%= s[:delta] %>
+            </span>
+          </div>
+          <p class="mt-1 text-xs text-slate-400"><%= s[:note] %></p>
+        </div>
+      <% end %>
+    </section>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <!-- Recent activity -->
+      <section aria-labelledby="activity-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 id="activity-heading" class="text-base font-semibold text-slate-900">Recent activity</h2>
+          <span class="text-xs text-slate-400">Updated moments ago</span>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <% activity.each do |a| %>
+            <li class="flex items-start gap-3 px-5 py-4">
+              <span class="flex size-8 shrink-0 items-center justify-center rounded-full <%= a[:color] %> text-xs font-semibold text-white">
+                <%= a[:initials] %>
+              </span>
+              <div class="min-w-0 flex-1">
+                <p class="text-sm text-slate-700">
+                  <span class="font-medium text-slate-900"><%= a[:actor] %></span>
+                  <%= a[:action] %>
+                  <span class="font-medium text-slate-900"><%= a[:target] %></span>
+                  <% if a[:detail] %>
+                    <span class="text-slate-400">(<%= a[:detail] %>)</span>
+                  <% end %>
+                </p>
+                <p class="mt-0.5 text-xs text-slate-400"><%= a[:project] %> &middot; <%= a[:time] %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+
+      <!-- Overdue breakdown -->
+      <section aria-labelledby="overdue-heading" class="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="border-b border-slate-200 px-5 py-4">
+          <h2 id="overdue-heading" class="text-base font-semibold text-slate-900">Overdue items</h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <li class="flex items-center justify-between px-5 py-3">
+            <span class="text-sm text-slate-700">Warehouse ERP cutover</span>
+            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">4 days late</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3">
+            <span class="text-sm text-slate-700">Vendor contract renewal</span>
+            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">2 days late</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3">
+            <span class="text-sm text-slate-700">Retro action items sign-off</span>
+            <span class="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700">2 days late</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3">
+            <span class="text-sm text-slate-700">Support macro audit</span>
+            <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">1 day late</span>
+          </li>
+          <li class="flex items-center justify-between px-5 py-3">
+            <span class="text-sm text-slate-700">Data retention policy update</span>
+            <span class="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">1 day late</span>
+          </li>
+        </ul>
+        <div class="border-t border-slate-100 px-5 py-3">
+          <a href="#" class="text-sm font-medium text-slate-600 hover:text-slate-900">View all overdue items &rarr;</a>
+        </div>
+      </section>
+    </div>
+
+    <!-- Per-project progress -->
+    <section aria-labelledby="projects-heading" class="mt-6 rounded-xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+        <h2 id="projects-heading" class="text-base font-semibold text-slate-900">Project progress</h2>
+        <span class="text-xs text-slate-400">6 active projects</span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[720px] text-left text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-400">
+              <th scope="col" class="px-5 py-3 font-medium">Project</th>
+              <th scope="col" class="px-5 py-3 font-medium">Owner</th>
+              <th scope="col" class="px-5 py-3 font-medium">Status</th>
+              <th scope="col" class="px-5 py-3 font-medium">Tasks</th>
+              <th scope="col" class="px-5 py-3 font-medium">Progress</th>
+              <th scope="col" class="px-5 py-3 font-medium">Due</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% projects.each do |p| %>
+              <tr>
+                <td class="px-5 py-4 font-medium text-slate-900"><%= p[:name] %></td>
+                <td class="px-5 py-4">
+                  <span class="flex size-6 items-center justify-center rounded-full <%= p[:color] %> text-[10px] font-semibold text-white">
+                    <%= p[:owner] %>
+                  </span>
+                </td>
+                <td class="px-5 py-4">
+                  <span class="inline-flex rounded-full <%= p[:status_color] %> px-2.5 py-0.5 text-xs font-medium">
+                    <%= p[:status] %>
+                  </span>
+                </td>
+                <td class="px-5 py-4 text-slate-600"><%= p[:done] %> / <%= p[:total] %></td>
+                <td class="px-5 py-4">
+                  <div class="flex items-center gap-2">
+                    <div class="h-2 w-32 overflow-hidden rounded-full bg-slate-100">
+                      <div class="h-full rounded-full <%= p[:color] %>" style="width: <%= p[:pct] %>%"></div>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500"><%= p[:pct] %>%</span>
+                  </div>
+                </td>
+                <td class="px-5 py-4 text-slate-600"><%= p[:due] %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</div>

@@ -1,0 +1,109 @@
+<%
+  services = [
+    { name: "API", icon: "server", status: :operational, uptime: "99.98%", warning_days: [41] },
+    { name: "Web Dashboard", icon: "layout-dashboard", status: :operational, uptime: "99.99%", warning_days: [] },
+    { name: "Authentication", icon: "shield-check", status: :degraded, uptime: "98.42%", warning_days: (85..89).to_a },
+    { name: "Database", icon: "database", status: :operational, uptime: "99.95%", warning_days: [12] },
+    { name: "Webhooks", icon: "webhook", status: :operational, uptime: "99.91%", warning_days: [30, 31] },
+    { name: "CDN", icon: "globe", status: :operational, uptime: "100.00%", warning_days: [] },
+  ]
+  services.each do |svc|
+    day_statuses = Array.new(90, :operational)
+    svc[:warning_days].each { |i| day_statuses[i] = :degraded }
+    svc[:day_statuses] = day_statuses
+  end
+%>
+<div class="mx-auto max-w-4xl space-y-8 p-6">
+  <header class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Northwind Cloud Status</h1>
+    <p class="text-sm text-muted-foreground">Real-time status and uptime history for Northwind Cloud services.</p>
+  </header>
+
+  <%# Overall status banner - tinted to match the current aggregate state (warning: one degraded service). %>
+  <section aria-labelledby="overall-status-heading" class="rounded-lg border border-warning/50 bg-warning/10 p-6">
+    <div class="flex flex-wrap items-start gap-4">
+      <%= poetry_icon(name: :"triangle-alert", class: "size-6 shrink-0 text-warning", label: "Warning") %>
+      <div class="min-w-0 flex-1 space-y-1">
+        <div class="flex flex-wrap items-center gap-2">
+          <h2 id="overall-status-heading" class="text-lg font-semibold">Degraded Performance</h2>
+          <%= poetry_badge(variant: :warning) { "Degraded" } %>
+        </div>
+        <p class="text-sm text-muted-foreground">Authentication is experiencing elevated error rates. All other services are operating normally.</p>
+      </div>
+      <p class="whitespace-nowrap text-xs text-muted-foreground">Updated 3 minutes ago</p>
+    </div>
+  </section>
+
+  <%# Services and their 90-day uptime history. %>
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Service status" } %>
+    <% card.with_description { "Uptime over the last 90 days" } %>
+    <%= poetry_item_group(role: "list", class: "divide-y divide-border") do %>
+      <% services.each_with_index do |svc, index| %>
+        <%= poetry_item(role: "listitem", class: "py-4 first:pt-0 last:pb-0") do |item| %>
+          <% item.with_media(variant: :icon) { poetry_icon(name: svc[:icon].to_sym) } %>
+          <% item.with_title { svc[:name] } %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: svc[:status] == :degraded ? :warning : :success) { svc[:status] == :degraded ? "Degraded" : "Operational" } %>
+          <% end %>
+          <div class="mt-3 space-y-1.5">
+            <div class="flex items-end gap-0.5" aria-hidden="true">
+              <% svc[:day_statuses].each do |day_status| %>
+                <span class="h-6 w-1 rounded-sm <%= day_status == :degraded ? "bg-warning" : "bg-success" %>" title="<%= day_status == :degraded ? "Degraded performance" : "Operational" %>"></span>
+              <% end %>
+            </div>
+            <div class="flex items-center justify-between text-xs text-muted-foreground">
+              <span>90 days ago</span>
+              <span class="font-medium text-foreground"><%= svc[:uptime] %> uptime</span>
+              <span>Today</span>
+            </div>
+          </div>
+        <% end %>
+        <% unless index == services.length - 1 %>
+          <%= poetry_item_separator %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <%# Active incident with a timeline of updates. %>
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Active incident" } %>
+    <% card.with_description { "Elevated error rates on Authentication" } %>
+    <% card.with_action { poetry_badge(variant: :warning) { "Monitoring" } } %>
+    <div class="space-y-6">
+      <%= poetry_metadata_list(columns: :two, orientation: :horizontal) do |list| %>
+        <% list.with_item(label: "Affected service") { "Authentication" } %>
+        <% list.with_item(label: "Started") { "Today at 09:14 UTC" } %>
+        <% list.with_item(label: "Duration") { "1 hr 6 min and counting" } %>
+        <% list.with_item(label: "Next update") { "Within 30 minutes" } %>
+      <% end %>
+      <%= poetry_separator %>
+      <%= poetry_timeline do |t| %>
+        <% t.with_item(title: "Investigating", time: "09:14 UTC", completed: true) { "We are investigating reports of elevated error rates and slow sign-ins on the Authentication service." } %>
+        <% t.with_item(title: "Identified", time: "09:41 UTC", completed: true) { "The issue has been identified as a degraded upstream database connection pool. A fix is being tested." } %>
+        <% t.with_item(title: "Monitoring", time: "10:20 UTC", completed: false) { "A fix has been deployed and we are monitoring the results. Error rates have decreased but remain above baseline." } %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <%# Subscribe to updates. %>
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Subscribe to updates" } %>
+    <% card.with_description { "Get an email when we open, update, or resolve an incident." } %>
+    <form class="flex flex-col gap-3 sm:flex-row sm:items-end" action="#" method="get">
+      <div class="min-w-0 flex-1 space-y-1.5">
+        <%= poetry_label(for_id: "subscribe-email") { "Email address" } %>
+        <%= poetry_input_group do %>
+          <% poetry_input_group_addon { poetry_icon(name: :mail) } %>
+          <%= poetry_input_group_input(id: "subscribe-email", name: "email", type: "email", placeholder: "you@example.com", required: true) %>
+        <% end %>
+      </div>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :mail) } %>
+        Subscribe
+      <% end %>
+    </form>
+    <p class="mt-3 text-xs text-muted-foreground">We'll only email you about new incidents and scheduled maintenance. Unsubscribe anytime.</p>
+  <% end %>
+</div>

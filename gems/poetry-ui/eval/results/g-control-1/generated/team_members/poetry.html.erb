@@ -1,0 +1,185 @@
+<section class="mx-auto max-w-6xl space-y-8 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Members</h1>
+    <p class="text-sm text-muted-foreground">Manage who has access to the Northwind workspace.</p>
+  </div>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Invite a teammate" } %>
+    <% card.with_description { "They'll get an email invite to join this workspace with the role you choose." } %>
+    <form action="#" method="post" class="flex flex-wrap items-end gap-4">
+      <%= poetry_field(id: "invite-email", label_text: "Email address", required: true, class: "min-w-64 flex-1") do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "email", name: "invitation[email]", placeholder: "teammate@company.com") %>
+      <% end %>
+      <%= poetry_field(id: "invite-role", label_text: "Role") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "invitation[role]",
+                                  options: [["Member", "member"], ["Admin", "admin"], ["Owner", "owner"]]) %>
+      <% end %>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+        Send invite
+      <% end %>
+    </form>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h2 class="text-lg font-semibold tracking-tight">Team members</h2>
+        <p class="text-sm text-muted-foreground">5 people have access to this workspace.</p>
+      </div>
+      <form action="#" method="get" class="w-full max-w-xs">
+        <%= poetry_search_field(name: "q", label: "Search members", placeholder: "Search by name or email…") %>
+      </form>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Workspace members with role and last-active time." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Member" } %>
+            <%= poetry_table_head { "Role" } %>
+            <%= poetry_table_head(class: "text-right") { "Last active" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Ava Bennett") { "AB" } %>
+                <div class="grid leading-tight">
+                  <span class="font-medium">Ava Bennett</span>
+                  <span class="text-xs text-muted-foreground">ava@northwind.dev</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Owner" } } %>
+            <%= poetry_table_cell(class: "text-right text-muted-foreground") { "2 minutes ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Marcus Chen") { "MC" } %>
+                <div class="grid leading-tight">
+                  <span class="font-medium">Marcus Chen</span>
+                  <span class="text-xs text-muted-foreground">marcus@northwind.dev</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Admin" } } %>
+            <%= poetry_table_cell(class: "text-right text-muted-foreground") { "1 hour ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Priya Patel") { "PP" } %>
+                <div class="grid leading-tight">
+                  <span class="font-medium">Priya Patel</span>
+                  <span class="text-xs text-muted-foreground">priya@northwind.dev</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-right text-muted-foreground") { "Yesterday" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Diego Ramirez") { "DR" } %>
+                <div class="grid leading-tight">
+                  <span class="font-medium">Diego Ramirez</span>
+                  <span class="text-xs text-muted-foreground">diego@northwind.dev</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-right text-muted-foreground") { "3 days ago" } %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell do %>
+              <div class="flex items-center gap-3">
+                <%= poetry_avatar(label: "Sophie Turner") { "ST" } %>
+                <div class="grid leading-tight">
+                  <span class="font-medium">Sophie Turner</span>
+                  <span class="text-xs text-muted-foreground">sophie@northwind.dev</span>
+                </div>
+              </div>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-right text-muted-foreground") { "2 weeks ago" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Pending invitations</h2>
+      <p class="text-sm text-muted-foreground">Invites that haven't been accepted yet.</p>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Pending invitations with role, invited date, and actions." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Email" } %>
+            <%= poetry_table_head { "Role" } %>
+            <%= poetry_table_head { "Invited" } %>
+            <%= poetry_table_head(class: "text-right") { "Actions" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "jordan@example.com" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Member" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "3 days ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <div class="flex items-center justify-end gap-2">
+                <form action="#" method="post">
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) do |button| %>
+                    <% button.with_leading { poetry_icon(name: :"refresh-cw") } %>
+                    Resend
+                  <% end %>
+                </form>
+                <form action="#" method="post">
+                  <%= poetry_alert_dialog(size: :sm) do |dialog| %>
+                    <% dialog.with_trigger(variant: :destructive, size: :sm) { "Revoke" } %>
+                    <% dialog.with_title { "Revoke this invitation?" } %>
+                    <% dialog.with_description { "jordan@example.com will no longer be able to accept this invite. You can invite them again later." } %>
+                    <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+                    <% dialog.with_action(variant: :destructive, type: :submit) { "Revoke invitation" } %>
+                  <% end %>
+                </form>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") { "taylor@example.com" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :secondary) { "Admin" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "1 week ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <div class="flex items-center justify-end gap-2">
+                <form action="#" method="post">
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) do |button| %>
+                    <% button.with_leading { poetry_icon(name: :"refresh-cw") } %>
+                    Resend
+                  <% end %>
+                </form>
+                <form action="#" method="post">
+                  <%= poetry_alert_dialog(size: :sm) do |dialog| %>
+                    <% dialog.with_trigger(variant: :destructive, size: :sm) { "Revoke" } %>
+                    <% dialog.with_title { "Revoke this invitation?" } %>
+                    <% dialog.with_description { "taylor@example.com will no longer be able to accept this invite. You can invite them again later." } %>
+                    <% dialog.with_cancel(variant: :outline) { "Cancel" } %>
+                    <% dialog.with_action(variant: :destructive, type: :submit) { "Revoke invitation" } %>
+                  <% end %>
+                </form>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+</section>

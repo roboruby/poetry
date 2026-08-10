@@ -1,0 +1,917 @@
+{
+  "schema": "results-v1",
+  "meta": {
+    "generated_on": "g-control-2",
+    "generation": {
+      "model": "claude-sonnet-5",
+      "max_turns": 40,
+      "guided": false,
+      "build_page_available": true,
+      "toolbelts": {
+        "poetry": "Read,Glob,Grep,Write,Skill,Bash(bin/check:*),mcp__poetry__compose,mcp__poetry__check,mcp__poetry__describe_component,mcp__poetry__list_components,mcp__poetry__list_blocks,mcp__poetry__describe_block,mcp__poetry__build_page",
+        "raw_tailwind": "Read,Glob,Grep,Write,Skill"
+      },
+      "units_recorded": 24,
+      "unit_cost_sum_usd": 14.4005,
+      "receipted_cost_usd": 14.4007
+    },
+    "protocol_notes": [
+      "hermetic generation: claude CLI cwd'd into twin tmp hosts; host B tree+prompt asserted free of the house name (HermeticityError aborts the run)",
+      "one identical generation prompt for both arms; the treatment lives in host files",
+      "symmetric no-<script> rule; native HTML capabilities allowed on both arms",
+      "capture stylesheet compiled with the generated arms as a Tailwind source (no purge bias)"
+    ]
+  },
+  "tasks": {
+    "activity_inbox": {
+      "brief": "The activity inbox: a stream of mentions, assignments and status changes with unread indicators, per-item actions to mark read or open, a filter by type, and an all-caught-up state at the end",
+      "generation": {
+        "poetry": {
+          "cost_usd": 1.134,
+          "num_turns": 37,
+          "duration_s": 277.9,
+          "attempts": 1,
+          "tools": {
+            "Read": 5,
+            "Skill": 2,
+            "ToolSearch": 2,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_component": 12,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__list_components": 1,
+            "Grep": 6,
+            "Write": 1,
+            "mcp__poetry__check": 2
+          },
+          "artifact": true
+        },
+        "raw_tailwind": {
+          "cost_usd": 0.6082,
+          "num_turns": 6,
+          "duration_s": 619.6,
+          "attempts": 1,
+          "tools": {
+            "Glob": 3,
+            "Read": 1,
+            "Write": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 0.833
+    },
+    "analytics_overview": {
+      "brief": "The analytics overview for a project-management workspace: headline numbers for active projects, tasks completed this week, overdue items and team velocity, a recent-activity list, and a per-project progress summary - a working product screen, not a demo",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1759,
+          "num_turns": 5,
+          "duration_s": 68.7,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 1.1506,
+          "num_turns": 39,
+          "duration_s": 237.0,
+          "attempts": 1,
+          "tools": {
+            "Read": 7,
+            "Skill": 2,
+            "ToolSearch": 2,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_component": 13,
+            "Grep": 7,
+            "mcp__poetry__list_components": 1,
+            "mcp__poetry__check": 2,
+            "Write": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "audit_log": {
+      "brief": "The audit log for a workspace: a filterable list of security-relevant events - who did what, when, and from where - grouped by day, with severity indicated and an export affordance",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.5595,
+          "num_turns": 5,
+          "duration_s": 236.4,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 1.1596,
+          "num_turns": 44,
+          "duration_s": 339.3,
+          "attempts": 1,
+          "tools": {
+            "Read": 3,
+            "Skill": 2,
+            "ToolSearch": 1,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__describe_component": 21,
+            "mcp__poetry__list_components": 1,
+            "Grep": 7,
+            "Write": 1,
+            "mcp__poetry__check": 1,
+            "Bash": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "billing_settings": {
+      "brief": "The billing page for a team workspace: the current plan with its renewal date, the payment method on file, usage this period against plan limits, and an invoice history with amounts, payment status and downloadable receipts",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1995,
+          "num_turns": 5,
+          "duration_s": 59.3,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.7364,
+          "num_turns": 19,
+          "duration_s": 194.6,
+          "attempts": 1,
+          "tools": {
+            "Read": 8,
+            "ToolSearch": 1,
+            "Skill": 2,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_block": 2,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "integrations": {
+      "brief": "The integrations page of a SaaS product: currently connected services with health status and a manage action, and a catalog of available integrations grouped by category, each with a short description and a connect button",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.2099,
+          "num_turns": 4,
+          "duration_s": 163.1,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 1,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 1.0553,
+          "num_turns": 38,
+          "duration_s": 233.9,
+          "attempts": 1,
+          "tools": {
+            "Read": 3,
+            "Skill": 2,
+            "ToolSearch": 1,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__describe_component": 9,
+            "mcp__poetry__list_components": 1,
+            "Grep": 6,
+            "Glob": 3,
+            "Bash": 1,
+            "Write": 1,
+            "mcp__poetry__check": 1,
+            "Edit": 4
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": false,
+          "has_heading": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "login": {
+      "brief": "The sign-in screen for a business app: email and password with a forgot-password link, a single-sign-on alternative, and a request-access path for new users - branded, centered, production-ready",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1085,
+          "num_turns": 4,
+          "duration_s": 39.3,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 1,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.985,
+          "num_turns": 29,
+          "duration_s": 179.4,
+          "attempts": 1,
+          "tools": {
+            "Read": 5,
+            "Skill": 2,
+            "ToolSearch": 2,
+            "mcp__poetry__compose": 1,
+            "Glob": 2,
+            "Bash": 4,
+            "Grep": 1,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__describe_component": 5,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": false,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 0.833
+    },
+    "onboarding_checklist": {
+      "brief": "The first-run screen after a user creates a workspace: a short welcome, three setup steps with completion states (connect a repository, invite the team, create the first project), and a way to skip for now",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1001,
+          "num_turns": 4,
+          "duration_s": 32.0,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 1,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.8081,
+          "num_turns": 30,
+          "duration_s": 156.6,
+          "attempts": 1,
+          "tools": {
+            "Read": 5,
+            "ToolSearch": 1,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_block": 1,
+            "mcp__poetry__list_components": 1,
+            "mcp__poetry__describe_component": 11,
+            "mcp__poetry__get_skill": 1,
+            "Skill": 2,
+            "Grep": 2,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 0.833
+    },
+    "pricing": {
+      "brief": "The public pricing page: three tiers with monthly prices and feature lists, one recommended plan visually emphasized, an enterprise contact option, and four common billing questions answered at the bottom",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1904,
+          "num_turns": 5,
+          "duration_s": 53.9,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.5395,
+          "num_turns": 23,
+          "duration_s": 128.9,
+          "attempts": 1,
+          "tools": {
+            "Read": 2,
+            "Skill": 2,
+            "ToolSearch": 1,
+            "mcp__poetry__build_page": 3,
+            "mcp__poetry__describe_block": 3,
+            "mcp__poetry__describe_component": 7,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "project_detail": {
+      "brief": "A single project's page: name, status and description up top with edit and archive actions, owner and key dates, a milestone timeline, and the five most recent tasks with assignees and due dates",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1565,
+          "num_turns": 5,
+          "duration_s": 50.7,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.4855,
+          "num_turns": 27,
+          "duration_s": 108.6,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "ToolSearch": 1,
+            "Skill": 2,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__build_page": 4,
+            "mcp__poetry__list_blocks": 1,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__describe_component": 10,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        },
+        "raw_tailwind": {
+          "renders": false,
+          "has_heading": false,
+          "no_raw_colors": false,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "search_results": {
+      "brief": "The global search results page for the query 'deployment': matches grouped across projects, documents and people, each result with a context snippet and metadata, per-group result counts, and a helpful message for one group with no matches",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1813,
+          "num_turns": 4,
+          "duration_s": 58.1,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 1,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 0.9044,
+          "num_turns": 29,
+          "duration_s": 183.8,
+          "attempts": 1,
+          "tools": {
+            "Read": 6,
+            "Skill": 2,
+            "ToolSearch": 1,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_component": 8,
+            "mcp__poetry__list_components": 1,
+            "Grep": 4,
+            "Write": 1,
+            "mcp__poetry__check": 2
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        }
+      },
+      "verdict": "raw_tailwind",
+      "axes": {
+        "hierarchy": "raw_tailwind",
+        "composition": "raw_tailwind",
+        "clarity": "raw_tailwind",
+        "brief_fit": "raw_tailwind"
+      },
+      "swap_consistency": 1.0
+    },
+    "status_page": {
+      "brief": "The public status page for a hosted product: an overall status banner, each service's current state with uptime over the last 90 days, an active incident with timeline updates, and a way to subscribe to updates",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.1814,
+          "num_turns": 4,
+          "duration_s": 67.7,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 1,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 1.4018,
+          "num_turns": 35,
+          "duration_s": 260.6,
+          "attempts": 1,
+          "tools": {
+            "Read": 7,
+            "Skill": 2,
+            "ToolSearch": 3,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_component": 9,
+            "Grep": 2,
+            "mcp__poetry__describe_block": 2,
+            "mcp__poetry__list_components": 1,
+            "mcp__poetry__check": 4,
+            "Write": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    },
+    "team_members": {
+      "brief": "The members page of a workspace admin area: invite a teammate by email with a role choice, a searchable member list showing avatar, name, role and last-active, and pending invitations that can be resent or revoked",
+      "generation": {
+        "raw_tailwind": {
+          "cost_usd": 0.2537,
+          "num_turns": 5,
+          "duration_s": 85.5,
+          "attempts": 1,
+          "tools": {
+            "Read": 1,
+            "Glob": 2,
+            "Write": 1
+          },
+          "artifact": true
+        },
+        "poetry": {
+          "cost_usd": 1.1154,
+          "num_turns": 42,
+          "duration_s": 223.0,
+          "attempts": 1,
+          "tools": {
+            "Read": 3,
+            "Skill": 2,
+            "ToolSearch": 1,
+            "mcp__poetry__compose": 1,
+            "mcp__poetry__describe_block": 4,
+            "mcp__poetry__describe_component": 21,
+            "Grep": 1,
+            "Bash": 4,
+            "Write": 1,
+            "mcp__poetry__check": 1
+          },
+          "artifact": true
+        }
+      },
+      "gates": {
+        "poetry": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": true
+        },
+        "raw_tailwind": {
+          "renders": true,
+          "has_heading": true,
+          "no_raw_colors": true,
+          "design_slop": false
+        }
+      },
+      "verdict": "poetry",
+      "axes": {
+        "hierarchy": "poetry",
+        "composition": "poetry",
+        "clarity": "poetry",
+        "brief_fit": "poetry"
+      },
+      "swap_consistency": 1.0
+    }
+  },
+  "incomplete": [],
+  "summary": {
+    "overall": {
+      "poetry": 6,
+      "raw_tailwind": 6
+    },
+    "win_rate": {
+      "poetry_headline": {
+        "n": 6,
+        "of": 12,
+        "rate": 0.5
+      },
+      "poetry_decided": {
+        "n": 6,
+        "of": 12,
+        "rate": 0.5
+      }
+    },
+    "axes": {
+      "hierarchy": {
+        "poetry": 6,
+        "raw_tailwind": 6,
+        "tied": 0
+      },
+      "composition": {
+        "poetry": 6,
+        "raw_tailwind": 6,
+        "tied": 0
+      },
+      "clarity": {
+        "poetry": 6,
+        "raw_tailwind": 6,
+        "tied": 0
+      },
+      "brief_fit": {
+        "poetry": 7,
+        "raw_tailwind": 5,
+        "tied": 0
+      }
+    },
+    "gate_pass_rates": {
+      "poetry": {
+        "design_slop": {
+          "n": 7,
+          "of": 12,
+          "rate": 0.583
+        },
+        "has_heading": {
+          "n": 10,
+          "of": 12,
+          "rate": 0.833
+        },
+        "no_raw_colors": {
+          "n": 11,
+          "of": 12,
+          "rate": 0.917
+        },
+        "renders": {
+          "n": 11,
+          "of": 12,
+          "rate": 0.917
+        }
+      },
+      "raw_tailwind": {
+        "design_slop": {
+          "n": 1,
+          "of": 12,
+          "rate": 0.083
+        },
+        "has_heading": {
+          "n": 11,
+          "of": 12,
+          "rate": 0.917
+        },
+        "no_raw_colors": {
+          "n": 11,
+          "of": 12,
+          "rate": 0.917
+        },
+        "renders": {
+          "n": 11,
+          "of": 12,
+          "rate": 0.917
+        }
+      }
+    },
+    "gate_deltas_ranked": [
+      {
+        "gate": "design_slop",
+        "bucket": "slop",
+        "delta": 0.5,
+        "runs": 12
+      },
+      {
+        "gate": "no_raw_colors",
+        "bucket": "slop",
+        "delta": 0.0,
+        "runs": 12
+      },
+      {
+        "gate": "renders",
+        "bucket": "structure",
+        "delta": 0.0,
+        "runs": 12
+      },
+      {
+        "gate": "has_heading",
+        "bucket": "a11y",
+        "delta": -0.084,
+        "runs": 12
+      }
+    ],
+    "bucket_deltas": {
+      "slop": 0.25,
+      "structure": 0.0,
+      "a11y": -0.083
+    },
+    "failure_taxonomy": {
+      "poetry": {
+        "design_slop": [
+          "activity_inbox",
+          "analytics_overview",
+          "integrations",
+          "pricing",
+          "project_detail"
+        ],
+        "has_heading": [
+          "integrations",
+          "login"
+        ],
+        "renders": [
+          "integrations"
+        ],
+        "no_raw_colors": [
+          "integrations"
+        ]
+      },
+      "raw_tailwind": {
+        "design_slop": [
+          "activity_inbox",
+          "analytics_overview",
+          "audit_log",
+          "billing_settings",
+          "integrations",
+          "login",
+          "onboarding_checklist",
+          "pricing",
+          "project_detail",
+          "status_page",
+          "team_members"
+        ],
+        "renders": [
+          "project_detail"
+        ],
+        "has_heading": [
+          "project_detail"
+        ],
+        "no_raw_colors": [
+          "project_detail"
+        ]
+      }
+    }
+  },
+  "predictions": {
+    "p1_overall": {
+      "registered": "poetry wins overall >= 70%",
+      "observed": {
+        "n": 6,
+        "of": 12,
+        "rate": 0.5
+      },
+      "held": false
+    },
+    "p2_widest_gaps": {
+      "registered": "gate pass-rate gap widest on a11y + design-slop",
+      "observed_bucket_deltas": {
+        "slop": 0.25,
+        "structure": 0.0,
+        "a11y": -0.083
+      },
+      "held": false
+    },
+    "p3_blocks_signal": {
+      "registered": "raw_tailwind winning any composition axis is the Blocks signal ",
+      "tasks_where_raw_won_composition": [
+        "analytics_overview",
+        "integrations",
+        "login",
+        "onboarding_checklist",
+        "pricing",
+        "search_results"
+      ],
+      "triggered": true
+    }
+  }
+}

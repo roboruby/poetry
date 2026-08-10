@@ -1,0 +1,66 @@
+<div class="mx-auto max-w-3xl p-6">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Welcome to Meridian</h1>
+      <p class="text-sm text-muted-foreground">
+        Your workspace is ready. Finish these three steps to get your team up and running.
+      </p>
+    </div>
+    <%= poetry_button(tag: :a, href: "/dashboard", variant: :ghost) { "Skip for now" } %>
+  </div>
+
+  <div class="mt-6">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Setup checklist" } %>
+      <% card.with_description { "Complete these to unlock the full workspace." } %>
+
+      <div class="mb-4">
+        <%= poetry_progress(label: "Setup progress", value: 0, max: 3, show_value: false) %>
+        <p class="mt-1.5 text-xs text-muted-foreground">0 of 3 steps complete</p>
+      </div>
+
+      <%= poetry_item_group do %>
+        <%= poetry_item(media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"git-branch") } %>
+          <% item.with_title { "Connect a repository" } %>
+          <% item.with_description { "Link a GitHub or GitLab repo so Meridian can track branches, deploys, and pull requests." } %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "Not started" } %>
+            <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) { "Connect repository" } %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :users) } %>
+          <% item.with_title { "Invite the team" } %>
+          <% item.with_description { "Bring in teammates by email - they'll land in this workspace with a starter role." } %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "Not started" } %>
+            <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) { "Invite teammates" } %>
+          <% end %>
+        <% end %>
+
+        <%= poetry_item_separator %>
+
+        <%= poetry_item(media_variant: :icon, role: "listitem") do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-plus") } %>
+          <% item.with_title { "Create your first project" } %>
+          <% item.with_description { "Projects group repositories, environments, and deploys - most teams start with one." } %>
+          <% item.with_actions do %>
+            <%= poetry_badge(variant: :outline) { "Not started" } %>
+            <%= poetry_button(tag: :a, href: "#", variant: :outline, size: :sm) { "Create project" } %>
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <% card.with_footer do %>
+        <p class="text-xs text-muted-foreground">
+          You can always finish setup later from
+          <%= poetry_link(href: "/settings/setup") { "workspace settings" } %>.
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

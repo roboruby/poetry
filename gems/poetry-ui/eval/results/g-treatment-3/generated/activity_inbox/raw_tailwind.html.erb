@@ -1,0 +1,155 @@
+<%
+  items = [
+    { id: "1", type: "mention", actor: "Priya Nair", verb: "mentioned you in", target: "Q3 Roadmap Review", project: "Planning",
+      snippet: "“...cc @you can you confirm the timeline for the billing migration before Thursday?”",
+      detail: "Priya Nair mentioned you in a comment on Q3 Roadmap Review: “cc @you can you confirm the timeline for the billing migration before Thursday? Want to make sure engineering has enough runway before we present to leadership.”",
+      time: "2m ago", unread: true },
+    { id: "2", type: "assignment", actor: "Marcus Chen", verb: "assigned you to", target: "Fix checkout timeout", project: "Storefront",
+      snippet: "Priority: High — customers are seeing 504s during checkout.",
+      detail: "Marcus Chen assigned Fix checkout timeout to you. Priority: High. Customers are intermittently seeing 504 errors while completing checkout during peak traffic; needs a fix before the weekend promo goes live.",
+      time: "18m ago", unread: true },
+    { id: "3", type: "status", actor: "Sam Ortiz", verb: "moved", target: "API Rate Limiting", project: "Platform",
+      snippet: "In Review → Done",
+      detail: "Sam Ortiz moved API Rate Limiting from In Review to Done. All acceptance criteria were verified against staging traffic and the change is now merged to main.",
+      time: "41m ago", unread: true },
+    { id: "4", type: "mention", actor: "Jordan Lee", verb: "mentioned you in", target: "Design system tokens", project: "Design",
+      snippet: "“...curious what @you thinks about deprecating the legacy spacing scale.”",
+      detail: "Jordan Lee mentioned you in Design system tokens: “Curious what @you thinks about deprecating the legacy spacing scale in favor of the new 4px grid. Would rather decide before the next release cut.”",
+      time: "1h ago", unread: true },
+    { id: "5", type: "status", actor: "Ana Torres", verb: "moved", target: "Billing dashboard", project: "Platform",
+      snippet: "In Progress → Blocked",
+      detail: "Ana Torres moved Billing dashboard from In Progress to Blocked. Reason: waiting on finance to confirm the new invoice line-item format before implementation can continue.",
+      time: "3h ago", unread: false },
+    { id: "6", type: "assignment", actor: "Priya Nair", verb: "assigned you to", target: "Write onboarding docs", project: "Docs",
+      snippet: "Due next Friday — pairs with the new signup flow.",
+      detail: "Priya Nair assigned Write onboarding docs to you, due next Friday. This should walk new users through the updated signup flow shipped last week.",
+      time: "Yesterday", unread: false },
+    { id: "7", type: "mention", actor: "Sam Ortiz", verb: "mentioned you in", target: "Incident postmortem #482", project: "Platform",
+      snippet: "“...thanks @you for the quick rollback, saved us a lot of pain.”",
+      detail: "Sam Ortiz mentioned you in Incident postmortem #482: “Thanks @you for the quick rollback, saved us a lot of pain. Adding the timeline you put together as an appendix.”",
+      time: "Yesterday", unread: false },
+    { id: "8", type: "status", actor: "Marcus Chen", verb: "moved", target: "Mobile push notifications", project: "Mobile",
+      snippet: "Backlog → In Progress",
+      detail: "Marcus Chen moved Mobile push notifications from Backlog to In Progress. Kickoff notes are in the project channel; targeting a beta rollout in two weeks.",
+      time: "2d ago", unread: false },
+    { id: "9", type: "assignment", actor: "Jordan Lee", verb: "added you as reviewer on", target: "Refactor auth middleware", project: "Platform",
+      snippet: "Ready for review — touches session handling.",
+      detail: "Jordan Lee added you as a reviewer on Refactor auth middleware. The change touches session handling and token refresh, so a second pair of eyes on edge cases would help.",
+      time: "3d ago", unread: false },
+  ]
+
+  type_meta = {
+    "mention"    => { label: "Mention",        badge: "bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-200", dot: "bg-indigo-500", accent: "border-l-indigo-500" },
+    "assignment" => { label: "Assignment",     badge: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-200",   dot: "bg-amber-500",  accent: "border-l-amber-500" },
+    "status"     => { label: "Status change",  badge: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200", dot: "bg-emerald-500", accent: "border-l-emerald-500" },
+  }
+
+  unread_count = items.count { |i| i[:unread] }
+  mention_count = items.count { |i| i[:type] == "mention" }
+  assignment_count = items.count { |i| i[:type] == "assignment" }
+  status_count = items.count { |i| i[:type] == "status" }
+%>
+<section class="mx-auto max-w-3xl px-4 py-8">
+  <header class="mb-6 flex items-end justify-between gap-4">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Activity</h1>
+      <p class="mt-1 text-sm text-slate-500">Mentions, assignments and status changes across your projects.</p>
+    </div>
+    <% if unread_count > 0 %>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-600 px-3 py-1 text-sm font-medium text-white">
+        <span class="h-1.5 w-1.5 rounded-full bg-white"></span>
+        <%= unread_count %> unread
+      </span>
+    <% end %>
+  </header>
+
+  <div class="rounded-xl border border-slate-200 bg-white shadow-sm has-[#filter-mention:checked]:[&_.item:not(.type-mention)]:hidden has-[#filter-assignment:checked]:[&_.item:not(.type-assignment)]:hidden has-[#filter-status:checked]:[&_.item:not(.type-status)]:hidden">
+    <fieldset class="flex flex-wrap items-center gap-2 border-b border-slate-100 px-4 py-3">
+      <legend class="sr-only">Filter activity by type</legend>
+
+      <input type="radio" name="activity-filter" id="filter-all" class="peer/all sr-only" checked>
+      <label for="filter-all" class="cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 peer-checked/all:bg-slate-900 peer-checked/all:text-white">
+        All <span class="opacity-70">(<%= items.size %>)</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-mention" class="peer/mention sr-only">
+      <label for="filter-mention" class="cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 peer-checked/mention:bg-indigo-600 peer-checked/mention:text-white">
+        Mentions <span class="opacity-70">(<%= mention_count %>)</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-assignment" class="peer/assignment sr-only">
+      <label for="filter-assignment" class="cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 peer-checked/assignment:bg-amber-600 peer-checked/assignment:text-white">
+        Assignments <span class="opacity-70">(<%= assignment_count %>)</span>
+      </label>
+
+      <input type="radio" name="activity-filter" id="filter-status" class="peer/status sr-only">
+      <label for="filter-status" class="cursor-pointer rounded-full px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 peer-checked/status:bg-emerald-600 peer-checked/status:text-white">
+        Status changes <span class="opacity-70">(<%= status_count %>)</span>
+      </label>
+    </fieldset>
+
+    <ul class="divide-y divide-slate-100">
+      <% items.each do |item| %>
+        <% meta = type_meta[item[:type]] %>
+        <li class="item type-<%= item[:type] %> group/row flex items-start gap-3 border-l-4 border-l-transparent bg-indigo-50/40 px-2 py-0 transition-colors has-[input:checked]:border-l-transparent has-[input:checked]:bg-white <%= item[:unread] ? meta[:accent] : "" %>">
+          <details class="group min-w-0 flex-1">
+            <summary class="flex cursor-pointer list-none items-start gap-4 px-2 py-4 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="unread-dot mt-2 h-2 w-2 flex-shrink-0 rounded-full <%= meta[:dot] %>" aria-hidden="true"></span>
+
+              <span class="mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-slate-200 text-xs font-semibold text-slate-700">
+                <%= item[:actor].split(" ").map { |n| n[0] }.first(2).join.upcase %>
+              </span>
+
+              <span class="min-w-0 flex-1">
+                <span class="flex flex-wrap items-center gap-2">
+                  <span class="item-title truncate text-sm font-semibold text-slate-900">
+                    <%= item[:actor] %> <span class="font-normal text-slate-600"><%= item[:verb] %></span> “<%= item[:target] %>”
+                  </span>
+                  <span class="inline-flex flex-shrink-0 items-center rounded-full px-2 py-0.5 text-xs font-medium <%= meta[:badge] %>">
+                    <%= meta[:label] %>
+                  </span>
+                </span>
+                <span class="mt-0.5 block truncate text-sm text-slate-500"><%= item[:project] %> · <%= item[:snippet] %></span>
+              </span>
+
+              <span class="ml-2 flex flex-shrink-0 flex-col items-end gap-2">
+                <span class="whitespace-nowrap text-xs text-slate-400"><%= item[:time] %></span>
+                <span class="open-label inline-flex items-center gap-1 text-xs font-medium text-indigo-600 group-open:hidden">
+                  Open
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 0 1 1.06 0L10 10.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+                </span>
+                <span class="close-label hidden items-center gap-1 text-xs font-medium text-slate-500 group-open:inline-flex">
+                  Close
+                  <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5 rotate-180"><path fill-rule="evenodd" d="M5.22 7.22a.75.75 0 0 1 1.06 0L10 10.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" /></svg>
+                </span>
+              </span>
+            </summary>
+
+            <div class="ml-[3.25rem] mr-4 mb-4 rounded-lg bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-600">
+              <%= item[:detail] %>
+            </div>
+          </details>
+
+          <div class="flex flex-shrink-0 items-center gap-2 py-4 pr-2">
+            <input type="checkbox" id="read-<%= item[:id] %>" class="sr-only" <%= "checked" unless item[:unread] %>>
+            <label for="read-<%= item[:id] %>" class="mark-read-label cursor-pointer whitespace-nowrap rounded-md border border-slate-300 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 group-has-[input:checked]/row:hidden">
+              Mark as read
+            </label>
+            <span class="read-badge hidden items-center gap-1 whitespace-nowrap text-xs font-medium text-emerald-600 group-has-[input:checked]/row:inline-flex">
+              <svg viewBox="0 0 20 20" fill="currentColor" class="h-3.5 w-3.5"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+              Read
+            </span>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+
+  <div class="mt-6 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50/60 px-6 py-10 text-center">
+    <span class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+      <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5"><path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" /></svg>
+    </span>
+    <p class="text-sm font-semibold text-slate-900">You&rsquo;re all caught up</p>
+    <p class="max-w-sm text-sm text-slate-500">That&rsquo;s every mention, assignment and status change from the last few days. New activity will appear at the top of the list.</p>
+  </div>
+</section>

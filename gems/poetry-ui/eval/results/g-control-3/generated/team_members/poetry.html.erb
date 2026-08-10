@@ -1,0 +1,112 @@
+<% Member = Struct.new(:id, :name, :email, :role, :initials, :last_active_at) unless defined?(Member) %>
+<% Invitation = Struct.new(:id, :email, :role, :invited_at) unless defined?(Invitation) %>
+
+<% members = [
+  Member.new(1, "Priya Natarajan", "priya@meridian.dev", "Owner", "PN", 8.minutes.ago),
+  Member.new(2, "Diego Alvarez", "diego@meridian.dev", "Admin", "DA", 1.hour.ago),
+  Member.new(3, "Sasha Kim", "sasha@meridian.dev", "Member", "SK", 22.hours.ago),
+  Member.new(4, "Jordan Blake", "jordan@meridian.dev", "Member", "JB", 3.days.ago),
+  Member.new(5, "Wren Okafor", "wren@meridian.dev", "Member", "WO", 19.days.ago),
+  Member.new(6, "Talia Fischer", "talia@meridian.dev", "Member", "TF", nil),
+] %>
+
+<% pending_invitations = [
+  Invitation.new(101, "morgan@meridian.dev", "Admin", 2.hours.ago),
+  Invitation.new(102, "casey@meridian.dev", "Member", 1.day.ago),
+  Invitation.new(103, "robin@meridian.dev", "Billing", 4.days.ago),
+] %>
+
+<% table_state = Poetry::Ui::DataTable::State.from_params(params, sortable: %w[name last_active_at]) %>
+
+<div class="mx-auto max-w-5xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Meridian", href: "#") %>
+      <% crumb.with_item("Settings", href: "#") %>
+      <% crumb.with_item("Members") %>
+    <% end %>
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Members</h1>
+      <p class="text-sm text-muted-foreground">Manage who has access to the Meridian workspace and what they can do.</p>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Invite a teammate" } %>
+    <% card.with_description { "They'll get an email with a link to join the workspace." } %>
+    <%= form_with url: "#", method: :post, local: true, class: "flex flex-wrap items-end gap-3" do %>
+      <%= poetry_field(id: "invite-email", label_text: "Email address", required: true, class: "min-w-64 flex-1") do |field| %>
+        <%= poetry_input(**field.control_attributes, type: "email", name: "invite[email]", placeholder: "name@company.com") %>
+      <% end %>
+      <%= poetry_field(id: "invite-role", label_text: "Role", class: "w-40") do |field| %>
+        <%= poetry_native_select(**field.control_attributes, name: "invite[role]",
+                                 options: [["Member", "member"], ["Admin", "admin"], ["Billing", "billing"]]) %>
+      <% end %>
+      <%= poetry_button(type: :submit) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"user-plus") } %>
+        Send invite
+      <% end %>
+    <% end %>
+  <% end %>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">All members</h2>
+      <p class="text-sm text-muted-foreground">Showing <%= members.size %> people with access.</p>
+    </div>
+    <%= poetry_data_table(rows: members, state: table_state, path: ->(p) { "?#{p.to_query}" },
+                          caption: "Workspace members with role and last-active time.",
+                          filter_label: "Search members", filter_placeholder: "Search by name or email…") do |table| %>
+      <% table.with_column("Member", key: :name, sortable: true) do |row| %>
+        <div class="flex items-center gap-3">
+          <%= poetry_avatar(label: row.name, size: :sm) { row.initials } %>
+          <div class="grid leading-tight">
+            <span class="font-medium"><%= row.name %></span>
+            <span class="text-xs text-muted-foreground"><%= row.email %></span>
+          </div>
+        </div>
+      <% end %>
+      <% table.with_column("Role") { |row| poetry_badge(variant: :outline) { row.role } } %>
+      <% table.with_column("Last active", key: :last_active_at, sortable: true) do |row| %>
+        <% if row.last_active_at %>
+          <%= tag.time "#{time_ago_in_words(row.last_active_at)} ago", datetime: row.last_active_at.iso8601, class: "text-sm text-muted-foreground tabular-nums" %>
+        <% else %>
+          <span class="text-sm text-muted-foreground">Never signed in</span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </section>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Pending invitations" } %>
+    <% card.with_description { "Invites that haven't been accepted yet." } %>
+    <% if pending_invitations.any? %>
+      <%= poetry_item_group(role: "list", class: "space-y-1") do %>
+        <% pending_invitations.each_with_index do |invite, index| %>
+          <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+            <% item.with_media { poetry_icon(name: :mail) } %>
+            <% item.with_title { invite.email } %>
+            <% item.with_description { "#{invite.role} · Invited #{time_ago_in_words(invite.invited_at)} ago" } %>
+            <% item.with_actions do %>
+              <div class="flex items-center gap-2">
+                <%= form_with url: "#", method: :post, class: "contents" do %>
+                  <%= poetry_button(variant: :outline, size: :sm, type: :submit) { "Resend" } %>
+                <% end %>
+                <%= form_with url: "#", method: :delete, class: "contents" do %>
+                  <%= poetry_button(variant: :destructive, size: :sm, type: :submit) { "Revoke" } %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+          <% poetry_item_separator unless index == pending_invitations.size - 1 %>
+        <% end %>
+      <% end %>
+    <% else %>
+      <%= poetry_empty do |empty| %>
+        <% empty.with_title { "No pending invitations" } %>
+        <% empty.with_description { "Invites you send will show up here until they're accepted." } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

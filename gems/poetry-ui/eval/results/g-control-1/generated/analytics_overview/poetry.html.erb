@@ -1,0 +1,111 @@
+<div class="mx-auto max-w-7xl space-y-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="text-sm text-muted-foreground">Delivery health across every active project, updated hourly.</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="text-sm text-muted-foreground">Week of Jul 20 – Jul 26, 2026</span>
+      <%= poetry_button(variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :download) } %>
+        Export report
+      <% end %>
+    </div>
+  </div>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Active projects", delta: "+2 vs last month", trend: :up) do |stat| %>
+        <% stat.with_description { "3 launching this week" } %>
+        18
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Tasks completed this week", delta: "+18% vs last week", trend: :up) do |stat| %>
+        <% stat.with_description { "Across 18 active projects" } %>
+        142
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Overdue items", delta: "+4 vs last week", trend: :up, sentiment: :negative) do |stat| %>
+        <% stat.with_description { "5 projects affected" } %>
+        9
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Team velocity", delta: "-3 pts vs last sprint", trend: :down) do |stat| %>
+        <% stat.with_description { "Rolling 2-sprint average" } %>
+        38 pts
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Recent activity" } %>
+      <% card.with_description { "Latest updates across the workspace" } %>
+      <%= poetry_timeline do |timeline| %>
+        <% timeline.with_item(title: "Atlas: Sprint 14 marked complete", time: "18m ago", icon: :"circle-check", completed: true) { "Priya closed out the sprint with 32 of 34 points delivered." } %>
+        <% timeline.with_item(title: "Beacon: 3 tasks moved to overdue", time: "1h ago", icon: :"circle-alert") { "The automated overdue sweep flagged the API migration tasks." } %>
+        <% timeline.with_item(title: "Nimbus: new comment on \"Billing webhook retry\"", time: "2h ago", icon: :"message-square") { "Dana asked for a rollback plan before merging." } %>
+        <% timeline.with_item(title: "Foundry: owner reassigned", time: "4h ago", icon: :"user-plus") { "The onboarding revamp task moved from Sam to Priya." } %>
+        <% timeline.with_item(title: "Atlas: release branch cut", time: "Yesterday", icon: :"git-branch", completed: true) { "release/1.14 created ahead of Friday's ship date." } %>
+        <% timeline.with_item(title: "Horizon: milestone \"Beta access\" opened", time: "Yesterday", icon: :flag) { "Jordan opened the beta access milestone to 40 waitlisted teams." } %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Project progress" } %>
+      <% card.with_description { "Completion by project this sprint" } %>
+      <%= poetry_item_group do %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Atlas" } %>
+          <% item.with_description { "Priya Shah · due Aug 2" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Atlas completion", value: 82, show_value: true) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Beacon" } %>
+          <% item.with_description { "Jordan Lee · due Jul 28" } %>
+          <% item.with_actions { poetry_badge(variant: :warning) { "At risk" } } %>
+          <%= poetry_progress(label: "Beacon completion", value: 54, show_value: true) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Nimbus" } %>
+          <% item.with_description { "Dana Osei · due Aug 9" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Nimbus completion", value: 91, show_value: true) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Foundry" } %>
+          <% item.with_description { "Sam Rivera · due Aug 15" } %>
+          <% item.with_actions { poetry_badge(variant: :info) { "Planning" } } %>
+          <%= poetry_progress(label: "Foundry completion", value: 23, show_value: true) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Horizon" } %>
+          <% item.with_description { "Priya Shah · due Jul 30" } %>
+          <% item.with_actions { poetry_badge(variant: :warning) { "At risk" } } %>
+          <%= poetry_progress(label: "Horizon completion", value: 67, show_value: true) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Compass" } %>
+          <% item.with_description { "Jordan Lee · due Sep 1" } %>
+          <% item.with_actions { poetry_badge(variant: :outline) { "Not started" } } %>
+          <%= poetry_progress(label: "Compass completion", value: 8, show_value: true) %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

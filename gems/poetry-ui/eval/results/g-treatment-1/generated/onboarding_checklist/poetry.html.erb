@@ -1,0 +1,48 @@
+<% completed_steps = 1 %>
+<% total_steps = 3 %>
+
+<div class="mx-auto flex max-w-3xl flex-col gap-8 px-6 py-12">
+  <div class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-2">
+      <h1 class="text-2xl font-semibold tracking-tight">Welcome to your new workspace</h1>
+      <p class="text-sm text-muted-foreground">
+        You&rsquo;re all set up. Finish these quick steps to get your team working here.
+      </p>
+    </div>
+    <%= poetry_link(href: "/dashboard") { "Skip for now" } %>
+  </div>
+
+  <%= poetry_progress(label: "Setup progress", value: completed_steps, max: total_steps, show_value: true) %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Get your workspace ready" } %>
+    <% card.with_description { "#{completed_steps} of #{total_steps} steps complete" } %>
+
+    <div role="list" class="divide-y divide-border">
+      <%= poetry_item(media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :"circle-check-big", class: "size-5 text-primary", label: "Completed") } %>
+        <% item.with_title { "Connect a repository" } %>
+        <% item.with_description { "Link a Git repository so deploys and activity show up in this workspace." } %>
+        <% item.with_actions { poetry_badge(variant: :success) { "Connected" } } %>
+      <% end %>
+
+      <%= poetry_item(media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :circle, class: "size-5 text-muted-foreground", label: "Not started") } %>
+        <% item.with_title { "Invite the team" } %>
+        <% item.with_description { "Bring in teammates so they can review changes and share ownership." } %>
+        <% item.with_actions { poetry_button(tag: :a, href: "/team/invitations/new") { "Invite" } } %>
+      <% end %>
+
+      <%= poetry_item(media_variant: :icon) do |item| %>
+        <% item.with_media { poetry_icon(name: :circle, class: "size-5 text-muted-foreground", label: "Not started") } %>
+        <% item.with_title { "Create your first project" } %>
+        <% item.with_description { "Set up a project to start tracking work in this workspace." } %>
+        <% item.with_actions { poetry_button(tag: :a, href: "/projects/new") { "Create project" } } %>
+      <% end %>
+    </div>
+
+    <% card.with_footer do %>
+      <p class="text-xs text-muted-foreground">You can finish these anytime from workspace settings.</p>
+    <% end %>
+  <% end %>
+</div>

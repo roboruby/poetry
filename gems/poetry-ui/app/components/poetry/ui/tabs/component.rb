@@ -27,8 +27,29 @@ module Poetry
           "Tabs switch VIEWS of one context; use navigation (links) when the URL should change."
         ].freeze
 
-        TABS_CONTROLLER = %i[poetry core tabs].freeze
-        ROVING = %i[poetry core roving_focus].freeze
+        use_stimulus do
+          on :root do
+            controller(:tabs) { register }
+          end
+          # BOTH controllers declare on ONE element (the ToggleGroup lesson,
+          # held by construction here): roving-focus registers and owns the
+          # keyboard; the tabs controller is NOT registered on the list -
+          # its focus_activate action routes up to the root instance.
+          on :list do
+            controller :roving_focus do
+              register
+              value :orientation
+              value :loop, true
+              action :keydown, on: :keydown
+            end
+            controller :tabs do
+              action :focus_activate, on: event(:roving_focus, :entry)
+            end
+          end
+          on :trigger do
+            controller(:tabs) { action :activate, on: :click }
+          end
+        end
 
         Tab = Data.define(:title, :value, :disabled, :panel, :defer)
 
@@ -117,7 +138,7 @@ module Poetry
           html_attributes.merge_if_not_set(
             {
               "data-slot" => "tabs", "data-orientation" => orientation
-            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -128,7 +149,7 @@ module Poetry
             "class" => "#{css(:list)} #{css(:"list_#{variant}")}".strip
           }
           attrs["aria-label"] = label if label.present?
-          attrs.merge(list_stimulus_attributes)
+          attrs.merge(stimulus_attributes_for(:list))
         end
 
         def trigger_attributes(tab)
@@ -138,9 +159,8 @@ module Poetry
             "data-poetry-collection-item" => "",
             "aria-selected" => active?(tab).to_s, "aria-controls" => panel_id(tab),
             "tabindex" => active?(tab) ? "0" : "-1",
-            "class" => css(:trigger),
-            "data-action" => "click->poetry--core--tabs#activate"
-          }
+            "class" => css(:trigger)
+          }.merge(stimulus_attributes_for(:trigger))
           attrs["data-active"] = "" if active?(tab)
           if tab.disabled
             attrs["disabled"] = true
@@ -166,29 +186,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-tabs-#{SecureRandom.hex(4)}"
-        end
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          tabs = Poetry::Core::Stimulus::Builder.new(TABS_CONTROLLER, attrs)
-          tabs.register_controller
-          attrs.to_attributes
-        end
-
-        # BOTH builders into ONE Attributes instance (the ToggleGroup
-        # lesson): roving-focus registers here and owns the keyboard; the
-        # tabs controller is NOT registered on the list - its focusin action
-        # routes up to the root instance.
-        def list_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          roving.with_value(:orientation, orientation)
-          roving.with_value(:loop, true)
-          roving.with_action(:keydown, on: :keydown)
-          tabs = Poetry::Core::Stimulus::Builder.new(TABS_CONTROLLER, attrs)
-          tabs.with_action(:focus_activate, on: "poetry--core--roving-focus:entry")
-          attrs.to_attributes
         end
       end
     end

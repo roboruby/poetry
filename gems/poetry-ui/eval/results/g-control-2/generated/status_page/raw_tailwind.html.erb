@@ -1,0 +1,170 @@
+<%
+  # ------------------------------------------------------------------
+  # Self-contained demo data. In the real app this would come from
+  # the controller; it's inlined here so the template is a single file.
+  # ------------------------------------------------------------------
+  status_meta = {
+    operational: { label: "Operational",         dot: "bg-emerald-500", text: "text-emerald-700", bg: "bg-emerald-50",  ring: "ring-emerald-600/20", bar: "bg-emerald-500" },
+    degraded:    { label: "Degraded Performance", dot: "bg-amber-500",   text: "text-amber-700",   bg: "bg-amber-50",    ring: "ring-amber-600/20",   bar: "bg-amber-500" },
+    partial:     { label: "Partial Outage",       dot: "bg-orange-500",  text: "text-orange-700",  bg: "bg-orange-50",   ring: "ring-orange-600/20",  bar: "bg-orange-500" },
+    major:       { label: "Major Outage",         dot: "bg-red-500",     text: "text-red-700",     bg: "bg-red-50",      ring: "ring-red-600/20",     bar: "bg-red-500" },
+  }
+  severity = { operational: 0, degraded: 1, partial: 2, major: 3 }
+
+  services = [
+    { name: "API",                 uptime: 99.98,  incidents: {} },
+    { name: "Web Dashboard",       uptime: 99.95,  incidents: { 71 => :degraded } },
+    { name: "Authentication",      uptime: 99.72,  incidents: { 12 => :degraded, 11 => :degraded, 3 => :degraded } },
+    { name: "Payments API",        uptime: 98.41,  incidents: { 0 => :partial, 1 => :degraded, 45 => :major } },
+    { name: "Notifications",       uptime: 100.00, incidents: {} },
+    { name: "Database Cluster",    uptime: 99.99,  incidents: { 58 => :degraded } },
+  ]
+
+  services = services.map do |svc|
+    worst = svc[:incidents].values.map { |s| severity[s] }.max || 0
+    current = severity.key(worst)
+    svc.merge(status: current)
+  end
+
+  overall_severity = services.map { |s| severity[s[:status]] }.max
+  overall_status = severity.key(overall_severity)
+
+  overall_copy = {
+    operational: "All Systems Operational",
+    degraded:    "Some Systems Experiencing Degraded Performance",
+    partial:     "Partial System Outage",
+    major:       "Major System Outage",
+  }
+
+  incident = {
+    title: "Elevated error rates on Payments API",
+    impact: :partial,
+    affected: ["Payments API"],
+    started_at: "Jul 22, 2026 09:05 UTC",
+    updates: [
+      { status: "Monitoring",   time: "Jul 22, 2026 10:15 UTC", body: "A fix has been implemented and we are monitoring the results. Error rates have returned to normal levels." },
+      { status: "Identified",   time: "Jul 22, 2026 09:40 UTC", body: "We've identified the cause as a misconfigured load balancer rule introduced during a routine deploy, and are rolling out a fix." },
+      { status: "Investigating", time: "Jul 22, 2026 09:05 UTC", body: "We are investigating reports of elevated error rates when processing payments. Some customers may see failed or delayed transactions." },
+    ],
+  }
+
+  incident_dot = { "Investigating" => "bg-red-500", "Identified" => "bg-orange-500", "Monitoring" => "bg-amber-500", "Resolved" => "bg-emerald-500" }
+%>
+
+<div class="mx-auto max-w-4xl px-6 py-10">
+  <header class="mb-8 flex items-center justify-between">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Acme Cloud Status</h1>
+      <p class="mt-1 text-sm text-slate-500">Current status for all Acme Cloud services</p>
+    </div>
+    <a href="#subscribe" class="hidden rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 sm:inline-block">
+      Subscribe to updates
+    </a>
+  </header>
+
+  <% banner = status_meta[overall_status] %>
+  <div class="mb-10 flex items-center gap-3 rounded-lg <%= banner[:bg] %> px-5 py-4 ring-1 <%= banner[:ring] %>">
+    <span class="relative flex h-3 w-3 shrink-0">
+      <span class="absolute inline-flex h-full w-full animate-ping rounded-full <%= banner[:dot] %> opacity-75"></span>
+      <span class="relative inline-flex h-3 w-3 rounded-full <%= banner[:dot] %>"></span>
+    </span>
+    <p class="text-base font-medium <%= banner[:text] %>"><%= overall_copy[overall_status] %></p>
+  </div>
+
+  <section aria-labelledby="services-heading" class="mb-12">
+    <h2 id="services-heading" class="mb-4 text-lg font-semibold text-slate-900">Services</h2>
+    <div class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+      <% services.each do |svc| %>
+        <% meta = status_meta[svc[:status]] %>
+        <div class="p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="h-2 w-2 rounded-full <%= meta[:dot] %>"></span>
+              <span class="font-medium text-slate-900"><%= svc[:name] %></span>
+            </div>
+            <div class="flex items-center gap-4">
+              <span class="text-xs text-slate-500"><%= format("%.2f", svc[:uptime]) %>% uptime (90d)</span>
+              <span class="inline-flex items-center rounded-full <%= meta[:bg] %> px-2.5 py-0.5 text-xs font-medium <%= meta[:text] %> ring-1 ring-inset <%= meta[:ring] %>">
+                <%= meta[:label] %>
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-3 flex items-end gap-px" role="img" aria-label="<%= svc[:name] %> uptime over the last 90 days, <%= format("%.2f", svc[:uptime]) %> percent">
+            <% 89.downto(0) do |day_ago| %>
+              <% day_status = svc[:incidents][day_ago] || :operational %>
+              <% day_meta = status_meta[day_status] %>
+              <span
+                class="h-6 w-[3px] rounded-sm <%= day_meta[:bar] %>"
+                title="<%= day_ago.zero? ? "Today" : "#{day_ago} days ago" %>: <%= day_meta[:label] %>"
+              ></span>
+            <% end %>
+          </div>
+          <div class="mt-1.5 flex justify-between text-xs text-slate-400">
+            <span>90 days ago</span>
+            <span>Today</span>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </section>
+
+  <section aria-labelledby="incident-heading" class="mb-12">
+    <h2 id="incident-heading" class="mb-4 text-lg font-semibold text-slate-900">Active Incident</h2>
+    <div class="rounded-lg border border-orange-200 bg-white">
+      <div class="border-b border-orange-100 bg-orange-50 px-5 py-4">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h3 class="font-medium text-slate-900"><%= incident[:title] %></h3>
+          <span class="inline-flex items-center rounded-full bg-orange-100 px-2.5 py-0.5 text-xs font-medium text-orange-700 ring-1 ring-inset ring-orange-600/20">
+            <%= status_meta[incident[:impact]][:label] %>
+          </span>
+        </div>
+        <p class="mt-1 text-xs text-slate-500">
+          Affecting <%= incident[:affected].join(", ") %> &middot; started <%= incident[:started_at] %>
+        </p>
+      </div>
+
+      <ol class="space-y-6 px-5 py-6">
+        <% incident[:updates].each_with_index do |update, idx| %>
+          <li class="relative pl-6">
+            <% unless idx == incident[:updates].length - 1 %>
+              <span class="absolute left-[5px] top-3 h-full w-px bg-slate-200"></span>
+            <% end %>
+            <span class="absolute left-0 top-1.5 h-2.5 w-2.5 rounded-full <%= incident_dot[update[:status]] %>"></span>
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <span class="text-sm font-semibold text-slate-900"><%= update[:status] %></span>
+              <time class="text-xs text-slate-400"><%= update[:time] %></time>
+            </div>
+            <p class="mt-1 text-sm text-slate-600"><%= update[:body] %></p>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </section>
+
+  <section id="subscribe" aria-labelledby="subscribe-heading" class="rounded-lg border border-slate-200 bg-white p-6">
+    <h2 id="subscribe-heading" class="text-lg font-semibold text-slate-900">Subscribe to updates</h2>
+    <p class="mt-1 text-sm text-slate-500">Get notified by email whenever a service's status changes.</p>
+
+    <form action="/subscriptions" method="post" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+      <div class="flex-1">
+        <label for="subscriber_email" class="sr-only">Email address</label>
+        <input
+          type="email"
+          name="subscriber[email]"
+          id="subscriber_email"
+          required
+          placeholder="you@example.com"
+          class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-slate-500 focus:outline-none focus:ring-2 focus:ring-slate-500/20"
+        >
+      </div>
+      <button
+        type="submit"
+        class="inline-flex items-center justify-center rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-500/40"
+      >
+        Subscribe
+      </button>
+    </form>
+    <p class="mt-2 text-xs text-slate-400">You can unsubscribe at any time.</p>
+  </section>
+</div>

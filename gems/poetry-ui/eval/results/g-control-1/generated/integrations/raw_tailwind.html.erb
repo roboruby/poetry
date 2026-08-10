@@ -1,0 +1,145 @@
+<%
+  connected_integrations = [
+    { name: "Slack", initials: "SL", color: "bg-fuchsia-600", category: "Communication",
+      status: :operational, detail: "Last synced 2 minutes ago" },
+    { name: "Stripe", initials: "ST", color: "bg-indigo-600", category: "Payments & Billing",
+      status: :operational, detail: "Last synced 5 minutes ago" },
+    { name: "GitHub", initials: "GH", color: "bg-gray-800", category: "Developer Tools",
+      status: :degraded, detail: "Elevated webhook delivery latency — last synced 18 minutes ago" },
+    { name: "Google Analytics", initials: "GA", color: "bg-amber-500", category: "Analytics",
+      status: :operational, detail: "Last synced 1 minute ago" },
+    { name: "Zendesk", initials: "ZD", color: "bg-emerald-600", category: "Support",
+      status: :down, detail: "Sync failed — retrying since 3 hours ago" },
+  ]
+
+  integration_catalog = {
+    "Communication" => [
+      { name: "Microsoft Teams", initials: "MT", color: "bg-blue-600",
+        description: "Send channel notifications and alerts directly to Microsoft Teams." },
+      { name: "Discord", initials: "DC", color: "bg-indigo-500",
+        description: "Post updates and mentions to Discord servers and channels." },
+      { name: "Twilio", initials: "TW", color: "bg-red-600",
+        description: "Trigger SMS and voice notifications for critical events." },
+    ],
+    "Payments & Billing" => [
+      { name: "PayPal", initials: "PP", color: "bg-sky-600",
+        description: "Reconcile transactions and sync payout data automatically." },
+      { name: "Square", initials: "SQ", color: "bg-gray-900",
+        description: "Import point-of-sale orders and settle payments in one place." },
+    ],
+    "Productivity" => [
+      { name: "Notion", initials: "NT", color: "bg-neutral-800",
+        description: "Sync project docs and specs directly into shared workspaces." },
+      { name: "Asana", initials: "AS", color: "bg-rose-500",
+        description: "Turn flagged items into tracked tasks with due dates." },
+      { name: "Trello", initials: "TR", color: "bg-blue-500",
+        description: "Mirror board cards to keep planning teams in the loop." },
+    ],
+    "Analytics" => [
+      { name: "Mixpanel", initials: "MX", color: "bg-purple-600",
+        description: "Stream product events for cohort and funnel analysis." },
+      { name: "Segment", initials: "SG", color: "bg-green-600",
+        description: "Route customer data to every downstream tool from one source." },
+    ],
+    "Developer Tools" => [
+      { name: "Datadog", initials: "DD", color: "bg-violet-600",
+        description: "Forward logs and metrics for unified observability dashboards." },
+      { name: "PagerDuty", initials: "PD", color: "bg-emerald-700",
+        description: "Escalate incidents to on-call rotations in real time." },
+      { name: "CircleCI", initials: "CI", color: "bg-neutral-700",
+        description: "Trigger deploy notifications when pipelines complete." },
+    ],
+  }
+
+  status_meta = {
+    operational: { label: "Operational", badge: "bg-green-50 text-green-700", dot: "bg-green-500" },
+    degraded: { label: "Degraded", badge: "bg-amber-50 text-amber-700", dot: "bg-amber-500" },
+    down: { label: "Down", badge: "bg-red-50 text-red-700", dot: "bg-red-500" },
+  }
+%>
+
+<div class="max-w-7xl mx-auto px-6 py-10 space-y-12">
+  <header>
+    <h1 class="text-2xl font-semibold text-gray-900">Integrations</h1>
+    <p class="mt-1 text-sm text-gray-500">
+      Monitor the health of your connected services and browse the catalog to add more.
+    </p>
+  </header>
+
+  <section aria-labelledby="connected-heading">
+    <div class="flex items-center justify-between mb-4">
+      <h2 id="connected-heading" class="text-lg font-semibold text-gray-900">Connected</h2>
+      <span class="text-sm text-gray-500"><%= connected_integrations.size %> active</span>
+    </div>
+
+    <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <% connected_integrations.each do |integration| %>
+        <% meta = status_meta.fetch(integration[:status]) %>
+        <li class="flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white <%= integration[:color] %>">
+                <%= integration[:initials] %>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900"><%= integration[:name] %></p>
+                <p class="text-xs text-gray-500"><%= integration[:category] %></p>
+              </div>
+            </div>
+            <span class="inline-flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium <%= meta[:badge] %>">
+              <span class="h-1.5 w-1.5 rounded-full <%= meta[:dot] %>" aria-hidden="true"></span>
+              <%= meta[:label] %>
+            </span>
+          </div>
+
+          <p class="text-xs text-gray-500"><%= integration[:detail] %></p>
+
+          <div class="mt-auto flex items-center justify-between border-t border-gray-100 pt-3">
+            <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-700">
+              Manage
+            </a>
+            <a href="#" class="text-xs text-gray-400 hover:text-gray-600">
+              View logs
+            </a>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <section aria-labelledby="catalog-heading">
+    <div class="mb-6">
+      <h2 id="catalog-heading" class="text-lg font-semibold text-gray-900">Add an integration</h2>
+      <p class="text-sm text-gray-500">Browse available integrations by category.</p>
+    </div>
+
+    <div class="space-y-8">
+      <% integration_catalog.each do |category, items| %>
+        <div>
+          <h3 class="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-500">
+            <%= category %>
+          </h3>
+          <ul class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <% items.each do |item| %>
+              <li class="flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+                <div class="flex items-center gap-3">
+                  <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-semibold text-white <%= item[:color] %>">
+                    <%= item[:initials] %>
+                  </div>
+                  <p class="font-medium text-gray-900"><%= item[:name] %></p>
+                </div>
+                <p class="flex-1 text-sm text-gray-500"><%= item[:description] %></p>
+                <a
+                  href="#"
+                  class="inline-flex items-center justify-center rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Connect
+                </a>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+  </section>
+</div>

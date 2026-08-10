@@ -1,0 +1,300 @@
+<%
+  spark_points = ->(values, width: 100, height: 32, pad: 2) {
+    max = values.max
+    min = values.min
+    range = max - min
+    range = 1 if range.zero?
+    step = (width - 2 * pad) / (values.size - 1).to_f
+    values.each_with_index.map do |v, i|
+      x = pad + i * step
+      y = pad + (height - 2 * pad) * (1 - (v - min).to_f / range)
+      "#{x.round(2)},#{y.round(2)}"
+    end.join(" ")
+  }
+
+  spark_area = ->(values, width: 100, height: 32, pad: 2) {
+    "#{pad},#{height - pad} #{spark_points.call(values, width: width, height: height, pad: pad)} #{width - pad},#{height - pad}"
+  }
+
+  spark_last = ->(values, width: 100, height: 32, pad: 2) {
+    max = values.max
+    min = values.min
+    range = max - min
+    range = 1 if range.zero?
+    step = (width - 2 * pad) / (values.size - 1).to_f
+    i = values.size - 1
+    x = pad + i * step
+    y = pad + (height - 2 * pad) * (1 - (values.last - min).to_f / range)
+    [x.round(2), y.round(2)]
+  }
+
+  stat_tiles = [
+    {
+      label: "Active projects",
+      value: "14",
+      delta_text: "+2 vs last month",
+      direction: :up,
+      good: true,
+      trend: [9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 14],
+      accent: "#2a78d6",
+      wash: "#eef4fc",
+      icon: :folder
+    },
+    {
+      label: "Tasks completed this week",
+      value: "187",
+      delta_text: "+18% vs last week",
+      direction: :up,
+      good: true,
+      trend: [28, 31, 24, 33, 29, 19, 23],
+      accent: "#2a78d6",
+      wash: "#eef4fc",
+      icon: :check
+    },
+    {
+      label: "Overdue items",
+      value: "9",
+      delta_text: "-4 vs last week",
+      direction: :down,
+      good: true,
+      trend: [14, 13, 15, 12, 11, 10, 9],
+      accent: "#d03b3b",
+      wash: "#fbeceb",
+      icon: :alert
+    },
+    {
+      label: "Team velocity",
+      value: "46 tasks/wk",
+      delta_text: "+6% vs 4-wk avg",
+      direction: :up,
+      good: true,
+      trend: [32, 35, 30, 38, 41, 39, 44, 46],
+      accent: "#2a78d6",
+      wash: "#eef4fc",
+      icon: :bolt,
+      info: "Team velocity is the trailing average of tasks completed per week across all active projects."
+    }
+  ]
+
+  activity_items = [
+    { actor: "Priya Nair", action: "completed task", target: "“Design review checklist”", project: "Atlas Redesign", time: "25 minutes ago", kind: :done },
+    { actor: "Jordan Lee", action: "commented on", target: "“API rate limiting”", project: "Nova Platform", time: "1 hour ago", kind: :comment },
+    { actor: "Workspace", action: "flagged as overdue", target: "“Vendor contract signature”", project: "Helios Launch", time: "2 hours ago", kind: :overdue },
+    { actor: "Sam Ortiz", action: "created project", target: nil, project: "Q3 Marketing Site", time: "3 hours ago", kind: :created },
+    { actor: "Miguel Alvarez", action: "moved to In Progress", target: "“Onboarding flow”", project: "Atlas Redesign", time: "5 hours ago", kind: :progress },
+    { actor: "Elena Petrova", action: "completed task", target: "“Refactor billing service”", project: "Nova Platform", time: "Yesterday", kind: :done },
+    { actor: "Priya Nair", action: "changed status to At risk", target: nil, project: "Helios Launch", time: "Yesterday", kind: :risk }
+  ]
+
+  projects = [
+    { name: "Atlas Redesign", status: :on_track, owner: "Priya Nair", due: "Aug 15, 2026", breakdown: { done: 82, in_progress: 26, todo: 10, overdue: 2 } },
+    { name: "Nova Platform", status: :on_track, owner: "Elena Petrova", due: "Sep 30, 2026", breakdown: { done: 54, in_progress: 40, todo: 20, overdue: 6 } },
+    { name: "Helios Launch", status: :at_risk, owner: "Jordan Lee", due: "Jul 28, 2026", breakdown: { done: 108, in_progress: 20, todo: 12, overdue: 10 } },
+    { name: "Vendor Portal Migration", status: :overdue, owner: "Sam Ortiz", due: "Jul 10, 2026", breakdown: { done: 41, in_progress: 1, todo: 0, overdue: 3 } },
+    { name: "Mobile App Revamp", status: :on_track, owner: "Miguel Alvarez", due: "Oct 12, 2026", breakdown: { done: 26, in_progress: 30, todo: 20, overdue: 3 } },
+    { name: "Internal Tools Cleanup", status: :at_risk, owner: "Elena Petrova", due: "Aug 5, 2026", breakdown: { done: 29, in_progress: 12, todo: 5, overdue: 4 } }
+  ].map do |p|
+    total = p[:breakdown].values.sum
+    p.merge(total: total, done: p[:breakdown][:done], percent: ((p[:breakdown][:done].to_f / total) * 100).round)
+  end
+
+  status_meta = {
+    on_track: { label: "On track", dot: "#0ca30c", text: "#0ca30c", bg: "#eaf7ea" },
+    at_risk: { label: "At risk", dot: "#fab219", text: "#8a5a00", bg: "#fef6e6" },
+    overdue: { label: "Overdue", dot: "#d03b3b", text: "#d03b3b", bg: "#fbeceb" }
+  }
+
+  breakdown_meta = {
+    done: { label: "Done", color: "#0ca30c" },
+    in_progress: { label: "In progress", color: "#2a78d6" },
+    todo: { label: "To do", color: "#c3c2b7" },
+    overdue: { label: "Overdue", color: "#d03b3b" }
+  }
+
+  activity_icon = {
+    done: :check, comment: :chat, overdue: :alert, created: :folder, progress: :arrow, risk: :alert
+  }
+  activity_wash = {
+    done: %w[#eaf7ea #0ca30c], comment: %w[#eef4fc #2a78d6], overdue: %w[#fbeceb #d03b3b],
+    created: %w[#eef4fc #2a78d6], progress: %w[#eef4fc #2a78d6], risk: %w[#fef6e6 #8a5a00]
+  }
+%>
+
+<div class="mx-auto max-w-7xl px-6 py-10 text-[#0b0b0b]">
+  <div class="flex flex-wrap items-start justify-between gap-4 border-b border-black/10 pb-6">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="mt-1 text-sm text-[#52514e]">Snapshot of delivery health across every active project</p>
+    </div>
+    <div class="text-right">
+      <p class="text-xs font-medium uppercase tracking-wide text-[#898781]">Reporting period</p>
+      <p class="mt-0.5 text-sm font-medium">Jul 16 &ndash; Jul 22, 2026</p>
+    </div>
+  </div>
+
+  <!-- KPI row -->
+  <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <% stat_tiles.each do |tile| %>
+      <div class="rounded-xl border border-black/10 bg-[#fcfcfb] p-5 shadow-sm">
+        <div class="flex items-start justify-between">
+          <div class="flex items-center gap-2">
+            <p class="text-sm font-medium text-[#52514e]"><%= tile[:label] %></p>
+            <% if tile[:info] %>
+              <details class="relative">
+                <summary class="list-none cursor-help text-[#898781] hover:text-[#52514e]" aria-label="What is <%= tile[:label] %>?">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M12 16v-4.5" stroke-linecap="round" />
+                    <circle cx="12" cy="8.2" r="0.6" fill="currentColor" stroke="none" />
+                  </svg>
+                </summary>
+                <p class="absolute right-0 z-10 mt-2 w-56 rounded-lg border border-black/10 bg-white p-3 text-xs leading-snug text-[#52514e] shadow-md">
+                  <%= tile[:info] %>
+                </p>
+              </details>
+            <% end %>
+          </div>
+          <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg" style="background-color: <%= tile[:wash] %>">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-4.5 w-4.5" fill="none" stroke="<%= tile[:accent] %>" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <% case tile[:icon] %>
+              <% when :folder %>
+                <path d="M4 7a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" />
+              <% when :check %>
+                <circle cx="12" cy="12" r="8.5" />
+                <path d="M8.5 12.3l2.3 2.3L15.8 9" />
+              <% when :alert %>
+                <path d="M12 4.5 20.5 19h-17L12 4.5z" />
+                <path d="M12 10.5v3.4" stroke-linecap="round" />
+                <circle cx="12" cy="16.3" r="0.6" fill="<%= tile[:accent] %>" stroke="none" />
+              <% when :bolt %>
+                <path d="M13 3.5 5 13h5.5l-1 7.5L18 11h-5.5l0.5-7.5z" />
+              <% end %>
+            </svg>
+          </span>
+        </div>
+
+        <p class="mt-3 text-3xl font-semibold" style="font-variant-numeric: proportional-nums"><%= tile[:value] %></p>
+
+        <div class="mt-1 flex items-center gap-1 text-xs font-medium" style="color: <%= tile[:good] ? '#006300' : '#d03b3b' %>">
+          <span aria-hidden="true"><%= tile[:direction] == :up ? "▲" : "▼" %></span>
+          <span><%= tile[:delta_text] %></span>
+        </div>
+
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 32" class="mt-3 h-8 w-full" preserveAspectRatio="none" aria-hidden="true">
+          <polygon points="<%= spark_area.call(tile[:trend]) %>" fill="<%= tile[:accent] %>" opacity="0.1" />
+          <polyline points="<%= spark_points.call(tile[:trend]) %>" fill="none" stroke="<%= tile[:accent] %>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+          <% lx, ly = spark_last.call(tile[:trend]) %>
+          <circle cx="<%= lx %>" cy="<%= ly %>" r="2.5" fill="<%= tile[:accent] %>" stroke="#fcfcfb" stroke-width="2" />
+        </svg>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Activity + project summary -->
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="rounded-xl border border-black/10 bg-[#fcfcfb] p-5 shadow-sm lg:col-span-1">
+      <h2 class="text-base font-semibold">Recent activity</h2>
+      <ul class="mt-4 space-y-4">
+        <% activity_items.each do |item| %>
+          <li class="flex gap-3">
+            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full" style="background-color: <%= activity_wash[item[:kind]][0] %>">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5" fill="none" stroke="<%= activity_wash[item[:kind]][1] %>" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <% case activity_icon[item[:kind]] %>
+                <% when :check %>
+                  <path d="M5 12.5l4.5 4.5L19 7" />
+                <% when :alert %>
+                  <path d="M12 4.5 20.5 19h-17L12 4.5z" />
+                  <path d="M12 10.5v3.4" />
+                  <circle cx="12" cy="16.3" r="0.5" fill="<%= activity_wash[item[:kind]][1] %>" stroke="none" />
+                <% when :chat %>
+                  <path d="M4 5.5h16v10H9l-4 3.5v-3.5H4z" />
+                <% when :folder %>
+                  <path d="M4 7a2 2 0 0 1 2-2h3.5l2 2H18a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V7z" />
+                <% when :arrow %>
+                  <path d="M5 12h13" />
+                  <path d="M13 6.5 18.5 12 13 17.5" />
+                <% end %>
+              </svg>
+            </span>
+            <div class="min-w-0 text-sm leading-snug">
+              <p class="text-[#0b0b0b]">
+                <span class="font-medium"><%= item[:actor] %></span>
+                <%= item[:action] %>
+                <% if item[:target] %><span class="font-medium"><%= item[:target] %></span><% end %>
+              </p>
+              <p class="mt-0.5 text-xs text-[#898781]">
+                <%= item[:project] %> &middot; <time datetime="2026-07-22"><%= item[:time] %></time>
+              </p>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    <div class="rounded-xl border border-black/10 bg-[#fcfcfb] p-5 shadow-sm lg:col-span-2">
+      <div class="flex items-center justify-between">
+        <h2 class="text-base font-semibold">Project progress</h2>
+        <p class="text-xs text-[#898781]"><%= projects.size %> active projects</p>
+      </div>
+
+      <ul class="mt-4 divide-y divide-[#e1e0d9]">
+        <% projects.each do |project| %>
+          <li class="py-4 first:pt-0 last:pb-0">
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <div class="min-w-[180px] flex-1">
+                <div class="flex items-center gap-2">
+                  <p class="font-medium"><%= project[:name] %></p>
+                  <span class="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-xs font-medium" style="background-color: <%= status_meta[project[:status]][:bg] %>; color: <%= status_meta[project[:status]][:text] %>">
+                    <span class="h-1.5 w-1.5 rounded-full" style="background-color: <%= status_meta[project[:status]][:dot] %>" aria-hidden="true"></span>
+                    <%= status_meta[project[:status]][:label] %>
+                  </span>
+                </div>
+                <p class="mt-0.5 text-xs text-[#898781]">Owner <%= project[:owner] %> &middot; Due <%= project[:due] %></p>
+              </div>
+
+              <div class="flex w-full max-w-xs shrink-0 items-center gap-3 sm:w-auto">
+                <progress
+                  value="<%= project[:percent] %>"
+                  max="100"
+                  aria-label="<%= project[:name] %> progress"
+                  class="h-2 w-40 flex-1 overflow-hidden rounded-full bg-[#cde2fb] [&::-webkit-progress-bar]:rounded-full [&::-webkit-progress-bar]:bg-[#cde2fb] [&::-webkit-progress-value]:rounded-full [&::-webkit-progress-value]:bg-[#2a78d6] [&::-moz-progress-bar]:rounded-full [&::-moz-progress-bar]:bg-[#2a78d6]"
+                ></progress>
+                <span class="w-10 shrink-0 text-right text-sm font-medium tabular-nums"><%= project[:percent] %>%</span>
+                <span class="w-16 shrink-0 text-right text-xs text-[#898781] tabular-nums"><%= project[:done] %>/<%= project[:total] %></span>
+              </div>
+            </div>
+
+            <details class="mt-2 group">
+              <summary class="w-fit cursor-pointer list-none text-xs font-medium text-[#2a78d6] hover:underline">
+                <span class="group-open:hidden">Show task breakdown</span>
+                <span class="hidden group-open:inline">Hide task breakdown</span>
+              </summary>
+
+              <div class="mt-3 rounded-lg bg-[#f9f9f7] p-3">
+                <div class="flex h-2 w-full gap-[2px]" role="img" aria-label="Task breakdown for <%= project[:name] %>">
+                  <% %i[done in_progress todo overdue].each do |key| %>
+                    <% count = project[:breakdown][key] %>
+                    <% next if count.zero? %>
+                    <span
+                      class="h-full first:rounded-l-full last:rounded-r-full"
+                      style="width: <%= (count.to_f / project[:total] * 100).round(2) %>%; background-color: <%= breakdown_meta[key][:color] %>"
+                    ></span>
+                  <% end %>
+                </div>
+                <div class="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
+                  <% %i[done in_progress todo overdue].each do |key| %>
+                    <div class="flex items-center gap-1.5 text-xs text-[#52514e]">
+                      <span class="h-2 w-2 rounded-full" style="background-color: <%= breakdown_meta[key][:color] %>" aria-hidden="true"></span>
+                      <span><%= breakdown_meta[key][:label] %></span>
+                      <span class="font-medium text-[#0b0b0b] tabular-nums"><%= project[:breakdown][key] %></span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </details>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>

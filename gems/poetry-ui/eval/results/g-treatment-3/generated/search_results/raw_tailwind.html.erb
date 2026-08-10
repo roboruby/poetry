@@ -1,0 +1,175 @@
+<% query = "deployment" %>
+
+<main class="mx-auto max-w-5xl px-6 py-10">
+  <header class="mb-8">
+    <p class="text-sm text-slate-500">Search results</p>
+    <h1 class="mt-1 text-2xl font-semibold text-slate-900">
+      Results for &ldquo;<span class="text-slate-900"><%= query %></span>&rdquo;
+    </h1>
+    <p class="mt-2 text-sm text-slate-500">7 matches across 2 groups &middot; Projects and Documents</p>
+
+    <nav aria-label="Result groups" class="mt-6 flex flex-wrap gap-2 border-b border-slate-200 pb-4">
+      <a href="#projects-results" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50">
+        Projects
+        <span class="inline-flex min-w-5 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">3</span>
+      </a>
+      <a href="#documents-results" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50">
+        Documents
+        <span class="inline-flex min-w-5 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">4</span>
+      </a>
+      <a href="#people-results" class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 hover:border-slate-300 hover:bg-slate-50">
+        People
+        <span class="inline-flex min-w-5 items-center justify-center rounded-full bg-slate-100 px-1.5 py-0.5 text-xs font-semibold text-slate-600">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="space-y-10">
+
+    <!-- Projects -->
+    <section id="projects-results" aria-labelledby="projects-heading">
+      <div class="mb-3 flex items-baseline justify-between">
+        <h2 id="projects-heading" class="text-lg font-semibold text-slate-900">Projects</h2>
+        <span class="text-sm text-slate-500">3 results</span>
+      </div>
+
+      <ul class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Q3 Platform <mark class="bg-yellow-100 font-semibold text-slate-900"><%= query %></mark> Rollout</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;coordinating the <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> schedule across staging and production, including rollback steps and the on-call rotation for the release window&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Project</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Owner: Priya Nair</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 2 days ago</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>12 members</span>
+          </div>
+        </li>
+
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Infra Automation</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;scripts that build the <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> pipeline end to end, from container build through canary promotion in the west region&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Project</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Owner: Marcus Lee</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 5 days ago</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>6 members</span>
+          </div>
+        </li>
+
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Mobile App Release Train</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;the new <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> checklist now requires QA sign-off before the app store submission step&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Project</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Owner: Sofia Alvarez</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 1 week ago</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>9 members</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Documents -->
+    <section id="documents-results" aria-labelledby="documents-heading">
+      <div class="mb-3 flex items-baseline justify-between">
+        <h2 id="documents-heading" class="text-lg font-semibold text-slate-900">Documents</h2>
+        <span class="text-sm text-slate-500">4 results</span>
+      </div>
+
+      <ul class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white">
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline"><mark class="bg-yellow-100 font-semibold text-slate-900"><%= query %></mark> Runbook</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;step-by-step guide for a production <mark class="bg-yellow-100 text-slate-900"><%= query %></mark>, including pre-flight checks, feature flag order, and the rollback command reference&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Document</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Infra Automation / Runbooks</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Edited by Marcus Lee</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated yesterday</span>
+          </div>
+        </li>
+
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Release Notes &ndash; v4.2</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;this <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> introduces the new billing service and fixes a memory leak in the background worker&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Document</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Q3 Platform Rollout / Notes</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Edited by Priya Nair</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 3 days ago</span>
+          </div>
+        </li>
+
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Incident Postmortem: Failed Rollout</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;root cause was a misconfigured <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> target that pointed staging traffic at the production database&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Document</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Infra Automation / Postmortems</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Edited by Devon Park</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 1 week ago</span>
+          </div>
+        </li>
+
+        <li class="p-4 hover:bg-slate-50">
+          <a href="#" class="text-base font-medium text-blue-700 hover:underline">Onboarding Guide: Shipping Your First Change</a>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            &hellip;once your PR is approved, request a <mark class="bg-yellow-100 text-slate-900"><%= query %></mark> from the #releases channel and watch the pipeline dashboard&hellip;
+          </p>
+          <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+            <span>Document</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Mobile App Release Train / Onboarding</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Edited by Sofia Alvarez</span>
+            <span aria-hidden="true">&middot;</span>
+            <span>Updated 2 weeks ago</span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <!-- People -->
+    <section id="people-results" aria-labelledby="people-heading">
+      <div class="mb-3 flex items-baseline justify-between">
+        <h2 id="people-heading" class="text-lg font-semibold text-slate-900">People</h2>
+        <span class="text-sm text-slate-500">0 results</span>
+      </div>
+
+      <div class="rounded-lg border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
+        <p class="text-sm font-medium text-slate-700">No people matched &ldquo;<%= query %>&rdquo;</p>
+        <p class="mt-1 text-sm text-slate-500">Try searching by a person&rsquo;s name, team, or email address instead.</p>
+      </div>
+    </section>
+
+  </div>
+</main>

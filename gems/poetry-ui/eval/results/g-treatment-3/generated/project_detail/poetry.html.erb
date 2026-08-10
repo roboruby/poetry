@@ -1,0 +1,154 @@
+<div class="mx-auto max-w-6xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "/") %>
+      <% crumb.with_item("Projects", href: "/projects") %>
+      <% crumb.with_item("Atlas Migration") %>
+    <% end %>
+
+    <div class="flex flex-wrap items-start justify-between gap-4">
+      <div class="max-w-2xl space-y-2">
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="text-2xl font-semibold tracking-tight">Atlas Migration</h1>
+          <%= poetry_badge(variant: :success) { "Active" } %>
+        </div>
+        <p class="text-sm text-muted-foreground">
+          Migrate the legacy billing pipeline onto the new event-driven ledger, cut over customer
+          invoicing, and retire the old warehouse jobs without a gap in monthly close.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline, href: "#") do |button| %>
+          <% button.with_leading { poetry_icon(name: :pencil) } %>
+          Edit
+        <% end %>
+        <%= poetry_button(variant: :outline, href: "#") do |button| %>
+          <% button.with_leading { poetry_icon(name: :archive) } %>
+          Archive
+        <% end %>
+      </div>
+    </div>
+
+    <%= poetry_separator %>
+  </header>
+
+  <div class="grid grid-cols-1 gap-8 lg:grid-cols-3">
+    <div class="space-y-8 lg:col-span-2">
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Milestones" } %>
+        <% card.with_description { "Key checkpoints across the project timeline." } %>
+        <%= poetry_timeline do |timeline| %>
+          <% timeline.with_item(title: "Charter approved", time: "Jan 6, 2026", completed: true) do %>
+            Scope, budget, and success metrics signed off by stakeholders.
+          <% end %>
+          <% timeline.with_item(title: "Design freeze", time: "Mar 2, 2026", completed: true) do %>
+            Target-state ledger schema and event contracts locked.
+          <% end %>
+          <% timeline.with_item(title: "Beta cutover", time: "Jun 18, 2026", completed: true) do %>
+            First cohort of accounts moved onto the new pipeline.
+          <% end %>
+          <% timeline.with_item(title: "Full cutover", time: "Aug 15, 2026", completed: false) do %>
+            Remaining accounts migrated and legacy writes disabled.
+          <% end %>
+          <% timeline.with_item(title: "Legacy warehouse retired", time: "Sep 30, 2026", completed: false) do %>
+            Old warehouse jobs decommissioned and billing closed out.
+          <% end %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Recent tasks" } %>
+        <% card.with_description { "The five most recently updated tasks on this project." } %>
+        <div class="overflow-hidden rounded-lg border">
+          <%= poetry_table do %>
+            <%= poetry_table_caption(class: "sr-only") { "The five most recently updated tasks with assignee and due date." } %>
+            <%= poetry_table_header do %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_head { "Task" } %>
+                <%= poetry_table_head { "Assignee" } %>
+                <%= poetry_table_head { "Due date" } %>
+                <%= poetry_table_head(class: "text-right") { "Status" } %>
+              <% end %>
+            <% end %>
+            <%= poetry_table_body do %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "font-medium") { "Wire event bus to ledger writer" } %>
+                <%= poetry_table_cell do %>
+                  <div class="flex items-center gap-2">
+                    <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                    <span>Priya Natarajan</span>
+                  </div>
+                <% end %>
+                <%= poetry_table_cell { "Jul 24, 2026" } %>
+                <%= poetry_table_cell(class: "text-right") { poetry_badge(variant: :info) { "In progress" } } %>
+              <% end %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "font-medium") { "Backfill Q2 invoices into new schema" } %>
+                <%= poetry_table_cell do %>
+                  <div class="flex items-center gap-2">
+                    <%= poetry_avatar(label: "Marcus Webb", size: :sm) { "MW" } %>
+                    <span>Marcus Webb</span>
+                  </div>
+                <% end %>
+                <%= poetry_table_cell { "Jul 26, 2026" } %>
+                <%= poetry_table_cell(class: "text-right") { poetry_badge(variant: :warning) { "At risk" } } %>
+              <% end %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "font-medium") { "Write cutover runbook for beta accounts" } %>
+                <%= poetry_table_cell do %>
+                  <div class="flex items-center gap-2">
+                    <%= poetry_avatar(label: "Sofia Reyes", size: :sm) { "SR" } %>
+                    <span>Sofia Reyes</span>
+                  </div>
+                <% end %>
+                <%= poetry_table_cell { "Jul 28, 2026" } %>
+                <%= poetry_table_cell(class: "text-right") { poetry_badge(variant: :success) { "Done" } } %>
+              <% end %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "font-medium") { "Reconcile ledger totals against warehouse" } %>
+                <%= poetry_table_cell do %>
+                  <div class="flex items-center gap-2">
+                    <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+                    <span>Priya Natarajan</span>
+                  </div>
+                <% end %>
+                <%= poetry_table_cell { "Aug 1, 2026" } %>
+                <%= poetry_table_cell(class: "text-right") { poetry_badge(variant: :secondary) { "Not started" } } %>
+              <% end %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "font-medium") { "Draft customer comms for full cutover" } %>
+                <%= poetry_table_cell do %>
+                  <div class="flex items-center gap-2">
+                    <%= poetry_avatar(label: "Dana Kim", size: :sm) { "DK" } %>
+                    <span>Dana Kim</span>
+                  </div>
+                <% end %>
+                <%= poetry_table_cell { "Aug 4, 2026" } %>
+                <%= poetry_table_cell(class: "text-right") { poetry_badge(variant: :secondary) { "Not started" } } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="space-y-8">
+      <%= poetry_card do |card| %>
+        <% card.with_title { "Owner & key dates" } %>
+        <%= poetry_metadata_list(columns: :one, orientation: :horizontal) do |list| %>
+          <% list.with_item(label: "Owner") do %>
+            <div class="flex items-center gap-2">
+              <%= poetry_avatar(label: "Priya Natarajan", size: :sm) { "PN" } %>
+              <span>Priya Natarajan</span>
+            </div>
+          <% end %>
+          <% list.with_item(label: "Start date") { "Jan 6, 2026" } %>
+          <% list.with_item(label: "Target date") { "Sep 30, 2026" } %>
+          <% list.with_item(label: "Created") { "Dec 18, 2025" } %>
+          <% list.with_item(label: "Last updated") { "Jul 20, 2026" } %>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+</div>

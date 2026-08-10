@@ -1,0 +1,119 @@
+<div class="mx-auto max-w-4xl space-y-8 p-6">
+  <header class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-3">
+      <%= poetry_icon(name: :activity, class: "size-6 text-muted-foreground") %>
+      <h1 class="text-2xl font-semibold tracking-tight">Nimbus Cloud Status</h1>
+    </div>
+    <%= poetry_link(href: "#subscribe", underline: :always, class: "inline-flex items-center gap-1 text-sm") do %>
+      Subscribe to updates <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
+    <% end %>
+  </header>
+
+  <%= poetry_alert(variant: :default) do |alert| %>
+    <% alert.with_icon(name: :"triangle-alert") %>
+    <% alert.with_title { "Degraded performance on some systems" } %>
+    We're seeing elevated database latency that is affecting API and Database response times. Follow the incident below for live updates. Last checked Jul 22, 2026 at 11:05 UTC.
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Service status" } %>
+    <% card.with_description { "Current state and 90-day uptime for every system." } %>
+    <div class="divide-y divide-border">
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+        <div class="flex min-w-40 items-center gap-3">
+          <%= poetry_icon(name: :server, class: "size-4 text-muted-foreground") %>
+          <span class="text-sm font-medium">API</span>
+        </div>
+        <div class="w-full sm:w-64">
+          <%= poetry_meter(label: "Uptime, last 90 days", value: 9987, max: 10000, value_label: "99.87% uptime") %>
+        </div>
+        <%= poetry_badge(variant: :warning) { "Degraded Performance" } %>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+        <div class="flex min-w-40 items-center gap-3">
+          <%= poetry_icon(name: :"layout-dashboard", class: "size-4 text-muted-foreground") %>
+          <span class="text-sm font-medium">Web Dashboard</span>
+        </div>
+        <div class="w-full sm:w-64">
+          <%= poetry_meter(label: "Uptime, last 90 days", value: 9999, max: 10000, value_label: "99.99% uptime") %>
+        </div>
+        <%= poetry_badge(variant: :success) { "Operational" } %>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+        <div class="flex min-w-40 items-center gap-3">
+          <%= poetry_icon(name: :database, class: "size-4 text-muted-foreground") %>
+          <span class="text-sm font-medium">Database</span>
+        </div>
+        <div class="w-full sm:w-64">
+          <%= poetry_meter(label: "Uptime, last 90 days", value: 9942, max: 10000, value_label: "99.42% uptime") %>
+        </div>
+        <%= poetry_badge(variant: :warning) { "Degraded Performance" } %>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+        <div class="flex min-w-40 items-center gap-3">
+          <%= poetry_icon(name: :"credit-card", class: "size-4 text-muted-foreground") %>
+          <span class="text-sm font-medium">Payments</span>
+        </div>
+        <div class="w-full sm:w-64">
+          <%= poetry_meter(label: "Uptime, last 90 days", value: 9995, max: 10000, value_label: "99.95% uptime") %>
+        </div>
+        <%= poetry_badge(variant: :success) { "Operational" } %>
+      </div>
+
+      <div class="flex flex-wrap items-center justify-between gap-4 py-4 first:pt-0 last:pb-0">
+        <div class="flex min-w-40 items-center gap-3">
+          <%= poetry_icon(name: :mail, class: "size-4 text-muted-foreground") %>
+          <span class="text-sm font-medium">Email Delivery</span>
+        </div>
+        <div class="w-full sm:w-64">
+          <%= poetry_meter(label: "Uptime, last 90 days", value: 9999, max: 10000, value_label: "99.99% uptime") %>
+        </div>
+        <%= poetry_badge(variant: :success) { "Operational" } %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Elevated database latency" } %>
+    <% card.with_description { "Investigating increased response times on database-backed requests." } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :warning) { "Monitoring" } %>
+    <% end %>
+    <div class="space-y-5">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-xs text-muted-foreground">Affected components:</span>
+        <%= poetry_badge(variant: :outline) { "API" } %>
+        <%= poetry_badge(variant: :outline) { "Database" } %>
+      </div>
+      <%= poetry_timeline do |tl| %>
+        <% tl.with_item(title: "Investigating", time: "10:14 UTC", completed: true) do %>
+          We are investigating reports of elevated latency on database-backed API requests.
+        <% end %>
+        <% tl.with_item(title: "Identified", time: "10:32 UTC", completed: true) do %>
+          The issue has been identified as connection-pool exhaustion on the primary database replica.
+        <% end %>
+        <% tl.with_item(title: "Monitoring", time: "11:05 UTC", completed: false) do %>
+          A fix has been deployed and we are monitoring the results before marking this incident resolved.
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div id="subscribe">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Subscribe to updates" } %>
+      <% card.with_description { "Get an email notification whenever we post a new incident or update." } %>
+      <form class="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div class="flex-1">
+          <%= poetry_field(id: "subscriber_email", label_text: "Email address", hint: "We'll only email you about status changes.") do |field| %>
+            <%= poetry_input(**field.control_attributes, type: "email", name: "subscriber[email]", placeholder: "you@example.com") %>
+          <% end %>
+        </div>
+        <%= poetry_button(type: :submit) { "Subscribe" } %>
+      </form>
+    <% end %>
+  </div>
+</div>

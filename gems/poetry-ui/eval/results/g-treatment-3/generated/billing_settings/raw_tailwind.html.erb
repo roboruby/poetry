@@ -1,0 +1,194 @@
+<%
+  plan = {
+    name: "Growth",
+    price: "$79",
+    interval: "month",
+    renews_on: "August 14, 2026",
+    seats: 12,
+    seat_limit: 20,
+  }
+
+  payment_method = {
+    brand: "Visa",
+    last4: "4242",
+    exp_month: 9,
+    exp_year: 2027,
+    holder: "Acme Robotics, Inc.",
+  }
+
+  usage_metrics = [
+    { label: "Team seats", used: 12, limit: 20, unit: "seats" },
+    { label: "API requests", used: 842_300, limit: 1_000_000, unit: "requests" },
+    { label: "Storage", used: 186, limit: 250, unit: "GB" },
+    { label: "Automations", used: 34, limit: 50, unit: "workflows" },
+  ]
+
+  invoices = [
+    { number: "INV-2026-0007", date: "July 14, 2026", amount: "$79.00", status: "paid" },
+    { number: "INV-2026-0006", date: "June 14, 2026", amount: "$79.00", status: "paid" },
+    { number: "INV-2026-0005", date: "May 14, 2026", amount: "$79.00", status: "paid" },
+    { number: "INV-2026-0004", date: "April 14, 2026", amount: "$99.00", status: "refunded" },
+    { number: "INV-2026-0003", date: "March 14, 2026", amount: "$79.00", status: "failed" },
+    { number: "INV-2026-0002", date: "February 14, 2026", amount: "$79.00", status: "paid" },
+  ]
+
+  status_styles = {
+    "paid"     => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+    "failed"   => "bg-red-50 text-red-700 ring-red-600/10",
+    "refunded" => "bg-slate-100 text-slate-600 ring-slate-500/10",
+    "pending"  => "bg-amber-50 text-amber-700 ring-amber-600/20",
+  }
+%>
+
+<div class="min-h-full bg-slate-50 py-10">
+  <div class="mx-auto max-w-6xl px-6 lg:px-8">
+
+    <header class="mb-8">
+      <p class="text-sm font-medium text-indigo-600">Acme Robotics workspace</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-slate-900">Billing &amp; plan</h1>
+      <p class="mt-2 text-sm text-slate-500">Manage your subscription, payment method, usage, and invoice history.</p>
+    </header>
+
+    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+
+      <!-- Current plan -->
+      <section aria-labelledby="current-plan-heading" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200 lg:col-span-2">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h2 id="current-plan-heading" class="text-sm font-medium text-slate-500">Current plan</h2>
+            <div class="mt-1 flex items-baseline gap-2">
+              <span class="text-xl font-semibold text-slate-900"><%= plan[:name] %></span>
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/20">Active</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-semibold text-slate-900"><%= plan[:price] %><span class="text-sm font-normal text-slate-500">/<%= plan[:interval] %></span></p>
+          </div>
+        </div>
+
+        <dl class="mt-6 grid grid-cols-2 gap-4 border-t border-slate-100 pt-6 sm:grid-cols-3">
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-400">Renews on</dt>
+            <dd class="mt-1 text-sm font-medium text-slate-900"><%= plan[:renews_on] %></dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-400">Seats</dt>
+            <dd class="mt-1 text-sm font-medium text-slate-900"><%= plan[:seats] %> of <%= plan[:seat_limit] %> used</dd>
+          </div>
+          <div>
+            <dt class="text-xs font-medium uppercase tracking-wide text-slate-400">Billing cycle</dt>
+            <dd class="mt-1 text-sm font-medium text-slate-900">Monthly</dd>
+          </div>
+        </dl>
+
+        <div class="mt-6 flex flex-wrap gap-3 border-t border-slate-100 pt-6">
+          <a href="#" class="inline-flex items-center rounded-md bg-indigo-600 px-3.5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500">
+            Change plan
+          </a>
+          <a href="#" class="inline-flex items-center rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+            Cancel subscription
+          </a>
+        </div>
+      </section>
+
+      <!-- Payment method -->
+      <section aria-labelledby="payment-method-heading" class="rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+        <h2 id="payment-method-heading" class="text-sm font-medium text-slate-500">Payment method</h2>
+
+        <div class="mt-4 flex items-center gap-4 rounded-lg border border-slate-200 p-4">
+          <div class="flex h-9 w-14 shrink-0 items-center justify-center rounded-md bg-slate-900 text-[11px] font-bold tracking-wide text-white">
+            <%= payment_method[:brand].upcase %>
+          </div>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-slate-900">
+              &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; &bull;&bull;&bull;&bull; <%= payment_method[:last4] %>
+            </p>
+            <p class="text-sm text-slate-500">
+              Expires <%= format("%02d", payment_method[:exp_month]) %>/<%= payment_method[:exp_year] %>
+            </p>
+          </div>
+        </div>
+
+        <p class="mt-3 text-xs text-slate-500">Billing name: <%= payment_method[:holder] %></p>
+
+        <a href="#" class="mt-5 inline-flex w-full items-center justify-center rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+          Update payment method
+        </a>
+      </section>
+    </div>
+
+    <!-- Usage this period -->
+    <section aria-labelledby="usage-heading" class="mt-6 rounded-xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+      <div class="flex items-baseline justify-between">
+        <h2 id="usage-heading" class="text-sm font-medium text-slate-500">Usage this period</h2>
+        <p class="text-xs text-slate-400">Resets on <%= plan[:renews_on] %></p>
+      </div>
+
+      <ul class="mt-5 grid grid-cols-1 gap-6 sm:grid-cols-2">
+        <% usage_metrics.each do |metric| %>
+          <%
+            percent = ((metric[:used].to_f / metric[:limit]) * 100).round
+            bar_color = percent >= 90 ? "bg-red-500" : (percent >= 75 ? "bg-amber-500" : "bg-indigo-600")
+          %>
+          <li>
+            <div class="flex items-baseline justify-between text-sm">
+              <span class="font-medium text-slate-900"><%= metric[:label] %></span>
+              <span class="text-slate-500">
+                <%= number_with_delimiter(metric[:used]) %> / <%= number_with_delimiter(metric[:limit]) %> <%= metric[:unit] %>
+              </span>
+            </div>
+            <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100" role="progressbar" aria-valuenow="<%= percent %>" aria-valuemin="0" aria-valuemax="100" aria-label="<%= metric[:label] %> usage">
+              <div class="h-full rounded-full <%= bar_color %>" style="width: <%= [percent, 100].min %>%"></div>
+            </div>
+            <p class="mt-1 text-xs text-slate-400"><%= percent %>% of limit used</p>
+          </li>
+        <% end %>
+      </ul>
+    </section>
+
+    <!-- Invoice history -->
+    <section aria-labelledby="invoices-heading" class="mt-6 rounded-xl bg-white shadow-sm ring-1 ring-slate-200">
+      <div class="p-6 pb-0">
+        <h2 id="invoices-heading" class="text-sm font-medium text-slate-500">Invoice history</h2>
+      </div>
+
+      <div class="mt-4 overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-100">
+          <thead>
+            <tr class="text-left text-xs font-medium uppercase tracking-wide text-slate-400">
+              <th scope="col" class="px-6 py-3">Invoice</th>
+              <th scope="col" class="px-6 py-3">Date</th>
+              <th scope="col" class="px-6 py-3">Amount</th>
+              <th scope="col" class="px-6 py-3">Status</th>
+              <th scope="col" class="px-6 py-3 text-right">Receipt</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% invoices.each do |invoice| %>
+              <tr>
+                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-slate-900"><%= invoice[:number] %></td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500"><%= invoice[:date] %></td>
+                <td class="whitespace-nowrap px-6 py-4 text-sm text-slate-500"><%= invoice[:amount] %></td>
+                <td class="whitespace-nowrap px-6 py-4">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ring-1 ring-inset <%= status_styles.fetch(invoice[:status], "bg-slate-100 text-slate-600 ring-slate-500/10") %>">
+                    <%= invoice[:status] %>
+                  </span>
+                </td>
+                <td class="whitespace-nowrap px-6 py-4 text-right text-sm">
+                  <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    Download
+                  </a>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="border-t border-slate-100 px-6 py-4 text-xs text-slate-400">
+        Showing <%= invoices.size %> most recent invoices.
+      </div>
+    </section>
+
+  </div>
+</div>

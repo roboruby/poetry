@@ -3,8 +3,6 @@
 module Poetry
   module Ui
     module Toast
-      # The controller identifier, declared ONCE (Builder-validated).
-      TOAST = %i[poetry core toast].freeze
       VARIANTS = %i[default success info warning destructive].freeze
       POLITENESS = %i[polite assertive].freeze
 
@@ -73,6 +71,32 @@ module Poetry
         part "toast-title", "The message - the announced payload's first line (required slot)"
         part "toast-description", "Supporting copy under the title"
 
+        # APG timing wiring: hover and focus-within hold the timer (the
+        # window-blur / tab-hidden holds are wired by the controller).
+        use_stimulus do
+          on :root do
+            controller :toast do
+              register
+              value :duration, from: :effective_duration
+              value :politeness
+              action :pause, on: %i[mouseenter focusin]
+              action :resume, on: %i[mouseleave focusout]
+            end
+          end
+          on :action do
+            controller :toast do
+              target :action
+              action :dismiss, on: :click
+            end
+          end
+          on :close do
+            controller :toast do
+              target :close
+              action :dismiss, on: :click
+            end
+          end
+        end
+
         # The message (REQUIRED - the announced payload's first line).
         renders_one :title
 
@@ -81,7 +105,7 @@ module Poetry
         # Typed Button slot (undo / view / retry): clicking it dismisses
         # with reason "action" (the controller reads the origin slot).
         renders_one :action, lambda { |**options, &block|
-          wiring = { "data-slot" => "toast-action" }.merge(action_stimulus_attributes)
+          wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
           Button::Component.new(variant: :outline, size: :sm, **wiring, **options, &block)
         }
 
@@ -117,39 +141,12 @@ module Poetry
               # sources otherwise - the Radix insight).
               "role" => "status", "aria-live" => "off", "aria-atomic" => "true",
               "tabindex" => "0"
-            }.merge(toast_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
         def close_button_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          toast = Poetry::Core::Stimulus::Builder.new(TOAST, attrs)
-          toast.with_target(:close)
-          toast.with_action(:dismiss, on: :click)
-          attrs.to_attributes.merge("data-slot" => "toast-close")
-        end
-
-        private
-
-        # APG timing wiring: hover and focus-within hold the timer (the
-        # window-blur / tab-hidden holds are wired by the controller).
-        def toast_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          toast = Poetry::Core::Stimulus::Builder.new(TOAST, attrs)
-          toast.register_controller
-          toast.with_value(:duration, effective_duration)
-          toast.with_value(:politeness, politeness)
-          toast.with_action(:pause, on: %i[mouseenter focusin])
-          toast.with_action(:resume, on: %i[mouseleave focusout])
-          attrs.to_attributes
-        end
-
-        def action_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          toast = Poetry::Core::Stimulus::Builder.new(TOAST, attrs)
-          toast.with_target(:action)
-          toast.with_action(:dismiss, on: :click)
-          attrs.to_attributes
+          stimulus_attributes_for(:close).merge("data-slot" => "toast-close")
         end
       end
     end

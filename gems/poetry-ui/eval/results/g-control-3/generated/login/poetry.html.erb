@@ -1,0 +1,48 @@
+<div class="flex min-h-[calc(100vh-4rem)] items-center justify-center p-6">
+  <div class="w-full max-w-sm space-y-6">
+    <div class="flex flex-col items-center gap-3 text-center">
+      <span class="flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+        <%= poetry_icon(name: :"audio-waveform", class: "size-5") %>
+      </span>
+      <h1 class="text-lg font-semibold">Meridian</h1>
+    </div>
+
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Sign in" } %>
+      <% card.with_description { "Enter your email and password to access your workspace." } %>
+
+      <%= form_with url: "#", method: :post, class: "space-y-4" do %>
+        <%= poetry_field(id: "login-email", label_text: "Email", required: true) do |field| %>
+          <%= poetry_input(**field.control_attributes, type: "email", name: "email", placeholder: "you@company.com") %>
+        <% end %>
+
+        <%= poetry_field(id: "login-password", required: true) do |field| %>
+          <div class="flex items-center justify-between">
+            <%= poetry_label(for_id: "login-password") { "Password" } %>
+            <%= poetry_link(href: "#", underline: :hover, class: "text-sm") { "Forgot password?" } %>
+          </div>
+          <%= poetry_input(**field.control_attributes, type: "password", name: "password", placeholder: "••••••••") %>
+        <% end %>
+
+        <%= poetry_button(type: :submit, class: "w-full") { "Sign in" } %>
+      <% end %>
+
+      <div class="relative my-5">
+        <%= poetry_separator %>
+        <span class="absolute inset-0 flex items-center justify-center">
+          <span class="bg-card px-2 text-xs text-muted-foreground">or continue with</span>
+        </span>
+      </div>
+
+      <%= poetry_button(variant: :outline, tag: :a, href: "#", class: "w-full") do %>
+        <%= poetry_icon(name: :"shield-check", class: "size-4") %> Single sign-on
+      <% end %>
+
+      <% card.with_footer do %>
+        <p class="w-full text-center text-sm text-muted-foreground">
+          New here? <%= poetry_link(href: "#") { "Request access" } %>
+        </p>
+      <% end %>
+    <% end %>
+  </div>
+</div>

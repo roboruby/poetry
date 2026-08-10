@@ -1,0 +1,154 @@
+<div class="mx-auto max-w-5xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Workspace", href: "/workspace") %>
+      <% crumb.with_item("Settings", href: "/workspace/settings") %>
+      <% crumb.with_item("Billing") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Billing</h1>
+        <p class="text-sm text-muted-foreground">Plan, payment method, usage, and invoice history for the Acme workspace.</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <%= poetry_button(variant: :outline, tag: :a, href: "#invoice-history") do |button| %>
+          <% button.with_leading { poetry_icon(name: :download) } %>
+          Download invoices
+        <% end %>
+      </div>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Team Pro plan" } %>
+    <% card.with_description { "Billed monthly · Renews August 22, 2026" } %>
+    <% card.with_action do %>
+      <%= poetry_badge(variant: :success) { "Active" } %>
+    <% end %>
+    <% card.with_footer do %>
+      <div class="flex w-full flex-wrap items-center justify-between gap-4">
+        <span class="text-xs text-muted-foreground">Next invoice: $490.00 on Aug 22, 2026</span>
+        <%= poetry_button_group do %>
+          <%= poetry_button(variant: :outline, size: :sm) { "Change plan" } %>
+          <%= poetry_button(variant: :ghost, size: :sm) { "Cancel plan" } %>
+        <% end %>
+      </div>
+    <% end %>
+    <%= poetry_metadata_list(columns: :three) do |list| %>
+      <% list.with_item(label: "Plan") { "Team Pro" } %>
+      <% list.with_item(label: "Price") { "$49.00 / seat / month" } %>
+      <% list.with_item(label: "Seats") { "10 seats" } %>
+      <% list.with_item(label: "Billing cycle") { "Monthly" } %>
+      <% list.with_item(label: "Renewal date") { "August 22, 2026" } %>
+      <% list.with_item(label: "Workspace owner") { "Matt Solt" } %>
+    <% end %>
+  <% end %>
+
+  <div id="payment-method">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Payment method" } %>
+      <% card.with_description { "Used to pay for your next invoice" } %>
+      <% card.with_action do %>
+        <%= poetry_button(variant: :outline, size: :sm) { "Update" } %>
+      <% end %>
+      <div class="flex items-center gap-4">
+        <div class="flex size-10 items-center justify-center rounded-md border bg-muted">
+          <%= poetry_icon(name: :"credit-card", class: "size-5 text-muted-foreground") %>
+        </div>
+        <div class="flex-1 space-y-0.5">
+          <p class="text-sm font-medium">Visa ending in 4242</p>
+          <p class="text-xs text-muted-foreground">Expires 08/2027</p>
+        </div>
+        <%= poetry_badge(variant: :secondary) { "Default" } %>
+      </div>
+    <% end %>
+  </div>
+
+  <%= poetry_card do |card| %>
+    <% card.with_title { "Usage this period" } %>
+    <% card.with_description { "July 1 – July 31, 2026" } %>
+    <div class="space-y-6">
+      <%= poetry_meter(label: "Seats", value: 8, max: 10, value_label: "8 of 10 seats") %>
+      <%= poetry_meter(label: "API requests", value: 42300, max: 50000, value_label: "42,300 of 50,000 requests") %>
+      <%= poetry_meter(label: "Storage", value: 18, max: 25, value_label: "18 GB of 25 GB") %>
+    </div>
+  <% end %>
+
+  <div id="invoice-history">
+    <%= poetry_card do |card| %>
+      <% card.with_title { "Invoice history" } %>
+      <% card.with_description { "Past charges and receipts for this workspace" } %>
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Invoice" } %>
+            <%= poetry_table_head { "Date" } %>
+            <%= poetry_table_head { "Amount" } %>
+            <%= poetry_table_head { "Status" } %>
+            <%= poetry_table_head { "Receipt" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { "INV-1049" } %>
+            <%= poetry_table_cell { "Jul 22, 2026" } %>
+            <%= poetry_table_cell { "$490.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell do %>
+              <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/billing/invoices/INV-1049/receipt.pdf") do |button| %>
+                <% button.with_leading { poetry_icon(name: :download) } %>
+                Receipt
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { "INV-1037" } %>
+            <%= poetry_table_cell { "Jun 22, 2026" } %>
+            <%= poetry_table_cell { "$490.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell do %>
+              <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/billing/invoices/INV-1037/receipt.pdf") do |button| %>
+                <% button.with_leading { poetry_icon(name: :download) } %>
+                Receipt
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { "INV-1022" } %>
+            <%= poetry_table_cell { "May 22, 2026" } %>
+            <%= poetry_table_cell { "$490.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :destructive) { "Failed" } } %>
+            <%= poetry_table_cell do %>
+              <span class="text-xs text-muted-foreground">Not available</span>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { "INV-1015" } %>
+            <%= poetry_table_cell { "Apr 22, 2026" } %>
+            <%= poetry_table_cell { "$490.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "Refunded" } } %>
+            <%= poetry_table_cell do %>
+              <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/billing/invoices/INV-1015/receipt.pdf") do |button| %>
+                <% button.with_leading { poetry_icon(name: :download) } %>
+                Receipt
+              <% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell { "INV-1002" } %>
+            <%= poetry_table_cell { "Mar 22, 2026" } %>
+            <%= poetry_table_cell { "$490.00" } %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Paid" } } %>
+            <%= poetry_table_cell do %>
+              <%= poetry_button(variant: :ghost, size: :sm, tag: :a, href: "/billing/invoices/INV-1002/receipt.pdf") do |button| %>
+                <% button.with_leading { poetry_icon(name: :download) } %>
+                Receipt
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

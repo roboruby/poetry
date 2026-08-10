@@ -1,0 +1,234 @@
+<% content_for :title, "Project · Aurora Checkout Redesign" if defined?(content_for) %>
+
+<main class="mx-auto max-w-5xl px-6 py-10">
+
+  <%# ---------- Header: name, status, description, actions ---------- %>
+  <header class="flex items-start justify-between gap-6 border-b border-slate-200 pb-8">
+    <div class="min-w-0">
+      <div class="flex items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+          Aurora Checkout Redesign
+        </h1>
+        <span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 ring-1 ring-inset ring-emerald-600/20">
+          <svg viewBox="0 0 6 6" aria-hidden="true" class="h-1.5 w-1.5 fill-emerald-500"><circle cx="3" cy="3" r="3" /></svg>
+          On track
+        </span>
+      </div>
+      <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+        Rebuild the checkout flow around a single-page layout, add saved payment methods,
+        and cut average completion time from 3m40s to under 2 minutes ahead of the Q4
+        holiday traffic ramp.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <a href="#"
+         class="inline-flex items-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-slate-50">
+        <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-.793.793-2.828-2.828.793-.793ZM11.379 5.793 3 14.172V17h2.828l8.38-8.379-2.83-2.828Z" />
+        </svg>
+        Edit
+      </a>
+
+      <details class="relative">
+        <summary class="flex list-none items-center gap-1.5 rounded-md bg-white px-3 py-2 text-sm font-medium text-red-600 shadow-sm ring-1 ring-inset ring-slate-300 hover:bg-red-50 [&::-webkit-details-marker]:hidden">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M4 4a1 1 0 0 1 1-1h10a1 1 0 1 1 0 2v10a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a1 1 0 0 1-1-1Zm3 3a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1Zm5 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0V8a1 1 0 0 1 1-1Z" clip-rule="evenodd" />
+          </svg>
+          Archive
+        </summary>
+        <div class="absolute right-0 z-10 mt-2 w-72 rounded-md border border-slate-200 bg-white p-4 shadow-lg">
+          <p class="text-sm text-slate-700">
+            Archiving hides this project from active lists. Tasks and history are kept
+            and can be restored later.
+          </p>
+          <form action="#" method="post" class="mt-3 flex justify-end gap-2">
+            <button type="reset" class="rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-100">
+              Cancel
+            </button>
+            <button type="submit" class="rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-500">
+              Confirm archive
+            </button>
+          </form>
+        </div>
+      </details>
+    </div>
+  </header>
+
+  <%# ---------- Owner and key dates ---------- %>
+  <section aria-labelledby="project-details-heading" class="border-b border-slate-200 py-8">
+    <h2 id="project-details-heading" class="sr-only">Project details</h2>
+    <dl class="grid grid-cols-2 gap-x-8 gap-y-6 sm:grid-cols-4">
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Owner</dt>
+        <dd class="mt-2 flex items-center gap-2">
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-indigo-100 text-xs font-semibold text-indigo-700">
+            RC
+          </span>
+          <span class="text-sm font-medium text-slate-900">Rina Chen</span>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Start date</dt>
+        <dd class="mt-2 text-sm font-medium text-slate-900">
+          <time datetime="2026-05-04">May 4, 2026</time>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Due date</dt>
+        <dd class="mt-2 text-sm font-medium text-slate-900">
+          <time datetime="2026-09-30">Sep 30, 2026</time>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-slate-500">Last updated</dt>
+        <dd class="mt-2 text-sm font-medium text-slate-900">
+          <time datetime="2026-07-21">Jul 21, 2026</time>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <%# ---------- Milestone timeline ---------- %>
+  <section aria-labelledby="milestones-heading" class="border-b border-slate-200 py-8">
+    <h2 id="milestones-heading" class="text-base font-semibold text-slate-900">Milestones</h2>
+
+    <ol class="mt-6 space-y-8">
+      <li class="relative flex gap-4 pb-8">
+        <span class="absolute left-[11px] top-6 h-full w-px bg-slate-200" aria-hidden="true"></span>
+        <span class="relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500">
+          <svg class="h-3.5 w-3.5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 .006 1.415l-7.5 7.6a1 1 0 0 1-1.42.005l-3.5-3.5a1 1 0 1 1 1.414-1.414l2.796 2.796 6.79-6.888a1 1 0 0 1 1.414-.014Z" clip-rule="evenodd" />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-900">Discovery &amp; UX research complete</p>
+          <p class="mt-0.5 text-sm text-slate-500">Completed <time datetime="2026-05-22">May 22, 2026</time></p>
+        </div>
+      </li>
+
+      <li class="relative flex gap-4 pb-8">
+        <span class="absolute left-[11px] top-6 h-full w-px bg-slate-200" aria-hidden="true"></span>
+        <span class="relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-emerald-500">
+          <svg class="h-3.5 w-3.5 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 .006 1.415l-7.5 7.6a1 1 0 0 1-1.42.005l-3.5-3.5a1 1 0 1 1 1.414-1.414l2.796 2.796 6.79-6.888a1 1 0 0 1 1.414-.014Z" clip-rule="evenodd" />
+          </svg>
+        </span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-900">Payment provider integration</p>
+          <p class="mt-0.5 text-sm text-slate-500">Completed <time datetime="2026-06-30">Jun 30, 2026</time></p>
+        </div>
+      </li>
+
+      <li class="relative flex gap-4 pb-8">
+        <span class="absolute left-[11px] top-6 h-full w-px bg-slate-200" aria-hidden="true"></span>
+        <span class="relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-indigo-600 ring-4 ring-indigo-100">
+          <span class="h-2 w-2 rounded-full bg-white"></span>
+        </span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-900">Single-page checkout beta</p>
+          <p class="mt-0.5 text-sm text-indigo-600">In progress &middot; due <time datetime="2026-08-14">Aug 14, 2026</time></p>
+        </div>
+      </li>
+
+      <li class="relative flex gap-4">
+        <span class="relative z-10 mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-100 ring-1 ring-inset ring-slate-300">
+          <span class="h-2 w-2 rounded-full bg-slate-300"></span>
+        </span>
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-slate-900">General rollout</p>
+          <p class="mt-0.5 text-sm text-slate-500">Scheduled for <time datetime="2026-09-30">Sep 30, 2026</time></p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <%# ---------- Five most recent tasks ---------- %>
+  <section aria-labelledby="recent-tasks-heading" class="py-8">
+    <div class="flex items-center justify-between">
+      <h2 id="recent-tasks-heading" class="text-base font-semibold text-slate-900">Recent tasks</h2>
+      <a href="#" class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View all</a>
+    </div>
+
+    <div class="mt-4 overflow-hidden rounded-lg border border-slate-200">
+      <table class="min-w-full divide-y divide-slate-200">
+        <thead class="bg-slate-50">
+          <tr>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Task</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Assignee</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Due date</th>
+            <th scope="col" class="px-4 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-200 bg-white">
+          <tr>
+            <td class="px-4 py-3 text-sm font-medium text-slate-900">Wire up saved payment methods UI</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-amber-100 text-[11px] font-semibold text-amber-700">JD</span>
+                <span class="text-sm text-slate-700">Jamie Diaz</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600"><time datetime="2026-07-25">Jul 25, 2026</time></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-600/20">In progress</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm font-medium text-slate-900">Add address autocomplete to shipping step</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-[11px] font-semibold text-sky-700">MK</span>
+                <span class="text-sm text-slate-700">Marcus Kim</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600"><time datetime="2026-07-24">Jul 24, 2026</time></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">In review</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm font-medium text-slate-900">QA pass on tax calculation edge cases</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-rose-100 text-[11px] font-semibold text-rose-700">SO</span>
+                <span class="text-sm text-slate-700">Sofia Ortiz</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600"><time datetime="2026-07-28">Jul 28, 2026</time></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">Not started</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm font-medium text-slate-900">Draft rollback plan for beta launch</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-indigo-100 text-[11px] font-semibold text-indigo-700">RC</span>
+                <span class="text-sm text-slate-700">Rina Chen</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600"><time datetime="2026-07-30">Jul 30, 2026</time></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">Not started</span>
+            </td>
+          </tr>
+          <tr>
+            <td class="px-4 py-3 text-sm font-medium text-slate-900">Instrument checkout funnel analytics</td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <span class="flex h-6 w-6 items-center justify-center rounded-full bg-sky-100 text-[11px] font-semibold text-sky-700">MK</span>
+                <span class="text-sm text-slate-700">Marcus Kim</span>
+              </div>
+            </td>
+            <td class="px-4 py-3 text-sm text-slate-600"><time datetime="2026-08-01">Aug 1, 2026</time></td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">Not started</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>

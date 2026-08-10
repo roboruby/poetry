@@ -1,0 +1,382 @@
+<main class="min-h-screen bg-slate-50">
+  <div class="mx-auto max-w-7xl px-6 py-10 lg:px-8">
+
+    <header class="mb-10">
+      <h1 class="text-2xl font-semibold text-slate-900">Integrations</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Monitor the tools you've already connected and browse the catalog to add more.
+      </p>
+    </header>
+
+    <!-- Connected integrations -->
+    <section aria-labelledby="connected-heading" class="mb-14">
+      <div class="mb-5 flex items-baseline justify-between">
+        <h2 id="connected-heading" class="text-lg font-semibold text-slate-900">Connected</h2>
+        <p class="text-sm text-slate-500">4 active connections</p>
+      </div>
+
+      <ul role="list" class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+        <!-- Slack — operational -->
+        <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-purple-100 text-sm font-semibold text-purple-700">Sl</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900">Slack</p>
+                <p class="text-xs text-slate-500">Team messaging</p>
+              </div>
+            </div>
+
+            <details class="relative">
+              <summary class="list-none cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                Manage
+              </summary>
+              <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+                <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+              </div>
+            </details>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+              <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+              Operational
+            </span>
+            <span class="text-xs text-slate-400">Checked 2m ago</span>
+          </div>
+        </li>
+
+        <!-- Stripe — operational -->
+        <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-sm font-semibold text-indigo-700">St</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900">Stripe</p>
+                <p class="text-xs text-slate-500">Payments &amp; billing</p>
+              </div>
+            </div>
+
+            <details class="relative">
+              <summary class="list-none cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                Manage
+              </summary>
+              <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+                <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+              </div>
+            </details>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+              <span class="h-1.5 w-1.5 rounded-full bg-green-500"></span>
+              Operational
+            </span>
+            <span class="text-xs text-slate-400">Checked 5m ago</span>
+          </div>
+        </li>
+
+        <!-- GitHub — degraded -->
+        <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">Gh</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900">GitHub</p>
+                <p class="text-xs text-slate-500">Source control</p>
+              </div>
+            </div>
+
+            <details class="relative">
+              <summary class="list-none cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                Manage
+              </summary>
+              <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+                <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+              </div>
+            </details>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+              <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+              Degraded
+            </span>
+            <span class="text-xs text-slate-400">Checked 1m ago</span>
+          </div>
+          <p class="mt-2 text-xs text-slate-500">Webhook deliveries are delayed by ~10 minutes.</p>
+        </li>
+
+        <!-- Google Analytics — down -->
+        <li class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">GA</div>
+              <div>
+                <p class="text-sm font-semibold text-slate-900">Google Analytics</p>
+                <p class="text-xs text-slate-500">Analytics</p>
+              </div>
+            </div>
+
+            <details class="relative">
+              <summary class="list-none cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+                Manage
+              </summary>
+              <div class="absolute right-0 z-10 mt-2 w-44 rounded-lg border border-slate-200 bg-white py-1 shadow-lg">
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Configure</a>
+                <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">View logs</a>
+                <button type="button" class="block w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50">Disconnect</button>
+              </div>
+            </details>
+          </div>
+
+          <div class="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+              <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+              Down
+            </span>
+            <span class="text-xs text-slate-400">Checked just now</span>
+          </div>
+          <p class="mt-2 text-xs text-slate-500">Authentication expired. Reconnect to resume syncing.</p>
+          <button type="button" class="mt-3 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700">
+            Reconnect
+          </button>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- Catalog -->
+    <section aria-labelledby="catalog-heading">
+      <div class="mb-6">
+        <h2 id="catalog-heading" class="text-lg font-semibold text-slate-900">Browse integrations</h2>
+        <p class="mt-1 text-sm text-slate-500">Add new integrations to extend your workflow.</p>
+      </div>
+
+      <nav aria-label="Integration categories" class="mb-8 flex flex-wrap gap-2">
+        <a href="#category-communication" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50">Communication</a>
+        <a href="#category-payments" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50">Payments &amp; billing</a>
+        <a href="#category-analytics" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50">Analytics</a>
+        <a href="#category-productivity" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50">Productivity</a>
+        <a href="#category-developer-tools" class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-600 hover:border-slate-300 hover:bg-slate-50">Developer tools</a>
+      </nav>
+
+      <div class="space-y-12">
+
+        <!-- Communication -->
+        <div id="category-communication">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Communication</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-100 text-sm font-semibold text-sky-700">Te</div>
+                <p class="text-sm font-semibold text-slate-900">Microsoft Teams</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Bring conversations and meetings into one shared hub.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-red-100 text-sm font-semibold text-red-700">Tw</div>
+                <p class="text-sm font-semibold text-slate-900">Twilio</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Send SMS and voice notifications triggered by workflow events.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">Zo</div>
+                <p class="text-sm font-semibold text-slate-900">Zoom</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Schedule and launch meetings directly from your workspace.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Payments & billing -->
+        <div id="category-payments">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Payments &amp; billing</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">Pa</div>
+                <p class="text-sm font-semibold text-slate-900">PayPal</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Accept payments and sync transactions automatically.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-sm font-semibold text-emerald-700">Qb</div>
+                <p class="text-sm font-semibold text-slate-900">QuickBooks</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Keep your accounting records reconciled in real time.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-200 text-sm font-semibold text-slate-700">Sq</div>
+                <p class="text-sm font-semibold text-slate-900">Square</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Sync in-person and online sales into one ledger.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Analytics -->
+        <div id="category-analytics">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Analytics</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-100 text-sm font-semibold text-violet-700">Mi</div>
+                <p class="text-sm font-semibold text-slate-900">Mixpanel</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Track product usage and user funnels.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-lime-100 text-sm font-semibold text-lime-700">Se</div>
+                <p class="text-sm font-semibold text-slate-900">Segment</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Collect and route customer data to every downstream tool.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-fuchsia-100 text-sm font-semibold text-fuchsia-700">Am</div>
+                <p class="text-sm font-semibold text-slate-900">Amplitude</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Understand engagement with behavioral analytics.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Productivity -->
+        <div id="category-productivity">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Productivity</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-800 text-sm font-semibold text-white">No</div>
+                <p class="text-sm font-semibold text-slate-900">Notion</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Sync docs and project pages with your workspace.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100 text-sm font-semibold text-yellow-700">Dr</div>
+                <p class="text-sm font-semibold text-slate-900">Google Drive</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Attach and preview files without leaving the app.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">Za</div>
+                <p class="text-sm font-semibold text-slate-900">Zapier</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Automate workflows across thousands of apps.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Developer tools -->
+        <div id="category-developer-tools">
+          <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-500">Developer tools</h3>
+          <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-100 text-sm font-semibold text-orange-700">Gl</div>
+                <p class="text-sm font-semibold text-slate-900">GitLab</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Track deployments and merge activity.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-sm font-semibold text-blue-700">Ji</div>
+                <p class="text-sm font-semibold text-slate-900">Jira</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Link issues and keep engineering status in sync.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+            <div class="flex flex-col rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div class="flex items-center gap-3">
+                <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-sm font-semibold text-green-700">Pd</div>
+                <p class="text-sm font-semibold text-slate-900">PagerDuty</p>
+              </div>
+              <p class="mt-3 flex-1 text-sm text-slate-500">Route incidents to the right on-call engineer automatically.</p>
+              <button type="button" class="mt-4 inline-flex items-center justify-center rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-700">
+                Connect
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</main>

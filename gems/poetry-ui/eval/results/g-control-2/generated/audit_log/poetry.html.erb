@@ -1,0 +1,169 @@
+<%
+  severity_variant = { critical: :destructive, high: :warning, medium: :info, low: :outline }
+  severity_label   = { critical: "Critical", high: "High", medium: "Medium", low: "Low" }
+
+  audit_days = [
+    {
+      label: "Today", date: "July 22, 2026",
+      events: [
+        { actor: "Priya Natarajan", initials: "PN", action: "disabled two-factor authentication",
+          target: "for teammate dana@northwind.io", ip: "203.0.113.42", location: "Austin, TX",
+          device: "Chrome on macOS", time: "10:42 AM", severity: :critical },
+        { actor: "API token · ci-deploy-bot", initials: "CI", action: "exported the members list",
+          target: "as CSV (248 rows)", ip: "198.51.100.7", location: "us-east-1 (AWS)",
+          device: "Service token", time: "9:15 AM", severity: :high },
+        { actor: "Owen Kessler", initials: "OK", action: "signed in from a new device",
+          target: "verified via email code", ip: "70.114.22.9", location: "Denver, CO",
+          device: "Safari on iOS", time: "8:03 AM", severity: :medium },
+        { actor: "Dana Whitfield", initials: "DW", action: "changed a workspace role",
+          target: "member → admin for marcus@northwind.io", ip: "203.0.113.55", location: "Austin, TX",
+          device: "Chrome on Windows", time: "7:48 AM", severity: :high },
+      ],
+    },
+    {
+      label: "Yesterday", date: "July 21, 2026",
+      events: [
+        { actor: "Unknown", initials: "?", action: "failed to sign in",
+          target: "5 consecutive attempts, account locked", ip: "45.83.12.190", location: "Bucharest, RO",
+          device: "Firefox on Linux", time: "11:52 PM", severity: :critical },
+        { actor: "Marcus Ilić", initials: "MI", action: "updated the IP allowlist",
+          target: "added 203.0.113.0/24", ip: "203.0.113.12", location: "Austin, TX",
+          device: "Chrome on macOS", time: "4:20 PM", severity: :high },
+        { actor: "Priya Natarajan", initials: "PN", action: "rotated the API signing key",
+          target: "key id ak_9f2c…3b1", ip: "203.0.113.42", location: "Austin, TX",
+          device: "Chrome on macOS", time: "2:11 PM", severity: :medium },
+        { actor: "Matt Solt", initials: "MS", action: "viewed a sensitive customer record",
+          target: "customer #48213", ip: "70.114.22.9", location: "Denver, CO",
+          device: "Chrome on macOS", time: "11:30 AM", severity: :medium },
+        { actor: "System", initials: "SY", action: "rotated the workspace encryption key",
+          target: "scheduled quarterly rotation", ip: "internal", location: "us-east-1 (AWS)",
+          device: "Automated job", time: "3:00 AM", severity: :low },
+      ],
+    },
+    {
+      label: "Monday", date: "July 20, 2026",
+      events: [
+        { actor: "Dana Whitfield", initials: "DW", action: "removed a member",
+          target: "removed liam@northwind.io from the workspace", ip: "203.0.113.55", location: "Austin, TX",
+          device: "Chrome on Windows", time: "6:14 PM", severity: :high },
+        { actor: "Owen Kessler", initials: "OK", action: "updated billing details",
+          target: "changed payment method", ip: "70.114.22.9", location: "Denver, CO",
+          device: "Safari on iOS", time: "1:05 PM", severity: :low },
+        { actor: "Marcus Ilić", initials: "MI", action: "generated an API token",
+          target: "scope: read:reports", ip: "203.0.113.12", location: "Austin, TX",
+          device: "Chrome on macOS", time: "9:40 AM", severity: :medium },
+      ],
+    },
+  ]
+
+  total_events = audit_days.sum { |day| day[:events].size }
+%>
+<section class="mx-auto max-w-6xl space-y-8 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Workspace", href: "#") %>
+      <% crumb.with_item("Settings", href: "#") %>
+      <% crumb.with_item("Audit log") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Audit log</h1>
+        <p class="text-sm text-muted-foreground">Security-relevant activity across this workspace — who did what, when, and from where.</p>
+      </div>
+      <%= poetry_dropdown_menu do |menu| %>
+        <% menu.with_trigger(variant: :outline) do %>
+          <%= poetry_icon(name: :download) %>
+          Export
+        <% end %>
+        <% menu.with_item(href: "#") { "Export as CSV" } %>
+        <% menu.with_item(href: "#") { "Export as JSON" } %>
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <form action="#" method="get" class="space-y-3">
+    <div class="flex flex-wrap items-end gap-3">
+      <div class="min-w-64 flex-1 space-y-1">
+        <%= poetry_label(for_id: "audit-search") { "Search" } %>
+        <%= poetry_search_field(id: "audit-search", name: "q", placeholder: "Search by actor, action, or IP…") %>
+      </div>
+      <div class="space-y-1">
+        <%= poetry_label(for_id: "audit-severity") { "Severity" } %>
+        <%= poetry_native_select(id: "audit-severity", name: "severity",
+              options: [["All severities", "all"], ["Critical", "critical"], ["High", "high"],
+                        ["Medium", "medium"], ["Low", "low"]]) %>
+      </div>
+      <div class="space-y-1">
+        <%= poetry_label(for_id: "audit-event-type") { "Event type" } %>
+        <%= poetry_native_select(id: "audit-event-type", name: "event_type",
+              options: [["All events", "all"], ["Authentication", "authentication"], ["Permissions", "permissions"],
+                        ["Data export", "data_export"], ["Settings", "settings"], ["API tokens", "api_tokens"]]) %>
+      </div>
+      <div class="space-y-1">
+        <%= poetry_label(for_id: "audit-actor") { "Actor" } %>
+        <%= poetry_native_select(id: "audit-actor", name: "actor",
+              options: [["Everyone", "all"], ["Priya Natarajan", "priya"], ["Owen Kessler", "owen"],
+                        ["Dana Whitfield", "dana"], ["Marcus Ilić", "marcus"], ["System & tokens", "system"]]) %>
+      </div>
+      <div class="space-y-1">
+        <%= poetry_label(for_id: "audit-range") { "Date range" } %>
+        <%= poetry_native_select(id: "audit-range", name: "range",
+              options: [["Last 24 hours", "24h"], ["Last 7 days", "7d"], ["Last 30 days", "30d"], ["Custom range", "custom"]],
+              selected: "7d") %>
+      </div>
+      <%= poetry_button(type: :submit) { "Apply filters" } %>
+      <%= poetry_button(variant: :ghost, type: :reset) { "Reset" } %>
+    </div>
+    <details class="group">
+      <summary class="w-fit cursor-pointer text-sm text-muted-foreground hover:text-foreground">Custom date range</summary>
+      <div class="mt-3 flex flex-wrap items-end gap-3">
+        <div class="space-y-1">
+          <%= poetry_label(for_id: "audit-from") { "From" } %>
+          <%= poetry_date_field(id: "audit-from", name: "from") %>
+        </div>
+        <div class="space-y-1">
+          <%= poetry_label(for_id: "audit-to") { "To" } %>
+          <%= poetry_date_field(id: "audit-to", name: "to") %>
+        </div>
+      </div>
+    </details>
+  </form>
+
+  <p class="text-sm text-muted-foreground">Showing <%= total_events %> events across <%= audit_days.size %> days</p>
+
+  <div class="space-y-6">
+    <% audit_days.each do |day| %>
+      <div class="space-y-3">
+        <h2 class="text-sm font-semibold text-foreground">
+          <%= day[:label] %> <span class="font-normal text-muted-foreground">· <%= day[:date] %></span>
+        </h2>
+        <%= poetry_item_group(class: "overflow-hidden rounded-lg border") do %>
+          <% day[:events].each_with_index do |event, index| %>
+            <%= poetry_item(role: "listitem", media_variant: :image) do |i| %>
+              <% i.with_media { poetry_avatar(label: event[:actor]) { event[:initials] } } %>
+              <% i.with_title do %>
+                <span class="font-medium"><%= event[:actor] %></span> <%= event[:action] %>
+              <% end %>
+              <% i.with_description do %>
+                <%= event[:target] %> · <%= event[:ip] %> · <%= event[:location] %> · <%= event[:device] %>
+              <% end %>
+              <% i.with_actions do %>
+                <div class="flex flex-col items-end gap-1.5">
+                  <%= poetry_badge(variant: severity_variant[event[:severity]]) { severity_label[event[:severity]] } %>
+                  <span class="text-xs text-muted-foreground"><%= event[:time] %></span>
+                </div>
+              <% end %>
+            <% end %>
+            <% poetry_item_separator unless index == day[:events].size - 1 %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing <%= total_events %> of 312 events</p>
+    <%= poetry_pagination(current: 1, total: 26, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</section>

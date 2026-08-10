@@ -1,0 +1,192 @@
+<% status_styles = {
+  "active"     => "bg-green-50 text-green-700 ring-green-600/20",
+  "on_track"   => "bg-green-50 text-green-700 ring-green-600/20",
+  "at_risk"    => "bg-amber-50 text-amber-700 ring-amber-600/20",
+  "off_track"  => "bg-red-50 text-red-700 ring-red-600/20",
+  "on_hold"    => "bg-slate-100 text-slate-600 ring-slate-500/20",
+  "completed"  => "bg-blue-50 text-blue-700 ring-blue-600/20",
+  "archived"   => "bg-slate-100 text-slate-500 ring-slate-500/20",
+}
+project_status = local_assigns[:status] || "active"
+status_label = project_status.to_s.tr("_", " ")
+status_class = status_styles.fetch(project_status.to_s, "bg-slate-100 text-slate-600 ring-slate-500/20")
+
+milestones = local_assigns[:milestones] || [
+  { name: "Discovery & scoping", date: "Mar 3, 2026", state: "complete" },
+  { name: "Design sign-off", date: "Apr 14, 2026", state: "complete" },
+  { name: "Beta release", date: "Jun 30, 2026", state: "current" },
+  { name: "General availability", date: "Sep 18, 2026", state: "upcoming" },
+  { name: "Post-launch review", date: "Oct 30, 2026", state: "upcoming" },
+]
+
+recent_tasks = local_assigns[:recent_tasks] || [
+  { title: "Finalize onboarding copy", assignee: "Priya Nair", due: "Jul 24, 2026", status: "In progress" },
+  { title: "Fix checkout redirect bug", assignee: "Marcus Lee", due: "Jul 25, 2026", status: "In review" },
+  { title: "Set up staging analytics", assignee: "Priya Nair", due: "Jul 28, 2026", status: "Not started" },
+  { title: "Accessibility pass on settings", assignee: "Dana Whitfield", due: "Jul 30, 2026", status: "Not started" },
+  { title: "Write release notes draft", assignee: "Marcus Lee", due: "Aug 1, 2026", status: "Not started" },
+]
+
+task_status_styles = {
+  "In progress" => "bg-blue-50 text-blue-700 ring-blue-600/20",
+  "In review"   => "bg-purple-50 text-purple-700 ring-purple-600/20",
+  "Not started" => "bg-slate-100 text-slate-600 ring-slate-500/20",
+  "Done"        => "bg-green-50 text-green-700 ring-green-600/20",
+  "Blocked"     => "bg-red-50 text-red-700 ring-red-600/20",
+}
+
+milestone_dot = {
+  "complete" => "bg-emerald-500 ring-4 ring-emerald-100",
+  "current"  => "bg-blue-600 ring-4 ring-blue-100",
+  "upcoming" => "bg-white ring-2 ring-slate-300",
+}
+milestone_text = {
+  "complete" => "text-slate-500 line-through decoration-slate-300",
+  "current"  => "text-slate-900 font-semibold",
+  "upcoming" => "text-slate-500",
+}
+%>
+
+<main class="mx-auto max-w-5xl px-6 py-10">
+  <!-- Header: name, status, description, actions -->
+  <header class="border-b border-slate-200 pb-6">
+    <div class="flex items-start justify-between gap-6">
+      <div class="min-w-0">
+        <div class="flex flex-wrap items-center gap-3">
+          <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
+            <%= local_assigns[:project_name] || "Atlas Customer Portal Revamp" %>
+          </h1>
+          <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium capitalize ring-1 ring-inset <%= status_class %>">
+            <%= status_label %>
+          </span>
+        </div>
+        <p class="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
+          <%= local_assigns[:description] || "A ground-up redesign of the customer-facing portal, consolidating billing, support, and account management into a single self-serve experience." %>
+        </p>
+      </div>
+
+      <div class="flex shrink-0 items-center gap-2">
+        <a
+          href="#edit-project"
+          class="inline-flex items-center gap-1.5 rounded-md bg-slate-900 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-slate-900"
+        >
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-.793.793-2.828-2.828.793-.793ZM11.379 5.793 3 14.172V17h2.828l8.38-8.379-2.83-2.828Z" />
+          </svg>
+          Edit
+        </a>
+
+        <details class="relative">
+          <summary class="flex list-none items-center justify-center rounded-md border border-slate-300 p-2 text-slate-600 hover:bg-slate-50 [&::-webkit-details-marker]:hidden cursor-pointer">
+            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M10 6a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM10 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4ZM10 18a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z" />
+            </svg>
+            <span class="sr-only">More actions</span>
+          </summary>
+          <div class="absolute right-0 z-10 mt-2 w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+            <a href="#archive-project" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Archive project</a>
+            <a href="#duplicate-project" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Duplicate project</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  <div class="mt-8 grid grid-cols-3 gap-8">
+    <div class="col-span-2 space-y-8">
+      <!-- Milestone timeline -->
+      <section aria-labelledby="milestones-heading" class="rounded-lg border border-slate-200 bg-white p-6">
+        <h2 id="milestones-heading" class="text-sm font-semibold text-slate-900">Milestone timeline</h2>
+
+        <ol class="mt-6 space-y-6">
+          <% milestones.each do |milestone| %>
+            <li class="relative flex gap-4 pb-6 last:pb-0">
+              <span class="absolute left-[7px] top-4 -bottom-2 w-px bg-slate-200 last:hidden" aria-hidden="true"></span>
+              <span class="relative mt-1 h-3.5 w-3.5 shrink-0 rounded-full <%= milestone_dot.fetch(milestone[:state], milestone_dot["upcoming"]) %>" aria-hidden="true"></span>
+              <div class="flex min-w-0 flex-1 items-center justify-between gap-4">
+                <p class="text-sm <%= milestone_text.fetch(milestone[:state], milestone_text["upcoming"]) %>">
+                  <%= milestone[:name] %>
+                </p>
+                <p class="shrink-0 text-xs text-slate-500"><%= milestone[:date] %></p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+
+      <!-- Recent tasks -->
+      <section aria-labelledby="recent-tasks-heading" class="rounded-lg border border-slate-200 bg-white p-6">
+        <div class="flex items-center justify-between">
+          <h2 id="recent-tasks-heading" class="text-sm font-semibold text-slate-900">Recent tasks</h2>
+          <a href="#all-tasks" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all</a>
+        </div>
+
+        <table class="mt-4 w-full text-left text-sm">
+          <thead>
+            <tr class="border-b border-slate-200 text-xs uppercase tracking-wide text-slate-500">
+              <th scope="col" class="py-2 pr-4 font-medium">Task</th>
+              <th scope="col" class="py-2 pr-4 font-medium">Assignee</th>
+              <th scope="col" class="py-2 pr-4 font-medium">Due date</th>
+              <th scope="col" class="py-2 pr-0 font-medium text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-100">
+            <% recent_tasks.first(5).each do |task| %>
+              <tr>
+                <td class="py-3 pr-4 font-medium text-slate-900"><%= task[:title] %></td>
+                <td class="py-3 pr-4 text-slate-600">
+                  <div class="flex items-center gap-2">
+                    <span class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">
+                      <%= task[:assignee].to_s.split.map { |n| n[0] }.first(2).join.upcase %>
+                    </span>
+                    <%= task[:assignee] %>
+                  </div>
+                </td>
+                <td class="py-3 pr-4 text-slate-600"><%= task[:due] %></td>
+                <td class="py-3 pr-0 text-right">
+                  <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium ring-1 ring-inset <%= task_status_styles.fetch(task[:status], task_status_styles["Not started"]) %>">
+                    <%= task[:status] %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <!-- Owner and key dates -->
+    <aside class="col-span-1 space-y-6">
+      <section aria-labelledby="owner-heading" class="rounded-lg border border-slate-200 bg-white p-6">
+        <h2 id="owner-heading" class="text-sm font-semibold text-slate-900">Owner</h2>
+        <div class="mt-4 flex items-center gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-full bg-slate-900 text-sm font-semibold text-white">
+            <%= (local_assigns[:owner_name] || "Dana Whitfield").to_s.split.map { |n| n[0] }.first(2).join.upcase %>
+          </span>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-slate-900"><%= local_assigns[:owner_name] || "Dana Whitfield" %></p>
+            <p class="truncate text-xs text-slate-500"><%= local_assigns[:owner_role] || "Product Lead" %></p>
+          </div>
+        </div>
+      </section>
+
+      <section aria-labelledby="key-dates-heading" class="rounded-lg border border-slate-200 bg-white p-6">
+        <h2 id="key-dates-heading" class="text-sm font-semibold text-slate-900">Key dates</h2>
+        <dl class="mt-4 space-y-4">
+          <div class="flex items-center justify-between gap-4">
+            <dt class="text-sm text-slate-500">Started</dt>
+            <dd class="text-sm font-medium text-slate-900"><%= local_assigns[:start_date] || "Mar 3, 2026" %></dd>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <dt class="text-sm text-slate-500">Target completion</dt>
+            <dd class="text-sm font-medium text-slate-900"><%= local_assigns[:target_date] || "Sep 18, 2026" %></dd>
+          </div>
+          <div class="flex items-center justify-between gap-4">
+            <dt class="text-sm text-slate-500">Last updated</dt>
+            <dd class="text-sm font-medium text-slate-900"><%= local_assigns[:updated_at] || "Jul 20, 2026" %></dd>
+          </div>
+        </dl>
+      </section>
+    </aside>
+  </div>
+</main>

@@ -1,0 +1,291 @@
+<div class="mx-auto max-w-6xl space-y-6 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Acme Manufacturing", href: "/") %>
+      <% crumb.with_item("Security", href: "/security") %>
+      <% crumb.with_item("Audit log") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Audit log</h1>
+        <p class="text-sm text-muted-foreground">Security-relevant activity across every member, service account, and integration in this workspace.</p>
+      </div>
+      <%= poetry_button(variant: :outline, tag: :a, href: "?format=csv") do |button| %>
+        <% button.with_leading { poetry_icon(name: :download) } %>
+        Export
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <form method="get" action="?" class="space-y-3 rounded-lg border bg-muted/30 p-4">
+    <div class="flex flex-wrap items-end gap-3">
+      <div class="flex min-w-64 flex-1 flex-col gap-1.5">
+        <%= poetry_label(for_id: "audit-search", class: "sr-only") { "Search the audit log" } %>
+        <%= poetry_input_group do %>
+          <%= poetry_input_group_addon do %>
+            <%= poetry_icon(name: :search) %>
+          <% end %>
+          <%= poetry_input_group_input(id: "audit-search", name: "q", placeholder: "Search by member, action, or IP address…") %>
+        <% end %>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <%= poetry_label(for_id: "audit-severity") { "Severity" } %>
+        <%= poetry_native_select(name: "severity", id: "audit-severity",
+                                 options: [["All severities", "all"], ["Critical", "critical"],
+                                           ["Elevated", "elevated"], ["Info", "info"]]) %>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <%= poetry_label(for_id: "audit-category") { "Event type" } %>
+        <%= poetry_native_select(name: "category", id: "audit-category",
+                                 options: [["All event types", "all"], ["Authentication", "authentication"],
+                                           ["Permissions", "permissions"], ["Data export", "data_export"],
+                                           ["Integrations", "integrations"], ["Billing", "billing"]]) %>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <%= poetry_label(for_id: "audit-from") { "From" } %>
+        <%= poetry_date_field(name: "from", id: "audit-from") %>
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <%= poetry_label(for_id: "audit-to") { "To" } %>
+        <%= poetry_date_field(name: "to", id: "audit-to") %>
+      </div>
+      <div class="ml-auto flex items-center gap-2">
+        <%= poetry_button(variant: :ghost, tag: :a, href: "?") { "Reset" } %>
+        <%= poetry_button(type: :submit) do |button| %>
+          <% button.with_leading { poetry_icon(name: :"list-filter") } %>
+          Apply filters
+        <% end %>
+      </div>
+    </div>
+  </form>
+
+  <div class="space-y-8">
+    <section class="space-y-3">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-sm font-semibold tracking-tight">Today &middot; July 22, 2026</h2>
+        <p class="text-sm text-muted-foreground">5 events</p>
+      </div>
+      <div class="overflow-hidden rounded-lg border">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Priya Nair</span> signed in from a new device
+            <% end %>
+            <% item.with_description do %>
+              Chrome on macOS &middot; 203.0.113.42 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :outline) { "Info" } %>
+                <time datetime="2026-07-22T09:42:00-05:00" class="text-xs text-muted-foreground">9:42 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Marcus Webb", size: :sm) { "MW" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Marcus Webb</span> downloaded the full member export (CSV)
+            <% end %>
+            <% item.with_description do %>
+              Safari on macOS &middot; 203.0.113.77 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :info) { "Elevated" } %>
+                <time datetime="2026-07-22T10:15:00-05:00" class="text-xs text-muted-foreground">10:15 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: :bot, label: "Service account") } %>
+            <% item.with_title do %>
+              <span class="font-medium">Deploy Bot</span> rotated the webhook signing secret for the Stripe integration
+            <% end %>
+            <% item.with_description do %>
+              API client &middot; 198.51.100.9 &middot; us-east-1
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :outline) { "Info" } %>
+                <time datetime="2026-07-22T11:03:00-05:00" class="text-xs text-muted-foreground">11:03 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Priya Nair</span> granted Marcus Webb the Billing admin role
+            <% end %>
+            <% item.with_description do %>
+              Chrome on macOS &middot; 203.0.113.42 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :info) { "Elevated" } %>
+                <time datetime="2026-07-22T13:27:00-05:00" class="text-xs text-muted-foreground">1:27 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", variant: :muted, media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: :"shield-alert", label: "Critical event") } %>
+            <% item.with_title do %>
+              <span class="font-medium">sara.chen@acme.com</span> locked out after 5 failed sign-in attempts
+            <% end %>
+            <% item.with_description do %>
+              Firefox on Windows &middot; 45.33.12.201 &middot; Bucharest, RO
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :warning) { "Critical" } %>
+                <time datetime="2026-07-22T15:58:00-05:00" class="text-xs text-muted-foreground">3:58 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-sm font-semibold tracking-tight">Yesterday &middot; July 21, 2026</h2>
+        <p class="text-sm text-muted-foreground">4 events</p>
+      </div>
+      <div class="overflow-hidden rounded-lg border">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem", variant: :muted, media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Sara Chen", size: :sm) { "SC" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Sara Chen</span> disabled two-factor authentication
+            <% end %>
+            <% item.with_description do %>
+              Chrome on Windows &middot; 203.0.113.15 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :warning) { "Critical" } %>
+                <time datetime="2026-07-21T08:12:00-05:00" class="text-xs text-muted-foreground">8:12 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Jordan Blake", size: :sm) { "JB" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Jordan Blake</span> connected the Slack integration
+            <% end %>
+            <% item.with_description do %>
+              Chrome on macOS &middot; 203.0.113.51 &middot; Denver, CO, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :outline) { "Info" } %>
+                <time datetime="2026-07-21T09:30:00-05:00" class="text-xs text-muted-foreground">9:30 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Priya Nair</span> removed Alex Kim from the workspace
+            <% end %>
+            <% item.with_description do %>
+              Chrome on macOS &middot; 203.0.113.42 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :info) { "Elevated" } %>
+                <time datetime="2026-07-21T14:44:00-05:00" class="text-xs text-muted-foreground">2:44 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+            <% item.with_media { poetry_icon(name: :key, label: "Service account") } %>
+            <% item.with_title do %>
+              <span class="font-medium">CI/CD Pipeline</span> created a new API key with read-write scope
+            <% end %>
+            <% item.with_description do %>
+              API client &middot; 198.51.100.22 &middot; us-east-1
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :info) { "Elevated" } %>
+                <time datetime="2026-07-21T16:05:00-05:00" class="text-xs text-muted-foreground">4:05 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="space-y-3">
+      <div class="flex items-baseline justify-between">
+        <h2 class="text-sm font-semibold tracking-tight">July 20, 2026</h2>
+        <p class="text-sm text-muted-foreground">3 events</p>
+      </div>
+      <div class="overflow-hidden rounded-lg border">
+        <%= poetry_item_group do %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Marcus Webb", size: :sm) { "MW" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Marcus Webb</span> changed the workspace billing plan to Enterprise
+            <% end %>
+            <% item.with_description do %>
+              Safari on macOS &middot; 203.0.113.77 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :outline) { "Info" } %>
+                <time datetime="2026-07-20T10:02:00-05:00" class="text-xs text-muted-foreground">10:02 AM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Jordan Blake", size: :sm) { "JB" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Jordan Blake</span> exported the full audit log (last 90 days)
+            <% end %>
+            <% item.with_description do %>
+              Chrome on macOS &middot; 203.0.113.51 &middot; Denver, CO, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :info) { "Elevated" } %>
+                <time datetime="2026-07-20T13:15:00-05:00" class="text-xs text-muted-foreground">1:15 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+          <%= poetry_item_separator %>
+          <%= poetry_item(role: "listitem", media_variant: :image) do |item| %>
+            <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+            <% item.with_title do %>
+              <span class="font-medium">Priya Nair</span> signed in
+            <% end %>
+            <% item.with_description do %>
+              Chrome on iOS &middot; 203.0.113.42 &middot; Austin, TX, US
+            <% end %>
+            <% item.with_actions do %>
+              <div class="flex flex-col items-end gap-1">
+                <%= poetry_badge(variant: :outline) { "Info" } %>
+                <time datetime="2026-07-20T18:40:00-05:00" class="text-xs text-muted-foreground">6:40 PM</time>
+              </div>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <p class="text-sm text-muted-foreground">Showing 12 of 214 events</p>
+    <%= poetry_pagination(current: 1, total: 18, current_variant: :filled, path: ->(page) { "?page=#{page}" }) %>
+  </div>
+</div>

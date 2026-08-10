@@ -1,0 +1,357 @@
+{
+  "generated_note": "GENERATED arms (N15 W2 benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
+  "tasks": {
+    "analytics_overview": {
+      "description": "The analytics overview for a project-management workspace: headline numbers for active projects, tasks completed this week, overdue items and team velocity, a recent-activity list, and a per-project progress summary - a working product screen, not a demo",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": false,
+            "has_heading": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/4",
+          "render_error": "ActionView::Template::Error: unknown icon :\"alert-triangle\" (not in this set) - did you mean :\"triangle-alert\"?"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "billing_settings": {
+      "description": "The billing page for a team workspace: the current plan with its renewal date, the payment method on file, usage this period against plan limits, and an invoice history with amounts, payment status and downloadable receipts",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "team_members": {
+      "description": "The members page of a workspace admin area: invite a teammate by email with a role choice, a searchable member list showing avatar, name, role and last-active, and pending invitations that can be resent or revoked",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "login": {
+      "description": "The sign-in screen for a business app: email and password with a forgot-password link, a single-sign-on alternative, and a request-access path for new users - branded, centered, production-ready",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "onboarding_checklist": {
+      "description": "The first-run screen after a user creates a workspace: a short welcome, three setup steps with completion states (connect a repository, invite the team, create the first project), and a way to skip for now",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "pricing": {
+      "description": "The public pricing page: three tiers with monthly prices and feature lists, one recommended plan visually emphasized, an enterprise contact option, and four common billing questions answered at the bottom",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "audit_log": {
+      "description": "The audit log for a workspace: a filterable list of security-relevant events - who did what, when, and from where - grouped by day, with severity indicated and an export affordance",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": false,
+            "has_heading": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/4",
+          "render_error": "ActionView::Template::Error: unknown icon :filter (not in this set) - did you mean :file?"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "project_detail": {
+      "description": "A single project's page: name, status and description up top with edit and archive actions, owner and key dates, a milestone timeline, and the five most recent tasks with assignees and due dates",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "integrations": {
+      "description": "The integrations page of a SaaS product: currently connected services with health status and a manage action, and a catalog of available integrations grouped by category, each with a short description and a connect button",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": false,
+            "has_heading": false,
+            "no_raw_colors": false,
+            "design_slop": false
+          },
+          "cross_arm_score": "0/4",
+          "render_error": "ActionView::Template::Error: unknown icon :github (not in this set)"
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    },
+    "activity_inbox": {
+      "description": "The activity inbox: a stream of mentions, assignments and status changes with unread indicators, per-item actions to mark read or open, a filter by type, and an all-caught-up state at the end",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4"
+        }
+      }
+    },
+    "search_results": {
+      "description": "The global search results page for the query 'deployment': matches grouped across projects, documents and people, each result with a context snippet and metadata, per-group result counts, and a helpful message for one group with no matches",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": true
+          },
+          "cross_arm_score": "4/4"
+        }
+      }
+    },
+    "status_page": {
+      "description": "The public status page for a hosted product: an overall status banner, each service's current state with uptime over the last 90 days, an active incident with timeline updates, and a way to subscribe to updates",
+      "arms": {
+        "poetry": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4",
+          "poetry_only_diagnostics": {
+            "stayed_in_system": true,
+            "registry_conformance": true,
+            "poetry_check": true
+          }
+        },
+        "raw_tailwind": {
+          "cross_arm": {
+            "renders": true,
+            "has_heading": true,
+            "no_raw_colors": true,
+            "design_slop": false
+          },
+          "cross_arm_score": "3/4"
+        }
+      }
+    }
+  },
+  "components_exercised": [
+    "accordion",
+    "alert",
+    "avatar",
+    "badge",
+    "breadcrumb",
+    "button",
+    "button_group",
+    "card",
+    "empty",
+    "field",
+    "icon",
+    "input",
+    "input_group",
+    "item",
+    "label",
+    "link",
+    "metadata_list",
+    "meter",
+    "native_select",
+    "progress",
+    "search_field",
+    "sensitive_input",
+    "separator",
+    "table",
+    "tabs",
+    "timeline"
+  ]
+}

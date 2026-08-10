@@ -1,0 +1,329 @@
+<section class="mx-auto max-w-5xl px-6 py-10">
+  <header class="mb-8">
+    <h1 class="text-2xl font-semibold text-gray-900">Members</h1>
+    <p class="mt-1 text-sm text-gray-500">Manage who has access to this workspace, their roles, and outstanding invitations.</p>
+  </header>
+
+  <!-- Invite teammate -->
+  <section aria-labelledby="invite-heading" class="mb-10 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <h2 id="invite-heading" class="text-base font-semibold text-gray-900">Invite a teammate</h2>
+    <p class="mt-1 text-sm text-gray-500">They'll receive an email invitation to join this workspace.</p>
+
+    <form action="#" method="post" class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-end">
+      <div class="flex-1">
+        <label for="invite-email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <input
+          type="email"
+          id="invite-email"
+          name="invite[email]"
+          required
+          placeholder="teammate@company.com"
+          class="mt-1.5 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+        >
+      </div>
+
+      <div class="sm:w-48">
+        <label for="invite-role" class="block text-sm font-medium text-gray-700">Role</label>
+        <select
+          id="invite-role"
+          name="invite[role]"
+          class="mt-1.5 block w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+        >
+          <option value="admin">Admin</option>
+          <option value="member" selected>Member</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+
+      <div>
+        <button
+          type="submit"
+          class="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+        >
+          Send invite
+        </button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Member list -->
+  <section aria-labelledby="members-heading" class="mb-10 rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="flex flex-col gap-4 border-b border-gray-200 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 id="members-heading" class="text-base font-semibold text-gray-900">Members</h2>
+        <p class="mt-1 text-sm text-gray-500">6 people have access to this workspace.</p>
+      </div>
+
+      <form action="#" method="get" role="search" class="sm:w-72">
+        <label for="member-search" class="sr-only">Search members</label>
+        <div class="relative">
+          <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true">
+            <circle cx="9" cy="9" r="6" stroke-width="1.5"></circle>
+            <path d="M17 17l-3.5-3.5" stroke-width="1.5" stroke-linecap="round"></path>
+          </svg>
+          <input
+            type="search"
+            id="member-search"
+            name="q"
+            placeholder="Search by name or email"
+            class="block w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+          >
+        </div>
+      </form>
+    </div>
+
+    <table class="w-full text-left text-sm">
+      <thead>
+        <tr class="border-b border-gray-200 text-xs uppercase tracking-wide text-gray-500">
+          <th scope="col" class="px-6 py-3 font-medium">Member</th>
+          <th scope="col" class="px-6 py-3 font-medium">Role</th>
+          <th scope="col" class="px-6 py-3 font-medium">Last active</th>
+          <th scope="col" class="px-6 py-3 font-medium"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-500 text-sm font-medium text-white">MS</div>
+              <div>
+                <div class="font-medium text-gray-900">Matt Solt</div>
+                <div class="text-gray-500">matt@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">Owner</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500">
+            <span class="inline-flex items-center gap-1.5">
+              <span class="h-1.5 w-1.5 rounded-full bg-emerald-500" aria-hidden="true"></span>
+              Active now
+            </span>
+          </td>
+          <td class="px-6 py-4 text-right">
+            <span class="text-xs text-gray-400">You</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-sm font-medium text-white">JR</div>
+              <div>
+                <div class="font-medium text-gray-900">Jamie Rivera</div>
+                <div class="text-gray-500">jamie@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Admin</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500"><time datetime="2026-07-22T08:00:00Z">2 hours ago</time></td>
+          <td class="px-6 py-4 text-right">
+            <details class="group relative inline-block text-left">
+              <summary class="inline-flex list-none cursor-pointer items-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden">
+                <span class="sr-only">Open actions for Jamie Rivera</span>
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM13 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50">Change role&hellip;</button>
+                <form action="#" method="post">
+                  <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-500 text-sm font-medium text-white">PK</div>
+              <div>
+                <div class="font-medium text-gray-900">Priya Kapoor</div>
+                <div class="text-gray-500">priya@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500"><time datetime="2026-07-21T15:00:00Z">Yesterday</time></td>
+          <td class="px-6 py-4 text-right">
+            <details class="group relative inline-block text-left">
+              <summary class="inline-flex list-none cursor-pointer items-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden">
+                <span class="sr-only">Open actions for Priya Kapoor</span>
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM13 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50">Change role&hellip;</button>
+                <form action="#" method="post">
+                  <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500 text-sm font-medium text-white">DC</div>
+              <div>
+                <div class="font-medium text-gray-900">Diego Cortez</div>
+                <div class="text-gray-500">diego@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500"><time datetime="2026-07-15T09:00:00Z">1 week ago</time></td>
+          <td class="px-6 py-4 text-right">
+            <details class="group relative inline-block text-left">
+              <summary class="inline-flex list-none cursor-pointer items-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden">
+                <span class="sr-only">Open actions for Diego Cortez</span>
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM13 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50">Change role&hellip;</button>
+                <form action="#" method="post">
+                  <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-sky-500 text-sm font-medium text-white">LN</div>
+              <div>
+                <div class="font-medium text-gray-900">Lena Novak</div>
+                <div class="text-gray-500">lena@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Viewer</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500"><time datetime="2026-06-30T09:00:00Z">3 weeks ago</time></td>
+          <td class="px-6 py-4 text-right">
+            <details class="group relative inline-block text-left">
+              <summary class="inline-flex list-none cursor-pointer items-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden">
+                <span class="sr-only">Open actions for Lena Novak</span>
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM13 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50">Change role&hellip;</button>
+                <form action="#" method="post">
+                  <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-teal-500 text-sm font-medium text-white">OA</div>
+              <div>
+                <div class="font-medium text-gray-900">Omar Al-Farsi</div>
+                <div class="text-gray-500">omar@acmehq.com</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Admin</span>
+          </td>
+          <td class="px-6 py-4 text-gray-500"><time datetime="2026-05-02T09:00:00Z">2 months ago</time></td>
+          <td class="px-6 py-4 text-right">
+            <details class="group relative inline-block text-left">
+              <summary class="inline-flex list-none cursor-pointer items-center rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden">
+                <span class="sr-only">Open actions for Omar Al-Farsi</span>
+                <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M4 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM8.5 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0zM13 10a1.5 1.5 0 113 0 1.5 1.5 0 01-3 0z"></path>
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-44 rounded-lg border border-gray-200 bg-white py-1 shadow-lg">
+                <button type="button" class="block w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-50">Change role&hellip;</button>
+                <form action="#" method="post">
+                  <button type="submit" class="block w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Pending invitations -->
+  <section aria-labelledby="pending-heading" class="rounded-xl border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 p-6">
+      <h2 id="pending-heading" class="text-base font-semibold text-gray-900">Pending invitations</h2>
+      <p class="mt-1 text-sm text-gray-500">2 invitations awaiting a response.</p>
+    </div>
+
+    <ul class="divide-y divide-gray-100">
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-500">
+            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M2.5 5.5A1.5 1.5 0 014 4h12a1.5 1.5 0 011.5 1.5v9A1.5 1.5 0 0116 16H4a1.5 1.5 0 01-1.5-1.5v-9zm1.75.25l5.75 4.2 5.75-4.2"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="font-medium text-gray-900">sam.wu@acmehq.com</div>
+            <div class="text-sm text-gray-500">Invited as Member &middot; sent <time datetime="2026-07-20T09:00:00Z">2 days ago</time></div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">Pending</span>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Resend</button>
+          </form>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex items-center gap-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-200 text-sm font-medium text-gray-500">
+            <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path d="M2.5 5.5A1.5 1.5 0 014 4h12a1.5 1.5 0 011.5 1.5v9A1.5 1.5 0 0116 16H4a1.5 1.5 0 01-1.5-1.5v-9zm1.75.25l5.75 4.2 5.75-4.2"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="font-medium text-gray-900">taylor.brooks@acmehq.com</div>
+            <div class="text-sm text-gray-500">Invited as Admin &middot; sent <time datetime="2026-07-15T09:00:00Z">1 week ago</time></div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">Pending</span>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50">Resend</button>
+          </form>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>

@@ -1,0 +1,1191 @@
+{
+  "schema": "judge-v1",
+  "context": "generated-arm benchmark (N15 W2) - agent output, unknown intended winner; no calibration key by design (the frozen-arm judge-verdicts.json carries it)",
+  "generated_on": "g-treatment-2",
+  "model": "claude-sonnet-5",
+  "votes_per_order": 3,
+  "axes": [
+    "hierarchy",
+    "composition",
+    "clarity",
+    "brief_fit"
+  ],
+  "tasks": {
+    "activity_inbox": {
+      "brief": "The activity inbox: a stream of mentions, assignments and status changes with unread indicators, per-item actions to mark read or open, a filter by type, and an all-caught-up state at the end",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses color-coded type avatars and pill filter tabs for stronger visual coding, plus explicit 'Open'/'Mark read' text actions versus first's ambiguous icon-only mark-read control; first also fails the design_slop gate while second passes.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First reads cleaner: color-coded category pills, bordered action buttons, and unread dots/shading that precisely match the '5 unread' count give stronger hierarchy, composition, and state clarity than second's avatar-circle rows and text-link actions where dot colors track category rather than read state. Second still edges brief_fit since it passed the design_slop gate that first failed.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses colored type-icons, pill filter tabs with a clear active state, and explicitly labeled 'Open'/'Mark read' actions inside a bounded card, while first relies on ambiguous icon-only actions and inconsistent zebra shading that also tripped the design_slop gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a clearer active-filter pill, an explicit labeled 'Mark read' action, and a bordered card/dashed empty-state container that reads as more composed; second relies on an unlabeled checkmark glyph for its per-item action and fails the design_slop gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST pairs colored avatar icons, pill badges, and explicit \"Open\"/\"Mark read\" text actions inside a clean bordered card for stronger hierarchy and unambiguous affordances, while SECOND relies on small line icons and an unlabeled checkmark icon-button and fails the design_slop gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST has a cleaner card layout with color-coded category avatars, pill-style filters, and explicit 'Open'/'Mark read' text actions per item, while SECOND relies on an unlabeled checkmark icon and inconsistent gray-band shading that muddies read/unread state; SECOND also fails the design_slop gate.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "composition": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "clarity": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 5,
+      "swap_consistency": 0.833,
+      "malformed_votes": 0
+    },
+    "analytics_overview": {
+      "brief": "The analytics overview for a project-management workspace: headline numbers for active projects, tasks completed this week, overdue items and team velocity, a recent-activity list, and a per-project progress summary - a working product screen, not a demo",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render entirely (HTTP 500 error page), while SECOND delivers a complete, well-organized analytics dashboard with clear stat tiles, project progress table, and activity feed matching the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500 error page), while SECOND delivers a complete, well-structured analytics dashboard with clear headline stat cards, a project progress table, and a recent-activity feed matching the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500 error page), providing no UI to evaluate, while SECOND delivers a complete, well-organized analytics dashboard with clear stat tiles, project progress table, and activity feed.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND renders only a browser HTTP 500 error page with no UI content, while FIRST delivers a complete, well-organized analytics dashboard with clear KPI cards, a project progress table, and a recent-activity feed.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render (HTTP 500), so it has no hierarchy, composition, or clarity to evaluate; FIRST delivers a complete, well-organized analytics dashboard fulfilling every part of the brief.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render at all (HTTP 500 error page), while FIRST delivers a complete, well-organized analytics dashboard with clear KPI cards, project progress table, and activity feed.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "audit_log": {
+      "brief": "The audit log for a workspace: a filterable list of security-relevant events - who did what, when, and from where - grouped by day, with severity indicated and an export affordance",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First reads cleaner with distinct, unambiguous severity colors and consistent table alignment across day groups, while second is denser and its High/Medium tags are visually close in hue; second edges brief_fit with added date-range filtering, quick-filter chips, and a severity summary panel.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second layers a severity-count dashboard above the filters/table (stronger hierarchy), uses color-coded actor avatars, active-state filter chips, and per-row Details links for clearer affordances, and its filter set (date range + severity/event chips) fulfills the brief's filterability more completely; First is the tighter, more unified composition but is comparatively flat and less feature-complete against the brief.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second's severity stat tiles and quick-filter pills give it richer hierarchy and composition, but its Export control shows a dropdown chevron that produced no visible menu when triggered, while first's plain Export button carries no such broken promise, making first's core export affordance more trustworthy and the brief better fulfilled overall.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST layers a severity-count summary, workspace eyebrow, and named quick-filter chips (Failed sign-ins, Permission changes, Data exports) atop the grouped tables, giving clearer structure and more on-brief filtering than SECOND's flatter dropdown-only filters. SECOND's 'Last 24 hours' filter label also contradicts the 3-day span of data shown, undermining its clarity.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second leads every row with a solid-color severity pill and adds per-day event counts and device/browser + anomalous-actor detail (unrecognized-device avatar on a failed sign-in), giving sharper hierarchy and security-specific clarity; first's stat-card + filter-card + pill-row stack is functional but visually busier and more generic-dashboard in feel.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST layers a severity-count dashboard, quick-filter chips (Critical only, Failed sign-ins, Data exports), and per-row Details links on top of the same grouped-by-day table, giving it stronger hierarchy and clearer purpose-signaling than SECOND's leaner dropdown-only filter bar. Both meet the core brief (grouping, severity, export), but FIRST's richer affordances more fully realize 'filterable... with severity indicated and export affordance'.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        },
+        "composition": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "clarity": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "brief_fit": {
+          "poetry": 2,
+          "raw_tailwind": 4
+        }
+      },
+      "verdict": "inconclusive",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "billing_settings": {
+      "brief": "The billing page for a team workspace: the current plan with its renewal date, the payment method on file, usage this period against plan limits, and an invoice history with amounts, payment status and downloadable receipts",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First is more consistently composed (aligned label/value/bar rows, full invoice count) and correctly withholds receipt downloads for failed/pending invoices, while second mistakenly offers a 'Download' receipt on a Failed payment; second's color-coded usage bars with an explicit 'approaching limit' warning give it a slight edge on clarity.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First keeps a flat, consistent card structure with generous full-width usage rows and correctly withholds receipt downloads for Failed/Pending invoices, while second nests a shaded sub-box only in the plan card, downgrades 'Update payment method' to a small text link, and incorrectly offers a 'Download' receipt on a Failed invoice. Both fail the design_slop gate equally, so the tie-breaker is first's more logically consistent state handling and uniform affordances.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First is cleaner typographically but its status badges are inconsistent (solid red/orange blocks vs light-pill Paid), while Second keeps a uniform pastel badge system, adds a proactive 'approaching limit' warning, and groups the current-plan info in a shaded block for clearer scanning. First edges brief completeness with plan description, cancel action, and an explicit 'showing all 6 invoices' note.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses a disciplined label/value hierarchy, breadcrumb navigation, and richer plan/usage context (cancel plan, days-left, invoice IDs), and correctly withholds receipt downloads for failed/pending invoices, whereas first offers a 'Download' link even on failed/refunded invoices. First's only edge is color-coded usage bars, but second's consistent monochrome system and more complete billing controls make it the stronger overall execution.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second has a more restrained, consistent monochrome system (sharp uniform borders, disciplined color use only for status) plus more complete billing features (cancel plan, invoice IDs, correct no-receipt-on-failed/pending logic, breadcrumbs); first's actionable 'approaching limit' warning and branded VISA badge give it a slight edge on moment-to-moment clarity.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads as a more rigorous, complete billing surface: labeled plan stats, breadcrumb nav, cancel/compare actions, and correctly withholds receipt links for failed/pending invoices, whereas first shows a misleading 'Download' on a failed invoice; first's shaded plan box and orange near-limit warning give it a slight edge only on layered hierarchy.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "composition": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "clarity": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 5,
+      "swap_consistency": 0.833,
+      "malformed_votes": 0
+    },
+    "integrations": {
+      "brief": "The integrations page of a SaaS product: currently connected services with health status and a manage action, and a catalog of available integrations grouped by category, each with a short description and a connect button",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render at all (HTTP 500 error page), while SECOND delivers a fully working, well-organized integrations page with clear health statuses, grouped categories, and consistent card composition.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render entirely (HTTP 500 error page), while SECOND delivers a complete, well-structured integrations page with clear connected/catalog sections, health statuses, and category grouping.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST fails to render entirely (HTTP 500 error page), while SECOND delivers a complete, well-organized integrations page with clear status indicators, grouped catalog sections, and consistent card composition.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND is a blank HTTP 500 error page with no rendered UI at all, while FIRST fully implements the brief with a clear connected-services list (status, sync info, manage actions) and a well-organized, categorized integration catalog with descriptions and connect buttons.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render entirely (HTTP 500 error page), while FIRST delivers a clean, well-organized integrations page with clear connected-services status and a categorized connect catalog.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "SECOND fails to render entirely (HTTP 500 error page), while FIRST delivers a complete, well-organized integrations page with connected services, health badges, and a categorized catalog of connect cards.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "login": {
+      "brief": "The sign-in screen for a business app: email and password with a forgot-password link, a single-sign-on alternative, and a request-access path for new users - branded, centered, production-ready",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First adds an explicit in-card heading and description that second lacks, and second fails the design_slop gate, undermining its production-ready claim despite its cleaner spacing and more conventional colored-link affordances.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second reads slightly cleaner (colored links, no text-collision bug) but fails the design_slop gate, a measured production-readiness defect that outweighs its marginal polish edge; first's explicit in-card heading/description also gives a clearer top-to-bottom hierarchy.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First layers brand identity, an in-card heading, and description text into a clearer 3-tier hierarchy and passes the design_slop gate for a more distinctive, production-ready feel, though its 'Request access' link is under-styled and missing a leading space. Second is more consistently composed (uniform purple accents, added 'keep me signed in' state) and its links read more clearly as affordances, but the failed design_slop gate counts against brief fit.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First has cleaner hierarchy, balanced spacing, and clear link affordances (colored forgot-password/request-access), while second has a visible layout bug (\"Request access\" squished against the preceding text) and low-contrast links; but the design_slop gate failure on first is a real, measured production-readiness defect that tips brief_fit to second.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First has crisper hierarchy and clearer link/button affordances via its purple accent system, while second's monochrome links blend into body text and its footer text is missing a space ('Business?Request'); second wins brief_fit only because the deterministic design_slop gate failed on first.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First uses color (indigo links/button) to clearly separate interactive elements from labels and has clean, bug-free spacing throughout, while second is monochrome (making 'Forgot password?' look non-interactive) and has a rendering bug with no space between 'Business?' and 'Request access'; second wins brief_fit only because it passed the design_slop gate that first failed.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "inconclusive",
+      "surviving_votes": 0,
+      "swap_consistency": 0.0,
+      "malformed_votes": 0
+    },
+    "onboarding_checklist": {
+      "brief": "The first-run screen after a user creates a workspace: a short welcome, three setup steps with completion states (connect a repository, invite the team, create the first project), and a way to skip for now",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second layers an eyebrow, personalized heading, numbered sequential steps, and concrete state text (repo name, help link) for clearer structure and communication, while first is flatter and fails the design_slop gate.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second pairs a stronger type scale (eyebrow + bold personalized heading, numbered steps, accent-colored progress/CTAs) with concrete state (repo name shown as connected) and passes the design_slop gate, while first's cards feel generic (repeated boilerplate copy) and leave a large dead void below the content.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses color (green check/badge, indigo accent, numbered steps) and a tighter vertical list with concrete state text ('northwind/storefront is connected') to communicate hierarchy and status more clearly, plus it passed the design_slop gate while first failed it. First's three-card layout is clean but flatter and monochrome, leaving less visual distinction between complete/incomplete states.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses color, badges, and step numbering to make status and priority actions instantly scannable, while second relies on a flat black/white palette that muddies which action is primary and failed the design_slop gate. Second's three-column card layout is tidier and more balanced, but first communicates state and next steps more clearly overall.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses stronger color/weight contrast (accent color, filled buttons, badges) to carry hierarchy and states clearly, while second is legible but flatter and failed the design_slop gate; second's three-column cards also leave a large dead void below them, whereas first's compact stacked rows fill the viewport in balanced proportion.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST uses color purposefully (indigo accents, green completion badges/check, differentiated primary vs secondary buttons) to guide the eye and signal state at a glance, while SECOND's monochrome card grid is clean but flatter and leaves a large unbalanced void beneath the content; SECOND also fails the design_slop gate.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "pricing": {
+      "brief": "The public pricing page: three tiers with monthly prices and feature lists, one recommended plan visually emphasized, an enterprise contact option, and four common billing questions answered at the bottom",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a genuinely distinct dark, elevated card with accent-colored CTA and badge to emphasize the recommended plan, plus a stronger type scale (eyebrow label, bold display heading) that carries hierarchy more clearly; first's 'Most popular' plan is only a badge on an otherwise identical white card, so the required visual emphasis is much weaker.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses a dark, elevated, scaled-up card plus a consistent purple accent to make the recommended plan and primary CTAs unmistakable, while first's 'Most popular' plan is just a same-size white box with a small tag. Second's eyebrow label, bolder display heading, and color-coded checkmarks/buttons also give clearer hierarchy and affordance than first's flatter black-and-white treatment.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second uses an eyebrow label, bolder display type, a scaled/elevated dark card for the recommended plan, and an accent color to reinforce hierarchy, while first only differentiates the popular plan with a small badge and identical card styling. Both fulfill the brief's checklist equally, but second's stronger visual emphasis and more polished composition (elevated card, consistent accent color, tighter alignment) make it the clearer, better-composed design.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST emphasizes the recommended plan with a full dark card, badge, and colored CTA against outlined siblings, making the hierarchy and recommended-plan affordance unmistakable, while SECOND's 'Most popular' plan is nearly identical in styling to the other two cards. FIRST also carries a consistent brand color through checkmarks and buttons, giving clearer state/affordance signaling than SECOND's flat black-and-white treatment.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses an eyebrow label, larger bold heading, and a genuinely elevated dark card with shadow to make the recommended plan pop, while second's 'Most popular' plan is only marked by a thin border and small badge that barely differentiates it from the others. First also shades the enterprise band to separate it compositionally, whereas second's enterprise box uses the same flat white/border treatment as the pricing cards.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First uses a color accent, inverted dark card, and elevation/shadow to make the recommended plan unmistakable, while second's 'Most popular' badge is a small monochrome pill that barely differentiates the Growth card from its neighbors. First's stronger type scale (eyebrow label, bold display headline) and colored primary CTA also give clearer overall hierarchy and affordance cues than second's flatter, all-black-and-white treatment.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "project_detail": {
+      "brief": "A single project's page: name, status and description up top with edit and archive actions, owner and key dates, a milestone timeline, and the five most recent tasks with assignees and due dates",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses color-coded milestone states (checkmarks/blue ring/greyed future) and a fuller three-card right column that better balances the layout, while first leaves the right column mostly empty beneath a single Overview card. First better fits the brief with an explicit labeled 'Archive' button versus second's vague 'Actions' button.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First uses a consistent card treatment (title+subtitle) across all four sections and a clearly labeled 'Archive' button, while second's ungrouped left column, ambiguous 'Actions' button (which produced no visible response when clicked), and low-contrast outlined status badges make hierarchy and affordances weaker.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First groups all content in consistent bordered cards with clean alignment, while second leaves the main column card-less, wraps assignee names awkwardly, and swaps the required 'Archive' action for an ambiguous 'Actions' trigger that produced no visible response when clicked.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second explicitly exposes an \"Archive\" action (the brief's exact requirement) plus consistent bordered cards and section subtitles that clarify each block's purpose, while first's ambiguous \"Actions\" button and missing archive affordance hurt brief fit and clarity; first edges out on hierarchy with its color-coded milestone states (green/blue/gray) reading faster than second's monochrome dots.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses consistent bordered cards with subtitles, a breadcrumb, and a true connected milestone timeline, while first mixes boxed sidebar cards with unboxed main content and uses an ambiguous info-icon for its \"Actions\" button; second's literal \"Archive\" button also matches the brief's edit/archive requirement more directly.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second uses consistent bordered cards with section subtitles for both columns and an explicit 'Archive' button matching the brief's literal action, while first's vague 'Actions' button and unboxed main column (versus boxed sidebar) read as less resolved and less compliant.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 4,
+          "raw_tailwind": 2
+        },
+        "composition": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "clarity": {
+          "poetry": 5,
+          "raw_tailwind": 1
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 5,
+      "swap_consistency": 0.833,
+      "malformed_votes": 0
+    },
+    "search_results": {
+      "brief": "The global search results page for the query 'deployment': matches grouped across projects, documents and people, each result with a context snippet and metadata, per-group result counts, and a helpful message for one group with no matches",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second reads as a more considered, polished product (status badges, file paths, filter chips, link-styled titles that signal clickability) while first leans on generic uniform black-bordered boxes that trip the design_slop gate; second also nails the empty-state and grouped-counts requirements at least as well.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First has cleaner card spacing and type hierarchy, but second gives clearer interactive affordances (blue link titles, status badges) and passes the design_slop gate that first fails.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second adds clearer affordances (link-colored titles, status badges, filter-count pills) and passes the design_slop gate that first fails, while first's advantage is a slightly cleaner, less redundant heading/count structure.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First has a cleaner category chip summary, tighter card grouping, and status badges/icons that add useful metadata, while passing the design_slop gate that second fails (likely from the heavy-bordered boxes and thick black outlines in second's layout). Second's bulky uniform borders and lack of category badges/status tags make it feel less refined and less information-dense despite similar content.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First pairs a clean category-count summary row with color-coded status badges and subtle card borders for tighter hierarchy and composition, while Second's heavy black-bordered boxes and duplicated search field feel boxier and failed the design_slop gate, weakening brief_fit.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST adds real hierarchy cues (colored section icons, clickable-blue titles, status pills like Active/Archived, and top-level filter chips) that SECOND lacks, while SECOND's plain black titles read less like links and its heavier black-bordered boxes feel more generic — consistent with its design_slop gate failure.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 3,
+          "raw_tailwind": 3
+        },
+        "composition": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "status_page": {
+      "brief": "The public status page for a hosted product: an overall status banner, each service's current state with uptime over the last 90 days, an active incident with timeline updates, and a way to subscribe to updates",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second's per-day 90-day uptime heatmaps literally fulfill the brief and visually tie to the incident (orange/red days matching the Payments API story), while First's identical-length bars per row plus a redundant repeated \"Uptime, last 90 days\" label undercut both data-truthfulness and composition. Second also layers hierarchy via eyebrow+H1, per-service descriptions, and color-coded status dots/badges that First's flatter grayscale rows lack.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second renders real per-day 90-day uptime history with color-coded bars and a severity/status-badged incident timeline with affected-service tagging, while first's uptime bars look like static decorative lines with little variance and a plainer incident list. Second's eyebrow+H1+section-label structure also reads with clearer hierarchy than first's uniformly-weighted card headers.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "Second renders actual day-by-day uptime bars (with real incident-day coloring) plus incident severity/affected-component/start-time metadata, fulfilling the brief's 90-day and incident-detail requirements far more literally than first's single decorative bar per service. Second also has stronger section-level hierarchy (eyebrow label, distinct 'Services'/'Active Incident' headers) and a more prominent, color-coded status banner and timeline.",
+          "order": "ab"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST shows real per-day uptime history with color-coded incident days plus status dots, directly fulfilling the '90 days' requirement, while SECOND's uptime indicator is a meaningless solid bar that conveys no historical detail. FIRST's stronger type scale, colored status cues, and richer incident/subscribe sections also give it clearer hierarchy and composition.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "poetry",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "FIRST's per-day 90-bar uptime chart with color-coded incident days communicates history far more clearly than SECOND's single solid progress bar, which barely differentiates 99.95% from 99.99%; FIRST also has a stronger two-tier title hierarchy and a more detailed incident timeline plus per-service subscribe options. SECOND edges out on composition with tidier bordered card grouping and icon-led alignment, but overall FIRST better serves the brief.",
+          "order": "ba"
+        },
+        {
+          "overall": "raw_tailwind",
+          "axes": {
+            "hierarchy": "raw_tailwind",
+            "composition": "raw_tailwind",
+            "clarity": "raw_tailwind",
+            "brief_fit": "raw_tailwind"
+          },
+          "rationale": "First's per-service history uses 90 individual color-coded day segments (with distinct incident-day highlights) that literally deliver 'uptime over the last 90 days,' plus a color-tinted alert banner that visually outranks the rest of the page; second reduces each service's 90-day history to one flat black bar that reads like a generic progress meter, and its alert sits in the same neutral bordered box as every other card, flattening hierarchy.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "composition": {
+          "poetry": 1,
+          "raw_tailwind": 5
+        },
+        "clarity": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        },
+        "brief_fit": {
+          "poetry": 0,
+          "raw_tailwind": 6
+        }
+      },
+      "verdict": "raw_tailwind",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    },
+    "team_members": {
+      "brief": "The members page of a workspace admin area: invite a teammate by email with a role choice, a searchable member list showing avatar, name, role and last-active, and pending invitations that can be resent or revoked",
+      "arms": [
+        "poetry",
+        "raw_tailwind"
+      ],
+      "votes": [
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST demonstrates the full invite flow (email + role selector) inline with clear helper text, while SECOND's identical trigger click produced no visible dialog, leaving the invite flow entirely undemonstrated; FIRST also passes the design_slop gate that SECOND fails, and its bordered card sections with plain button affordances for Resend/Revoke read cleaner than SECOND's colored text-link actions.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "FIRST's invite flow is visibly complete and functional (inline form with labeled email/role/submit) inside consistently bordered, aligned cards, while SECOND's primary 'Invite teammate' trigger produced no visible dialog and its pending-invitations table lacks the bordered structure and real button affordances (using plain color-coded text links) seen elsewhere, consistent with its design_slop gate failure.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "First fully renders the invite-teammate flow (email + role + send) inline, while second's invite trigger produced no visible dialog or form, leaving a core brief requirement unverifiable and its design_slop gate failing; first's card-grouped sections also give steadier hierarchy and composition.",
+          "order": "ab"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second groups invite/members/pending into clearly bordered, labeled sections with a visibly working inline invite form, while first's invite trigger produced no visible dialog and also fails the design_slop gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second groups invite, member list, and pending invitations into clearly bounded, consistently styled cards with a working inline invite form (email + role + send), while first's invite trigger produced no visible dialog and also fails the design_slop gate.",
+          "order": "ba"
+        },
+        {
+          "overall": "poetry",
+          "axes": {
+            "hierarchy": "poetry",
+            "composition": "poetry",
+            "clarity": "poetry",
+            "brief_fit": "poetry"
+          },
+          "rationale": "Second presents a fully realized, clearly labeled invite form with helper text and distinct bordered sections, while first's invite button click produced no visible dialog at all, undermining core brief functionality; second also passes the design_slop gate that first fails.",
+          "order": "ba"
+        }
+      ],
+      "axis_tallies": {
+        "hierarchy": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "composition": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "clarity": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        },
+        "brief_fit": {
+          "poetry": 6,
+          "raw_tailwind": 0
+        }
+      },
+      "verdict": "poetry",
+      "surviving_votes": 6,
+      "swap_consistency": 1.0,
+      "malformed_votes": 0
+    }
+  },
+  "summary": {
+    "verdicts": {
+      "raw_tailwind": 7,
+      "inconclusive": 2,
+      "poetry": 3
+    },
+    "mean_swap_consistency": 0.875,
+    "usage": {
+      "judge_calls": 72,
+      "total_cost_usd": 7.0655
+    }
+  }
+}

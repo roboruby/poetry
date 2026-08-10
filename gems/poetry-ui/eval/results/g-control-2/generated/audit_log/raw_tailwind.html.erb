@@ -1,0 +1,540 @@
+<section aria-labelledby="audit-log-heading" class="mx-auto max-w-6xl space-y-8 px-6 py-8">
+
+  <!-- Header -->
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div>
+      <p class="text-xs font-medium uppercase tracking-wide text-slate-400">Acme Robotics workspace</p>
+      <h1 id="audit-log-heading" class="mt-1 text-2xl font-semibold text-slate-900">Audit log</h1>
+      <p class="mt-1 max-w-2xl text-sm text-slate-500">
+        A record of security-relevant activity across this workspace: sign-ins, permission changes,
+        data exports, and administrative actions, with who did it, when, and from where.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <details class="group relative">
+        <summary
+          class="flex list-none cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+          <svg class="h-4 w-4 text-slate-500" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M10 3v10m0 0-3.5-3.5M10 13l3.5-3.5M4 15.5h12" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+          Export
+          <svg class="h-3.5 w-3.5 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </summary>
+        <div role="menu" aria-label="Export options" class="absolute right-0 z-10 mt-2 w-52 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+          <a role="menuitem" href="#" class="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export visible rows as CSV</a>
+          <a role="menuitem" href="#" class="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export visible rows as JSON</a>
+          <a role="menuitem" href="#" class="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Export full log (CSV)</a>
+          <div class="my-1 border-t border-slate-100"></div>
+          <a role="menuitem" href="#" class="block rounded-md px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Print report</a>
+        </div>
+      </details>
+
+      <button type="button" class="rounded-lg bg-indigo-600 px-3.5 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        Configure retention
+      </button>
+    </div>
+  </header>
+
+  <!-- Summary stats -->
+  <dl class="grid grid-cols-2 gap-4 sm:grid-cols-4">
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <dt class="text-xs font-medium text-slate-500">Events (30 days)</dt>
+      <dd class="mt-1 text-2xl font-semibold text-slate-900">1,284</dd>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <dt class="text-xs font-medium text-slate-500">Critical events</dt>
+      <dd class="mt-1 text-2xl font-semibold text-red-600">3</dd>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <dt class="text-xs font-medium text-slate-500">Unique actors</dt>
+      <dd class="mt-1 text-2xl font-semibold text-slate-900">27</dd>
+    </div>
+    <div class="rounded-xl border border-slate-200 bg-white p-4">
+      <dt class="text-xs font-medium text-slate-500">Failed sign-ins</dt>
+      <dd class="mt-1 text-2xl font-semibold text-amber-600">9</dd>
+    </div>
+  </dl>
+
+  <!-- Filters -->
+  <form method="get" class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <div class="flex flex-wrap items-end gap-x-4 gap-y-3">
+
+      <div class="min-w-[14rem] flex-1">
+        <label for="filter-q" class="block text-xs font-medium text-slate-600">Search</label>
+        <input
+          type="search" name="q" id="filter-q" placeholder="Actor, action, IP address&hellip;"
+          class="mt-1 block w-full rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-indigo-500" />
+      </div>
+
+      <div>
+        <label for="filter-actor" class="block text-xs font-medium text-slate-600">Actor</label>
+        <input
+          type="text" name="actor" id="filter-actor" list="actor-options" placeholder="Anyone"
+          class="mt-1 block w-40 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-900 placeholder:text-slate-400 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-indigo-500" />
+        <datalist id="actor-options">
+          <option value="Priya Shah"></option>
+          <option value="Marcus Webb"></option>
+          <option value="Dana Okafor"></option>
+          <option value="Liam Chen"></option>
+          <option value="System"></option>
+        </datalist>
+      </div>
+
+      <div>
+        <label for="filter-from" class="block text-xs font-medium text-slate-600">From</label>
+        <input type="date" name="from" id="filter-from" value="2026-07-15"
+          class="mt-1 block w-36 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-indigo-500" />
+      </div>
+
+      <div>
+        <label for="filter-to" class="block text-xs font-medium text-slate-600">To</label>
+        <input type="date" name="to" id="filter-to" value="2026-07-22"
+          class="mt-1 block w-36 rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-900 focus:border-indigo-500 focus:outline focus:outline-2 focus:outline-offset-0 focus:outline-indigo-500" />
+      </div>
+
+      <div>
+        <span class="block text-xs font-medium text-slate-600">Event type</span>
+        <details class="group relative mt-1">
+          <summary class="flex w-44 list-none cursor-pointer items-center justify-between rounded-md border border-slate-300 px-3 py-1.5 text-sm text-slate-700 hover:bg-slate-50 marker:hidden [&::-webkit-details-marker]:hidden">
+            <span>All types</span>
+            <svg class="h-3.5 w-3.5 text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </summary>
+          <div class="absolute left-0 z-10 mt-1 w-56 space-y-1 rounded-lg border border-slate-200 bg-white p-2 shadow-lg">
+            <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-slate-700 hover:bg-slate-50">
+              <input type="checkbox" name="event_type[]" value="authentication" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Authentication
+            </label>
+            <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-slate-700 hover:bg-slate-50">
+              <input type="checkbox" name="event_type[]" value="permissions" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Permissions &amp; roles
+            </label>
+            <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-slate-700 hover:bg-slate-50">
+              <input type="checkbox" name="event_type[]" value="data" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Data export
+            </label>
+            <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-slate-700 hover:bg-slate-50">
+              <input type="checkbox" name="event_type[]" value="integrations" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Integrations
+            </label>
+            <label class="flex items-center gap-2 rounded px-2 py-1 text-sm text-slate-700 hover:bg-slate-50">
+              <input type="checkbox" name="event_type[]" value="billing" checked class="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" /> Billing
+            </label>
+          </div>
+        </details>
+      </div>
+
+      <fieldset>
+        <legend class="block text-xs font-medium text-slate-600">Severity</legend>
+        <div class="mt-1 flex gap-1.5">
+          <label class="cursor-pointer">
+            <input type="checkbox" name="severity[]" value="critical" checked class="peer sr-only" />
+            <span class="block rounded-full border border-red-200 bg-white px-2.5 py-1 text-xs font-medium text-red-700 peer-checked:border-red-600 peer-checked:bg-red-50">Critical</span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" name="severity[]" value="warning" checked class="peer sr-only" />
+            <span class="block rounded-full border border-amber-200 bg-white px-2.5 py-1 text-xs font-medium text-amber-700 peer-checked:border-amber-600 peer-checked:bg-amber-50">Warning</span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" name="severity[]" value="notice" checked class="peer sr-only" />
+            <span class="block rounded-full border border-blue-200 bg-white px-2.5 py-1 text-xs font-medium text-blue-700 peer-checked:border-blue-600 peer-checked:bg-blue-50">Notice</span>
+          </label>
+          <label class="cursor-pointer">
+            <input type="checkbox" name="severity[]" value="info" checked class="peer sr-only" />
+            <span class="block rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-600 peer-checked:border-slate-500 peer-checked:bg-slate-100">Info</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <div class="ml-auto flex items-center gap-2">
+        <a href="#" class="text-sm font-medium text-slate-500 hover:text-slate-700">Reset</a>
+        <button type="submit" class="rounded-md bg-slate-900 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-slate-700">Apply filters</button>
+      </div>
+    </div>
+
+    <!-- Active filter chips -->
+    <div class="mt-3 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
+      <span class="text-xs font-medium text-slate-400">Active:</span>
+      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs font-medium text-slate-600">
+        Jul 15 &ndash; Jul 22
+        <a href="#" aria-label="Remove date filter" class="rounded-full p-0.5 hover:bg-slate-200">&times;</a>
+      </span>
+      <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 py-1 pl-2.5 pr-1 text-xs font-medium text-slate-600">
+        5 event types
+        <a href="#" aria-label="Remove event type filter" class="rounded-full p-0.5 hover:bg-slate-200">&times;</a>
+      </span>
+    </div>
+  </form>
+
+  <!-- Event list, grouped by day -->
+  <div class="space-y-6">
+
+    <!-- Today -->
+    <section aria-labelledby="day-2026-07-22">
+      <div class="flex items-baseline justify-between px-1">
+        <h2 id="day-2026-07-22" class="text-sm font-semibold text-slate-900">Today &mdash; Wednesday, July 22, 2026</h2>
+        <p class="text-xs text-slate-400">5 events &middot; 1 critical</p>
+      </div>
+
+      <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <time datetime="2026-07-22T14:32:07-07:00" class="font-mono text-xs text-slate-500">14:32:07</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">MW</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Marcus Webb</span> disabled two-factor authentication on their own account</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">203.0.113.42 &middot; Austin, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f2a1c88</dd></div>
+                <div><dt class="text-slate-400">Session</dt><dd class="font-mono text-slate-700">sess_7a01&hellip;e4c2</dd></div>
+                <div><dt class="text-slate-400">Device</dt><dd class="text-slate-700">Chrome 126 on macOS</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">workspace member: marcus@acme-robotics.com</dd></div>
+                <div><dt class="text-slate-400">Prior state</dt><dd class="text-slate-700">2FA: enabled (TOTP)</dd></div>
+                <div><dt class="text-slate-400">New state</dt><dd class="text-slate-700">2FA: disabled</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <time datetime="2026-07-22T12:05:41-07:00" class="font-mono text-xs text-slate-500">12:05:41</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">PS</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Priya Shah</span> granted <span class="font-medium">admin</span> role to Dana Okafor</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.7 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f2a1a01</dd></div>
+                <div><dt class="text-slate-400">Session</dt><dd class="font-mono text-slate-700">sess_11cd&hellip;90ab</dd></div>
+                <div><dt class="text-slate-400">Device</dt><dd class="text-slate-700">Safari 17 on macOS</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">dana@acme-robotics.com</dd></div>
+                <div><dt class="text-slate-400">Prior state</dt><dd class="text-slate-700">role: member</dd></div>
+                <div><dt class="text-slate-400">New state</dt><dd class="text-slate-700">role: admin</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Info
+              </span>
+              <time datetime="2026-07-22T09:58:12-07:00" class="font-mono text-xs text-slate-500">09:58:12</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">PS</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Priya Shah</span> signed in</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.7 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f29fe20</dd></div>
+                <div><dt class="text-slate-400">Session</dt><dd class="font-mono text-slate-700">sess_11cd&hellip;90ab</dd></div>
+                <div><dt class="text-slate-400">Device</dt><dd class="text-slate-700">Safari 17 on macOS</dd></div>
+                <div><dt class="text-slate-400">Method</dt><dd class="text-slate-700">SSO (Google Workspace)</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Notice
+              </span>
+              <time datetime="2026-07-22T08:41:53-07:00" class="font-mono text-xs text-slate-500">08:41:53</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">SY</span>
+                <span class="truncate"><span class="font-medium text-slate-900">System</span> rotated the production API key on schedule</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">internal &middot; scheduled job</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f29e011</dd></div>
+                <div><dt class="text-slate-400">Job</dt><dd class="font-mono text-slate-700">key-rotation-cron</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">API key: prod_live_&hellip;39ab</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Info
+              </span>
+              <time datetime="2026-07-22T07:12:30-07:00" class="font-mono text-xs text-slate-500">07:12:30</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">LC</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Liam Chen</span> updated the Slack integration channel mapping</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">192.0.2.15 &middot; London, UK</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f29c7f4</dd></div>
+                <div><dt class="text-slate-400">Session</dt><dd class="font-mono text-slate-700">sess_44f0&hellip;12de</dd></div>
+                <div><dt class="text-slate-400">Device</dt><dd class="text-slate-700">Firefox 128 on Windows</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">integration: Slack</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- Yesterday -->
+    <section aria-labelledby="day-2026-07-21">
+      <div class="flex items-baseline justify-between px-1">
+        <h2 id="day-2026-07-21" class="text-sm font-semibold text-slate-900">Yesterday &mdash; Tuesday, July 21, 2026</h2>
+        <p class="text-xs text-slate-400">4 events &middot; 1 critical</p>
+      </div>
+
+      <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-red-50 px-2.5 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-red-500"></span> Critical
+              </span>
+              <time datetime="2026-07-21T23:14:02-07:00" class="font-mono text-xs text-slate-500">23:14:02</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-100 text-[10px] font-semibold text-red-700">?</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Unknown</span> &mdash; 6 failed sign-in attempts for dana@acme-robotics.com</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">203.0.113.201 &middot; Unknown (VPN)</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f27ab30</dd></div>
+                <div><dt class="text-slate-400">Attempts</dt><dd class="text-slate-700">6 in 4 minutes</dd></div>
+                <div><dt class="text-slate-400">Outcome</dt><dd class="text-slate-700">account locked, owner notified</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">dana@acme-robotics.com</dd></div>
+                <div><dt class="text-slate-400">User agent</dt><dd class="text-slate-700">python-requests/2.31</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Notice
+              </span>
+              <time datetime="2026-07-21T16:48:19-07:00" class="font-mono text-xs text-slate-500">16:48:19</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">DO</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Dana Okafor</span> exported a full member data report</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.19 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f26f102</dd></div>
+                <div><dt class="text-slate-400">Format</dt><dd class="text-slate-700">CSV, 412 rows</dd></div>
+                <div><dt class="text-slate-400">Device</dt><dd class="text-slate-700">Chrome 126 on macOS</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <time datetime="2026-07-21T11:02:55-07:00" class="font-mono text-xs text-slate-500">11:02:55</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">PS</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Priya Shah</span> changed workspace visibility to Private</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.7 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f25b881</dd></div>
+                <div><dt class="text-slate-400">Prior state</dt><dd class="text-slate-700">visibility: public</dd></div>
+                <div><dt class="text-slate-400">New state</dt><dd class="text-slate-700">visibility: private</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Info
+              </span>
+              <time datetime="2026-07-21T09:30:44-07:00" class="font-mono text-xs text-slate-500">09:30:44</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">MW</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Marcus Webb</span> signed in</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">203.0.113.42 &middot; Austin, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f2549a0</dd></div>
+                <div><dt class="text-slate-400">Session</dt><dd class="font-mono text-slate-700">sess_7a01&hellip;e4c2</dd></div>
+                <div><dt class="text-slate-400">Method</dt><dd class="text-slate-700">Password + TOTP</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+
+    <!-- Older day -->
+    <section aria-labelledby="day-2026-07-17">
+      <div class="flex items-baseline justify-between px-1">
+        <h2 id="day-2026-07-17" class="text-sm font-semibold text-slate-900">Friday, July 17, 2026</h2>
+        <p class="text-xs text-slate-400">3 events</p>
+      </div>
+
+      <ul class="mt-2 divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span> Notice
+              </span>
+              <time datetime="2026-07-17T17:20:09-07:00" class="font-mono text-xs text-slate-500">17:20:09</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">PS</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Priya Shah</span> updated the workspace billing plan</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.7 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f1c7710</dd></div>
+                <div><dt class="text-slate-400">Prior state</dt><dd class="text-slate-700">plan: Team</dd></div>
+                <div><dt class="text-slate-400">New state</dt><dd class="text-slate-700">plan: Business</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10">
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-400"></span> Info
+              </span>
+              <time datetime="2026-07-17T13:04:51-07:00" class="font-mono text-xs text-slate-500">13:04:51</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">LC</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Liam Chen</span> added an SSO domain: acme-robotics.com</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">192.0.2.15 &middot; London, UK</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f1b0233</dd></div>
+                <div><dt class="text-slate-400">Domain</dt><dd class="text-slate-700">acme-robotics.com</dd></div>
+                <div><dt class="text-slate-400">Provider</dt><dd class="text-slate-700">Google Workspace</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+        <li>
+          <details class="group">
+            <summary class="grid list-none cursor-pointer grid-cols-[7rem_9rem_1fr_11rem_1.25rem] items-center gap-3 px-4 py-3 text-sm hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-indigo-600 marker:hidden [&::-webkit-details-marker]:hidden">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700 ring-1 ring-inset ring-amber-600/20">
+                <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Warning
+              </span>
+              <time datetime="2026-07-17T08:55:27-07:00" class="font-mono text-xs text-slate-500">08:55:27</time>
+              <span class="flex items-center gap-2 truncate">
+                <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[10px] font-semibold text-slate-600">DO</span>
+                <span class="truncate"><span class="font-medium text-slate-900">Dana Okafor</span> deleted the Slack integration</span>
+              </span>
+              <span class="truncate text-xs text-slate-500">198.51.100.19 &middot; San Francisco, US</span>
+              <svg class="h-4 w-4 justify-self-end text-slate-400 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                <path d="m5.5 7.5 4.5 5 4.5-5" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </summary>
+            <div class="border-t border-slate-100 bg-slate-50 px-4 py-3 pl-[8.5rem]">
+              <dl class="grid grid-cols-2 gap-x-8 gap-y-2 text-xs sm:grid-cols-3">
+                <div><dt class="text-slate-400">Event ID</dt><dd class="font-mono text-slate-700">evt_9f1a5590</dd></div>
+                <div><dt class="text-slate-400">Target</dt><dd class="text-slate-700">integration: Slack</dd></div>
+                <div><dt class="text-slate-400">Reconnected since</dt><dd class="text-slate-700">not yet reconnected</dd></div>
+              </dl>
+            </div>
+          </details>
+        </li>
+
+      </ul>
+    </section>
+  </div>
+
+  <!-- Pagination -->
+  <nav aria-label="Audit log pagination" class="flex items-center justify-between border-t border-slate-200 pt-4">
+    <p class="text-sm text-slate-500">Showing <span class="font-medium text-slate-700">12</span> of <span class="font-medium text-slate-700">1,284</span> events</p>
+    <div class="flex items-center gap-2">
+      <a href="#" aria-disabled="true" class="pointer-events-none rounded-md border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-300">Previous</a>
+      <a href="#" class="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50">Next</a>
+    </div>
+  </nav>
+
+</section>

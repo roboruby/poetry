@@ -1,0 +1,287 @@
+<div class="min-h-screen bg-slate-50 px-4 py-10">
+  <div id="activity-inbox" class="mx-auto max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-slate-200
+    has-[#f-mentions:checked]:[&_[data-type]:not([data-type=mention])]:hidden
+    has-[#f-assignments:checked]:[&_[data-type]:not([data-type=assignment])]:hidden
+    has-[#f-status:checked]:[&_[data-type]:not([data-type=status])]:hidden">
+
+    <%# Header %>
+    <div class="flex items-center justify-between border-b border-slate-200 px-6 py-5">
+      <div class="flex items-center gap-2.5">
+        <span class="flex h-9 w-9 items-center justify-center rounded-full bg-slate-900 text-white">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-5 w-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.85 23.85 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+          </svg>
+        </span>
+        <div>
+          <h1 class="text-base font-semibold text-slate-900">Activity</h1>
+          <p class="text-xs text-slate-500">Mentions, assignments, and status changes</p>
+        </div>
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-medium text-indigo-700 ring-1 ring-indigo-100">
+        <span class="h-1.5 w-1.5 rounded-full bg-indigo-500"></span>
+        4 unread
+      </span>
+    </div>
+
+    <%# Filter by type %>
+    <fieldset class="flex flex-wrap items-center gap-1 border-b border-slate-100 bg-slate-50/60 px-6 py-3">
+      <legend class="sr-only">Filter activity by type</legend>
+
+      <label class="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-transparent transition-colors hover:bg-slate-100 has-checked:bg-indigo-600 has-checked:text-white has-checked:hover:bg-indigo-600 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-400">
+        <input type="radio" name="activity-filter" id="f-all" checked class="sr-only">
+        All
+      </label>
+      <label class="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-transparent transition-colors hover:bg-slate-100 has-checked:bg-indigo-600 has-checked:text-white has-checked:hover:bg-indigo-600 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-400">
+        <input type="radio" name="activity-filter" id="f-mentions" class="sr-only">
+        Mentions
+      </label>
+      <label class="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-transparent transition-colors hover:bg-slate-100 has-checked:bg-indigo-600 has-checked:text-white has-checked:hover:bg-indigo-600 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-400">
+        <input type="radio" name="activity-filter" id="f-assignments" class="sr-only">
+        Assignments
+      </label>
+      <label class="cursor-pointer rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 ring-1 ring-transparent transition-colors hover:bg-slate-100 has-checked:bg-indigo-600 has-checked:text-white has-checked:hover:bg-indigo-600 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-400">
+        <input type="radio" name="activity-filter" id="f-status" class="sr-only">
+        Status changes
+      </label>
+    </fieldset>
+
+    <%# Stream %>
+    <ul class="divide-y divide-slate-100">
+
+      <%# 1. Mention — unread %>
+      <li data-type="mention" class="flex items-start gap-3 bg-indigo-50/40 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-600">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.5c0-2.485 2.91-4.5 6.5-4.5s6.5 2.015 6.5 4.5c0 2.485-2.91 4.5-6.5 4.5-.66 0-1.297-.068-1.897-.196L5 15v-2.87C3.76 11.28 3 9.98 3 8.5Z" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-slate-900">
+            Priya Nair <span class="font-normal text-slate-600">mentioned you in a comment on</span> Q3 Roadmap
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">
+            <span class="sr-only">Unread. </span>2 minutes ago &middot; Product / Planning
+          </p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <button type="button" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8" /></svg>
+            Mark as read
+          </button>
+          <a href="#" class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 2. Assignment — unread %>
+      <li data-type="assignment" class="flex items-start gap-3 bg-indigo-50/40 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-violet-100 text-violet-600">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 7c0-2.761 2.686-5 6-5s6 2.239 6 5M15.5 8v4M17.5 10h-4" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-slate-900">
+            Jordan Lee <span class="font-normal text-slate-600">assigned you to</span> Fix checkout timeout bug
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">
+            <span class="sr-only">Unread. </span>18 minutes ago &middot; Checkout / Bugs
+          </p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <button type="button" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8" /></svg>
+            Mark as read
+          </button>
+          <a href="#" class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 3. Status change — unread %>
+      <li data-type="status" class="flex items-start gap-3 bg-indigo-50/40 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.958 5.5A6.5 6.5 0 1 0 17 10M15.958 5.5V2M15.958 5.5H12.5" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-slate-900">
+            Design Review <span class="font-normal text-slate-600">moved from Open to</span> In Progress
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">
+            <span class="sr-only">Unread. </span>1 hour ago &middot; Design System
+          </p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <button type="button" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8" /></svg>
+            Mark as read
+          </button>
+          <a href="#" class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 4. Mention — read %>
+      <li data-type="mention" class="flex items-start gap-3 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-500">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.5c0-2.485 2.91-4.5 6.5-4.5s6.5 2.015 6.5 4.5c0 2.485-2.91 4.5-6.5 4.5-.66 0-1.297-.068-1.897-.196L5 15v-2.87C3.76 11.28 3 9.98 3 8.5Z" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-700">
+            <span class="font-medium text-slate-900">Sam Okafor</span> mentioned you in Release Notes v2.4
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">3 hours ago &middot; Releases</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <a href="#" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 5. Status change — unread %>
+      <li data-type="status" class="flex items-start gap-3 bg-indigo-50/40 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full bg-indigo-500" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.958 5.5A6.5 6.5 0 1 0 17 10M15.958 5.5V2M15.958 5.5H12.5" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm font-semibold text-slate-900">
+            Payment Service Incident <span class="font-normal text-slate-600">marked</span> Resolved
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">
+            <span class="sr-only">Unread. </span>5 hours ago &middot; Infrastructure
+          </p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <button type="button" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-500 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="m4 10 4 4 8-8" /></svg>
+            Mark as read
+          </button>
+          <a href="#" class="inline-flex items-center gap-1 rounded-md bg-slate-900 px-2.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-slate-700">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 6. Assignment — read %>
+      <li data-type="assignment" class="flex items-start gap-3 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-500">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 7c0-2.761 2.686-5 6-5s6 2.239 6 5M15.5 8v4M17.5 10h-4" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-700">
+            <span class="font-medium text-slate-900">Alex Kim</span> assigned you to Update onboarding docs
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">Yesterday &middot; Documentation</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <a href="#" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 7. Mention — read %>
+      <li data-type="mention" class="flex items-start gap-3 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-sky-50 text-sky-500">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8.5c0-2.485 2.91-4.5 6.5-4.5s6.5 2.015 6.5 4.5c0 2.485-2.91 4.5-6.5 4.5-.66 0-1.297-.068-1.897-.196L5 15v-2.87C3.76 11.28 3 9.98 3 8.5Z" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-700">
+            <span class="font-medium text-slate-900">Priya Nair</span> mentioned you in Sprint Retro notes
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">Yesterday &middot; Product / Planning</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <a href="#" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 8. Status change — read %>
+      <li data-type="status" class="flex items-start gap-3 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-amber-50 text-amber-500">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.958 5.5A6.5 6.5 0 1 0 17 10M15.958 5.5V2M15.958 5.5H12.5" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-700">
+            <span class="font-medium text-slate-900">API Gateway Migration</span> moved from In Progress to Blocked
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">2 days ago &middot; Infrastructure</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <a href="#" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+
+      <%# 9. Assignment — read %>
+      <li data-type="assignment" class="flex items-start gap-3 px-6 py-4">
+        <span class="mt-2 h-2 w-2 flex-shrink-0 rounded-full" aria-hidden="true"></span>
+        <span class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-violet-50 text-violet-500">
+          <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-4.5 w-4.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm-6 7c0-2.761 2.686-5 6-5s6 2.239 6 5M15.5 8v4M17.5 10h-4" />
+          </svg>
+        </span>
+        <div class="min-w-0 flex-1">
+          <p class="text-sm text-slate-700">
+            <span class="font-medium text-slate-900">Jordan Lee</span> assigned you to Review PR #482
+          </p>
+          <p class="mt-0.5 text-xs text-slate-500">3 days ago &middot; Checkout / Bugs</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2 pl-2">
+          <a href="#" class="inline-flex items-center gap-1 rounded-md px-2.5 py-1.5 text-xs font-medium text-slate-600 ring-1 ring-slate-200 transition-colors hover:bg-slate-100">
+            Open
+            <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" class="h-3.5 w-3.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7 13 13 7M7.5 7h5.5v5.5" /></svg>
+          </a>
+        </div>
+      </li>
+    </ul>
+
+    <%# All-caught-up end-of-stream state %>
+    <div class="flex flex-col items-center gap-2 border-t border-slate-100 bg-slate-50/40 px-6 py-10 text-center">
+      <span class="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="h-6 w-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="m8 12.5 2.5 2.5L16 9.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+        </svg>
+      </span>
+      <p class="text-sm font-semibold text-slate-900">You&rsquo;re all caught up</p>
+      <p class="max-w-xs text-xs text-slate-500">
+        No more activity to show. New mentions, assignments, and status changes will appear here as they happen.
+      </p>
+    </div>
+  </div>
+</div>

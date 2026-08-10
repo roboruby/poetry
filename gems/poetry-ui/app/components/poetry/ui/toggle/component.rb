@@ -20,9 +20,20 @@ module Poetry
       # `toggleVariants` cva ports as the shared Toggle::Style dictionary
       # (+ the VARIANTS/SIZES constants) that ToggleGroup items consume.
       class Component < Poetry::Core::Component
-        PRESSED = %i[poetry core pressed].freeze
         VARIANTS = %i[default outline].freeze
         SIZES = %i[default sm lg].freeze
+
+        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
+        # written together; the DOM is the store (no Values). No keydown
+        # code - Space AND Enter activate a native button (Radix-exact).
+        use_stimulus do
+          on :root do
+            controller :pressed do
+              register
+              action :toggle, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Use poetry_toggle - never a Button with hand-managed aria-pressed.",
@@ -84,7 +95,7 @@ module Poetry
           attrs["data-disabled"] = "" if disabled
           attrs["aria-label"] = label if label.present?
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -92,17 +103,6 @@ module Poetry
 
         def visible_text?
           content? && content.to_s.gsub(/<[^>]+>/, " ").strip.present?
-        end
-
-        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
-        # written together; the DOM is the store (no Values). No keydown
-        # code - Space AND Enter activate a native button (Radix-exact).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          builder = Poetry::Core::Stimulus::Builder.new(PRESSED, attrs)
-          builder.register_controller
-          builder.with_action(:toggle, on: :click)
-          attrs.to_attributes
         end
       end
     end

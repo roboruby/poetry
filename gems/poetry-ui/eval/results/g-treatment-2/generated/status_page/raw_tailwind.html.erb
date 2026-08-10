@@ -1,0 +1,269 @@
+<%
+  product_name = "Nimbus"
+  today = Date.current
+
+  status_meta = {
+    operational: { label: "Operational",  dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-700 ring-emerald-600/20",  bar: "bg-emerald-500" },
+    degraded:    { label: "Degraded Performance", dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700 ring-amber-600/20",  bar: "bg-amber-500" },
+    outage:      { label: "Outage",       dot: "bg-red-500",    badge: "bg-red-50 text-red-700 ring-red-600/20",       bar: "bg-red-500" },
+    no_data:     { label: "No data",      dot: "bg-gray-300",   badge: "bg-gray-50 text-gray-500 ring-gray-500/10",    bar: "bg-gray-200" },
+  }
+
+  build_history = lambda do |exceptions|
+    Array.new(90) { |i| exceptions[i] || :operational }
+  end
+
+  services = [
+    {
+      name: "API",
+      description: "Core REST and GraphQL endpoints",
+      status: :operational,
+      history: build_history.call({ 41 => :degraded }),
+    },
+    {
+      name: "Web Dashboard",
+      description: "app.nimbus.io",
+      status: :operational,
+      history: build_history.call({}),
+    },
+    {
+      name: "Authentication",
+      description: "Login, SSO, and session tokens",
+      status: :operational,
+      history: build_history.call({ 12 => :degraded, 13 => :degraded }),
+    },
+    {
+      name: "Payments API",
+      description: "Billing, invoices, and checkout",
+      status: :degraded,
+      history: build_history.call({ 87 => :degraded, 88 => :degraded, 89 => :degraded }),
+    },
+    {
+      name: "Database Cluster",
+      description: "Primary data storage and replication",
+      status: :operational,
+      history: build_history.call({ 5 => :outage }),
+    },
+    {
+      name: "Notifications",
+      description: "Email, SMS, and webhook delivery",
+      status: :operational,
+      history: build_history.call({ 63 => :degraded }),
+    },
+  ]
+
+  services.each do |svc|
+    up_days = svc[:history].count(:operational)
+    svc[:uptime] = (up_days.to_f / svc[:history].size * 100).round(2)
+  end
+
+  worst = services.map { |s| s[:status] }.max_by { |s| [:operational, :degraded, :outage].index(s) }
+  overall = case worst
+    when :outage then { headline: "Partial System Outage", sub: "One or more services are currently unavailable.", theme: "bg-red-50 border-red-200 text-red-800", icon_bg: "bg-red-100 text-red-600" }
+    when :degraded then { headline: "Degraded Performance", sub: "Some services are experiencing issues. See details below.", theme: "bg-amber-50 border-amber-200 text-amber-800", icon_bg: "bg-amber-100 text-amber-600" }
+    else { headline: "All Systems Operational", sub: "Everything is running smoothly.", theme: "bg-emerald-50 border-emerald-200 text-emerald-800", icon_bg: "bg-emerald-100 text-emerald-600" }
+  end
+
+  incident = {
+    title: "Elevated error rates on Payments API",
+    status: :monitoring,
+    severity: "Minor",
+    affected: ["Payments API"],
+    started_at: Time.current.change(hour: 14, min: 12) - 1.day,
+    updates: [
+      {
+        status: "Monitoring",
+        time: Time.current.change(hour: 9, min: 46),
+        body: "Error rates have returned to normal levels. We are continuing to monitor the Payments API closely before marking this incident as resolved.",
+      },
+      {
+        status: "Identified",
+        time: Time.current.change(hour: 22, min: 30) - 1.day,
+        body: "The issue has been traced to a degraded upstream connection with our card-processing provider. A fix has been applied and we are watching error rates recover.",
+      },
+      {
+        status: "Investigating",
+        time: Time.current.change(hour: 16, min: 3) - 1.day,
+        body: "We've confirmed elevated 5xx responses and timeouts on checkout and invoice creation requests. Our team is investigating the root cause.",
+      },
+      {
+        status: "Investigating",
+        time: Time.current.change(hour: 14, min: 12) - 1.day,
+        body: "We are investigating reports of intermittent errors on the Payments API. Some customers may see failed or delayed checkout requests.",
+      },
+    ],
+  }
+  incident_status_theme = {
+    "Investigating" => "bg-red-50 text-red-700 ring-red-600/20",
+    "Identified" => "bg-amber-50 text-amber-700 ring-amber-600/20",
+    "Monitoring" => "bg-blue-50 text-blue-700 ring-blue-600/20",
+    "Resolved" => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  }
+%>
+<main class="mx-auto max-w-5xl px-6 py-12">
+  <header class="flex flex-wrap items-end justify-between gap-4 border-b border-gray-200 pb-6">
+    <div>
+      <p class="text-sm font-medium text-gray-400"><%= product_name %> Status</p>
+      <h1 class="mt-1 text-2xl font-semibold tracking-tight text-gray-900">System Status</h1>
+    </div>
+    <p class="text-sm text-gray-500">
+      Last updated <time datetime="<%= Time.current.iso8601 %>"><%= Time.current.strftime("%B %-d, %Y at %-I:%M %p %Z") %></time>
+    </p>
+  </header>
+
+  <!-- Overall status banner -->
+  <section aria-labelledby="overall-status-heading" class="mt-8">
+    <h2 id="overall-status-heading" class="sr-only">Overall status</h2>
+    <div class="flex items-center gap-4 rounded-xl border p-6 <%= overall[:theme] %>">
+      <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-full <%= overall[:icon_bg] %>">
+        <% if worst == :operational %>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+            <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+          </svg>
+        <% else %>
+          <svg viewBox="0 0 20 20" fill="currentColor" class="h-6 w-6" aria-hidden="true">
+            <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 6a.75.75 0 01.75.75v3.5a.75.75 0 01-1.5 0v-3.5A.75.75 0 0110 6zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+        <% end %>
+      </span>
+      <div>
+        <p class="text-lg font-semibold"><%= overall[:headline] %></p>
+        <p class="text-sm opacity-80"><%= overall[:sub] %></p>
+      </div>
+      <% if worst != :operational %>
+        <a href="#active-incident" class="ml-auto shrink-0 text-sm font-medium underline underline-offset-2 hover:opacity-80">
+          View incident &darr;
+        </a>
+      <% end %>
+    </div>
+  </section>
+
+  <!-- Services -->
+  <section aria-labelledby="services-heading" class="mt-10">
+    <h2 id="services-heading" class="text-lg font-semibold text-gray-900">Services</h2>
+    <p class="mt-1 text-sm text-gray-500">Uptime over the last 90 days for each component.</p>
+
+    <ul class="mt-4 divide-y divide-gray-200 rounded-xl border border-gray-200">
+      <% services.each do |svc| %>
+        <% meta = status_meta[svc[:status]] %>
+        <li class="p-5">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+              <span class="h-2.5 w-2.5 shrink-0 rounded-full <%= meta[:dot] %>" aria-hidden="true"></span>
+              <div>
+                <p class="font-medium text-gray-900"><%= svc[:name] %></p>
+                <p class="text-xs text-gray-500"><%= svc[:description] %></p>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-500"><%= svc[:uptime] %>% uptime</span>
+              <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset <%= meta[:badge] %>">
+                <%= meta[:label] %>
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <div class="flex h-8 items-stretch gap-px" role="img" aria-label="<%= svc[:name] %> uptime for the last 90 days, currently #{svc[:uptime]} percent">
+              <% svc[:history].each_with_index do |status, i| %>
+                <% day = today - (89 - i) %>
+                <span
+                  class="min-w-0 flex-1 rounded-[2px] <%= status_meta[status][:bar] %>"
+                  title="<%= day.strftime('%b %-d, %Y') %> &middot; <%= status_meta[status][:label] %>"
+                ></span>
+              <% end %>
+            </div>
+            <div class="mt-1.5 flex justify-between text-xs text-gray-400">
+              <span>90 days ago</span>
+              <span>Today</span>
+            </div>
+          </div>
+        </li>
+      <% end %>
+    </ul>
+  </section>
+
+  <!-- Active incident -->
+  <section id="active-incident" aria-labelledby="incident-heading" class="mt-10 scroll-mt-6">
+    <h2 id="incident-heading" class="text-lg font-semibold text-gray-900">Active Incident</h2>
+
+    <div class="mt-4 rounded-xl border border-amber-200 bg-white">
+      <div class="flex flex-wrap items-start justify-between gap-3 border-b border-gray-100 p-5">
+        <div>
+          <p class="font-medium text-gray-900"><%= incident[:title] %></p>
+          <p class="mt-1 text-xs text-gray-500">
+            Affects <%= incident[:affected].join(", ") %> &middot; Started
+            <time datetime="<%= incident[:started_at].iso8601 %>"><%= incident[:started_at].strftime("%b %-d, %Y at %-I:%M %p %Z") %></time>
+          </p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset bg-gray-50 text-gray-600 ring-gray-500/10">
+            <%= incident[:severity] %> severity
+          </span>
+          <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset <%= incident_status_theme[incident[:updates].first[:status]] %>">
+            <%= incident[:updates].first[:status] %>
+          </span>
+        </div>
+      </div>
+
+      <ol class="space-y-6 p-5">
+        <% incident[:updates].each do |update| %>
+          <li class="relative pl-6">
+            <span class="absolute left-0 top-1.5 h-2 w-2 rounded-full ring-4 ring-white <%= incident_status_theme[update[:status]].split(" ").find { |c| c.start_with?("bg-") } %>" aria-hidden="true"></span>
+            <div class="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+              <span class="text-sm font-semibold text-gray-900"><%= update[:status] %></span>
+              <time datetime="<%= update[:time].iso8601 %>" class="text-xs text-gray-400">
+                <%= update[:time].strftime("%b %-d, %Y &middot; %-I:%M %p %Z".gsub("&middot;", "·")) %>
+              </time>
+            </div>
+            <p class="mt-1 text-sm text-gray-600"><%= update[:body] %></p>
+          </li>
+        <% end %>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Subscribe -->
+  <section aria-labelledby="subscribe-heading" class="mt-10 mb-4 rounded-xl border border-gray-200 bg-gray-50 p-6">
+    <h2 id="subscribe-heading" class="text-lg font-semibold text-gray-900">Subscribe to updates</h2>
+    <p class="mt-1 text-sm text-gray-500">
+      Get notified by email whenever <%= product_name %> creates, updates, or resolves an incident.
+    </p>
+
+    <form action="#" method="post" class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-start">
+      <div class="flex-1">
+        <label for="subscribe-email" class="sr-only">Email address</label>
+        <input
+          type="email"
+          id="subscribe-email"
+          name="email"
+          required
+          placeholder="you@example.com"
+          autocomplete="email"
+          class="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 focus:border-gray-900 focus:outline-none focus:ring-1 focus:ring-gray-900"
+        >
+      </div>
+      <button
+        type="submit"
+        class="shrink-0 rounded-lg bg-gray-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+      >
+        Subscribe
+      </button>
+    </form>
+
+    <details class="mt-4 text-sm">
+      <summary class="cursor-pointer font-medium text-gray-700 hover:text-gray-900">Only notify me about specific services</summary>
+      <fieldset class="mt-3 grid grid-cols-2 gap-x-4 gap-y-2 sm:grid-cols-3">
+        <legend class="sr-only">Services to follow</legend>
+        <% services.each do |svc| %>
+          <label class="flex items-center gap-2 text-gray-600">
+            <input type="checkbox" name="components[]" value="<%= svc[:name] %>" checked class="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900">
+            <%= svc[:name] %>
+          </label>
+        <% end %>
+      </fieldset>
+    </details>
+
+    <p class="mt-4 text-xs text-gray-400">You can unsubscribe at any time. We'll only email you about status changes.</p>
+  </section>
+</main>

@@ -1,0 +1,117 @@
+<%
+  repo_connected   = defined?(@repo_connected)   ? @repo_connected   : false
+  team_invited     = defined?(@team_invited)     ? @team_invited     : false
+  project_created  = defined?(@project_created)  ? @project_created  : false
+  workspace_name   = defined?(@workspace_name)   ? @workspace_name   : "your workspace"
+
+  steps = [
+    {
+      done: repo_connected,
+      title: "Connect a repository",
+      description: "Link a Git repository so we can start tracking builds, deploys, and pull requests.",
+      cta: "Connect repository",
+      href: "#"
+    },
+    {
+      done: team_invited,
+      title: "Invite the team",
+      description: "Bring in teammates so everyone can collaborate on projects from day one.",
+      cta: "Invite teammates",
+      href: "#"
+    },
+    {
+      done: project_created,
+      title: "Create your first project",
+      description: "Set up a project to organize your work and start shipping.",
+      cta: "Create project",
+      href: "#"
+    }
+  ]
+  completed_count = steps.count { |s| s[:done] }
+%>
+
+<main class="mx-auto max-w-3xl px-6 py-16">
+  <header class="mb-10 text-center">
+    <p class="text-sm font-semibold uppercase tracking-wide text-indigo-600">Workspace created</p>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+      Welcome to <%= workspace_name %>
+    </h1>
+    <p class="mx-auto mt-3 max-w-xl text-base text-gray-600">
+      You're all set up. Finish these three steps to get your workspace ready for the rest of the team.
+    </p>
+  </header>
+
+  <section aria-labelledby="setup-steps-heading" class="rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-gray-200 px-6 py-4">
+      <h2 id="setup-steps-heading" class="text-base font-semibold text-gray-900">
+        Setup checklist
+      </h2>
+      <span class="text-sm font-medium text-gray-500">
+        <%= completed_count %> of <%= steps.length %> complete
+      </span>
+    </div>
+
+    <div class="px-6 py-2" role="progressbar" aria-valuenow="<%= completed_count %>" aria-valuemin="0" aria-valuemax="<%= steps.length %>" aria-label="Onboarding progress">
+      <div class="h-2 w-full overflow-hidden rounded-full bg-gray-100">
+        <div
+          class="h-full rounded-full bg-indigo-600 transition-all"
+          style="width: <%= (completed_count.to_f / steps.length * 100).round %>%"
+        ></div>
+      </div>
+    </div>
+
+    <ol class="divide-y divide-gray-200">
+      <% steps.each_with_index do |step, index| %>
+        <li class="flex items-start gap-4 px-6 py-5">
+          <div class="mt-0.5 flex-shrink-0">
+            <% if step[:done] %>
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-green-700">
+                <svg viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 010 1.42l-7.5 7.5a1 1 0 01-1.42 0l-3.5-3.5a1 1 0 111.42-1.42l2.79 2.79 6.79-6.79a1 1 0 011.42 0z" clip-rule="evenodd" />
+                </svg>
+                <span class="sr-only">Completed</span>
+              </span>
+            <% else %>
+              <span class="flex h-8 w-8 items-center justify-center rounded-full border-2 border-gray-300 text-sm font-semibold text-gray-500">
+                <%= index + 1 %>
+              </span>
+            <% end %>
+          </div>
+
+          <div class="flex-1">
+            <h3 class="text-sm font-semibold <%= step[:done] ? 'text-gray-500 line-through decoration-gray-300' : 'text-gray-900' %>">
+              <%= step[:title] %>
+            </h3>
+            <p class="mt-1 text-sm text-gray-600">
+              <%= step[:description] %>
+            </p>
+          </div>
+
+          <div class="flex-shrink-0">
+            <% if step[:done] %>
+              <span class="inline-flex items-center rounded-md bg-green-50 px-2.5 py-1.5 text-xs font-medium text-green-700">
+                Done
+              </span>
+            <% else %>
+              <a
+                href="<%= step[:href] %>"
+                class="inline-flex items-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              >
+                <%= step[:cta] %>
+              </a>
+            <% end %>
+          </div>
+        </li>
+      <% end %>
+    </ol>
+  </section>
+
+  <div class="mt-8 flex items-center justify-between">
+    <p class="text-sm text-gray-500">
+      You can always finish these steps later from your workspace settings.
+    </p>
+    <a href="#" class="text-sm font-semibold text-gray-500 hover:text-gray-700">
+      Skip for now &rarr;
+    </a>
+  </div>
+</main>

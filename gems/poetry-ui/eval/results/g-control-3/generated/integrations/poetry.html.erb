@@ -1,0 +1,226 @@
+<div class="mx-auto max-w-6xl space-y-10 p-6">
+  <header class="flex flex-col gap-4">
+    <%= poetry_breadcrumb do |crumb| %>
+      <% crumb.with_item("Home", href: "#") %>
+      <% crumb.with_item("Integrations") %>
+    <% end %>
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <div class="space-y-1">
+        <h1 class="text-2xl font-semibold tracking-tight">Integrations</h1>
+        <p class="text-sm text-muted-foreground">Manage the services connected to your workspace and browse what else you can connect.</p>
+      </div>
+      <%= poetry_button(variant: :outline) do |button| %>
+        <% button.with_leading { poetry_icon(name: :"message-square-plus") } %>
+        Request an integration
+      <% end %>
+    </div>
+    <%= poetry_separator %>
+  </header>
+
+  <section class="space-y-4">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Connected</h2>
+      <p class="text-sm text-muted-foreground">Services currently linked to your workspace, with their latest health check.</p>
+    </div>
+    <div class="overflow-hidden rounded-lg border">
+      <%= poetry_table do %>
+        <%= poetry_table_caption(class: "sr-only") { "Connected integrations with health status, last sync time, and management action." } %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Service" } %>
+            <%= poetry_table_head { "Status" } %>
+            <%= poetry_table_head { "Last synced" } %>
+            <%= poetry_table_head(class: "text-right") { "Actions" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <span class="inline-flex items-center gap-2">
+                <%= poetry_icon(name: :slack, class: "size-4 text-muted-foreground") %>
+                <span>Slack</span>
+              </span>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Healthy" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "2 minutes ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#") { "Manage" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <span class="inline-flex items-center gap-2">
+                <%= poetry_icon(name: :github, class: "size-4 text-muted-foreground") %>
+                <span>GitHub</span>
+              </span>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :success) { "Healthy" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "12 minutes ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#") { "Manage" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <span class="inline-flex items-center gap-2">
+                <%= poetry_icon(name: :calendar, class: "size-4 text-muted-foreground") %>
+                <span>Google Calendar</span>
+              </span>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :outline) { "Syncing" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "Just now" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#") { "Manage" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_cell(class: "font-medium") do %>
+              <span class="inline-flex items-center gap-2">
+                <%= poetry_icon(name: :"credit-card", class: "size-4 text-muted-foreground") %>
+                <span>Stripe</span>
+              </span>
+            <% end %>
+            <%= poetry_table_cell { poetry_badge(variant: :warning) { "Degraded" } } %>
+            <%= poetry_table_cell(class: "text-muted-foreground") { "1 hour ago" } %>
+            <%= poetry_table_cell(class: "text-right") do %>
+              <%= poetry_button(variant: :outline, size: :sm, href: "#") { "Manage" } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="space-y-6">
+    <div class="space-y-1">
+      <h2 class="text-lg font-semibold tracking-tight">Browse the catalog</h2>
+      <p class="text-sm text-muted-foreground">Connect a new service to extend your workspace.</p>
+    </div>
+
+    <div class="space-y-4">
+      <h3 class="text-sm font-medium text-muted-foreground">Communication</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :video, class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Microsoft Teams" } %>
+          <% card.with_description { "Bring alerts and approvals into your team's channels." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :"video-mode", class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Zoom" } %>
+          <% card.with_description { "Auto-generate meeting links for scheduled calls." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :phone, class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Twilio" } %>
+          <% card.with_description { "Send SMS notifications for critical account events." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <h3 class="text-sm font-medium text-muted-foreground">Productivity</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :"file-text", class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Notion" } %>
+          <% card.with_description { "Sync docs and specs into a shared workspace." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :"list-checks", class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Asana" } %>
+          <% card.with_description { "Turn support tickets into tracked tasks automatically." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :trello, class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Trello" } %>
+          <% card.with_description { "Mirror board cards with your project pipeline." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="space-y-4">
+      <h3 class="text-sm font-medium text-muted-foreground">Developer tools</h3>
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :gitlab, class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "GitLab" } %>
+          <% card.with_description { "Track deployments and merge requests in one place." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :activity, class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "Datadog" } %>
+          <% card.with_description { "Stream infrastructure metrics and traces for alerting." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_card do |card| %>
+          <% card.with_action do %>
+            <span class="flex size-9 items-center justify-center rounded-lg bg-muted">
+              <%= poetry_icon(name: :"bell-ring", class: "size-4 text-muted-foreground") %>
+            </span>
+          <% end %>
+          <% card.with_title { "PagerDuty" } %>
+          <% card.with_description { "Route incidents to the right on-call engineer." } %>
+          <% card.with_footer do %>
+            <%= poetry_button(variant: :outline, size: :sm) { "Connect" } %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</div>

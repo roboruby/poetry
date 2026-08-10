@@ -1,0 +1,149 @@
+<div class="flex flex-col gap-6 p-6">
+  <div class="flex flex-wrap items-end justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Analytics overview</h1>
+      <p class="text-sm text-muted-foreground">Delivery health across every active project, updated through today.</p>
+    </div>
+    <%= poetry_button_group("aria-label": "Time range") do %>
+      <%= poetry_button(variant: :outline, size: :sm, "aria-pressed": "false") { "This month" } %>
+      <%= poetry_button(variant: :outline, size: :sm, "aria-pressed": "true") { "This week" } %>
+      <%= poetry_button(variant: :outline, size: :sm, "aria-pressed": "false") { "This quarter" } %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Active projects", delta: "+2", trend: :up, sentiment: :positive) do |stat| %>
+        <% stat.with_description { "3 launching this week" } %>
+        14
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Tasks completed this week", delta: "+24", trend: :up, sentiment: :positive) do |stat| %>
+        <% stat.with_description { "vs. 158 last week" } %>
+        182
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Overdue items", delta: "+3", trend: :up, sentiment: :negative) do |stat| %>
+        <% stat.with_description { "across 2 projects" } %>
+        9
+      <% end %>
+    <% end %>
+    <%= poetry_card do %>
+      <%= poetry_stat(label: "Team velocity", delta: "+6", trend: :up, sentiment: :positive) do |stat| %>
+        <% stat.with_description { "story points / sprint, vs. 32 last sprint" } %>
+        38
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="grid gap-6 lg:grid-cols-2">
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Recent activity" } %>
+      <% card.with_description { "The latest updates across all active projects." } %>
+      <%= poetry_item_group do %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Jordan Ellis", size: :sm) { "JE" } } %>
+          <% item.with_title { "Jordan Ellis completed “Checkout API integration”" } %>
+          <% item.with_description { "Payments Revamp" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">12m ago</span>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+          <% item.with_title { "Priya Nair opened 4 new tasks in sprint 14" } %>
+          <% item.with_description { "Customer Portal v2" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">45m ago</span>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Sam Okafor", size: :sm) { "SO" } } %>
+          <% item.with_title { "Sam Okafor flagged “Onboarding flow QA” as blocked" } %>
+          <% item.with_description { "Mobile Onboarding Redesign" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">1h ago</span>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Casey Morgan", size: :sm) { "CM" } } %>
+          <% item.with_title { "Casey Morgan merged the design tokens update" } %>
+          <% item.with_description { "Aurora Design System" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">3h ago</span>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Priya Nair", size: :sm) { "PN" } } %>
+          <% item.with_title { "Priya Nair moved “Migrate billing events” to Done" } %>
+          <% item.with_description { "Data Pipeline Migration" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">Yesterday</span>
+          <% end %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem") do |item| %>
+          <% item.with_media { poetry_avatar(label: "Jordan Ellis", size: :sm) { "JE" } } %>
+          <% item.with_title { "Jordan Ellis commented on “Refund reconciliation”" } %>
+          <% item.with_description { "Payments Revamp" } %>
+          <% item.with_actions do %>
+            <span class="text-xs text-muted-foreground tabular-nums">2 days ago</span>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= poetry_card(title_tag: :h2) do |card| %>
+      <% card.with_title { "Per-project progress" } %>
+      <% card.with_description { "Task completion against each project's current sprint." } %>
+      <%= poetry_item_group do %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Aurora Design System" } %>
+          <% item.with_description { "43 of 50 tasks · due Aug 4" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Aurora Design System progress", value: 86) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Payments Revamp" } %>
+          <% item.with_description { "42 of 58 tasks · due Jul 28" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Payments Revamp progress", value: 72) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Customer Portal v2" } %>
+          <% item.with_description { "21 of 44 tasks · was due Jul 20" } %>
+          <% item.with_actions { poetry_badge(variant: :warning) { "At risk" } } %>
+          <%= poetry_progress(label: "Customer Portal v2 progress", value: 48) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Mobile Onboarding Redesign" } %>
+          <% item.with_description { "11 of 33 tasks · was due Jul 15" } %>
+          <% item.with_actions { poetry_badge(variant: :destructive) { "Behind" } } %>
+          <%= poetry_progress(label: "Mobile Onboarding Redesign progress", value: 33) %>
+        <% end %>
+        <%= poetry_item_separator %>
+        <%= poetry_item(role: "listitem", media_variant: :icon) do |item| %>
+          <% item.with_media { poetry_icon(name: :"folder-kanban") } %>
+          <% item.with_title { "Data Pipeline Migration" } %>
+          <% item.with_description { "30 of 33 tasks · due Aug 1" } %>
+          <% item.with_actions { poetry_badge(variant: :success) { "On track" } } %>
+          <%= poetry_progress(label: "Data Pipeline Migration progress", value: 91) %>
+        <% end %>
+      <% end %>
+      <p class="pt-1 text-sm text-muted-foreground">Showing 5 of 14 active projects.</p>
+    <% end %>
+  </div>
+</div>

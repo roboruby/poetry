@@ -1,0 +1,101 @@
+<%# First-run onboarding: welcome + a three-step setup checklist with a skip path.
+    Adapted from the section-card block (card + badge + icon + link) with the
+    stepper block's completed/upcoming indicator language for visual coherence. %>
+<% steps = [
+     {
+       icon: :"git-branch",
+       title: "Connect a repository",
+       description: "Link a repository so deploys, commits, and pull requests show up in this workspace.",
+       hint: "Takes about 2 minutes",
+       completed: true,
+       cta: "View repository",
+       href: "#"
+     },
+     {
+       icon: :users,
+       title: "Invite your team",
+       description: "Bring teammates in so work can be reviewed, assigned, and shared from day one.",
+       hint: "Send invites by email",
+       completed: false,
+       cta: "Invite teammates",
+       href: "#"
+     },
+     {
+       icon: :"folder-plus",
+       title: "Create your first project",
+       description: "Projects group your work into something shippable - start with whatever you're building next.",
+       hint: "Takes about a minute",
+       completed: false,
+       cta: "Create project",
+       href: "#"
+     }
+   ] %>
+<% completed_count = steps.count { |step| step[:completed] } %>
+
+<div class="mx-auto max-w-5xl px-6 py-12">
+  <header class="flex flex-wrap items-start justify-between gap-4">
+    <div class="space-y-1">
+      <h1 class="text-2xl font-semibold tracking-tight">Welcome to your new workspace</h1>
+      <p class="max-w-xl text-sm text-muted-foreground">
+        A few quick steps get your workspace ready for real work. You can finish them now or pick up where you left off later.
+      </p>
+    </div>
+    <%= poetry_button(tag: :a, href: "#", variant: :ghost) { "Skip for now" } %>
+  </header>
+
+  <div class="mt-6 flex items-center gap-3">
+    <span class="text-sm font-medium"><%= completed_count %> of <%= steps.length %> complete</span>
+    <div class="h-1.5 flex-1 max-w-48 overflow-hidden rounded-full bg-muted">
+      <div class="h-full rounded-full bg-primary" style="width: <%= (completed_count.to_f / steps.length * 100).round %>%"></div>
+    </div>
+  </div>
+
+  <%= poetry_separator(class: "mt-6") %>
+
+  <div class="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+    <% steps.each do |step| %>
+      <%= poetry_card do |card| %>
+        <% card.with_title do %>
+          <div class="flex items-center gap-3">
+            <span class="flex size-9 shrink-0 items-center justify-center rounded-full <%= step[:completed] ? "bg-primary text-primary-foreground" : "border border-border text-muted-foreground" %>">
+              <% if step[:completed] %>
+                <%= poetry_icon(name: :check, class: "size-4", label: "Completed") %>
+              <% else %>
+                <%= poetry_icon(name: step[:icon], class: "size-4") %>
+              <% end %>
+            </span>
+            <span class="text-base"><%= step[:title] %></span>
+          </div>
+        <% end %>
+        <% card.with_action do %>
+          <% if step[:completed] %>
+            <%= poetry_badge(variant: :success) { "Completed" } %>
+          <% else %>
+            <%= poetry_badge(variant: :outline) { "Not started" } %>
+          <% end %>
+        <% end %>
+        <% card.with_description { step[:description] } %>
+        <% card.with_footer do %>
+          <div class="flex w-full items-center justify-between gap-4">
+            <span class="text-xs text-muted-foreground"><%= step[:hint] %></span>
+            <% if step[:completed] %>
+              <%= poetry_button(tag: :a, href: step[:href], variant: :outline, size: :sm) { step[:cta] } %>
+            <% else %>
+              <%= poetry_button(tag: :a, href: step[:href], size: :sm) do |button| %>
+                <% button.with_trailing { poetry_icon(name: :"arrow-right", class: "size-3.5") } %>
+                <%= step[:cta] %>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+        <div class="text-sm text-muted-foreground">
+          <% if step[:completed] %>
+            You're all set here - revisit any time from workspace settings.
+          <% else %>
+            You can complete this later; nothing else in the workspace is blocked on it.
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

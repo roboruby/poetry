@@ -1,0 +1,169 @@
+<% content_for :title, @project.name %>
+
+<div class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+  <%
+    status_styles = {
+      "active"    => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+      "on_track"  => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+      "at_risk"   => "bg-amber-50 text-amber-700 ring-amber-600/20",
+      "off_track" => "bg-red-50 text-red-700 ring-red-600/20",
+      "completed" => "bg-blue-50 text-blue-700 ring-blue-600/20",
+      "archived"  => "bg-gray-100 text-gray-500 ring-gray-400/20"
+    }
+    status_key = @project.status.to_s
+    status_class = status_styles.fetch(status_key, "bg-gray-100 text-gray-600 ring-gray-500/20")
+  %>
+
+  <!-- Header: name, status, description, actions -->
+  <header class="flex flex-col gap-4 border-b border-gray-200 pb-6 sm:flex-row sm:items-start sm:justify-between">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight text-gray-900"><%= @project.name %></h1>
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset <%= status_class %>">
+          <%= status_key.presence&.titleize || "Unknown" %>
+        </span>
+      </div>
+      <p class="mt-2 max-w-2xl text-sm leading-6 text-gray-600">
+        <%= @project.description.presence || "No description provided." %>
+      </p>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <%= link_to edit_project_path(@project),
+            class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-gray-700 ring-1 ring-inset ring-gray-300 hover:bg-gray-50" do %>
+        Edit
+      <% end %>
+
+      <%= button_to project_path(@project),
+            method: :patch,
+            params: { project: { status: "archived" } },
+            form: { data: { turbo_confirm: "Archive #{@project.name}? You can restore it later from the archive." } },
+            class: "inline-flex items-center rounded-md bg-white px-3 py-2 text-sm font-medium text-red-600 ring-1 ring-inset ring-red-300 hover:bg-red-50" do %>
+        Archive
+      <% end %>
+    </div>
+  </header>
+
+  <!-- Owner and key dates -->
+  <section aria-labelledby="project-details-heading" class="rounded-lg border border-gray-200 bg-white p-6">
+    <h2 id="project-details-heading" class="sr-only">Project details</h2>
+    <dl class="grid grid-cols-2 gap-x-6 gap-y-6 sm:grid-cols-4">
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Owner</dt>
+        <dd class="mt-1 flex items-center gap-2">
+          <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gray-200 text-xs font-semibold text-gray-700">
+            <%= @project.owner&.name.to_s.first(1).upcase.presence || "?" %>
+          </span>
+          <span class="truncate text-sm font-medium text-gray-900"><%= @project.owner&.name || "Unassigned" %></span>
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Start date</dt>
+        <dd class="mt-1 text-sm text-gray-900">
+          <%= @project.start_date&.strftime("%b %-d, %Y") || "Not set" %>
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Due date</dt>
+        <dd class="mt-1 text-sm text-gray-900">
+          <%= @project.due_date&.strftime("%b %-d, %Y") || "Not set" %>
+        </dd>
+      </div>
+
+      <div>
+        <dt class="text-xs font-medium uppercase tracking-wide text-gray-500">Created</dt>
+        <dd class="mt-1 text-sm text-gray-900">
+          <%= @project.created_at&.strftime("%b %-d, %Y") %>
+        </dd>
+      </div>
+    </dl>
+  </section>
+
+  <!-- Milestone timeline -->
+  <section aria-labelledby="milestones-heading">
+    <h2 id="milestones-heading" class="text-base font-semibold text-gray-900">Milestones</h2>
+
+    <% milestones = @project.milestones.order(:due_on) %>
+    <% if milestones.any? %>
+      <ol class="mt-4 space-y-0">
+        <% milestones.each_with_index do |milestone, index| %>
+          <%
+            dot_class = case milestone.status.to_s
+            when "completed" then "bg-blue-600"
+            when "in_progress", "active" then "bg-emerald-500"
+            when "at_risk", "off_track" then "bg-amber-500"
+            else "bg-gray-300"
+            end
+          %>
+          <li class="relative flex gap-4 pb-8 last:pb-0">
+            <% unless index == milestones.size - 1 %>
+              <span class="absolute left-[7px] top-4 -bottom-2 w-px bg-gray-200" aria-hidden="true"></span>
+            <% end %>
+            <span class="relative mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full ring-4 ring-white <%= dot_class %>"></span>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <p class="text-sm font-medium text-gray-900"><%= milestone.name %></p>
+                <p class="text-xs text-gray-500">
+                  <%= milestone.due_on&.strftime("%b %-d, %Y") || "No due date" %>
+                </p>
+              </div>
+              <% if milestone.description.present? %>
+                <p class="mt-0.5 text-sm text-gray-600"><%= milestone.description %></p>
+              <% end %>
+            </div>
+          </li>
+        <% end %>
+      </ol>
+    <% else %>
+      <p class="mt-4 text-sm text-gray-500">No milestones have been added yet.</p>
+    <% end %>
+  </section>
+
+  <!-- Five most recent tasks -->
+  <section aria-labelledby="recent-tasks-heading">
+    <div class="flex items-center justify-between">
+      <h2 id="recent-tasks-heading" class="text-base font-semibold text-gray-900">Recent tasks</h2>
+      <%= link_to "View all tasks", project_tasks_path(@project), class: "text-sm font-medium text-blue-600 hover:text-blue-700" %>
+    </div>
+
+    <% recent_tasks = @project.tasks.order(created_at: :desc).limit(5) %>
+    <% if recent_tasks.any? %>
+      <div class="mt-4 overflow-hidden rounded-lg border border-gray-200 bg-white">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th scope="col" class="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Task</th>
+              <th scope="col" class="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Assignee</th>
+              <th scope="col" class="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Due date</th>
+              <th scope="col" class="px-4 py-2.5 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <% recent_tasks.each do |task| %>
+              <tr>
+                <td class="max-w-xs truncate px-4 py-3 text-sm font-medium text-gray-900">
+                  <%= link_to task.title, project_task_path(@project, task), class: "hover:underline" %>
+                </td>
+                <td class="px-4 py-3 text-sm text-gray-600"><%= task.assignee&.name || "Unassigned" %></td>
+                <td class="px-4 py-3 text-sm text-gray-600">
+                  <%= task.due_on&.strftime("%b %-d, %Y") || "No due date" %>
+                </td>
+                <td class="px-4 py-3">
+                  <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">
+                    <%= task.status.to_s.presence&.titleize || "Open" %>
+                  </span>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% else %>
+      <p class="mt-4 text-sm text-gray-500">No tasks have been created for this project yet.</p>
+    <% end %>
+  </section>
+
+</div>

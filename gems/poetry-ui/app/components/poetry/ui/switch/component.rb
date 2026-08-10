@@ -21,8 +21,19 @@ module Poetry
       # auto-submit (form data-action: "change->form#requestSubmit" hangs
       # off the store input's REAL change event).
       class Component < Poetry::Core::Component
-        CHECKED = %i[poetry core checked].freeze
         SIZES = %i[default sm].freeze
+
+        # The SHARED family controller (shipped by Checkbox, reused with
+        # zero fork): input first, real change event, then reflect.
+        use_stimulus do
+          on :root do
+            controller :checked do
+              register
+              value :input_id, if: :form_participant?
+              action :toggle, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces " \
@@ -105,21 +116,8 @@ module Poetry
           attrs["aria-required"] = true if required
           attrs["aria-label"] = label if label.present?
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
-        end
-
-        private
-
-        # The SHARED family controller (shipped by Checkbox, reused with
-        # zero fork): input first, real change event, then reflect.
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          builder = Poetry::Core::Stimulus::Builder.new(CHECKED, attrs)
-          builder.register_controller
-          builder.with_value(:input_id, input_id) if form_participant?
-          builder.with_action(:toggle, on: :click)
-          attrs.to_attributes
         end
       end
     end

@@ -19,8 +19,19 @@ module Poetry
       # the source's `peer` class contract for peer-* label styling breaks
       # if poetry wraps.
       class Component < Poetry::Core::Component
-        CHECKED = %i[poetry core checked].freeze
         STATES = [true, false, :indeterminate].freeze
+
+        use_stimulus do
+          on :root do
+            controller :checked do
+              register
+              # No input-id value -> pure visual mode: state lives on the
+              # button's checked attributes alone (discouraged; see AGENT_RULES).
+              value :input_id, if: :form_participant?
+              action :toggle, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with hand-written " \
@@ -134,21 +145,8 @@ module Poetry
           attrs["aria-required"] = true if required
           attrs["aria-label"] = label if label.present?
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
-        end
-
-        private
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          builder = Poetry::Core::Stimulus::Builder.new(CHECKED, attrs)
-          builder.register_controller
-          # No input-id value -> pure visual mode: state lives on the
-          # button's checked attributes alone (discouraged; see AGENT_RULES).
-          builder.with_value(:input_id, input_id) if form_participant?
-          builder.with_action(:toggle, on: :click)
-          attrs.to_attributes
         end
       end
     end

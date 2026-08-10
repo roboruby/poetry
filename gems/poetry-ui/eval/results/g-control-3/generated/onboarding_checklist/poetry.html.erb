@@ -1,0 +1,59 @@
+<div class="mx-auto max-w-2xl space-y-6 p-6">
+  <div class="space-y-1">
+    <h1 class="text-2xl font-semibold tracking-tight">Welcome to Northwind Traders</h1>
+    <p class="text-sm text-muted-foreground">
+      Your workspace is ready. Finish these steps to get your team up and running.
+    </p>
+  </div>
+
+  <%= poetry_meter(label: "Setup progress", value: 1, max: 3, value_label: "1 of 3 steps complete") %>
+
+  <%= poetry_card(title_tag: :h2) do |card| %>
+    <% card.with_title { "Finish setting up your workspace" } %>
+    <% card.with_description { "These steps help your team find their way around." } %>
+
+    <%= poetry_item_group(role: "list", class: "space-y-1") do %>
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :"git-branch") } %>
+        <% item.with_title do %>
+          <span>Connect a repository</span>
+          <%= poetry_badge(variant: :success) { "Connected" } %>
+        <% end %>
+        <% item.with_description { "Northwind/storefront is linked and syncing commits." } %>
+        <% item.with_actions do %>
+          <%= poetry_button(tag: :a, href: "/repositories", variant: :outline) { "Manage" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :users) } %>
+        <% item.with_title do %>
+          <span>Invite the team</span>
+          <%= poetry_badge(variant: :outline) { "Not started" } %>
+        <% end %>
+        <% item.with_description { "Bring in teammates so they can review changes and share ownership." } %>
+        <% item.with_actions do %>
+          <%= poetry_button(tag: :a, href: "/team/invitations/new") { "Invite teammates" } %>
+        <% end %>
+      <% end %>
+
+      <%= poetry_item(variant: :outline, media_variant: :icon, role: "listitem") do |item| %>
+        <% item.with_media { poetry_icon(name: :"folder-plus") } %>
+        <% item.with_title do %>
+          <span>Create your first project</span>
+          <%= poetry_badge(variant: :outline) { "Not started" } %>
+        <% end %>
+        <% item.with_description { "Projects group your repositories, tasks, and deployments." } %>
+        <% item.with_actions do %>
+          <%= poetry_button(tag: :a, href: "/projects/new") { "Create project" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% card.with_footer do %>
+      <div class="flex w-full items-center justify-end">
+        <%= poetry_link(href: "/dashboard", underline: :hover) { "Skip for now" } %>
+      </div>
+    <% end %>
+  <% end %>
+</div>

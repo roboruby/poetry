@@ -1,0 +1,391 @@
+<section aria-labelledby="team-members-heading" class="mx-auto max-w-5xl space-y-10 px-6 py-10">
+  <header>
+    <h1 id="team-members-heading" class="text-2xl font-semibold text-gray-900">Team members</h1>
+    <p class="mt-1 text-sm text-gray-500">Manage who has access to this workspace, assign roles, and invite new teammates.</p>
+  </header>
+
+  <!-- Invite a teammate -->
+  <section aria-labelledby="invite-heading" class="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 px-6 py-4">
+      <h2 id="invite-heading" class="text-base font-semibold text-gray-900">Invite a teammate</h2>
+      <p class="mt-1 text-sm text-gray-500">They&rsquo;ll receive an email invitation to join this workspace.</p>
+    </div>
+
+    <form action="#" method="post" class="px-6 py-5">
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-end">
+        <div class="flex-1">
+          <label for="invite-email" class="block text-sm font-medium text-gray-700">Email address</label>
+          <input
+            type="email"
+            id="invite-email"
+            name="invitation[email]"
+            required
+            placeholder="teammate@company.com"
+            class="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+        </div>
+
+        <div class="sm:w-48">
+          <label for="invite-role" class="block text-sm font-medium text-gray-700">Role</label>
+          <select
+            id="invite-role"
+            name="invitation[role]"
+            class="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          >
+            <option value="admin">Admin</option>
+            <option value="member" selected>Member</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+
+        <div>
+          <button
+            type="submit"
+            class="inline-flex w-full items-center justify-center rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto"
+          >
+            Send invite
+          </button>
+        </div>
+      </div>
+    </form>
+  </section>
+
+  <!-- Member list -->
+  <section aria-labelledby="members-heading" class="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div class="flex flex-col gap-4 border-b border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 id="members-heading" class="text-base font-semibold text-gray-900">Members</h2>
+        <p class="mt-1 text-sm text-gray-500">6 people have access to this workspace.</p>
+      </div>
+
+      <form action="#" method="get" role="search" class="flex items-center gap-2">
+        <label for="member-search" class="sr-only">Search members</label>
+        <input
+          type="search"
+          id="member-search"
+          name="query"
+          placeholder="Search by name or email"
+          class="w-64 rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        >
+        <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          Search
+        </button>
+      </form>
+    </div>
+
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Name</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Role</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wide text-gray-500">Last active</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium uppercase tracking-wide text-gray-500">
+            <span class="sr-only">Actions</span>
+          </th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">AT</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Ava Thompson</p>
+                <p class="truncate text-sm text-gray-500">ava.thompson@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-purple-50 px-2.5 py-0.5 text-xs font-medium text-purple-700">Owner</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active now</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Ava Thompson">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-ava" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-ava" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option>Admin</option>
+                    <option>Member</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700">MC</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Marcus Chen</p>
+                <p class="truncate text-sm text-gray-500">marcus.chen@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-0.5 text-xs font-medium text-blue-700">Admin</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active 2 hours ago</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Marcus Chen">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-marcus" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-marcus" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option selected>Admin</option>
+                    <option>Member</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+                <form action="#" method="post" class="mt-2 border-t border-gray-100 pt-2">
+                  <button type="submit" class="w-full rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-rose-100 text-sm font-semibold text-rose-700">PN</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Priya Natarajan</p>
+                <p class="truncate text-sm text-gray-500">priya.natarajan@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active yesterday</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Priya Natarajan">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-priya" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-priya" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option>Admin</option>
+                    <option selected>Member</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+                <form action="#" method="post" class="mt-2 border-t border-gray-100 pt-2">
+                  <button type="submit" class="w-full rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-amber-100 text-sm font-semibold text-amber-700">LO</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Liam O&rsquo;Connor</p>
+                <p class="truncate text-sm text-gray-500">liam.oconnor@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active 3 days ago</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Liam O'Connor">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-liam" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-liam" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option>Admin</option>
+                    <option selected>Member</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+                <form action="#" method="post" class="mt-2 border-t border-gray-100 pt-2">
+                  <button type="submit" class="w-full rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">SA</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Sofia Alvarez</p>
+                <p class="truncate text-sm text-gray-500">sofia.alvarez@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Viewer</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active 2 weeks ago</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Sofia Alvarez">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-sofia" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-sofia" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option>Admin</option>
+                    <option>Member</option>
+                    <option selected>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+                <form action="#" method="post" class="mt-2 border-t border-gray-100 pt-2">
+                  <button type="submit" class="w-full rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+
+        <tr>
+          <td class="px-6 py-4">
+            <div class="flex items-center gap-3">
+              <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700">NW</div>
+              <div class="min-w-0">
+                <p class="truncate text-sm font-medium text-gray-900">Noah Williams</p>
+                <p class="truncate text-sm text-gray-500">noah.williams@company.com</p>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4">
+            <span class="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Member</span>
+          </td>
+          <td class="px-6 py-4 text-sm text-gray-500">Active 1 month ago</td>
+          <td class="px-6 py-4 text-right">
+            <details class="relative inline-block text-left">
+              <summary class="list-none cursor-pointer rounded-md p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 [&::-webkit-details-marker]:hidden" aria-label="Actions for Noah Williams">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-5 w-5">
+                  <path d="M10 3a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 8.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM10 14a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z" />
+                </svg>
+              </summary>
+              <div class="absolute right-0 z-10 mt-1 w-52 rounded-md border border-gray-200 bg-white p-3 text-left shadow-lg">
+                <form action="#" method="post" class="space-y-2">
+                  <label for="role-noah" class="block text-xs font-medium text-gray-500">Change role</label>
+                  <select id="role-noah" name="member[role]" class="block w-full rounded-md border border-gray-300 px-2 py-1.5 text-sm text-gray-900">
+                    <option>Owner</option>
+                    <option>Admin</option>
+                    <option selected>Member</option>
+                    <option>Viewer</option>
+                  </select>
+                  <button type="submit" class="w-full rounded-md bg-indigo-600 px-2 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500">Save role</button>
+                </form>
+                <form action="#" method="post" class="mt-2 border-t border-gray-100 pt-2">
+                  <button type="submit" class="w-full rounded-md px-2 py-1.5 text-left text-sm text-red-600 hover:bg-red-50">Remove from workspace</button>
+                </form>
+              </div>
+            </details>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Pending invitations -->
+  <section aria-labelledby="pending-heading" class="rounded-lg border border-gray-200 bg-white shadow-sm">
+    <div class="border-b border-gray-200 px-6 py-4">
+      <h2 id="pending-heading" class="text-base font-semibold text-gray-900">Pending invitations</h2>
+      <p class="mt-1 text-sm text-gray-500">Invitations that haven&rsquo;t been accepted yet.</p>
+    </div>
+
+    <ul class="divide-y divide-gray-100">
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="truncate text-sm font-medium text-gray-900">jordan.miles@company.com</p>
+            <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">Pending</span>
+          </div>
+          <p class="mt-0.5 text-xs text-gray-500">Invited as Member &middot; Sent 3 days ago</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2">
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">Resend</button>
+          </form>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="truncate text-sm font-medium text-gray-900">taylor.reed@company.com</p>
+            <span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-700">Pending</span>
+          </div>
+          <p class="mt-0.5 text-xs text-gray-500">Invited as Admin &middot; Sent 1 week ago</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2">
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">Resend</button>
+          </form>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+
+      <li class="flex flex-col gap-3 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <p class="truncate text-sm font-medium text-gray-900">sam.okafor@company.com</p>
+            <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">Expiring soon</span>
+          </div>
+          <p class="mt-0.5 text-xs text-gray-500">Invited as Viewer &middot; Sent yesterday</p>
+        </div>
+        <div class="flex flex-shrink-0 items-center gap-2">
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50">Resend</button>
+          </form>
+          <form action="#" method="post">
+            <button type="submit" class="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">Revoke</button>
+          </form>
+        </div>
+      </li>
+    </ul>
+  </section>
+</section>

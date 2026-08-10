@@ -1,0 +1,186 @@
+<section aria-label="Activity inbox" class="bg-slate-50 px-6 py-10">
+  <div class="mx-auto max-w-2xl">
+
+    <!-- Header -->
+    <div class="mb-6 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Activity</h1>
+        <p class="mt-1 text-sm text-slate-500">Mentions, assignments, and status changes across your work.</p>
+      </div>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700 ring-1 ring-inset ring-blue-200">
+        <span class="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+        3 unread
+      </span>
+    </div>
+
+    <div class="group/feed">
+
+      <!-- Filter by type -->
+      <div role="radiogroup" aria-label="Filter by type" class="mb-4 inline-flex flex-wrap gap-1 rounded-lg border border-slate-200 bg-white p-1 shadow-sm">
+        <label class="cursor-pointer">
+          <input type="radio" name="activity-filter" id="f-all" class="peer sr-only" checked>
+          <span class="block rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition peer-checked:bg-slate-900 peer-checked:text-white">All</span>
+        </label>
+        <label class="cursor-pointer">
+          <input type="radio" name="activity-filter" id="f-mentions" class="peer sr-only">
+          <span class="block rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition peer-checked:bg-slate-900 peer-checked:text-white">Mentions</span>
+        </label>
+        <label class="cursor-pointer">
+          <input type="radio" name="activity-filter" id="f-assignments" class="peer sr-only">
+          <span class="block rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition peer-checked:bg-slate-900 peer-checked:text-white">Assignments</span>
+        </label>
+        <label class="cursor-pointer">
+          <input type="radio" name="activity-filter" id="f-status" class="peer sr-only">
+          <span class="block rounded-md px-3 py-1.5 text-sm font-medium text-slate-600 transition peer-checked:bg-slate-900 peer-checked:text-white">Status changes</span>
+        </label>
+      </div>
+
+      <!-- Stream -->
+      <ul class="divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+
+        <!-- Mention · unread -->
+        <li data-type="mention" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-assignments:checked]/feed:hidden group-has-[#f-status:checked]/feed:hidden">
+          <input type="checkbox" id="read-1" class="peer sr-only">
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-4.5 w-4.5"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="truncate-none text-sm">
+              <span class="font-semibold">Priya Shah</span> mentioned you in <span class="font-semibold">Q3 Roadmap</span>: "cc <span class="text-indigo-600">@you</span> can you confirm the launch date?"
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-[10px] font-medium text-indigo-600 ring-1 ring-inset ring-indigo-200">Mention</span>
+              <time datetime="2026-07-22T14:00">2h ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-1" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+        <!-- Assignment · unread -->
+        <li data-type="assignment" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-mentions:checked]/feed:hidden group-has-[#f-status:checked]/feed:hidden">
+          <input type="checkbox" id="read-2" class="peer sr-only">
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-4.5 w-4.5"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 1 1 16 0H4z"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="text-sm">
+              <span class="font-semibold">Jordan Lee</span> assigned you to <span class="font-semibold">Fix checkout timeout bug</span>
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 ring-1 ring-inset ring-amber-200">Assignment</span>
+              <time datetime="2026-07-22T13:00">3h ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-2" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+        <!-- Status change · unread -->
+        <li data-type="status" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-mentions:checked]/feed:hidden group-has-[#f-assignments:checked]/feed:hidden">
+          <input type="checkbox" id="read-3" class="peer sr-only">
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="text-sm">
+              <span class="font-semibold">Design Review</span> moved from <span class="font-semibold">Backlog</span> to <span class="font-semibold">In Progress</span>
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">Status change</span>
+              <time datetime="2026-07-22T11:00">5h ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-3" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+        <!-- Mention · read -->
+        <li data-type="mention" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-assignments:checked]/feed:hidden group-has-[#f-status:checked]/feed:hidden">
+          <input type="checkbox" id="read-4" class="peer sr-only" checked>
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-4.5 w-4.5"><path d="M4 4h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H9l-5 4v-4H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="text-sm">
+              <span class="font-semibold">Alex Kim</span> mentioned you in <span class="font-semibold">#general</span>: "great work on the release notes"
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-indigo-50 px-1.5 py-0.5 text-[10px] font-medium text-indigo-600 ring-1 ring-inset ring-indigo-200">Mention</span>
+              <time datetime="2026-07-21T10:00">1d ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-4" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+        <!-- Assignment · read -->
+        <li data-type="assignment" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-mentions:checked]/feed:hidden group-has-[#f-status:checked]/feed:hidden">
+          <input type="checkbox" id="read-5" class="peer sr-only" checked>
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="h-4.5 w-4.5"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM4 20a8 8 0 1 1 16 0H4z"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="text-sm">
+              You were assigned to <span class="font-semibold">Update API documentation</span>
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-amber-50 px-1.5 py-0.5 text-[10px] font-medium text-amber-600 ring-1 ring-inset ring-amber-200">Assignment</span>
+              <time datetime="2026-07-21T09:00">1d ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-5" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+        <!-- Status change · read -->
+        <li data-type="status" class="group relative flex items-start gap-4 px-5 py-4 group-has-[#f-mentions:checked]/feed:hidden group-has-[#f-assignments:checked]/feed:hidden">
+          <input type="checkbox" id="read-6" class="peer sr-only" checked>
+          <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-blue-500 peer-checked:bg-transparent"></span>
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4.5 w-4.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="min-w-0 flex-1 text-slate-900 font-medium peer-checked:text-slate-500 peer-checked:font-normal">
+            <p class="text-sm">
+              <span class="font-semibold">Marketing site launch</span> marked as <span class="font-semibold">Done</span>
+            </p>
+            <p class="mt-1 flex items-center gap-1.5 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-emerald-50 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600 ring-1 ring-inset ring-emerald-200">Status change</span>
+              <time datetime="2026-07-20T09:00">2d ago</time>
+            </p>
+          </div>
+          <div class="flex shrink-0 items-center gap-2 pt-0.5">
+            <label for="read-6" class="cursor-pointer rounded-md border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-600 hover:bg-slate-50 peer-checked:hidden">Mark as read</label>
+            <a href="#" class="rounded-md bg-slate-900 px-2.5 py-1 text-xs font-medium text-white hover:bg-slate-700">Open</a>
+          </div>
+        </li>
+
+      </ul>
+
+      <!-- All caught up -->
+      <div class="mt-6 flex flex-col items-center gap-2 rounded-xl border border-dashed border-slate-200 py-10 text-center">
+        <div class="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <p class="text-sm font-medium text-slate-700">You're all caught up</p>
+        <p class="text-xs text-slate-400">No more activity to show from the last 7 days.</p>
+      </div>
+
+    </div>
+  </div>
+</section>

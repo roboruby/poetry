@@ -1,0 +1,292 @@
+<%
+  stats = [
+    {
+      label: "Active projects",
+      value: "12",
+      delta: "+2",
+      delta_detail: "vs last month",
+      trend: :up,
+      good: true,
+      icon: :folder
+    },
+    {
+      label: "Tasks completed this week",
+      value: "84",
+      delta: "+16%",
+      delta_detail: "vs last week",
+      trend: :up,
+      good: true,
+      icon: :check
+    },
+    {
+      label: "Overdue items",
+      value: "7",
+      delta: "+3",
+      delta_detail: "vs last week",
+      trend: :up,
+      good: false,
+      icon: :alert
+    },
+    {
+      label: "Team velocity",
+      value: "38 pts",
+      delta: "-4 pts",
+      delta_detail: "vs last week",
+      trend: :down,
+      good: false,
+      icon: :bolt
+    }
+  ]
+
+  projects = [
+    {
+      name: "Mobile Redesign",
+      description: "iOS/Android app refresh",
+      status: "On track",
+      status_classes: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20",
+      dot_classes: "bg-emerald-500",
+      bar_track: "bg-emerald-100",
+      bar_fill: "bg-emerald-500",
+      owner: "Priya Nair",
+      owner_initials: "PN",
+      owner_color: "bg-blue-500",
+      tasks_done: 42,
+      tasks_total: 58,
+      progress: 72,
+      due: "Aug 15, 2026"
+    },
+    {
+      name: "Platform Migration",
+      description: "Move core services to new infra",
+      status: "At risk",
+      status_classes: "bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20",
+      dot_classes: "bg-amber-500",
+      bar_track: "bg-amber-100",
+      bar_fill: "bg-amber-500",
+      owner: "Jordan Lee",
+      owner_initials: "JL",
+      owner_color: "bg-violet-500",
+      tasks_done: 19,
+      tasks_total: 40,
+      progress: 48,
+      due: "Sep 1, 2026"
+    },
+    {
+      name: "Growth Experiments",
+      description: "Onboarding &amp; activation tests",
+      status: "On track",
+      status_classes: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20",
+      dot_classes: "bg-emerald-500",
+      bar_track: "bg-emerald-100",
+      bar_fill: "bg-emerald-500",
+      owner: "Sam Osei",
+      owner_initials: "SO",
+      owner_color: "bg-orange-500",
+      tasks_done: 27,
+      tasks_total: 30,
+      progress: 90,
+      due: "Aug 8, 2026"
+    },
+    {
+      name: "Customer Portal Revamp",
+      description: "Self-serve billing &amp; support",
+      status: "Behind",
+      status_classes: "bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/20",
+      dot_classes: "bg-rose-500",
+      bar_track: "bg-rose-100",
+      bar_fill: "bg-rose-500",
+      owner: "Dana Whitfield",
+      owner_initials: "DW",
+      owner_color: "bg-emerald-600",
+      tasks_done: 11,
+      tasks_total: 35,
+      progress: 31,
+      due: "Jul 30, 2026"
+    },
+    {
+      name: "Data Warehouse Cleanup",
+      description: "Schema audit &amp; deprecation",
+      status: "On track",
+      status_classes: "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20",
+      dot_classes: "bg-emerald-500",
+      bar_track: "bg-emerald-100",
+      bar_fill: "bg-emerald-500",
+      owner: "Marcus Webb",
+      owner_initials: "MW",
+      owner_color: "bg-sky-600",
+      tasks_done: 8,
+      tasks_total: 22,
+      progress: 36,
+      due: "Oct 3, 2026"
+    },
+    {
+      name: "Q3 Marketing Site",
+      description: "Landing pages &amp; launch assets",
+      status: "Completed",
+      status_classes: "bg-slate-100 text-slate-600 ring-1 ring-inset ring-slate-500/20",
+      dot_classes: "bg-slate-400",
+      bar_track: "bg-slate-100",
+      bar_fill: "bg-slate-400",
+      owner: "Sam Osei",
+      owner_initials: "SO",
+      owner_color: "bg-orange-500",
+      tasks_done: 24,
+      tasks_total: 24,
+      progress: 100,
+      due: "Jul 18, 2026"
+    }
+  ]
+
+  activities = [
+    { initials: "PN", color: "bg-blue-500", text: "<span class=\"font-medium text-slate-900\">Priya Nair</span> completed <span class=\"font-medium text-slate-900\">Design QA checklist</span> in Mobile Redesign", time: "12 minutes ago" },
+    { initials: "JL", color: "bg-violet-500", text: "<span class=\"font-medium text-slate-900\">Jordan Lee</span> moved <span class=\"font-medium text-slate-900\">API rate limiting</span> to In Review in Platform Migration", time: "47 minutes ago" },
+    { initials: "SO", color: "bg-orange-500", text: "<span class=\"font-medium text-slate-900\">Sam Osei</span> commented on <span class=\"font-medium text-slate-900\">Checkout flow copy</span> in Growth Experiments", time: "2 hours ago" },
+    { initials: "PN", color: "bg-blue-500", text: "<span class=\"font-medium text-slate-900\">Priya Nair</span> flagged <span class=\"font-medium text-slate-900\">Payment webhook retries</span> as overdue in Platform Migration", time: "3 hours ago" },
+    { initials: "DW", color: "bg-emerald-600", text: "<span class=\"font-medium text-slate-900\">Dana Whitfield</span> closed 4 tasks in Customer Portal Revamp", time: "5 hours ago" },
+    { initials: "MW", color: "bg-sky-600", text: "<span class=\"font-medium text-slate-900\">Marcus Webb</span> added <span class=\"font-medium text-slate-900\">Update onboarding illustrations</span> to Mobile Redesign", time: "Yesterday" },
+    { initials: "JL", color: "bg-violet-500", text: "<span class=\"font-medium text-slate-900\">Jordan Lee</span> completed <span class=\"font-medium text-slate-900\">Database index migration</span> in Platform Migration", time: "Yesterday" },
+    { initials: "SO", color: "bg-orange-500", text: "<span class=\"font-medium text-slate-900\">Sam Osei</span> marked Q3 Marketing Site as complete", time: "2 days ago" }
+  ]
+%>
+<section aria-labelledby="analytics-overview-heading" class="mx-auto max-w-7xl px-6 py-8">
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div>
+      <h1 id="analytics-overview-heading" class="text-2xl font-semibold text-slate-900">Analytics overview</h1>
+      <p class="mt-1 text-sm text-slate-500">Workspace performance across all active projects &middot; week of Jul 20&ndash;26, 2026</p>
+    </div>
+
+    <details class="relative shrink-0">
+      <summary class="flex list-none cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+        <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <rect x="3" y="4" width="14" height="13" rx="2" />
+          <path d="M3 8h14M7 2v4M13 2v4" stroke-linecap="round" />
+        </svg>
+        This week
+        <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M6 8l4 4 4-4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+      </summary>
+      <div class="absolute right-0 z-10 mt-2 w-52 rounded-lg border border-slate-200 bg-white p-1 shadow-lg">
+        <ul class="text-sm text-slate-700">
+          <li><a href="#" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-slate-50">Today</a></li>
+          <li><a href="#" aria-current="true" class="flex items-center justify-between rounded-md bg-slate-50 px-3 py-2 font-medium text-slate-900">
+            This week
+            <svg class="h-4 w-4 text-slate-900" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.7 5.3a1 1 0 010 1.4l-7.5 7.5a1 1 0 01-1.4 0l-3.5-3.5a1 1 0 111.4-1.4l2.8 2.8 6.8-6.8a1 1 0 011.4 0z" clip-rule="evenodd" /></svg>
+          </a></li>
+          <li><a href="#" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-slate-50">Last 30 days</a></li>
+          <li><a href="#" class="flex items-center justify-between rounded-md px-3 py-2 hover:bg-slate-50">This quarter</a></li>
+        </ul>
+      </div>
+    </details>
+  </div>
+
+  <dl class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <% stats.each do |stat| %>
+      <div class="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+        <div class="flex items-start justify-between">
+          <dt class="text-sm font-medium text-slate-500"><%= stat[:label] %></dt>
+          <span class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400" aria-hidden="true">
+            <% case stat[:icon] %>
+            <% when :folder %>
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 6a1 1 0 011-1h4l1.5 2H16a1 1 0 011 1v7a1 1 0 01-1 1H4a1 1 0 01-1-1V6z" stroke-linejoin="round" /></svg>
+            <% when :check %>
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 10.5l3.5 3.5L16 5.5" stroke-linecap="round" stroke-linejoin="round" /></svg>
+            <% when :alert %>
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3.5l7.5 13h-15l7.5-13z" stroke-linejoin="round" /><path d="M10 8.5v3.2M10 14.2h.01" stroke-linecap="round" /></svg>
+            <% when :bolt %>
+              <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11 2.5L4 12h5l-1 5.5L16 8h-5l1-5.5z" stroke-linejoin="round" /></svg>
+            <% end %>
+          </span>
+        </div>
+        <dd class="mt-3 text-3xl font-semibold text-slate-900"><%= stat[:value] %></dd>
+        <p class="mt-2 flex items-center gap-1 text-xs">
+          <span class="inline-flex items-center gap-0.5 font-medium <%= stat[:good] ? 'text-emerald-600' : 'text-rose-600' %>">
+            <% if stat[:trend] == :up %>
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 2l4 5H2l4-5z" /></svg>
+            <% else %>
+              <svg class="h-3 w-3" viewBox="0 0 12 12" fill="currentColor" aria-hidden="true"><path d="M6 10L2 5h8l-4 5z" /></svg>
+            <% end %>
+            <%= stat[:delta] %>
+          </span>
+          <span class="text-slate-400"><%= stat[:delta_detail] %></span>
+        </p>
+      </div>
+    <% end %>
+  </dl>
+
+  <div class="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 class="text-base font-semibold text-slate-900">Project progress</h2>
+          <p class="text-xs text-slate-400"><%= projects.size %> projects</p>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Project</th>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Status</th>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Owner</th>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Progress</th>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Tasks</th>
+                <th scope="col" class="px-5 py-3 text-left text-xs font-medium uppercase tracking-wide text-slate-500">Due</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100">
+              <% projects.each do |project| %>
+                <tr class="hover:bg-slate-50">
+                  <td class="px-5 py-4">
+                    <p class="text-sm font-medium text-slate-900"><%= project[:name] %></p>
+                    <p class="text-xs text-slate-400"><%= project[:description] %></p>
+                  </td>
+                  <td class="px-5 py-4">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium <%= project[:status_classes] %>">
+                      <span class="h-1.5 w-1.5 rounded-full <%= project[:dot_classes] %>" aria-hidden="true"></span>
+                      <%= project[:status] %>
+                    </span>
+                  </td>
+                  <td class="px-5 py-4">
+                    <div class="flex items-center gap-2">
+                      <span class="flex h-6 w-6 items-center justify-center rounded-full text-[10px] font-semibold text-white <%= project[:owner_color] %>" aria-hidden="true"><%= project[:owner_initials] %></span>
+                      <span class="text-sm text-slate-700"><%= project[:owner] %></span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-4">
+                    <div class="flex items-center gap-2" role="img" aria-label="<%= project[:progress] %>% complete">
+                      <div class="h-2 w-28 overflow-hidden rounded-full <%= project[:bar_track] %>">
+                        <div class="h-2 rounded-full <%= project[:bar_fill] %>" style="width: <%= project[:progress] %>%;"></div>
+                      </div>
+                      <span class="text-xs font-medium text-slate-500 tabular-nums"><%= project[:progress] %>%</span>
+                    </div>
+                  </td>
+                  <td class="px-5 py-4 text-sm text-slate-600 tabular-nums"><%= project[:tasks_done] %>/<%= project[:tasks_total] %></td>
+                  <td class="px-5 py-4 text-sm text-slate-600"><%= project[:due] %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="rounded-xl border border-slate-200 bg-white shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
+          <h2 class="text-base font-semibold text-slate-900">Recent activity</h2>
+        </div>
+        <ul class="divide-y divide-slate-100">
+          <% activities.each do |activity| %>
+            <li class="flex gap-3 px-5 py-4">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold text-white <%= activity[:color] %>" aria-hidden="true"><%= activity[:initials] %></span>
+              <div class="min-w-0">
+                <p class="text-sm leading-snug text-slate-600"><%= raw activity[:text] %></p>
+                <p class="mt-1 text-xs text-slate-400"><%= activity[:time] %></p>
+              </div>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>

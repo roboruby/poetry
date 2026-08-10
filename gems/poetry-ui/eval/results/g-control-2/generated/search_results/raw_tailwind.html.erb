@@ -1,0 +1,230 @@
+<main class="max-w-5xl mx-auto px-6 py-10">
+  <header class="mb-8">
+    <form action="/search" method="get" role="search" class="mb-6">
+      <label for="search-query" class="sr-only">Search</label>
+      <div class="relative">
+        <svg class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M14 14L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          id="search-query"
+          type="search"
+          name="q"
+          value="deployment"
+          class="w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-4 text-sm text-slate-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30"
+        >
+      </div>
+    </form>
+
+    <h1 class="text-xl font-semibold text-slate-900">
+      Search results for &ldquo;<span class="text-indigo-600">deployment</span>&rdquo;
+    </h1>
+    <p class="mt-1 text-sm text-slate-500">8 results across 3 categories</p>
+
+    <nav aria-label="Result categories" class="mt-5 flex flex-wrap gap-2 border-b border-slate-200 pb-5">
+      <a href="#projects-results" class="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700 hover:bg-indigo-100">
+        Projects
+        <span class="rounded-full bg-indigo-600 px-1.5 py-0.5 text-xs font-semibold text-white">3</span>
+      </a>
+      <a href="#documents-results" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 hover:bg-slate-200">
+        Documents
+        <span class="rounded-full bg-slate-500 px-1.5 py-0.5 text-xs font-semibold text-white">5</span>
+      </a>
+      <a href="#people-results" class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700 hover:bg-slate-200">
+        People
+        <span class="rounded-full bg-slate-400 px-1.5 py-0.5 text-xs font-semibold text-white">0</span>
+      </a>
+    </nav>
+  </header>
+
+  <div class="space-y-10">
+    <!-- Projects -->
+    <section id="projects-results" aria-labelledby="projects-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="projects-heading" class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <rect x="3" y="5" width="14" height="10" rx="1.5" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M3 8h14" stroke="currentColor" stroke-width="1.5"/>
+          </svg>
+          Projects
+        </h2>
+        <span class="text-xs font-medium text-slate-400">3 matches</span>
+      </div>
+
+      <ul class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Deployment Pipeline Revamp</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...proposal to automate the <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> process across staging and production, cutting release time from 45 minutes to under 5...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Project</span>
+              <span>Updated 2 days ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Owner: Priya Nair</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>14 members</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Q3 Deployment Readiness</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...tracking blockers ahead of the Q3 <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> window, including sign-off from security and infra teams...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Project</span>
+              <span>Updated 6 days ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Owner: Marcus Lee</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>6 members</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Mobile App Deployment</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...coordinating the App Store and Play Store <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> for version 4.2, including phased rollout plan...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Project</span>
+              <span>Updated 3 weeks ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Owner: Sofia Alvarez</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>9 members</span>
+            </div>
+          </article>
+        </li>
+      </ul>
+    </section>
+
+    <!-- Documents -->
+    <section id="documents-results" aria-labelledby="documents-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="documents-heading" class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <path d="M6 3h5l3 3v11a1 1 0 01-1 1H6a1 1 0 01-1-1V4a1 1 0 011-1z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M11 3v3h3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+          Documents
+        </h2>
+        <span class="text-xs font-medium text-slate-400">5 matches</span>
+      </div>
+
+      <ul class="divide-y divide-slate-200 rounded-lg border border-slate-200 bg-white shadow-sm">
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Deployment Runbook.pdf</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...step-by-step <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> runbook covering rollback triggers, health checks, and on-call escalation paths...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Document</span>
+              <span>Engineering / Runbooks</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Edited yesterday</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Sam Okafor</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Kubernetes Deployment Guide</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...defines rolling update strategy for each <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> manifest, including readiness probes and resource limits...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Document</span>
+              <span>Infrastructure / Guides</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Edited 4 days ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Priya Nair</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Release &amp; Deployment Checklist</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...final checklist before any production <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark>, including changelog review and stakeholder sign-off...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Document</span>
+              <span>Engineering / Checklists</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Edited 1 week ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Marcus Lee</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Deployment Rollback Procedure</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...if a <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark> fails health checks, revert to the previous stable tag using the automated rollback script...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Document</span>
+              <span>Infrastructure / Runbooks</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Edited 2 weeks ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Sofia Alvarez</span>
+            </div>
+          </article>
+        </li>
+        <li class="p-4 hover:bg-slate-50">
+          <article>
+            <a href="#" class="text-base font-medium text-indigo-700 hover:underline">Staging Environment Deployment Notes</a>
+            <p class="mt-1 text-sm text-slate-600">
+              ...known issues encountered during the staging <mark class="rounded bg-amber-100 px-0.5 text-slate-900">deployment</mark>, along with workarounds and follow-up tasks...
+            </p>
+            <div class="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-400">
+              <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 font-medium text-slate-600">Document</span>
+              <span>Engineering / Notes</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Edited 3 weeks ago</span>
+              <span aria-hidden="true">&middot;</span>
+              <span>Sam Okafor</span>
+            </div>
+          </article>
+        </li>
+      </ul>
+    </section>
+
+    <!-- People -->
+    <section id="people-results" aria-labelledby="people-heading">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 id="people-heading" class="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-slate-500">
+          <svg class="h-4 w-4 text-slate-400" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+            <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+          People
+        </h2>
+        <span class="text-xs font-medium text-slate-400">0 matches</span>
+      </div>
+
+      <div class="flex flex-col items-center gap-2 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-6 py-8 text-center">
+        <svg class="h-8 w-8 text-slate-300" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <circle cx="10" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M4 17c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M4 4l12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <p class="text-sm font-medium text-slate-600">No people matched &ldquo;deployment&rdquo;</p>
+        <p class="max-w-sm text-sm text-slate-400">
+          Try searching by a person&rsquo;s name, team, or role instead &mdash; people results match on profile fields, not document content.
+        </p>
+      </div>
+    </section>
+  </div>
+</main>

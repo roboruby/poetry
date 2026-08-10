@@ -1,0 +1,197 @@
+<% status_styles = {
+  "On Track" => "bg-emerald-50 text-emerald-700 ring-emerald-600/20",
+  "At Risk" => "bg-amber-50 text-amber-700 ring-amber-600/20",
+  "Off Track" => "bg-red-50 text-red-700 ring-red-600/20",
+  "Completed" => "bg-slate-100 text-slate-600 ring-slate-500/20"
+} %>
+<% project_status = "At Risk" %>
+
+<main class="mx-auto max-w-6xl px-6 py-10">
+  <!-- Header: name, status, description, actions -->
+  <div class="flex items-start justify-between gap-6 border-b border-slate-200 pb-6">
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold tracking-tight text-slate-900">Harborview Platform Migration</h1>
+        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset <%= status_styles[project_status] %>">
+          <%= project_status %>
+        </span>
+      </div>
+      <p class="mt-3 max-w-3xl text-sm leading-6 text-slate-600">
+        Migrate the legacy Harborview billing stack onto the new platform, consolidating three regional
+        services into a single multi-tenant deployment. Scope includes data migration, customer
+        notification tooling, and a phased cutover for existing accounts.
+      </p>
+    </div>
+
+    <div class="flex shrink-0 items-center gap-2">
+      <a href="#"
+         class="inline-flex items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50">
+        <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+          <path d="M13.586 3.586a2 2 0 1 1 2.828 2.828l-.793.793-2.828-2.828.793-.793ZM11.379 5.793 3 14.172V17h2.828l8.38-8.379-2.83-2.828Z" />
+        </svg>
+        Edit
+      </a>
+
+      <details class="relative">
+        <summary class="flex list-none items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-2 text-sm font-medium text-slate-700 shadow-sm hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
+          <svg class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M2 10a8 8 0 1 1 16 0 8 8 0 0 1-16 0Zm7-4a1 1 0 1 1 2 0v4a1 1 0 0 1-2 0V6Zm1 8a1.25 1.25 0 1 0 0-2.5 1.25 1.25 0 0 0 0 2.5Z" clip-rule="evenodd" />
+          </svg>
+          Actions
+        </summary>
+        <div class="absolute right-0 z-10 mt-2 w-44 rounded-md border border-slate-200 bg-white py-1 shadow-lg">
+          <a href="#" class="block px-3 py-2 text-sm text-slate-700 hover:bg-slate-50">Duplicate project</a>
+          <a href="#" class="block px-3 py-2 text-sm text-amber-700 hover:bg-amber-50">Archive project</a>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-3 gap-8">
+    <!-- Main column -->
+    <div class="col-span-2 space-y-8">
+      <!-- Milestone timeline -->
+      <section aria-labelledby="milestones-heading">
+        <h2 id="milestones-heading" class="text-sm font-semibold text-slate-900">Milestones</h2>
+
+        <ol class="mt-4 space-y-0">
+          <% milestones = [
+            { name: "Discovery & requirements", date: "Jan 12, 2026", state: :done },
+            { name: "Data model migration plan approved", date: "Mar 3, 2026", state: :done },
+            { name: "Regional service consolidation", date: "Jun 18, 2026", state: :current },
+            { name: "Customer notification rollout", date: "Aug 29, 2026", state: :upcoming },
+            { name: "Full cutover & legacy decommission", date: "Oct 15, 2026", state: :upcoming }
+          ] %>
+          <% milestones.each_with_index do |m, i| %>
+            <li class="relative flex gap-4 pb-8 last:pb-0">
+              <% unless i == milestones.length - 1 %>
+                <span class="absolute left-[9px] top-5 h-full w-px bg-slate-200" aria-hidden="true"></span>
+              <% end %>
+
+              <% if m[:state] == :done %>
+                <span class="relative z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-600">
+                  <svg class="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M16.704 5.29a1 1 0 0 1 0 1.415l-7.5 7.5a1 1 0 0 1-1.414 0l-3.5-3.5a1 1 0 1 1 1.414-1.414L8.5 12.086l6.79-6.796a1 1 0 0 1 1.414 0Z" clip-rule="evenodd" />
+                  </svg>
+                </span>
+              <% elsif m[:state] == :current %>
+                <span class="relative z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-blue-600 bg-white">
+                  <span class="h-2 w-2 rounded-full bg-blue-600"></span>
+                </span>
+              <% else %>
+                <span class="relative z-10 mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 border-slate-300 bg-white"></span>
+              <% end %>
+
+              <div class="flex min-w-0 flex-1 items-center justify-between gap-4 pt-px">
+                <p class="text-sm font-medium <%= m[:state] == :upcoming ? "text-slate-500" : "text-slate-900" %>">
+                  <%= m[:name] %>
+                </p>
+                <p class="shrink-0 text-sm text-slate-500"><%= m[:date] %></p>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+
+      <!-- Recent tasks -->
+      <section aria-labelledby="tasks-heading">
+        <div class="flex items-center justify-between">
+          <h2 id="tasks-heading" class="text-sm font-semibold text-slate-900">Recent tasks</h2>
+          <a href="#" class="text-sm font-medium text-blue-600 hover:text-blue-700">View all</a>
+        </div>
+
+        <div class="mt-4 overflow-hidden rounded-lg border border-slate-200">
+          <table class="min-w-full divide-y divide-slate-200">
+            <thead class="bg-slate-50">
+              <tr>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold text-slate-500">Task</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold text-slate-500">Assignee</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold text-slate-500">Due date</th>
+                <th scope="col" class="px-4 py-2.5 text-left text-xs font-semibold text-slate-500">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 bg-white">
+              <% tasks = [
+                { name: "Finalize tenant data mapping spec", assignee: "Priya Nair", due: "Jul 25, 2026", status: "In progress" },
+                { name: "Stand up staging environment for region EU", assignee: "Marcus Chen", due: "Jul 28, 2026", status: "In progress" },
+                { name: "Draft customer migration notice copy", assignee: "Sofia Reyes", due: "Aug 1, 2026", status: "Not started" },
+                { name: "Review billing reconciliation edge cases", assignee: "Priya Nair", due: "Aug 4, 2026", status: "Blocked" },
+                { name: "QA pass on account cutover script", assignee: "Devon Ward", due: "Aug 9, 2026", status: "Not started" }
+              ] %>
+              <% task_status_styles = {
+                "In progress" => "bg-blue-50 text-blue-700 ring-blue-600/20",
+                "Not started" => "bg-slate-100 text-slate-600 ring-slate-500/20",
+                "Blocked" => "bg-red-50 text-red-700 ring-red-600/20",
+                "Done" => "bg-emerald-50 text-emerald-700 ring-emerald-600/20"
+              } %>
+              <% tasks.each do |t| %>
+                <tr>
+                  <td class="px-4 py-3 text-sm font-medium text-slate-900"><%= t[:name] %></td>
+                  <td class="px-4 py-3">
+                    <div class="flex items-center gap-2">
+                      <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-200 text-[11px] font-medium text-slate-600">
+                        <%= t[:assignee].split.map { |n| n[0] }.join %>
+                      </span>
+                      <span class="text-sm text-slate-700"><%= t[:assignee] %></span>
+                    </div>
+                  </td>
+                  <td class="px-4 py-3 text-sm text-slate-600"><%= t[:due] %></td>
+                  <td class="px-4 py-3">
+                    <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ring-1 ring-inset <%= task_status_styles[t[:status]] %>">
+                      <%= t[:status] %>
+                    </span>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <!-- Sidebar: owner and key dates -->
+    <aside class="space-y-6">
+      <section class="rounded-lg border border-slate-200 p-5" aria-labelledby="owner-heading">
+        <h2 id="owner-heading" class="text-sm font-semibold text-slate-900">Owner</h2>
+        <div class="mt-3 flex items-center gap-3">
+          <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-medium text-white">
+            AK
+          </span>
+          <div class="min-w-0">
+            <p class="truncate text-sm font-medium text-slate-900">Amara Kessler</p>
+            <p class="truncate text-sm text-slate-500">Director, Platform Engineering</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-lg border border-slate-200 p-5" aria-labelledby="dates-heading">
+        <h2 id="dates-heading" class="text-sm font-semibold text-slate-900">Key dates</h2>
+        <dl class="mt-3 space-y-3">
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-slate-500">Start date</dt>
+            <dd class="text-sm font-medium text-slate-900">Jan 6, 2026</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-slate-500">Target completion</dt>
+            <dd class="text-sm font-medium text-slate-900">Oct 15, 2026</dd>
+          </div>
+          <div class="flex items-center justify-between">
+            <dt class="text-sm text-slate-500">Last updated</dt>
+            <dd class="text-sm font-medium text-slate-900">Jul 20, 2026</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="rounded-lg border border-slate-200 p-5" aria-labelledby="team-heading">
+        <h2 id="team-heading" class="text-sm font-semibold text-slate-900">Team</h2>
+        <ul class="mt-3 flex flex-wrap gap-2">
+          <% %w[PN MC SR DW].each do |initials| %>
+            <li class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-200 text-xs font-medium text-slate-600" title="<%= initials %>">
+              <%= initials %>
+            </li>
+          <% end %>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</main>
