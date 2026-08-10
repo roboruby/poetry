@@ -6,8 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      MENU = %i[poetry core menu].freeze
-      POPPER = %i[poetry core popper].freeze
       ITEM_VARIANTS = %i[default destructive].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
@@ -18,18 +16,6 @@ module Poetry
       # menu level renders the same anatomy through the same Builder.
       module Helpers
         private
-
-        def menu_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
-        end
 
         # menu items are role=menuitem DIVs (APG/Radix-exact) - no native
         # disabled, so aria-disabled and data-disabled are written TOGETHER
@@ -45,8 +31,11 @@ module Poetry
           attrs
         end
 
+        # Every menu item's activation, via the public escape hatch (the
+        # Component's :item declaration mirrors it; the contract gate keeps
+        # the two in sync).
         def item_action_attributes
-          menu_stimulus { |menu| menu.with_action(:activate, on: :click) }
+          stimulus_attributes(:menu) { |menu| menu.with_action(:activate, on: :click) }
         end
 
         # data-slot="dropdown-menu-item-indicator" is a POETRY ADDITION
@@ -221,6 +210,49 @@ module Poetry
         option :dir, :symbol
         option :disabled, :boolean, default: false
 
+        use_stimulus do
+          on :root do
+            controller :menu do
+              register
+              value :open
+              value :modal
+              value :loop
+            end
+            controller :popper do
+              register
+              value :side
+              value :align
+              value :side_offset
+              value :align_offset
+              value :avoid_collisions
+            end
+          end
+          on :trigger do
+            controller :menu do
+              action :toggle, on: :click
+              action :trigger_keydown, on: :keydown
+            end
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+          # Anatomy-rendered wiring, declared here so the contract covers
+          # the whole family surface (items + submenus render via the
+          # escape hatch in the anatomy classes).
+          on :item do
+            controller(:menu) { action :activate, on: :click }
+          end
+          on :sub_trigger do
+            controller :menu do
+              action :sub_enter, on: :pointerenter
+              action :sub_leave, on: :pointerleave
+              action :open_sub, on: :click
+            end
+            controller(:popper) { target :anchor }
+          end
+        end
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
@@ -316,7 +348,7 @@ module Poetry
           wiring = {
             "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
             "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(trigger_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:trigger))
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
@@ -345,7 +377,7 @@ module Poetry
           root = { "data-slot" => "dropdown-menu" }
           root["dir"] = dir.to_s if dir
           html_attributes.merge_if_not_set(
-            root.merge(root_stimulus_attributes).merge(component_data_attributes)
+            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -357,7 +389,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -374,36 +406,6 @@ module Poetry
         def instance_id
           @instance_id ||= "poetry-dropdown-menu-#{SecureRandom.hex(4)}"
         end
-
-        # BOTH controllers build into ONE Attributes instance - a plain
-        # Hash#merge of two would overwrite data-controller instead of
-        # token-concatenating it (the Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menu = Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          menu.register_controller
-          menu.with_value(:open, open)
-          menu.with_value(:modal, modal)
-          menu.with_value(:loop, loop)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          popper.with_value(:align_offset, align_offset)
-          popper.with_value(:avoid_collisions, avoid_collisions)
-          attrs.to_attributes
-        end
-
-        def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menu = Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          menu.with_action(:toggle, on: :click)
-          menu.with_action(:trigger_keydown, on: :keydown)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
-        end
       end
 
       # role=group semantic grouping between separators - the same item
@@ -412,6 +414,7 @@ module Poetry
       # registry, and the nested parts are anatomy, not components.
       class Group < ViewComponent::Base
         include ItemSlots
+        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
           super()
@@ -440,6 +443,7 @@ module Poetry
       # base contract); radio items exist ONLY through this group.
       class RadioGroup < ViewComponent::Base
         include Helpers
+        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :group_value
 
@@ -489,6 +493,7 @@ module Poetry
       # roving-focus) are added by the menu controller when the sub opens.
       class Sub < ViewComponent::Base
         include ItemSlots
+        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
           super()
@@ -544,11 +549,13 @@ module Poetry
         end
 
         def sub_attributes
-          attrs = { "data-slot" => "dropdown-menu-sub" }.merge(popper_stimulus do |popper|
-            popper.register_controller
-            popper.with_value(:side, rtl? ? :left : :right)
-            popper.with_value(:align, :start)
-          end)
+          attrs = { "data-slot" => "dropdown-menu-sub" }.merge(
+            stimulus_attributes(:popper) do |popper|
+              popper.register_controller
+              popper.with_value(:side, rtl? ? :left : :right)
+              popper.with_value(:align, :start)
+            end
+          )
           attrs.merge(@extra_attributes)
         end
 
@@ -558,19 +565,17 @@ module Poetry
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
             "data-slot" => "dropdown-menu-sub-content", "data-closed" => "", "hidden" => true,
             "class" => Style.css(:sub_content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes(:popper) { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
         end
 
         def sub_trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menu = Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          menu.with_action(:sub_enter, on: :pointerenter)
-          menu.with_action(:sub_leave, on: :pointerleave)
-          menu.with_action(:open_sub, on: :click)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+          stimulus_attributes(:menu, :popper) do |menu, popper|
+            menu.with_action(:sub_enter, on: :pointerenter)
+            menu.with_action(:sub_leave, on: :pointerleave)
+            menu.with_action(:open_sub, on: :click)
+            popper.with_target(:anchor)
+          end
         end
 
         def chevron

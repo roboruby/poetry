@@ -6,9 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      COMBOBOX = %i[poetry core combobox].freeze
-      COMMAND = %i[poetry core command].freeze
-      POPPER = %i[poetry core popper].freeze
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
       DIRS = %i[ltr rtl].freeze
@@ -72,24 +69,6 @@ module Poetry
       module Helpers
         private
 
-        def combobox_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(COMBOBOX, attrs)
-          attrs.to_attributes
-        end
-
-        def command_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
-        end
-
         def item_component(**)
           Item.new(option_set: option_set, selected_value: selected_value, **)
         end
@@ -130,6 +109,7 @@ module Poetry
       # the listbox renders - top level or grouped.
       class Item < ViewComponent::Base
         include Helpers
+        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :option_set, :selected_value
 
@@ -163,7 +143,7 @@ module Poetry
             "data-poetry-collection-item" => "", "data-value" => @value,
             "aria-selected" => selected.to_s,
             "class" => Command::Style.css(:item, class: @extra_attributes.delete(:class))
-          }.merge(command_stimulus do |command|
+          }.merge(stimulus_attributes(:command) do |command|
             command.with_action(:activate, on: :click)
             command.with_action(:pointer_highlight, on: :pointermove)
           end)
@@ -339,6 +319,88 @@ module Poetry
         option :side_offset, :integer, default: 4
         option :avoid_collisions, :boolean, default: true
         option :dir, :symbol
+
+        use_stimulus do
+          on :root do
+            controller :combobox do
+              register
+              value :open
+              value :value, from: :value_payload
+              value :modal
+              value :multiple, if: :multiple
+            end
+            # multiple mounts the command engine on the ROOT (the inline
+            # input sits outside the popup); single keeps it on the
+            # popup's command part.
+            controller :command, if: :multiple do
+              register
+              value :filter
+              value :loop
+            end
+            controller :popper do
+              register
+              value :side
+              value :align
+              value :side_offset
+              value :avoid_collisions
+            end
+          end
+          on :trigger do
+            controller :combobox do
+              action :toggle, on: :click
+              action :trigger_keydown, on: :keydown
+            end
+            controller(:popper) { target :anchor }
+          end
+          # multiple: the chips frame replaces the trigger as the anchor.
+          on :chips do
+            controller(:combobox) { action :chips_pointerdown, on: :mousedown }
+            controller(:popper) { target :anchor }
+          end
+          # multiple: both engines' keyboard maps ride the one input.
+          on :inline_input do
+            controller :command do
+              action :filter_input, on: :input
+              action :keydown, on: :keydown
+            end
+            controller(:combobox) { action :input_keydown, on: :keydown }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+          # single-mode: the embedded engine root inside the popup.
+          on :command_part do
+            controller :command do
+              register
+              value :filter
+              value :loop
+            end
+          end
+          on :input do
+            controller :command do
+              action :filter_input, on: :input
+              action :keydown, on: :keydown
+            end
+          end
+          on :item do
+            controller :command do
+              action :activate, on: :click
+              action :pointer_highlight, on: :pointermove
+            end
+          end
+          on :native do
+            controller(:combobox) { action :native_changed, on: :change }
+          end
+          on :clear do
+            controller(:combobox) { action :clear, on: :click }
+          end
+          on :chip do
+            controller(:combobox) { action :chip_keydown, on: :keydown }
+          end
+          on :chip_remove do
+            controller(:combobox) { action :remove_chip, on: :click }
+          end
+        end
         # The trigger width utility (the demo 200px as its scale spelling,
         # w-50 - DesignLint off-scale-arbitrary; the popup ALWAYS
         # tracks it via the anchor-width binding - one knob, two surfaces).
@@ -584,7 +646,7 @@ module Poetry
           attrs["multiple"] = true if multiple
           attrs["required"] = true if required
           attrs["disabled"] = true if disabled
-          attrs.merge!(combobox_stimulus { |combobox| combobox.with_action(:native_changed, on: :change) })
+          attrs.merge!(stimulus_attributes_for(:native))
           content_tag(:select, native_options, attrs)
         end
 
@@ -657,7 +719,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => side, "data-align" => align,
             "class" => css(:content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -666,13 +728,11 @@ module Poetry
         # controller with filter/loop forwarded - the composition boundary
         # (this component renders Command's anatomy; the engine controller
         # is reused unchanged).
+        def value_payload = multiple ? selected_values : value.to_s
+
         def command_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          command = Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-          command.register_controller
-          command.with_value(:filter, filter)
-          command.with_value(:loop, loop)
-          { "data-slot" => "command", "class" => Command::Style.css }.merge(attrs.to_attributes)
+          { "data-slot" => "command", "class" => Command::Style.css }
+            .merge(stimulus_attributes_for(:command_part))
         end
 
         # The popup's filter input (Command's contract at the demo's h-9
@@ -691,10 +751,7 @@ module Poetry
           attrs["placeholder"] = search_placeholder if search_placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = option_set.highlighted_id if option_set.highlighted_id
-          attrs.merge!(command_stimulus do |command|
-            command.with_action(:filter_input, on: :input)
-            command.with_action(:keydown, on: :keydown)
-          end)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -782,7 +839,7 @@ module Poetry
           }
           attrs["hidden"] = true unless selected_label
           attrs["disabled"] = true if disabled
-          attrs.merge!(combobox_stimulus { |combobox| combobox.with_action(:clear, on: :click) })
+          attrs.merge!(stimulus_attributes_for(:clear))
           content_tag(:button, attrs) do
             render(Icon::Component.new(name: :x, class: Style.css(:clear_icon)))
           end
@@ -804,7 +861,7 @@ module Poetry
           # reads as failing text (Base UI sets it too).
           attrs["aria-disabled"] = "true" if disabled
           attrs["data-disabled"] = "" if disabled
-          attrs.merge!(combobox_stimulus { |combobox| combobox.with_action(:chip_keydown, on: :keydown) })
+          attrs.merge!(stimulus_attributes_for(:chip))
           content_tag(:div, attrs) do
             safe_join([label, chip_remove_part(label)].compact)
           end
@@ -820,7 +877,7 @@ module Poetry
           }
           attrs["aria-label"] = t("poetry.combobox.remove", label: label) if label
           attrs["disabled"] = true if disabled
-          attrs.merge!(combobox_stimulus { |combobox| combobox.with_action(:remove_chip, on: :click) })
+          attrs.merge!(stimulus_attributes_for(:chip_remove))
           content_tag(:button, attrs) do
             render(Icon::Component.new(name: :x, class: Style.css(:chip_remove_icon)))
           end
@@ -862,25 +919,14 @@ module Poetry
         # The frame carries the popper anchor AND the combobox press action
         # - one Attributes instance (the Accordion lesson, via Select).
         def chips_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          combobox = Poetry::Core::Stimulus::Builder.new(COMBOBOX, attrs)
-          combobox.with_action(:chips_pointerdown, on: :mousedown)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+          stimulus_attributes_for(:chips)
         end
 
         # BOTH controllers' keyboard maps ride the one input: the engine's
         # filter/arrows/Enter, then the shell's chips map (Backspace /
         # ArrowLeft / reopen / the closed-popup Escape wipe).
         def inline_input_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          command = Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-          command.with_action(:filter_input, on: :input)
-          command.with_action(:keydown, on: :keydown)
-          combobox = Poetry::Core::Stimulus::Builder.new(COMBOBOX, attrs)
-          combobox.with_action(:input_keydown, on: :keydown)
-          attrs.to_attributes
+          stimulus_attributes_for(:inline_input)
         end
 
         # The blank option (Rails include_blank semantics, value="") rides
@@ -922,36 +968,11 @@ module Poetry
         # inline input sits outside the popup, so the engine must scope
         # over both) - single keeps it on the popup's command part.
         def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          combobox = Poetry::Core::Stimulus::Builder.new(COMBOBOX, attrs)
-          combobox.register_controller
-          combobox.with_value(:open, open)
-          combobox.with_value(:value, multiple ? selected_values : value.to_s)
-          combobox.with_value(:modal, modal)
-          combobox.with_value(:multiple, multiple) if multiple
-          if multiple
-            command = Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-            command.register_controller
-            command.with_value(:filter, filter)
-            command.with_value(:loop, loop)
-          end
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, side)
-          popper.with_value(:align, align)
-          popper.with_value(:side_offset, side_offset)
-          popper.with_value(:avoid_collisions, avoid_collisions)
-          attrs.to_attributes
+          stimulus_attributes_for(:root)
         end
 
         def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          combobox = Poetry::Core::Stimulus::Builder.new(COMBOBOX, attrs)
-          combobox.with_action(:toggle, on: :click)
-          combobox.with_action(:trigger_keydown, on: :keydown)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+          stimulus_attributes_for(:trigger)
         end
       end
     end

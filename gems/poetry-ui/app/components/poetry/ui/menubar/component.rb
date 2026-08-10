@@ -6,10 +6,6 @@ module Poetry
       # The controller identifiers, declared ONCE - every data attribute
       # derives from them through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      MENUBAR = %i[poetry core menubar].freeze
-      ROVING = %i[poetry core roving_focus].freeze
-      MENU = %i[poetry core menu].freeze
-      POPPER = %i[poetry core popper].freeze
       ITEM_VARIANTS = %i[default destructive].freeze
       DIRS = %i[ltr rtl].freeze
 
@@ -18,18 +14,6 @@ module Poetry
       # anatomy through the same Builder.
       module Helpers
         private
-
-        def menu_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          attrs.to_attributes
-        end
-
-        def popper_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          attrs.to_attributes
-        end
 
         # menu items are role=menuitem DIVs (APG/Radix-exact) - no native
         # disabled, so aria-disabled and data-disabled are written TOGETHER.
@@ -44,8 +28,10 @@ module Poetry
           attrs
         end
 
+        # Every menu item's activation, via the public escape hatch (the
+        # Component's :item declaration mirrors it).
         def item_action_attributes
-          menu_stimulus { |menu| menu.with_action(:activate, on: :click) }
+          stimulus_attributes(:menu) { |menu| menu.with_action(:activate, on: :click) }
         end
 
         # data-slot="menubar-item-indicator" is a POETRY ADDITION
@@ -200,6 +186,69 @@ module Poetry
         option :value, :string
         option :dir, :symbol
 
+        use_stimulus do
+          on :root do
+            controller :menubar do
+              register
+              value :value, from: :value_string
+              value :loop
+              # The coordinator's two event seams: the family menu
+              # controller's edge-navigate (cross-menu arrows) and closed
+              # (value bookkeeping) - custom poetry:-namespaced events.
+              action :slide_adjacent, on: "poetry:menu:edge-navigate"
+              action :on_menu_closed, on: "poetry:menu:closed"
+            end
+            controller :roving_focus do
+              register
+              # The DELTA vs in-menu roving: horizontal, manageTabindex
+              # TRUE (one tab stop for the whole bar).
+              value :orientation, :horizontal
+              value :manage_tabindex, true
+              value :loop
+              action :keydown, on: :keydown
+            end
+          end
+          # Anatomy-rendered wiring (the Menu/Sub classes build via the
+          # escape hatch; declared here for the contract).
+          on :menu_wrapper do
+            controller :menu do
+              register
+              value :open
+              value :modal, false
+            end
+            controller :popper do
+              register
+              value :side, :bottom
+              value :align, :start
+              value :side_offset, 8
+              value :align_offset, -4
+              value :avoid_collisions, true
+            end
+          end
+          on :trigger do
+            controller :menubar do
+              action :toggle, on: :pointerdown
+              action :hover_slide, on: :pointerenter
+              action :trigger_keydown, on: :keydown
+            end
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+          on :item do
+            controller(:menu) { action :activate, on: :click }
+          end
+          on :sub_trigger do
+            controller :menu do
+              action :sub_enter, on: :pointerenter
+              action :sub_leave, on: :pointerleave
+              action :open_sub, on: :click
+            end
+            controller(:popper) { target :anchor }
+          end
+        end
+
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
         part "menubar", "The role=menubar bar - one horizontal roving tab stop across the triggers",
@@ -298,6 +347,8 @@ module Poetry
           raise ArgumentError, "Menubar requires at least one with_menu" unless menus?
         end
 
+        def value_string = value.to_s
+
         def root_attributes
           root = {
             "data-slot" => "menubar", "role" => "menubar", "aria-label" => label,
@@ -307,7 +358,7 @@ module Poetry
           }
           root["dir"] = dir.to_s if dir
           html_attributes.merge_if_not_set(
-            root.merge(root_stimulus_attributes).merge(component_data_attributes)
+            root.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -339,30 +390,6 @@ module Poetry
           menu_parts.find { |menu| open_menu?(menu.value) && !menu.disabled } ||
             menu_parts.find { |menu| !menu.disabled } || menu_parts.first
         end
-
-        # BOTH bar controllers build into ONE Attributes instance - a plain
-        # Hash#merge would overwrite data-controller instead of
-        # token-concatenating it (the Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menubar = Poetry::Core::Stimulus::Builder.new(MENUBAR, attrs)
-          menubar.register_controller
-          menubar.with_value(:value, value.to_s)
-          menubar.with_value(:loop, loop)
-          # The coordinator's two event seams: the family menu controller's
-          # edge-navigate (cross-menu arrows) and closed (value bookkeeping).
-          menubar.with_action(:slide_adjacent, on: "poetry:menu:edge-navigate")
-          menubar.with_action(:on_menu_closed, on: "poetry:menu:closed")
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          # The DELTA vs the in-menu roving: horizontal, manageTabindex TRUE
-          # (one tab stop for the whole bar - the inverse of NavigationMenu).
-          roving.with_value(:orientation, :horizontal)
-          roving.with_value(:manage_tabindex, true)
-          roving.with_value(:loop, loop)
-          roving.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
       end
 
       # One logical menu: the trigger + content pair. Radix renders no
@@ -373,6 +400,7 @@ module Poetry
       # PURPOSE - the nested parts are anatomy, not registry components.
       class Menu < ViewComponent::Base
         include ItemSlots
+        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :value, :disabled
 
@@ -445,31 +473,28 @@ module Poetry
         # positioning overrides (align start / alignOffset -4 / sideOffset
         # 8, source-validated).
         def menu_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menu = Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          menu.register_controller
-          menu.with_value(:open, open?)
-          menu.with_value(:modal, false)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.register_controller
-          popper.with_value(:side, :bottom)
-          popper.with_value(:align, :start)
-          popper.with_value(:side_offset, 8)
-          popper.with_value(:align_offset, -4)
-          popper.with_value(:avoid_collisions, true)
+          wiring = stimulus_attributes(:menu, :popper) do |menu, popper|
+            menu.register_controller
+            menu.with_value(:open, open?)
+            menu.with_value(:modal, false)
+            popper.register_controller
+            popper.with_value(:side, :bottom)
+            popper.with_value(:align, :start)
+            popper.with_value(:side_offset, 8)
+            popper.with_value(:align_offset, -4)
+            popper.with_value(:avoid_collisions, true)
+          end
           { "data-slot" => "menubar-menu", "class" => Style.css(:menu) }
-            .merge(attrs.to_attributes).merge(@extra_attributes)
+            .merge(wiring).merge(@extra_attributes)
         end
 
         def trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menubar = Poetry::Core::Stimulus::Builder.new(MENUBAR, attrs)
-          menubar.with_action(:toggle, on: :pointerdown)
-          menubar.with_action(:hover_slide, on: :pointerenter)
-          menubar.with_action(:trigger_keydown, on: :keydown)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+          stimulus_attributes(:menubar, :popper) do |menubar, popper|
+            menubar.with_action(:toggle, on: :pointerdown)
+            menubar.with_action(:hover_slide, on: :pointerenter)
+            menubar.with_action(:trigger_keydown, on: :keydown)
+            popper.with_target(:anchor)
+          end
         end
 
         # NOT named `content` - that would shadow ViewComponent's own slot
@@ -482,7 +507,7 @@ module Poetry
             # Initial placement, re-resolved live by popper on open.
             "data-side" => "bottom", "data-align" => "start",
             "class" => Style.css(:content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes(:popper) { |popper| popper.with_target(:content) })
           attrs["hidden"] = true unless open?
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
         end
@@ -492,6 +517,7 @@ module Poetry
       # union, one level down.
       class Group < ViewComponent::Base
         include ItemSlots
+        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
           super()
@@ -520,6 +546,7 @@ module Poetry
       # base contract); radio items exist ONLY through this group.
       class RadioGroup < ViewComponent::Base
         include Helpers
+        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :group_value
 
@@ -568,6 +595,7 @@ module Poetry
       # union, recursively - family-identical to DropdownMenu's.
       class Sub < ViewComponent::Base
         include ItemSlots
+        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
           super()
@@ -620,11 +648,13 @@ module Poetry
         end
 
         def sub_attributes
-          attrs = { "data-slot" => "menubar-sub" }.merge(popper_stimulus do |popper|
-            popper.register_controller
-            popper.with_value(:side, rtl? ? :left : :right)
-            popper.with_value(:align, :start)
-          end)
+          attrs = { "data-slot" => "menubar-sub" }.merge(
+            stimulus_attributes(:popper) do |popper|
+              popper.register_controller
+              popper.with_value(:side, rtl? ? :left : :right)
+              popper.with_value(:align, :start)
+            end
+          )
           attrs.merge(@extra_attributes)
         end
 
@@ -634,19 +664,17 @@ module Poetry
             "aria-labelledby" => trigger_id, "tabindex" => "-1",
             "data-slot" => "menubar-sub-content", "data-closed" => "", "hidden" => true,
             "class" => Style.css(:sub_content)
-          }.merge(popper_stimulus { |popper| popper.with_target(:content) })
+          }.merge(stimulus_attributes(:popper) { |popper| popper.with_target(:content) })
           content_tag(:div, attrs) { safe_join(items.map(&:to_s)) }
         end
 
         def sub_trigger_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          menu = Poetry::Core::Stimulus::Builder.new(MENU, attrs)
-          menu.with_action(:sub_enter, on: :pointerenter)
-          menu.with_action(:sub_leave, on: :pointerleave)
-          menu.with_action(:open_sub, on: :click)
-          popper = Poetry::Core::Stimulus::Builder.new(POPPER, attrs)
-          popper.with_target(:anchor)
-          attrs.to_attributes
+          stimulus_attributes(:menu, :popper) do |menu, popper|
+            menu.with_action(:sub_enter, on: :pointerenter)
+            menu.with_action(:sub_leave, on: :pointerleave)
+            menu.with_action(:open_sub, on: :click)
+            popper.with_target(:anchor)
+          end
         end
 
         def chevron
