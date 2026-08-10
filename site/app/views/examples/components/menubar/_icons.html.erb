@@ -1,0 +1,32 @@
+<%# Upstream menubar-icons: icons lead the label (poetry_icon inside
+    the item block); the destructive variant colors item and glyph.
+    Upstream's MenubarGroup is a semantic wrapper only - the menu
+    content is already the single group here. %>
+<%= poetry_menubar(label: "Document menu", class: "w-72") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "File" } %>
+    <% menu.with_item(shortcut: "⌘N") do %>
+      <%= poetry_icon(name: :file) %>New File
+    <% end %>
+    <% menu.with_item do %>
+      <%= poetry_icon(name: :folder) %>Open Folder
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(shortcut: "⌘S") do %>
+      <%= poetry_icon(name: :save) %>Save
+    <% end %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "More" } %>
+    <% menu.with_item do %>
+      <%= poetry_icon(name: :settings) %>Settings
+    <% end %>
+    <% menu.with_item do %>
+      <%= poetry_icon(name: :"circle-question-mark") %>Help
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(variant: :destructive) do %>
+      <%= poetry_icon(name: :trash) %>Delete
+    <% end %>
+  <% end %>
+<% end %>

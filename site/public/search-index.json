@@ -2586,22 +2586,34 @@
     "path": "/components/menubar#default"
   },
   {
+    "title": "Checkbox",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#checkbox"
+  },
+  {
     "title": "Disabled menu",
     "page": "Menubar",
     "section": "components",
     "path": "/components/menubar#disabled-menu"
   },
   {
-    "title": "Rtl",
+    "title": "Icons",
     "page": "Menubar",
     "section": "components",
-    "path": "/components/menubar#rtl"
+    "path": "/components/menubar#icons"
   },
   {
-    "title": "With icon",
+    "title": "Radio",
     "page": "Menubar",
     "section": "components",
-    "path": "/components/menubar#with-icon"
+    "path": "/components/menubar#radio"
+  },
+  {
+    "title": "Submenu",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#submenu"
   },
   {
     "title": "Wiring",

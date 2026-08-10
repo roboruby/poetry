@@ -1,0 +1,23 @@
+<%# Upstream menubar-radio: one selected value per group, server-
+    rendered via value:. %>
+<%= poetry_menubar(label: "Profile menu", class: "w-72") do |bar| %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Profiles" } %>
+    <% menu.with_radio_group(value: "benoit") do |group| %>
+      <% group.with_radio_item(value: "andy") { "Andy" } %>
+      <% group.with_radio_item(value: "benoit") { "Benoit" } %>
+      <% group.with_radio_item(value: "luis") { "Luis" } %>
+    <% end %>
+    <% menu.with_separator %>
+    <% menu.with_item(inset: true) { "Edit..." } %>
+    <% menu.with_item(inset: true) { "Add Profile..." } %>
+  <% end %>
+  <% bar.with_menu do |menu| %>
+    <% menu.with_trigger { "Theme" } %>
+    <% menu.with_radio_group(value: "system") do |group| %>
+      <% group.with_radio_item(value: "light") { "Light" } %>
+      <% group.with_radio_item(value: "dark") { "Dark" } %>
+      <% group.with_radio_item(value: "system") { "System" } %>
+    <% end %>
+  <% end %>
+<% end %>
