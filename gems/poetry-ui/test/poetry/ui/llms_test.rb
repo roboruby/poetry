@@ -29,11 +29,14 @@ module Poetry
       def test_llms_full_txt_carries_the_stimulus_wiring_surface
         get "/llms-full.txt"
 
-        # N7 W3: an agent wiring by hand sees the controllers + their
-        # targets/values/actions (Base UI vocabulary), not just the props.
-        assert_includes response.body, "- WIRING `poetry--core--dialog`:"
-        assert_includes response.body, "actions"
-        assert_includes response.body, "targets dialog"
+        # Phase 5 element-level projection: an agent wiring by hand sees
+        # WHICH element carries which controller, values, actions (with
+        # their events), and targets - not just the controllers' API.
+        assert_includes response.body, "- WIRING root: `poetry--core--dialog` registers; values dismissible"
+        assert_includes response.body,
+                        "- WIRING content: `poetry--core--dialog` actions close on cancel, " \
+                        "backdropClose on click; targets dialog"
+        assert_includes response.body, "- WIRING trigger: `poetry--core--dialog` actions open"
         # The command palette dialog helper is addressed by its full path,
         # not the last-segment poetry_dialog (which collides).
         assert_includes response.body, "## command_dialog (`poetry_command_dialog`)"

@@ -127,6 +127,28 @@ components:
       - name: "--accordion-panel-height"
         description: the measured content height (controller-written) that feeds the
           accordion-down/up keyframes
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--accordion
+        registers: true
+        values:
+        - name: type
+        - name: collapsible
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: manage_tabindex
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--accordion
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/alert:
     class_name: Poetry::Ui::Alert::Component
     identifier: poetry--ui--alert
@@ -281,6 +303,33 @@ components:
       description: The explanation, wired to aria-describedby (required slot)
     - name: alert-dialog-footer
       description: The choice row - cancel then action
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--dialog
+        registers: true
+        values:
+        - name: dismissible
+    - element: content
+      controllers:
+      - identifier: poetry--core--dialog
+        targets:
+        - name: dialog
+        actions:
+        - method: close
+          'on': cancel
+        - method: backdropClose
+          'on': click
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: open
+    - element: close
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: close
   poetry/ui/aspect_ratio:
     class_name: Poetry::Ui::AspectRatio::Component
     identifier: poetry--ui--aspect_ratio
@@ -988,6 +1037,76 @@ components:
         condition: the day belongs to a neighbouring month (leading/trailing fill)
     - name: calendar-day-label
       description: The day-number span inside the button
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--calendar
+        registers: true
+        values:
+        - name: month
+        - name: selected
+        - name: mode
+          conditional: if range?
+        - name: range_start
+          conditional: if range?
+        - name: range_end
+          conditional: if range?
+        - name: week_start
+        - name: min
+        - name: max
+        - name: month_names
+    - element: day
+      controllers:
+      - identifier: poetry--core--calendar
+        targets:
+        - name: day
+        actions:
+        - method: select
+          'on': click
+    - element: nav_previous
+      controllers:
+      - identifier: poetry--core--calendar
+        actions:
+        - method: previousMonth
+          'on': click
+    - element: nav_next
+      controllers:
+      - identifier: poetry--core--calendar
+        actions:
+        - method: nextMonth
+          'on': click
+    - element: dropdown
+      controllers:
+      - identifier: poetry--core--calendar
+        actions:
+        - method: jump
+          'on': change
+    - element: grid
+      controllers:
+      - identifier: poetry--core--calendar
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: caption
+      controllers:
+      - identifier: poetry--core--calendar
+        targets:
+        - name: caption
+    - element: start_input
+      controllers:
+      - identifier: poetry--core--calendar
+        targets:
+        - name: startInput
+    - element: end_input
+      controllers:
+      - identifier: poetry--core--calendar
+        targets:
+        - name: endInput
+    - element: hidden_input
+      controllers:
+      - identifier: poetry--core--calendar
+        targets:
+        - name: input
   poetry/ui/card:
     class_name: Poetry::Ui::Card::Component
     identifier: poetry--ui--card
@@ -1140,6 +1259,40 @@ components:
         owns the physics
     - name: carousel-item
       description: One role=group slide - sized by item classes (basis-full default)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--carousel
+        registers: true
+        values:
+        - name: orientation
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: viewport
+      controllers:
+      - identifier: poetry--core--carousel
+        targets:
+        - name: viewport
+        actions:
+        - method: scrolled
+          'on': scroll
+    - element: previous
+      controllers:
+      - identifier: poetry--core--carousel
+        targets:
+        - name: previous
+        actions:
+        - method: previous
+          'on': click
+    - element: next
+      controllers:
+      - identifier: poetry--core--carousel
+        targets:
+        - name: next
+        actions:
+        - method: next
+          'on': click
   poetry/ui/checkbox:
     class_name: Poetry::Ui::Checkbox::Component
     identifier: poetry--ui--checkbox
@@ -1229,6 +1382,17 @@ components:
         condition: mirrors the control - the indicator is invisible
       - attr: data-indeterminate
         condition: mirrors the control - the glyph swaps to minus
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--checked
+        registers: true
+        values:
+        - name: input_id
+          conditional: if form_participant?
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/clipboard_text:
     class_name: Poetry::Ui::ClipboardText::Component
     identifier: poetry--ui--clipboard_text
@@ -1297,6 +1461,26 @@ components:
         condition: always - inline-end holds the copy button
         values:
         - inline-end
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        registers: true
+        values:
+        - name: message
+        - name: text
+          conditional: if
+    - element: input
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        targets:
+        - name: input
+    - element: copy_button
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        actions:
+        - method: copy
+          'on': click
   poetry/ui/code_block:
     class_name: Poetry::Ui::CodeBlock::Component
     identifier: poetry--ui--code_block
@@ -1367,6 +1551,26 @@ components:
     - name: code-block-code
       description: The code element - rouge's .line/.hll spans and the seven --syntax-*
         token maps live under it; the copy affordance reads ITS textContent
+    stimulus:
+    - element: root
+      conditional: if copy
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        registers: true
+        values:
+        - name: message
+    - element: source
+      conditional: if copy
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        targets:
+        - name: source
+    - element: copy_button
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        actions:
+        - method: copy
+          'on': click
   poetry/ui/collapsible:
     class_name: Poetry::Ui::Collapsible::Component
     identifier: poetry--ui--collapsible
@@ -1430,6 +1634,24 @@ components:
       - attr: data-closed
         condition: content is closed or animating out (hidden lands after the exit
           finishes)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--state
+        registers: true
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: trigger
+        actions:
+        - method: toggle
+          'on': click
+    - element: content
+      controllers:
+      - identifier: poetry--core--state
+        targets:
+        - name: content
   poetry/ui/combobox:
     class_name: Poetry::Ui::Combobox::Component
     identifier: poetry--ui--combobox
@@ -1778,6 +2000,114 @@ components:
     - name: combobox-chip-remove
       description: The chip's native remove button (tabindex=-1, labelled 'Remove
         <label>') - a press removes the value and is never a chips-area press
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--combobox
+        registers: true
+        values:
+        - name: open
+        - name: value
+        - name: modal
+        - name: multiple
+          conditional: if multiple
+      - identifier: poetry--core--command
+        conditional: if multiple
+        registers: true
+        values:
+        - name: filter
+        - name: loop
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: toggle
+          'on': click
+        - method: triggerKeydown
+          'on': keydown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: chips
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: chipsPointerdown
+          'on': mousedown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: inline_input
+      controllers:
+      - identifier: poetry--core--command
+        actions:
+        - method: filterInput
+          'on': input
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--core--combobox
+        actions:
+        - method: inputKeydown
+          'on': keydown
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: command_part
+      controllers:
+      - identifier: poetry--core--command
+        registers: true
+        values:
+        - name: filter
+        - name: loop
+    - element: input
+      controllers:
+      - identifier: poetry--core--command
+        actions:
+        - method: filterInput
+          'on': input
+        - method: keydown
+          'on': keydown
+    - element: item
+      controllers:
+      - identifier: poetry--core--command
+        actions:
+        - method: activate
+          'on': click
+        - method: pointerHighlight
+          'on': pointermove
+    - element: native
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: nativeChanged
+          'on': change
+    - element: clear
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: clear
+          'on': click
+    - element: chip
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: chipKeydown
+          'on': keydown
+    - element: chip_remove
+      controllers:
+      - identifier: poetry--core--combobox
+        actions:
+        - method: removeChip
+          'on': click
   poetry/ui/command:
     class_name: Poetry::Ui::Command::Component
     identifier: poetry--ui--command
@@ -1946,6 +2276,30 @@ components:
       - attr: data-other
         condition: always - the localized many-results template (a literal count placeholder
           the controller interpolates)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--command
+        registers: true
+        values:
+        - name: filter
+        - name: loop
+    - element: input
+      controllers:
+      - identifier: poetry--core--command
+        actions:
+        - method: filterInput
+          'on': input
+        - method: keydown
+          'on': keydown
+    - element: item
+      controllers:
+      - identifier: poetry--core--command
+        actions:
+        - method: activate
+          'on': click
+        - method: pointerHighlight
+          'on': pointermove
   poetry/ui/command/dialog:
     class_name: Poetry::Ui::Command::DialogComponent
     identifier: poetry--ui--command--dialog
@@ -2038,6 +2392,35 @@ components:
         the source string)
     - name: dialog-description
       description: The sr-only description wired to aria-describedby
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--dialog
+        registers: true
+        values:
+        - name: dismissible
+        - name: hotkey
+          conditional: if
+    - element: content
+      controllers:
+      - identifier: poetry--core--dialog
+        targets:
+        - name: dialog
+        actions:
+        - method: close
+          'on': cancel
+        - method: backdropClose
+          'on': click
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: open
+    - element: close
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: close
   poetry/ui/context_menu:
     class_name: Poetry::Ui::ContextMenu::Component
     identifier: poetry--ui--context_menu
@@ -2505,6 +2888,66 @@ components:
         description: 'popper: the sub-trigger''s measured width'
       - name: "--anchor-height"
         description: 'popper: the sub-trigger''s measured height'
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--context-menu
+        registers: true
+        values:
+        - name: long_press_delay
+        - name: disabled
+      - identifier: poetry--core--menu
+        registers: true
+        values:
+        - name: open
+        - name: modal
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--context-menu
+        actions:
+        - method: open
+          'on': contextmenu
+        - method: pressStart
+          'on': pointerdown
+        - method: pressCancel
+          'on':
+          - pointermove
+          - pointerup
+          - pointercancel
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: item
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: activate
+          'on': click
+    - element: sub_trigger
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: subEnter
+          'on': pointerenter
+        - method: subLeave
+          'on': pointerleave
+        - method: openSub
+          'on': click
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
   poetry/ui/data_table:
     class_name: Poetry::Ui::DataTable::Component
     identifier: poetry--ui--data_table
@@ -2597,6 +3040,32 @@ components:
         surface owns where it sits
     - name: data-table-footer
       description: 'The Pagination row - renders when total: is more than one page'
+    stimulus:
+    - element: root
+      conditional: if selectable?
+      controllers:
+      - identifier: poetry--core--table-selection
+        registers: true
+        values:
+        - name: label
+    - element: select_all
+      controllers:
+      - identifier: poetry--core--table-selection
+        targets:
+        - name: all
+        actions:
+        - method: toggleAll
+          'on': change
+    - element: row_checkbox
+      controllers:
+      - identifier: poetry--core--table-selection
+        actions:
+        - method: press
+          'on':
+          - pointerdown
+          - keydown
+        - method: toggled
+          'on': change
   poetry/ui/date_field:
     class_name: Poetry::Ui::DateField::Component
     identifier: poetry--ui--date_field
@@ -2690,6 +3159,32 @@ components:
     - name: date-field-input
       description: The native <input type=date> - THE form value in both modes; tabindex
         -1 + aria-hidden once segments exist
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--date-field
+        registers: true
+        values:
+        - name: locale
+          conditional: if
+        - name: placeholder
+        - name: labels
+        - name: placeholders
+    - element: group
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: group
+        actions:
+        - method: focusGap
+          'on': click
+        - method: settle
+          'on': focusout
+    - element: input
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: input
   poetry/ui/date_picker:
     class_name: Poetry::Ui::DatePicker::Component
     identifier: poetry--ui--date_picker
@@ -2746,6 +3241,33 @@ components:
     - name: date-picker
       description: Root wrapper - the glue controller (formats the trigger label,
         closes on pick) around the composed Popover + Calendar
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--date-picker
+        registers: true
+        values:
+        - name: placeholder
+        - name: mode
+          conditional: if range?
+        actions:
+        - method: picked
+          'on': poetry--core--calendar:change
+    - element: label
+      controllers:
+      - identifier: poetry--core--date-picker
+        targets:
+        - name: label
+    - element: input
+      controllers:
+      - identifier: poetry--core--date-picker
+        targets:
+        - name: input
+        actions:
+        - method: inputChanged
+          'on': input
+        - method: inputKeydown
+          'on': keydown
   poetry/ui/deferred:
     class_name: Poetry::Ui::Deferred::Component
     identifier: poetry--ui--deferred
@@ -2791,6 +3313,29 @@ components:
     - name: deferred-error
       description: The retryable error card, stamped into the frame from the slotted
         <template> on failure
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--deferred
+        registers: true
+        values:
+        - name: src
+    - element: placeholder
+      controllers:
+      - identifier: poetry--core--deferred
+        targets:
+        - name: placeholder
+    - element: error_template
+      controllers:
+      - identifier: poetry--core--deferred
+        targets:
+        - name: error
+    - element: retry
+      controllers:
+      - identifier: poetry--core--deferred
+        actions:
+        - method: retry
+          'on': click
   poetry/ui/dialog:
     class_name: Poetry::Ui::Dialog::Component
     identifier: poetry--ui--dialog
@@ -2871,6 +3416,33 @@ components:
       description: Muted copy under the title, wired to aria-describedby
     - name: dialog-footer
       description: Action row at the bottom of the panel
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--dialog
+        registers: true
+        values:
+        - name: dismissible
+    - element: content
+      controllers:
+      - identifier: poetry--core--dialog
+        targets:
+        - name: dialog
+        actions:
+        - method: close
+          'on': cancel
+        - method: backdropClose
+          'on': click
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: open
+    - element: close
+      controllers:
+      - identifier: poetry--core--dialog
+        actions:
+        - method: close
   poetry/ui/drawer:
     class_name: Poetry::Ui::Drawer::Component
     identifier: poetry--ui--drawer
@@ -3015,6 +3587,45 @@ components:
       description: The scrollable content region between header and footer
     - name: drawer-footer
       description: Action row pinned to the bottom of the popup
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--drawer
+        registers: true
+        values:
+        - name: dismissible
+        - name: direction
+        - name: modal
+        - name: snap_points
+          conditional: if
+    - element: content
+      controllers:
+      - identifier: poetry--core--drawer
+        targets:
+        - name: dialog
+        actions:
+        - method: close
+          'on': cancel
+        - method: backdropClose
+          'on': click
+        - method: escapeClose
+          'on': keydown
+          conditional: unless modal
+        - method: swipeStart
+          'on': pointerdown
+        - method: swipeMove
+          'on': pointermove
+        - method: swipeEnd
+          'on': pointerup
+        - method: swipeCancel
+          'on': pointercancel
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--drawer
+        actions:
+        - method: open
+    - element: close
+      controllers: []
   poetry/ui/dropdown_menu:
     class_name: Poetry::Ui::DropdownMenu::Component
     identifier: poetry--ui--dropdown_menu
@@ -3483,6 +4094,58 @@ components:
         description: 'popper: the sub-trigger''s measured width'
       - name: "--anchor-height"
         description: 'popper: the sub-trigger''s measured height'
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--menu
+        registers: true
+        values:
+        - name: open
+        - name: modal
+        - name: loop
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: align_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: toggle
+          'on': click
+        - method: triggerKeydown
+          'on': keydown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: item
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: activate
+          'on': click
+    - element: sub_trigger
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: subEnter
+          'on': pointerenter
+        - method: subLeave
+          'on': pointerleave
+        - method: openSub
+          'on': click
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
   poetry/ui/empty:
     class_name: Poetry::Ui::Empty::Component
     identifier: poetry--ui--empty
@@ -3821,6 +4484,46 @@ components:
     - name: file-input-clear
       description: The clear affordance - hidden until populated; never re-opens the
         picker
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--file-input
+        registers: true
+        values:
+        - name: multiple
+    - element: dropzone
+      controllers:
+      - identifier: poetry--core--file-input
+        actions:
+        - method: dragenter
+          'on': dragenter
+        - method: dragover
+          'on': dragover
+        - method: dragleave
+          'on': dragleave
+        - method: drop
+          'on': drop
+    - element: control
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: input
+        actions:
+        - method: changed
+          'on': change
+    - element: list
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: list
+    - element: clear
+      controllers:
+      - identifier: poetry--core--file-input
+        targets:
+        - name: clear
+        actions:
+        - method: clear
+          'on': click
   poetry/ui/hover_card:
     class_name: Poetry::Ui::HoverCard::Component
     identifier: poetry--ui--hover_card
@@ -3973,6 +4676,45 @@ components:
         description: the anchor's measured width (popper)
       - name: "--anchor-height"
         description: the anchor's measured height (popper)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--hover-card
+        registers: true
+        values:
+        - name: open
+        - name: open_delay
+        - name: close_delay
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: align_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--hover-card
+        actions:
+        - method: pointerEnter
+          'on': pointerenter
+        - method: pointerLeave
+          'on': pointerleave
+        - method: focusOpen
+          'on': focus
+        - method: blurClose
+          'on': blur
+        - method: touchGuard
+          'on': touchstart
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
   poetry/ui/icon:
     class_name: Poetry::Ui::Icon::Component
     identifier: poetry--ui--icon
@@ -4192,6 +4934,35 @@ components:
     - name: input-otp-separator
       description: The between-groups dash - role=separator kept for parity but aria-hidden
         (a recorded divergence)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--otp
+        registers: true
+        values:
+        - name: length
+        - name: pattern
+        actions:
+        - method: focusInput
+          'on': click
+    - element: input
+      controllers:
+      - identifier: poetry--core--otp
+        targets:
+        - name: input
+        actions:
+        - method: sync
+          'on':
+          - input
+          - focus
+          - blur
+        - method: paste
+          'on': paste
+    - element: slot
+      controllers:
+      - identifier: poetry--core--otp
+        targets:
+        - name: slot
   poetry/ui/item:
     class_name: Poetry::Ui::Item::Component
     identifier: poetry--ui--item
@@ -4895,6 +5666,80 @@ components:
         description: 'popper: the sub-trigger''s measured width'
       - name: "--anchor-height"
         description: 'popper: the sub-trigger''s measured height'
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--menubar
+        registers: true
+        values:
+        - name: value
+        - name: loop
+        actions:
+        - method: slideAdjacent
+          'on': poetry:menu:edge-navigate
+        - method: onMenuClosed
+          'on': poetry:menu:closed
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: manage_tabindex
+        - name: loop
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: menu_wrapper
+      controllers:
+      - identifier: poetry--core--menu
+        registers: true
+        values:
+        - name: open
+        - name: modal
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: align_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--menubar
+        actions:
+        - method: toggle
+          'on': pointerdown
+        - method: hoverSlide
+          'on': pointerenter
+        - method: triggerKeydown
+          'on': keydown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: item
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: activate
+          'on': click
+    - element: sub_trigger
+      controllers:
+      - identifier: poetry--core--menu
+        actions:
+        - method: subEnter
+          'on': pointerenter
+        - method: subLeave
+          'on': pointerleave
+        - method: openSub
+          'on': click
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
   poetry/ui/message:
     class_name: Poetry::Ui::Message::Component
     identifier: poetry--ui--message
@@ -5066,6 +5911,38 @@ components:
     - name: message-scroller-spacer
       description: Tail spacer faking scroll room below a short anchored turn - hidden
         at height 0
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--message-scroller
+        registers: true
+        values:
+        - name: auto_scroll
+        - name: default_scroll_position
+        - name: preserve_scroll_on_prepend
+        - name: track_visibility
+    - element: viewport
+      controllers:
+      - identifier: poetry--core--message-scroller
+        targets:
+        - name: viewport
+    - element: content
+      controllers:
+      - identifier: poetry--core--message-scroller
+        targets:
+        - name: content
+    - element: spacer
+      controllers:
+      - identifier: poetry--core--message-scroller
+        targets:
+        - name: spacer
+    - element: jump_button
+      controllers:
+      - identifier: poetry--core--message-scroller
+        targets:
+        - name: button
+        actions:
+        - method: scrollToEnd
   poetry/ui/metadata_list:
     class_name: Poetry::Ui::MetadataList::Component
     identifier: poetry--ui--metadata_list
@@ -5393,6 +6270,49 @@ components:
       states:
       - attr: data-active
         condition: 'the current page (active: true)'
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--navigation-menu
+        registers: true
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: focusLeft
+          'on': focusout
+      - identifier: poetry--core--popper
+        conditional: if viewport
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: strategy
+    - element: item
+      controllers:
+      - identifier: poetry--core--navigation-menu
+        actions:
+        - method: scheduleOpen
+          'on': pointerenter
+        - method: scheduleClose
+          'on': pointerleave
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--navigation-menu
+        actions:
+        - method: toggle
+          'on': click
+    - element: positioner
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+      - identifier: poetry--core--navigation-menu
+        actions:
+        - method: cancelClose
+          'on': pointerenter
+        - method: scheduleClose
+          'on': pointerleave
   poetry/ui/number_field:
     class_name: Poetry::Ui::NumberField::Component
     identifier: poetry--ui--number_field
@@ -5518,6 +6438,73 @@ components:
       description: The visible formatted <input type=text> - InputGroup's control
         slot (the themes' focus-ring hook); aria-roledescription "Number field", never
         a spinbutton
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--number-field
+        registers: true
+        values:
+        - name: min
+          conditional: if
+        - name: max
+          conditional: if
+        - name: step
+        - name: large_step
+        - name: small_step
+        - name: snap
+          conditional: if snap
+        - name: wheel
+          conditional: if wheel
+        - name: format
+          conditional: if
+        - name: locale
+          conditional: if
+    - element: input
+      controllers:
+      - identifier: poetry--core--number-field
+        targets:
+        - name: input
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: input
+          'on': input
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+    - element: hidden
+      controllers:
+      - identifier: poetry--core--number-field
+        targets:
+        - name: hidden
+        actions:
+        - method: hiddenChanged
+          'on': change
+    - element: increment
+      controllers:
+      - identifier: poetry--core--number-field
+        targets:
+        - name: increment
+        actions:
+        - method: press
+          'on': pointerdown
+        - method: tap
+          'on': click
+        - method: leave
+          'on': pointerleave
+    - element: decrement
+      controllers:
+      - identifier: poetry--core--number-field
+        targets:
+        - name: decrement
+        actions:
+        - method: press
+          'on': pointerdown
+        - method: tap
+          'on': click
+        - method: leave
+          'on': pointerleave
   poetry/ui/pagination:
     class_name: Poetry::Ui::Pagination::Component
     identifier: poetry--ui--pagination
@@ -5736,6 +6723,40 @@ components:
       description: The heading - the panel's accessible name via aria-labelledby
     - name: popover-description
       description: Muted copy under the title, wired to aria-describedby
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--popover
+        registers: true
+        values:
+        - name: open
+        - name: modal
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: anchor
+          conditional: unless anchor?
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: align_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--popover
+        actions:
+        - method: toggle
+          'on': click
+    - element: anchor_part
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
   poetry/ui/progress:
     class_name: Poetry::Ui::Progress::Component
     identifier: poetry--ui--progress
@@ -5906,6 +6927,36 @@ components:
       description: The choice card's title line (the item label:)
     - name: radio-group-card-description
       description: Muted copy under the choice card's title (description:)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--radio-group
+        registers: true
+        values:
+        - name: value
+          conditional: if value?
+        actions:
+        - method: entryCheck
+          'on': poetry--core--roving-focus:entry
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: loop
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: item
+      controllers:
+      - identifier: poetry--core--radio-group
+        actions:
+        - method: check
+          'on': click
+    - element: input
+      controllers:
+      - identifier: poetry--core--radio-group
+        targets:
+        - name: input
   poetry/ui/resizable:
     class_name: Poetry::Ui::Resizable::Component
     identifier: poetry--ui--resizable
@@ -5985,6 +7036,25 @@ components:
     - name: resizable-handle
       description: The role=separator splitter between panels - drag and keyboard
         resizing live here; its aria-valuenow tracks the preceding panel
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--resizable
+        registers: true
+        values:
+        - name: orientation
+    - element: handle
+      controllers:
+      - identifier: poetry--core--resizable
+        actions:
+        - method: dragStart
+          'on': pointerdown
+        - method: dragMove
+          'on': pointermove
+        - method: dragEnd
+          'on': pointerup
+        - method: keydown
+          'on': keydown
   poetry/ui/scroll_area:
     class_name: Poetry::Ui::ScrollArea::Component
     identifier: poetry--ui--scroll_area
@@ -6091,6 +7161,31 @@ components:
     - name: input-group-control
       description: The native <input type=search> - InputGroup's control slot (the
         themes' focus-ring hook); WebKit's own cancel affordance suppressed
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--search-field
+        registers: true
+    - element: input
+      controllers:
+      - identifier: poetry--core--search-field
+        targets:
+        - name: input
+        actions:
+        - method: changed
+          'on': input
+        - method: keydown
+          'on': keydown
+    - element: clear
+      controllers:
+      - identifier: poetry--core--search-field
+        targets:
+        - name: clear
+        actions:
+        - method: holdFocus
+          'on': pointerdown
+        - method: clear
+          'on': click
   poetry/ui/select:
     class_name: Poetry::Ui::Select::Component
     identifier: poetry--ui--select
@@ -6358,6 +7453,66 @@ components:
       description: The option's label span - the value display copies from it
     - name: select-separator
       description: Decorative divider between options (aria-hidden)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--select
+        registers: true
+        values:
+        - name: open
+        - name: value
+        - name: modal
+        - name: loop
+        - name: align_item_with_trigger
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+        - name: avoid_collisions
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--select
+        actions:
+        - method: toggle
+          'on': click
+        - method: triggerKeydown
+          'on': keydown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: item
+      controllers:
+      - identifier: poetry--core--select
+        actions:
+        - method: commit
+          'on': click
+    - element: native
+      controllers:
+      - identifier: poetry--core--select
+        actions:
+        - method: nativeChanged
+          'on': change
+    - element: viewport
+      controllers:
+      - identifier: poetry--core--select
+        actions:
+        - method: syncScrollButtons
+          'on': scroll
+    - element: scroll_button
+      controllers:
+      - identifier: poetry--core--select
+        actions:
+        - method: scrollHoldStart
+          'on': pointerenter
+        - method: scrollHoldStop
+          'on': pointerleave
   poetry/ui/sensitive_input:
     class_name: Poetry::Ui::SensitiveInput::Component
     identifier: poetry--ui--sensitive_input
@@ -6479,6 +7634,71 @@ components:
         condition: always - inline-end holds the actions
         values:
         - inline-end
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        registers: true
+        values:
+        - name: masked_label
+        - name: hidden_message
+        - name: read_only
+          conditional: if readonly
+        actions:
+        - method: blurred
+          'on': focusout
+      - identifier: poetry--core--clipboard-text
+        conditional: if copy
+        registers: true
+        values:
+        - name: message
+    - element: group
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        actions:
+        - method: reveal
+          'on': click
+    - element: mask
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        targets:
+        - name: mask
+        actions:
+        - method: maskKeydown
+          'on': keydown
+    - element: input
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        targets:
+        - name: input
+        actions:
+        - method: changed
+          'on': input
+        - method: inputKeydown
+          'on': keydown
+      - identifier: poetry--core--clipboard-text
+        conditional: if copy
+        targets:
+        - name: input
+    - element: toggle
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        targets:
+        - name: toggle
+        actions:
+        - method: toggle
+          'on': click
+    - element: copy_button
+      controllers:
+      - identifier: poetry--core--clipboard-text
+        actions:
+        - method: copy
+          'on': click
+    - element: hint
+      controllers:
+      - identifier: poetry--core--sensitive-input
+        targets:
+        - name: hint
   poetry/ui/separator:
     class_name: Poetry::Ui::Separator::Component
     identifier: poetry--ui--separator
@@ -6605,6 +7825,33 @@ components:
       description: Muted copy under the title, wired to aria-describedby
     - name: sheet-footer
       description: Action row pinned to the bottom of the panel
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--sheet
+        registers: true
+        values:
+        - name: dismissible
+    - element: content
+      controllers:
+      - identifier: poetry--core--sheet
+        targets:
+        - name: dialog
+        actions:
+        - method: close
+          'on': cancel
+        - method: backdropClose
+          'on': click
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--sheet
+        actions:
+        - method: open
+    - element: close
+      controllers:
+      - identifier: poetry--core--sheet
+        actions:
+        - method: close
   poetry/ui/sidebar:
     class_name: Poetry::Ui::Sidebar::Component
     identifier: poetry--ui--sidebar
@@ -6813,6 +8060,45 @@ components:
       states:
       - attr: data-sidebar
         condition: always "menu-badge" - the upstream sub-part marker
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--sidebar
+        registers: true
+        values:
+        - name: open
+        - name: collapsible
+    - element: peer
+      controllers:
+      - identifier: poetry--core--sidebar
+        targets:
+        - name: sidebar
+    - element: inner
+      controllers:
+      - identifier: poetry--core--sidebar
+        targets:
+        - name: inner
+    - element: mobile
+      controllers:
+      - identifier: poetry--core--sidebar
+        targets:
+        - name: mobileDialog
+        actions:
+        - method: closeMobile
+          'on': cancel
+        - method: mobileBackdropClose
+          'on': click
+    - element: mobile_inner
+      controllers:
+      - identifier: poetry--core--sidebar
+        targets:
+        - name: mobileInner
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--sidebar
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/skeleton:
     class_name: Poetry::Ui::Skeleton::Component
     identifier: poetry--ui--skeleton
@@ -6986,6 +8272,45 @@ components:
       - attr: data-dragging
         condition: this thumb is the one being dragged (the controller pairs it with
           the root's)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--slider
+        registers: true
+        values:
+        - name: min
+        - name: max
+        - name: step
+        - name: value
+        - name: min_steps_between_thumbs
+        - name: orientation
+        - name: inverted
+        actions:
+        - method: pointerdown
+          'on': pointerdown
+    - element: track
+      controllers:
+      - identifier: poetry--core--slider
+        targets:
+        - name: track
+    - element: range
+      controllers:
+      - identifier: poetry--core--slider
+        targets:
+        - name: range
+    - element: thumb
+      controllers:
+      - identifier: poetry--core--slider
+        targets:
+        - name: thumb
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: input
+      controllers:
+      - identifier: poetry--core--slider
+        targets:
+        - name: input
   poetry/ui/spinner:
     class_name: Poetry::Ui::Spinner::Component
     identifier: poetry--ui--spinner
@@ -7173,6 +8498,17 @@ components:
           wearing the pair)
       - attr: data-unchecked
         condition: mirrors the control - the thumb sits at the start
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--checked
+        registers: true
+        values:
+        - name: input_id
+          conditional: if form_participant?
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/table:
     class_name: Poetry::Ui::Table::Component
     identifier: poetry--ui--table
@@ -7336,6 +8672,31 @@ components:
           flips both)
       - attr: data-value
         condition: the owning tab's value
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--tabs
+        registers: true
+    - element: list
+      controllers:
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: loop
+        actions:
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--core--tabs
+        actions:
+        - method: focusActivate
+          'on': poetry--core--roving-focus:entry
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--tabs
+        actions:
+        - method: activate
+          'on': click
   poetry/ui/tag_group:
     class_name: Poetry::Ui::TagGroup::Component
     identifier: poetry--ui--tag_group
@@ -7415,6 +8776,28 @@ components:
     - name: tag-group-remove
       description: The per-tag remove button - tabbable (Tab steps from the row into
         it), removes exactly its own tag
+    stimulus:
+    - element: grid
+      controllers:
+      - identifier: poetry--core--tag-group
+        registers: true
+        actions:
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: loop
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: remove
+      controllers:
+      - identifier: poetry--core--tag-group
+        actions:
+        - method: remove
+          'on': click
   poetry/ui/textarea:
     class_name: Poetry::Ui::Textarea::Component
     identifier: poetry--ui--textarea
@@ -7545,6 +8928,38 @@ components:
     - name: time-field-input
       description: The native <input type=time> - THE form value in both modes; tabindex
         -1 + aria-hidden once segments exist
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--date-field
+        registers: true
+        values:
+        - name: locale
+          conditional: if
+        - name: placeholder
+        - name: labels
+        - name: placeholders
+      - identifier: poetry--core--date-field
+        values:
+        - name: seconds
+          conditional: if seconds
+        - name: hour_cycle
+          conditional: if
+    - element: group
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: group
+        actions:
+        - method: focusGap
+          'on': click
+        - method: settle
+          'on': focusout
+    - element: input
+      controllers:
+      - identifier: poetry--core--date-field
+        targets:
+        - name: input
   poetry/ui/timeline:
     class_name: Poetry::Ui::Timeline::Component
     identifier: poetry--ui--timeline
@@ -7725,6 +9140,39 @@ components:
       description: The message - the announced payload's first line (required slot)
     - name: toast-description
       description: Supporting copy under the title
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--toast
+        registers: true
+        values:
+        - name: duration
+        - name: politeness
+        actions:
+        - method: pause
+          'on':
+          - mouseenter
+          - focusin
+        - method: resume
+          'on':
+          - mouseleave
+          - focusout
+    - element: action
+      controllers:
+      - identifier: poetry--core--toast
+        targets:
+        - name: action
+        actions:
+        - method: dismiss
+          'on': click
+    - element: close
+      controllers:
+      - identifier: poetry--core--toast
+        targets:
+        - name: close
+        actions:
+        - method: dismiss
+          'on': click
   poetry/ui/toaster:
     class_name: Poetry::Ui::Toaster::Component
     identifier: poetry--ui--toaster
@@ -7788,6 +9236,15 @@ components:
       - attr: data-poetry-top-layer
         condition: always - the dismissal layer exempts presses here, so clicking
           a toast never dismisses the overlay under it
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--toaster
+        registers: true
+        values:
+        - name: hotkey
+        - name: limit
+        - name: position
   poetry/ui/toggle:
     class_name: Poetry::Ui::Toggle::Component
     identifier: poetry--ui--toggle
@@ -7863,6 +9320,14 @@ components:
         - default
         - sm
         - lg
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--pressed
+        registers: true
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/toggle_group:
     class_name: Poetry::Ui::ToggleGroup::Component
     identifier: poetry--ui--toggle_group
@@ -8008,6 +9473,27 @@ components:
         - lg
       - attr: data-spacing
         condition: cascaded from the root - keys the segmented corner/border chain
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--toggle-group
+        registers: true
+        values:
+        - name: type
+      - identifier: poetry--core--roving-focus
+        registers: true
+        values:
+        - name: orientation
+        - name: loop
+        actions:
+        - method: keydown
+          'on': keydown
+    - element: item
+      controllers:
+      - identifier: poetry--core--toggle-group
+        actions:
+        - method: toggle
+          'on': click
   poetry/ui/toolbar:
     class_name: Poetry::Ui::Toolbar::Component
     identifier: poetry--ui--toolbar
@@ -8228,6 +9714,52 @@ components:
         - right
         - bottom
         - left
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--tooltip
+        registers: true
+        values:
+        - name: open
+        - name: delay_duration
+          conditional: unless
+        - name: disable_hoverable_content
+          conditional: unless
+      - identifier: poetry--core--popper
+        registers: true
+        values:
+        - name: side
+        - name: align
+        - name: side_offset
+    - element: trigger
+      controllers:
+      - identifier: poetry--core--tooltip
+        actions:
+        - method: pointerMove
+          'on': pointermove
+        - method: pointerLeave
+          'on': pointerleave
+        - method: pointerDown
+          'on': pointerdown
+        - method: clickClose
+          'on': click
+        - method: focusOpen
+          'on': focus
+        - method: blurClose
+          'on': blur
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: arrow
+      controllers:
+      - identifier: poetry--core--popper
+        targets:
+        - name: arrow
   poetry/ui/tree:
     class_name: Poetry::Ui::Tree::Component
     identifier: poetry--ui--tree
@@ -8305,6 +9837,24 @@ components:
           on expand
     - name: tree-item-label
       description: 'The row''s text - a link when href: is given'
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--tree
+        registers: true
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: press
+          'on': click
+    - element: toggle
+      controllers:
+      - identifier: poetry--core--tree
+        actions:
+        - method: pressStart
+          'on': pointerdown
+        - method: toggle
+          'on': click
   poetry/ui/typeset:
     class_name: Poetry::Ui::Typeset::Component
     identifier: poetry--ui--typeset
