@@ -122,11 +122,25 @@ class DocsCatalog
       end
     end
 
+    # The element-level wiring projection (use_stimulus declarations) -
+    # rendered as the Wiring table beside the Styling tables.
+    def wiring_for(section, slug)
+      return unless section == "components"
+
+      component_wiring[slug]
+    end
+
     private
 
     def component_parts
       @component_parts ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
         [ key.split("/")[2..].join("-").tr("_", "-"), entry["parts"] ]
+      end
+    end
+
+    def component_wiring
+      @component_wiring ||= registry_components(Poetry::Ui.root).to_h do |key, entry|
+        [ key.split("/")[2..].join("-").tr("_", "-"), entry["stimulus"] ]
       end
     end
 

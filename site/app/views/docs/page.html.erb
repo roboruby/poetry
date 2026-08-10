@@ -58,6 +58,7 @@
   <% end %>
 
   <% if (parts = DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
-    <%= render "docs/styling", parts: parts %>
+    <%= render "docs/styling", parts: parts,
+                               wiring: DocsCatalog.wiring_for(@entry.section, @entry.slug) %>
   <% end %>
 </div>

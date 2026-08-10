@@ -89,4 +89,56 @@
       </div>
     </div>
   <% end %>
+
+  <% if defined?(wiring) && wiring.present? %>
+    <div class="flex flex-col gap-3">
+      <h3 class="text-lg font-medium" id="wiring">Wiring</h3>
+      <p class="max-w-2xl text-sm text-muted-foreground">
+        The Stimulus surface each element carries — declared in the component,
+        verified against rendered DOM in CI. Bare actions fire on the
+        element's default event.
+      </p>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Element" } %>
+              <%= poetry_table_head { "Controller" } %>
+              <%= poetry_table_head { "Wiring" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% wiring.each do |element| %>
+              <% element["controllers"].each do |controller| %>
+                <%= poetry_table_row do %>
+                  <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
+                    <%= element["element"] %><%= " (#{element["conditional"]})" if element["conditional"] %>
+                  <% end %>
+                  <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") do %>
+                    <%= controller["identifier"] %><%= " (#{controller["conditional"]})" if controller["conditional"] %>
+                  <% end %>
+                  <%= poetry_table_cell(class: "text-muted-foreground") do %>
+                    <% facets = [] %>
+                    <% facets << (controller["registers"] == true ? "registers" : "registers (#{controller["registers"]})") if controller["registers"] %>
+                    <% (controller["values"] || []).each do |value| %>
+                      <% facets << "value #{value["name"]}#{" (#{value["conditional"]})" if value["conditional"]}" %>
+                    <% end %>
+                    <% (controller["actions"] || []).each do |action| %>
+                      <% events = Array(action["on"]).join("/") %>
+                      <% events = "#{events}@#{action["at"]}" if action["at"] %>
+                      <% facets << "#{action["method"]}#{" on #{events}" if events.present?}#{" (#{action["conditional"]})" if action["conditional"]}" %>
+                    <% end %>
+                    <% (controller["targets"] || []).each do |target| %>
+                      <% facets << "target #{target["name"]}#{" (#{target["conditional"]})" if target["conditional"]}" %>
+                    <% end %>
+                    <%= facets.join(" · ") %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
 </section>

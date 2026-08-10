@@ -246,6 +246,12 @@
     "path": "/components/accordion#non-collapsible"
   },
   {
+    "title": "Wiring",
+    "page": "Accordion",
+    "section": "components",
+    "path": "/components/accordion#wiring"
+  },
+  {
     "title": "Alert",
     "page": "Alert",
     "section": "components",
@@ -322,6 +328,12 @@
     "page": "Alert Dialog",
     "section": "components",
     "path": "/components/alert-dialog#with-media"
+  },
+  {
+    "title": "Wiring",
+    "page": "Alert Dialog",
+    "section": "components",
+    "path": "/components/alert-dialog#wiring"
   },
   {
     "title": "Aspect Ratio",
@@ -840,6 +852,12 @@
     "path": "/components/calendar#week-numbers"
   },
   {
+    "title": "Wiring",
+    "page": "Calendar",
+    "section": "components",
+    "path": "/components/calendar#wiring"
+  },
+  {
     "title": "Card",
     "page": "Card",
     "section": "components",
@@ -918,6 +936,12 @@
     "path": "/components/carousel#vertical"
   },
   {
+    "title": "Wiring",
+    "page": "Carousel",
+    "section": "components",
+    "path": "/components/carousel#wiring"
+  },
+  {
     "title": "Checkbox",
     "page": "Checkbox",
     "section": "components",
@@ -978,6 +1002,12 @@
     "path": "/components/checkbox#with-description"
   },
   {
+    "title": "Wiring",
+    "page": "Checkbox",
+    "section": "components",
+    "path": "/components/checkbox#wiring"
+  },
+  {
     "title": "Clipboard Text",
     "page": "Clipboard Text",
     "section": "components",
@@ -1002,6 +1032,12 @@
     "path": "/components/clipboard-text#truncated-copy"
   },
   {
+    "title": "Wiring",
+    "page": "Clipboard Text",
+    "section": "components",
+    "path": "/components/clipboard-text#wiring"
+  },
+  {
     "title": "Code Block",
     "page": "Code Block",
     "section": "components",
@@ -1024,6 +1060,12 @@
     "page": "Code Block",
     "section": "components",
     "path": "/components/code-block#numbered-and-highlighted"
+  },
+  {
+    "title": "Wiring",
+    "page": "Code Block",
+    "section": "components",
+    "path": "/components/code-block#wiring"
   },
   {
     "title": "Collapsible",
@@ -1066,6 +1108,12 @@
     "page": "Collapsible",
     "section": "components",
     "path": "/components/collapsible#with-icon"
+  },
+  {
+    "title": "Wiring",
+    "page": "Collapsible",
+    "section": "components",
+    "path": "/components/collapsible#wiring"
   },
   {
     "title": "Combobox",
@@ -1152,6 +1200,12 @@
     "path": "/components/combobox#with-icon"
   },
   {
+    "title": "Wiring",
+    "page": "Combobox",
+    "section": "components",
+    "path": "/components/combobox#wiring"
+  },
+  {
     "title": "Command",
     "page": "Command",
     "section": "components",
@@ -1200,6 +1254,12 @@
     "path": "/components/command#zero-match"
   },
   {
+    "title": "Wiring",
+    "page": "Command",
+    "section": "components",
+    "path": "/components/command#wiring"
+  },
+  {
     "title": "Command Dialog",
     "page": "Command Dialog",
     "section": "components",
@@ -1240,6 +1300,12 @@
     "page": "Command Dialog",
     "section": "components",
     "path": "/components/command-dialog#with-icons"
+  },
+  {
+    "title": "Wiring",
+    "page": "Command Dialog",
+    "section": "components",
+    "path": "/components/command-dialog#wiring"
   },
   {
     "title": "Context Menu",
@@ -1314,6 +1380,12 @@
     "path": "/components/context-menu#with-icon"
   },
   {
+    "title": "Wiring",
+    "page": "Context Menu",
+    "section": "components",
+    "path": "/components/context-menu#wiring"
+  },
+  {
     "title": "Data Table",
     "page": "Data Table",
     "section": "components",
@@ -1362,6 +1434,12 @@
     "path": "/components/data-table#selectable"
   },
   {
+    "title": "Wiring",
+    "page": "Data Table",
+    "section": "components",
+    "path": "/components/data-table#wiring"
+  },
+  {
     "title": "Date Field",
     "page": "Date Field",
     "section": "components",
@@ -1390,6 +1468,12 @@
     "page": "Date Field",
     "section": "components",
     "path": "/components/date-field#year-first"
+  },
+  {
+    "title": "Wiring",
+    "page": "Date Field",
+    "section": "components",
+    "path": "/components/date-field#wiring"
   },
   {
     "title": "Date Picker",
@@ -1440,6 +1524,12 @@
     "path": "/components/date-picker#with-time"
   },
   {
+    "title": "Wiring",
+    "page": "Date Picker",
+    "section": "components",
+    "path": "/components/date-picker#wiring"
+  },
+  {
     "title": "Deferred",
     "page": "Deferred",
     "section": "components",
@@ -1456,6 +1546,12 @@
     "page": "Deferred",
     "section": "components",
     "path": "/components/deferred#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Deferred",
+    "section": "components",
+    "path": "/components/deferred#wiring"
   },
   {
     "title": "Dialog",
@@ -1498,6 +1594,12 @@
     "page": "Dialog",
     "section": "components",
     "path": "/components/dialog#sticky-footer"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dialog",
+    "section": "components",
+    "path": "/components/dialog#wiring"
   },
   {
     "title": "Drawer",
@@ -1558,6 +1660,12 @@
     "page": "Drawer",
     "section": "components",
     "path": "/components/drawer#swipe-handle"
+  },
+  {
+    "title": "Wiring",
+    "page": "Drawer",
+    "section": "components",
+    "path": "/components/drawer#wiring"
   },
   {
     "title": "Dropdown Menu",
@@ -1630,6 +1738,12 @@
     "page": "Dropdown Menu",
     "section": "components",
     "path": "/components/dropdown-menu#with-icons"
+  },
+  {
+    "title": "Wiring",
+    "page": "Dropdown Menu",
+    "section": "components",
+    "path": "/components/dropdown-menu#wiring"
   },
   {
     "title": "Empty",
@@ -1872,6 +1986,12 @@
     "path": "/components/file-input#dropzone"
   },
   {
+    "title": "Wiring",
+    "page": "File Input",
+    "section": "components",
+    "path": "/components/file-input#wiring"
+  },
+  {
     "title": "Hover Card",
     "page": "Hover Card",
     "section": "components",
@@ -1900,6 +2020,12 @@
     "page": "Hover Card",
     "section": "components",
     "path": "/components/hover-card#sides"
+  },
+  {
+    "title": "Wiring",
+    "page": "Hover Card",
+    "section": "components",
+    "path": "/components/hover-card#wiring"
   },
   {
     "title": "Icon",
@@ -2164,6 +2290,12 @@
     "page": "Input Otp",
     "section": "components",
     "path": "/components/input-otp#states"
+  },
+  {
+    "title": "Wiring",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#wiring"
   },
   {
     "title": "Item",
@@ -2436,6 +2568,12 @@
     "path": "/components/menubar#with-icon"
   },
   {
+    "title": "Wiring",
+    "page": "Menubar",
+    "section": "components",
+    "path": "/components/menubar#wiring"
+  },
+  {
     "title": "Message",
     "page": "Message",
     "section": "components",
@@ -2530,6 +2668,12 @@
     "page": "Message Scroller",
     "section": "components",
     "path": "/components/message-scroller#without-jump-button"
+  },
+  {
+    "title": "Wiring",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#wiring"
   },
   {
     "title": "Metadata List",
@@ -2652,6 +2796,12 @@
     "path": "/components/navigation-menu#with-icon"
   },
   {
+    "title": "Wiring",
+    "page": "Navigation Menu",
+    "section": "components",
+    "path": "/components/navigation-menu#wiring"
+  },
+  {
     "title": "Number Field",
     "page": "Number Field",
     "section": "components",
@@ -2680,6 +2830,12 @@
     "page": "Number Field",
     "section": "components",
     "path": "/components/number-field#decimal-steps"
+  },
+  {
+    "title": "Wiring",
+    "page": "Number Field",
+    "section": "components",
+    "path": "/components/number-field#wiring"
   },
   {
     "title": "Pagination",
@@ -2772,6 +2928,12 @@
     "path": "/components/popover#with-anchor"
   },
   {
+    "title": "Wiring",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#wiring"
+  },
+  {
     "title": "Progress",
     "page": "Progress",
     "section": "components",
@@ -2856,6 +3018,12 @@
     "path": "/components/radio-group#with-description"
   },
   {
+    "title": "Wiring",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#wiring"
+  },
+  {
     "title": "Resizable",
     "page": "Resizable",
     "section": "components",
@@ -2890,6 +3058,12 @@
     "page": "Resizable",
     "section": "components",
     "path": "/components/resizable#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#wiring"
   },
   {
     "title": "Scroll Area",
@@ -2938,6 +3112,12 @@
     "page": "Search Field",
     "section": "components",
     "path": "/components/search-field#with-value"
+  },
+  {
+    "title": "Wiring",
+    "page": "Search Field",
+    "section": "components",
+    "path": "/components/search-field#wiring"
   },
   {
     "title": "Select",
@@ -2994,6 +3174,12 @@
     "path": "/components/select#valued"
   },
   {
+    "title": "Wiring",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#wiring"
+  },
+  {
     "title": "Sensitive Input",
     "page": "Sensitive Input",
     "section": "components",
@@ -3016,6 +3202,12 @@
     "page": "Sensitive Input",
     "section": "components",
     "path": "/components/sensitive-input#with-copy"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#wiring"
   },
   {
     "title": "Separator",
@@ -3090,6 +3282,12 @@
     "path": "/components/sheet#sides"
   },
   {
+    "title": "Wiring",
+    "page": "Sheet",
+    "section": "components",
+    "path": "/components/sheet#wiring"
+  },
+  {
     "title": "Sidebar",
     "page": "Sidebar",
     "section": "components",
@@ -3136,6 +3334,12 @@
     "page": "Sidebar",
     "section": "components",
     "path": "/components/sidebar#workspace-switcher"
+  },
+  {
+    "title": "Wiring",
+    "page": "Sidebar",
+    "section": "components",
+    "path": "/components/sidebar#wiring"
   },
   {
     "title": "Skeleton",
@@ -3238,6 +3442,12 @@
     "page": "Slider",
     "section": "components",
     "path": "/components/slider#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#wiring"
   },
   {
     "title": "Spinner",
@@ -3366,6 +3576,12 @@
     "path": "/components/switch#states"
   },
   {
+    "title": "Wiring",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#wiring"
+  },
+  {
     "title": "Table",
     "page": "Table",
     "section": "components",
@@ -3438,6 +3654,12 @@
     "path": "/components/tabs#with-icon"
   },
   {
+    "title": "Wiring",
+    "page": "Tabs",
+    "section": "components",
+    "path": "/components/tabs#wiring"
+  },
+  {
     "title": "Tag Group",
     "page": "Tag Group",
     "section": "components",
@@ -3460,6 +3682,12 @@
     "page": "Tag Group",
     "section": "components",
     "path": "/components/tag-group#as-form-value"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tag Group",
+    "section": "components",
+    "path": "/components/tag-group#wiring"
   },
   {
     "title": "Textarea",
@@ -3540,6 +3768,12 @@
     "path": "/components/time-field#twenty-four-hour"
   },
   {
+    "title": "Wiring",
+    "page": "Time Field",
+    "section": "components",
+    "path": "/components/time-field#wiring"
+  },
+  {
     "title": "Timeline",
     "page": "Timeline",
     "section": "components",
@@ -3600,6 +3834,12 @@
     "path": "/components/toast#with-action"
   },
   {
+    "title": "Wiring",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#wiring"
+  },
+  {
     "title": "Toaster",
     "page": "Toaster",
     "section": "components",
@@ -3622,6 +3862,12 @@
     "page": "Toaster",
     "section": "components",
     "path": "/components/toaster#top-center"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toaster",
+    "section": "components",
+    "path": "/components/toaster#wiring"
   },
   {
     "title": "Toggle",
@@ -3664,6 +3910,12 @@
     "page": "Toggle",
     "section": "components",
     "path": "/components/toggle#with-text"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toggle",
+    "section": "components",
+    "path": "/components/toggle#wiring"
   },
   {
     "title": "Toggle Group",
@@ -3718,6 +3970,12 @@
     "page": "Toggle Group",
     "section": "components",
     "path": "/components/toggle-group#vertical"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#wiring"
   },
   {
     "title": "Toolbar",
@@ -3792,6 +4050,12 @@
     "path": "/components/tooltip#with-label"
   },
   {
+    "title": "Wiring",
+    "page": "Tooltip",
+    "section": "components",
+    "path": "/components/tooltip#wiring"
+  },
+  {
     "title": "Tree",
     "page": "Tree",
     "section": "components",
@@ -3814,6 +4078,12 @@
     "page": "Tree",
     "section": "components",
     "path": "/components/tree#with-links"
+  },
+  {
+    "title": "Wiring",
+    "page": "Tree",
+    "section": "components",
+    "path": "/components/tree#wiring"
   },
   {
     "title": "Typeset",
