@@ -1,0 +1,38 @@
+<%# Text addons (upstream Text): prefixes, suffixes, both edges, and a
+    block-end caption under a textarea. poetry_input_group_text gives the
+    muted, non-interactive caption treatment. %>
+<div class="grid w-full max-w-sm gap-6">
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_input_group_text { "$" } %>
+    <% end %>
+    <%= poetry_input_group_input(name: "price", placeholder: "0.00", "aria-label": "Price") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text { "USD" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_input_group_text { "https://" } %>
+    <% end %>
+    <%= poetry_input_group_input(name: "domain", placeholder: "example.com", "aria-label": "Domain",
+                                 class: "pl-0.5!") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text { ".com" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(name: "username", placeholder: "Enter your username",
+                                 "aria-label": "Username") %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_input_group_text { "@company.com" } %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_textarea(name: "message", placeholder: "Enter your message",
+                                    "aria-label": "Message") %>
+    <%= poetry_input_group_addon(align: :"block-end") do %>
+      <%= poetry_input_group_text(class: "text-xs text-muted-foreground") { "120 characters left" } %>
+    <% end %>
+  <% end %>
+</div>

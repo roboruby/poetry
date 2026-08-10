@@ -1,15 +1,16 @@
-<%# The search pattern: leading icon, borderless control, trailing kbd.
-    The group wears the border and focus ring; the control inside must be
-    poetry_input_group_input (a plain poetry_input double-chromes it). %>
+<%# Upstream demo: leading icon addon, borderless control, trailing
+    result count. The group wears the border and focus ring; the control
+    inside must be poetry_input_group_input (a plain poetry_input keeps
+    its own chrome and double-borders the group). %>
 <div class="w-80">
   <%= poetry_label(for_id: "input-group-search", class: "sr-only") { "Search" } %>
   <%= poetry_input_group do %>
+    <%= poetry_input_group_input(id: "input-group-search", name: "q", placeholder: "Search...") %>
     <%= poetry_input_group_addon do %>
       <%= poetry_icon(name: :search) %>
     <% end %>
-    <%= poetry_input_group_input(id: "input-group-search", name: "q", placeholder: "Search…") %>
     <%= poetry_input_group_addon(align: :"inline-end") do %>
-      <%= poetry_kbd { "⌘K" } %>
+      12 results
     <% end %>
   <% end %>
 </div>

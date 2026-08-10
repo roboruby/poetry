@@ -1,0 +1,14 @@
+<%# The shortcut hint (upstream Kbd): a leading icon and a trailing
+    poetry_kbd riding the addon row. %>
+<div class="w-full max-w-sm">
+  <%= poetry_label(for_id: "input-group-kbd-search", class: "sr-only") { "Search" } %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_input(id: "input-group-kbd-search", name: "q", placeholder: "Search...") %>
+    <%= poetry_input_group_addon do %>
+      <%= poetry_icon(name: :search, class: "text-muted-foreground") %>
+    <% end %>
+    <%= poetry_input_group_addon(align: :"inline-end") do %>
+      <%= poetry_kbd { "⌘K" } %>
+    <% end %>
+  <% end %>
+</div>

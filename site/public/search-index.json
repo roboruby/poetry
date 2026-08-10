@@ -2058,6 +2058,54 @@
     "path": "/components/input-group#default"
   },
   {
+    "title": "Align",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#align"
+  },
+  {
+    "title": "Button",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#button"
+  },
+  {
+    "title": "Custom",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#custom"
+  },
+  {
+    "title": "Dropdown",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#dropdown"
+  },
+  {
+    "title": "Icon",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#icon"
+  },
+  {
+    "title": "Kbd",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#kbd"
+  },
+  {
+    "title": "Spinner",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#spinner"
+  },
+  {
+    "title": "Text",
+    "page": "Input Group",
+    "section": "components",
+    "path": "/components/input-group#text"
+  },
+  {
     "title": "Textarea block",
     "page": "Input Group",
     "section": "components",
@@ -2068,24 +2116,6 @@
     "page": "Input Group",
     "section": "components",
     "path": "/components/input-group#textarea-header"
-  },
-  {
-    "title": "With button",
-    "page": "Input Group",
-    "section": "components",
-    "path": "/components/input-group#with-button"
-  },
-  {
-    "title": "With spinner",
-    "page": "Input Group",
-    "section": "components",
-    "path": "/components/input-group#with-spinner"
-  },
-  {
-    "title": "With text",
-    "page": "Input Group",
-    "section": "components",
-    "path": "/components/input-group#with-text"
   },
   {
     "title": "Input Otp",
