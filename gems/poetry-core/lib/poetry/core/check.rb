@@ -108,6 +108,16 @@ module Poetry
         # that yields its slot builder.
         def helper_yields?(helper) = !@helper_entries.dig(helper, "yields").nil?
 
+        # The element-level wiring projection (Phase 5): which elements of
+        # a component carry which controllers, values, actions, and
+        # targets - use_stimulus declarations, serialized. Empty for
+        # registries that predate the projection; future check rules and
+        # suggestions read the component's actual wiring here instead of
+        # the controllers section's whole-API view.
+        def stimulus_wiring(path)
+          @components.dig(path, "stimulus") || []
+        end
+
         def option_names(path)
           entry = @components.fetch(path, {})
           (entry["options"] || []).map { |option| option["name"] } +

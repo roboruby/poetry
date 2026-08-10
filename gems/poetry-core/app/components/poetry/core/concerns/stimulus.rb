@@ -106,6 +106,15 @@ module Poetry
             Poetry::Core::Stimulus::Declarations.resolve_identifier(identifier)
           end
 
+          # The registry-shaped projection of the RESOLVED wiring (post-
+          # inheritance, so Sheet publishes sheet controllers) - plain data
+          # for the registry, skill text, and docs tables.
+          def stimulus_definitions
+            stimulus_elements.values.map do |element|
+              Poetry::Core::Stimulus::Declarations.serialize_element(element)
+            end
+          end
+
           # Descriptor builders are STATIC facts of the declarations, so
           # they exist at class level - helpers, generator templates, and
           # test selectors consume them without an instance. on:/at: build

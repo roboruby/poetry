@@ -197,6 +197,15 @@ module Poetry
         # holds to the rendered DOM of every preview.
         parts = component.part_definitions
         entry["parts"] = plain(parts) if parts.any?
+
+        # The element-level wiring projection (use_stimulus declarations,
+        # resolved): which parts carry which controllers, values, actions,
+        # and targets - the usage view beside the controllers section's
+        # capability view.
+        if component.respond_to?(:stimulus_definitions)
+          wiring = component.stimulus_definitions
+          entry["stimulus"] = plain(wiring) if wiring.any?
+        end
         entry
       end
 

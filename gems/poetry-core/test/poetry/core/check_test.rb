@@ -119,6 +119,14 @@ module Poetry
         }
       ).freeze
 
+
+      def test_the_catalog_exposes_the_element_level_stimulus_wiring
+        catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Core.root)
+
+        assert_equal [], catalog.stimulus_wiring("poetry/core/nope")
+        assert_kind_of Array, catalog.stimulus_wiring("poetry/core/x")
+      end
+
       def test_a_charts_component_helper_maps_to_its_path_in_a_merged_catalog
         findings = Check.lint(<<~ERB, catalog: MERGED_CATALOG)
           <%= poetry_area_chart(data: data, config: config) do |chart| %>

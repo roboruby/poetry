@@ -119,6 +119,62 @@ module Poetry
           name.to_s.camelize(:lower)
         end
 
+        # Registry-shaped serialization of one resolved element (plain
+        # string keys, YAML round-trippable) - the element-level projection
+        # consumers read: the registry, skill text, and the docs wiring
+        # tables. Conditions serialize as possibility-space: the predicate
+        # name for symbols, "conditional" for procs.
+        def serialize_element(element)
+          definition = { "element" => element.name.to_s }
+          if (label = condition_label(element.conditions))
+            definition["conditional"] = label
+          end
+          definition["controllers"] = element.wirings.map { |wiring| serialize_wiring(wiring) }
+          definition
+        end
+
+        def serialize_wiring(wiring)
+          serialized = { "identifier" => wiring.identifier }
+          if (label = condition_label(wiring.conditions))
+            serialized["conditional"] = label
+          end
+          wiring.entries.each do |entry|
+            case entry.kind
+            when :register
+              serialized["registers"] = condition_label(entry.conditions) || true
+            when :value
+              (serialized["values"] ||= []) << serialize_entry(entry, "name" => entry.name.to_s)
+            when :action
+              action = { "method" => camelize(entry.name) }
+              action["on"] = serialize_on(entry.on) unless entry.on.nil?
+              action["at"] = entry.at.to_s if entry.at
+              (serialized["actions"] ||= []) << serialize_entry(entry, action)
+            when :target
+              (serialized["targets"] ||= []) << serialize_entry(entry, "name" => camelize(entry.name))
+            end
+          end
+          serialized
+        end
+
+        def serialize_entry(entry, base)
+          if (label = condition_label(entry.conditions))
+            base["conditional"] = label
+          end
+          base
+        end
+
+        def serialize_on(on)
+          on.is_a?(Array) ? on.map(&:to_s) : on.to_s
+        end
+
+        def condition_label(conditions)
+          return nil if conditions.nil? || conditions.empty?
+
+          conditions.filter_map do |key, condition|
+            condition.is_a?(Symbol) ? "#{key} #{condition}" : key.to_s
+          end.join(", ").presence || "conditional"
+        end
+
         # Evaluates one use_stimulus block; #elements is the harvest.
         class RootDSL
           attr_reader :elements

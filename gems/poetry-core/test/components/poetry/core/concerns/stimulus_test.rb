@@ -243,6 +243,37 @@ module Poetry
           assert_equal "poetry--core--accordion#toggle", DeclaredComponent.new.stimulus_action(:toggle)
         end
 
+        def test_stimulus_definitions_project_registry_shaped_wiring
+          definitions = DeclaredComponent.stimulus_definitions
+          root = definitions.find { |definition| definition["element"] == "root" }
+          accordion = root["controllers"].first
+
+          assert_equal "poetry--core--accordion", accordion["identifier"]
+          assert accordion["registers"]
+          assert_equal(%w[type collapsible], accordion["values"].map { |value| value["name"] })
+          assert_equal [{ "method" => "toggle", "on" => "click" }], accordion["actions"]
+
+          list = definitions.find { |definition| definition["element"] == "list" }
+          bar = list["controllers"].first
+
+          assert_equal [{ "name" => "count" }], bar["targets"]
+          assert_equal [{ "method" => "keydown", "on" => "keydown", "at" => "window" }], bar["actions"]
+        end
+
+        def test_conditions_serialize_as_possibility_space
+          definitions = ConditionalComponent.stimulus_definitions
+          root = definitions.find { |definition| definition["element"] == "root" }
+          accordion = root["controllers"].first
+
+          assert_equal "if enabled", accordion["conditional"]
+          value = accordion["values"].first
+
+          assert_equal "unless", value["conditional"]
+          panel = definitions.find { |definition| definition["element"] == "panel" }
+
+          assert_equal "if extras", panel["conditional"]
+        end
+
         def test_descriptors_exist_at_class_level_with_events
           assert_equal "poetry--core--accordion#toggle", DeclaredComponent.stimulus_action(:toggle)
           assert_equal "click->poetry--core--accordion#toggle",

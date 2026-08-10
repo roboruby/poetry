@@ -145,7 +145,12 @@ module Poetry
       # renders, each with the targets / values / actions an agent may wire
       # by hand and the events it may listen for (N13 W1). Base UI
       # vocabulary. Absent for static components.
+      # Element-level when the entry carries the projection (use_stimulus
+      # declarations); the controller-level capability view otherwise
+      # (charts, external registries).
       def wiring_lines(entry)
+        return element_wiring_lines(entry) if entry["stimulus"]
+
         (entry["controllers"] || []).map do |controller|
           facets = []
           facets << "targets #{controller["targets"].join(", ")}" if controller["targets"].any?
@@ -154,6 +159,44 @@ module Poetry
           facets << "events #{controller["events"].join(", ")}" if (controller["events"] || []).any?
           "- WIRING `#{controller["identifier"]}`#{": #{facets.join("; ")}" unless facets.empty?}"
         end
+      end
+
+      def element_wiring_lines(entry)
+        entry["stimulus"].map do |element|
+          phrases = element["controllers"].map { |wiring| wiring_phrase(wiring) }
+          suffix = element["conditional"] ? " (#{element["conditional"]})" : ""
+          "- WIRING #{element["element"]}#{suffix}: #{phrases.join(" | ")}"
+        end
+      end
+
+      def wiring_phrase(wiring)
+        facets = []
+        facets << "registers#{" (#{wiring["registers"]})" unless wiring["registers"] == true}" if wiring["registers"]
+        if (values = wiring["values"])
+          facets << "values #{values.map { |value| conditional_name(value, "name") }.join(", ")}"
+        end
+        if (actions = wiring["actions"])
+          facets << "actions #{actions.map { |action| action_phrase(action) }.join(", ")}"
+        end
+        if (targets = wiring["targets"])
+          facets << "targets #{targets.map { |target| conditional_name(target, "name") }.join(", ")}"
+        end
+        suffix = wiring["conditional"] ? " (#{wiring["conditional"]})" : ""
+        "`#{wiring["identifier"]}`#{suffix} #{facets.join("; ")}".strip
+      end
+
+      def action_phrase(action)
+        phrase = action["method"]
+        if (on = action["on"])
+          events = Array(on).join("/")
+          events = "#{events}@#{action["at"]}" if action["at"]
+          phrase = "#{phrase} on #{events}"
+        end
+        action["conditional"] ? "#{phrase} (#{action["conditional"]})" : phrase
+      end
+
+      def conditional_name(item, key)
+        item["conditional"] ? "#{item[key]} (#{item["conditional"]})" : item[key]
       end
 
       def prop_lines(entry)
