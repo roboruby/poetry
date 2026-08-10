@@ -19,7 +19,38 @@ module Poetry
       # (params: "50" / ["200", "800"]). Change fires per mutation,
       # commit once per gesture; native input/change fire on COMMIT only.
       class Component < Poetry::Core::Component
-        SLIDER = %i[poetry core slider].freeze
+        use_stimulus do
+          on :root do
+            controller :slider do
+              register
+              value :min, from: :min_number
+              value :max, from: :max_number
+              value :step, from: :step_number
+              value :value, from: :value_numbers
+              value :min_steps_between_thumbs
+              value :orientation
+              value :inverted
+              action :pointerdown, on: :pointerdown
+            end
+          end
+          on :track do
+            controller(:slider) { target :track }
+          end
+          on :range do
+            controller(:slider) { target :range }
+          end
+          on :thumb do
+            controller :slider do
+              target :thumb
+              action :keydown, on: :keydown
+            end
+          end
+          # The form bridge: hidden inputs submit the server value even
+          # when disabled.
+          on :input do
+            controller(:slider) { target :input }
+          end
+        end
         ORIENTATIONS = %i[horizontal vertical].freeze
 
         AGENT_RULES = [
@@ -181,18 +212,18 @@ module Poetry
           }
           attrs["data-disabled"] = "" if disabled
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
         def track_attributes
           { class: css(:track), "data-slot" => "slider-track", "data-orientation" => orientation }
-            .merge(slider_target(:track))
+            .merge(stimulus_attributes_for(:track))
         end
 
         def range_attributes
           { class: css(:range), "data-slot" => "slider-range", "data-orientation" => orientation }
-            .merge(slider_target(:range))
+            .merge(stimulus_attributes_for(:range))
         end
 
         def anchor_attributes(index)
@@ -215,8 +246,7 @@ module Poetry
           attrs["aria-labelledby"] = labelled_by if labelled_by.present?
           attrs["aria-describedby"] = described_by if described_by.present?
           attrs["data-disabled"] = "" if disabled
-          attrs.merge(stimulus_attributes { |slider| slider.with_action(:keydown, on: :keydown) })
-               .merge(slider_target(:thumb))
+          attrs.merge(stimulus_attributes_for(:thumb))
         end
 
         # The form bridge: hidden inputs submit the server value even when
@@ -224,7 +254,7 @@ module Poetry
         # datum is not) - contrast native disabled fields.
         def input_attributes(index)
           { type: "hidden", name: input_name, value: number(thumb_values[index]) }
-            .merge(slider_target(:input))
+            .merge(stimulus_attributes_for(:input))
         end
 
         # Trailing-zero-free rendering: 50.0 -> "50", 0.5 -> "0.5" (aria
@@ -288,30 +318,10 @@ module Poetry
           end
         end
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          slider = Poetry::Core::Stimulus::Builder.new(SLIDER, attrs)
-          slider.register_controller
-          slider.with_value(:min, number(min))
-          slider.with_value(:max, number(max))
-          slider.with_value(:step, number(step))
-          slider.with_value(:value, thumb_values.map { |item| number(item) })
-          slider.with_value(:min_steps_between_thumbs, min_steps_between_thumbs)
-          slider.with_value(:orientation, orientation)
-          slider.with_value(:inverted, inverted)
-          slider.with_action(:pointerdown, on: :pointerdown)
-          attrs.to_attributes
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(SLIDER, attrs)
-          attrs.to_attributes
-        end
-
-        def slider_target(name)
-          stimulus_attributes { |slider| slider.with_target(name) }
-        end
+        def min_number = number(min)
+        def max_number = number(max)
+        def step_number = number(step)
+        def value_numbers = thumb_values.map { |item| number(item) }
       end
     end
   end

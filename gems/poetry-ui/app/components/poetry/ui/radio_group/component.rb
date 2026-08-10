@@ -22,8 +22,33 @@ module Poetry
       # renders the roving tab stop (checked item tabindex=0, rest -1) so
       # the one-Tab-stop contract holds before JS connects.
       class Component < Poetry::Core::Component
-        GROUP = %i[poetry core radio_group].freeze
-        ROVING = %i[poetry core roving_focus].freeze
+        use_stimulus do
+          on :root do
+            controller :radio_group do
+              register
+              value :value, from: :value_string, if: :value?
+              # Selection follows focus: entry fires ONLY on arrow/Home/End
+              # navigation (never Tab), so checking on entry IS the APG
+              # radio contract.
+              action :entry_check, on: event(:roving_focus, :entry)
+            end
+            controller :roving_focus do
+              register
+              # DEFAULT tabindex-managing mode: the group is ONE Tab stop.
+              value :orientation
+              value :loop
+              action :keydown, on: :keydown
+            end
+          end
+          on :item do
+            controller(:radio_group) { action :check, on: :click }
+          end
+          # THE form participant: the hidden native radio the controller
+          # syncs (previously a hand-written target string).
+          on :input do
+            controller(:radio_group) { target :input }
+          end
+        end
         ORIENTATIONS = %i[both vertical horizontal].freeze
 
         AGENT_RULES = [
@@ -166,7 +191,7 @@ module Poetry
           attrs["aria-label"] = label if label.present?
           attrs["data-disabled"] = "" if disabled
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -235,7 +260,7 @@ module Poetry
             attrs[:disabled] = true
             attrs["data-disabled"] = "" # the roving-focus collection filter
           end
-          attrs.merge!(stimulus_attributes(GROUP) { |group| group.with_action(:check, on: :click) })
+          attrs.merge!(stimulus_attributes_for(:item))
 
           # The native input is the button's SIBLING - a focusable native
           # control inside a role=radio button is axe nested-interactive
@@ -262,7 +287,7 @@ module Poetry
           tag.input(type: "radio", name: name, value: item_value, id: "#{item_id}-input",
                     checked: checked, disabled: item_disabled, "aria-hidden": true,
                     tabindex: "-1", class: css(:input),
-                    "data-poetry--core--radio-group-target": "input")
+                    **stimulus_attributes_for(:input).transform_keys(&:to_sym))
         end
 
         # The server renders the roving contract: exactly one tabindex=0 -
@@ -280,32 +305,8 @@ module Poetry
           classnames(css(:item), extra)
         end
 
-        # BOTH controllers build into ONE Attributes instance (the
-        # Accordion lesson: a plain Hash#merge would overwrite
-        # data-controller instead of token-concatenating).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          group = Poetry::Core::Stimulus::Builder.new(GROUP, attrs)
-          group.register_controller
-          group.with_value(:value, value.to_s) if value.present?
-          # Selection follows focus: entry fires ONLY on arrow/Home/End
-          # navigation (never Tab), so checking on entry IS the APG radio
-          # contract.
-          group.with_action(:entry_check, on: "poetry--core--roving-focus:entry")
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          # DEFAULT tabindex-managing mode: the group is ONE Tab stop.
-          roving.with_value(:orientation, orientation)
-          roving.with_value(:loop, loop)
-          roving.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
-
-        def stimulus_attributes(controller)
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(controller, attrs)
-          attrs.to_attributes
-        end
+        def value_string = value.to_s
+        def value? = value.present?
       end
     end
   end

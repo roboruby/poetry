@@ -15,8 +15,56 @@ module Poetry
       # engine alongside - copy WITHOUT revealing is the point. The no-JS
       # story is a plain password input that still submits.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core sensitive_input].freeze
-        COPY_CONTROLLER = %i[poetry core clipboard_text].freeze
+        # Both engines declare on the root (the one-Attributes rule holds
+        # by construction); the borrowed clipboard-text controller rides
+        # along copy-gated.
+        use_stimulus do
+          on :root do
+            controller :sensitive_input do
+              register
+              value :masked_label
+              value :hidden_message, from: :hidden_message_text
+              value :read_only, "true", if: :readonly
+              action :blurred, on: :focusout
+            end
+            controller :clipboard_text, if: :copy do
+              register
+              value :message, from: :copied_message_text
+            end
+          end
+          # Clicks anywhere on the bordered surface reveal (the mask's own
+          # clicks bubble here); Enter/Space ride the mask button.
+          on :group do
+            controller(:sensitive_input) { action :reveal, on: :click }
+          end
+          on :mask do
+            controller :sensitive_input do
+              target :mask
+              action :maskKeydown, on: :keydown
+            end
+          end
+          on :input do
+            controller :sensitive_input do
+              target :input
+              action :changed, on: :input
+              action :inputKeydown, on: :keydown
+            end
+            controller(:clipboard_text, if: :copy) { target :input }
+          end
+          on :toggle do
+            controller :sensitive_input do
+              target :toggle
+              action :toggle, on: :click
+            end
+          end
+          on :copy_button do
+            controller(:clipboard_text) { action :copy, on: :click }
+          end
+          # The sr hint the masked group is described by.
+          on :hint do
+            controller(:sensitive_input) { target :hint }
+          end
+        end
 
         AGENT_RULES = [
           "Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare " \
@@ -97,7 +145,7 @@ module Poetry
             "class" => css
           }.merge(component_data_attributes)
           attrs["data-disabled"] = "" if disabled
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def group_attributes
@@ -105,7 +153,7 @@ module Poetry
             "data-slot" => "sensitive-input-group",
             "class" => InputGroup::Style.css(class: css(:group))
           )
-          attrs.merge!(group_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:group))
           attrs
         end
 
@@ -132,7 +180,7 @@ module Poetry
             attrs["aria-label"] = masked_label
             attrs["aria-describedby"] = hint_id
           end
-          attrs.merge!(mask_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:mask))
           attrs
         end
 
@@ -160,7 +208,7 @@ module Poetry
           elsif readonly
             attrs["readonly"] = ""
           end
-          attrs.merge!(input_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -174,7 +222,7 @@ module Poetry
             "data-slot" => "sensitive-input-toggle",
             "hidden" => "",
             "aria-controls" => control_id
-          }.merge(toggle_stimulus_attributes))
+          }.merge(stimulus_attributes_for(:toggle)))
         end
 
         def copy_button
@@ -184,7 +232,7 @@ module Poetry
             class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
             "data-slot" => "clipboard-text-copy",
             "aria-controls" => control_id
-          }.merge(copy_stimulus_attributes))
+          }.merge(stimulus_attributes_for(:copy_button)))
         end
 
         def masked_label
@@ -199,73 +247,14 @@ module Poetry
         # only referenced while masked).
         def hint_attributes
           attrs = Poetry::Core::HTML::Attributes.new("id" => hint_id, "class" => "sr-only")
-          Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs).with_target(:hint)
+          attrs.merge!(stimulus_attributes_for(:hint))
           attrs
         end
 
         private
 
-        # Both engines ride ONE attribute build (the TagGroup lesson: a
-        # plain hash merge clobbers the first data-controller token).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          field.register_controller
-          field.with_value(:masked_label, masked_label)
-          field.with_value(:hidden_message, t("poetry.sensitive_input.hidden"))
-          field.with_value(:read_only, "true") if readonly
-          field.with_action(:blurred, on: :focusout)
-          if copy
-            clip = Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs)
-            clip.register_controller
-            clip.with_value(:message, t("poetry.clipboard_text.copied"))
-          end
-          attrs.to_attributes
-        end
-
-        # Clicks anywhere on the bordered surface reveal (the mask's own
-        # clicks bubble here); Enter/Space ride the mask button.
-        def group_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_action(:reveal, on: :click)
-          end
-        end
-
-        def mask_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:mask)
-            field.with_action(:maskKeydown, on: :keydown)
-          end
-        end
-
-        def input_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          field.with_target(:input)
-          field.with_action(:changed, on: :input)
-          field.with_action(:inputKeydown, on: :keydown)
-          Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs).with_target(:input) if copy
-          attrs.to_attributes
-        end
-
-        def toggle_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:toggle)
-            field.with_action(:toggle, on: :click)
-          end
-        end
-
-        def copy_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs).with_action(:copy, on: :click)
-          attrs.to_attributes
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
+        def hidden_message_text = t("poetry.sensitive_input.hidden")
+        def copied_message_text = t("poetry.clipboard_text.copied")
       end
     end
   end

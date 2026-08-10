@@ -17,6 +17,12 @@ module Poetry
                            value: "sk_demo_4eC39HqLyjWDarjtT1zdp7dc", copy: true)
         end
 
+        # readonly: reveal and copy still work; editing never does.
+        def readonly
+          render_component(name: "api_key", label: "API key", readonly: true,
+                           value: "sk_demo_4eC39HqLyjWDarjtT1zdp7dc", copy: true)
+        end
+
         # Empty: a plain password field; the first character typed
         # auto-reveals so composition happens visibly.
         def empty

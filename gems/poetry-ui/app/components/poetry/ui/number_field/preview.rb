@@ -23,6 +23,12 @@ module Poetry
           render_component({ name: "duration", label: "Duration", value: 15, min: 0, max: 120, step: 15, snap: true })
         end
 
+        # wheel: opts the focused input into scroll-to-step (off by
+        # default - a page-scroll trap otherwise).
+        def wheel_stepping
+          render_component({ name: "zoom", label: "Zoom", value: 100, min: 25, max: 400, step: 25, wheel: true })
+        end
+
         # @!endgroup
 
         # @!group Formatted

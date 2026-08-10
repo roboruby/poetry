@@ -27,6 +27,18 @@ module Poetry
         # Pin the hour cycle (h12/h23/h11/h24) instead of the locale's.
         option :hour_cycle, :string
 
+        # EXTENDS DateField's root declaration (extend: true merges into
+        # the inherited element) - same date-field controller, two more
+        # values; group/input inherit untouched.
+        use_stimulus do
+          on :root, extend: true do
+            controller :date_field do
+              value :seconds, true, if: :seconds
+              value :hour_cycle, if: -> { hour_cycle.present? }
+            end
+          end
+        end
+
         part "time-field", "Root - the controller and the enhanced/disabled surface ride " \
                            "here (segments inside share the date-field-* vocabulary)",
              states: {
@@ -64,11 +76,6 @@ module Poetry
 
         def placeholder_iso
           placeholder_value.present? ? iso(placeholder_value) : "12:00#{":00" if seconds}"
-        end
-
-        def extra_controller_values(field)
-          field.with_value(:seconds, true) if seconds
-          field.with_value(:hour_cycle, hour_cycle) if hour_cycle.present?
         end
       end
     end

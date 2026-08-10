@@ -19,8 +19,26 @@ module Poetry
       # belongs to ToggleGroup; the pick-from-options job to Combobox
       # multiple, whose chips these visually match).
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core tag_group].freeze
-        ROVING = %i[poetry core roving_focus].freeze
+        # BOTH controllers declare on the grid element - the one-Attributes
+        # rule holds by construction; roving-focus owns the arrow keys with
+        # the group's own keydown layered on the same event.
+        use_stimulus do
+          on :grid do
+            controller :tag_group do
+              register
+              action :keydown, on: :keydown
+            end
+            controller :roving_focus do
+              register
+              value :orientation, :horizontal
+              value :loop, true
+              action :keydown, on: :keydown
+            end
+          end
+          on :remove do
+            controller(:tag_group) { action :remove, on: :click }
+          end
+        end
 
         AGENT_RULES = [
           "Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal " \
@@ -88,9 +106,7 @@ module Poetry
           }
           attrs["data-empty"] = "" if tags.none?
           attrs["tabindex"] = "0" if tags.none?
-          # BOTH controllers build into ONE Attributes object - a plain
-          # hash merge would clobber the first data-controller token.
-          attrs.merge(grid_stimulus_attributes)
+          attrs.merge(stimulus_attributes_for(:grid))
         end
 
         # Built here (not in the template) so the slot lambda can compose
@@ -130,33 +146,13 @@ module Poetry
           }
           attrs["disabled"] = "" if disabled
 
-          content_tag(:button, attrs.merge(remove_stimulus_attributes)) do
+          content_tag(:button, attrs.merge(stimulus_attributes_for(:remove))) do
             render(Icon::Component.new(name: :x))
           end
         end
 
         def hidden_input(value)
           tag.input(type: "hidden", name: "#{name}[]", value: value)
-        end
-
-        def grid_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          group = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          group.register_controller
-          group.with_action(:keydown, on: :keydown)
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          roving.with_value(:orientation, :horizontal)
-          roving.with_value(:loop, true)
-          roving.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
-
-        def remove_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          group = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          group.with_action(:remove, on: :click)
-          attrs.to_attributes
         end
       end
     end

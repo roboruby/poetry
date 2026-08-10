@@ -29,6 +29,13 @@ module Poetry
           render_component(name: "event[on]", label: "Event date", disabled: true,
                            value: Date.new(2026, 7, 13))
         end
+
+        # locale: pins segment order and placeholders (dd.mm.yyyy under
+        # de-DE) instead of following the page locale.
+        def localized
+          render_component(name: "geburt[am]", label: "Geburtsdatum", locale: "de-DE",
+                           value: Date.new(2026, 3, 9))
+        end
       end
     end
   end

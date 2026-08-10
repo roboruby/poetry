@@ -21,7 +21,30 @@ module Poetry
       # codes are LTR strings, slot order == string index order even on
       # RTL pages.
       class Component < Poetry::Core::Component
-        OTP = %i[poetry core otp].freeze
+        use_stimulus do
+          on :root do
+            controller :otp do
+              register
+              value :length
+              value :pattern, from: :pattern_js
+              # The input already covers the cells at z-20; this catches
+              # gap/separator clicks.
+              action :focus_input, on: :click
+            end
+          end
+          on :input do
+            controller :otp do
+              target :input
+              action :sync, on: %i[input focus blur]
+              # maxlength truncates RAW clipboard text before the input
+              # event - the controller filters the paste itself.
+              action :paste, on: :paste
+            end
+          end
+          on :slot do
+            controller(:otp) { target :slot }
+          end
+        end
         LENGTH_RANGE = (1..12)
         PATTERNS = {
           digits: { js: "\\d", char: "[0-9]", inputmode: "numeric" },
@@ -121,7 +144,7 @@ module Poetry
             "dir" => "ltr"
           }
           container_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -142,7 +165,7 @@ module Poetry
           attrs["aria-required"] = true if required
           attrs["aria-invalid"] = true if invalid
           Poetry::Core::HTML::Attributes.new(html_attributes.slice(*INPUT_FACING))
-                                        .merge_if_not_set(attrs.merge(input_stimulus_attributes))
+                                        .merge_if_not_set(attrs.merge(stimulus_attributes_for(:input)))
         end
 
         def slot_attributes(_index)
@@ -152,7 +175,7 @@ module Poetry
           # Styling-only on an aria-hidden cell (the source's
           # aria-invalid: variants key on it); AT never sees it.
           attrs["aria-invalid"] = "true" if invalid
-          attrs.merge(stimulus_attributes { |otp| otp.with_target(:slot) })
+          attrs.merge(stimulus_attributes_for(:slot))
         end
 
         private
@@ -194,33 +217,7 @@ module Poetry
           raise ArgumentError, "InputOTP groups: must be an array of integers - got #{groups.inspect}"
         end
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          otp = Poetry::Core::Stimulus::Builder.new(OTP, attrs)
-          otp.register_controller
-          otp.with_value(:length, length)
-          otp.with_value(:pattern, pattern_spec[:js])
-          # The input already covers the cells at z-20; this catches
-          # gap/separator clicks.
-          otp.with_action(:focus_input, on: :click)
-          attrs.to_attributes
-        end
-
-        def input_stimulus_attributes
-          stimulus_attributes do |otp|
-            otp.with_target(:input)
-            otp.with_action(:sync, on: %i[input focus blur])
-            # maxlength truncates RAW clipboard text before the input event
-            # - the controller filters the paste itself.
-            otp.with_action(:paste, on: :paste)
-          end
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(OTP, attrs)
-          attrs.to_attributes
-        end
+        def pattern_js = pattern_spec[:js]
       end
     end
   end

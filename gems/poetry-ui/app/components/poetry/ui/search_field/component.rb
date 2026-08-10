@@ -14,7 +14,27 @@ module Poetry
       # native WebKit cancel affordance is suppressed so poetry's clear
       # button is the only one.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core search_field].freeze
+        use_stimulus do
+          on :root do
+            controller(:search_field) { register }
+          end
+          on :input do
+            controller :search_field do
+              target :input
+              action :changed, on: :input
+              action :keydown, on: :keydown
+            end
+          end
+          # The clear affordance holds focus through pointerdown (never a
+          # tab stop) and clears on click.
+          on :clear do
+            controller :search_field do
+              target :clear
+              action :holdFocus, on: :pointerdown
+              action :clear, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
@@ -68,7 +88,7 @@ module Poetry
             "class" => css
           }.merge(component_data_attributes)
           attrs["data-empty"] = "" if value.blank?
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def group_attributes
@@ -106,7 +126,7 @@ module Poetry
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
           attrs["required"] = "" if required
-          attrs.merge!(input_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -121,38 +141,7 @@ module Poetry
             "tabindex" => "-1",
             "hidden" => value.blank? || readonly || disabled ? "" : nil,
             "aria-controls" => control_id
-          }.compact.merge(clear_stimulus_attributes))
-        end
-
-        private
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          field.register_controller
-          attrs.to_attributes
-        end
-
-        def input_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:input)
-            field.with_action(:changed, on: :input)
-            field.with_action(:keydown, on: :keydown)
-          end
-        end
-
-        def clear_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:clear)
-            field.with_action(:holdFocus, on: :pointerdown)
-            field.with_action(:clear, on: :click)
-          end
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
+          }.compact.merge(stimulus_attributes_for(:clear)))
         end
       end
     end

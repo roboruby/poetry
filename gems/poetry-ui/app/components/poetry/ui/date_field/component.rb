@@ -13,7 +13,29 @@ module Poetry
       # drops out of the tab order but keeps carrying name/required/min/
       # max - native constraint validation stays on.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core date_field].freeze
+        # TimeField subclasses this and EXTENDS the root element with its
+        # seconds/hour-cycle values - the declarations-inheritance seam.
+        use_stimulus do
+          on :root do
+            controller :date_field do
+              register
+              value :locale, if: -> { locale.present? }
+              value :placeholder, from: :placeholder_iso
+              value :labels, from: :segment_labels_json
+              value :placeholders, from: :segment_placeholders_json
+            end
+          end
+          on :group do
+            controller :date_field do
+              target :group
+              action :focusGap, on: :click
+              action :settle, on: :focusout
+            end
+          end
+          on :input do
+            controller(:date_field) { target :input }
+          end
+        end
 
         AGENT_RULES = [
           "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
@@ -81,7 +103,7 @@ module Poetry
           }.merge(component_data_attributes)
           attrs["data-disabled"] = "" if disabled
           attrs["data-invalid"] = "" if invalid
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def group_attributes
@@ -93,7 +115,7 @@ module Poetry
           attrs["aria-label"] = label if label.present?
           attrs["data-invalid"] = "" if invalid
           attrs["data-disabled"] = "" if disabled
-          attrs.merge(group_stimulus_attributes)
+          attrs.merge(stimulus_attributes_for(:group))
         end
 
         def input_attributes
@@ -113,7 +135,7 @@ module Poetry
           attrs["required"] = "" if required
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
-          attrs.merge!(input_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -166,41 +188,8 @@ module Poetry
           }
         end
 
-        def extra_controller_values(_field)
-          # DateField has no extras; TimeField adds seconds/hour cycle.
-        end
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          field.register_controller
-          field.with_value(:locale, locale) if locale.present?
-          field.with_value(:placeholder, placeholder_iso)
-          field.with_value(:labels, segment_labels.to_json)
-          field.with_value(:placeholders, segment_placeholders.to_json)
-          extra_controller_values(field)
-          attrs.to_attributes
-        end
-
-        def group_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:group)
-            field.with_action(:focusGap, on: :click)
-            field.with_action(:settle, on: :focusout)
-          end
-        end
-
-        def input_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:input)
-          end
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
+        def segment_labels_json = segment_labels.to_json
+        def segment_placeholders_json = segment_placeholders.to_json
       end
     end
   end

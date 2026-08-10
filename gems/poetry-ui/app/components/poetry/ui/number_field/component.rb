@@ -21,7 +21,50 @@ module Poetry
       # symbols ARE handled via Intl.formatToParts), and the server renders
       # the raw number - the display formats on connect.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core number_field].freeze
+        use_stimulus do
+          on :root do
+            controller :number_field do
+              register
+              value :min, from: :min_number, if: -> { min.present? }
+              value :max, from: :max_number, if: -> { max.present? }
+              value :step, from: :step_number
+              value :large_step, from: :large_step_number
+              value :small_step, from: :small_step_number
+              value :snap, if: :snap
+              value :wheel, if: :wheel
+              value :format, from: :format_json, if: -> { format.present? }
+              value :locale, if: -> { locale.present? }
+            end
+          end
+          on :input do
+            controller :number_field do
+              target :input
+              action :keydown, on: :keydown
+              action :input, on: :input
+              action :focus, on: :focus
+              action :blur, on: :blur
+            end
+          end
+          # The form/validation truth: the sr-only native number input.
+          on :hidden do
+            controller :number_field do
+              target :hidden
+              action :hiddenChanged, on: :change
+            end
+          end
+          # One element per stepper direction, so stepper(direction)
+          # forwards stimulus_attributes_for(direction) into Button kwargs.
+          %i[increment decrement].each do |direction|
+            on direction do
+              controller :number_field do
+                target direction
+                action :press, on: :pointerdown
+                action :tap, on: :click
+                action :leave, on: :pointerleave
+              end
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
@@ -116,7 +159,7 @@ module Poetry
           attrs["data-disabled"] = "" if disabled
           attrs["data-invalid"] = "" if invalid
           attrs["data-filled"] = "" if value.present?
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def group_attributes
@@ -155,7 +198,7 @@ module Poetry
           attrs["disabled"] = "" if disabled
           attrs["readonly"] = "" if readonly
           attrs["required"] = "" if required
-          attrs.merge!(input_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -175,10 +218,7 @@ module Poetry
           attrs["step"] = number(step)
           attrs["disabled"] = "" if disabled
           attrs["required"] = "" if required
-          attrs.merge!(stimulus_attributes do |field|
-            field.with_target(:hidden)
-            field.with_action(:hiddenChanged, on: :change)
-          end)
+          attrs.merge!(stimulus_attributes_for(:hidden))
           attrs
         end
 
@@ -194,7 +234,7 @@ module Poetry
             "data-slot" => "number-field-#{direction}",
             "tabindex" => "-1",
             "aria-controls" => control_id
-          }.merge(stepper_stimulus_attributes(direction)))
+          }.merge(stimulus_attributes_for(direction)))
         end
 
         def stepper_icon(direction)
@@ -221,46 +261,12 @@ module Poetry
           float == float.to_i ? float.to_i.to_s : float.to_s
         end
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          field = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          field.register_controller
-          field.with_value(:min, number(min)) if min.present?
-          field.with_value(:max, number(max)) if max.present?
-          field.with_value(:step, number(step))
-          field.with_value(:large_step, number(large_step))
-          field.with_value(:small_step, number(small_step))
-          field.with_value(:snap, snap) if snap
-          field.with_value(:wheel, wheel) if wheel
-          field.with_value(:format, format.to_json) if format.present?
-          field.with_value(:locale, locale) if locale.present?
-          attrs.to_attributes
-        end
-
-        def input_stimulus_attributes
-          stimulus_attributes do |field|
-            field.with_target(:input)
-            field.with_action(:keydown, on: :keydown)
-            field.with_action(:input, on: :input)
-            field.with_action(:focus, on: :focus)
-            field.with_action(:blur, on: :blur)
-          end
-        end
-
-        def stepper_stimulus_attributes(direction)
-          stimulus_attributes do |field|
-            field.with_target(direction)
-            field.with_action(:press, on: :pointerdown)
-            field.with_action(:tap, on: :click)
-            field.with_action(:leave, on: :pointerleave)
-          end
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
+        def min_number = number(min)
+        def max_number = number(max)
+        def step_number = number(step)
+        def large_step_number = number(large_step)
+        def small_step_number = number(small_step)
+        def format_json = format.to_json
       end
     end
   end

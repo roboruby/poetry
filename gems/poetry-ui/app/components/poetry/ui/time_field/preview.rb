@@ -26,6 +26,12 @@ module Poetry
         def disabled
           render_component(name: "meeting[at]", value: "13:05", disabled: true, label: "Start time")
         end
+
+        # locale: pins the cycle AND the dayPeriod/label language instead
+        # of following the page locale.
+        def localized
+          render_component(name: "termin[um]", value: "14:30", locale: "de-DE", label: "Uhrzeit")
+        end
       end
     end
   end

@@ -15,7 +15,37 @@ module Poetry
       # (data: { direct_upload_url: ... } passes straight through).
       # Styling is utility-only (the Separator/Spinner rule).
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core file_input].freeze
+        use_stimulus do
+          on :root do
+            controller :file_input do
+              register
+              value :multiple
+            end
+          end
+          on :dropzone do
+            controller :file_input do
+              action :dragenter, on: :dragenter
+              action :dragover, on: :dragover
+              action :dragleave, on: :dragleave
+              action :drop, on: :drop
+            end
+          end
+          on :control do
+            controller :file_input do
+              target :input
+              action :changed, on: :change
+            end
+          end
+          on :list do
+            controller(:file_input) { target :list }
+          end
+          on :clear do
+            controller :file_input do
+              target :clear
+              action :clear, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "File selection is a FileInput: variant: :input for compact forms, :dropzone when " \
@@ -95,13 +125,13 @@ module Poetry
           attrs["multiple"] = true if multiple
           attrs["disabled"] = true if disabled
           attrs["aria-invalid"] = "true" if invalid
-          attrs.merge(control_stimulus_attributes)
+          attrs.merge(stimulus_attributes_for(:control))
         end
 
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "file-input", "data-variant" => variant }
-              .merge(component_data_attributes).merge(root_stimulus_attributes)
+              .merge(component_data_attributes).merge(stimulus_attributes_for(:root))
           )
         end
 
@@ -109,49 +139,18 @@ module Poetry
           {
             "data-slot" => "file-input-dropzone",
             "class" => "#{css(:dropzone)}#{" #{css(:dropzone_disabled)}" if disabled}"
-          }.merge(dropzone_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:dropzone))
         end
 
         def list_attributes
           { "data-slot" => "file-input-list", "class" => css(:list) }
-            .merge(stimulus { |controller| controller.with_target(:list) })
+            .merge(stimulus_attributes_for(:list))
         end
 
         def clear_attributes
           { "type" => "button", "data-slot" => "file-input-clear", "hidden" => true,
             "class" => css(:clear) }
-            .merge(stimulus do |controller|
-              controller.with_target(:clear)
-              controller.with_action(:clear, on: :click)
-            end)
-        end
-
-        private
-
-        def root_stimulus_attributes
-          stimulus do |controller|
-            controller.register_controller
-            controller.with_value(:multiple, multiple)
-          end
-        end
-
-        def dropzone_stimulus_attributes
-          stimulus do |controller|
-            %i[dragenter dragover dragleave drop].each { |kind| controller.with_action(kind, on: kind) }
-          end
-        end
-
-        def control_stimulus_attributes
-          stimulus do |controller|
-            controller.with_target(:input)
-            controller.with_action(:changed, on: :change)
-          end
-        end
-
-        def stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
+            .merge(stimulus_attributes_for(:clear))
         end
       end
     end
