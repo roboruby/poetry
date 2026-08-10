@@ -18,10 +18,33 @@ module Poetry
           "Destructive confirmations pair a destructive Button in the footer - never auto-submit."
         ].freeze
 
-        # The controller identifier, declared ONCE - every data attribute
-        # derives from it through the Stimulus Builder, validated against
-        # the controllers manifest (no hand-written wiring strings).
-        CONTROLLER = %i[poetry core dialog].freeze
+        # Sheet and Drawer subclass this and REDECLARE both elements with
+        # their own controllers (replace-on-redeclare); the trigger lambda
+        # and close_action late-bind through stimulus_action, so subclasses
+        # never re-type the entry points.
+        use_stimulus do
+          on :root do
+            controller :dialog do
+              register
+              value :dismissible
+            end
+          end
+          on :content do
+            controller :dialog do
+              target :dialog
+              action :close, on: :cancel
+              action :backdrop_close, on: :click
+            end
+          end
+          # Forwarded descriptors (bare = element-default click): the
+          # trigger Button and the corner close button.
+          on :trigger do
+            controller(:dialog) { action :open }
+          end
+          on :close do
+            controller(:dialog) { action :close }
+          end
+        end
 
         option :dismissible, :boolean, default: true
 
@@ -45,7 +68,7 @@ module Poetry
         # The trigger is a poetry Button wired to open the dialog - agents
         # pass Button props: with_trigger(variant: :outline) { "Open" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus.action(:open) }.merge(options[:data] || {})
+          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
         renders_one :title
@@ -76,10 +99,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "dialog" }
-              .merge(stimulus_attributes do |dialog|
-                dialog.register_controller
-                dialog.with_value(:dismissible, dismissible)
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -90,18 +110,16 @@ module Poetry
             "data-slot" => "dialog-content",
             "data-closed" => "",
             "aria-labelledby" => title_id
-          }.merge(stimulus_attributes do |dialog|
-            dialog.with_target(:dialog)
-            dialog.with_action(:close, on: :cancel)
-            dialog.with_action(:backdrop_close, on: :click)
-          end)
+          }.merge(stimulus_attributes_for(:content))
           attrs["aria-describedby"] = description_id if description?
           attrs
         end
 
-        # Validated action descriptor for the template's close button.
+        # Validated action descriptor for the template's close button -
+        # resolves against the class's OWN declarations (Sheet/Drawer get
+        # their controller without overriding).
         def close_action
-          stimulus.action(:close)
+          stimulus_action(:close)
         end
 
         # The dialog-family root wrapper is NON-VISUAL - the <dialog> is
@@ -120,20 +138,6 @@ module Poetry
         end
 
         private
-
-        # A manifest-validated Builder for descriptor strings (pure - never
-        # touches the component's own html_attributes).
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-        end
-
-        # Builds one element's Stimulus attributes through the Builder so
-        # every target / value / action name is manifest-validated.
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
 
         # Server-stable unique id for the aria wiring (two dialogs on one
         # page must not share label ids).

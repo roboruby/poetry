@@ -6,7 +6,6 @@ module Poetry
       # The controller identifier, declared ONCE - every data attribute
       # derives from it through the Stimulus Builder, validated against
       # the controllers manifest (no hand-written wiring strings).
-      COMMAND = %i[poetry core command].freeze
 
       # The server-side item registry: every rendered item (DOM order)
       # lands here so option ids are server-stable ("#{id}-item-<n>" - the
@@ -58,14 +57,11 @@ module Poetry
       module Helpers
         private
 
-        def command_stimulus
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-          attrs.to_attributes
-        end
-
+        # Hosts must also expose #item_wiring (the root Component computes
+        # it from its :item declaration; Group receives it at construction)
+        # so every item renders the same declared wiring.
         def item_component(**)
-          Item.new(item_set: item_set, **)
+          Item.new(item_set: item_set, item_wiring: item_wiring, **)
         end
 
         # role=separator, server-rendered VISIBLE - the controller hides
@@ -93,11 +89,12 @@ module Poetry
       class Item < ViewComponent::Base
         include Helpers
 
-        attr_reader :item_set
+        attr_reader :item_set, :item_wiring
 
-        def initialize(item_set:, value:, **options)
+        def initialize(item_set:, value:, item_wiring: {}, **options)
           super()
           @item_set = item_set
+          @item_wiring = item_wiring
           @value = value.to_s
           @disabled = options.delete(:disabled) || false
           @keywords = Array(options.delete(:keywords)).map(&:to_s)
@@ -113,10 +110,7 @@ module Poetry
             "id" => item_id, "data-slot" => "command-item", "role" => "option",
             "data-poetry-collection-item" => "", "data-value" => @value,
             "class" => Style.css(:item, class: @extra_attributes.delete(:class))
-          }.merge(command_stimulus do |command|
-            command.with_action(:activate, on: :click)
-            command.with_action(:pointer_highlight, on: :pointermove)
-          end)
+          }.merge(@item_wiring)
           attrs["data-highlighted"] = "" if highlighted
           if @disabled
             attrs["aria-disabled"] = "true"
@@ -158,18 +152,19 @@ module Poetry
       class Group < ViewComponent::Base
         include Helpers
 
-        attr_reader :item_set
+        attr_reader :item_set, :item_wiring
 
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
         }
 
-        def initialize(item_set:, heading:, always_render: false, **extra_attributes)
+        def initialize(item_set:, heading:, item_wiring: {}, always_render: false, **extra_attributes)
           raise ArgumentError, "Command group requires heading: (the group's accessible name)" if heading.blank?
 
           super()
           @item_set = item_set
+          @item_wiring = item_wiring
           @heading_text = heading
           @always_render = always_render
           @extra_attributes = extra_attributes
@@ -258,6 +253,30 @@ module Poetry
 
         include Helpers
 
+        use_stimulus do
+          on :root do
+            controller :command do
+              register
+              value :filter
+              value :loop
+            end
+          end
+          on :input do
+            controller :command do
+              action :filter_input, on: :input
+              action :keydown, on: :keydown
+            end
+          end
+          # Every item (root-level and grouped) wears this - the anatomy
+          # classes receive it as item_wiring at construction.
+          on :item do
+            controller :command do
+              action :activate, on: :click
+              action :pointer_highlight, on: :pointermove
+            end
+          end
+        end
+
         part "command", "Root of the palette - the input row over the listbox, carrying the " \
                         "engine controller"
         part "command-input-wrapper", "The input row - search icon + filter input above the list"
@@ -316,7 +335,9 @@ module Poetry
         # part COMPONENTS so id assignment follows render/DOM order).
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: { renders: ->(**options) { Group.new(item_set: item_set, **options) }, as: :group },
+          group: { renders: lambda { |**options|
+            Group.new(item_set: item_set, item_wiring: item_wiring, **options)
+          }, as: :group },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
         }
 
@@ -360,7 +381,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "id" => base_id, "data-slot" => "command" }
-              .merge(root_stimulus_attributes)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -379,10 +400,7 @@ module Poetry
           attrs["placeholder"] = placeholder if placeholder.present?
           attrs["disabled"] = true if disabled
           attrs["aria-activedescendant"] = item_set.highlighted_id if item_set.highlighted_id
-          attrs.merge!(command_stimulus do |command|
-            command.with_action(:filter_input, on: :input)
-            command.with_action(:keydown, on: :keydown)
-          end)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs.merge!(input_aria_attributes)
           attrs
         end
@@ -448,13 +466,8 @@ module Poetry
           end
         end
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          command = Poetry::Core::Stimulus::Builder.new(COMMAND, attrs)
-          command.register_controller
-          command.with_value(:filter, filter)
-          command.with_value(:loop, loop)
-          attrs.to_attributes
+        def item_wiring
+          @item_wiring ||= stimulus_attributes_for(:item)
         end
       end
     end

@@ -32,7 +32,41 @@ module Poetry
           "fractions or px/rem lengths; opens at the first) - direction: :down only."
         ].freeze
 
-        CONTROLLER = %i[poetry core drawer].freeze
+        # Replace-on-redeclare: both elements re-controller to :drawer;
+        # the inherited trigger lambda late-binds through stimulus_action.
+        use_stimulus do
+          on :root do
+            controller :drawer do
+              register
+              value :dismissible
+              value :direction
+              value :modal
+              value :snap_points, from: :snap_points_json, if: -> { snap_points.present? }
+            end
+          end
+          on :content do
+            controller :drawer do
+              target :dialog
+              action :close, on: :cancel
+              action :backdrop_close, on: :click
+              # A non-modal dialog never fires cancel - Esc rides its own
+              # keydown exit (guarded controller-side to modal: false).
+              action :escape_close, on: :keydown, unless: :modal
+              action :swipe_start, on: :pointerdown
+              action :swipe_move, on: :pointermove
+              action :swipe_end, on: :pointerup
+              action :swipe_cancel, on: :pointercancel
+            end
+          end
+          on :trigger do
+            controller(:drawer) { action :open }
+          end
+          # The Drawer renders no corner close button - an empty
+          # redeclaration ERASES Dialog's inherited :close element (and
+          # with it the dialog identifier that would make unqualified
+          # stimulus_action ambiguous).
+          on :close
+        end
 
         # The dismissal direction (the Base UI swipeDirection vocabulary);
         # the edge chrome + swipe axis derive from it.
@@ -111,13 +145,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "drawer" }
-              .merge(stimulus_attributes do |drawer|
-                drawer.register_controller
-                drawer.with_value(:dismissible, dismissible)
-                drawer.with_value(:direction, direction)
-                drawer.with_value(:modal, modal)
-                drawer.with_value(:snap_points, snap_points.to_json) if snap_points.present?
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -137,18 +165,7 @@ module Poetry
             "data-swipe-direction" => direction,
             "data-closed" => "",
             "aria-labelledby" => title_id
-          }.merge(stimulus_attributes do |drawer|
-            drawer.with_target(:dialog)
-            drawer.with_action(:close, on: :cancel)
-            drawer.with_action(:backdrop_close, on: :click)
-            # A non-modal dialog never fires cancel - Esc rides its own
-            # keydown exit (guarded controller-side to modal: false).
-            drawer.with_action(:escape_close, on: :keydown) unless modal
-            drawer.with_action(:swipe_start, on: :pointerdown)
-            drawer.with_action(:swipe_move, on: :pointermove)
-            drawer.with_action(:swipe_end, on: :pointerup)
-            drawer.with_action(:swipe_cancel, on: :pointercancel)
-          end)
+          }.merge(stimulus_attributes_for(:content))
           # The attribute drives the dictionary's full-height sizing; the
           # controller reads the value for the offset physics.
           attrs["data-snap-points"] = "" if snap_points.present?
@@ -173,25 +190,13 @@ module Poetry
                                'px/rem lengths ("31rem", "400px"), ascending'
         end
 
-        # The Dialog parent resolves its CONTROLLER lexically, so every
-        # builder entry point re-declares here in Drawer's scope - including
-        # the memoized `stimulus` the inherited trigger slot wires its open
-        # action through.
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
-
+        # Host-facing close descriptor (no template consumer) - the
+        # explicit click event preserved from the pre-declaration shape.
         def close_action
-          Poetry::Core::Stimulus::Builder
-            .new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-            .action(:close, on: :click)
+          "click->#{stimulus_action(:close)}"
         end
+
+        def snap_points_json = snap_points.to_json
       end
     end
   end

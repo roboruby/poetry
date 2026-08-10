@@ -1995,23 +1995,6 @@ components:
     - loading
     - separator
     controllers:
-    - identifier: poetry--core--command
-      targets: []
-      values:
-      - debounce
-      - filter
-      - loop
-      actions:
-      - activate
-      - filterInput
-      - highlightItem
-      - keydown
-      - pointerHighlight
-      - reset
-      events:
-      - poetry:command:filter
-      - poetry:command:highlight
-      - poetry:command:select
     - identifier: poetry--core--dialog
       targets:
       - dialog

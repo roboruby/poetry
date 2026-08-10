@@ -30,7 +30,28 @@ module Poetry
         ].freeze
 
         # The SHARED dialog controller (zero new JS) - hotkey included.
-        DIALOG = %i[poetry core dialog].freeze
+        use_stimulus do
+          on :root do
+            controller :dialog do
+              register
+              value :dismissible
+              value :hotkey, if: -> { hotkey.present? }
+            end
+          end
+          on :content do
+            controller :dialog do
+              target :dialog
+              action :close, on: :cancel
+              action :backdrop_close, on: :click
+            end
+          end
+          on :trigger do
+            controller(:dialog) { action :open }
+          end
+          on :close do
+            controller(:dialog) { action :close }
+          end
+        end
 
         option :title, :string, default: -> { I18n.t("poetry.command.dialog_title") }
         option :description, :string, default: -> { I18n.t("poetry.command.dialog_description") }
@@ -72,7 +93,7 @@ module Poetry
         # The trigger is a poetry Button wired to open - the Dialog
         # pattern: with_trigger(variant: :outline) { "Open palette" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus.action(:open) }.merge(options[:data] || {})
+          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
 
@@ -107,11 +128,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "command-dialog" }
-              .merge(stimulus_attributes do |dialog|
-                dialog.register_controller
-                dialog.with_value(:dismissible, dismissible)
-                dialog.with_value(:hotkey, hotkey) if hotkey.present?
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -125,31 +142,18 @@ module Poetry
             "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
-          }.merge(stimulus_attributes do |dialog|
-            dialog.with_target(:dialog)
-            dialog.with_action(:close, on: :cancel)
-            dialog.with_action(:backdrop_close, on: :click)
-          end)
+          }.merge(stimulus_attributes_for(:content))
         end
 
         # Validated action descriptor for the template's close button.
         def close_action
-          stimulus.action(:close)
+          stimulus_action(:close)
         end
 
         private
 
         # A manifest-validated Builder for descriptor strings (pure - never
         # touches the component's own html_attributes).
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(DIALOG, Poetry::Core::HTML::Attributes.new)
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(DIALOG, attrs)
-          attrs.to_attributes
-        end
 
         # Server-stable unique id for the aria wiring (two palettes on one
         # page must not share label ids).

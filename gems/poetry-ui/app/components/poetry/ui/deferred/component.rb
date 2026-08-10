@@ -18,7 +18,27 @@ module Poetry
       # error card rides static template utilities (scanned into the
       # safelist like every committed template class).
       class Component < Poetry::Core::Component
-        DEFERRED = %i[poetry core deferred].freeze
+        use_stimulus do
+          # src rides the controller value, NOT the frame markup: connect()
+          # arms it, so a fast response can never beat the controllers
+          # module graph to the frame.
+          on :root do
+            controller :deferred do
+              register
+              value :src
+            end
+          end
+          # Template-consumed elements (previously hand-written strings).
+          on :placeholder do
+            controller(:deferred) { target :placeholder }
+          end
+          on :error_template do
+            controller(:deferred) { target :error }
+          end
+          on :retry do
+            controller(:deferred) { action :retry, on: :click }
+          end
+        end
 
         AGENT_RULES = [
           "Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled fetch.",
@@ -58,19 +78,8 @@ module Poetry
             {
               "id" => "poetry-deferred-#{Digest::MD5.hexdigest(src.to_s).first(8)}",
               "loading" => loading, "data-slot" => "deferred"
-            }.merge(stimulus_attributes do |deferred|
-              deferred.register_controller
-              deferred.with_value(:src, src)
-            end).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
-        end
-
-        private
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(DEFERRED, attrs)
-          attrs.to_attributes
         end
       end
     end

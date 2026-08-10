@@ -3,8 +3,6 @@
 module Poetry
   module Ui
     module Toaster
-      # The controller identifier, declared ONCE (Builder-validated).
-      TOASTER = %i[poetry core toaster].freeze
       POSITIONS = %i[top-left top-center top-right bottom-left bottom-center bottom-right].freeze
 
       # The toast viewport (Toast): a labeled
@@ -62,6 +60,19 @@ module Poetry
                                                        "dismisses the overlay under it" }
              }
 
+        # Values only, zero actions: the controller wires its own
+        # window-keydown (hotkey) and dismiss listeners in connect.
+        use_stimulus do
+          on :root do
+            controller :toaster do
+              register
+              value :hotkey
+              value :limit
+              value :position
+            end
+          end
+        end
+
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -75,22 +86,8 @@ module Poetry
               # group-data selector (items render independently of the
               # region - a streamed toast cannot know the corner).
               "data-position" => position
-            }.merge(toaster_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
-        end
-
-        private
-
-        # The controller wires its own window-keydown (hotkey) and dismiss
-        # listeners in connect - values only, no data-action needed.
-        def toaster_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          toaster = Poetry::Core::Stimulus::Builder.new(TOASTER, attrs)
-          toaster.register_controller
-          toaster.with_value(:hotkey, hotkey)
-          toaster.with_value(:limit, limit)
-          toaster.with_value(:position, position)
-          attrs.to_attributes
         end
       end
     end

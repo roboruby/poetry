@@ -19,7 +19,30 @@ module Poetry
         # W5b commit 1: the Sheet gets its OWN controller - the dialog
         # machinery + the presence-hold close its dictionary was waiting on
         # (the Drawer subclass pattern, minus the swipe).
-        CONTROLLER = %i[poetry core sheet].freeze
+        # Redeclaring both elements REPLACES Dialog's :dialog controller
+        # wholesale (replace-on-redeclare); the inherited trigger lambda and
+        # close_action late-bind here through stimulus_action.
+        use_stimulus do
+          on :root do
+            controller :sheet do
+              register
+              value :dismissible
+            end
+          end
+          on :content do
+            controller :sheet do
+              target :dialog
+              action :close, on: :cancel
+              action :backdrop_close, on: :click
+            end
+          end
+          on :trigger do
+            controller(:sheet) { action :open }
+          end
+          on :close do
+            controller(:sheet) { action :close }
+          end
+        end
 
         AGENT_RULES = [
           "Open sheets with with_trigger(...) - never a hand-wired button.",
@@ -55,10 +78,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "sheet" }
-              .merge(stimulus_attributes do |dialog|
-                dialog.register_controller
-                dialog.with_value(:dismissible, dismissible)
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -75,33 +95,12 @@ module Poetry
             "data-side" => side,
             "data-closed" => "",
             "aria-labelledby" => title_id
-          }.merge(stimulus_attributes do |dialog|
-            dialog.with_target(:dialog)
-            dialog.with_action(:close, on: :cancel)
-            dialog.with_action(:backdrop_close, on: :click)
-          end)
+          }.merge(stimulus_attributes_for(:content))
           attrs["aria-describedby"] = description_id if description?
           attrs
         end
 
         private
-
-        # The Dialog parent resolves its CONTROLLER lexically, so every
-        # builder entry point re-declares here in Sheet's scope (the Drawer
-        # subclass lesson, test-pinned there).
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
-
-        def close_action
-          stimulus.action(:close)
-        end
 
         # Sheet-scoped label ids (two overlays on a page never collide).
         def instance_id

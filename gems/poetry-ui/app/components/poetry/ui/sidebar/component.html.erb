@@ -2,7 +2,7 @@
   <%= content_tag(:div, peer_attributes) do %>
     <div data-slot="sidebar-gap" class="<%= gap_classes %>"></div>
     <div data-slot="sidebar-container" data-side="<%= side %>" class="<%= container_classes %>">
-      <div data-slot="sidebar-inner" class="<%= css(:inner) %>" <%= tag.attributes(**inner_stimulus_attributes) %>><%= nav %></div>
+      <div data-slot="sidebar-inner" class="<%= css(:inner) %>" <%= tag.attributes(**stimulus_attributes_for(:inner)) %>><%= nav %></div>
     </div>
   <% end %>
   <%# The mobile sheet (DOM-move): rendered EMPTY; the controller
@@ -12,7 +12,7 @@
       <h2 id="<%= mobile_title_id %>">Sidebar</h2>
       <p>Displays the mobile sidebar.</p>
     </div>
-    <div data-slot="sidebar-mobile-inner" class="<%= css(:mobile_inner) %>" <%= tag.attributes(**mobile_inner_stimulus_attributes) %>></div>
+    <div data-slot="sidebar-mobile-inner" class="<%= css(:mobile_inner) %>" <%= tag.attributes(**stimulus_attributes_for(:mobile_inner)) %>></div>
   <% end %>
   <% if inset? %>
     <main data-slot="sidebar-inset" class="<%= css(:inset) %>"><%= inset %></main>

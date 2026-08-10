@@ -38,7 +38,39 @@ module Poetry
           "navigation navigates."
         ].freeze
 
-        CONTROLLER = %i[poetry core sidebar].freeze
+        use_stimulus do
+          on :root do
+            controller :sidebar do
+              register
+              value :open
+              value :collapsible
+            end
+          end
+          on :peer do
+            controller(:sidebar) { target :sidebar }
+          end
+          on :inner do
+            controller(:sidebar) { target :inner }
+          end
+          # The mobile sheet <dialog>: the Dialog-family cancel/backdrop
+          # pair under sidebar-namespaced action names.
+          on :mobile do
+            controller :sidebar do
+              target :mobile_dialog
+              action :close_mobile, on: :cancel
+              action :mobile_backdrop_close, on: :click
+            end
+          end
+          on :mobile_inner do
+            controller(:sidebar) { target :mobile_inner }
+          end
+          # Rendered by the poetry_sidebar_trigger / poetry_sidebar_rail
+          # helpers (helper-side strings; declared here so the contract
+          # covers the whole family surface).
+          on :trigger do
+            controller(:sidebar) { action :toggle, on: :click }
+          end
+        end
 
         WIDTH = "16rem"
         WIDTH_ICON = "3rem"
@@ -146,7 +178,7 @@ module Poetry
               "data-slot" => "sidebar-wrapper",
               "style" => "--sidebar-width: #{WIDTH}; --sidebar-width-icon: #{WIDTH_ICON};",
               "class" => css(:wrapper)
-            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -155,7 +187,7 @@ module Poetry
             "data-slot" => "sidebar", "class" => css(:peer),
             "data-state" => data_state, "data-collapsible" => data_collapsible,
             "data-variant" => variant, "data-side" => side
-          }.merge(peer_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:peer))
         end
 
         def gap_classes
@@ -178,55 +210,12 @@ module Poetry
             "style" => "--sidebar-width: #{WIDTH_MOBILE};",
             "aria-labelledby" => mobile_title_id
           }
-          attrs.merge(mobile_stimulus_attributes)
+          attrs.merge(stimulus_attributes_for(:mobile))
         end
 
         def mobile_title_id
           @mobile_title_id ||= "poetry-sidebar-mobile-#{SecureRandom.hex(4)}"
         end
-
-        private
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          sidebar.register_controller
-          sidebar.with_value(:open, open)
-          sidebar.with_value(:collapsible, collapsible)
-          attrs.to_attributes
-        end
-
-        def peer_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          sidebar.with_target(:sidebar)
-          attrs.to_attributes
-        end
-
-        def inner_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          sidebar.with_target(:inner)
-          attrs.to_attributes
-        end
-        public :inner_stimulus_attributes
-
-        def mobile_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          sidebar.with_target(:mobile_dialog)
-          sidebar.with_action(:close_mobile, on: :cancel)
-          sidebar.with_action(:mobile_backdrop_close, on: :click)
-          attrs.to_attributes
-        end
-
-        def mobile_inner_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          sidebar = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          sidebar.with_target(:mobile_inner)
-          attrs.to_attributes
-        end
-        public :mobile_inner_stimulus_attributes
       end
     end
   end

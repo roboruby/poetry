@@ -43,6 +43,26 @@ module Poetry
             "Swipe left to dismiss."
           end
         end
+
+        # modal: false keeps the page interactive behind the drawer -
+        # Esc rides its own keydown exit (a non-modal dialog never fires
+        # cancel).
+        def non_modal
+          render_component(modal: false) do |drawer|
+            drawer.with_trigger { "Open player" }
+            drawer.with_title { "Now playing" }
+            "The page stays interactive behind this drawer."
+          end
+        end
+
+        # snap_points: the swipe physics settle at fractional heights.
+        def with_snap_points
+          render_component(snap_points: [0.4, 1]) do |drawer|
+            drawer.with_trigger { "Open details" }
+            drawer.with_title { "Details" }
+            "Drag the handle - the sheet settles at 40% or full height."
+          end
+        end
       end
     end
   end

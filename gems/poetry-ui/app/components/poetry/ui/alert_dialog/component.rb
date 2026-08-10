@@ -28,9 +28,33 @@ module Poetry
           "Cancel keeps variant: :outline; do not make cancel visually primary."
         ].freeze
 
-        # The SHARED controller (zero new JS - the whole point): the
-        # component renders dismissible-value=false itself, not the caller.
-        CONTROLLER = %i[poetry core dialog].freeze
+        # The SHARED dialog controller (zero new JS) under AlertDialog's
+        # own declarations - dismissible is the hard-coded false posture.
+        use_stimulus do
+          on :root do
+            controller :dialog do
+              register
+              # The posture IS the identity - never caller-settable.
+              value :dismissible, false
+            end
+          end
+          on :content do
+            controller :dialog do
+              target :dialog
+              action :close, on: :cancel
+              # Wired but inert: backdropClose no-ops on dismissibleValue
+              # false. Keep it - removing it would fork the Dialog wiring.
+              action :backdrop_close, on: :click
+            end
+          end
+          on :trigger do
+            controller(:dialog) { action :open }
+          end
+          # Both the action and cancel Buttons close (same descriptor).
+          on :close do
+            controller(:dialog) { action :close }
+          end
+        end
 
         style :size, default: :default, required: true, variants: SIZES
 
@@ -55,7 +79,7 @@ module Poetry
         # The trigger is a poetry Button wired to open - the inherited
         # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus.action(:open) }.merge(options[:data] || {})
+          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
         renders_one :title
@@ -67,7 +91,7 @@ module Poetry
         # shared dialog on activation, exactly like Radix AlertDialogAction
         # (a caller passing their own data-action opts out of the auto-close).
         renders_one :action, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-action", action: stimulus.action(:close) }.merge(options[:data] || {})
+          options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
         # The safe way out - outline (source default) and the INITIAL focus:
@@ -76,7 +100,7 @@ module Poetry
         # dismisses the dialog through the shared controller - without this
         # wiring the modal is unclosable except by Esc.
         renders_one :cancel, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-cancel", action: stimulus.action(:close) }.merge(options[:data] || {})
+          options[:data] = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }.merge(options[:data] || {})
           Button::Component.new(variant: :outline, autofocus: true, **options, &block)
         }
 
@@ -112,11 +136,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "alert-dialog" }
-              .merge(stimulus_attributes do |dialog|
-                dialog.register_controller
-                # The posture IS the identity - never caller-settable.
-                dialog.with_value(:dismissible, false)
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -132,13 +152,7 @@ module Poetry
             "data-closed" => "",
             "aria-labelledby" => title_id,
             "aria-describedby" => description_id
-          }.merge(stimulus_attributes do |dialog|
-            dialog.with_target(:dialog)
-            dialog.with_action(:close, on: :cancel)
-            # Wired but inert: backdropClose no-ops on dismissibleValue
-            # false. Keep it - removing it would fork the Dialog wiring.
-            dialog.with_action(:backdrop_close, on: :click)
-          end)
+          }.merge(stimulus_attributes_for(:content))
         end
 
         # The source's group-has-data-[slot] selector acrobatics, emitted as
@@ -165,20 +179,6 @@ module Poetry
         end
 
         private
-
-        # A manifest-validated Builder for descriptor strings (pure - never
-        # touches the component's own html_attributes).
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-        end
-
-        # Builds one element's Stimulus attributes through the Builder so
-        # every target / value / action name is manifest-validated.
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
 
         # Server-stable unique id for the aria wiring.
         def instance_id
