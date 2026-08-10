@@ -2328,6 +2328,12 @@
     "path": "/components/item#avatar"
   },
   {
+    "title": "Dropdown",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#dropdown"
+  },
+  {
     "title": "Group",
     "page": "Item",
     "section": "components",
@@ -2352,16 +2358,22 @@
     "path": "/components/item#outline-with-icon-and-actions"
   },
   {
+    "title": "Sizes",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#sizes"
+  },
+  {
+    "title": "Variants",
+    "page": "Item",
+    "section": "components",
+    "path": "/components/item#variants"
+  },
+  {
     "title": "With header and footer",
     "page": "Item",
     "section": "components",
     "path": "/components/item#with-header-and-footer"
-  },
-  {
-    "title": "Xs",
-    "page": "Item",
-    "section": "components",
-    "path": "/components/item#xs"
   },
   {
     "title": "Kbd",

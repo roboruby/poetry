@@ -1,0 +1,19 @@
+<%# The three visual variants - default (transparent), outline, and
+    muted (secondary-content background). %>
+<div class="flex w-full max-w-md flex-col gap-6">
+  <%= poetry_item(media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Default Variant" } %>
+    <% item.with_description { "Transparent background with no border." } %>
+  <% end %>
+  <%= poetry_item(variant: :outline, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Outline Variant" } %>
+    <% item.with_description { "Outlined style with a visible border." } %>
+  <% end %>
+  <%= poetry_item(variant: :muted, media_variant: :icon) do |item| %>
+    <% item.with_media { poetry_icon(name: :inbox) } %>
+    <% item.with_title { "Muted Variant" } %>
+    <% item.with_description { "Muted background for secondary content." } %>
+  <% end %>
+</div>

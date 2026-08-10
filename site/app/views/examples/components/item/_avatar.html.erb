@@ -1,9 +1,31 @@
-<%# An avatar in the media slot carries its own round shape, so the row keeps the default media cell. %>
-<%= poetry_item(class: "w-full max-w-md") do |item| %>
-  <% item.with_media { poetry_avatar(label: "Dana Whitfield") { "DW" } } %>
-  <% item.with_title { "Dana Whitfield" } %>
-  <% item.with_description { "Product designer, joined March 2024" } %>
-  <% item.with_actions do %>
-    <%= poetry_button(size: :sm, variant: :outline) { "Message" } %>
+<%# Upstream item-avatar: a member row (image avatar + invite action)
+    and the team stack - overlapped avatars ride the data-slot seam
+    (ring + grayscale per avatar). Same inline SVG stand-in photo as
+    the Avatar page. %>
+<% image = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjM2NmYxIi8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=" %>
+<div class="flex w-full max-w-lg flex-col gap-6">
+  <%= poetry_item(variant: :outline) do |item| %>
+    <% item.with_media { poetry_avatar(src: image, size: :lg, label: "Evil Rabbit") { "ER" } } %>
+    <% item.with_title { "Evil Rabbit" } %>
+    <% item.with_description { "Last seen 5 months ago" } %>
+    <% item.with_actions do %>
+      <%= poetry_button(size: :"icon-sm", variant: :outline, label: "Invite", class: "rounded-full") do %>
+        <%= poetry_icon(name: :plus) %>
+      <% end %>
+    <% end %>
   <% end %>
-<% end %>
+  <%= poetry_item(variant: :outline) do |item| %>
+    <% item.with_media do %>
+      <div class="flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background *:data-[slot=avatar]:grayscale">
+        <%= poetry_avatar(src: image, label: "shadcn", class: "hidden sm:flex") { "CN" } %>
+        <%= poetry_avatar(src: image, label: "maxleiter", class: "hidden sm:flex") { "LR" } %>
+        <%= poetry_avatar(src: image, label: "evilrabbit") { "ER" } %>
+      </div>
+    <% end %>
+    <% item.with_title { "No Team Members" } %>
+    <% item.with_description { "Invite your team to collaborate on this project." } %>
+    <% item.with_actions do %>
+      <%= poetry_button(size: :sm, variant: :outline) { "Invite" } %>
+    <% end %>
+  <% end %>
+</div>
