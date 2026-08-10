@@ -1,28 +1,41 @@
-<%# Upstream input-otp-form: the verify-login card - one OTP field, a
-    resend / lost-access row, and a full-width submit. The row under the
-    code is interactive (a resend action and a recovery link), so it is
-    a plain muted row rather than the field hint - hint text lands in
-    aria-describedby, and buttons don't belong in a description. %>
-<%= poetry_card(class: "w-full max-w-md") do |card| %>
+<%# Upstream input-otp-form: the verify-login card. The resend action is
+    an xs outline button ON the label row (upstream's badge-sized chip);
+    the lost-access link is the muted description under the code; the
+    footer stacks the full-width submit over the support line. Slot
+    sizing is upstream's own override recipe, expressed as descendant
+    data-slot variants through the root class seam. %>
+<%= poetry_card(class: "mx-auto w-full max-w-md") do |card| %>
   <% card.with_title { "Verify your login" } %>
-  <% card.with_description { "Enter the verification code we sent to your email address: m@example.com." } %>
+  <% card.with_description do %>
+    Enter the verification code we sent to your email address:
+    <span class="font-medium">m@example.com</span>.
+  <% end %>
 
-  <form class="grid gap-6">
-    <div class="grid gap-3">
-      <%= poetry_field(id: "otp-form-code", label_text: "Verification code") do |field| %>
-        <%= poetry_input_otp(name: "code", length: 6, groups: [3, 3],
-                             **field.control_attributes.transform_keys(&:to_sym)) %>
+  <div class="grid gap-3">
+    <div class="flex items-center justify-between">
+      <%= poetry_label(for_id: "otp-verification") { "Verification code" } %>
+      <%= poetry_button(variant: :outline, size: :xs, type: :button) do %>
+        <%= poetry_icon(name: :"refresh-cw") %> Resend Code
       <% end %>
-      <div class="flex items-center justify-between gap-2 text-sm text-muted-foreground">
-        <%= poetry_button(variant: :link, size: :sm, type: :button, class: "h-auto p-0") do %>
-          <%= poetry_icon(name: :"refresh-cw") %> Resend Code
-        <% end %>
-        <%= poetry_link(href: "#") { "I no longer have access to this email address." } %>
+    </div>
+    <%= poetry_input_otp(name: "code", length: 6, groups: [3, 3], required: true,
+                         id: "otp-verification",
+                         "aria-describedby": "otp-verification-description",
+                         class: "**:data-[slot=input-otp-slot]:h-12 " \
+                                "**:data-[slot=input-otp-slot]:w-11 " \
+                                "**:data-[slot=input-otp-slot]:text-xl " \
+                                "**:data-[slot=input-otp-separator]:mx-2") %>
+    <p id="otp-verification-description" class="text-sm text-muted-foreground">
+      <%= poetry_link(href: "#") { "I no longer have access to this email address." } %>
+    </p>
+  </div>
+
+  <% card.with_footer do %>
+    <div class="grid w-full gap-3">
+      <%= poetry_button(type: :submit, class: "w-full") { "Verify" } %>
+      <div class="text-sm text-muted-foreground">
+        Having trouble signing in? <%= poetry_link(href: "#") { "Contact support" } %>
       </div>
     </div>
-    <%= poetry_button(type: :submit, class: "w-full") { "Verify" } %>
-    <p class="text-center text-sm text-muted-foreground">
-      Having trouble signing in? <%= poetry_link(href: "#") { "Contact support" } %>
-    </p>
-  </form>
+  <% end %>
 <% end %>
