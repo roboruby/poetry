@@ -26,7 +26,21 @@ module Poetry
       # Documented divergence: selection modes are deferred (the TagGroup
       # reasoning) - v1 is navigation + expansion; href: items navigate.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core tree].freeze
+        use_stimulus do
+          on :root do
+            controller :tree do
+              register
+              action :keydown, on: :keydown
+              action :press, on: :click
+            end
+          end
+          on :toggle do
+            controller :tree do
+              action :pressStart, on: :pointerdown
+              action :toggle, on: :click
+            end
+          end
+        end
 
         AGENT_RULES = [
           "Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with " \
@@ -120,7 +134,7 @@ module Poetry
             {
               "data-slot" => "tree", "role" => "treegrid",
               "aria-label" => label, "class" => css
-            }.merge(component_data_attributes).merge(root_stimulus_attributes)
+            }.merge(component_data_attributes).merge(stimulus_attributes_for(:root))
           )
         end
 
@@ -153,7 +167,7 @@ module Poetry
             "id" => "#{row_id(index)}-toggle",
             "data-expand-label" => t("poetry.tree.expand"),
             "data-collapse-label" => t("poetry.tree.collapse")
-          }.merge(toggle_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:toggle))
         end
 
         def row_id(index)
@@ -184,23 +198,6 @@ module Poetry
 
             [row] + flatten(item.children, level: level + 1, hidden: hidden || !expanded)
           end
-        end
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          tree = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          tree.register_controller
-          tree.with_action(:keydown, on: :keydown)
-          tree.with_action(:press, on: :click)
-          attrs.to_attributes
-        end
-
-        def toggle_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          tree = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          tree.with_action(:pressStart, on: :pointerdown)
-          tree.with_action(:toggle, on: :click)
-          attrs.to_attributes
         end
       end
     end

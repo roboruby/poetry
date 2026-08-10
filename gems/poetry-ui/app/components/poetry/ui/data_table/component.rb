@@ -31,7 +31,27 @@ module Poetry
         # A declared column: header label, the whitelisted sort key, and the
         # cell block (called per row, returns the cell content).
         Column = Data.define(:label, :key, :sortable, :classes, :cell)
-        SELECTION = %i[poetry core table_selection].freeze
+        # The whole selection surface is selectable?-gated.
+        use_stimulus do
+          on :root, if: :selectable? do
+            controller :table_selection do
+              register
+              value :label, from: :selected_count_label
+            end
+          end
+          on :select_all do
+            controller :table_selection do
+              target :all
+              action :toggleAll, on: :change
+            end
+          end
+          on :row_checkbox do
+            controller :table_selection do
+              action :press, on: %i[pointerdown keydown]
+              action :toggled, on: :change
+            end
+          end
+        end
 
         option :caption, :string
         option :empty_text, :string, default: "No results."
@@ -117,7 +137,7 @@ module Poetry
 
         def root_attributes
           attrs = { "data-slot" => "data-table" }.merge(component_data_attributes)
-          attrs = attrs.merge(selection_stimulus_attributes) if selectable?
+          attrs = attrs.merge(stimulus_attributes_for(:root))
           html_attributes.merge_if_not_set(attrs)
         end
 
@@ -129,10 +149,8 @@ module Poetry
           {
             "type" => "checkbox", "data-slot" => "data-table-select-all",
             "class" => css(:checkbox),
-            "aria-label" => t("poetry.data_table.select_all"),
-            "data-poetry--core--table-selection-target" => "all",
-            "data-action" => "change->poetry--core--table-selection#toggleAll"
-          }
+            "aria-label" => t("poetry.data_table.select_all")
+          }.merge(stimulus_attributes_for(:select_all))
         end
 
         def select_row_attributes(row)
@@ -140,12 +158,11 @@ module Poetry
             "type" => "checkbox", "data-slot" => "data-table-select-row",
             "name" => "#{selection_name}[]", "value" => selectable.call(row),
             "class" => css(:checkbox),
-            "aria-label" => t("poetry.data_table.select_row"),
-            "data-action" => "pointerdown->poetry--core--table-selection#press " \
-                             "keydown->poetry--core--table-selection#press " \
-                             "change->poetry--core--table-selection#toggled"
-          }
+            "aria-label" => t("poetry.data_table.select_row")
+          }.merge(stimulus_attributes_for(:row_checkbox))
         end
+
+        def selected_count_label = t("poetry.data_table.selected_count")
 
         def path_for(params)
           @path.call(params)
@@ -198,14 +215,6 @@ module Poetry
         end
 
         private
-
-        def selection_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          selection = Poetry::Core::Stimulus::Builder.new(SELECTION, attrs)
-          selection.register_controller
-          selection.with_value(:label, t("poetry.data_table.selected_count"))
-          attrs.to_attributes
-        end
 
         # rows/state/path/total are structural collaborators, not typed
         # options (see Pagination's path: for the precedent).

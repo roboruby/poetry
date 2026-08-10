@@ -23,8 +23,25 @@ module Poetry
       # single-select that must submit is a RadioGroup; a multi-select that
       # must submit is a checkbox group.
       class Component < Poetry::Core::Component
-        GROUP = %i[poetry core toggle_group].freeze
-        ROVING = %i[poetry core roving_focus].freeze
+        use_stimulus do
+          on :root do
+            controller :toggle_group do
+              register
+              value :type
+            end
+            controller :roving_focus do
+              register
+              # DEFAULT tabindex-managing mode (contrast Accordion's
+              # manage_tabindex: false).
+              value :orientation
+              value :loop, true
+              action :keydown, on: :keydown
+            end
+          end
+          on :item do
+            controller(:toggle_group) { action :toggle, on: :click }
+          end
+        end
         TYPES = %i[single multiple].freeze
         ORIENTATIONS = %i[horizontal vertical].freeze
 
@@ -144,7 +161,7 @@ module Poetry
             attrs["data-disabled"] = "" # the roving-focus collection filter
           end
           attrs["aria-label"] = label if label.present?
-          attrs.merge!(stimulus_attributes(GROUP) { |group| group.with_action(:toggle, on: :click) })
+          attrs.merge!(stimulus_attributes_for(:item))
 
           content_tag(:button, content, attrs.merge(options))
         }
@@ -184,7 +201,7 @@ module Poetry
           attrs["aria-label"] = label if label.present?
           attrs["data-disabled"] = "" if disabled
           html_attributes.merge_if_not_set(
-            attrs.merge(root_stimulus_attributes).merge(component_data_attributes)
+            attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -222,30 +239,6 @@ module Poetry
         # (px-3 wins, min-w-0 wins).
         def item_classes(extra)
           classnames(Toggle::Style.css(variant: variant, size: size), css(:item), extra)
-        end
-
-        # BOTH controllers build into ONE Attributes instance - a plain
-        # Hash#merge of two would overwrite data-controller instead of
-        # token-concatenating it (the Accordion lesson).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          group = Poetry::Core::Stimulus::Builder.new(GROUP, attrs)
-          group.register_controller
-          group.with_value(:type, type)
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          # DEFAULT tabindex-managing mode (contrast Accordion's
-          # manage_tabindex: false): one tab stop, pressed item preferred.
-          roving.with_value(:orientation, orientation)
-          roving.with_value(:loop, true)
-          roving.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
-
-        def stimulus_attributes(controller)
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(controller, attrs)
-          attrs.to_attributes
         end
       end
     end

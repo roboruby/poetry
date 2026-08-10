@@ -24,7 +24,24 @@ module Poetry
           "Nest a group inside a panel for two-axis layouts - groups self-scope."
         ].freeze
 
-        CONTROLLER = %i[poetry core resizable].freeze
+        use_stimulus do
+          on :root do
+            controller :resizable do
+              register
+              value :orientation, from: :direction
+            end
+          end
+          # The full drag trio + keyboard on each handle; panels are found
+          # by DOM position (no targets).
+          on :handle do
+            controller :resizable do
+              action :drag_start, on: :pointerdown
+              action :drag_move, on: :pointermove
+              action :drag_end, on: :pointerup
+              action :keydown, on: :keydown
+            end
+          end
+        end
 
         option :direction, :symbol, default: :horizontal
         option :grip, :boolean, default: false
@@ -85,7 +102,7 @@ module Poetry
           html_attributes.merge_if_not_set(
             {
               "data-slot" => "resizable-panel-group", "data-orientation" => direction
-            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -118,7 +135,7 @@ module Poetry
             "aria-valuemin" => before.min_size || 10,
             "aria-valuemax" => before.max_size || 90,
             "class" => css(:handle)
-          }.merge(handle_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:handle))
         end
 
         def panel_id(index)
@@ -129,24 +146,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-resizable-#{SecureRandom.hex(4)}"
-        end
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          resizable = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          resizable.register_controller
-          resizable.with_value(:orientation, direction)
-          attrs.to_attributes
-        end
-
-        def handle_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          resizable = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          resizable.with_action(:drag_start, on: :pointerdown)
-          resizable.with_action(:drag_move, on: :pointermove)
-          resizable.with_action(:drag_end, on: :pointerup)
-          resizable.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
         end
       end
     end

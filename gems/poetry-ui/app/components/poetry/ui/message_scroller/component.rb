@@ -14,7 +14,34 @@ module Poetry
       # this wrapper is poetry's opinionated chat posture and renders the
       # value TRUE unless auto_scroll: false.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core message_scroller].freeze
+        use_stimulus do
+          on :root do
+            controller :message_scroller do
+              register
+              value :auto_scroll
+              value :default_scroll_position
+              value :preserve_scroll_on_prepend
+              value :track_visibility
+            end
+          end
+          on :viewport do
+            controller(:message_scroller) { target :viewport }
+          end
+          on :content do
+            controller(:message_scroller) { target :content }
+          end
+          on :spacer do
+            controller(:message_scroller) { target :spacer }
+          end
+          # The jump affordance: a bare descriptor (element-default click)
+          # plus the button target, forwarded into Button kwargs.
+          on :jump_button do
+            controller :message_scroller do
+              target :button
+              action :scroll_to_end
+            end
+          end
+        end
         SCROLL_POSITIONS = %i[start end last-anchor].freeze
 
         AGENT_RULES = [
@@ -68,13 +95,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "message-scroller" }
-              .merge(stimulus_attributes do |scroller|
-                scroller.register_controller
-                scroller.with_value(:auto_scroll, auto_scroll)
-                scroller.with_value(:default_scroll_position, default_scroll_position)
-                scroller.with_value(:preserve_scroll_on_prepend, preserve_scroll_on_prepend)
-                scroller.with_value(:track_visibility, track_visibility)
-              end)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -84,7 +105,7 @@ module Poetry
             "class" => css(:viewport), "data-slot" => "message-scroller-viewport",
             "role" => "region", "tabindex" => "0",
             "aria-label" => t("poetry.message_scroller.region")
-          }.merge(stimulus_attributes { |scroller| scroller.with_target(:viewport) })
+          }.merge(stimulus_attributes_for(:viewport))
         end
 
         def content_attributes
@@ -92,40 +113,20 @@ module Poetry
             "id" => "#{id}-messages", "class" => css(:content),
             "data-slot" => "message-scroller-content",
             "role" => "log", "aria-relevant" => "additions"
-          }.merge(stimulus_attributes { |scroller| scroller.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
         end
 
         def spacer_attributes
           { "data-slot" => "message-scroller-spacer", "aria-hidden" => "true", "hidden" => true }
-            .merge(stimulus_attributes { |scroller| scroller.with_target(:spacer) })
+            .merge(stimulus_attributes_for(:spacer))
         end
 
         def button_attributes
           {
-            class: css(:button), data: {
-              slot: "message-scroller-button", direction: "end", active: "false",
-              action: stimulus.action(:scroll_to_end)
-            }.merge(stimulus_target_data(:button)),
+            class: css(:button),
+            data: { slot: "message-scroller-button", direction: "end", active: "false" },
             tabindex: "-1"
-          }
-        end
-
-        private
-
-        def stimulus
-          @stimulus ||= Poetry::Core::Stimulus::Builder.new(CONTROLLER, Poetry::Core::HTML::Attributes.new)
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
-
-        # target attribute in data: {} hash form for the Button slot merge.
-        def stimulus_target_data(name)
-          stimulus_attributes { |scroller| scroller.with_target(name) }
-            .transform_keys { |key| key.delete_prefix("data-").to_sym }
+          }.merge(stimulus_attributes_for(:jump_button))
         end
       end
     end

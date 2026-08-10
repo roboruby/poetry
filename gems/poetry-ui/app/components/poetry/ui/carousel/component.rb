@@ -25,7 +25,35 @@ module Poetry
           "\"pl-1 -scroll-ml-1\" - the gutter padding and its snap scroll-margin move together."
         ].freeze
 
-        CONTROLLER = %i[poetry core carousel].freeze
+        use_stimulus do
+          on :root do
+            controller :carousel do
+              register
+              value :orientation
+              action :keydown, on: :keydown
+            end
+          end
+          on :viewport do
+            controller :carousel do
+              target :viewport
+              action :scrolled, on: :scroll
+            end
+          end
+          # One element per control direction, forwarded into Button
+          # kwargs (previously hand-written target + action strings).
+          on :previous do
+            controller :carousel do
+              target :previous
+              action :previous, on: :click
+            end
+          end
+          on :next do
+            controller :carousel do
+              target :next
+              action :next, on: :click
+            end
+          end
+        end
 
         # required: the hand raise in before_render carries the message;
         # the flag carries the fact to the registry (: the floating
@@ -83,7 +111,7 @@ module Poetry
             {
               "role" => "region", "aria-roledescription" => "carousel", "aria-label" => label,
               "data-slot" => "carousel", "data-orientation" => orientation
-            }.merge(root_stimulus_attributes).merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
@@ -94,7 +122,7 @@ module Poetry
             # rule); the arrows then page it via the root's keydown.
             "tabindex" => "0",
             "class" => "#{css(:content)} #{css(vertical? ? :content_vertical : :content_horizontal)}"
-          }.merge(viewport_stimulus_attributes)
+          }.merge(stimulus_attributes_for(:viewport))
         end
 
         def item_attributes(slide)
@@ -114,31 +142,8 @@ module Poetry
             variant: :outline, size: :"icon-sm",
             label: direction == :previous ? "Previous slide" : "Next slide",
             class: "#{css(:control)} #{css(:"control_#{direction}_#{orientation}")}",
-            data: {
-              slot: "carousel-#{direction == :previous ? "previous" : "next"}",
-              "poetry--core--carousel-target": direction == :previous ? "previous" : "next",
-              action: "click->poetry--core--carousel##{direction == :previous ? "previous" : "next"}"
-            }
-          }
-        end
-
-        private
-
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          carousel = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          carousel.register_controller
-          carousel.with_value(:orientation, orientation)
-          carousel.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
-
-        def viewport_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          carousel = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          carousel.with_target(:viewport)
-          carousel.with_action(:scrolled, on: :scroll)
-          attrs.to_attributes
+            data: { slot: "carousel-#{direction == :previous ? "previous" : "next"}" }
+          }.merge(stimulus_attributes_for(direction))
         end
       end
     end

@@ -12,7 +12,21 @@ module Poetry
       # live-region singleton; the execCommand fallback restores the user's
       # own selection and focus (poetry--core--clipboard-text).
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core clipboard_text].freeze
+        use_stimulus do
+          on :root do
+            controller :clipboard_text do
+              register
+              value :message, from: :copied_message_text
+              value :text, from: :text_to_copy, if: -> { text_to_copy.present? }
+            end
+          end
+          on :input do
+            controller(:clipboard_text) { target :input }
+          end
+          on :copy_button do
+            controller(:clipboard_text) { action :copy, on: :click }
+          end
+        end
 
         AGENT_RULES = [
           "A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install " \
@@ -62,7 +76,7 @@ module Poetry
             "data-slot" => "clipboard-text",
             "class" => css
           }.merge(component_data_attributes)
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def group_attributes
@@ -95,7 +109,7 @@ module Poetry
           attrs["aria-label"] = label if label.present?
           attrs["aria-describedby"] = described_by if described_by.present?
           attrs["disabled"] = "" if disabled
-          attrs.merge!(input_stimulus_attributes)
+          attrs.merge!(stimulus_attributes_for(:input))
           attrs
         end
 
@@ -108,33 +122,12 @@ module Poetry
             class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
             "data-slot" => "clipboard-text-copy",
             "aria-controls" => control_id
-          }.compact.merge(copy_stimulus_attributes))
+          }.compact.merge(stimulus_attributes_for(:copy_button)))
         end
 
         private
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          text = Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          text.register_controller
-          text.with_value(:message, t("poetry.clipboard_text.copied"))
-          text.with_value(:text, text_to_copy) if text_to_copy.present?
-          attrs.to_attributes
-        end
-
-        def input_stimulus_attributes
-          stimulus_attributes { |text| text.with_target(:input) }
-        end
-
-        def copy_stimulus_attributes
-          stimulus_attributes { |text| text.with_action(:copy, on: :click) }
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
-        end
+        def copied_message_text = t("poetry.clipboard_text.copied")
       end
     end
   end

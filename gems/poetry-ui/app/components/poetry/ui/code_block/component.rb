@@ -14,7 +14,22 @@ module Poetry
       # theme owns (GitHub light/dark is the shared v1 baseline). copy:
       # rides the clipboard-text engine reading the rendered code itself.
       class Component < Poetry::Core::Component
-        COPY_CONTROLLER = %i[poetry core clipboard_text].freeze
+        # The whole copy surface is copy:-gated - element conditions keep
+        # the wiring out of copy: false renders entirely.
+        use_stimulus do
+          on :root, if: :copy do
+            controller :clipboard_text do
+              register
+              value :message, from: :copied_message_text
+            end
+          end
+          on :source, if: :copy do
+            controller(:clipboard_text) { target :source }
+          end
+          on :copy_button do
+            controller(:clipboard_text) { action :copy, on: :click }
+          end
+        end
 
         AGENT_RULES = [
           "Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code " \
@@ -64,7 +79,7 @@ module Poetry
             "class" => css
           }.merge(component_data_attributes)
           attrs["data-line-numbers"] = "" if line_numbers
-          html_attributes.merge_if_not_set(attrs.merge(root_stimulus_attributes))
+          html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
         def pre_attributes
@@ -82,7 +97,7 @@ module Poetry
             "data-slot" => "code-block-code",
             "class" => css(:code)
           )
-          attrs.merge!(source_stimulus_attributes) if copy
+          attrs.merge!(stimulus_attributes_for(:source))
           attrs
         end
 
@@ -92,32 +107,12 @@ module Poetry
             label: t("poetry.clipboard_text.copy"),
             class: css(:copy),
             "data-slot" => "clipboard-text-copy"
-          }.merge(copy_stimulus_attributes))
+          }.merge(stimulus_attributes_for(:copy_button)))
         end
 
         private
 
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          return attrs.to_attributes unless copy
-
-          clip = Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs)
-          clip.register_controller
-          clip.with_value(:message, t("poetry.clipboard_text.copied"))
-          attrs.to_attributes
-        end
-
-        def source_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs).with_target(:source)
-          attrs.to_attributes
-        end
-
-        def copy_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          Poetry::Core::Stimulus::Builder.new(COPY_CONTROLLER, attrs).with_action(:copy, on: :click)
-          attrs.to_attributes
-        end
+        def copied_message_text = t("poetry.clipboard_text.copied")
       end
     end
   end

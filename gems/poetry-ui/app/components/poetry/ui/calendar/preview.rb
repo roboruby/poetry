@@ -35,6 +35,20 @@ module Poetry
           render_component(month: "2026-06-01", selected: "2026-06-12", today: "2026-06-15",
                            week_numbers: true, class: "rounded-md border")
         end
+
+        # name: makes the calendar a form participant - the hidden input
+        # the controller keeps in sync submits the ISO date.
+        def form_participant
+          render_component(name: "event[on]", month: "2026-06-01", selected: "2026-06-12",
+                           today: "2026-06-15", class: "rounded-md border")
+        end
+
+        # Range + name: submits <name>[start] / <name>[end] hidden inputs.
+        def form_participant_range
+          render_component(mode: :range, name: "stay", month: "2026-06-01", today: "2026-06-15",
+                           range_start: "2026-06-08", range_end: "2026-06-12",
+                           class: "rounded-md border")
+        end
       end
     end
   end

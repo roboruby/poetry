@@ -10,7 +10,20 @@ module Poetry
       # trigger mirrors aria-expanded; content stays in the DOM (hidden,
       # searchable by re-render) and rides the presence helper on exit.
       class Component < Poetry::Core::Component
-        CONTROLLER = %i[poetry core state].freeze
+        use_stimulus do
+          on :root do
+            controller(:state) { register }
+          end
+          on :trigger do
+            controller :state do
+              target :trigger
+              action :toggle, on: :click
+            end
+          end
+          on :content do
+            controller(:state) { target :content }
+          end
+        end
 
         AGENT_RULES = [
           "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
@@ -42,10 +55,7 @@ module Poetry
           attrs = {
             type: "button", "data-slot" => "collapsible-trigger",
             "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes do |state|
-            state.with_target(:trigger)
-            state.with_action(:toggle, on: :click)
-          end).merge(options)
+          }.merge(stimulus_attributes_for(:trigger)).merge(options)
           content_tag(:button, attrs, &block)
         }
 
@@ -69,7 +79,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "collapsible", "data-#{state}" => "" }
-              .merge(stimulus_attributes(&:register_controller))
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -77,7 +87,7 @@ module Poetry
         def content_attributes
           attrs = {
             "id" => content_id, "data-slot" => "collapsible-content", "data-#{state}" => ""
-          }.merge(stimulus_attributes { |state_builder| state_builder.with_target(:content) })
+          }.merge(stimulus_attributes_for(:content))
           attrs["hidden"] = true unless open
           attrs
         end
@@ -86,12 +96,6 @@ module Poetry
 
         def instance_id
           @instance_id ||= "poetry-collapsible-#{SecureRandom.hex(4)}"
-        end
-
-        def stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(CONTROLLER, attrs)
-          attrs.to_attributes
         end
       end
     end

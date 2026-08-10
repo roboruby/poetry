@@ -13,7 +13,7 @@
         <% { "month" => [month_options, @month.month, "Month", Date::MONTHNAMES[@month.month]],
              "year" => [year_options, @month.year, "Year", @month.year.to_s] }.each do |unit, (options, current, label, text)| %>
           <span data-slot="calendar-dropdown" data-calendar-unit="<%= unit %>" class="<%= css(:dropdown_root) %>"
-                <%= tag.attributes("data-action" => "change->poetry--core--calendar#jump") %>>
+                <%= tag.attributes(**stimulus_attributes_for(:dropdown)) %>>
             <span data-slot="calendar-caption-label" aria-hidden="true" class="<%= css(:dropdown_label) %>">
               <span data-slot="calendar-dropdown-value"><%= text %></span>
               <%= render Poetry::Ui::Icon::Component.new(name: :"chevron-down") %>
@@ -27,14 +27,14 @@
         <% end %>
       </div>
     <% else %>
-      <div data-slot="calendar-caption" data-poetry--core--calendar-target="caption" class="<%= css(:caption) %>"><%= caption %></div>
+      <div data-slot="calendar-caption" class="<%= css(:caption) %>" <%= tag.attributes(**stimulus_attributes_for(:caption)) %>><%= caption %></div>
     <% end %>
     <%= render Poetry::Ui::Button::Component.new(**next_options) do |button| %>
       <% button.with_leading { render Poetry::Ui::Icon::Component.new(name: :"chevron-right") } %>
     <% end %>
   </div>
   <div role="grid" data-slot="calendar-grid" class="<%= css(:grid) %>"
-       <%= tag.attributes(**{ "data-action" => "keydown->poetry--core--calendar#keydown" }) %>>
+       <%= tag.attributes(**stimulus_attributes_for(:grid)) %>>
     <div role="row" data-slot="calendar-weekdays" class="<%= css(:weekdays) %>">
       <% if week_numbers %>
         <div role="columnheader" data-slot="calendar-week-number" class="<%= css(:weekday) %>"><span class="sr-only">Week</span></div>
@@ -61,12 +61,12 @@
   <% if name.present? %>
     <% if range? %>
       <input type="hidden" name="<%= name %>[start]" value="<%= range_start&.iso8601 %>"
-             data-poetry--core--calendar-target="startInput">
+             <%= tag.attributes(**stimulus_attributes_for(:start_input)) %>>
       <input type="hidden" name="<%= name %>[end]" value="<%= range_end&.iso8601 %>"
-             data-poetry--core--calendar-target="endInput">
+             <%= tag.attributes(**stimulus_attributes_for(:end_input)) %>>
     <% else %>
       <input type="hidden" name="<%= name %>" value="<%= selected&.iso8601 %>"
-             data-poetry--core--calendar-target="input">
+             <%= tag.attributes(**stimulus_attributes_for(:hidden_input)) %>>
     <% end %>
   <% end %>
 <% end %>

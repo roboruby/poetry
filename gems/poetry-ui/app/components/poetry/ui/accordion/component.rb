@@ -10,8 +10,24 @@ module Poetry
       # role=region wired aria-labelledby; single non-collapsible marks
       # the locked-open trigger aria-disabled.
       class Component < Poetry::Core::Component
-        ACCORDION = %i[poetry core accordion].freeze
-        ROVING = %i[poetry core roving_focus].freeze
+        use_stimulus do
+          on :root do
+            controller :accordion do
+              register
+              value :type
+              value :collapsible
+            end
+            controller :roving_focus do
+              register
+              value :orientation, "vertical"
+              value :manage_tabindex, false
+              action :keydown, on: :keydown
+            end
+          end
+          on :trigger do
+            controller(:accordion) { action :toggle, on: :click }
+          end
+        end
         TYPES = %i[single multiple].freeze
         HEADINGS = %i[h2 h3 h4 h5 h6].freeze
 
@@ -95,7 +111,7 @@ module Poetry
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "accordion", "data-orientation" => "vertical" }
-              .merge(root_stimulus_attributes)
+              .merge(stimulus_attributes_for(:root))
               .merge(component_data_attributes)
           )
         end
@@ -115,7 +131,7 @@ module Poetry
             "data-slot" => "accordion-trigger",
             "data-poetry-collection-item" => "",
             "aria-expanded" => open_item.to_s, "aria-controls" => "#{item_id}-panel"
-          }.merge(stimulus_attributes(ACCORDION) { |accordion| accordion.with_action(:toggle, on: :click) })
+          }.merge(stimulus_attributes_for(:trigger))
           trigger_attrs["aria-disabled"] = "true" if open_item && type == :single && !collapsible
           # Native disabled owns interaction and focus; data-disabled is the
           # roving-focus query filter (a natively disabled button already
@@ -146,29 +162,6 @@ module Poetry
 
         def chevron
           render(Icon::Component.new(name: :"chevron-down", class: css(:indicator)))
-        end
-
-        # BOTH controllers build into ONE Attributes instance - a plain
-        # Hash#merge of two would overwrite data-controller instead of
-        # token-concatenating it (caught by the render tests).
-        def root_stimulus_attributes
-          attrs = Poetry::Core::HTML::Attributes.new
-          accordion = Poetry::Core::Stimulus::Builder.new(ACCORDION, attrs)
-          accordion.register_controller
-          accordion.with_value(:type, type)
-          accordion.with_value(:collapsible, collapsible)
-          roving = Poetry::Core::Stimulus::Builder.new(ROVING, attrs)
-          roving.register_controller
-          roving.with_value(:orientation, "vertical")
-          roving.with_value(:manage_tabindex, false)
-          roving.with_action(:keydown, on: :keydown)
-          attrs.to_attributes
-        end
-
-        def stimulus_attributes(controller)
-          attrs = Poetry::Core::HTML::Attributes.new
-          yield Poetry::Core::Stimulus::Builder.new(controller, attrs)
-          attrs.to_attributes
         end
       end
     end
