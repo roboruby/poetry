@@ -6,676 +6,367 @@ module Poetry
   module Core
     module Concerns
       class StimulusTest < ViewComponent::TestCase
-        # Test component with basic Stimulus controller
-        class BasicComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown
-
-          def call
-            tag.div("Basic", **html_attributes.to_attributes)
+        # Real manifest controllers keep declaration-time validation live:
+        # accordion (values type/collapsible, method toggle, event :change)
+        # and action-bar (target count, value label, methods clear/keydown).
+        # "connect"/"disconnect" exist on BOTH - the ambiguity fixture.
+        class DeclaredComponent < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller :accordion do
+                register
+                value :type
+                value :collapsible, true
+                action :toggle, on: :click
+              end
+            end
+            on :list do
+              controller :action_bar do
+                register
+                value :label, from: :label_text
+                target :count
+                action :keydown, on: :keydown, at: :window
+              end
+            end
           end
 
-          def css
-            "basic-component"
+          def type = "single"
+          def label_text = "3 chosen"
+
+          def call
+            tag.div("declared", **stimulus_attributes_for(:root))
           end
         end
 
-        # Test component with controller configuration block
-        class ConfiguredComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown do |controller|
-            controller.with_value(:open, false)
-            controller.with_action(:toggle, on: :click)
+        def test_declared_element_matches_hand_built_builder_output
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_value(:type, "single")
+            accordion.with_value(:collapsible, true)
+            accordion.with_action(:toggle, on: :click)
           end
 
-          def call
-            tag.div("Configured", **html_attributes.to_attributes)
-          end
-
-          def css = "configured-component"
+          assert_equal expected, DeclaredComponent.new.stimulus_attributes_for(:root)
         end
 
-        # Test component with conditional registration using method
+        def test_value_sources_implicit_literal_and_from
+          expected = build_attributes do |attrs|
+            bar = Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs)
+            bar.register_controller
+            bar.with_value(:label, "3 chosen")
+            bar.with_target(:count)
+            bar.with_action(:keydown, on: :keydown, at: :window)
+          end
+
+          assert_equal expected, DeclaredComponent.new.stimulus_attributes_for(:list)
+        end
+
+        def test_renders_through_the_template
+          html = render_inline(DeclaredComponent.new).to_html
+
+          assert_includes html, 'data-controller="poetry--core--accordion"'
+          assert_includes html, "declared"
+        end
+
+        def test_undeclared_element_raises_with_declared_names
+          error = assert_raises(ArgumentError) { DeclaredComponent.new.stimulus_attributes_for(:nope) }
+          assert_match(/undeclared stimulus element :nope/, error.message)
+          assert_match(/root, list/, error.message)
+        end
+
+        class TwoControllerComponent < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller(:accordion) { register }
+              controller(:action_bar) { register }
+            end
+          end
+
+          def call = tag.div("two", **stimulus_attributes_for(:root))
+        end
+
+        def test_two_controllers_share_one_attributes_instance
+          expected = build_attributes do |attrs|
+            Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs).register_controller
+            Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs).register_controller
+          end
+
+          assert_equal expected, TwoControllerComponent.new.stimulus_attributes_for(:root)
+
+          html = render_inline(TwoControllerComponent.new).to_html
+
+          assert_includes html, 'data-controller="poetry--core--accordion poetry--core--action-bar"'
+        end
+
         class ConditionalComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
+          option :enabled, :boolean, default: false
+          option :extras, :boolean, default: false
 
-          attribute :enabled, :boolean, default: false
-
-          stimulated_with :dropdown, if: :enabled? do |controller|
-            controller.with_value(:open, false)
+          use_stimulus do
+            on :root do
+              controller :accordion, if: :enabled do
+                register
+                value :type, "single", unless: -> { extras }
+                action :toggle, on: :click, if: :extras
+              end
+            end
+            on :panel, if: :extras do
+              controller(:action_bar) { register }
+            end
           end
 
-          def enabled?
-            !!enabled
+          def call = tag.div("cond", **stimulus_attributes_for(:root))
+        end
+
+        def test_controller_condition_gates_the_whole_wiring
+          assert_equal({}, ConditionalComponent.new(enabled: false).stimulus_attributes_for(:root))
+        end
+
+        def test_entry_conditions_gate_individual_entries
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_value(:type, "single")
           end
 
-          def call
-            tag.div("Conditional", **html_attributes.to_attributes)
+          assert_equal expected, ConditionalComponent.new(enabled: true).stimulus_attributes_for(:root)
+
+          flipped = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_action(:toggle, on: :click)
           end
 
-          def css = "conditional-component"
+          assert_equal flipped,
+                       ConditionalComponent.new(enabled: true, extras: true).stimulus_attributes_for(:root)
         end
 
-        # Test component with unless condition
-        class UnlessComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          attribute :disabled, :boolean, default: false
-
-          stimulated_with :dropdown, unless: :disabled? do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def disabled?
-            !!disabled
-          end
-
-          def call
-            tag.div("Unless", **html_attributes.to_attributes)
-          end
-
-          def css = "unless-component"
+        def test_element_condition_returns_empty_hash
+          assert_equal({}, ConditionalComponent.new.stimulus_attributes_for(:panel))
+          refute_empty ConditionalComponent.new(extras: true).stimulus_attributes_for(:panel)
         end
 
-        # Test component with both if and unless conditions
-        class MultiConditionComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          attribute :enabled, :boolean, default: false
-          attribute :disabled, :boolean, default: false
-
-          stimulated_with :dropdown, if: :enabled?, unless: :disabled? do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def enabled?
-            !!enabled
-          end
-
-          def disabled?
-            !!disabled
-          end
-
-          def call
-            tag.div("Multi", **html_attributes.to_attributes)
-          end
-
-          def css = "multi-condition-component"
-        end
-
-        # Test component with Proc conditions
-        class ProcConditionComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          attribute :visible, :boolean, default: false
-
-          stimulated_with :dropdown, if: -> { visible } do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def call
-            tag.div("Proc", **html_attributes.to_attributes)
-          end
-
-          def css = "proc-condition-component"
-        end
-
-        # Test component with custom method name
-        class CustomMethodComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown, as: :menu do |controller|
-            controller.with_value(:position, "bottom")
-          end
-
-          def call
-            tag.div("Custom", **html_attributes.to_attributes)
-          end
-
-          def css = "custom-method-component"
-        end
-
-        # Test component with namespaced controller
-        class NamespacedComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with [:acme, :dropdown] do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def call
-            tag.div("Namespaced", **html_attributes.to_attributes)
-          end
-
-          def css = "namespaced-component"
-        end
-
-        # Test component with multiple controllers
-        class MultiControllerComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown do |controller|
-            controller.with_value(:open, false)
-          end
-
-          stimulated_with :tooltip do |controller|
-            controller.with_value(:text, "Hello")
-          end
-
-          def call
-            tag.div("Multi", **html_attributes.to_attributes)
-          end
-
-          def css = "multi-controller-component"
-        end
-
-        # Test component with register: false
-        class DisabledComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown, register: false do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def call
-            tag.div("Disabled", **html_attributes.to_attributes)
-          end
-
-          def css = "disabled-component"
-        end
-
-        # Test component with initial options
-        class InitialOptionsComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :modal,
-                          values: { open: false, size: "lg" },
-                          classes: { active: "bg-blue-500" },
-                          actions: { close: :click }
-
-          def call
-            tag.div("Initial", **html_attributes.to_attributes)
-          end
-
-          def css = "initial-options-component"
-        end
-
-        # Test component that accesses controller builder in before_render
-        class DynamicComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          attribute :item_count, :integer, default: 0
-
-          stimulated_with :dropdown do |controller|
-            controller.with_value(:open, false)
-          end
-
-          def before_render
-            dropdown_controller.with_value(:items, item_count)
-            super
-          end
-
-          def call
-            tag.div("Dynamic", **html_attributes.to_attributes)
-          end
-
-          def css = "dynamic-component"
-        end
-
-        # Component that uses stimulated directly
-        class DirectAccessComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          def before_render
-            stimulated.register("dropdown")
-            super
-          end
-
-          def call
-            tag.div("Direct", **html_attributes.to_attributes)
-          end
-
-          def css = "direct-access-component"
-        end
-
-        # Test concern inclusion
-        def test_concern_can_be_included
-          component = BasicComponent.new
-
-          assert_kind_of Poetry::Core::Concerns::Stimulus, component
-        end
-
-        def test_includes_class_methods
-          assert_respond_to BasicComponent, :stimulated_with
-        end
-
-        def test_includes_instance_methods
-          component = BasicComponent.new
-
-          assert_respond_to component, :stimulated
-          assert_respond_to component, :before_render
-        end
-
-        # Test class_attribute setup
-        def test_defines_stimulus_controllers_attribute
-          assert_respond_to BasicComponent, :stimulus_controllers
-        end
-
-        def test_stimulus_controllers_is_hash
-          assert_instance_of ActiveSupport::HashWithIndifferentAccess, BasicComponent.stimulus_controllers
-        end
-
-        def test_stimulus_controllers_is_empty_by_default
-          test_component_class = Class.new(Poetry::Core::Component) do
-            include Poetry::Core::Concerns::Stimulus
-          end
-
-          assert_empty test_component_class.stimulus_controllers
-        end
-
-        # Test stimulated_with class method
-        def test_stimulated_with_registers_controller
-          assert BasicComponent.stimulus_controllers.key?("dropdown")
-        end
-
-        def test_stimulated_with_stores_controller_instance
-          controller = BasicComponent.stimulus_controllers["dropdown"]
-
-          assert_instance_of Poetry::Core::Stimulus::Controller, controller
-        end
-
-        def test_stimulated_with_normalizes_identifier
-          component_class = Class.new(Poetry::Core::Component) do
-            include Poetry::Core::Concerns::Stimulus
-
-            stimulated_with :my_controller
-          end
-
-          assert component_class.stimulus_controllers.key?("my-controller")
-        end
-
-        def test_stimulated_with_handles_array_identifier
-          assert NamespacedComponent.stimulus_controllers.key?("acme--dropdown")
-        end
-
-        def test_stimulated_with_defines_accessor_method
-          component = BasicComponent.new
-
-          assert_respond_to component, :dropdown_controller
-        end
-
-        def test_stimulated_with_accessor_method_returns_builder
-          component = ConfiguredComponent.new
-          render_inline(component)
-
-          builder = component.dropdown_controller
-
-          assert_instance_of Poetry::Core::Stimulus::Builder, builder
-        end
-
-        def test_stimulated_with_custom_method_name
-          component = CustomMethodComponent.new
-
-          assert_respond_to component, :menu_controller
-          refute_respond_to component, :dropdown_controller
-        end
-
-        def test_stimulated_with_custom_method_name_returns_correct_builder
-          component = CustomMethodComponent.new
-          render_inline(component)
-
-          builder = component.menu_controller
-
-          assert_instance_of Poetry::Core::Stimulus::Builder, builder
-          assert_equal "dropdown", builder.identifier
-        end
-
-        # Test multiple controllers
-        def test_multiple_controllers_are_registered
-          assert MultiControllerComponent.stimulus_controllers.key?("dropdown")
-          assert MultiControllerComponent.stimulus_controllers.key?("tooltip")
-        end
-
-        def test_multiple_controllers_have_separate_methods
-          component = MultiControllerComponent.new
-
-          assert_respond_to component, :dropdown_controller
-          assert_respond_to component, :tooltip_controller
-        end
-
-        # Test before_render hook
-        def test_before_render_registers_controller
-          component = BasicComponent.new
-          render_inline(component)
-          # After rendering, the controller should be registered
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        def test_before_render_executes_configuration_block
-          component = ConfiguredComponent.new
-          result = render_inline(component)
-
-          html = result.to_html
-
-          assert_includes html, 'data-dropdown-open-value="false"'
-          assert_includes html, 'data-action="click->dropdown#toggle"'
-        end
-
-        def test_before_render_does_not_register_twice
-          component = BasicComponent.new
-          render_inline(component)
-
-          # Manually check that controller is registered
-          assert component.stimulated.registered?("dropdown")
-
-          # Call before_render again (shouldn't raise error about duplicate registration)
-          assert_nothing_raised do
-            component.send(:before_render)
-          end
-        end
-
-        def test_before_render_with_disabled_registration
-          component = DisabledComponent.new
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        # Test conditional registration
-        def test_conditional_registration_with_false_condition
-          component = ConditionalComponent.new(enabled: false)
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        def test_conditional_registration_with_true_condition
-          component = ConditionalComponent.new(enabled: true)
-          render_inline(component)
-
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        def test_unless_condition_with_false
-          component = UnlessComponent.new(disabled: false)
-          render_inline(component)
-
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        def test_unless_condition_with_true
-          component = UnlessComponent.new(disabled: true)
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        def test_multiple_conditions_all_true
-          component = MultiConditionComponent.new(enabled: true, disabled: false)
-          render_inline(component)
-
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        def test_multiple_conditions_if_false
-          component = MultiConditionComponent.new(enabled: false, disabled: false)
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        def test_multiple_conditions_unless_true
-          component = MultiConditionComponent.new(enabled: true, disabled: true)
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        def test_proc_condition_with_false
-          component = ProcConditionComponent.new(visible: false)
-          render_inline(component)
-
-          refute component.stimulated.registered?("dropdown")
-        end
-
-        def test_proc_condition_with_true
-          component = ProcConditionComponent.new(visible: true)
-          render_inline(component)
-
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        # Test initial options
-        def test_initial_options_are_applied
-          component = InitialOptionsComponent.new
-          result = render_inline(component)
-
-          html = result.to_html
-
-          assert_includes html, 'data-modal-open-value="false"'
-          assert_includes html, 'data-modal-size-value="lg"'
-          assert_includes html, 'data-modal-active-class="bg-blue-500"'
-          assert_includes html, 'data-action="click->modal#close"'
-        end
-
-        # Test dynamic configuration
-        def test_dynamic_configuration_in_before_render
-          component = DynamicComponent.new(item_count: 5)
-          result = render_inline(component)
-
-          html = result.to_html
-
-          assert_includes html, 'data-dropdown-items-value="5"'
-          assert_includes html, 'data-dropdown-open-value="false"'
-        end
-
-        # Test stimulated instance method
-        def test_stimulated_returns_manager
-          component = BasicComponent.new
-          render_inline(component) # Render first to initialize html_attributes
-
-          assert_instance_of Poetry::Core::Stimulus::Manager, component.stimulated
-        end
-
-        def test_stimulated_returns_same_instance
-          component = BasicComponent.new
-          render_inline(component) # Render first to initialize html_attributes
-          manager1 = component.stimulated
-          manager2 = component.stimulated
-
-          assert_same manager1, manager2
-        end
-
-        def test_stimulated_manager_uses_html_attributes
-          component = BasicComponent.new
-          render_inline(component) # Render first to initialize html_attributes
-          manager = component.stimulated
-          # Manager uses the internal @html_attributes, not the merged html_attributes method
-          assert_instance_of Poetry::Core::HTML::Attributes, manager.html_attributes
-        end
-
-        # Test direct access to stimulated
-        def test_direct_access_to_stimulated
-          component = DirectAccessComponent.new
-          render_inline(component)
-
-          assert component.stimulated.registered?("dropdown")
-        end
-
-        # Test integration with HTML attributes
-        def test_controller_adds_data_controller_attribute
-          component = BasicComponent.new
-          result = render_inline(component)
-
-          # Check the HTML output directly
-          assert_includes result.to_html, 'data-controller="dropdown"'
-        end
-
-        def test_multiple_controllers_add_to_data_controller
-          component = MultiControllerComponent.new
-          result = render_inline(component)
-
-          html = result.to_html
-
-          assert_includes html, "dropdown"
-          assert_includes html, "tooltip"
-          assert_includes html, "data-controller="
-        end
-
-        def test_namespaced_controller_identifier
-          component = NamespacedComponent.new
-          result = render_inline(component)
-
-          assert_includes result.to_html, 'data-controller="acme--dropdown"'
-        end
-
-        # Test inheritance - use named test classes
         class ParentComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown
-
-          def call
-            tag.div("Parent", **html_attributes.to_attributes)
+          use_stimulus do
+            on :root do
+              controller :accordion do
+                register
+                value :type, "single"
+              end
+            end
+            on :list do
+              controller(:action_bar) { register }
+            end
           end
 
-          def css = "parent-component"
+          def call = tag.div("parent", **stimulus_attributes_for(:root))
         end
 
-        class ChildComponent < ParentComponent
-          stimulated_with :tooltip
-
-          def call
-            tag.div("Child", **html_attributes.to_attributes)
-          end
-
-          def css = "child-component"
-        end
-
-        class OverrideParentComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown do |c|
-            c.with_value(:open, false)
-          end
-
-          def call
-            tag.div("OverrideParent", **html_attributes.to_attributes)
-          end
-
-          def css = "override-parent-component"
-        end
-
-        class OverrideChildComponent < OverrideParentComponent
-          stimulated_with :dropdown do |c|
-            c.with_value(:open, true)
-          end
-
-          def call
-            tag.div("OverrideChild", **html_attributes.to_attributes)
-          end
-
-          def css = "override-child-component"
-        end
-
-        class ContextComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          attribute :message, :string, default: "Hello"
-
-          stimulated_with :dropdown do |controller|
-            controller.with_value(:message, message)
-          end
-
-          def call
-            tag.div("Context", **html_attributes.to_attributes)
-          end
-
-          def css = "context-component"
-        end
-
-        class EmptyBlockComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown do |_controller|
-            # Empty block
-          end
-
-          def call
-            tag.div("Empty", **html_attributes.to_attributes)
-          end
-
-          def css = "empty-block-component"
-        end
-
-        def test_controllers_are_inherited
-          assert ChildComponent.stimulus_controllers.key?("dropdown")
-          assert ChildComponent.stimulus_controllers.key?("tooltip")
-        end
-
-        def test_child_can_override_parent_controller
-          parent_component = OverrideParentComponent.new
-          child_component = OverrideChildComponent.new
-
-          parent_result = render_inline(parent_component)
-          child_result = render_inline(child_component)
-
-          assert_includes parent_result.to_html, 'data-dropdown-open-value="false"'
-          assert_includes child_result.to_html, 'data-dropdown-open-value="true"'
-        end
-
-        # Test configuration block has access to component context
-        def test_configuration_block_has_component_context
-          component = ContextComponent.new(message: "World")
-          result = render_inline(component)
-
-          assert_includes result.to_html, 'data-dropdown-message-value="World"'
-        end
-
-        # Edge cases
-        def test_empty_configuration_block
-          component = EmptyBlockComponent.new
-          assert_nothing_raised do
-            render_inline(component)
+        class ReplacingChildComponent < ParentComponent
+          use_stimulus do
+            on :root do
+              controller(:action_bar) { register }
+            end
           end
         end
 
-        def test_controller_without_block
-          component = BasicComponent.new
-          assert_nothing_raised do
-            render_inline(component)
+        class ExtendingChildComponent < ParentComponent
+          use_stimulus do
+            on :root, extend: true do
+              controller(:action_bar) { register }
+            end
           end
         end
 
-        # Test overriding same controller in same component
-        class DuplicateControllerComponent < Poetry::Core::Component
-          include Poetry::Core::Concerns::Stimulus
-
-          stimulated_with :dropdown do |c|
-            c.with_value(:open, false)
-          end
-          stimulated_with :dropdown do |c|
-            c.with_value(:open, true)
+        def test_subclass_redeclaration_replaces_the_element_wholesale
+          expected = build_attributes do |attrs|
+            Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs).register_controller
           end
 
-          def call
-            tag.div("Duplicate", **html_attributes.to_attributes)
-          end
-
-          def css = "duplicate-controller-component"
+          assert_equal expected, ReplacingChildComponent.new.stimulus_attributes_for(:root)
         end
 
-        def test_register_same_controller_twice_in_same_component
-          component = DuplicateControllerComponent.new
-          # Should not raise an error - the second declaration overrides the first
-          result = nil
-          assert_nothing_raised do
-            result = render_inline(component)
+        def test_untouched_elements_inherit
+          expected = build_attributes do |attrs|
+            Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs).register_controller
           end
-          # The second value should win
-          assert_includes result.to_html, 'data-dropdown-open-value="true"'
+
+          assert_equal expected, ReplacingChildComponent.new.stimulus_attributes_for(:list)
+        end
+
+        def test_extend_true_merges_into_the_inherited_element
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_value(:type, "single")
+            Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs).register_controller
+          end
+
+          assert_equal expected, ExtendingChildComponent.new.stimulus_attributes_for(:root)
+        end
+
+        def test_parent_declarations_are_untouched_by_subclasses
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_value(:type, "single")
+          end
+
+          assert_equal expected, ParentComponent.new.stimulus_attributes_for(:root)
+        end
+
+        def test_escape_hatch_shares_one_attributes_instance
+          component = DeclaredComponent.new
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            host = Poetry::Core::Stimulus::Builder.new("checkout", attrs)
+            host.register_controller
+            host.with_value(:total, 42)
+          end
+
+          actual = component.stimulus_attributes(:accordion, "checkout") do |accordion, checkout|
+            accordion.register_controller
+            checkout.register_controller
+            checkout.with_value(:total, 42)
+          end
+
+          assert_equal expected, actual
+        end
+
+        def test_escape_hatch_requires_a_controller
+          assert_raises(ArgumentError) { DeclaredComponent.new.stimulus_attributes }
+        end
+
+        def test_stimulus_action_resolves_unambiguous_methods
+          assert_equal "poetry--core--accordion#toggle", DeclaredComponent.new.stimulus_action(:toggle)
+        end
+
+        def test_stimulus_action_raises_on_ambiguity
+          error = assert_raises(ArgumentError) { DeclaredComponent.new.stimulus_action(:connect) }
+          assert_match(/ambiguous action :connect/, error.message)
+        end
+
+        def test_stimulus_action_qualified_form
+          assert_equal "poetry--core--action-bar#clear",
+                       DeclaredComponent.new.stimulus_action(:action_bar, :clear)
+        end
+
+        def test_stimulus_action_validates_the_method
+          assert_raises(Poetry::Core::Stimulus::Manifest::UnknownName) do
+            DeclaredComponent.new.stimulus_action(:accordion, :vanish)
+          end
+        end
+
+        def test_stimulus_event_resolves_and_validates
+          assert_equal "poetry--core--accordion:change", DeclaredComponent.new.stimulus_event(:change)
+          assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
+            DeclaredComponent.new.stimulus_event(:accordion, :vanished)
+          end
+        end
+
+        class HostControllerComponent < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller "checkout" do
+                register
+                value :anything_goes, "unvalidated"
+                action :whatever, on: :click
+              end
+            end
+          end
+
+          def call = tag.div("host", **stimulus_attributes_for(:root))
+        end
+
+        def test_host_controllers_pass_through_unvalidated
+          expected = build_attributes do |attrs|
+            checkout = Poetry::Core::Stimulus::Builder.new("checkout", attrs)
+            checkout.register_controller
+            checkout.with_value(:anything_goes, "unvalidated")
+            checkout.with_action(:whatever, on: :click)
+          end
+
+          assert_equal expected, HostControllerComponent.new.stimulus_attributes_for(:root)
+        end
+
+        class EventListeningComponent < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller :action_bar do
+                register
+                action :keydown, on: event(:accordion, :change)
+              end
+            end
+          end
+
+          def call = tag.div("listens", **stimulus_attributes_for(:root))
+        end
+
+        def test_declared_event_names_wire_cross_controller_listens
+          expected = build_attributes do |attrs|
+            bar = Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs)
+            bar.register_controller
+            bar.with_action(:keydown, on: "poetry--core--accordion:change")
+          end
+
+          assert_equal expected, EventListeningComponent.new.stimulus_attributes_for(:root)
+        end
+
+        def test_load_time_validation_of_value_names
+          error = assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
+            Class.new(Poetry::Core::Component) do
+              use_stimulus do
+                on(:root) { controller(:accordion) { value :nope } }
+              end
+            end
+          end
+          assert_match(/unknown value "nope"/, error.message)
+        end
+
+        def test_load_time_validation_of_action_methods
+          assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
+            Class.new(Poetry::Core::Component) do
+              use_stimulus do
+                on(:root) { controller(:accordion) { action :vanish, on: :click } }
+              end
+            end
+          end
+        end
+
+        def test_load_time_validation_of_controllers
+          error = assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
+            Class.new(Poetry::Core::Component) do
+              use_stimulus do
+                on(:root) { controller(:zzz_missing) { register } }
+              end
+            end
+          end
+          assert_match(/unknown stimulus controller :zzz_missing/, error.message)
+        end
+
+        def test_condition_options_are_validated
+          error = assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
+            Class.new(Poetry::Core::Component) do
+              use_stimulus do
+                on(:root) { controller(:accordion) { value :type, wat: 1 } }
+              end
+            end
+          end
+          assert_match(/unknown option/, error.message)
+        end
+
+        def test_use_stimulus_requires_a_block
+          assert_raises(ArgumentError) { Class.new(Poetry::Core::Component) { use_stimulus } }
+        end
+
+        private
+
+        def build_attributes
+          attrs = Poetry::Core::HTML::Attributes.new
+          yield attrs
+          attrs.to_attributes
         end
       end
     end

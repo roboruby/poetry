@@ -3,184 +3,264 @@
 module Poetry
   module Core
     module Concerns
-      # Provides declarative Stimulus controller integration for ViewComponents.
+      # The use_stimulus contract: a class-level, element-major declaration
+      # of the component's Stimulus wiring, replacing both the hand-rolled
+      # `<element>_stimulus_attributes` methods and the previous
+      # `stimulated_with` DSL (controller-major, root-only - it could not
+      # express multi-element wiring, and no component ever adopted it).
       #
-      # This concern enables components to register Stimulus controllers using a simple
-      # DSL. Controllers can be conditionally registered based on component state and
-      # configured using a block-based API. The concern manages the lifecycle of
-      # Stimulus controllers, automatically registering them before rendering.
-      #
-      # @example Basic usage
-      #   class DropdownComponent < Poetry::Core::Component
-      #     include Poetry::Core::Concerns::Stimulus
-      #
-      #     stimulated_with :dropdown do |controller|
-      #       controller.with_value(:open, false)
-      #       controller.with_action(:toggle, on: :click)
+      #   use_stimulus do
+      #     on :root do
+      #       controller :hover_card do
+      #         register
+      #         value :open
+      #         value :open_delay, unless: -> { open_delay.nil? }
+      #       end
+      #       controller :popper do
+      #         register
+      #         value :side
+      #       end
+      #     end
+      #     on :trigger do
+      #       controller :hover_card do
+      #         action :pointer_enter, on: :pointerenter
+      #       end
+      #       controller :popper do
+      #         target :anchor
+      #       end
       #     end
       #   end
       #
-      # @example Conditional registration
-      #   class AlertComponent < Poetry::Core::Component
-      #     include Poetry::Core::Concerns::Stimulus
+      # Render side: `stimulus_attributes_for(:trigger)` returns the
+      # element's merged attribute hash (public - templates and slot
+      # lambdas call it directly); `stimulus_action(:open)` /
+      # `stimulus_event(:change)` build validated descriptor strings for
+      # forwarding; `stimulus_attributes(:a, :b) { |a, b| ... }` is the
+      # escape hatch for wiring too dynamic to declare - every builder
+      # shares ONE Attributes instance, so multi-controller merges are
+      # correct by construction.
       #
-      #     attribute :dismissable, :boolean, default: false
-      #
-      #     stimulated_with :dismissable, if: :dismissable? do |controller|
-      #       controller.with_action(:dismiss, on: :click)
-      #     end
-      #
-      #     def dismissable?
-      #       !!dismissable
-      #     end
-      #   end
-      #
-      # @example Custom method name
-      #   class MenuComponent < Poetry::Core::Component
-      #     include Poetry::Core::Concerns::Stimulus
-      #
-      #     stimulated_with :dropdown, as: :menu do |controller|
-      #       controller.with_value(:position, "bottom")
-      #     end
-      #
-      #     # Access via menu_controller method
-      #     def before_render
-      #       menu_controller.with_value(:items, @items.count)
-      #       super
-      #     end
-      #   end
-      #
-      # @example Namespaced controllers
-      #   class TooltipComponent < Poetry::Core::Component
-      #     include Poetry::Core::Concerns::Stimulus
-      #
-      #     stimulated_with [:poetry, :tooltip] do |controller|
-      #       controller.with_value(:text, "Hello")
-      #       controller.with_value(:position, "top")
-      #     end
-      #   end
-      #
-      # @see Poetry::Core::Stimulus::Controller
-      # @see Poetry::Core::Stimulus::Manager
-      # @see Poetry::Core::Stimulus::Builder
+      # Declarations validate against the controllers manifest at CLASS
+      # LOAD (unknown controller/value/action/target/event raises at boot,
+      # not first render) and are declared once per element: a subclass
+      # redeclaring an element REPLACES it wholesale (the Ruby-override
+      # intuition; Sheet/Drawer re-controller their roots this way), while
+      # `on :root, extend: true` merges into the inherited element
+      # (date_field -> time_field adds values). Untouched elements inherit.
       module Stimulus
         extend ActiveSupport::Concern
 
-        included do
-          # @!attribute [r] stimulus_controllers
-          #   @return [ActiveSupport::HashWithIndifferentAccess] Hash of registered controller configurations
-          class_attribute :stimulus_controllers,
-                          instance_writer: false,
-                          instance_predicate: false
-
-          self.stimulus_controllers = ActiveSupport::HashWithIndifferentAccess.new
-        end
-
         class_methods do
-          # Declares a Stimulus controller for this component.
-          #
-          # Creates a controller configuration that will be automatically registered
-          # during rendering. Also defines a method on the component to access the
-          # controller's builder for additional configuration.
-          #
-          # @param identifier [String, Symbol, Array] The Stimulus controller identifier(s)
-          #   Underscores are converted to dashes. Arrays are joined with "--" for namespacing.
-          # @param options [Hash] Configuration options
-          # @option options [String, Symbol] :as The method name prefix for accessing the builder
-          #   Defaults to the identifier with underscores (e.g., "dropdown" → "dropdown_controller")
-          # @option options [Boolean] :register (true) Whether to register by default
-          # @option options [Symbol, Proc] :if Condition for registration (must return true)
-          # @option options [Symbol, Proc] :unless Condition for registration (must return false)
-          # @option options [Hash] :values Initial Stimulus values
-          # @option options [Hash] :classes Initial Stimulus classes
-          # @option options [Hash] :actions Initial Stimulus actions
-          # @yield [builder] Optional configuration block for the builder
-          # @yieldparam builder [Poetry::Core::Stimulus::Builder] The Stimulus builder instance
-          #
-          # @example Simple controller
-          #   stimulated_with :dropdown
-          #
-          # @example With initial values
-          #   stimulated_with :modal, values: { open: false, size: "lg" }
-          #
-          # @example With configuration block
-          #   stimulated_with :dropdown do |controller|
-          #     controller.with_value(:open, false)
-          #     controller.with_action(:toggle, on: :click)
-          #   end
-          #
-          # @example With conditional registration
-          #   stimulated_with :dismissable, if: :dismissable? do |controller|
-          #     controller.with_action(:dismiss, on: :click)
-          #   end
-          #
-          # @example With custom method name
-          #   stimulated_with :dropdown, as: :menu do |controller|
-          #     controller.with_value(:position, "bottom")
-          #   end
-          #   # Accessible via menu_controller method
-          #
-          # @example Namespaced controller
-          #   stimulated_with [:poetry, :tooltip] do |controller|
-          #     controller.with_value(:text, "Hello")
-          #   end
-          #
-          # @return [void]
-          def stimulated_with(identifier, options = {}, &block)
-            stimulus_controller = Poetry::Core::Stimulus::Controller.new(identifier, options, block)
-            self.stimulus_controllers =
-              stimulus_controllers.merge(stimulus_controller.identifier => stimulus_controller)
+          # Declares (part of) the component's stimulus wiring. Multiple
+          # blocks compose additively within a class; shared wiring modules
+          # call this from their `included` hook.
+          def use_stimulus(&block)
+            raise ArgumentError, "use_stimulus requires a block" unless block
 
-            define_method stimulus_controller.method_name do
-              stimulated.with(identifier)
-            end
+            dsl = Poetry::Core::Stimulus::Declarations::RootDSL.new(name || to_s)
+            dsl.instance_exec(&block)
+            dsl.elements.each { |element| store_stimulus_element(element) }
           end
-        end
 
-        # Registers Stimulus controllers before rendering the component.
-        #
-        # This method is automatically called by ViewComponent's rendering lifecycle.
-        # It iterates through all declared controllers and registers them if they:
-        # 1. Haven't been registered yet
-        # 2. Meet their registration conditions (if/unless)
-        # 3. Have register: true (the default)
-        #
-        # Configuration blocks are executed in the component's context, allowing
-        # access to component state and methods.
-        #
-        # @return [void]
-        # @api private
-        def before_render
-          stimulus_controllers.each_value do |controller|
-            next if stimulated.registered?(controller.identifier) || !controller.register?(self)
+          # This class's own declarations, element name -> Element.
+          def own_stimulus_elements
+            @own_stimulus_elements ||= {}
+          end
 
-            stimulated.register(controller.identifier, controller.controller_options).tap do |builder|
-              instance_exec builder, &controller.block if controller.block
+          # The effective wiring after inheritance: walk the superclass
+          # chain root-first, folding each class's declarations over the
+          # inherited set - redeclared elements replace wholesale unless
+          # declared with extend: true, which appends to the inherited
+          # element's wirings.
+          def stimulus_elements
+            chain = []
+            klass = self
+            while klass.respond_to?(:own_stimulus_elements)
+              chain.unshift(klass)
+              klass = klass.superclass
+            end
+
+            chain.each_with_object({}) do |ancestor, resolved|
+              ancestor.own_stimulus_elements.each do |name, element|
+                resolved[name] =
+                  if element.extend_inherited && resolved[name]
+                    Poetry::Core::Stimulus::Declarations::Element.new(
+                      name: name, extend_inherited: false, conditions: element.conditions,
+                      wirings: resolved[name].wirings + element.wirings
+                    )
+                  else
+                    element
+                  end
+              end
             end
           end
 
-          super
+          # Every controller identifier declared anywhere on the class, in
+          # declaration order - the search space for unqualified
+          # stimulus_action / stimulus_event resolution.
+          def stimulus_identifiers
+            stimulus_elements.values.flat_map { |element| element.wirings.map(&:identifier) }.uniq
+          end
+
+          def resolve_stimulus_identifier(identifier)
+            Poetry::Core::Stimulus::Declarations.resolve_identifier(identifier)
+          end
+
+          private
+
+          def store_stimulus_element(element)
+            existing = own_stimulus_elements[element.name]
+            own_stimulus_elements[element.name] =
+              if existing
+                Poetry::Core::Stimulus::Declarations::Element.new(
+                  name: element.name,
+                  extend_inherited: existing.extend_inherited || element.extend_inherited,
+                  conditions: element.conditions || existing.conditions,
+                  wirings: existing.wirings + element.wirings
+                )
+              else
+                element
+              end
+          end
         end
 
-        # Returns the Stimulus manager for this component.
-        #
-        # The manager coordinates all Stimulus controllers registered with this component
-        # and provides methods for accessing, registering, and configuring them.
-        #
-        # @return [Poetry::Core::Stimulus::Manager] The manager instance for this component
-        #
-        # @example Access the manager
-        #   def some_method
-        #     stimulated.register("dropdown")
-        #     stimulated.with("modal").with_value(:open, true)
-        #   end
-        #
-        # @example Check if a controller is registered
-        #   def dropdown_active?
-        #     stimulated.registered?("dropdown")
-        #   end
-        def stimulated
-          @stimulated ||= Poetry::Core::Stimulus::Manager.new(@html_attributes)
+        # The declared wiring for one element as a plain attributes hash,
+        # ready to merge into the element's tag or forward as component
+        # kwargs. Public by design - templates call it, ending the
+        # `public :inner_stimulus_attributes` juggling.
+        def stimulus_attributes_for(element_name)
+          element = self.class.stimulus_elements[element_name.to_sym]
+          unless element
+            known = self.class.stimulus_elements.keys
+            raise ArgumentError,
+                  "undeclared stimulus element #{element_name.inspect} on #{self.class}" \
+                  "#{known.any? ? " - declared: #{known.join(", ")}" : " (no use_stimulus declarations)"}"
+          end
+          return {} unless stimulus_conditions_met?(element.conditions)
+
+          attrs = Poetry::Core::HTML::Attributes.new
+          element.wirings.each do |wiring|
+            next unless stimulus_conditions_met?(wiring.conditions)
+
+            builder = Poetry::Core::Stimulus::Builder.new(wiring.identifier, attrs)
+            wiring.entries.each do |entry|
+              apply_stimulus_entry(builder, entry) if stimulus_conditions_met?(entry.conditions)
+            end
+          end
+          attrs.to_attributes
+        end
+
+        # The escape hatch for wiring too dynamic to declare: yields one
+        # Builder per controller, all sharing ONE Attributes instance.
+        # Controllers resolve like declarations (Symbol -> manifest,
+        # String/Array -> verbatim).
+        def stimulus_attributes(*controllers)
+          raise ArgumentError, "stimulus_attributes needs at least one controller" if controllers.empty?
+
+          attrs = Poetry::Core::HTML::Attributes.new
+          builders = controllers.map do |controller|
+            Poetry::Core::Stimulus::Builder.new(
+              self.class.resolve_stimulus_identifier(controller), attrs
+            )
+          end
+          yield(*builders) if block_given?
+          attrs.to_attributes
+        end
+
+        # A bare action descriptor ("poetry--core--dialog#open") for
+        # forwarding into another component's kwargs. stimulus_action(:open)
+        # resolves across the class's declared controllers and must be
+        # unambiguous; stimulus_action(:popper, :reposition) qualifies.
+        def stimulus_action(*args)
+          controller, method = unpack_stimulus_descriptor_args(args, :action)
+          identifier = resolve_stimulus_descriptor(controller, method, kind: :action)
+          Poetry::Core::Stimulus::Builder.new(identifier, Poetry::Core::HTML::Attributes.new)
+                                         .action(method)
+        end
+
+        # A namespaced event name ("poetry--core--dialog:change") for
+        # listening sides, validated against the emitting controller's
+        # manifest events. Same one- or two-argument forms as stimulus_action.
+        def stimulus_event(*args)
+          controller, name = unpack_stimulus_descriptor_args(args, :event)
+          identifier = resolve_stimulus_descriptor(controller, name, kind: :event)
+          Poetry::Core::Stimulus::Declarations.event_name(identifier, name)
+        end
+
+        def unpack_stimulus_descriptor_args(args, kind)
+          case args.size
+          when 1 then [nil, args.first]
+          when 2 then args
+          else
+            raise ArgumentError,
+                  "stimulus_#{kind}(#{kind}) or stimulus_#{kind}(:controller, #{kind})"
+          end
+        end
+
+        def apply_stimulus_entry(builder, entry)
+          case entry.kind
+          when :register then builder.register_controller
+          when :value then builder.with_value(entry.name, stimulus_value_for(entry))
+          when :action then builder.with_action(entry.name, on: entry.on, at: entry.at)
+          when :target then builder.with_target(entry.name)
+          end
+        end
+
+        def stimulus_value_for(entry)
+          source = entry.source
+          case source[:type]
+          when :literal then source[:value]
+          else send(source[:value])
+          end
+        end
+
+        def stimulus_conditions_met?(conditions)
+          return true if conditions.nil?
+
+          if (condition = conditions[:if]) && !evaluate_stimulus_condition(condition)
+            return false
+          end
+          if (condition = conditions[:unless]) && evaluate_stimulus_condition(condition)
+            return false
+          end
+
+          true
+        end
+
+        def evaluate_stimulus_condition(condition)
+          condition.is_a?(Proc) ? instance_exec(&condition) : send(condition)
+        end
+
+        def resolve_stimulus_descriptor(controller, name, kind:)
+          return self.class.resolve_stimulus_identifier(controller) if controller
+
+          identifiers = self.class.stimulus_identifiers
+          if identifiers.empty?
+            raise ArgumentError,
+                  "no use_stimulus declarations on #{self.class} - pass the controller: " \
+                  "stimulus_#{kind}(:controller, #{name.inspect})"
+          end
+          return identifiers.first if identifiers.size == 1
+
+          matches = identifiers.select { |id| stimulus_descriptor_match?(id, name, kind) }
+          return matches.first if matches.size == 1
+
+          raise ArgumentError,
+                "#{matches.empty? ? "no declared controller defines" : "ambiguous"} " \
+                "#{kind} #{name.inspect} (declared: #{identifiers.join(", ")}) - qualify: " \
+                "stimulus_#{kind}(:controller, #{name.inspect})"
+        end
+
+        def stimulus_descriptor_match?(identifier, name, kind)
+          definition = Poetry::Core::Stimulus::Manifest.definition(identifier)
+          return false unless definition
+
+          case kind
+          when :action
+            definition.fetch("methods", []).include?(Poetry::Core::Stimulus::Declarations.camelize(name))
+          when :event
+            definition.fetch("events", []).include?("#{identifier}:#{name}")
+          end
         end
       end
     end
