@@ -106,7 +106,67 @@ module Poetry
             Poetry::Core::Stimulus::Declarations.resolve_identifier(identifier)
           end
 
+          # Descriptor builders are STATIC facts of the declarations, so
+          # they exist at class level - helpers, generator templates, and
+          # test selectors consume them without an instance. on:/at: build
+          # the evented token ("click->id#method"); without on: the bare
+          # descriptor (element-default event).
+          def stimulus_action(*args, on: nil, at: nil)
+            controller, method = unpack_stimulus_descriptor_args(args, :action)
+            identifier = resolve_stimulus_descriptor(controller, method, kind: :action)
+            Poetry::Core::Stimulus::Builder.new(identifier, Poetry::Core::HTML::Attributes.new)
+                                           .action(method, on: on, at: at)
+          end
+
+          def stimulus_event(*args)
+            controller, name = unpack_stimulus_descriptor_args(args, :event)
+            identifier = resolve_stimulus_descriptor(controller, name, kind: :event)
+            Poetry::Core::Stimulus::Declarations.event_name(identifier, name)
+          end
+
           private
+
+          def unpack_stimulus_descriptor_args(args, kind)
+            case args.size
+            when 1 then [nil, args.first]
+            when 2 then args
+            else
+              raise ArgumentError,
+                    "stimulus_#{kind}(#{kind}) or stimulus_#{kind}(:controller, #{kind})"
+            end
+          end
+
+          def resolve_stimulus_descriptor(controller, name, kind:)
+            return resolve_stimulus_identifier(controller) if controller
+
+            identifiers = stimulus_identifiers
+            if identifiers.empty?
+              raise ArgumentError,
+                    "no use_stimulus declarations on #{self} - pass the controller: " \
+                    "stimulus_#{kind}(:controller, #{name.inspect})"
+            end
+            return identifiers.first if identifiers.size == 1
+
+            matches = identifiers.select { |id| stimulus_descriptor_match?(id, name, kind) }
+            return matches.first if matches.size == 1
+
+            raise ArgumentError,
+                  "#{matches.empty? ? "no declared controller defines" : "ambiguous"} " \
+                  "#{kind} #{name.inspect} (declared: #{identifiers.join(", ")}) - qualify: " \
+                  "stimulus_#{kind}(:controller, #{name.inspect})"
+          end
+
+          def stimulus_descriptor_match?(identifier, name, kind)
+            definition = Poetry::Core::Stimulus::Manifest.definition(identifier)
+            return false unless definition
+
+            case kind
+            when :action
+              definition.fetch("methods", []).include?(Poetry::Core::Stimulus::Declarations.camelize(name))
+            when :event
+              definition.fetch("events", []).include?("#{identifier}:#{name}")
+            end
+          end
 
           def store_stimulus_element(element)
             existing = own_stimulus_elements[element.name]
@@ -167,34 +227,16 @@ module Poetry
           attrs.to_attributes
         end
 
-        # A bare action descriptor ("poetry--core--dialog#open") for
-        # forwarding into another component's kwargs. stimulus_action(:open)
-        # resolves across the class's declared controllers and must be
-        # unambiguous; stimulus_action(:popper, :reposition) qualifies.
-        def stimulus_action(*args)
-          controller, method = unpack_stimulus_descriptor_args(args, :action)
-          identifier = resolve_stimulus_descriptor(controller, method, kind: :action)
-          Poetry::Core::Stimulus::Builder.new(identifier, Poetry::Core::HTML::Attributes.new)
-                                         .action(method)
+        # Delegates to the class-level builder (descriptors are static
+        # facts of the declarations); stimulus_action(:open) resolves
+        # across declared controllers, on:/at: build the evented token.
+        def stimulus_action(*, on: nil, at: nil)
+          self.class.stimulus_action(*, on: on, at: at)
         end
 
-        # A namespaced event name ("poetry--core--dialog:change") for
-        # listening sides, validated against the emitting controller's
-        # manifest events. Same one- or two-argument forms as stimulus_action.
-        def stimulus_event(*args)
-          controller, name = unpack_stimulus_descriptor_args(args, :event)
-          identifier = resolve_stimulus_descriptor(controller, name, kind: :event)
-          Poetry::Core::Stimulus::Declarations.event_name(identifier, name)
-        end
-
-        def unpack_stimulus_descriptor_args(args, kind)
-          case args.size
-          when 1 then [nil, args.first]
-          when 2 then args
-          else
-            raise ArgumentError,
-                  "stimulus_#{kind}(#{kind}) or stimulus_#{kind}(:controller, #{kind})"
-          end
+        # Delegates to the class-level builder.
+        def stimulus_event(*)
+          self.class.stimulus_event(*)
         end
 
         def apply_stimulus_entry(builder, entry)
@@ -229,38 +271,6 @@ module Poetry
 
         def evaluate_stimulus_condition(condition)
           condition.is_a?(Proc) ? instance_exec(&condition) : send(condition)
-        end
-
-        def resolve_stimulus_descriptor(controller, name, kind:)
-          return self.class.resolve_stimulus_identifier(controller) if controller
-
-          identifiers = self.class.stimulus_identifiers
-          if identifiers.empty?
-            raise ArgumentError,
-                  "no use_stimulus declarations on #{self.class} - pass the controller: " \
-                  "stimulus_#{kind}(:controller, #{name.inspect})"
-          end
-          return identifiers.first if identifiers.size == 1
-
-          matches = identifiers.select { |id| stimulus_descriptor_match?(id, name, kind) }
-          return matches.first if matches.size == 1
-
-          raise ArgumentError,
-                "#{matches.empty? ? "no declared controller defines" : "ambiguous"} " \
-                "#{kind} #{name.inspect} (declared: #{identifiers.join(", ")}) - qualify: " \
-                "stimulus_#{kind}(:controller, #{name.inspect})"
-        end
-
-        def stimulus_descriptor_match?(identifier, name, kind)
-          definition = Poetry::Core::Stimulus::Manifest.definition(identifier)
-          return false unless definition
-
-          case kind
-          when :action
-            definition.fetch("methods", []).include?(Poetry::Core::Stimulus::Declarations.camelize(name))
-          when :event
-            definition.fetch("events", []).include?("#{identifier}:#{name}")
-          end
         end
       end
     end

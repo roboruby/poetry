@@ -243,6 +243,15 @@ module Poetry
           assert_equal "poetry--core--accordion#toggle", DeclaredComponent.new.stimulus_action(:toggle)
         end
 
+        def test_descriptors_exist_at_class_level_with_events
+          assert_equal "poetry--core--accordion#toggle", DeclaredComponent.stimulus_action(:toggle)
+          assert_equal "click->poetry--core--accordion#toggle",
+                       DeclaredComponent.stimulus_action(:toggle, on: :click)
+          assert_equal "keydown@window->poetry--core--action-bar#clear",
+                       DeclaredComponent.stimulus_action(:action_bar, :clear, on: :keydown, at: :window)
+          assert_equal "poetry--core--accordion:change", DeclaredComponent.stimulus_event(:change)
+        end
+
         def test_stimulus_action_raises_on_ambiguity
           error = assert_raises(ArgumentError) { DeclaredComponent.new.stimulus_action(:connect) }
           assert_match(/ambiguous action :connect/, error.message)
