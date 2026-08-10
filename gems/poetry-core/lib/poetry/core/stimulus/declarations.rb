@@ -176,20 +176,25 @@ module Poetry
           # value :orientation, :horizontal -> literal
           # value :selected, from: :selected_iso -> named method reference
           def value(name, *literal, from: nil, **options)
-            if literal.size > 1 || (literal.any? && from)
+            if literal.size > 1 || (!literal.empty? && from)
               raise DeclarationError,
                     "#{context}: value #{name.inspect} takes ONE of a literal or from:"
             end
 
             Declarations.validate_value!(@wiring.identifier, @definition, name)
+            # literal presence is arity-detected, so `value :x, false` and
+            # `value :x, nil` stay literals (never .any?, which is false
+            # for [false]).
             source = if from then { type: :method, value: from.to_sym }
-                     elsif literal.any? then { type: :literal, value: literal.first }
+                     elsif !literal.empty? then { type: :literal, value: literal.first }
                      else { type: :implicit, value: name.to_sym }
                      end
             push(kind: :value, name: name.to_sym, source: source, options: options)
           end
 
-          def action(method, on:, at: nil, **options)
+          # on: nil declares a BARE descriptor (Stimulus element-default
+          # event - the forwarding shape: "poetry--core--x#method").
+          def action(method, on: nil, at: nil, **options)
             Declarations.validate_action!(@wiring.identifier, @definition, method)
             push(kind: :action, name: method.to_sym, on: on, at: at, options: options)
           end

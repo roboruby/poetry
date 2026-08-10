@@ -357,6 +357,31 @@ module Poetry
           assert_match(/unknown option/, error.message)
         end
 
+        class LiteralEdgeComponent < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller :accordion do
+                register
+                value :collapsible, false
+                action :toggle
+              end
+            end
+          end
+
+          def call = tag.div("edge", **stimulus_attributes_for(:root))
+        end
+
+        def test_false_literals_and_bare_actions_round_trip
+          expected = build_attributes do |attrs|
+            accordion = Poetry::Core::Stimulus::Builder.new("poetry--core--accordion", attrs)
+            accordion.register_controller
+            accordion.with_value(:collapsible, false)
+            accordion.with_action(:toggle, on: nil)
+          end
+
+          assert_equal expected, LiteralEdgeComponent.new.stimulus_attributes_for(:root)
+        end
+
         def test_use_stimulus_requires_a_block
           assert_raises(ArgumentError) { Class.new(Poetry::Core::Component) { use_stimulus } }
         end
