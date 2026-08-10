@@ -193,7 +193,7 @@ module Poetry
         # Host-facing close descriptor (no template consumer) - the
         # explicit click event preserved from the pre-declaration shape.
         def close_action
-          "click->#{stimulus_action(:close)}"
+          stimulus_action(:close, on: :click)
         end
 
         def snap_points_json = snap_points.to_json

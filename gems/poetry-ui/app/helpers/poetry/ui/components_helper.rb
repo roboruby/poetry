@@ -125,10 +125,12 @@ module Poetry
         options[:data] = (options[:data] || {}).dup
         options[:data][:controller] =
           [options[:data][:controller], "poetry--core--optimistic-form"].compact.join(" ")
+        optimistic = Poetry::Core::Stimulus::Builder.new("poetry--core--optimistic-form",
+                                                         Poetry::Core::HTML::Attributes.new)
         options[:data][:action] = [
           options[:data][:action],
-          "turbo:submit-start->poetry--core--optimistic-form#apply " \
-          "turbo:submit-end->poetry--core--optimistic-form#reconcile"
+          optimistic.action(:apply, on: "turbo:submit-start"),
+          optimistic.action(:reconcile, on: "turbo:submit-end")
         ].compact.join(" ")
 
         form_with(**options) do |form|
@@ -220,7 +222,7 @@ module Poetry
       # The collapse toggle (lives in the inset): a ghost icon Button wired
       # to the sidebar controller on the wrapper.
       def poetry_sidebar_trigger(**attrs)
-        action = "click->poetry--core--sidebar#toggle"
+        action = Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click)
         render(Poetry::Ui::Button::Component.new(
                  variant: :ghost, size: :"icon-sm", label: "Toggle Sidebar",
                  data: { slot: "sidebar-trigger", action: action }, **attrs
@@ -233,7 +235,8 @@ module Poetry
         classes = [Poetry::Ui::Sidebar::Style.css(:rail), attrs.delete(:class)].compact.join(" ")
         content_tag(:button, nil, type: "button", "aria-label": "Toggle Sidebar", tabindex: "-1",
                                   title: "Toggle Sidebar", class: classes,
-                                  data: { slot: "sidebar-rail", action: "click->poetry--core--sidebar#toggle" },
+                                  data: { slot: "sidebar-rail",
+                                          action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) },
                                   **attrs)
       end
 

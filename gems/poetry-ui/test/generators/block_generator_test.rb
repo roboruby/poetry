@@ -54,5 +54,35 @@ module Poetry
         end
       end
     end
+
+    # The one generator template carrying Stimulus wiring: every
+    # hand-written token must stay manifest-valid (the template generates
+    # into HOST apps, where poetry check re-validates - this pins it at
+    # the source).
+    test "action_bar template wiring is manifest-valid" do
+      template = File.read(File.expand_path(
+                             "../../lib/generators/poetry/block/templates/action_bar.html.erb", __dir__
+                           ))
+      identifier = "poetry--core--action-bar"
+      definition = Poetry::Core::Stimulus::Manifest.definition(identifier)
+
+      assert definition, "action-bar controller missing from the manifest"
+      assert_includes template, %(data-controller="#{identifier}")
+      template.scan(/data-action="([^"]+)"/).flatten.flat_map(&:split).each do |token|
+        next unless token.include?(identifier)
+
+        method = token.split("#").last
+
+        assert_includes definition["methods"], method, "unknown action method #{method}"
+      end
+      template.scan(/data-#{identifier}-target="([^"]+)"/).flatten.each do |target|
+        assert_includes definition["targets"], target, "unknown target #{target}"
+      end
+      template.scan(/data-#{identifier}-([a-z-]+)-value=/).flatten.each do |key|
+        camel = key.split("-").each_with_index.map { |part, i| i.zero? ? part : part.capitalize }.join
+
+        assert_includes definition["values"].keys, camel, "unknown value #{key}"
+      end
+    end
   end
 end

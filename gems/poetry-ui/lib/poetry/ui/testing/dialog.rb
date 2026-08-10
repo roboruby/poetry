@@ -45,7 +45,8 @@ module Poetry
         # The trigger has no slot of its own - it is the consumer's Button
         # wired to the dialog controller's open action (the contract).
         def trigger
-          root.find("[data-action*='poetry--core--dialog#open']", match: :first)
+          root.find("[data-action*='#{Poetry::Ui::Dialog::Component.stimulus_action(:open)}']",
+                    match: :first)
         end
       end
     end
