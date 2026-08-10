@@ -27,6 +27,16 @@ module Poetry
         def announcing_status
           render_component(announce: :status) { "Searching the web…" }
         end
+
+        # The block icon path: other media in the decorative cell - the
+        # Spinner's own status role is hidden by the aria-hidden wrapper,
+        # the marker root announces.
+        def status_with_spinner
+          render_component(announce: :status) do |marker|
+            marker.with_icon { render(Spinner::Component.new) }
+            "Compacting conversation"
+          end
+        end
       end
     end
   end

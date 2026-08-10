@@ -5162,9 +5162,10 @@ components:
     slots:
     - name: icon
       many: false
-      component: poetry/ui/icon
       setter_args:
-        icon: 1
+        icon: 0
+      yieldless:
+      - icon
     description: A transcript divider or inline status marker for chat UIs.
     elements:
     - icon
@@ -5174,7 +5175,8 @@ components:
     - The marker text is real announced content - never mark it aria-hidden or role=separator.
     - 'announce: :status is for the ONE in-flight marker (streaming status); static
       dividers never announce.'
-    - Icons in markers ride the typed icon slot (decorative always).
+    - 'Icons ride the icon slot (decorative always): with_icon(name:) for a lucide
+      glyph, with_icon { } for other media (a Spinner mid-run).'
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
     parts:
     - name: marker

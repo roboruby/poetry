@@ -16,7 +16,8 @@ module Poetry
         AGENT_RULES = [
           "The marker text is real announced content - never mark it aria-hidden or role=separator.",
           "announce: :status is for the ONE in-flight marker (streaming status); static dividers never announce.",
-          "Icons in markers ride the typed icon slot (decorative always).",
+          "Icons ride the icon slot (decorative always): with_icon(name:) for a lucide glyph, " \
+          "with_icon { } for other media (a Spinner mid-run).",
           "Use variant: :separator for date/section breaks; :border under pinned headers."
         ].freeze
 
@@ -36,7 +37,16 @@ module Poetry
         part "marker-icon", "Decorative icon wrapper (aria-hidden always)"
         part "marker-content", "The label span - the marker text itself"
 
-        renders_one :icon, Poetry::Ui::Icon::Component
+        # name: renders the lucide icon; a block carries other media (a
+        # Spinner mid-run - upstream's MarkerIcon is a generic wrapper).
+        # Either way the template's aria-hidden icon cell keeps it
+        # decorative: a block Spinner's own status role is hidden, and
+        # the marker root does the announcing.
+        renders_one :icon, lambda { |name: nil, **options, &block|
+          next Poetry::Ui::Icon::Component.new(name: name, **options) if name
+
+          content_tag(:span, &block)
+        }
 
         def root_attributes
           attrs = { "data-slot" => "marker", "data-variant" => variant }.merge(component_data_attributes)
