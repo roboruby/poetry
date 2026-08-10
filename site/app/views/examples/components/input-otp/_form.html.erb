@@ -3,8 +3,11 @@
     the lost-access link is the muted description under the code; the
     footer stacks the full-width submit over the support line. Slot
     sizing is upstream's own override recipe, expressed as descendant
-    data-slot variants through the root class seam. %>
-<%= poetry_card(class: "mx-auto w-full max-w-md") do |card| %>
+    data-slot variants through the root class seam. w-min makes the card
+    hug the code row - the OTP is the widest unbreakable child, so label,
+    resend, and description all align to the input's edges (upstream gets
+    the same shrink from its preview flexbox). %>
+<%= poetry_card(class: "mx-auto w-min") do |card| %>
   <% card.with_title { "Verify your login" } %>
   <% card.with_description do %>
     Enter the verification code we sent to your email address:
