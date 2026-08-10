@@ -2268,6 +2268,12 @@
     "path": "/components/input-otp#alphanumeric"
   },
   {
+    "title": "Form",
+    "page": "Input Otp",
+    "section": "components",
+    "path": "/components/input-otp#form"
+  },
+  {
     "title": "Four digits",
     "page": "Input Otp",
     "section": "components",
