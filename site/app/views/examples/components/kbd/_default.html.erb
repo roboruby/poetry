@@ -1,1 +1,15 @@
-<%= poetry_kbd { "Esc" } %>
+<%# Upstream kbd-demo: the modifier row and a Ctrl+B chord - a group is
+    a plain inline-flex wrapper (the house grouping idiom, cf. Chord). %>
+<div class="flex flex-col items-center gap-4">
+  <div class="inline-flex items-center gap-1">
+    <%= poetry_kbd { "⌘" } %>
+    <%= poetry_kbd { "⇧" } %>
+    <%= poetry_kbd { "⌥" } %>
+    <%= poetry_kbd { "⌃" } %>
+  </div>
+  <div class="inline-flex items-center gap-1">
+    <%= poetry_kbd { "Ctrl" } %>
+    <span>+</span>
+    <%= poetry_kbd { "B" } %>
+  </div>
+</div>

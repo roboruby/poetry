@@ -2406,6 +2406,12 @@
     "path": "/components/kbd#command"
   },
   {
+    "title": "Group",
+    "page": "Kbd",
+    "section": "components",
+    "path": "/components/kbd#group"
+  },
+  {
     "title": "In button",
     "page": "Kbd",
     "section": "components",

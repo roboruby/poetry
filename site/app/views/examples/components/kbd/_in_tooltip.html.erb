@@ -1,9 +1,26 @@
-<%# A tooltip can name the key that fires an action. The Kbd renders inside
-    the floating content, so the shortcut reads right next to its label. %>
-<%= poetry_tooltip do |tooltip| %>
-  <% tooltip.with_trigger(variant: :outline) { "Comment" } %>
-  <span class="inline-flex items-center gap-2">
-    Add comment
-    <%= poetry_kbd { "C" } %>
-  </span>
-<% end %>
+<%# Upstream kbd-tooltip: each tooltip names its action and shows the
+    chord - the command symbol makes the shortcut read at a glance.
+    Poetry's tooltip root is a wrapper span, so the two triggers sit in
+    a plain row rather than a ButtonGroup. %>
+<div class="flex flex-wrap gap-2">
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Save" } %>
+    <span class="inline-flex items-center gap-2">
+      Save Changes
+      <span class="inline-flex items-center gap-1">
+        <%= poetry_kbd { "⌘" } %>
+        <%= poetry_kbd { "S" } %>
+      </span>
+    </span>
+  <% end %>
+  <%= poetry_tooltip do |tooltip| %>
+    <% tooltip.with_trigger(variant: :outline) { "Print" } %>
+    <span class="inline-flex items-center gap-2">
+      Print Document
+      <span class="inline-flex items-center gap-1">
+        <%= poetry_kbd { "⌘" } %>
+        <%= poetry_kbd { "P" } %>
+      </span>
+    </span>
+  <% end %>
+</div>
