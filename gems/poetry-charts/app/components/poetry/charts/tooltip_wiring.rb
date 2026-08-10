@@ -10,18 +10,48 @@ module Poetry
     module TooltipWiring
       CONTROLLER = "poetry--charts--tooltip"
 
-      SVG_ACTIONS = %W[
-        pointermove->#{CONTROLLER}#move
-        pointerleave->#{CONTROLLER}#leave
-        focus->#{CONTROLLER}#focus
-        blur->#{CONTROLLER}#blur
-        keydown->#{CONTROLLER}#keydown
-      ].join(" ").freeze
-
       # Every chart with a tooltip can join a sync group (C-W4, recharts
       # syncId): charts sharing a sync: broadcast/receive the active index.
+      #
+      # The wiring is declared, not hand-built: the frame carries the
+      # controller + sync value, the SVG carries the target and the
+      # pointer/keyboard actions (the accessibilityLayer floor), and the
+      # coordinates <script> is the data target the controller reads.
+      # Full-string identifier - :tooltip is ambiguous with core's.
       def self.included(base)
         base.option :sync, :string
+
+        base.use_stimulus do
+          on :frame do
+            controller CONTROLLER, if: :tooltip? do
+              register
+              value :sync, if: -> { sync.present? }
+            end
+          end
+          on :svg do
+            controller CONTROLLER, if: :tooltip? do
+              target :svg
+              action :move, on: :pointermove
+              action :leave, on: :pointerleave
+              action :focus, on: :focus
+              action :blur, on: :blur
+              action :keydown, on: :keydown
+            end
+          end
+          on :coordinates do
+            controller CONTROLLER, if: :tooltip? do
+              target :data
+            end
+          end
+          # Rendered BY the TooltipLayer child inside the frame - mirrored
+          # here so the family's contract owns its full anatomy (the gate
+          # flags phantom if the layer ever stops rendering it).
+          on :tooltip_layer do
+            controller CONTROLLER, if: :tooltip? do
+              target :tooltip
+            end
+          end
+        end
       end
 
       def tooltip_config
@@ -74,33 +104,15 @@ module Poetry
         end
       end
 
-      # data attributes for the frame div (display: contents) wrapping
-      # svg + chrome + coordinates. The motion controller (Phase A) rides
-      # the same element whenever animation is on; the live controller
-      # (Phase B) joins when live: is, wired so its updated dispatch
-      # re-reads the tooltip's coordinates mid-stream.
-      def frame_data
-        window = respond_to?(:window_features?) && window_features?
-        controllers = []
-        controllers << CONTROLLER if tooltip?
-        controllers << Motion::CONTROLLER if respond_to?(:animate?) && animate?
-        controllers << Live::CONTROLLER if respond_to?(:live?) && live?
-        controllers << Live::WINDOW_CONTROLLER if window
-
-        # Self-identification: the frame is the chart type's own
-        # root - the Container wrapper self-ids as "container", so without
-        # this the SVG anatomy would have no owner in the part contract.
-        data = { component: self.class.component_title }
-        data[:controller] = controllers.join(" ") if controllers.any?
-        actions = []
-        if controllers.include?(Live::CONTROLLER)
-          actions << "poetry-chart:update->#{Live::CONTROLLER}#receive"
-          actions << "#{Live::CONTROLLER}:updated->#{CONTROLLER}#refresh" if tooltip?
-        end
-        data[:action] = actions.join(" ") if actions.any?
-        data["#{CONTROLLER}-sync-value"] = sync if tooltip? && respond_to?(:sync) && sync.present?
-        data.merge!(window_frame_data) if window
-        data
+      # Attributes for the frame div (display: contents) wrapping svg +
+      # chrome + coordinates: the declared frame wiring - tooltip
+      # registration + sync here, whichever of motion/live/window the
+      # family mixes in declared by those modules - plus the
+      # self-identification: the frame is the chart type's own root (the
+      # Container wrapper self-ids as "container", so without this the
+      # SVG anatomy would have no owner in the part contract).
+      def frame_attributes
+        { "data-component" => self.class.component_title }.merge(stimulus_attributes_for(:frame))
       end
 
       # role=img for static charts; the accessibilityLayer contract when
@@ -108,21 +120,8 @@ module Poetry
       # Motion (Phase A) rides the same tag: data-animate + the
       # --poetry-motion-* knobs.
       def svg_interaction_attributes
-        base = if tooltip?
-                 {
-                   "role" => "application",
-                   "tabindex" => "0",
-                   "data-poetry--charts--tooltip-target" => "svg",
-                   "data-action" => SVG_ACTIONS
-                 }
-               else
-                 { "role" => "img" }
-               end
-        if respond_to?(:zoom?) && zoom?
-          zoom_actions = "pointerdown->#{Live::WINDOW_CONTROLLER}#startZoom " \
-                         "dblclick->#{Live::WINDOW_CONTROLLER}#reset"
-          base["data-action"] = [base["data-action"], zoom_actions].compact.join(" ")
-        end
+        base = tooltip? ? { "role" => "application", "tabindex" => "0" } : { "role" => "img" }
+        base.merge!(stimulus_attributes_for(:svg))
         respond_to?(:motion_svg_attributes) ? base.merge(motion_svg_attributes) : base
       end
 

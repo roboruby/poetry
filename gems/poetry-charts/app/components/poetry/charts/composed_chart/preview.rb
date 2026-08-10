@@ -42,6 +42,20 @@ module Poetry
             chart.with_tooltip
           end
         end
+
+        # A sync group member (C-W4, recharts syncId): charts sharing sync:
+        # broadcast/receive the active index - the sync value the stimulus
+        # contract holds to the DOM.
+        def synced
+          render_component(data: DATA, config: CONFIG, id: "composed-synced",
+                           sync: "composed-demo") do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :month, tick_formatter: ->(v) { v[0, 3] })
+            chart.with_bar(data_key: :visitors, radius: 4)
+            chart.with_line(data_key: :trend, stroke_width: 2, dots: true)
+            chart.with_tooltip
+          end
+        end
       end
     end
   end

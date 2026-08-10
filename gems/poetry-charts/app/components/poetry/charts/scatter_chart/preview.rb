@@ -76,6 +76,18 @@ module Poetry
             chart.with_tooltip
           end
         end
+
+        # A sync group member (C-W4): the sync value the stimulus contract
+        # holds to the DOM.
+        def synced
+          render_component(data: SAMPLE, config: ONE, id: "scatter-synced",
+                           margin: { left: 12, right: 12 }, sync: "scatter-demo") do |chart|
+            chart.with_x_axis(data_key: :height, name: "Height")
+            chart.with_y_axis(data_key: :weight, name: "Weight")
+            chart.with_scatter(key: :sample)
+            chart.with_tooltip
+          end
+        end
       end
     end
   end

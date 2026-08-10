@@ -83,6 +83,16 @@ module Poetry
             chart.with_center_label(title: "1,830", subtitle: "Visitors", compact: true)
           end
         end
+
+        # A sync group member (C-W4): the sync value the stimulus contract
+        # holds to the DOM.
+        def synced
+          render_component(data: DATA, config: CONFIG, id: "radial-synced", name_key: :browser,
+                           inner_radius: 30, outer_radius: 110, sync: "radial-demo") do |chart|
+            chart.with_radial_bar(data_key: :visitors, background: true)
+            chart.with_tooltip
+          end
+        end
       end
     end
   end

@@ -44,6 +44,16 @@ components:
     - frame
     - mount
     capsule: 9305db093df7
+    controllers:
+    - identifier: poetry--charts--adapter
+      targets:
+      - mount
+      - spec
+      values:
+      - engine
+      actions: []
+      events:
+      - poetry--charts--adapter:rendered
     agent_rules:
     - 'The adapter path takes series:/axes: ARGUMENTS (the closed spec), not slots.'
     - 'The host must register the engine first: registerChartAdapter(name, adapter)
@@ -51,6 +61,23 @@ components:
     - 'The Container contract still applies: config colors, --chart tokens, dark mode.'
     - Prefer the default engine; adapters are for engine-specific needs (e.g. >10k
       points on canvas).
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--adapter
+        registers: true
+        values:
+        - name: engine
+    - element: mount
+      controllers:
+      - identifier: poetry--charts--adapter
+        targets:
+        - name: mount
+    - element: spec
+      controllers:
+      - identifier: poetry--charts--adapter
+        targets:
+        - name: spec
   poetry/charts/area_chart:
     class_name: Poetry::Charts::AreaChart::Component
     identifier: poetry--charts--area_chart
@@ -203,6 +230,56 @@ components:
     - brush_window
     - brush_handle
     capsule: adf1ec3bc1d1
+    controllers:
+    - identifier: poetry--charts--live
+      targets:
+      - payload
+      values: []
+      actions:
+      - receive
+      - setWindow
+      - toggleSeries
+      - update
+      events:
+      - poetry--charts--live:settled
+      - poetry--charts--live:updated
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
+    - identifier: poetry--charts--window
+      targets: []
+      values:
+      - brush
+      - plot
+      - zoom
+      actions:
+      - reset
+      - startBrush
+      - startZoom
+      events: []
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:)
       / with_legend.'
@@ -214,6 +291,27 @@ components:
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
     parts:
+    - name: chart-brush
+      description: 'The brush strip group (with_brush): track + window + two handles
+        below the x axis'
+    - name: chart-brush-track
+      description: The full-width brush rail
+    - name: chart-brush-window
+      description: The selected-range rect the drag moves
+    - name: chart-brush-handle
+      description: One draggable window edge
+      states:
+      - attr: data-edge
+        condition: always - which edge
+        values:
+        - start
+        - end
+    - name: chart-zoom-selection
+      description: 'The zoom drag-selection overlay (zoom: true), hidden until a drag
+        starts'
+    - name: chart-live-payload
+      description: The embedded {spec, frame} JSON the live renderer recomputes geometry
+        from
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
         viewBox; role=img, or the focusable role=application accessibilityLayer when
@@ -280,6 +378,85 @@ components:
     - name: chart-coordinates
       description: The embedded per-index geometry payload (<script type=application/json>)
         the tooltip controller reads - zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+      - identifier: poetry--charts--live
+        conditional: if live?
+        registers: true
+        actions:
+        - method: receive
+          'on': poetry-chart:update
+      - identifier: poetry--charts--tooltip
+        conditional: if
+        actions:
+        - method: refresh
+          'on': poetry--charts--live:updated
+      - identifier: poetry--charts--window
+        conditional: if window_features?
+        registers: true
+        values:
+        - name: zoom
+        - name: plot
+        - name: brush
+          conditional: if
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--window
+        conditional: if zoom?
+        actions:
+        - method: startZoom
+          'on': pointerdown
+        - method: reset
+          'on': dblclick
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
+    - element: live_payload
+      controllers:
+      - identifier: poetry--charts--live
+        targets:
+        - name: payload
+    - element: brush
+      controllers:
+      - identifier: poetry--charts--window
+        conditional: if
+        actions:
+        - method: startBrush
+          'on': pointerdown
   poetry/charts/bar_chart:
     class_name: Poetry::Charts::BarChart::Component
     identifier: poetry--charts--bar_chart
@@ -451,6 +628,56 @@ components:
     - brush_handle
     - label
     capsule: b8433411927b
+    controllers:
+    - identifier: poetry--charts--live
+      targets:
+      - payload
+      values: []
+      actions:
+      - receive
+      - setWindow
+      - toggleSeries
+      - update
+      events:
+      - poetry--charts--live:settled
+      - poetry--charts--live:updated
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
+    - identifier: poetry--charts--window
+      targets: []
+      values:
+      - brush
+      - plot
+      - zoom
+      actions:
+      - reset
+      - startBrush
+      - startZoom
+      events: []
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:)
       / with_legend.'
@@ -465,6 +692,27 @@ components:
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
     parts:
+    - name: chart-brush
+      description: 'The brush strip group (with_brush): track + window + two handles
+        below the x axis'
+    - name: chart-brush-track
+      description: The full-width brush rail
+    - name: chart-brush-window
+      description: The selected-range rect the drag moves
+    - name: chart-brush-handle
+      description: One draggable window edge
+      states:
+      - attr: data-edge
+        condition: always - which edge
+        values:
+        - start
+        - end
+    - name: chart-zoom-selection
+      description: 'The zoom drag-selection overlay (zoom: true), hidden until a drag
+        starts'
+    - name: chart-live-payload
+      description: The embedded {spec, frame} JSON the live renderer recomputes geometry
+        from
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
         viewBox; role=img, or the focusable role=application accessibilityLayer when
@@ -530,6 +778,85 @@ components:
     - name: chart-coordinates
       description: The embedded per-index geometry payload (<script type=application/json>)
         the tooltip controller reads - zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+      - identifier: poetry--charts--live
+        conditional: if live?
+        registers: true
+        actions:
+        - method: receive
+          'on': poetry-chart:update
+      - identifier: poetry--charts--tooltip
+        conditional: if
+        actions:
+        - method: refresh
+          'on': poetry--charts--live:updated
+      - identifier: poetry--charts--window
+        conditional: if window_features?
+        registers: true
+        values:
+        - name: zoom
+        - name: plot
+        - name: brush
+          conditional: if
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--window
+        conditional: if zoom?
+        actions:
+        - method: startZoom
+          'on': pointerdown
+        - method: reset
+          'on': dblclick
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
+    - element: live_payload
+      controllers:
+      - identifier: poetry--charts--live
+        targets:
+        - name: payload
+    - element: brush
+      controllers:
+      - identifier: poetry--charts--window
+        conditional: if
+        actions:
+        - method: startBrush
+          'on': pointerdown
   poetry/charts/composed_chart:
     class_name: Poetry::Charts::ComposedChart::Component
     identifier: poetry--charts--composed_chart
@@ -686,6 +1013,33 @@ components:
     - reference_dot
     - error_bar
     capsule: 6947e8a26d43
+    controllers:
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
     agent_rules:
     - 'Mix marks freely: with_area / with_bar / with_line - declaration order is paint
       order.'
@@ -793,6 +1147,47 @@ components:
     - name: chart-coordinates
       description: The embedded per-index geometry payload (<script type=application/json>)
         the tooltip controller reads - zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
   poetry/charts/container:
     class_name: Poetry::Charts::Container::Component
     identifier: poetry--charts--container
@@ -1028,6 +1423,56 @@ components:
     - brush_handle
     - label
     capsule: b8433411927b
+    controllers:
+    - identifier: poetry--charts--live
+      targets:
+      - payload
+      values: []
+      actions:
+      - receive
+      - setWindow
+      - toggleSeries
+      - update
+      events:
+      - poetry--charts--live:settled
+      - poetry--charts--live:updated
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
+    - identifier: poetry--charts--window
+      targets: []
+      values:
+      - brush
+      - plot
+      - zoom
+      actions:
+      - reset
+      - startBrush
+      - startZoom
+      events: []
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'
@@ -1041,6 +1486,27 @@ components:
     - 'Entrance animation is on by default (recharts parity); animate: false for a
       static chart. Reduced-motion users always get the finished chart.'
     parts:
+    - name: chart-brush
+      description: 'The brush strip group (with_brush): track + window + two handles
+        below the x axis'
+    - name: chart-brush-track
+      description: The full-width brush rail
+    - name: chart-brush-window
+      description: The selected-range rect the drag moves
+    - name: chart-brush-handle
+      description: One draggable window edge
+      states:
+      - attr: data-edge
+        condition: always - which edge
+        values:
+        - start
+        - end
+    - name: chart-zoom-selection
+      description: 'The zoom drag-selection overlay (zoom: true), hidden until a drag
+        starts'
+    - name: chart-live-payload
+      description: The embedded {spec, frame} JSON the live renderer recomputes geometry
+        from
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
         viewBox; role=img, or the focusable role=application accessibilityLayer when
@@ -1117,6 +1583,85 @@ components:
     - name: chart-coordinates
       description: The embedded per-index geometry payload (<script type=application/json>)
         the tooltip controller reads - zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+      - identifier: poetry--charts--live
+        conditional: if live?
+        registers: true
+        actions:
+        - method: receive
+          'on': poetry-chart:update
+      - identifier: poetry--charts--tooltip
+        conditional: if
+        actions:
+        - method: refresh
+          'on': poetry--charts--live:updated
+      - identifier: poetry--charts--window
+        conditional: if window_features?
+        registers: true
+        values:
+        - name: zoom
+        - name: plot
+        - name: brush
+          conditional: if
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--window
+        conditional: if zoom?
+        actions:
+        - method: startZoom
+          'on': pointerdown
+        - method: reset
+          'on': dblclick
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
+    - element: live_payload
+      controllers:
+      - identifier: poetry--charts--live
+        targets:
+        - name: payload
+    - element: brush
+      controllers:
+      - identifier: poetry--charts--window
+        conditional: if
+        actions:
+        - method: startBrush
+          'on': pointerdown
   poetry/charts/pie_chart:
     class_name: Poetry::Charts::PieChart::Component
     identifier: poetry--charts--pie_chart
@@ -1199,6 +1744,33 @@ components:
     - center_title
     - center_subtitle
     capsule: 0e163387c077
+    controllers:
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
     agent_rules:
     - Rows carry their slice color in a fill key (var(--color-<name>)); the config
       maps names to labels.
@@ -1264,6 +1836,52 @@ components:
     - name: chart-coordinates
       description: The embedded JSON payload (<script>) the tooltip controller reads
         - per-category anchors and pre-formatted values, zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        actions:
+        - method: enter
+          'on': pointerover
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
   poetry/charts/radar_chart:
     class_name: Poetry::Charts::RadarChart::Component
     identifier: poetry--charts--radar_chart
@@ -1351,6 +1969,33 @@ components:
     - grid_fill
     - tick
     capsule: e07db6d1050e
+    controllers:
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
     agent_rules:
     - 'Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:)
       / with_legend.'
@@ -1421,6 +2066,52 @@ components:
     - name: chart-coordinates
       description: The embedded JSON payload (<script>) the tooltip controller reads
         - per-category anchors and pre-formatted values, zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        actions:
+        - method: enter
+          'on': pointerover
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
   poetry/charts/radial_bar_chart:
     class_name: Poetry::Charts::RadialBarChart::Component
     identifier: poetry--charts--radial_bar_chart
@@ -1529,6 +2220,33 @@ components:
     - center_title_compact
     - center_subtitle
     capsule: 753933f16121
+    controllers:
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
     agent_rules:
     - One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
     - 'background: true draws the muted track ring behind each bar (the gauge look).'
@@ -1600,6 +2318,52 @@ components:
     - name: chart-coordinates
       description: The embedded JSON payload (<script>) the tooltip controller reads
         - per-category anchors and pre-formatted values, zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        actions:
+        - method: enter
+          'on': pointerover
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
   poetry/charts/scatter_chart:
     class_name: Poetry::Charts::ScatterChart::Component
     identifier: poetry--charts--scatter_chart
@@ -1735,6 +2499,33 @@ components:
     - reference_dot
     - error_bar
     capsule: 132a5aba612e
+    controllers:
+    - identifier: poetry--charts--motion
+      targets: []
+      values: []
+      actions: []
+      events:
+      - poetry--charts--motion:settled
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
     agent_rules:
     - 'Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name
       the row keys to plot.'
@@ -1799,6 +2590,52 @@ components:
     - name: chart-coordinates
       description: The embedded per-index geometry payload (<script type=application/json>)
         the tooltip controller reads - zero chart math in the browser
+    stimulus:
+    - element: frame
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        registers: true
+        values:
+        - name: sync
+          conditional: if
+      - identifier: poetry--charts--motion
+        conditional: if animate?
+        registers: true
+    - element: svg
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: svg
+        actions:
+        - method: move
+          'on': pointermove
+        - method: leave
+          'on': pointerleave
+        - method: focus
+          'on': focus
+        - method: blur
+          'on': blur
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        actions:
+        - method: enter
+          'on': pointerover
+    - element: coordinates
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: data
+    - element: tooltip_layer
+      controllers:
+      - identifier: poetry--charts--tooltip
+        conditional: if tooltip?
+        targets:
+        - name: tooltip
   poetry/charts/tooltip_content:
     class_name: Poetry::Charts::TooltipContent::Component
     identifier: poetry--charts--tooltip_content
@@ -1898,6 +2735,33 @@ components:
     slots: []
     elements: []
     capsule: 3aa9cd90e2e1
+    controllers:
+    - identifier: poetry--charts--tooltip
+      targets:
+      - data
+      - svg
+      - tooltip
+      values:
+      - sync
+      actions:
+      - blur
+      - count
+      - enter
+      - focus
+      - keydown
+      - leave
+      - move
+      - refresh
+      - show
+      events:
+      - poetry--charts--tooltip:hide
+      - poetry--charts--tooltip:show
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--charts--tooltip
+        targets:
+        - name: tooltip
 helpers:
   poetry_chart:
     yields: the dispatched chart component

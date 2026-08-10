@@ -56,6 +56,19 @@ module Poetry
           two_series_chart(id: "area-axes") { |chart| chart.with_y_axis(tick_count: 3) }
         end
 
+        # The full live-window surface in one frame (see BarChart::Preview#
+        # live_window) - no tick_formatter: lambdas cannot ride the payload.
+        def live_window
+          render_component(data: DATA, config: ONE, id: "area-live", margin: MARGIN, live: true,
+                           zoom: true, sync: "area-demo") do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :month)
+            chart.with_area(data_key: :desktop)
+            chart.with_tooltip(indicator: :line)
+            chart.with_brush
+          end
+        end
+
         private
 
         def simple_chart(id:, curve: :natural, tooltip: false)

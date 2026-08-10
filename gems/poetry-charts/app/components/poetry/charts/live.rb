@@ -18,6 +18,60 @@ module Poetry
 
       def self.included(base)
         base.extend(ClassMethods)
+
+        # Declared after TooltipWiring's and Motion's frame wirings
+        # (include order IS emission order): live registration + the host
+        # update hook, the tooltip re-read on live's updated dispatch, and
+        # the window controller's server-computed rects. The SVG gains the
+        # zoom drag actions; the payload <script> is live's data target.
+        base.use_stimulus do
+          on :frame do
+            controller CONTROLLER, if: :live? do
+              register
+              action :receive, on: "poetry-chart:update"
+            end
+            controller TooltipWiring::CONTROLLER, if: -> { live? && tooltip? } do
+              action :refresh, on: event(CONTROLLER, :updated)
+            end
+            controller WINDOW_CONTROLLER, if: :window_features? do
+              register
+              value :zoom, from: :zoom?
+              value :plot, from: :window_plot_json
+              value :brush, from: :window_brush_json, if: -> { brush_config }
+            end
+          end
+          on :svg do
+            controller WINDOW_CONTROLLER, if: :zoom? do
+              action :startZoom, on: :pointerdown
+              action :reset, on: :dblclick
+            end
+          end
+          on :live_payload do
+            controller(CONTROLLER) { target :payload }
+          end
+          # Rendered by brush_svg via the stimulus_action descriptor -
+          # declared so the contract owns the token (and flags drift).
+          on :brush do
+            controller(WINDOW_CONTROLLER, if: -> { brush_config }) do
+              action :startBrush, on: :pointerdown
+            end
+          end
+        end
+
+        # The live-window anatomy (all server-rendered; the window
+        # controller only drags and repaints) - declared here so every
+        # live-capable family publishes the same styling surface.
+        base.part "chart-brush", "The brush strip group (with_brush): track + window + two " \
+                                 "handles below the x axis"
+        base.part "chart-brush-track", "The full-width brush rail"
+        base.part "chart-brush-window", "The selected-range rect the drag moves"
+        base.part "chart-brush-handle", "One draggable window edge",
+                  states: { "data-edge" => { condition: "always - which edge",
+                                             values: %w[start end] } }
+        base.part "chart-zoom-selection", "The zoom drag-selection overlay (zoom: true), " \
+                                          "hidden until a drag starts"
+        base.part "chart-live-payload", "The embedded {spec, frame} JSON the live renderer " \
+                                        "recomputes geometry from"
       end
 
       module ClassMethods
@@ -86,7 +140,7 @@ module Poetry
         handle = 6.0
 
         tag.g("data-slot": "chart-brush", "aria-hidden": true,
-              "data-action": "pointerdown->#{WINDOW_CONTROLLER}#startBrush") do
+              "data-action": stimulus_action(:startBrush, on: :pointerdown)) do
           safe_join([
                       tag.rect(class: css(:brush_track), "data-slot": "chart-brush-track",
                                x: fnum(left), y: fnum(top), width: fnum(width),
@@ -114,22 +168,16 @@ module Poetry
                  "fill-opacity": 0.15, display: "none")
       end
 
-      # Stimulus values for the window controller: the plot rect and the
-      # brush strip rect, server-computed (the controller's only layout
-      # math is fractions of these).
-      def window_frame_data
-        return {} unless window_features?
+      # Value readers for the window controller's declared frame wiring:
+      # the plot rect and the brush strip rect, server-computed (the
+      # controller's only layout math is fractions of these).
+      def window_plot_json
+        [cartesian.plot_left, cartesian.plot_right, cartesian.plot_top, cartesian.plot_bottom].to_json
+      end
 
-        data = {
-          "#{WINDOW_CONTROLLER}-zoom-value" => zoom?.to_s,
-          "#{WINDOW_CONTROLLER}-plot-value" =>
-            [cartesian.plot_left, cartesian.plot_right, cartesian.plot_top, cartesian.plot_bottom].to_json
-        }
-        if (config = brush_config)
-          data["#{WINDOW_CONTROLLER}-brush-value"] =
-            [cartesian.plot_left, brush_top, cartesian.plot_right - cartesian.plot_left, config[:height]].to_json
-        end
-        data
+      def window_brush_json
+        [cartesian.plot_left, brush_top, cartesian.plot_right - cartesian.plot_left,
+         brush_config[:height]].to_json
       end
 
       def live_payload

@@ -32,13 +32,25 @@ function publicMethods(klass) {
     .sort()
 }
 
+// poetry-core's manifest shape: values serialize as {name: {type, default}}
+// objects, not bare name arrays - Ruby's use_stimulus declaration
+// validation and the registry both call .keys on the values map.
+const serializeValues = (values = {}) =>
+  Object.fromEntries(Object.entries(values).map(([name, definition]) => {
+    const expanded = typeof definition === "function" ? { type: definition } : definition
+    return [name, {
+      type: expanded.type.name,
+      ...(Object.hasOwn(expanded, "default") ? { default: expanded.default } : {})
+    }]
+  }))
+
 function introspect() {
   return Object.fromEntries(
     Object.entries(CONTROLLERS).map(([identifier, klass]) => [
       identifier,
       {
         targets: [...(klass.targets ?? [])].sort(),
-        values: Object.keys(klass.values ?? {}).sort(),
+        values: serializeValues(klass.values),
         methods: publicMethods(klass),
         events: [...(klass.events ?? [])].sort(),
       },

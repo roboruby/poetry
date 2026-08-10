@@ -266,12 +266,12 @@ module Poetry
           label.presence || "Radar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
         end
 
-        def svg_interaction_attributes
-          attributes = super
-          if tooltip?
-            attributes["data-action"] = "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
+        # Vertex dots are hit by pointerover, not bisect - the svg gains
+        # the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
           end
-          attributes
         end
 
         # The polar center, so the motion stylesheet can scale the entrance

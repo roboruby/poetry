@@ -8,6 +8,14 @@ module Poetry
       # (names and indicator colors resolved server-side), positioned and
       # text-swapped by the poetry--charts--tooltip controller.
       class Component < Poetry::Core::Component
+        # The box is the parent frame controller's tooltip target - no
+        # registration here (TooltipWiring registers on the chart frame).
+        use_stimulus do
+          on :root do
+            controller(TooltipWiring::CONTROLLER) { target :tooltip }
+          end
+        end
+
         option :config, ActiveModel::Type::Value.new, required: true
         option :series_keys, ActiveModel::Type::Value.new, required: true
         option :indicator, :symbol, default: :dot
@@ -28,9 +36,9 @@ module Poetry
           html_attributes.merge_if_not_set(
             {
               "data-slot" => "chart-tooltip",
-              "data-poetry--charts--tooltip-target" => "tooltip",
               "hidden" => ""
-            }.merge(component_data_attributes)
+            }.merge(stimulus_attributes_for(:root))
+              .merge(component_data_attributes)
           )
         end
       end

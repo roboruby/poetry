@@ -232,14 +232,13 @@ module Poetry
           label.presence || "Pie chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
         end
 
-        # Pie slices are hit by pointerover on the marked sector, not bisect.
-        def svg_interaction_attributes
-          attributes = super
-          if tooltip?
-            attributes["data-action"] =
-              "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
+        # Pie slices are hit by pointerover on the marked sector, not
+        # bisect - the svg gains the enter action after the module's
+        # pointer/keyboard set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
           end
-          attributes
         end
 
         def tooltip_layer_component

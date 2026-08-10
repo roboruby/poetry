@@ -279,14 +279,12 @@ module Poetry
           )
         end
 
-        # Points are hit by pointerover on the marked circle, not bisect.
-        def svg_interaction_attributes
-          attributes = super
-          if tooltip?
-            attributes["data-action"] =
-              "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
+        # Points are hit by pointerover on the marked circle, not bisect -
+        # the svg gains the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
           end
-          attributes
         end
 
         def chart_id

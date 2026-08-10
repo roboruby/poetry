@@ -85,6 +85,15 @@ module Poetry
             chart.with_pie(data_key: :visitors, name_key: :browser, inner_radius: 60, active_index: 0)
           end
         end
+
+        # A sync group member (C-W4): the sync value the stimulus contract
+        # holds to the DOM.
+        def synced
+          render_component(data: DATA, config: CONFIG, id: "pie-synced", sync: "pie-demo") do |chart|
+            chart.with_pie(data_key: :visitors, name_key: :browser)
+            chart.with_tooltip
+          end
+        end
       end
     end
   end

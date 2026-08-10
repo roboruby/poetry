@@ -70,6 +70,17 @@ module Poetry
           end
         end
 
+        # A sync group member (C-W4): the sync value the stimulus contract
+        # holds to the DOM.
+        def synced
+          render_component(data: DATA, config: ONE, id: "radar-synced", sync: "radar-demo") do |chart|
+            chart.with_angle_axis(data_key: :month)
+            chart.with_grid
+            chart.with_radar(data_key: :desktop)
+            chart.with_tooltip
+          end
+        end
+
         private
 
         def simple(id:, dots: false, grid_type: :polygon)

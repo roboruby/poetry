@@ -5,9 +5,11 @@
       "svg",
       "tooltip"
     ],
-    "values": [
-      "sync"
-    ],
+    "values": {
+      "sync": {
+        "type": "String"
+      }
+    },
     "methods": [
       "blur",
       "connect",
@@ -31,9 +33,11 @@
       "mount",
       "spec"
     ],
-    "values": [
-      "engine"
-    ],
+    "values": {
+      "engine": {
+        "type": "String"
+      }
+    },
     "methods": [
       "connect",
       "disconnect"
@@ -44,7 +48,7 @@
   },
   "poetry--charts--motion": {
     "targets": [],
-    "values": [],
+    "values": {},
     "methods": [
       "connect",
       "disconnect"
@@ -57,7 +61,7 @@
     "targets": [
       "payload"
     ],
-    "values": [],
+    "values": {},
     "methods": [
       "connect",
       "disconnect",
@@ -73,11 +77,17 @@
   },
   "poetry--charts--window": {
     "targets": [],
-    "values": [
-      "brush",
-      "plot",
-      "zoom"
-    ],
+    "values": {
+      "zoom": {
+        "type": "Boolean"
+      },
+      "plot": {
+        "type": "Array"
+      },
+      "brush": {
+        "type": "Array"
+      }
+    },
     "methods": [
       "connect",
       "disconnect",

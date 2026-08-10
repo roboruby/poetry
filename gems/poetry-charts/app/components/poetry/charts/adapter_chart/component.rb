@@ -19,6 +19,24 @@ module Poetry
           "Prefer the default engine; adapters are for engine-specific needs (e.g. >10k points on canvas)."
         ].freeze
 
+        # The adapter seam's whole JS surface: the frame registers the
+        # controller with the engine name, the mount div and the spec
+        # <script> are its two targets.
+        use_stimulus do
+          on :frame do
+            controller "poetry--charts--adapter" do
+              register
+              value :engine
+            end
+          end
+          on :mount do
+            controller("poetry--charts--adapter") { target :mount }
+          end
+          on :spec do
+            controller("poetry--charts--adapter") { target :spec }
+          end
+        end
+
         option :type, :symbol, required: true
         option :engine, :string, required: true
         option :data, ActiveModel::Type::Value.new, required: true

@@ -94,6 +94,21 @@ module Poetry
             chart.with_bar(data_key: :visitors, radius: 5, color_key: :fill)
           end
         end
+
+        # The full live-window surface in one frame - the client renderer
+        # (live:), the zoom drag, the brush strip, and a sync group: the
+        # wiring the stimulus contract holds to the DOM. No tick_formatter
+        # (lambdas cannot ride the live payload).
+        def live_window
+          render_component(data: DATA, config: ONE, id: "bar-live", live: true, zoom: true,
+                           sync: "bar-demo") do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :month)
+            chart.with_bar(data_key: :desktop, radius: 8)
+            chart.with_tooltip(hide_label: true)
+            chart.with_brush
+          end
+        end
       end
     end
   end

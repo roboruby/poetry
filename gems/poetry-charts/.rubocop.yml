@@ -22,6 +22,11 @@ Layout/LineLength:
   Max: 120
 
 Metrics/BlockLength:
+  # use_stimulus declaration blocks are the component's wiring contract -
+  # element-major and legitimately long on multi-element components
+  # (same posture as poetry-ui).
+  AllowedMethods:
+    - use_stimulus
   Exclude:
     - "test/**/*"
     - "*.gemspec"

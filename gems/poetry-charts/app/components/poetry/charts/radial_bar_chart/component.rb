@@ -365,12 +365,12 @@ module Poetry
           label.presence || "Radial bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
         end
 
-        def svg_interaction_attributes
-          attributes = super
-          if tooltip?
-            attributes["data-action"] = "#{attributes["data-action"]} pointerover->#{TooltipWiring::CONTROLLER}#enter"
+        # Arcs are hit by pointerover on the marked sector, not bisect -
+        # the svg gains the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
           end
-          attributes
         end
 
         def tooltip_layer_component

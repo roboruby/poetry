@@ -86,6 +86,19 @@ module Poetry
           end
         end
 
+        # The full live-window surface in one frame (see BarChart::Preview#
+        # live_window) - no tick_formatter: lambdas cannot ride the payload.
+        def live_window
+          render_component(data: DATA, config: ONE, id: "line-live", margin: MARGIN, live: true,
+                           zoom: true, sync: "line-demo") do |chart|
+            chart.with_grid
+            chart.with_x_axis(data_key: :month)
+            chart.with_line(data_key: :desktop)
+            chart.with_tooltip(hide_label: true)
+            chart.with_brush
+          end
+        end
+
         private
 
         def simple_chart(id:, curve: :natural, dots: false, tooltip: false)

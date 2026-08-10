@@ -1,5 +1,5 @@
 <%= render Poetry::Charts::Container::Component.new(config: chart_config, id: chart_id.delete_prefix("chart-")) do %>
-  <%= content_tag(:div, class: css(:frame), data: frame_data) do %>
+  <%= content_tag(:div, frame_attributes.merge("class" => css(:frame))) do %>
   <svg viewBox="0 0 <%= width %> <%= height %>" class="<%= css(:svg) %>" data-slot="chart-svg" aria-label="<%= svg_label %>" preserveAspectRatio="xMidYMid meet" <%= tag.attributes(svg_interaction_attributes) %>>
     <% if grid? %>
       <g data-slot="chart-grid" aria-hidden="true">
@@ -50,6 +50,6 @@
     <%= render legend_component %>
   <% end %>
   <% if tooltip? %><%= render tooltip_layer_component %><% end %>
-  <script type="application/json" data-slot="chart-coordinates"<% if tooltip? %> data-poetry--charts--tooltip-target="data"<% end %>><%= script_json(coordinates_json) %></script>
+  <script type="application/json" data-slot="chart-coordinates" <%= tag.attributes(stimulus_attributes_for(:coordinates)) %>><%= script_json(coordinates_json) %></script>
   <% end %>
 <% end %>

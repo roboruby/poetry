@@ -9,6 +9,16 @@ module Poetry
       config.autoload_paths << "#{Poetry::Charts.root}/app/components"
       config.eager_load_paths << "#{Poetry::Charts.root}/app/components"
 
+      # The charts controllers manifest joins core's catalog, so the
+      # Builder and use_stimulus declarations validate poetry--charts--*
+      # names exactly like core's own (runs before components load -
+      # declarations validate at class-load time).
+      initializer "poetry_charts.controllers_manifest", before: :eager_load! do
+        Poetry::Core::Stimulus::Manifest.register(
+          "#{Poetry::Charts.root}/config/controllers_manifest.json"
+        )
+      end
+
       initializer "poetry_charts.helpers" do
         ActiveSupport.on_load(:action_view) do
           include Poetry::Charts::ComponentsHelper

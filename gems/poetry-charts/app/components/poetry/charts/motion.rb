@@ -16,6 +16,15 @@ module Poetry
 
       def self.included(base)
         base.extend(ClassMethods)
+
+        # The motion controller rides the same frame element TooltipWiring
+        # declares (include order IS emission order: tooltip, motion, then
+        # live/window).
+        base.use_stimulus do
+          on :frame do
+            controller(CONTROLLER, if: :animate?) { register }
+          end
+        end
       end
 
       module ClassMethods
