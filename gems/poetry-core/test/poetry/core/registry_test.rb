@@ -18,6 +18,23 @@ module Poetry
         end
       end
 
+      # use_stimulus declarations feed the registry's controllers section
+      # directly (the constant scan remains for unmigrated components).
+      module DeclaredProbe
+        class Component < Poetry::Core::Component
+          use_stimulus do
+            on :root do
+              controller(:accordion) { register }
+              controller("host-thing") { register }
+            end
+          end
+
+          def call
+            content_tag(:div, content, **stimulus_attributes_for(:root))
+          end
+        end
+      end
+
       def registry
         # Explicit component list: descendant discovery inside the test suite
         # would pick up test-defined probe components.
@@ -26,6 +43,15 @@ module Poetry
 
       def test_entries_are_keyed_by_component_path
         assert_equal %w[poetry/core/generic poetry/core/x], registry.entries.keys.sort
+      end
+
+      def test_controllers_come_from_use_stimulus_declarations
+        entry = Registry.new(components: [DeclaredProbe::Component])
+                        .entries.fetch("poetry/core/registry_test/declared_probe")
+        controllers = entry.fetch("controllers")
+
+        assert_equal(["poetry--core--accordion"], controllers.map { |c| c["identifier"] })
+        assert_includes controllers.first["actions"], "toggle"
       end
 
       def test_entry_carries_the_introspected_surface

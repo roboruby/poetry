@@ -200,11 +200,21 @@ module Poetry
         entry
       end
 
-      # The controller-identifier constants a component defines/inherits
-      # (Sheet reuses Dialog's), formatted to identifiers and joined to the
-      # manifest. A constant qualifies when its value is an array of symbols
-      # beginning [:poetry, :core, ...] - exactly the Builder identifier shape.
+      # The controllers a component wires, joined to the manifest. Two
+      # sources: use_stimulus declarations (exact - the resolved
+      # identifiers of every declared element) and, for components not yet
+      # migrated to declarations, the legacy constant scan - an array of
+      # symbols beginning [:poetry, :core, ...] is exactly the Builder
+      # identifier shape.
       def wired_controllers(component)
+        identifiers = []
+        if component.respond_to?(:stimulus_identifiers)
+          # Manifest-known only: host-app controllers declared by a
+          # component are not poetry's to document.
+          identifiers += component.stimulus_identifiers
+                                  .select { |id| Poetry::Core::Stimulus::Manifest.catalog.key?(id) }
+        end
+
         # Constants live inconsistently: some components define them on the
         # Component class (Checkbox::CHECKED), others on the enclosing module
         # (Select::SELECT/POPPER), and subclasses inherit them (Sheet reuses
@@ -213,7 +223,7 @@ module Poetry
         scopes = [component]
         scopes << component.module_parent if component.respond_to?(:module_parent)
 
-        identifiers = scopes.flat_map do |scope|
+        identifiers += scopes.flat_map do |scope|
           own = scope.equal?(component) # inherited only matters for the class
           scope.constants(own).filter_map do |name|
             value = scope.const_get(name)
