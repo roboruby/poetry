@@ -58,7 +58,10 @@ module Poetry
 
         use_stimulus do
           on :root do
-            controller :tooltip do
+            # Full identifier: the bare :tooltip suffix is ambiguous the
+            # moment a host also loads poetry-charts (poetry--charts--
+            # tooltip joins the manifest catalog).
+            controller "poetry--core--tooltip" do
               register
               value :open
               # Inherit-from-provider: unset renders NO attribute - the
@@ -77,7 +80,7 @@ module Poetry
           # excluded, once per hover), pointerdown/click close, focus opens
           # instantly / blur closes.
           on :trigger do
-            controller :tooltip do
+            controller "poetry--core--tooltip" do
               action :pointer_move, on: :pointermove
               action :pointer_leave, on: :pointerleave
               action :pointer_down, on: :pointerdown
