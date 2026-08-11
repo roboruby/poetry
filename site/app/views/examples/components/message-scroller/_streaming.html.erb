@@ -7,7 +7,8 @@
     Streams targeting the content element (id "chat-stream-messages"). %>
 <div data-controller="demo-chat" class="mx-auto w-full max-w-sm">
   <%= poetry_card(class: "flex h-[34rem] w-full flex-col gap-0 overflow-hidden",
-                  content_class: "flex min-h-0 flex-1 flex-col p-0") do |card| %>
+                  content_class: "flex min-h-0 flex-1 flex-col p-0",
+                  header_class: "border-b pb-4") do |card| %>
     <% card.with_title { "New Chat" } %>
     <% card.with_description { "How can I help you today?" } %>
     <% card.with_action do %>
