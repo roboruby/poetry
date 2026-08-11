@@ -1,0 +1,17 @@
+<%# Skip renders only while the active item is OPTIONAL - it marks the
+    question skipped and advances (on the last question it submits).
+    Answering later clears the skipped status. %>
+<%= poetry_questionnaire(url: "#", class: "w-full max-w-md") do |q| %>
+  <% q.with_progress %>
+  <% q.with_item(name: "referral", title: "Where did you hear about us?",
+                 description: "Optional - skip if you would rather not say.") do |item| %>
+    <% item.with_choice(value: "friend", label: "A friend or colleague") %>
+    <% item.with_choice(value: "social", label: "Social media") %>
+    <% item.with_choice(value: "search", label: "Search") %>
+  <% end %>
+  <% q.with_item(name: "team-size", title: "How big is your team?", required: true) do |item| %>
+    <% item.with_choice(value: "solo", label: "Just me") %>
+    <% item.with_choice(value: "small", label: "2-10") %>
+    <% item.with_choice(value: "large", label: "More than 10") %>
+  <% end %>
+<% end %>

@@ -3066,6 +3066,48 @@
     "path": "/components/progress#label"
   },
   {
+    "title": "Questionnaire",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire"
+  },
+  {
+    "title": "Installation",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#default"
+  },
+  {
+    "title": "Shortcuts",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#shortcuts"
+  },
+  {
+    "title": "Skip",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#skip"
+  },
+  {
+    "title": "Validation",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#validation"
+  },
+  {
+    "title": "Wiring",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#wiring"
+  },
+  {
     "title": "Radio Group",
     "page": "Radio Group",
     "section": "components",

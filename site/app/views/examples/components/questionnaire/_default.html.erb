@@ -1,0 +1,34 @@
+<%# The hero flow: a required single choice with a free answer, an
+    optional multi-select (Skip appears), and a required closer.
+    Letter shortcuts answer with one keystroke; Cmd/Ctrl+Enter
+    confirms; ArrowLeft/Right navigate. The root is a REAL form -
+    answers submit as ordinary params. %>
+<%= poetry_questionnaire(url: "#", shortcuts: :letters, class: "w-full max-w-md") do |q| %>
+  <% q.with_progress %>
+  <% q.with_item(name: "direction", title: "What should the agent build next?",
+                 description: "Choose a direction or describe another task.",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "tool-calls", label: "Tool call timeline",
+                        description: "Show what the agent ran and what came back.") %>
+    <% item.with_choice(value: "approvals", label: "Approval checkpoints",
+                        description: "Ask before sensitive or destructive actions.") %>
+    <% item.with_choice(value: "handoffs", label: "Sub-agent handoffs",
+                        description: "Make delegated work easier to follow.") %>
+    <% item.with_input(label: "Another agent feature", placeholder: "Describe another feature…") %>
+  <% end %>
+  <% q.with_item(name: "signals", title: "What should every progress update include?",
+                 description: "Select all that apply, or skip this question.",
+                 multiple: true) do |item| %>
+    <% item.with_choice(value: "progress", label: "Progress") %>
+    <% item.with_choice(value: "decisions", label: "Decisions") %>
+    <% item.with_choice(value: "risks", label: "Risks") %>
+    <% item.with_choice(value: "next-step", label: "Next step") %>
+  <% end %>
+  <% q.with_item(name: "timing", title: "When should work begin?",
+                 description: "Choose when the agent should begin the work.",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "now", label: "Start now") %>
+    <% item.with_choice(value: "next-cycle", label: "Next development cycle") %>
+    <% item.with_choice(value: "backlog", label: "Add it to the backlog") %>
+  <% end %>
+<% end %>

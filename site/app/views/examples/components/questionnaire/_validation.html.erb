@@ -1,0 +1,17 @@
+<%# required: true gates Next - press it unanswered and the error shows
+    (role=alert), clearing the moment an answer lands. The server
+    remains the truth on submit: re-render an invalid item with error:
+    for the server-side message. %>
+<%= poetry_questionnaire(url: "#", class: "w-full max-w-md") do |q| %>
+  <% q.with_progress %>
+  <% q.with_item(name: "plan", title: "Which plan fits best?",
+                 description: "Press Next without answering to see the validation.",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "starter", label: "Starter") %>
+    <% item.with_choice(value: "team", label: "Team") %>
+  <% end %>
+  <% q.with_item(name: "seats", title: "How many seats?", required: true) do |item| %>
+    <% item.with_choice(value: "five", label: "Up to 5") %>
+    <% item.with_choice(value: "twenty", label: "Up to 20") %>
+  <% end %>
+<% end %>
