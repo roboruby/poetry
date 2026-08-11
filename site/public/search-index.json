@@ -3012,6 +3012,12 @@
     "path": "/components/popover#with-anchor"
   },
   {
+    "title": "With form",
+    "page": "Popover",
+    "section": "components",
+    "path": "/components/popover#with-form"
+  },
+  {
     "title": "Wiring",
     "page": "Popover",
     "section": "components",
