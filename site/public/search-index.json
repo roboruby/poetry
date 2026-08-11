@@ -3162,6 +3162,12 @@
     "path": "/components/radio-group#disabled"
   },
   {
+    "title": "Fieldset",
+    "page": "Radio Group",
+    "section": "components",
+    "path": "/components/radio-group#fieldset"
+  },
+  {
     "title": "Horizontal layout",
     "page": "Radio Group",
     "section": "components",
