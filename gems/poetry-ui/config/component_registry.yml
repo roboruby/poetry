@@ -6557,7 +6557,9 @@ components:
     - content
     - ellipsis
     - label
-    capsule: f9a5513c2b6e
+    - edge_previous
+    - edge_next
+    capsule: 2a43a1839dd2
     agent_rules:
     - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
       list.

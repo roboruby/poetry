@@ -14,6 +14,13 @@ module Poetry
         element :ellipsis, "cn-pagination-ellipsis flex items-center justify-center"
         # The label span on prev/next: hidden below sm (icon-only on mobile).
         element :label, "hidden sm:block"
+        # The edge-padding trim (upstream parity): the chevron side pulls
+        # in so the glyph's optical whitespace doesn't read as extra
+        # hover-box padding. Lives HERE because safelists harvest Style
+        # dictionaries and templates - a class string inside component.rb
+        # never compiles in any host.
+        element :edge_previous, "pl-2!"
+        element :edge_next, "pr-2!"
       end
     end
   end

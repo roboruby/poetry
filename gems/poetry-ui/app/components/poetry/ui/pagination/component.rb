@@ -121,8 +121,8 @@ module Poetry
           options
         end
 
-        def previous_options = edge_options(current - 1, "Go to previous page", "pl-2!")
-        def next_options = edge_options(current + 1, "Go to next page", "pr-2!")
+        def previous_options = edge_options(current - 1, "Go to previous page", css(:edge_previous))
+        def next_options = edge_options(current + 1, "Go to next page", css(:edge_next))
 
         def root_attributes
           html_attributes.merge_if_not_set(
