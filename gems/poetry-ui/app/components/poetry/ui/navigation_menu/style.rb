@@ -26,8 +26,13 @@ module Poetry
         # Tailwind variants - upstream's own strings are malformed and
         # compile to nothing, the W4c compiled-CSS catch): content slides
         # in FROM the travel direction and out the other way.
+        # h-full is the VIEWPORT-mode contract (the panel fills the
+        # morphing popup box); inline panels size to their content - an
+        # unscoped h-full clamps them to the 36px list item and the
+        # popover chrome paints short of the rows.
         element :content,
-                "cn-navigation-menu-content h-full w-auto " \
+                "cn-navigation-menu-content w-auto " \
+                "group-data-[viewport=true]/navigation-menu:h-full " \
                 "transition-[opacity,transform,translate] duration-[0.35s] " \
                 "ease-[cubic-bezier(0.22,1,0.36,1)] " \
                 "group-data-[viewport=false]/navigation-menu:duration-300 " \

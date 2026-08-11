@@ -6158,7 +6158,7 @@ components:
     - viewport_shell
     - viewport_panel
     - link
-    capsule: df9fd9371376
+    capsule: 9551c8f6a039
     controllers:
     - identifier: poetry--core--navigation-menu
       targets: []
