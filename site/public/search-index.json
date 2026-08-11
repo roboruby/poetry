@@ -2934,6 +2934,12 @@
     "path": "/components/pagination#first-page"
   },
   {
+    "title": "Icons only",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#icons-only"
+  },
+  {
     "title": "Long range",
     "page": "Pagination",
     "section": "components",
@@ -2944,6 +2950,12 @@
     "page": "Pagination",
     "section": "components",
     "path": "/components/pagination#short-range"
+  },
+  {
+    "title": "Simple",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#simple"
   },
   {
     "title": "Popover",
