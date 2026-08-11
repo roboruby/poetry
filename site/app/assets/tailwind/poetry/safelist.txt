@@ -812,6 +812,7 @@ group-data-[upload-state=error]/attachment:text-destructive/80
 group-data-[upload-state=processing]/attachment:shimmer
 group-data-[upload-state=uploading]/attachment:shimmer
 group-data-[viewport=false]/navigation-menu:duration-300
+group-data-[viewport=true]/navigation-menu:h-full
 group-data-open/navigation-menu-trigger:rotate-180
 group-data-popup-open/navigation-menu-trigger:rotate-180
 group-data-vertical/tabs:flex-col
@@ -1068,6 +1069,7 @@ peer-data-[size=sm]/menu-button:top-1
 peer-data-active/menu-button:text-sidebar-accent-foreground
 peer-disabled:cursor-not-allowed
 peer/menu-button
+pl-2!
 pl-4
 pl-[calc(0.5rem+(var(--poetry-tree-level)-1)*1.25rem)]
 place-content-center
@@ -1075,6 +1077,7 @@ place-items-center
 pointer-events-auto
 pointer-events-none
 pr-2
+pr-2!
 pt-1
 pt-4
 px-2
