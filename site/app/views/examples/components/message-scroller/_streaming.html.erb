@@ -38,6 +38,7 @@
             <% end %>
             <% menu.with_group do |group| %>
               <% group.with_item do %><%= poetry_icon(name: :paperclip) %>Add Photos & Files<% end %>
+              <% group.with_separator %>
               <% group.with_item do %><%= poetry_icon(name: :image) %>Create Image<% end %>
               <% group.with_item do %><%= poetry_icon(name: :telescope) %>Deep Research<% end %>
               <% group.with_item do %><%= poetry_icon(name: :globe) %>Web Search<% end %>
