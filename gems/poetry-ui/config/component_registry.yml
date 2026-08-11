@@ -6926,16 +6926,25 @@ components:
     - 'shortcuts: :letters or :numbers labels each choice with a key (server-rendered)
       and enables one-keystroke answering.'
     - Skip renders only while the active item is optional - never force-hide it.
+    - with_progress { custom } replaces the readout; data-current/data-total on the
+      progress element and a [data-progress-count] child stay live for segment bars
+      and counters.
     parts:
     - name: questionnaire
       description: The root <form> the controller drives - navigation, validation
         gating, and the keyboard map all ride here
     - name: questionnaire-progress
       description: The polite progressbar ('Question X of Y'; block content replaces
-        the text)
+        the text). Always carries live data-current/data-total, and a [data-progress-count]
+        child gets the live 'X of Y' text - custom segment bars ride data-[current=N]
+        variants
       states:
       - attr: data-custom
         condition: block content supplied - the controller leaves the text alone
+      - attr: data-current
+        condition: always - the active question number (live)
+      - attr: data-total
+        condition: always - the enabled question count (live)
     - name: questionnaire-item
       description: One question <fieldset> - exactly one is active
       states:

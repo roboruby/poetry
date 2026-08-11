@@ -4,6 +4,8 @@
     <div <%= tag.attributes({ "class" => css(:progress), "data-slot" => "questionnaire-progress",
                               "role" => "progressbar", "aria-label" => "Questionnaire progress",
                               "aria-live" => "polite",
+                              "data-current" => active_index + 1,
+                              "data-total" => enabled_items.size,
                               "aria-valuemin" => "1",
                               "aria-valuemax" => enabled_items.size,
                               "aria-valuenow" => active_index + 1,

@@ -33,7 +33,10 @@ module Poetry
           "required: true gates Next/submit client-side; the server stays the truth on submit.",
           "shortcuts: :letters or :numbers labels each choice with a key (server-rendered) " \
           "and enables one-keystroke answering.",
-          "Skip renders only while the active item is optional - never force-hide it."
+          "Skip renders only while the active item is optional - never force-hide it.",
+          "with_progress { custom } replaces the readout; data-current/data-total on the " \
+          "progress element and a [data-progress-count] child stay live for segment bars " \
+          "and counters."
         ].freeze
 
         use_stimulus do
@@ -94,8 +97,15 @@ module Poetry
         part "questionnaire", "The root <form> the controller drives - navigation, validation " \
                               "gating, and the keyboard map all ride here"
         part "questionnaire-progress", "The polite progressbar ('Question X of Y'; block " \
-                                       "content replaces the text)",
-             states: { "data-custom" => "block content supplied - the controller leaves the text alone" }
+                                       "content replaces the text). Always carries live " \
+                                       "data-current/data-total, and a [data-progress-count] " \
+                                       "child gets the live 'X of Y' text - custom segment " \
+                                       "bars ride data-[current=N] variants",
+             states: {
+               "data-custom" => "block content supplied - the controller leaves the text alone",
+               "data-current" => "always - the active question number (live)",
+               "data-total" => "always - the enabled question count (live)"
+             }
         part "questionnaire-item", "One question <fieldset> - exactly one is active",
              states: {
                "data-name" => "always - the item's param name",
@@ -157,11 +167,12 @@ module Poetry
         # optional free-text input via the yielded builder.
         class Item
           attr_reader :name, :title, :description, :required, :multiple, :disabled,
-                      :error, :choices, :input
+                      :error, :choices, :input, :class_name
 
           def initialize(name:, title:, **options)
             @name = name
             @title = title
+            @class_name = options[:class]
             @description = options[:description]
             @required = options.fetch(:required, false)
             @multiple = options.fetch(:multiple, false)
@@ -272,7 +283,7 @@ module Poetry
         def item_attributes(item)
           active = item == active_item
           attrs = {
-            "class" => css(:item), "data-slot" => "questionnaire-item",
+            "class" => css(:item, class: item.class_name), "data-slot" => "questionnaire-item",
             "data-name" => item.name, "data-status" => item.status,
             "aria-describedby" => (item.description ? item_dom_id(item, "description") : nil)
           }.compact
