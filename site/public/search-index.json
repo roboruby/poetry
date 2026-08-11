@@ -3048,10 +3048,22 @@
     "path": "/components/progress#complete"
   },
   {
+    "title": "Controlled",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#controlled"
+  },
+  {
     "title": "Custom max without value",
     "page": "Progress",
     "section": "components",
     "path": "/components/progress#custom-max-without-value"
+  },
+  {
+    "title": "Label",
+    "page": "Progress",
+    "section": "components",
+    "path": "/components/progress#label"
   },
   {
     "title": "Radio Group",
