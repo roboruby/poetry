@@ -388,6 +388,13 @@ export default class QuestionnaireController extends Controller {
     const label = total ? `Question ${current} of ${total}` : ""
 
     if (!("custom" in this.progressTarget.dataset)) this.progressTarget.textContent = label
+    // Custom progress hooks: data-current/data-total drive CSS (segment
+    // bars via data-[current=N] variants), and a [data-progress-count]
+    // child gets the live "X of Y" text.
+    this.progressTarget.dataset.current = String(current)
+    this.progressTarget.dataset.total = String(total)
+    const count = this.progressTarget.querySelector("[data-progress-count]")
+    if (count) count.textContent = `${current} of ${total}`
     if (total) {
       this.progressTarget.setAttribute("aria-valuemax", String(total))
       this.progressTarget.setAttribute("aria-valuemin", "1")
