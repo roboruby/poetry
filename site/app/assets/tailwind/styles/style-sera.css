@@ -1104,8 +1104,12 @@
   @apply border-input bg-transparent data-checked:border-foreground aria-invalid:aria-checked:border-foreground aria-invalid:border-destructive focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 dark:aria-invalid:border-destructive/50 flex size-4.5 rounded-full focus-visible:ring-2 aria-invalid:ring-2;
 }
 
+.cn-radio-group-indicator {
+  @apply flex size-4.5 items-center justify-center;
+}
+
 .cn-radio-group-indicator-icon {
-  @apply size-2 fill-foreground;
+  @apply bg-foreground absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full;
 }
 
 /* MARK: Select */

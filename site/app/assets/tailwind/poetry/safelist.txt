@@ -142,6 +142,8 @@ absolute
 accent-primary
 active:cursor-grabbing
 after:-inset-2
+after:-inset-x-3
+after:-inset-y-2
 after:-translate-x-1/2
 after:absolute
 after:block
@@ -518,6 +520,7 @@ cn-questionnaire-progress
 cn-questionnaire-shortcut
 cn-questionnaire-title
 cn-radio-group
+cn-radio-group-indicator
 cn-radio-group-indicator-icon
 cn-radio-group-item
 cn-select-content
@@ -921,6 +924,7 @@ group/navigation-menu-trigger
 group/questionnaire-choice
 group/questionnaire-choices
 group/questionnaire-input
+group/radio-group-item
 group/sensitive
 group/sidebar-wrapper
 group/switch
