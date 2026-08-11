@@ -5,7 +5,7 @@
     receives the live "X of Y". Submit is relabeled via submit_label:. %>
 <%= poetry_questionnaire(url: "#", http_method: :get, submit_label: "Finish plan",
                          class: "w-full max-w-md") do |q| %>
-  <% q.with_progress do %>
+  <% q.with_progress(class: "w-full") do %>
     <span aria-hidden="true" class="mb-2 flex gap-1.5">
       <span class="h-1.5 flex-1 rounded-full bg-primary"></span>
       <span class="h-1.5 flex-1 rounded-full bg-muted in-data-[current=2]:bg-primary in-data-[current=3]:bg-primary in-data-[current=4]:bg-primary"></span>
