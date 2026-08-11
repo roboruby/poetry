@@ -404,7 +404,8 @@ module Poetry
         # The trigger width utility (the demo 200px as its scale spelling,
         # w-50 - DesignLint off-scale-arbitrary; the popup ALWAYS
         # tracks it via the anchor-width binding - one knob, two surfaces).
-        option :width, :string, default: "w-50"
+        # nil resolves to the dictionary's default_width (w-50).
+        option :width, :string
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
@@ -656,12 +657,16 @@ module Poetry
         # names the popup kind, and there is NO aria-autocomplete here -
         # the typing session belongs to the popup input (the double-
         # combobox kept for source parity).
+        # The width utility the trigger/chips carry - the option, or the
+        # dictionary default (w-50).
+        def width_classes = width || css(:default_width)
+
         def trigger_button
           attrs = {
             "id" => trigger_id, "data-slot" => "combobox-trigger", "type" => "button",
             "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => list_id,
             "aria-haspopup" => "listbox",
-            "class" => classnames(css(:trigger), width)
+            "class" => classnames(css(:trigger), width_classes)
           }
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
@@ -696,7 +701,7 @@ module Poetry
           attrs = {
             "data-slot" => "combobox-chips",
             "data-remove-label" => t("poetry.combobox.remove", label: "%{label}"), # rubocop:disable Style/FormatStringToken
-            "class" => classnames(css(:chips), width)
+            "class" => classnames(css(:chips), width_classes)
           }
           attrs["role"] = "toolbar" if selected_values.any?
           attrs["data-placeholder"] = "" if selected_values.empty?

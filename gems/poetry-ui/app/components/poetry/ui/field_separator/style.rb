@@ -11,6 +11,9 @@ module Poetry
         base "cn-field-separator relative"
 
         element :content, "cn-field-separator-content relative mx-auto block w-fit bg-background"
+        # The rule the content sits on (dictionary-resident for the
+        # safelist harvest).
+        element :line, "absolute inset-0 top-1/2"
       end
     end
   end

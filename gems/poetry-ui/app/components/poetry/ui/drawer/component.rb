@@ -160,7 +160,7 @@ module Poetry
             # the direction margins and over-constraint sizing then work
             # exactly as they do in the top layer.
             "class" => css(:content, class: [Style.direction(direction),
-                                             ("fixed inset-0 z-50" unless modal)].compact.join(" ")),
+                                             (css(:nonmodal) unless modal)].compact.join(" ")),
             "data-slot" => "drawer-content",
             "data-swipe-direction" => direction,
             "data-closed" => "",

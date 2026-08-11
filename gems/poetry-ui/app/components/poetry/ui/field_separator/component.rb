@@ -44,7 +44,7 @@ module Poetry
         private
 
         def rule
-          render(Separator::Component.new(class: "absolute inset-0 top-1/2"))
+          render(Separator::Component.new(class: css(:line)))
         end
 
         def caption

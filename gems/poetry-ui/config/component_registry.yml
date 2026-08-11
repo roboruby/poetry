@@ -1724,7 +1724,6 @@ components:
       type: string
     - name: width
       type: string
-      default: w-50
     slots:
     - name: trigger
       many: false
@@ -1744,6 +1743,7 @@ components:
     elements:
     - trigger
     - value
+    - default_width
     - trigger_leading
     - content
     - input_scale
@@ -1762,7 +1762,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: 0b0d78e2e373
+    capsule: 62c8a75c3b73
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -3492,11 +3492,12 @@ components:
     - content
     - handle
     - header
+    - nonmodal
     - footer
     - title
     - description
     - body
-    capsule: 96ddd8c0f355
+    capsule: 483e972fceb8
     controllers:
     - identifier: poetry--core--drawer
       targets:
@@ -4326,7 +4327,8 @@ components:
     slots: []
     elements:
     - content
-    capsule: 568b511b71b3
+    - line
+    capsule: 3cacac000edf
     agent_rules:
     - Divides stacked fields inside a poetry_field_group - not a general-purpose rule
       (that is poetry_separator).

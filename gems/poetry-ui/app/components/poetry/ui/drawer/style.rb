@@ -85,6 +85,9 @@ module Poetry
                          "after:block after:shrink-0"
 
         element :header, "cn-drawer-header flex shrink-0 flex-col"
+        # Non-modal show() skips the top layer; the UA :modal positioning
+        # must be restated (dictionary-resident so safelists ship it).
+        element :nonmodal, "fixed inset-0 z-50"
         element :footer, "cn-drawer-footer mt-auto flex shrink-0 flex-col"
         element :title, "cn-drawer-title"
         element :description, "cn-drawer-description"

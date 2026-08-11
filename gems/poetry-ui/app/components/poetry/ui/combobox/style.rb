@@ -20,6 +20,10 @@ module Poetry
 
         # The value DISPLAY truncates inside the fixed-width trigger.
         element :value, "truncate"
+        # The width option's default - lives in the dictionary so the
+        # safelist ships it and verify_compiled gates it (a bare Ruby
+        # default string compiles in no host).
+        element :default_width, "w-50"
 
         # The leading group (with_trigger only): a custom icon is a PREFIX
         # to the value, not a third justify-between child - grouped, the
