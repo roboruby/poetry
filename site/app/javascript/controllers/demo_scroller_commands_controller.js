@@ -9,18 +9,22 @@ export default class extends Controller {
   static targets = ["scroller"]
 
   // Menu items own their data-action (the menu's activate wiring), so
-  // jump targets carry data-demo-jump-id and one delegated listener
-  // forwards them.
+  // jump targets carry data-demo-jump-id instead. The menu activates on
+  // pointerup and tears down before a click can bubble, so listen for
+  // pointerup at the document (click kept for keyboard activation; a
+  // double fire just re-scrolls to the same row).
   connect() {
-    this.onClick = (event) => {
-      const item = event.target.closest("[data-demo-jump-id]")
+    this.onActivate = (event) => {
+      const item = event.target.closest?.("[data-demo-jump-id]")
       if (item) this.scroller?.scrollToMessage(item.dataset.demoJumpId, { behavior: "smooth" })
     }
-    this.element.addEventListener("click", this.onClick)
+    document.addEventListener("pointerup", this.onActivate)
+    document.addEventListener("click", this.onActivate)
   }
 
   disconnect() {
-    this.element.removeEventListener("click", this.onClick)
+    document.removeEventListener("pointerup", this.onActivate)
+    document.removeEventListener("click", this.onActivate)
   }
 
   get scroller() {

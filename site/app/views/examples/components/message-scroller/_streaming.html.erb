@@ -25,7 +25,7 @@
         <% end %>
       </div>
       <div data-demo-chat-target="chat" hidden class="h-full min-h-0">
-        <%= poetry_message_scroller(id: "chat-stream", class: "h-full") do %><% end %>
+        <%= poetry_message_scroller(id: "chat-stream", class: "h-full [&_[data-slot=message-scroller-content]]:justify-end") do %><% end %>
       </div>
     </div>
 
