@@ -31,7 +31,8 @@ module Poetry
                       poetry/ui/link poetry/ui/marker poetry/ui/menubar poetry/ui/message poetry/ui/message_scroller
                       poetry/ui/metadata_list poetry/ui/meter
                       poetry/ui/native_select poetry/ui/navigation_menu poetry/ui/number_field
-                      poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/radio_group
+                      poetry/ui/pagination poetry/ui/popover poetry/ui/progress poetry/ui/questionnaire
+                      poetry/ui/radio_group
                       poetry/ui/resizable
                       poetry/ui/scroll_area
                       poetry/ui/search_field poetry/ui/select

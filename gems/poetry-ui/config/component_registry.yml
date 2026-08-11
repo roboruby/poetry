@@ -6829,6 +6829,245 @@ components:
     - name: progress-indicator
       description: 'The filled bar - sized by an inline width percentage computed
         from value:/max:'
+  poetry/ui/questionnaire:
+    class_name: Poetry::Ui::Questionnaire::Component
+    identifier: poetry--ui--questionnaire
+    bem_block: poetry-ui-questionnaire
+    styles: []
+    options:
+    - name: default_item
+      type: string
+    - name: http_method
+      type: symbol
+      default: post
+    - name: id
+      type: string
+    - name: next_label
+      type: string
+      default: Next
+    - name: previous_label
+      type: string
+      default: Previous
+    - name: shortcuts
+      type: symbol
+      variants:
+      - letters
+      - numbers
+    - name: skip_label
+      type: string
+      default: Skip
+    - name: submit_label
+      type: string
+      default: Submit
+    - name: url
+      type: string
+      required: true
+    slots:
+    - name: progress
+      many: false
+    description: A one-question-at-a-time survey flow with choices, free answers,
+      and validation.
+    slot_extras:
+    - item
+    elements:
+    - progress
+    - item
+    - title
+    - description
+    - choices
+    - choice
+    - choice_input
+    - choice_indicator
+    - choice_indicator_dot
+    - choice_indicator_check
+    - choice_label
+    - choice_description
+    - choice_shortcut
+    - input_wrapper
+    - input
+    - error
+    - actions
+    - previous
+    - skip
+    - next
+    - submit
+    capsule: 18805ab1cf50
+    controllers:
+    - identifier: poetry--core--questionnaire
+      targets:
+      - next
+      - previous
+      - progress
+      - skip
+      - submit
+      values:
+      - shortcuts
+      actions:
+      - change
+      - input
+      - keydown
+      - next
+      - previous
+      - reset
+      - skip
+      - submit
+      events:
+      - poetry:questionnaire:item-change
+      - poetry:questionnaire:status-change
+    agent_rules:
+    - The root is a REAL form (url:/method:) - answers submit as ordinary params;
+      validate server-side and re-render invalid items with error:.
+    - 'One with_item per question (name: is the param key); choices via item.with_choice,
+      an optional free-text answer via item.with_input.'
+    - 'multiple: true renders checkboxes named <name>[] (Rails array params) - a recorded
+      divergence from upstream''s repeated bare names.'
+    - 'required: true gates Next/submit client-side; the server stays the truth on
+      submit.'
+    - 'shortcuts: :letters or :numbers labels each choice with a key (server-rendered)
+      and enables one-keystroke answering.'
+    - Skip renders only while the active item is optional - never force-hide it.
+    parts:
+    - name: questionnaire
+      description: The root <form> the controller drives - navigation, validation
+        gating, and the keyboard map all ride here
+    - name: questionnaire-progress
+      description: The polite progressbar ('Question X of Y'; block content replaces
+        the text)
+      states:
+      - attr: data-custom
+        condition: block content supplied - the controller leaves the text alone
+    - name: questionnaire-item
+      description: One question <fieldset> - exactly one is active
+      states:
+      - attr: data-name
+        condition: always - the item's param name
+      - attr: data-active
+        condition: the visible question (inactive items are hidden + inert)
+      - attr: data-status
+        condition: always - the answer state
+        values:
+        - unanswered
+        - answered
+        - skipped
+      - attr: data-required
+        condition: 'required: true - Skip hides and Next validates'
+      - attr: data-multiple
+        condition: 'multiple: true - checkbox choices named <name>[]'
+      - attr: data-invalid
+        condition: validation attempted and unanswered - the error shows
+      - attr: data-validated
+        condition: a navigation has demanded this answer at least once
+      - attr: data-skipped
+        condition: explicitly skipped (cleared by any interaction)
+    - name: questionnaire-title
+      description: The question heading - a real <legend>
+    - name: questionnaire-description
+      description: Muted copy under the title; its id rides the fieldset's aria-describedby
+    - name: questionnaire-choices
+      description: The answer grid for one item
+    - name: questionnaire-choice
+      description: One answer <label> wrapping its native input
+      states:
+      - attr: data-type
+        condition: always - the input kind
+        values:
+        - radio
+        - checkbox
+      - attr: data-checked
+        condition: the choice is selected
+      - attr: data-unchecked
+        condition: the choice is not selected
+      - attr: data-shortcut
+        condition: 'shortcuts: on - the key label (A, B... or 1-9)'
+      - attr: data-disabled
+        condition: choice or item disabled
+    - name: questionnaire-choice-input
+      description: THE native radio/checkbox - stretched invisibly over the row (paste
+        of the input-otp posture)
+      states:
+      - attr: data-checked
+        condition: selected
+      - attr: data-unchecked
+        condition: not selected
+    - name: questionnaire-choice-indicator
+      description: The box/circle glyph (aria-hidden) - dot for radio, check for checkbox
+    - name: questionnaire-choice-indicator-dot
+      description: The radio dot (shown while checked)
+    - name: questionnaire-choice-indicator-check
+      description: The checkbox check icon (shown while checked)
+    - name: questionnaire-choice-label
+      description: The label column - answer text over the optional description
+    - name: questionnaire-choice-description
+      description: Muted copy under the answer text
+    - name: questionnaire-choice-shortcut
+      description: The key hint chip (aria-hidden; hidden unless the choice carries
+        data-shortcut)
+    - name: questionnaire-input-wrapper
+      description: The free-text answer's positioning wrapper
+    - name: questionnaire-input
+      description: The free-text answer - a real text input named after the item
+      states:
+      - attr: data-filled
+        condition: has a value (counts as answered)
+      - attr: data-empty
+        condition: blank
+    - name: questionnaire-error
+      description: The validation message (hidden until a navigation demands the answer;
+        role=alert while shown)
+    - name: questionnaire-actions
+      description: The navigation row - Previous / Skip / Next / Submit (the buttons
+        ride composed Buttons, so those elements belong to Button's anatomy, not this
+        contract; each carries data-visible/data-hidden + hidden/inert)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--questionnaire
+        registers: true
+        values:
+        - name: shortcuts
+          conditional: if
+        actions:
+        - method: keydown
+          'on': keydown
+        - method: submit
+          'on': submit
+        - method: reset
+          'on': reset
+        - method: change
+          'on': change
+        - method: input
+          'on': input
+    - element: progress
+      controllers:
+      - identifier: poetry--core--questionnaire
+        targets:
+        - name: progress
+    - element: previous
+      controllers:
+      - identifier: poetry--core--questionnaire
+        targets:
+        - name: previous
+        actions:
+        - method: previous
+    - element: skip
+      controllers:
+      - identifier: poetry--core--questionnaire
+        targets:
+        - name: skip
+        actions:
+        - method: skip
+    - element: next_button
+      controllers:
+      - identifier: poetry--core--questionnaire
+        targets:
+        - name: next
+        actions:
+        - method: next
+    - element: submit_button
+      controllers:
+      - identifier: poetry--core--questionnaire
+        targets:
+        - name: submit
   poetry/ui/radio_group:
     class_name: Poetry::Ui::RadioGroup::Component
     identifier: poetry--ui--radio_group
@@ -10216,6 +10455,7 @@ helper_args:
   poetry_pagination: 0
   poetry_popover: 0
   poetry_progress: 0
+  poetry_questionnaire: 0
   poetry_radio_group: 0
   poetry_resizable: 0
   poetry_scroll_area: 0

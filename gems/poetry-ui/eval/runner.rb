@@ -671,6 +671,22 @@ module Poetry
             })
           ]
         },
+        "survey" => {
+          "description" => "A three-question product survey: a required single-choice question, " \
+                           "an optional multi-select, and a free-text answer, submitting as one form",
+          "gates" => [
+            Gate.new(:real_form, :cross_arm, ->(doc, _html) { doc.css("form").any? }),
+            Gate.new(:grouped_questions, :cross_arm, lambda { |doc, _html|
+              doc.css("fieldset legend").size >= 3
+            }),
+            Gate.new(:native_answers, :cross_arm, lambda { |doc, _html|
+              doc.css("input[type=radio]").any? && doc.css("input[type=checkbox]").any?
+            }),
+            Gate.new(:progress_announces, :cross_arm, lambda { |doc, _html|
+              doc.css('[role="progressbar"][aria-valuenow][aria-valuemax]').any?
+            })
+          ]
+        },
         "upload_progress" => {
           "description" => "A determinate upload progress bar at 60%, with a visible label and value",
           "gates" => [

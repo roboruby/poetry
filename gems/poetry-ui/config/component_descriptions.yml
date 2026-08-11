@@ -64,6 +64,7 @@ poetry/ui/number_field: A numeric input with increment and decrement steppers.
 poetry/ui/pagination: Navigation for moving between pages of content.
 poetry/ui/popover: Rich floating content anchored to a trigger.
 poetry/ui/progress: A determinate progress bar toward task completion.
+poetry/ui/questionnaire: A one-question-at-a-time survey flow with choices, free answers, and validation.
 poetry/ui/radio_group: A set of options where only one can be selected at a time.
 poetry/ui/resizable: Panels with draggable handles for resizing adjacent regions.
 poetry/ui/scroll_area: A bounded, keyboard-reachable scroll region with styled scrollbars.

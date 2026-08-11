@@ -73,7 +73,10 @@ module Poetry
         "starting-style" => "presence enter hook (presence.js enterPresence - one painted frame, " \
                             "the Base UI transition idiom; Drawer is the first consumer)",
         "ending-style" => "presence exit hook (presence.js exitPresence - rides the whole exit)",
-        "swipe-direction" => "toast swipe (reserved)"
+        "swipe-direction" => "toast swipe (reserved)",
+        "type" => "questionnaire choice input kind (server-rendered: radio | checkbox)",
+        "shortcut" => "questionnaire choice key label (server-rendered; the controller matches " \
+                      "keystrokes against it)"
       }.freeze
 
       EXTRACTORS = [

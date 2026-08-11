@@ -621,6 +621,12 @@ module Poetry
       # one hidden native radio per item (collection_radio_buttons-exact
       # serialization). The group MUST be labelled (label: or
       # aria-labelledby).
+      # One-question-at-a-time survey: a REAL form of fieldset items -
+      # native radio/checkbox/text answers, validate-gated navigation.
+      def poetry_questionnaire(**, &)
+        render(Poetry::Ui::Questionnaire::Component.new(**), &)
+      end
+
       def poetry_radio_group(**, &)
         render(Poetry::Ui::RadioGroup::Component.new(**), &)
       end
