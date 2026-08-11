@@ -31,6 +31,15 @@ module Poetry
 
         # An action-bearing toast defaults to PERSISTENT (duration nil ->
         # 0): a missable undo is a bug.
+        # The promise-lifecycle opener: a spinning persistent toast the
+        # job later REPLACES (turbo_stream.replace on its id) with the
+        # settled success/destructive toast.
+        def loading
+          render_component(variant: :loading) do |toast|
+            toast.with_title { "Creating event…" }
+          end
+        end
+
         def with_action
           render_component do |toast|
             toast.with_title { "Message deleted" }

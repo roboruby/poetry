@@ -1,7 +1,8 @@
 <%= content_tag(:li, **root_attributes.to_attributes) do %>
   <% if variant_icon %>
     <span data-slot="toast-icon" aria-hidden="true" class="<%= css(:icon) %>">
-      <%= render Poetry::Ui::Icon::Component.new(name: variant_icon) %>
+      <%= render Poetry::Ui::Icon::Component.new(name: variant_icon,
+                                                 class: ("animate-spin" if variant == :loading)) %>
     </span>
   <% end %>
   <div class="<%= css(:body) %>">

@@ -9312,6 +9312,7 @@ components:
       - info
       - warning
       - destructive
+      - loading
       default: default
       required: true
     options:
@@ -9392,6 +9393,7 @@ components:
         - info
         - warning
         - destructive
+        - loading
       - attr: data-queued
         condition: the toaster holds it hidden past the visible limit (timer paused
           until a slot frees up)

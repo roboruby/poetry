@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Toast
-      VARIANTS = %i[default success info warning destructive].freeze
+      VARIANTS = %i[default success info warning destructive loading].freeze
       POLITENESS = %i[polite assertive].freeze
 
       # One notification (Toast): poetry's OWN build -
@@ -34,10 +34,11 @@ module Poetry
           "Toasts are supplementary: never the only place an outcome is recorded."
         ].freeze
 
-        # The sonner-slot icon set rides the variant (loader reserved for
-        # a future promise API; default ships no icon).
+        # The sonner-slot icon set rides the variant (default ships no
+        # icon; loading spins - the promise-lifecycle opener).
         VARIANT_ICONS = {
-          success: :"circle-check", info: :info, warning: :"triangle-alert", destructive: :"octagon-x"
+          success: :"circle-check", info: :info, warning: :"triangle-alert",
+          destructive: :"octagon-x", loading: :"loader-circle"
         }.freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS
@@ -125,7 +126,11 @@ module Poetry
         def effective_duration
           return duration unless duration.nil?
 
-          action? ? 0 : 5000
+          # Action-bearing toasts are persistent (a missable undo is a
+          # bug); so are loading toasts - the promise recipe REPLACES
+          # them (turbo_stream.replace on the toast id) when the job
+          # settles, and an auto-dismissed loading state is a lie.
+          action? || variant == :loading ? 0 : 5000
         end
 
         def variant_icon
