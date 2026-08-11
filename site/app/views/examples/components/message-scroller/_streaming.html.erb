@@ -6,7 +6,8 @@
     plumbing, not poetry API - in a real app these appends are Turbo
     Streams targeting the content element (id "chat-stream-messages"). %>
 <div data-controller="demo-chat" class="mx-auto w-full max-w-sm">
-  <%= poetry_card(class: "flex h-[34rem] w-full flex-col gap-0 overflow-hidden") do |card| %>
+  <%= poetry_card(class: "flex h-[34rem] w-full flex-col gap-0 overflow-hidden",
+                  content_class: "flex min-h-0 flex-1 flex-col p-0") do |card| %>
     <% card.with_title { "New Chat" } %>
     <% card.with_description { "How can I help you today?" } %>
     <% card.with_action do %>
@@ -16,17 +17,15 @@
       <% end %>
     <% end %>
 
-    <div class="min-h-0 flex-1">
-      <div data-demo-chat-target="empty" class="flex h-full items-center justify-center">
+    <div data-demo-chat-target="empty" class="flex min-h-0 flex-1 items-center justify-center">
         <%= poetry_empty do |empty| %>
           <% empty.with_media { poetry_icon(name: :"message-circle-dashed") } %>
           <% empty.with_title { "Morning!" } %>
           <% empty.with_description { "What are we working on today? Press send to start the conversation." } %>
         <% end %>
       </div>
-      <div data-demo-chat-target="chat" hidden class="h-full min-h-0">
-        <%= poetry_message_scroller(id: "chat-stream", class: "h-full [&_[data-slot=message-scroller-content]]:justify-end") do %><% end %>
-      </div>
+    <div data-demo-chat-target="chat" hidden class="min-h-0 flex-1">
+      <%= poetry_message_scroller(id: "chat-stream", class: "h-full [&_[data-slot=message-scroller-content]]:justify-end") do %><% end %>
     </div>
 
     <% card.with_footer do %>
