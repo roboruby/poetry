@@ -38,7 +38,19 @@ def poetry_charts_gate_themes
   ENV["POETRY_THEME"] ? [poetry_charts_theme_name] : poetry_charts_theme_names
 end
 
-def poetry_charts_compile_tailwind(theme: poetry_charts_theme_name)
+# Preview scaffolding classes live in preview.rb - host safelists rightly
+# never see them, so the PREVIEW-rendering build sources the files
+# directly (the poetry-ui pattern). component.rb is deliberately NOT
+# sourced: css:verify_rendered's teeth depend on a component-emitted bare
+# string staying uncompiled.
+def poetry_charts_preview_sources
+  previews = Dir[Poetry::Charts.root.join("app/components/**/preview.rb").to_s]
+  layout = Poetry::Charts.root.join("test/dummy/app/views/layouts/component_preview.html.erb")
+  wrapper = Poetry::Core.root.join("app/views/poetry/core/preview.html.erb")
+  (previews + [layout.to_s, wrapper.to_s]).sort
+end
+
+def poetry_charts_compile_tailwind(theme: poetry_charts_theme_name, extra_sources: [])
   require "tailwindcss/ruby"
   require "tmpdir"
 
@@ -46,7 +58,7 @@ def poetry_charts_compile_tailwind(theme: poetry_charts_theme_name)
     safelist = Poetry::Core::CSS::Safelist.new(style_classes: poetry_charts_styles, template_classes: [])
     File.write(File.join(dir, "safelist.txt"), safelist.text)
     File.write(File.join(dir, "entry.css"), <<~CSS)
-      @import "tailwindcss";
+      @import "tailwindcss" source(none);
       @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
       @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
@@ -55,6 +67,7 @@ def poetry_charts_compile_tailwind(theme: poetry_charts_theme_name)
       @import "#{Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css")}";
       @import "#{poetry_charts_theme_path(theme)}" layer(base);
       @source "#{File.join(dir, "safelist.txt")}";
+      #{extra_sources.map { |src| %(@source "#{src}";) }.join("\n")}
     CSS
     out = File.join(dir, "out.css")
     system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,
@@ -81,6 +94,42 @@ namespace :css do
 
       puts "all #{styles.size} charts Style dictionaries verified against a compiled Tailwind build (theme #{theme})"
     end
+  end
+
+  desc "Render every preview and verify each rendered class token exists in the compiled " \
+       "preview build (safelist + preview sources) - the rendered-truth gate for the " \
+       "'utilities live where the harvest sees them' rule (the poetry-ui pattern)"
+  task :verify_rendered do
+    poetry_charts_boot!
+    require "nokogiri"
+
+    compiled = poetry_charts_compile_tailwind(extra_sources: poetry_charts_preview_sources)
+    verifier = Poetry::Core::CSS::Verifier.new(compiled_css: compiled)
+
+    session = ActionDispatch::Integration::Session.new(Rails.application)
+    tokens = {}
+    pages = poetry_charts_preview_pages
+    pages.each do |_component, _example, url|
+      session.get(url)
+      abort "HTTP #{session.response.status} at #{url}" unless session.response.successful?
+
+      Nokogiri::HTML(session.response.body).css("[class]").each do |element|
+        next if element.ancestors.any? { |ancestor| ancestor.name == "pre" }
+
+        element["class"].split(/\s+/).each { |token| tokens[token] ||= "#{url} <#{element.name}>" }
+      end
+    end
+
+    failures = verifier.unknown(tokens.keys.sort)
+    if failures.any?
+      report = failures.map { |unknown| "#{unknown} - first seen #{tokens[unknown.class_name]}" }
+      abort "rendered class tokens missing from the compiled preview build - a component or " \
+            "preview emits a utility no harvest ships (move it into a Style dictionary or " \
+            "preview source):\n  #{report.join("\n  ")}"
+    end
+
+    puts "rendered-class coverage: #{tokens.size} tokens across #{pages.size} preview pages " \
+         "all present in the compiled build"
   end
 
   desc "Verify bidirectional cn-* coverage between the charts Style dictionaries and every themes/*.css (N12)"

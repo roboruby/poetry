@@ -77,7 +77,7 @@ namespace :browser do
     FileUtils.mkdir_p(dir)
 
     # (a) The real stylesheet: the exact css:verify_compiled build.
-    File.write(dir.join("poetry.css"), poetry_charts_compile_tailwind)
+    File.write(dir.join("poetry.css"), poetry_charts_compile_tailwind(extra_sources: poetry_charts_preview_sources))
 
     # (b) The controllers, verbatim, plus the Stimulus dist the gem
     # develops against.
