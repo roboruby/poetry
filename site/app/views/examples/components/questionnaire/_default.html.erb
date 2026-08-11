@@ -3,7 +3,7 @@
     Letter shortcuts answer with one keystroke; Cmd/Ctrl+Enter
     confirms; ArrowLeft/Right navigate. The root is a REAL form -
     answers submit as ordinary params. %>
-<%= poetry_questionnaire(url: "#", shortcuts: :letters, class: "w-full max-w-md") do |q| %>
+<%= poetry_questionnaire(url: "#", http_method: :get, shortcuts: :letters, class: "w-full max-w-md") do |q| %>
   <% q.with_progress %>
   <% q.with_item(name: "direction", title: "What should the agent build next?",
                  description: "Choose a direction or describe another task.",

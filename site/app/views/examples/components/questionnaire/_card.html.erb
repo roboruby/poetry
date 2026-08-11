@@ -1,0 +1,25 @@
+<%# The questionnaire inside a Card shell. Upstream re-parents each
+    question's title into the CardHeader with render props; poetry's
+    generative anatomy keeps the legend inside its fieldset (the
+    accessible grouping), so the card supplies the frame and the flow
+    runs in the content area. Number shortcuts answer with one key. %>
+<%= poetry_card(class: "w-full max-w-md") do |card| %>
+  <% card.with_title { "Create an agent task" } %>
+  <% card.with_description { "Two questions before the run starts." } %>
+  <%= poetry_questionnaire(url: "#", http_method: :get, shortcuts: :numbers,
+                           submit_label: "Create task") do |q| %>
+    <% q.with_progress %>
+    <% q.with_item(name: "task", title: "What should the agent work on?",
+                   required: true) do |item| %>
+      <% item.with_choice(value: "fix", label: "Fix the failing tests") %>
+      <% item.with_choice(value: "refactor", label: "Refactor the data layer") %>
+      <% item.with_choice(value: "docs", label: "Write the missing docs") %>
+    <% end %>
+    <% q.with_item(name: "output", title: "How should the work be handed off?",
+                   required: true) do |item| %>
+      <% item.with_choice(value: "summary", label: "A written summary") %>
+      <% item.with_choice(value: "files", label: "The changed files") %>
+      <% item.with_choice(value: "review", label: "A review-ready pull request") %>
+    <% end %>
+  <% end %>
+<% end %>

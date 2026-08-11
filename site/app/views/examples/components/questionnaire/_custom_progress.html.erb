@@ -1,0 +1,39 @@
+<%# with_progress { custom } owns the readout (data-custom keeps the
+    auto text off), while the controller holds data-current/data-total
+    live on the progress element - so checkpoint segments are pure CSS
+    (in-data-[current=N] variants) and the [data-progress-count] child
+    receives the live "X of Y". Submit is relabeled via submit_label:. %>
+<%= poetry_questionnaire(url: "#", http_method: :get, submit_label: "Finish plan",
+                         class: "w-full max-w-md") do |q| %>
+  <% q.with_progress do %>
+    <span aria-hidden="true" class="mb-2 flex gap-1.5">
+      <span class="h-1.5 flex-1 rounded-full bg-primary"></span>
+      <span class="h-1.5 flex-1 rounded-full bg-muted in-data-[current=2]:bg-primary in-data-[current=3]:bg-primary in-data-[current=4]:bg-primary"></span>
+      <span class="h-1.5 flex-1 rounded-full bg-muted in-data-[current=3]:bg-primary in-data-[current=4]:bg-primary"></span>
+      <span class="h-1.5 flex-1 rounded-full bg-muted in-data-[current=4]:bg-primary"></span>
+    </span>
+    Checkpoint <span data-progress-count>1 of 4</span>
+  <% end %>
+  <% q.with_item(name: "scope", title: "What is in scope for this pull request?",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "single", label: "A single focused change") %>
+    <% item.with_choice(value: "feature", label: "One feature across a few files") %>
+    <% item.with_choice(value: "refactor", label: "A wider refactor") %>
+  <% end %>
+  <% q.with_item(name: "strategy", title: "How should the change be built?",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "incremental", label: "Small reviewable commits") %>
+    <% item.with_choice(value: "spike", label: "Spike first, then clean up") %>
+  <% end %>
+  <% q.with_item(name: "tests", title: "How should it be verified?",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "unit", label: "Unit tests with the change") %>
+    <% item.with_choice(value: "integration", label: "An integration test per behavior") %>
+    <% item.with_choice(value: "manual", label: "A manual verification checklist") %>
+  <% end %>
+  <% q.with_item(name: "delivery", title: "How should it land?",
+                 required: true) do |item| %>
+    <% item.with_choice(value: "review", label: "Open for review") %>
+    <% item.with_choice(value: "pair", label: "Walk through it together") %>
+  <% end %>
+<% end %>

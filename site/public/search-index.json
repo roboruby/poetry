@@ -3084,6 +3084,30 @@
     "path": "/components/questionnaire#default"
   },
   {
+    "title": "Animated",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#animated"
+  },
+  {
+    "title": "Card",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#card"
+  },
+  {
+    "title": "Custom progress",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#custom-progress"
+  },
+  {
+    "title": "Dialog",
+    "page": "Questionnaire",
+    "section": "components",
+    "path": "/components/questionnaire#dialog"
+  },
+  {
     "title": "Shortcuts",
     "page": "Questionnaire",
     "section": "components",

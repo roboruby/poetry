@@ -2,7 +2,7 @@
     (role=alert), clearing the moment an answer lands. The server
     remains the truth on submit: re-render an invalid item with error:
     for the server-side message. %>
-<%= poetry_questionnaire(url: "#", class: "w-full max-w-md") do |q| %>
+<%= poetry_questionnaire(url: "#", http_method: :get, class: "w-full max-w-md") do |q| %>
   <% q.with_progress %>
   <% q.with_item(name: "plan", title: "Which plan fits best?",
                  description: "Press Next without answering to see the validation.",

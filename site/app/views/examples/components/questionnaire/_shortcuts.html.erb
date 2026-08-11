@@ -1,7 +1,7 @@
 <%# shortcuts: :numbers labels each choice 1-9 (server-rendered chips);
     pressing the key focuses and selects the choice. Text targets are
     exempt, so typing in a free answer never triggers them. %>
-<%= poetry_questionnaire(url: "#", shortcuts: :numbers, class: "w-full max-w-md") do |q| %>
+<%= poetry_questionnaire(url: "#", http_method: :get, shortcuts: :numbers, class: "w-full max-w-md") do |q| %>
   <% q.with_item(name: "cadence", title: "How often should we check in?",
                  description: "Press 1, 2, or 3 to answer.", required: true) do |item| %>
     <% item.with_choice(value: "daily", label: "Daily") %>
