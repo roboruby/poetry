@@ -15,7 +15,10 @@ module Poetry
           "path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).",
           "The current page is aria-current=page; current_variant: :outline (upstream parity, " \
           "default) or :filled (the primary treatment - unambiguous active state); the rest are " \
-          "ghost links."
+          "ghost links.",
+          "edges: :icons renders chevron-only Previous/Next (the table-footer posture); " \
+          ":none drops them for a bare page list; pages: false drops the numbers " \
+          "(pair with edges: :icons for the compact pager)."
         ].freeze
 
         # :outline is upstream parity and stays the default; :filled renders
@@ -24,15 +27,35 @@ module Poetry
         # hover/focus ring"; the data-index block and docs adopt :filled).
         CURRENT_VARIANTS = %i[outline filled].freeze
 
+        # The edge treatment: :labeled (chevron + responsive text, upstream
+        # parity, default), :icons (chevron-only - table footers/toolbars),
+        # :none (no Previous/Next at all).
+        EDGES = %i[labeled icons none].freeze
+
         option :current, :integer, required: true
         option :total, :integer, required: true
         option :siblings, :integer, default: 1
+        option :edges, :symbol, default: :labeled
+        # pages: false drops the numbered links - the compact two-button
+        # pager (upstream pagination-icons-only).
+        option :pages, :boolean, default: true
         option :current_variant, :symbol, default: :outline
         option :label, :string, default: "pagination"
         option :previous_label, :string, default: "Previous"
         option :next_label, :string, default: "Next"
 
         validates :current_variant, inclusion: { in: CURRENT_VARIANTS }
+        validates :edges, inclusion: { in: EDGES }
+
+        def before_render
+          return if pages || edges != :none
+
+          raise ArgumentError, "pagination with pages: false needs edges (:labeled or :icons) - " \
+                               "edges: :none would render an empty nav"
+        end
+
+        def show_edges? = edges != :none
+        def icon_edges? = edges == :icons
 
         # (pagination-link rides the composed Buttons, so those elements
         # belong to Button's anatomy, not this contract.)
@@ -81,12 +104,21 @@ module Poetry
         # Prev/Next: default-sized ghost links with the edge padding tweak;
         # disabled (aria-disabled, no navigation) at the boundary.
         def edge_options(page, aria_label, padding)
-          {
-            tag: :a, href: path_for(page), variant: :ghost, size: :default,
+          options = {
+            tag: :a, href: path_for(page), variant: :ghost,
             disabled: page < 1 || page > total,
-            "aria-label": aria_label, class: padding,
             data: { slot: "pagination-link" }
           }
+          if icon_edges?
+            # Icon-sized Buttons take label: (the accessible-name contract).
+            options[:size] = :icon
+            options[:label] = aria_label
+          else
+            options[:size] = :default
+            options[:"aria-label"] = aria_label
+            options[:class] = padding
+          end
+          options
         end
 
         def previous_options = edge_options(current - 1, "Go to previous page", "pl-2!")

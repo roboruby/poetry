@@ -30,6 +30,17 @@ module Poetry
         def filled_current
           render_component(current: 4, total: 10, current_variant: :filled, path: PATH)
         end
+
+        # edges: :none - the bare page list (upstream pagination-simple).
+        def simple_numbers_only
+          render_component(current: 2, total: 5, edges: :none, path: PATH)
+        end
+
+        # The compact two-button pager (upstream pagination-icons-only):
+        # chevron-only edges, no numbers.
+        def icons_only
+          render_component(current: 3, total: 10, edges: :icons, pages: false, path: PATH)
+        end
       end
     end
   end

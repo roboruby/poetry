@@ -6526,12 +6526,22 @@ components:
       - outline
       - filled
       default: outline
+    - name: edges
+      type: symbol
+      variants:
+      - labeled
+      - icons
+      - none
+      default: labeled
     - name: label
       type: string
       default: pagination
     - name: next_label
       type: string
       default: Next
+    - name: pages
+      type: boolean
+      default: true
     - name: previous_label
       type: string
       default: Previous
@@ -6555,6 +6565,9 @@ components:
     - 'The current page is aria-current=page; current_variant: :outline (upstream
       parity, default) or :filled (the primary treatment - unambiguous active state);
       the rest are ghost links.'
+    - 'edges: :icons renders chevron-only Previous/Next (the table-footer posture);
+      :none drops them for a bare page list; pages: false drops the numbers (pair
+      with edges: :icons for the compact pager).'
     parts:
     - name: pagination
       description: The <nav> landmark (role=navigation, aria-label) around the page
