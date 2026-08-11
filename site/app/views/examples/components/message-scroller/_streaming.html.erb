@@ -11,10 +11,16 @@
     <% card.with_title { "New Chat" } %>
     <% card.with_description { "How can I help you today?" } %>
     <% card.with_action do %>
-      <%= poetry_button(variant: :outline, size: :"icon-sm", label: "Reset conversation",
-                        "data-action": "demo-chat#reset") do %>
-        <%= poetry_icon(name: :"rotate-cw") %>
-      <% end %>
+      <%# The reset action rides a wrapper (clicks bubble) - putting it on
+          the trigger would replace the tooltip's own wiring. %>
+      <span data-action="click->demo-chat#reset">
+        <%= poetry_tooltip do |tooltip| %>
+          <% tooltip.with_trigger(variant: :outline, size: :"icon-sm", label: "Reset conversation") do %>
+            <%= poetry_icon(name: :"rotate-cw") %>
+          <% end %>
+          Reset
+        <% end %>
+      </span>
     <% end %>
 
     <div data-demo-chat-target="empty" class="flex min-h-0 flex-1 items-center justify-center">
@@ -32,7 +38,7 @@
       <div class="flex w-full flex-col gap-2 rounded-xl border p-2">
         <div data-demo-chat-target="queue" class="line-clamp-2 min-h-10 px-1 text-sm"></div>
         <div class="flex items-center gap-1">
-          <%= poetry_dropdown_menu(align: :start, side: :top) do |menu| %>
+          <%= poetry_dropdown_menu(align: :start, side: :top, modal: false) do |menu| %>
             <% menu.with_trigger(variant: :outline, size: :"icon-sm", label: "Add files") do %>
               <%= poetry_icon(name: :plus) %>
             <% end %>
