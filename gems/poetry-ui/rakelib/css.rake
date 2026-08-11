@@ -58,7 +58,7 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
                                                template_classes: Poetry::Ui.template_classes)
     File.write(File.join(dir, "safelist.txt"), safelist.text)
     File.write(File.join(dir, "entry.css"), <<~CSS)
-      @import "tailwindcss";
+      @import "tailwindcss" source(none);
       @import "#{Poetry::Core.root.join("tokens/tokens.css")}";
       @import "#{Poetry::Core.root.join("tokens/tailwind-theme.css")}";
       @import "#{Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css")}";
@@ -74,6 +74,25 @@ def poetry_ui_compile_tailwind(theme: poetry_ui_theme_name, extra_sources: [])
            exception: true, out: File::NULL, err: File::NULL)
     File.read(out)
   end
+end
+
+# Preview scaffolding classes (tag.div class strings, render_component
+# class: args) live in preview.rb - host safelists rightly never see them,
+# so the PREVIEW-rendering build sources the files directly (Tailwind's
+# scanner reads any text file). component.rb is deliberately NOT sourced:
+# css:verify_rendered's teeth depend on a component-emitted bare string
+# staying uncompiled (the pagination pl-2! / combobox w-50 class).
+def poetry_ui_preview_sources
+  previews = Dir[Poetry::Ui.root.join("app/components/**/preview.rb").to_s]
+  # Preview ERB templates and block templates join as RAW text sources:
+  # the herb harvest extracts static class attributes only, so utility
+  # strings inside helper kwargs (poetry_input(class: "col-span-2 h-8"))
+  # are invisible to it. In a host the block copy compiles via the
+  # host's own view scan; the gem's preview build needs the raw scan.
+  preview_templates = Dir[Poetry::Ui.root.join("app/components/**/*preview*.html.erb").to_s]
+  block_templates = Dir[Poetry::Ui.root.join("lib/generators/poetry/block/templates/*.html.erb").to_s]
+  layout = Poetry::Ui.root.join("test/dummy/app/views/layouts/component_preview.html.erb")
+  (previews + preview_templates + block_templates + [layout.to_s]).sort
 end
 
 # Runtime custom-property assignments, DERIVED from the actual sources -
@@ -171,6 +190,48 @@ namespace :css do
 
       puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build (theme #{theme})"
     end
+  end
+
+  desc "Render every preview and verify each rendered class token exists in the compiled " \
+       "preview build (safelist + preview sources) - the rendered-truth gate for the " \
+       "'utilities live where the harvest sees them' rule (the pagination pl-2! / " \
+       "combobox w-50 class of bug)"
+  task :verify_rendered do
+    poetry_ui_boot!
+    require "nokogiri"
+
+    compiled = poetry_ui_compile_tailwind(extra_sources: poetry_ui_preview_sources)
+    verifier = Poetry::Core::CSS::Verifier.new(compiled_css: compiled)
+
+    session = ActionDispatch::Integration::Session.new(Rails.application)
+    # token -> "url <tag>" of its first sighting, so a failure names the
+    # page and element that emitted it.
+    tokens = {}
+    pages = poetry_ui_preview_pages
+    pages.each do |_component, _example, url|
+      session.get(url)
+      abort "HTTP #{session.response.status} at #{url}" unless session.response.successful?
+
+      Nokogiri::HTML(session.response.body).css("[class]").each do |element|
+        # Rouge token spans inside <pre> (code_block / typeset highlighting)
+        # carry the syntax palette's semantic classes (n, p, k...) - the
+        # theme's contract, not Tailwind utilities.
+        next if element.ancestors.any? { |ancestor| ancestor.name == "pre" }
+
+        element["class"].split(/\s+/).each { |token| tokens[token] ||= "#{url} <#{element.name}>" }
+      end
+    end
+
+    failures = verifier.unknown(tokens.keys.sort)
+    if failures.any?
+      report = failures.map { |unknown| "#{unknown} - first seen #{tokens[unknown.class_name]}" }
+      abort "rendered class tokens missing from the compiled preview build - a component or " \
+            "preview emits a utility no harvest ships (move it into a Style dictionary or " \
+            "preview source):\n  #{report.join("\n  ")}"
+    end
+
+    puts "rendered-class coverage: #{tokens.size} tokens across #{pages.size} preview pages " \
+         "all present in the compiled build"
   end
 
   desc "Verify bidirectional cn-* coverage between the Style dictionaries and every themes/*.css (N11/N12)"

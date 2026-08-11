@@ -10,6 +10,15 @@ module Poetry
       # an inline-block wrapper.
       class Style < Poetry::Core::Style
         base "inline-block"
+
+        # The trigger Button's classes (dictionary-resident so safelists
+        # ship them - a bare Ruby string compiles in no host). Range
+        # triggers run wider (two dates + the dash; upstream sizes its
+        # range demo up the same way).
+        element :trigger_single, "w-56"
+        element :trigger_range, "w-72"
+        element :trigger_chrome, "justify-start font-normal"
+        element :trigger_placeholder, "text-muted-foreground"
       end
     end
   end

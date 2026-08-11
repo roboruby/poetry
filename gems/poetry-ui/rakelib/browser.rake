@@ -108,7 +108,7 @@ namespace :browser do
 
     # (a) The real stylesheet: the exact css:verify_compiled build (tokens +
     # theme + vendored animate/shadcn + full safelist).
-    File.write(dir.join("poetry.css"), poetry_ui_compile_tailwind)
+    File.write(dir.join("poetry.css"), poetry_ui_compile_tailwind(extra_sources: poetry_ui_preview_sources))
 
     # (b) The controllers, verbatim (ESM with bare @poetry/controllers/*
     # specifiers), plus the Stimulus dist poetry-core develops against.

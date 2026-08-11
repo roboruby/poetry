@@ -3214,8 +3214,12 @@ components:
       default: button
     slots: []
     description: A date field that opens a calendar popover for selection.
-    elements: []
-    capsule: e0f70e04b15c
+    elements:
+    - trigger_single
+    - trigger_range
+    - trigger_chrome
+    - trigger_placeholder
+    capsule: 705cd77aef89
     controllers:
     - identifier: poetry--core--date-picker
       targets:

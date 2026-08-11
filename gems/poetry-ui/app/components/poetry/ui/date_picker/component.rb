@@ -122,10 +122,9 @@ module Poetry
           {
             variant: :outline,
             label: label.presence,
-            # Range triggers run wider (two dates + the dash; upstream sizes
-            # its range demo up the same way).
-            class: "#{range? ? "w-72" : "w-56"} justify-start font-normal " \
-                   "#{"text-muted-foreground" unless value}".strip,
+            class: css(range? ? :trigger_range : :trigger_single,
+                       class: [css(:trigger_chrome),
+                               (css(:trigger_placeholder) unless value)].compact.join(" ")),
             data: { slot: "date-picker-trigger" }
           }.compact
         end
