@@ -1,8 +1,8 @@
-<%# Upstream pagination-icons-only: the table-footer row - a rows-per-
-    page select on the left, the compact chevron pager on the right
-    (edges: :icons + pages: false; mx-0 w-auto undoes the centered
-    full-width default for toolbar placement). %>
-<div class="flex w-full max-w-md items-center justify-between gap-4">
+<%# Upstream pagination-icons-only: "just the previous and next buttons
+    without page numbers" (pages: false) beside a rows-per-page select -
+    the buttons keep their chevron + text; mx-0 w-auto undoes the
+    centered full-width default so the pager sits in the cluster. %>
+<div class="flex items-center gap-4">
   <div class="flex items-center gap-2">
     <%= poetry_label(for_id: "pagination-rows-per-page", class: "text-sm font-normal") { "Rows per page" } %>
     <%= poetry_select(name: "per_page", value: "25", id: "pagination-rows-per-page", class: "w-20") do |select| %>
@@ -12,6 +12,6 @@
       <% select.with_item(value: "100") { "100" } %>
     <% end %>
   </div>
-  <%= poetry_pagination(current: 3, total: 10, edges: :icons, pages: false,
+  <%= poetry_pagination(current: 3, total: 10, pages: false,
                         class: "mx-0 w-auto", path: ->(page) { "?page=#{page}" }) %>
 </div>
