@@ -92,7 +92,8 @@ def poetry_ui_preview_sources
   preview_templates = Dir[Poetry::Ui.root.join("app/components/**/*preview*.html.erb").to_s]
   block_templates = Dir[Poetry::Ui.root.join("lib/generators/poetry/block/templates/*.html.erb").to_s]
   layout = Poetry::Ui.root.join("test/dummy/app/views/layouts/component_preview.html.erb")
-  (previews + preview_templates + block_templates + [layout.to_s]).sort
+  wrapper = Poetry::Core.root.join("app/views/poetry/core/preview.html.erb")
+  (previews + preview_templates + block_templates + [layout.to_s, wrapper.to_s]).sort
 end
 
 # Runtime custom-property assignments, DERIVED from the actual sources -
