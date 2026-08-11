@@ -4,21 +4,25 @@ module Poetry
   module Ui
     module RadioGroup
       # Re-expressed through the cn-* theme layer (N11): the well + dot
-      # treatments ride themes/default.css (the dot keeps its centering
-      # mechanics inline). :input stays the hidden native form bridge and
-      # :row the demo pairing row - both structural, no cn names.
+      # treatments ride the themes. The indicator is a theme-SIZED box
+      # (upstream's 2026-07 refactor) so the absolutely-centered dot
+      # anchors against a real rect regardless of the item's display -
+      # an unsized anchor span centers only by flow accident (7px off
+      # under nova's flex item). :input stays the hidden native form
+      # bridge and :row the demo pairing row - both structural, no cn
+      # names.
       class Style < Poetry::Core::Style
         base "cn-radio-group"
 
-        element :item, "cn-radio-group-item aspect-square shrink-0 border outline-none " \
-                       "disabled:cursor-not-allowed disabled:opacity-50"
+        element :item, "cn-radio-group-item group/radio-group-item peer relative aspect-square " \
+                       "shrink-0 border outline-none after:absolute after:-inset-x-3 " \
+                       "after:-inset-y-2 disabled:cursor-not-allowed disabled:opacity-50"
 
-        element :indicator, "relative flex items-center justify-center"
+        element :indicator, "cn-radio-group-indicator"
 
-        # The checked dot (source: CircleIcon size-2 fill-primary, centered
-        # absolutely inside the indicator).
-        element :dot, "cn-radio-group-indicator-icon absolute top-1/2 left-1/2 " \
-                      "-translate-x-1/2 -translate-y-1/2"
+        # The checked dot - a bare themed span (bg + size + centering all
+        # live in the theme's cn-radio-group-indicator-icon rule).
+        element :dot, "cn-radio-group-indicator-icon"
 
         # The form participant: one hidden native radio PER item, shared
         # name - out of the Tab order and the accessibility tree (the

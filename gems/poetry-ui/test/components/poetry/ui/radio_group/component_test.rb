@@ -186,16 +186,17 @@ module Poetry
           assert_includes fragment.css('[data-slot="radio-group"]').first["class"], "cn-radio-group"
           item_class = fragment.css('[data-slot="radio-group-item"]').first["class"]
 
-          %w[cn-radio-group-item aspect-square border outline-none].each do |token|
+          %w[cn-radio-group-item aspect-square border outline-none after:absolute
+             group/radio-group-item peer relative].each do |token|
             assert_includes item_class, token
           end
           indicator = fragment.css('[data-slot="radio-group-indicator"]').first
 
-          assert_includes indicator["class"], "items-center"
-          dot = indicator.css("svg").first
+          assert_includes indicator["class"], "cn-radio-group-indicator"
+          dot = indicator.css("span").first
 
-          %w[cn-radio-group-indicator-icon -translate-x-1/2].each { |token| assert_includes dot["class"], token }
-          assert_equal "true", dot["aria-hidden"]
+          assert_includes dot["class"], "cn-radio-group-indicator-icon"
+          assert_empty dot.content, "the dot is a bare themed span - size/bg/centering are theme rules"
         end
 
         def test_item_values_slug_into_ids_and_caller_classes_merge

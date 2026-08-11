@@ -7125,7 +7125,7 @@ components:
     - card_content
     - card_title
     - card_description
-    capsule: fa7a3e1f8bcb
+    capsule: 4f1c89f116fd
     controllers:
     - identifier: poetry--core--radio-group
       targets:
@@ -7189,8 +7189,9 @@ components:
       - attr: data-value
         condition: always - the item's value (keys the checked-value machine)
     - name: radio-group-indicator
-      description: Centering span holding the checked dot - hidden (the native attribute,
-        toggled by the controller) while unchecked
+      description: The theme-sized centering box holding the checked dot (the dot
+        itself is the themed .cn-radio-group-indicator-icon span) - hidden (the native
+        attribute, toggled by the controller) while unchecked
     - name: radio-group-card
       description: 'The choice-card row (variant: :card) - a <label> for= the radio
         button, so the whole card toggles; the checked treatments key on data-checked

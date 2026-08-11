@@ -110,7 +110,9 @@ module Poetry
                                   "roving-focus collection filter",
                "data-value" => "always - the item's value (keys the checked-value machine)"
              }
-        part "radio-group-indicator", "Centering span holding the checked dot - hidden (the " \
+        part "radio-group-indicator", "The theme-sized centering box holding the checked dot " \
+                                      "(the dot itself is the themed " \
+                                      ".cn-radio-group-indicator-icon span) - hidden (the " \
                                       "native attribute, toggled by the controller) while " \
                                       "unchecked"
         part "radio-group-card", "The choice-card row (variant: :card) - a <label> for= the " \
@@ -276,7 +278,7 @@ module Poetry
           # A hidden attr toggle, not presence - shadcn renders no check
           # animation (source-exact, morph-safe).
           attrs[:hidden] = true unless checked
-          content_tag(:span, render(Icon::Component.new(name: :circle, class: css(:dot))), attrs)
+          content_tag(:span, content_tag(:span, "", class: css(:dot)), attrs)
         end
 
         # THE form participant: native radio serialization (same form+name
