@@ -1,8 +1,17 @@
+<%# A scrollable transcript of real Message rows - user turns anchored
+    (anchor: true), the jump button appears the moment you scroll up. %>
 <div class="w-full max-w-md">
   <%= poetry_message_scroller(id: "scroller-demo", class: "h-80 rounded-lg border") do %>
-    <% 12.times do |i| %>
-      <%= poetry_message_scroller_item(id: "m#{i}") do %>
-        <div class="rounded-xl bg-muted px-3 py-2 w-fit">Message <%= i + 1 %></div>
+    <% 6.times do |i| %>
+      <%= poetry_message_scroller_item(id: "demo-q#{i + 1}", anchor: true, class: "px-4 pt-4") do %>
+        <%= poetry_message(align: :end) do |message| %>
+          <%= poetry_bubble { "Check section #{i + 1} of the transcript." } %>
+        <% end %>
+      <% end %>
+      <%= poetry_message_scroller_item(id: "demo-a#{i + 1}", class: "px-4 #{"pb-4" if i == 5}") do %>
+        <%= poetry_message do |message| %>
+          <%= poetry_bubble(variant: :muted) { "Section #{i + 1} is ready. New rows land below while your reading position is respected." } %>
+        <% end %>
       <% end %>
     <% end %>
   <% end %>

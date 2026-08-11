@@ -1,7 +1,11 @@
+<%# jump_button: false drops the return-to-latest affordance - for
+    short regions where follow-bottom alone is enough. %>
 <div class="w-full max-w-md">
   <%= poetry_message_scroller(id: "scroller-plain", jump_button: false, class: "h-60 rounded-lg border") do %>
-    <%= poetry_message_scroller_item(id: "only") do %>
-      <div class="rounded-xl bg-muted px-3 py-2 w-fit">Message 1</div>
+    <%= poetry_message_scroller_item(id: "only", class: "p-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) { "A quiet region: no jump button, just the log." } %>
+      <% end %>
     <% end %>
   <% end %>
 </div>

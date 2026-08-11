@@ -1,24 +1,27 @@
+<%# anchor: true marks the turn the controller settles near the TOP of
+    the viewport (with a peek of the previous exchange) instead of
+    snapping to the bottom - here each answer is the anchored turn. %>
 <div class="w-full max-w-md">
   <%= poetry_message_scroller(id: "scroller-anchored", class: "h-80 rounded-lg border") do %>
-    <%= poetry_message_scroller_item(id: "q1") do %>
-      <div class="ml-auto w-fit rounded-xl bg-primary px-3 py-2 text-sm text-primary-foreground">
-        How do I export this report as a PDF?
-      </div>
+    <%= poetry_message_scroller_item(id: "q1", class: "px-4 pt-4") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "How do I export this report as a PDF?" } %>
+      <% end %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "a1", anchor: true) do %>
-      <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm">
-        Open the report, choose Share, then pick Download as PDF. The file lands in your downloads folder.
-      </div>
+    <%= poetry_message_scroller_item(id: "a1", anchor: true, class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) { "Open the report, choose Share, then pick Download as PDF. The file lands in your downloads folder." } %>
+      <% end %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "q2") do %>
-      <div class="ml-auto w-fit rounded-xl bg-primary px-3 py-2 text-sm text-primary-foreground">
-        Can I have it run every Monday instead?
-      </div>
+    <%= poetry_message_scroller_item(id: "q2", class: "px-4") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "Can I have it run every Monday instead?" } %>
+      <% end %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "a2", anchor: true) do %>
-      <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm">
-        Yes. In the report settings, turn on Recurring and set the cadence to weekly. We will email the PDF each Monday morning.
-      </div>
+    <%= poetry_message_scroller_item(id: "a2", anchor: true, class: "px-4 pb-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) { "Yes. In the report settings, turn on Recurring and set the cadence to weekly. We will email the PDF each Monday morning." } %>
+      <% end %>
     <% end %>
   <% end %>
 </div>

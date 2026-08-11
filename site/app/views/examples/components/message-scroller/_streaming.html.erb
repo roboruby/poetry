@@ -1,0 +1,123 @@
+<%# The full chat surface, live: Send replays a scripted conversation
+    through the scroller the way your app's Turbo Streams would - each
+    turn is server-rendered ERB kept in a <template>, the user row pops
+    in anchored, and the assistant reply streams by UPDATING its row
+    text (never append-per-token). The demo-chat controller is docs
+    plumbing, not poetry API - in a real app these appends are Turbo
+    Streams targeting the content element (id "chat-stream-messages"). %>
+<div data-controller="demo-chat" class="mx-auto w-full max-w-sm">
+  <%= poetry_card(class: "flex h-[34rem] w-full flex-col gap-0 overflow-hidden") do |card| %>
+    <% card.with_title { "New Chat" } %>
+    <% card.with_description { "How can I help you today?" } %>
+    <% card.with_action do %>
+      <%= poetry_button(variant: :outline, size: :"icon-sm", label: "Reset conversation",
+                        "data-action": "demo-chat#reset") do %>
+        <%= poetry_icon(name: :"rotate-cw") %>
+      <% end %>
+    <% end %>
+
+    <div class="min-h-0 flex-1">
+      <div data-demo-chat-target="empty" class="flex h-full items-center justify-center">
+        <%= poetry_empty do |empty| %>
+          <% empty.with_media { poetry_icon(name: :"message-circle-dashed") } %>
+          <% empty.with_title { "Morning!" } %>
+          <% empty.with_description { "What are we working on today? Press send to start the conversation." } %>
+        <% end %>
+      </div>
+      <div data-demo-chat-target="chat" hidden class="h-full min-h-0">
+        <%= poetry_message_scroller(id: "chat-stream", class: "h-full") do %><% end %>
+      </div>
+    </div>
+
+    <% card.with_footer do %>
+      <div class="flex w-full flex-col gap-2 rounded-xl border p-2">
+        <div data-demo-chat-target="queue" class="line-clamp-2 min-h-10 px-1 text-sm"></div>
+        <div class="flex items-center gap-1">
+          <%= poetry_dropdown_menu(align: :start, side: :top) do |menu| %>
+            <% menu.with_trigger(variant: :outline, size: :"icon-sm", label: "Add files") do %>
+              <%= poetry_icon(name: :plus) %>
+            <% end %>
+            <% menu.with_group do |group| %>
+              <% group.with_item do %><%= poetry_icon(name: :paperclip) %>Add Photos & Files<% end %>
+              <% group.with_item do %><%= poetry_icon(name: :image) %>Create Image<% end %>
+              <% group.with_item do %><%= poetry_icon(name: :telescope) %>Deep Research<% end %>
+              <% group.with_item do %><%= poetry_icon(name: :globe) %>Web Search<% end %>
+            <% end %>
+          <% end %>
+          <%= poetry_button(size: :"icon-sm", label: "Send message", class: "ml-auto",
+                            "data-demo-chat-target": "send", "data-action": "demo-chat#send") do %>
+            <%= poetry_icon(name: :"arrow-up") %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+
+  <template data-demo-chat-target="turn"
+            data-demo-preview="I'm building a chat for our app and the scroll behavior is driving me nuts. Every time the AI streams a reply, the whole thread jumps around.">
+    <%= poetry_message_scroller_item(id: "turn-1-user", anchor: true,
+                                     class: "animate-in fade-in slide-in-from-bottom-2 px-4 pt-4 duration-300") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "I'm building a chat for our app and the scroll behavior is driving me nuts. Every time the AI streams a reply, the whole thread jumps around." } %>
+      <% end %>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "turn-1-assistant", class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) do %>
+          <span data-demo-text="That's the classic streaming scroll problem. Wrap your rows in poetry_message_scroller - the viewport pins to the bottom as tokens arrive, so the latest text lands in place. And it only auto-scrolls while the reader is already at the bottom: scroll up to re-read and it backs off."></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </template>
+
+  <template data-demo-chat-target="turn"
+            data-demo-preview="Okay, but when I send a new message the view still feels jarring - like the whole conversation reloads.">
+    <%= poetry_message_scroller_item(id: "turn-2-user", anchor: true,
+                                     class: "animate-in fade-in slide-in-from-bottom-2 px-4 duration-300") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "Okay, but when I send a new message the view still feels jarring - like the whole conversation reloads." } %>
+      <% end %>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "turn-2-assistant", class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) do %>
+          <span data-demo-text="Turn anchoring fixes that. Pass anchor: true on the row that should settle near the top of the viewport instead of snapping to the bottom - this demo anchors each user turn. A small peek of the previous exchange stays visible above it, so context isn't lost."></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </template>
+
+  <template data-demo-chat-target="turn"
+            data-demo-preview="And if someone has scrolled up to re-read an older answer? I don't want to yank them back down.">
+    <%= poetry_message_scroller_item(id: "turn-3-user", anchor: true,
+                                     class: "animate-in fade-in slide-in-from-bottom-2 px-4 duration-300") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "And if someone has scrolled up to re-read an older answer? I don't want to yank them back down." } %>
+      <% end %>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "turn-3-assistant", class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) do %>
+          <span data-demo-text="You won't. Scrolling up is a deliberate opt-out - their place stays put while new tokens keep arriving below. When there's unseen content, the jump button appears; one tap returns to the newest message and re-engages follow-bottom. Same pattern as Slack or iMessage."></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </template>
+
+  <template data-demo-chat-target="turn"
+            data-demo-preview="Last one - does this work with assistive tech?">
+    <%= poetry_message_scroller_item(id: "turn-4-user", anchor: true,
+                                     class: "animate-in fade-in slide-in-from-bottom-2 px-4 duration-300") do %>
+      <%= poetry_message(align: :end) do |message| %>
+        <%= poetry_bubble { "Last one - does this work with assistive tech?" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_message_scroller_item(id: "turn-4-assistant", class: "px-4 pb-4") do %>
+      <%= poetry_message do |message| %>
+        <%= poetry_bubble(variant: :muted) do %>
+          <span data-demo-text="Yes - the content element sets role=log with aria-relevant=additions, so screen readers announce new messages as they arrive. The jump button is a real button with an accessible label, and it leaves the tab order when you're already at the bottom."></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  </template>
+</div>

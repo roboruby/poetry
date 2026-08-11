@@ -1,0 +1,34 @@
+<%# Zero JS here: the controller mirrors its state machine onto the
+    DOM - data-mode (the 4-state machine) and data-scrollable (which
+    edges have room) - so plain CSS can read it. The chips and the
+    footer are revealed purely by group-has selectors on those
+    attributes. Scroll, jump, and drag to watch them flip. %>
+<div class="group/state mx-auto flex w-full max-w-md flex-col gap-3">
+  <div class="flex flex-wrap items-center gap-2 text-xs">
+    <span class="text-muted-foreground">mode:</span>
+    <span class="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium group-has-[[data-mode=following-bottom]]/state:inline-flex"><span class="size-1.5 rounded-full bg-emerald-500"></span>following-bottom</span>
+    <span class="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium group-has-[[data-mode=free-scrolling]]/state:inline-flex"><span class="size-1.5 rounded-full bg-amber-500"></span>free-scrolling</span>
+    <span class="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium group-has-[[data-mode=anchored-to-message]]/state:inline-flex"><span class="size-1.5 rounded-full bg-sky-500"></span>anchored-to-message</span>
+    <span class="hidden items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium group-has-[[data-mode=settling-jump]]/state:inline-flex"><span class="size-1.5 rounded-full bg-violet-500"></span>settling-jump</span>
+  </div>
+  <%= poetry_message_scroller(id: "scroller-state", default_scroll_position: :start,
+                              class: "h-80 rounded-lg border") do %>
+    <% 6.times do |i| %>
+      <%= poetry_message_scroller_item(id: "state-q#{i + 1}", anchor: true, class: "px-4 #{"pt-4" if i.zero?}") do %>
+        <%= poetry_message(align: :end) do |message| %>
+          <%= poetry_bubble { "Check section #{i + 1} of the transcript." } %>
+        <% end %>
+      <% end %>
+      <%= poetry_message_scroller_item(id: "state-a#{i + 1}", class: "px-4 #{"pb-4" if i == 5}") do %>
+        <%= poetry_message do |message| %>
+          <%= poetry_bubble(variant: :muted) { "Section #{i + 1} is ready. The scroll state updates without touching the rows." } %>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+  <p class="text-center text-xs text-muted-foreground">
+    <span class="hidden group-has-[[data-scrollable=end]]/state:inline">Newer messages below - scroll or jump down.</span>
+    <span class="hidden group-has-[[data-scrollable='start_end']]/state:inline">Room in both directions.</span>
+    <span class="hidden group-has-[[data-scrollable=start]]/state:inline">You're at the newest - older messages above.</span>
+  </p>
+</div>

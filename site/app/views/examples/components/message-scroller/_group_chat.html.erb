@@ -1,32 +1,30 @@
+<%# A group thread: join notices are separator Markers (real announced
+    content), senders are named via the Message header. %>
 <div class="w-full max-w-md">
   <%= poetry_message_scroller(id: "scroller-group", class: "h-80 rounded-lg border") do %>
-    <%= poetry_message_scroller_item(id: "join-priya", anchor: true) do %>
-      <div class="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-        Priya joined the channel
-      </div>
+    <%= poetry_message_scroller_item(id: "join-priya", anchor: true, class: "px-4 pt-4") do %>
+      <%= poetry_marker(variant: :separator) { "Priya joined the channel" } %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "g1") do %>
-      <div class="w-fit">
-        <p class="mb-1 text-xs font-medium text-muted-foreground">Priya</p>
-        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Morning! Did the staging deploy finish?</div>
-      </div>
+    <%= poetry_message_scroller_item(id: "g1", class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <% message.with_header { "Priya" } %>
+        <%= poetry_bubble(variant: :muted) { "Morning! Did the staging deploy finish?" } %>
+      <% end %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "g2") do %>
-      <div class="w-fit">
-        <p class="mb-1 text-xs font-medium text-muted-foreground">Marcus</p>
-        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Went green two minutes ago and the smoke tests are passing.</div>
-      </div>
+    <%= poetry_message_scroller_item(id: "g2", class: "px-4") do %>
+      <%= poetry_message do |message| %>
+        <% message.with_header { "Marcus" } %>
+        <%= poetry_bubble(variant: :muted) { "Went green two minutes ago and the smoke tests are passing." } %>
+      <% end %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "join-lena", anchor: true) do %>
-      <div class="mx-auto w-fit rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-        Lena joined the channel
-      </div>
+    <%= poetry_message_scroller_item(id: "join-lena", anchor: true, class: "px-4") do %>
+      <%= poetry_marker(variant: :separator) { "Lena joined the channel" } %>
     <% end %>
-    <%= poetry_message_scroller_item(id: "g3") do %>
-      <div class="w-fit">
-        <p class="mb-1 text-xs font-medium text-muted-foreground">Lena</p>
-        <div class="rounded-xl bg-muted px-3 py-2 text-sm">Perfect timing. I will start the release checklist now.</div>
-      </div>
+    <%= poetry_message_scroller_item(id: "g3", class: "px-4 pb-4") do %>
+      <%= poetry_message do |message| %>
+        <% message.with_header { "Lena" } %>
+        <%= poetry_bubble(variant: :muted) { "Perfect timing. I will start the release checklist now." } %>
+      <% end %>
     <% end %>
   <% end %>
 </div>

@@ -1,5 +1,8 @@
+<%# default_scroll_position: :start opens the thread at its beginning -
+    the saved-conversation posture - instead of the chat default (:end). %>
 <div class="w-full max-w-md">
-  <%= poetry_message_scroller(id: "scroller-saved", default_scroll_position: :start, class: "h-72 rounded-lg border") do %>
+  <%= poetry_message_scroller(id: "scroller-saved", default_scroll_position: :start,
+                              class: "h-72 rounded-lg border") do %>
     <% [
       "Welcome back. This thread opens right where the conversation began.",
       "Last session we sketched the onboarding email sequence.",
@@ -10,8 +13,10 @@
       "Whichever wins gets promoted to everyone after a week.",
       "Pick up wherever feels right whenever you are ready."
     ].each_with_index do |text, i| %>
-      <%= poetry_message_scroller_item(id: "s#{i}") do %>
-        <div class="w-fit rounded-xl bg-muted px-3 py-2 text-sm"><%= text %></div>
+      <%= poetry_message_scroller_item(id: "s#{i}", class: "px-4 #{"pt-4" if i.zero?} #{"pb-4" if i == 7}") do %>
+        <%= poetry_message do |message| %>
+          <%= poetry_bubble(variant: :muted) { text } %>
+        <% end %>
       <% end %>
     <% end %>
   <% end %>

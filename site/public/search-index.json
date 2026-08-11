@@ -2706,6 +2706,12 @@
     "path": "/components/message-scroller#anchored-turns"
   },
   {
+    "title": "Commands",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#commands"
+  },
+  {
     "title": "Group chat",
     "page": "Message Scroller",
     "section": "components",
@@ -2716,6 +2722,18 @@
     "page": "Message Scroller",
     "section": "components",
     "path": "/components/message-scroller#open-at-start"
+  },
+  {
+    "title": "Scroll state",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#scroll-state"
+  },
+  {
+    "title": "Streaming",
+    "page": "Message Scroller",
+    "section": "components",
+    "path": "/components/message-scroller#streaming"
   },
   {
     "title": "Without jump button",
