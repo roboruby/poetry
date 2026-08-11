@@ -1113,6 +1113,8 @@ components:
     bem_block: poetry-ui-card
     styles: []
     options:
+    - name: content_class
+      type: string
     - name: title_tag
       type: symbol
       variants:

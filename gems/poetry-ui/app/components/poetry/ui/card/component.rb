@@ -19,6 +19,13 @@ module Poetry
         # gate (2026-07-01). Visual classes unchanged, so parity holds.
         option :title_tag, :symbol, default: :h3
 
+        # The body cell's class merge seam (caller classes win via
+        # tailwind_merge, the footer's existing pattern) - the chat-in-a-
+        # card posture needs the content cell to flex and drop its padding
+        # (min-h-0 flex-1 p-0), exactly what upstream passes to
+        # CardContent.
+        option :content_class, :string
+
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
 
         part "card", "Root container - the vertical flex stack"
