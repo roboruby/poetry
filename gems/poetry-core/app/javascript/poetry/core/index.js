@@ -31,6 +31,7 @@ import CheckedController from "@poetry/controllers/checked_controller"
 import CheckboxGroupController from "@poetry/controllers/checkbox_group_controller"
 import PressedController from "@poetry/controllers/pressed_controller"
 import ToggleGroupController from "@poetry/controllers/toggle_group_controller"
+import QuestionnaireController from "@poetry/controllers/questionnaire_controller"
 import RadioGroupController from "@poetry/controllers/radio_group_controller"
 import SliderController from "@poetry/controllers/slider_controller"
 import OtpController from "@poetry/controllers/otp_controller"
@@ -82,6 +83,7 @@ export { default as CheckedController } from "@poetry/controllers/checked_contro
 export { default as CheckboxGroupController } from "@poetry/controllers/checkbox_group_controller"
 export { default as PressedController } from "@poetry/controllers/pressed_controller"
 export { default as ToggleGroupController } from "@poetry/controllers/toggle_group_controller"
+export { default as QuestionnaireController } from "@poetry/controllers/questionnaire_controller"
 export { default as RadioGroupController } from "@poetry/controllers/radio_group_controller"
 export { default as SliderController } from "@poetry/controllers/slider_controller"
 export { default as OtpController } from "@poetry/controllers/otp_controller"
@@ -146,6 +148,7 @@ export const controllers = {
   "poetry--core--checkbox-group": CheckboxGroupController,
   "poetry--core--pressed": PressedController,
   "poetry--core--toggle-group": ToggleGroupController,
+  "poetry--core--questionnaire": QuestionnaireController,
   "poetry--core--radio-group": RadioGroupController,
   "poetry--core--slider": SliderController,
   "poetry--core--otp": OtpController,

@@ -950,6 +950,37 @@
       "poetry:toggle:change"
     ]
   },
+  "poetry--core--questionnaire": {
+    "targets": [
+      "next",
+      "previous",
+      "progress",
+      "skip",
+      "submit"
+    ],
+    "values": {
+      "shortcuts": {
+        "type": "String",
+        "default": ""
+      }
+    },
+    "classes": [],
+    "methods": [
+      "change",
+      "connect",
+      "input",
+      "keydown",
+      "next",
+      "previous",
+      "reset",
+      "skip",
+      "submit"
+    ],
+    "events": [
+      "poetry:questionnaire:item-change",
+      "poetry:questionnaire:status-change"
+    ]
+  },
   "poetry--core--radio-group": {
     "targets": [
       "input"
