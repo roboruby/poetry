@@ -10,7 +10,8 @@ module Poetry
       # to await), the glyph size matches source (CheckIcon size-3.5,
       # upstream-inline in TSX), and :input is the sr-only form store.
       class Style < Poetry::Core::Style
-        base "cn-checkbox peer shrink-0 outline-none " \
+        base "cn-checkbox peer relative shrink-0 outline-none after:absolute " \
+             "after:-inset-x-3 after:-inset-y-2 " \
              "disabled:cursor-not-allowed disabled:opacity-50"
 
         element :indicator, "grid place-content-center text-current transition-none " \
