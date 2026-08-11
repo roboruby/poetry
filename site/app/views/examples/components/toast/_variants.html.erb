@@ -13,6 +13,10 @@
     <% toast.with_title { "Storage almost full" } %>
     <% toast.with_description { "You have used 90% of your quota." } %>
   <% end %>
+  <%= poetry_toast(variant: :loading, duration: 0) do |toast| %>
+    <% toast.with_title { "Creating event…" } %>
+    <% toast.with_description { "Persistent until the job replaces it." } %>
+  <% end %>
   <%= poetry_toast(variant: :destructive, duration: 0) do |toast| %>
     <% toast.with_title { "Payment failed" } %>
     <% toast.with_description { "Your card was declined." } %>

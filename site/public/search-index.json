@@ -3966,6 +3966,12 @@
     "path": "/components/toast#default"
   },
   {
+    "title": "Promise",
+    "page": "Toast",
+    "section": "components",
+    "path": "/components/toast#promise"
+  },
+  {
     "title": "Variants",
     "page": "Toast",
     "section": "components",

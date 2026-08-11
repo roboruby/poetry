@@ -1,0 +1,23 @@
+<%# Upstream toast-promise, the Rails way: the job appends a LOADING
+    toast (persistent by contract), then REPLACES it in place - same
+    toast id - with the settled result. In a real app both steps are
+    Turbo Streams (turbo_stream.poetry_toast to append, then
+    turbo_stream.replace from the job); the demo-toast controller
+    stands in for the job with a 2s timer. %>
+<div data-controller="demo-toast" class="flex w-full flex-col items-start gap-3">
+  <%= poetry_button(variant: :outline, "data-action": "demo-toast#create") { "Create Event" } %>
+  <div class="h-40 w-full overflow-hidden rounded-lg border contain-content">
+    <%= poetry_toaster(id: "promise-toaster", "data-demo-toast-target": "toaster") %>
+  </div>
+
+  <template data-demo-toast-target="loading">
+    <%= poetry_toast(variant: :loading, id: "promise-toast") do |toast| %>
+      <% toast.with_title { "Creating event…" } %>
+    <% end %>
+  </template>
+  <template data-demo-toast-target="settled">
+    <%= poetry_toast(variant: :success, id: "promise-toast", duration: 0) do |toast| %>
+      <% toast.with_title { "Event created." } %>
+    <% end %>
+  </template>
+</div>
