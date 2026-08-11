@@ -1115,6 +1115,8 @@ components:
     options:
     - name: content_class
       type: string
+    - name: header_class
+      type: string
     - name: title_tag
       type: symbol
       variants:

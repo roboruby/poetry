@@ -26,6 +26,11 @@ module Poetry
         # CardContent.
         option :content_class, :string
 
+        # The header row's seam, completing the trio (header/content/
+        # footer) - upstream's chat demos pass border-b to CardHeader to
+        # rule the title off from the transcript.
+        option :header_class, :string
+
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
 
         part "card", "Root container - the vertical flex stack"
