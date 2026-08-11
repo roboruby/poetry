@@ -1,7 +1,7 @@
 <%= form_with(url: url, method: http_method, html: root_attributes.to_attributes) do %>
   <% if progress? %>
     <% custom_progress = progress.to_s %>
-    <div <%= tag.attributes({ "class" => css(:progress), "data-slot" => "questionnaire-progress",
+    <div <%= tag.attributes({ "class" => css(:progress, class: progress_class), "data-slot" => "questionnaire-progress",
                               "role" => "progressbar", "aria-label" => "Questionnaire progress",
                               "aria-live" => "polite",
                               "data-current" => active_index + 1,

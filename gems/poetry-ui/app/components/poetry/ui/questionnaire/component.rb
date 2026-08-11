@@ -212,8 +212,18 @@ module Poetry
 
         # with_progress (bare) renders the auto "Question X of Y" text;
         # with_progress { custom } replaces it (marked data-custom so the
-        # controller leaves it alone).
+        # controller leaves it alone). class: merges onto the progress
+        # element (upstream's className seam - e.g. w-full for a
+        # full-width segment bar over the base w-fit).
         renders_one :progress
+        alias_method :__vc_with_progress, :with_progress
+
+        def with_progress(**options, &block)
+          @progress_class = options[:class]
+          __vc_with_progress(&block)
+        end
+
+        attr_reader :progress_class
 
         # Hand-rolled (not a VC slot): the yielded builder is a plain
         # object, and ViewComponent lambda slots only forward to component
