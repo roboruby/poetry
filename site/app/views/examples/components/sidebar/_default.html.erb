@@ -1,24 +1,33 @@
-<%# The full app frame (upstream's sidebar hero): team header, the nav
-    groups with the active item's submenu expanded, a projects group
-    with row actions, the account footer, the collapse rail, and a
-    breadcrumb + skeleton inset. The switcher/account menus are shown
-    as affordances - the User menu and Workspace switcher examples
-    below focus on those rows. %>
+<%# The full app frame (upstream's sidebar hero), with the menus LIVE
+    via trigger composition: with_trigger(compose: true) yields the
+    overlay's wiring and the sidebar control wears it - the team
+    switcher and account rows open real dropdowns, the nav items are
+    real collapsibles, and each project row carries an action menu. %>
 <div class="h-[32rem] w-full overflow-hidden rounded-lg border contain-content">
   <%= poetry_sidebar(collapsible: :icon) do |shell| %>
     <% shell.with_nav do %>
       <%= poetry_sidebar_header do %>
         <%= poetry_sidebar_menu do %>
           <%= poetry_sidebar_menu_item do %>
-            <%= poetry_sidebar_menu_button(size: :lg) do %>
-              <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <%= poetry_icon(name: :"gallery-vertical-end", class: "size-4") %>
-              </div>
-              <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">Acme Inc</span>
-                <span class="truncate text-xs">Enterprise</span>
-              </div>
-              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <%= poetry_dropdown_menu do |menu| %>
+              <% menu.with_trigger(compose: true) do |wiring| %>
+                <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
+                  <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                    <%= poetry_icon(name: :"gallery-vertical-end", class: "size-4") %>
+                  </div>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">Acme Inc</span>
+                    <span class="truncate text-xs">Enterprise</span>
+                  </div>
+                  <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+                <% end %>
+              <% end %>
+              <% menu.with_label { "Teams" } %>
+              <% menu.with_item(shortcut: "⌘1") { "Acme Inc" } %>
+              <% menu.with_item(shortcut: "⌘2") { "Acme Corp." } %>
+              <% menu.with_item(shortcut: "⌘3") { "Evil Corp." } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Add team" } %>
             <% end %>
           <% end %>
         <% end %>
@@ -27,31 +36,27 @@
         <%= poetry_sidebar_group do %>
           <%= poetry_sidebar_group_label { "Platform" } %>
           <%= poetry_sidebar_menu do %>
-            <%= poetry_sidebar_menu_item do %>
-              <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
-                <%= poetry_icon(name: :"square-terminal") %><span>Playground</span>
-              <% end %>
-              <%= poetry_sidebar_menu_sub do %>
-                <% %w[History Starred Settings].each do |title| %>
-                  <%= poetry_sidebar_menu_sub_item do %>
-                    <%= poetry_sidebar_menu_sub_button(href: "#") do %><span><%= title %></span><% end %>
+            <% [["Playground", :"square-terminal", true, %w[History Starred Settings]],
+               ["Models", :bot, false, %w[Genesis Explorer Quantum]],
+               ["Documentation", :"book-open", false, ["Introduction", "Get Started", "Tutorials", "Changelog"]],
+               ["Settings", :"settings-2", false, %w[General Team Billing Limits]]].each do |title, icon, active, subs| %>
+              <%= poetry_sidebar_menu_item do %>
+                <%= poetry_collapsible(open: active) do |collapsible| %>
+                  <% collapsible.with_trigger(compose: true) do |wiring| %>
+                    <%= poetry_sidebar_menu_button(active: active, **wiring) do %>
+                      <%= poetry_icon(name: icon) %><span><%= title %></span>
+                      <%= poetry_icon(name: :"chevron-right",
+                                      class: "ml-auto transition-transform in-data-open:rotate-90") %>
+                    <% end %>
+                  <% end %>
+                  <%= poetry_sidebar_menu_sub do %>
+                    <% subs.each do |sub| %>
+                      <%= poetry_sidebar_menu_sub_item do %>
+                        <%= poetry_sidebar_menu_sub_button(href: "#") do %><span><%= sub %></span><% end %>
+                      <% end %>
+                    <% end %>
                   <% end %>
                 <% end %>
-              <% end %>
-            <% end %>
-            <%= poetry_sidebar_menu_item do %>
-              <%= poetry_sidebar_menu_button(href: "#") do %>
-                <%= poetry_icon(name: :bot) %><span>Models</span>
-              <% end %>
-            <% end %>
-            <%= poetry_sidebar_menu_item do %>
-              <%= poetry_sidebar_menu_button(href: "#") do %>
-                <%= poetry_icon(name: :"book-open") %><span>Documentation</span>
-              <% end %>
-            <% end %>
-            <%= poetry_sidebar_menu_item do %>
-              <%= poetry_sidebar_menu_button(href: "#") do %>
-                <%= poetry_icon(name: :"settings-2") %><span>Settings</span>
               <% end %>
             <% end %>
           <% end %>
@@ -64,8 +69,16 @@
                 <%= poetry_sidebar_menu_button(href: "#") do %>
                   <%= poetry_icon(name: icon) %><span><%= name %></span>
                 <% end %>
-                <%= poetry_sidebar_menu_action(label: "#{name} options") do %>
-                  <%= poetry_icon(name: :ellipsis) %>
+                <%= poetry_dropdown_menu do |menu| %>
+                  <% menu.with_trigger(compose: true) do |wiring| %>
+                    <%= poetry_sidebar_menu_action(label: "#{name} options", **wiring) do %>
+                      <%= poetry_icon(name: :ellipsis) %>
+                    <% end %>
+                  <% end %>
+                  <% menu.with_item { "View project" } %>
+                  <% menu.with_item { "Share project" } %>
+                  <% menu.with_separator %>
+                  <% menu.with_item(variant: :destructive) { "Delete project" } %>
                 <% end %>
               <% end %>
             <% end %>
@@ -80,13 +93,26 @@
       <%= poetry_sidebar_footer do %>
         <%= poetry_sidebar_menu do %>
           <%= poetry_sidebar_menu_item do %>
-            <%= poetry_sidebar_menu_button(size: :lg) do %>
-              <%= poetry_avatar(label: "shadcn", class: "size-8 rounded-lg") { "CN" } %>
-              <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">shadcn</span>
-                <span class="truncate text-xs">m@example.com</span>
-              </div>
-              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <%= poetry_dropdown_menu(side: :right, align: :end) do |menu| %>
+              <% menu.with_trigger(compose: true) do |wiring| %>
+                <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
+                  <%= poetry_avatar(label: "shadcn", class: "size-8 rounded-lg") { "CN" } %>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">shadcn</span>
+                    <span class="truncate text-xs">m@example.com</span>
+                  </div>
+                  <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+                <% end %>
+              <% end %>
+              <% menu.with_label { "shadcn — m@example.com" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Upgrade to Pro" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Account" } %>
+              <% menu.with_item { "Billing" } %>
+              <% menu.with_item { "Notifications" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Log out" } %>
             <% end %>
           <% end %>
         <% end %>
