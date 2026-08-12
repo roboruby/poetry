@@ -1,8 +1,27 @@
-<div class="h-96 w-full overflow-hidden rounded-lg border contain-content">
+<%# The full app frame (upstream's sidebar hero): team header, the nav
+    groups with the active item's submenu expanded, a projects group
+    with row actions, the account footer, the collapse rail, and a
+    breadcrumb + skeleton inset. The switcher/account menus are shown
+    as affordances - the User menu and Workspace switcher examples
+    below focus on those rows. %>
+<div class="h-[32rem] w-full overflow-hidden rounded-lg border contain-content">
   <%= poetry_sidebar(collapsible: :icon) do |shell| %>
     <% shell.with_nav do %>
       <%= poetry_sidebar_header do %>
-        <div class="flex items-center gap-2 px-2 py-1 text-sm font-semibold">Acme Inc</div>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(size: :lg) do %>
+              <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                <%= poetry_icon(name: :"gallery-vertical-end", class: "size-4") %>
+              </div>
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-semibold">Acme Inc</span>
+                <span class="truncate text-xs">Enterprise</span>
+              </div>
+              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <% end %>
+          <% end %>
+        <% end %>
       <% end %>
       <%= poetry_sidebar_content do %>
         <%= poetry_sidebar_group do %>
@@ -10,36 +29,87 @@
           <%= poetry_sidebar_menu do %>
             <%= poetry_sidebar_menu_item do %>
               <%= poetry_sidebar_menu_button(href: "#", active: true) do %>
-                <%= poetry_icon(name: :"layout-dashboard") %><span>Dashboard</span>
+                <%= poetry_icon(name: :"square-terminal") %><span>Playground</span>
+              <% end %>
+              <%= poetry_sidebar_menu_sub do %>
+                <% %w[History Starred Settings].each do |title| %>
+                  <%= poetry_sidebar_menu_sub_item do %>
+                    <%= poetry_sidebar_menu_sub_button(href: "#") do %><span><%= title %></span><% end %>
+                  <% end %>
+                <% end %>
               <% end %>
             <% end %>
             <%= poetry_sidebar_menu_item do %>
               <%= poetry_sidebar_menu_button(href: "#") do %>
-                <%= poetry_icon(name: :inbox) %><span>Inbox</span>
+                <%= poetry_icon(name: :bot) %><span>Models</span>
               <% end %>
-              <%= poetry_sidebar_menu_badge do %>12<% end %>
             <% end %>
             <%= poetry_sidebar_menu_item do %>
               <%= poetry_sidebar_menu_button(href: "#") do %>
-                <%= poetry_icon(name: :settings) %><span>Settings</span>
+                <%= poetry_icon(name: :"book-open") %><span>Documentation</span>
               <% end %>
-              <%= poetry_sidebar_menu_action(label: "Settings options") do %>
-                <%= poetry_icon(name: :ellipsis) %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#") do %>
+                <%= poetry_icon(name: :"settings-2") %><span>Settings</span>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+        <%= poetry_sidebar_group do %>
+          <%= poetry_sidebar_group_label { "Projects" } %>
+          <%= poetry_sidebar_menu do %>
+            <% [["Design Engineering", :frame], ["Sales & Marketing", :"chart-pie"], ["Travel", :map]].each do |name, icon| %>
+              <%= poetry_sidebar_menu_item do %>
+                <%= poetry_sidebar_menu_button(href: "#") do %>
+                  <%= poetry_icon(name: icon) %><span><%= name %></span>
+                <% end %>
+                <%= poetry_sidebar_menu_action(label: "#{name} options") do %>
+                  <%= poetry_icon(name: :ellipsis) %>
+                <% end %>
+              <% end %>
+            <% end %>
+            <%= poetry_sidebar_menu_item do %>
+              <%= poetry_sidebar_menu_button(href: "#", class: "text-sidebar-foreground/70") do %>
+                <%= poetry_icon(name: :ellipsis) %><span>More</span>
               <% end %>
             <% end %>
           <% end %>
         <% end %>
       <% end %>
       <%= poetry_sidebar_footer do %>
-        <div class="px-2 py-1 text-xs text-muted-foreground">v1.0.0</div>
+        <%= poetry_sidebar_menu do %>
+          <%= poetry_sidebar_menu_item do %>
+            <%= poetry_sidebar_menu_button(size: :lg) do %>
+              <%= poetry_avatar(label: "shadcn", class: "size-8 rounded-lg") { "CN" } %>
+              <div class="grid flex-1 text-left text-sm leading-tight">
+                <span class="truncate font-semibold">shadcn</span>
+                <span class="truncate text-xs">m@example.com</span>
+              </div>
+              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <% end %>
+          <% end %>
+        <% end %>
       <% end %>
+      <%= poetry_sidebar_rail %>
     <% end %>
     <% shell.with_inset do %>
-      <div class="flex items-center gap-2 border-b p-3">
+      <header class="flex h-14 shrink-0 items-center gap-2 border-b px-4">
         <%= poetry_sidebar_trigger %>
-        <span class="text-sm font-medium">Dashboard</span>
+        <%= poetry_separator(orientation: :vertical, class: "mr-2 h-4") %>
+        <%= poetry_breadcrumb do |crumb| %>
+          <% crumb.with_item("Building Your Application", href: "#") %>
+          <% crumb.with_item("Data Fetching") %>
+        <% end %>
+      </header>
+      <div class="flex flex-1 flex-col gap-4 p-4">
+        <div class="grid auto-rows-min gap-4 md:grid-cols-3">
+          <div class="aspect-video rounded-xl bg-muted/50"></div>
+          <div class="aspect-video rounded-xl bg-muted/50"></div>
+          <div class="aspect-video rounded-xl bg-muted/50"></div>
+        </div>
+        <div class="min-h-[100vh] flex-1 rounded-xl bg-muted/50"></div>
       </div>
-      <div class="p-4 text-sm text-muted-foreground">Main content area.</div>
     <% end %>
   <% end %>
 </div>
