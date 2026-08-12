@@ -216,11 +216,11 @@ module Poetry
         # element (upstream's className seam - e.g. w-full for a
         # full-width segment bar over the base w-fit).
         renders_one :progress
-        alias_method :__vc_with_progress, :with_progress
+        alias __vc_with_progress with_progress
 
-        def with_progress(**options, &block)
+        def with_progress(**options, &)
           @progress_class = options[:class]
-          __vc_with_progress(&block)
+          __vc_with_progress(&)
         end
 
         attr_reader :progress_class

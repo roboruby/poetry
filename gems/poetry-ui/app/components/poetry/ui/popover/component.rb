@@ -24,7 +24,14 @@ module Poetry
       # (focus-scope's mount default, not vetoed - no data-open-reason),
       # and the trigger has no custom keydown (native button Enter/Space).
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.",
           "Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for pointer-only " \
           "previews use HoverCard.",
@@ -131,7 +138,8 @@ module Poetry
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
-          Button::Component.new(**wiring, **options, &block)
+          composed_trigger(wiring, options, &block) ||
+            Button::Component.new(**wiring, **options, &block)
         }
 
         # OPTIONAL alternate popper anchor (Radix PopoverAnchor): when

@@ -179,9 +179,16 @@ module Poetry
       # would steal focus at page load, so the markup renders NO layer
       # tokens (menu_controller.js appends/removes them).
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         include ItemSlots
 
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
           "Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.",
           "Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a " \
@@ -352,8 +359,10 @@ module Poetry
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
-          options[:disabled] = true if disabled && !options.key?(:disabled)
-          Button::Component.new(**wiring, **options, &block)
+          composed_trigger(wiring, options, &block) || begin
+            options[:disabled] = true if disabled && !options.key?(:disabled)
+            Button::Component.new(**wiring, **options, &block)
+          end
         }
 
         # The forwarding-lambda component fact: with_trigger renders a

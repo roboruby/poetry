@@ -266,6 +266,10 @@ components:
       - unlockScroll
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - 'Destructive confirmations use AlertDialog with with_action(variant: :destructive)
       - never a bare Dialog, never data-turbo-confirm.'
     - with_title AND with_description are REQUIRED (both raise).
@@ -1605,6 +1609,10 @@ components:
       - toggle
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
     - 'Server-render the initial state via open: - never toggle data-open/data-closed
       by hand.'
@@ -3397,6 +3405,10 @@ components:
       - unlockScroll
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - Open dialogs with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name); with_description when the purpose
       needs explaining.
@@ -3955,6 +3967,10 @@ components:
       - strategyValueChanged
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
       it with radio items.
@@ -4631,6 +4647,10 @@ components:
       - strategyValueChanged
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - Use poetry_hover_card - never hand-roll hover-div previews.
     - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
       a hover card MUST exist at the trigger link''s destination (or another keyboard/touch-reachable
@@ -6692,6 +6712,10 @@ components:
       - strategyValueChanged
       events: []
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
     - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
       pointer-only previews use HoverCard.
@@ -9933,6 +9957,10 @@ components:
       - poetry:tooltip:closed
       - poetry:tooltip:open
     agent_rules:
+    - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
+      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
+      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
+      a plain tag); without compose: the classic composed Button renders.'
     - Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
     - Tooltip content is TEXT and never interactive/focusable - links, buttons, or
       inputs inside are a contract violation (use Popover).

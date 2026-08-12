@@ -1,0 +1,56 @@
+# frozen_string_literal: true
+
+module Poetry
+  module Ui
+    # The render-prop equivalent (Base UI's `render={<SidebarMenuButton/>}`),
+    # poetry-shaped: with_trigger(compose: true) yields the trigger's wiring
+    # to the block, and the block's output IS the trigger.
+    #
+    #   <% menu.with_trigger(compose: true) do |wiring| %>
+    #     <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>...<% end %>
+    #   <% end %>
+    #
+    # (An arity dispatch is impossible: ViewComponent hands slot lambdas a
+    # variadic capture wrapper, never the caller's block - the explicit flag
+    # is the honest switch. The wrapper DOES forward call arguments through
+    # capture, which is what carries the wiring into the caller's block.)
+    #
+    # The wiring hash is flat and symbol-keyed (the field.control_attributes
+    # convention): id + aria + the Stimulus behavior the overlay needs on its
+    # trigger. Identity stays the caller's - the overlay's own data-slot is
+    # NOT in the hash, so the composed control keeps its own name and the
+    # overlay's trigger part is simply replaced by caller markup (exactly
+    # upstream's render-prop story). Splat the wiring onto a WIRING-FREE
+    # control: a receiver with its own data-action would end up with two
+    # attributes and the first parsed wins (the caller-data-action gotcha).
+    # Without compose: the classic path renders (a composed Button).
+    module ComposableTrigger
+      private
+
+      # The custom-trigger markup when compose: true, or nil for the
+      # default path. Other slot options don't combine with compose -
+      # style the composed control itself.
+      def composed_trigger(wiring, options = {}, &block)
+        return nil unless options.delete(:compose)
+        raise ArgumentError, "compose: true requires a block taking |wiring|" unless block
+
+        if options.any?
+          raise ArgumentError,
+                "with_trigger options #{options.keys.inspect} don't combine with compose: " \
+                "true - put styling on the composed control itself"
+        end
+
+        attrs = { data: {} }
+        wiring.except(:type, "type").each do |key, value|
+          name = key.to_s
+          if name.start_with?("data-")
+            attrs[:data][name.delete_prefix("data-").to_sym] = value
+          else
+            attrs[name.to_sym] = value
+          end
+        end
+        yield(attrs)
+      end
+    end
+  end
+end

@@ -10,6 +10,8 @@ module Poetry
       # trigger mirrors aria-expanded; content stays in the DOM (hidden,
       # searchable by re-render) and rides the presence helper on exit.
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         use_stimulus do
           on :root do
             controller(:state) { register }
@@ -26,6 +28,11 @@ module Poetry
         end
 
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
           "Server-render the initial state via open: - never toggle data-open/data-closed by hand.",
           "Content stays in the DOM when closed (hidden) - do not conditionally render it.",
@@ -55,8 +62,9 @@ module Poetry
           attrs = {
             type: "button", "data-slot" => "collapsible-trigger",
             "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes_for(:trigger)).merge(options)
-          content_tag(:button, attrs, &block)
+          }.merge(stimulus_attributes_for(:trigger))
+          composed_trigger(attrs, options, &block) ||
+            content_tag(:button, attrs.merge(options), &block)
         }
 
         # The same facts the before_render raise enforces, stated statically

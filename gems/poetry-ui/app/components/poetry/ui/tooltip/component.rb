@@ -26,7 +26,14 @@ module Poetry
       # is a description, not a popup the user operates); touch never opens
       # one (no long-press path, Radix-exact).
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.",
           "Tooltip content is TEXT and never interactive/focusable - links, buttons, or inputs inside " \
           "are a contract violation (use Popover).",
@@ -148,7 +155,8 @@ module Poetry
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
           wiring["aria-describedby"] = content_id if open
-          Button::Component.new(**wiring, **options, &block)
+          composed_trigger(wiring, options, &block) ||
+            Button::Component.new(**wiring, **options, &block)
         }
 
         # The same facts the before_render raise enforces, stated statically

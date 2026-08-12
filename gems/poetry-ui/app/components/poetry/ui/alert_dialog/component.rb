@@ -17,9 +17,16 @@ module Poetry
       # initial focus per APG), no X close button, and the source's size
       # variant + media well.
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         SIZES = %i[default sm].freeze
 
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Destructive confirmations use AlertDialog with with_action(variant: :destructive) - " \
           "never a bare Dialog, never data-turbo-confirm.",
           "with_title AND with_description are REQUIRED (both raise).",
@@ -79,8 +86,10 @@ module Poetry
         # The trigger is a poetry Button wired to open - the inherited
         # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
+          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+            Button::Component.new(**options, &block)
+          end
         }
         renders_one :title
         renders_one :description

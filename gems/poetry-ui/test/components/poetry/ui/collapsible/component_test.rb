@@ -45,6 +45,25 @@ module Poetry
         def test_trigger_is_required
           assert_raises(ArgumentError) { render_inline(Component.new) { "content only" } }
         end
+
+        # The wiring blocks below build markup the way a view would.
+        def tag = ActionController::Base.helpers.tag
+
+        def test_wiring_block_composes_a_custom_trigger
+          html = render_inline(Component.new) do |collapsible|
+            collapsible.with_trigger(compose: true) do |wiring|
+              tag.a("Toggle", href: "#", class: "custom-trigger", **wiring)
+            end
+            "Body"
+          end.to_html
+          fragment = Nokogiri::HTML.fragment(html)
+          trigger = fragment.css("a.custom-trigger").first
+
+          assert trigger, "the block's markup renders as the trigger"
+          assert_equal "false", trigger["aria-expanded"]
+          assert_includes trigger["data-action"].to_s, "state#toggle"
+          assert_equal "collapsible-trigger", trigger["data-slot"]
+        end
       end
     end
   end

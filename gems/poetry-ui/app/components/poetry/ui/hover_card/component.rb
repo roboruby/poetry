@@ -26,7 +26,14 @@ module Poetry
       # trigger stays an <a href> because it is simultaneously the no-JS
       # fallback, the touch path, and the keyboard path.
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Use poetry_hover_card - never hand-roll hover-div previews.",
           "THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card " \
           "MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). " \
@@ -142,6 +149,7 @@ module Poetry
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
+          next composed_trigger(attrs, options, &block) if options[:compose]
           if options.key?(:variant) || options.key?(:size)
             next Button::Component.new(href: href, **attrs, **options, &block)
           end

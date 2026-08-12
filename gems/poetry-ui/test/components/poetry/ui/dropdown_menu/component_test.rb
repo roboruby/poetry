@@ -383,6 +383,37 @@ module Poetry
           # The destructive focus treatment rides .cn-dropdown-menu-item.
           assert_includes html, "cn-dropdown-menu-item"
         end
+
+        # The wiring blocks below build markup the way a view would.
+        def tag = ActionController::Base.helpers.tag
+
+        def test_wiring_block_composes_a_custom_trigger
+          html = render_inline(Component.new) do |menu|
+            menu.with_trigger(compose: true) do |wiring|
+              tag.button("Workspace", class: "custom-trigger", **wiring)
+            end
+            menu.with_item { "Profile" }
+          end.to_html
+          fragment = Nokogiri::HTML.fragment(html)
+          trigger = fragment.css("button.custom-trigger").first
+
+          assert trigger, "the block's markup renders as the trigger"
+          assert_equal "menu", trigger["aria-haspopup"]
+          assert_includes trigger["data-action"].to_s, "menu#toggle"
+          assert_equal "dropdown-menu-trigger", trigger["data-slot"],
+                       "the composed control wears the overlay's trigger identity"
+        end
+
+        def test_wiring_block_rejects_slot_options
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new) do |menu|
+              menu.with_trigger(compose: true, variant: :outline) { |wiring| tag.button(**wiring) }
+              menu.with_item { "Profile" }
+            end
+          end
+
+          assert_match(/don't combine with compose/, error.message)
+        end
       end
     end
   end

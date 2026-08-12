@@ -163,6 +163,24 @@ module Poetry
             render_inline(Component.new) { "Just text" }
           end
         end
+
+        # The wiring blocks below build markup the way a view would.
+        def tag = ActionController::Base.helpers.tag
+
+        def test_wiring_block_composes_a_custom_trigger
+          html = render_inline(Component.new) do |tooltip|
+            tooltip.with_trigger(compose: true) do |wiring|
+              tag.span("Hint anchor", class: "custom-trigger", **wiring)
+            end
+            "Tip"
+          end.to_html
+          fragment = Nokogiri::HTML.fragment(html)
+          trigger = fragment.css("span.custom-trigger").first
+
+          assert trigger, "the block's markup renders as the trigger"
+          assert_includes trigger["data-action"].to_s, "tooltip"
+          assert_equal "tooltip-trigger", trigger["data-slot"]
+        end
       end
     end
   end

@@ -97,6 +97,23 @@ module Poetry
 
           refute_equal first, second
         end
+
+        # The wiring blocks below build markup the way a view would.
+        def tag = ActionController::Base.helpers.tag
+
+        def test_wiring_block_composes_a_custom_trigger
+          html = render_inline(Component.new) do |dialog|
+            dialog.with_trigger(compose: true) do |wiring|
+              tag.button("Open it", class: "custom-trigger", **wiring)
+            end
+            dialog.with_title { "Title" }
+            "Body"
+          end.to_html
+          trigger = Nokogiri::HTML.fragment(html).css("button.custom-trigger").first
+
+          assert trigger, "the block's markup renders as the trigger"
+          assert_includes trigger["data-action"].to_s, "open"
+        end
       end
     end
   end

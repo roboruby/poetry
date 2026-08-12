@@ -10,7 +10,14 @@ module Poetry
       # lock. The title is
       # REQUIRED (the accessible name - aria-labelledby is always wired).
       class Component < Poetry::Core::Component
+        include Poetry::Ui::ComposableTrigger
+
         AGENT_RULES = [
+          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
+          "and Stimulus behavior) - splat it onto a wiring-free control " \
+          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
+          "Button renders.",
           "Open dialogs with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.",
           "Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).",
@@ -72,8 +79,10 @@ module Poetry
         # The trigger is a poetry Button wired to open the dialog - agents
         # pass Button props: with_trigger(variant: :outline) { "Open" }.
         renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
+          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+            Button::Component.new(**options, &block)
+          end
         }
         renders_one :title
         renders_one :description
