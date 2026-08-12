@@ -1,9 +1,24 @@
+<%# The body is caller markup - px-4 aligns it with the header/footer
+    gutters. The footer Close is the SheetClose equivalent: any button
+    inside the sheet can close it by targeting the controller's close
+    action. %>
 <%= poetry_sheet do |sheet| %>
-  <% sheet.with_trigger(variant: :outline) { "Open right sheet" } %>
-  <% sheet.with_title { "Slide from the right" } %>
-  <% sheet.with_description { "A Dialog that stays visually adjacent to the page." } %>
+  <% sheet.with_trigger(variant: :outline) { "Open" } %>
+  <% sheet.with_title { "Edit profile" } %>
+  <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
   <% sheet.with_footer do %>
-    <%= poetry_button { "Apply" } %>
+    <%= poetry_button(type: :submit) { "Save changes" } %>
+    <%= poetry_button(variant: :outline,
+                      data: { action: "click->poetry--core--sheet#close" }) { "Close" } %>
   <% end %>
-  Sheet body content.
+  <div class="grid flex-1 auto-rows-min gap-6 px-4">
+    <div class="grid gap-3">
+      <%= poetry_label(for_id: "sheet-demo-name") { "Name" } %>
+      <%= poetry_input(name: "name", value: "Pedro Duarte", id: "sheet-demo-name") %>
+    </div>
+    <div class="grid gap-3">
+      <%= poetry_label(for_id: "sheet-demo-username") { "Username" } %>
+      <%= poetry_input(name: "username", value: "@peduarte", id: "sheet-demo-username") %>
+    </div>
+  </div>
 <% end %>

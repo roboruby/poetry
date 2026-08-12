@@ -1,10 +1,17 @@
+<%# show_close_button: false drops the corner X - the forced-choice
+    posture. Both choices close by targeting the controller's close
+    action (in an app they would also submit the decision). %>
 <%= poetry_sheet(side: :right, show_close_button: false) do |sheet| %>
   <% sheet.with_trigger(variant: :outline) { "Review terms" } %>
   <% sheet.with_title { "Updated usage terms" } %>
   <% sheet.with_description { "Please choose an option below to continue. There is no dismiss control on this panel." } %>
   <% sheet.with_footer do %>
-    <%= poetry_button(variant: :outline) { "Decline" } %>
-    <%= poetry_button { "Accept and continue" } %>
+    <%= poetry_button(variant: :outline,
+                      data: { action: "click->poetry--core--sheet#close" }) { "Decline" } %>
+    <%= poetry_button(data: { action: "click->poetry--core--sheet#close" }) { "Accept and continue" } %>
   <% end %>
-  We refreshed the sections covering data retention and export. The changes take effect at the start of your next billing cycle.
+  <p class="px-4">
+    We refreshed the sections covering data retention and export. The changes
+    take effect at the start of your next billing cycle.
+  </p>
 <% end %>

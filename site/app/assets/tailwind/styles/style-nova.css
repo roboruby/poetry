@@ -1149,7 +1149,7 @@
 }
 
 .cn-sheet-side-top {
-  @apply mb-auto h-auto w-full max-w-none border-b data-open:slide-in-from-top data-closed:slide-out-to-top;
+  @apply bottom-auto mb-auto h-auto w-full max-w-none border-b data-open:slide-in-from-top data-closed:slide-out-to-top;
 }
 
 .cn-sheet-side-right {
@@ -1157,7 +1157,7 @@
 }
 
 .cn-sheet-side-bottom {
-  @apply mt-auto h-auto w-full max-w-none border-t data-open:slide-in-from-bottom data-closed:slide-out-to-bottom;
+  @apply top-auto mt-auto h-auto w-full max-w-none border-t data-open:slide-in-from-bottom data-closed:slide-out-to-bottom;
 }
 
 .cn-sheet-side-left {

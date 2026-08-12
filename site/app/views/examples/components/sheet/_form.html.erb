@@ -1,10 +1,25 @@
+<%# A REAL form inside the sheet: the fields live in the form element,
+    and the footer submit reaches it from outside via form= (the footer
+    is component anatomy, not form content). The demo submits as a GET
+    so the params land visibly in the URL. %>
 <%= poetry_sheet(side: :right) do |sheet| %>
   <% sheet.with_trigger(variant: :outline) { "Edit profile" } %>
   <% sheet.with_title { "Edit profile" } %>
   <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
   <% sheet.with_footer do %>
-    <%= poetry_button(type: :submit) { "Save changes" } %>
+    <%= poetry_button(type: :submit, form: "sheet-profile-form") { "Save changes" } %>
+    <%= poetry_button(variant: :outline,
+                      data: { action: "click->poetry--core--sheet#close" }) { "Close" } %>
   <% end %>
-  <%= poetry_label(for_id: "sheet-demo-name") { "Name" } %>
-  <%= poetry_input(name: "name", value: "Pedro Duarte", id: "sheet-demo-name") %>
+  <%= form_with(url: "#", method: :get, id: "sheet-profile-form",
+                html: { class: "grid flex-1 auto-rows-min gap-6 px-4" }) do %>
+    <div class="grid gap-3">
+      <%= poetry_label(for_id: "sheet-form-name") { "Name" } %>
+      <%= poetry_input(name: "name", value: "Pedro Duarte", id: "sheet-form-name") %>
+    </div>
+    <div class="grid gap-3">
+      <%= poetry_label(for_id: "sheet-form-username") { "Username" } %>
+      <%= poetry_input(name: "username", value: "@peduarte", id: "sheet-form-username") %>
+    </div>
+  <% end %>
 <% end %>

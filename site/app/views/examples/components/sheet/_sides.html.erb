@@ -1,20 +1,29 @@
+<%# One sheet per edge. Top and bottom panels hug their content; the
+    scrollable body div carries its own max-height so long content
+    scrolls inside the panel instead of growing it. %>
 <div class="flex flex-wrap items-center gap-2">
-  <%= poetry_sheet(side: :left) do |sheet| %>
-    <% sheet.with_trigger(variant: :outline) { "Left" } %>
-    <% sheet.with_title { "Slide from the left" } %>
-    <% sheet.with_description { "Navigation belongs on the left." } %>
-    Sheet body content.
-  <% end %>
-  <%= poetry_sheet(side: :top) do |sheet| %>
-    <% sheet.with_trigger(variant: :outline) { "Top" } %>
-    <% sheet.with_title { "Slide from the top" } %>
-    <% sheet.with_description { "A banner-style panel." } %>
-    Sheet body content.
-  <% end %>
-  <%= poetry_sheet(side: :bottom) do |sheet| %>
-    <% sheet.with_trigger(variant: :outline) { "Bottom" } %>
-    <% sheet.with_title { "Slide from the bottom" } %>
-    <% sheet.with_description { "Pickers belong on the bottom." } %>
-    Sheet body content.
+  <% %i[top right bottom left].each do |side| %>
+    <%= poetry_sheet(side: side) do |sheet| %>
+      <% sheet.with_trigger(variant: :outline) { side.to_s.capitalize } %>
+      <% sheet.with_title { "Edit profile" } %>
+      <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
+      <% sheet.with_footer do %>
+        <%= poetry_button(type: :submit) { "Save changes" } %>
+        <%= poetry_button(variant: :outline,
+                          data: { action: "click->poetry--core--sheet#close" }) { "Close" } %>
+      <% end %>
+      <div class="max-h-[40vh] overflow-y-auto px-4">
+        <% 6.times do %>
+          <p class="mb-2 leading-relaxed">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+            aliquip ex ea commodo consequat. Duis aute irure dolor in
+            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
+            pariatur.
+          </p>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
 </div>
