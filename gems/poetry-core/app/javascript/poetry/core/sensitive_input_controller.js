@@ -109,8 +109,15 @@ export default class SensitiveInputController extends Controller {
 
   #reveal() {
     this.#visible = true
+    // Move focus off the mask BEFORE #reflect hides it: hiding the
+    // focused element drops focus to body, blurred() reads that as
+    // leaving the field, and the re-mask beats the reveal (the
+    // takes-two-clicks bug). The input accepts .focus() even while
+    // masked (tabindex=-1 only skips Tab); read-only hands focus on
+    // to the eye once #reflect has shown it.
+    this.inputTarget.focus()
     this.#reflect()
-    if (!this.readOnlyValue) this.inputTarget.focus()
+    if (this.readOnlyValue && this.hasToggleTarget) this.toggleTarget.focus()
     this.dispatch("reveal", { prefix: EVENT_PREFIX })
   }
 
