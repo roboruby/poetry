@@ -20,7 +20,7 @@ module Poetry
           fragment = render_inline(Component.new) { "rows" }
           container = fragment.css('[data-slot="table-container"]').first
 
-          assert_includes container["class"], "overflow-x-auto"
+          assert_includes container["class"], "cn-table-container"
           table = container.css('table[data-slot="table"]').first
 
           assert table, "a real <table> inside the container"

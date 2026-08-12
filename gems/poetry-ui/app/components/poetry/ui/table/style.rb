@@ -6,11 +6,12 @@ module Poetry
       # Re-expressed through the cn-* theme layer (N11). Zero JS - the
       # row's selected state stays the Base UI vocabulary (data-selected),
       # its tint now in the theme with every other row tint (same-side).
-      # The scroll container stays utility-only (pure mechanism).
+      # The scroll container carries the themed hook (upstream ships the
+      # mechanism AS the identical-everywhere cn-table-container rule).
       class Style < Poetry::Core::Style
         base "cn-table"
 
-        element :container, "relative w-full overflow-x-auto"
+        element :container, "cn-table-container"
         element :container_sticky,
                 "overflow-y-auto [&_thead]:sticky [&_thead]:top-0 [&_thead]:z-10 [&_thead]:bg-background"
         element :header, "cn-table-header"

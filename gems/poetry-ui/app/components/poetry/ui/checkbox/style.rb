@@ -14,10 +14,10 @@ module Poetry
              "after:-inset-x-3 after:-inset-y-2 " \
              "disabled:cursor-not-allowed disabled:opacity-50"
 
-        element :indicator, "grid place-content-center text-current transition-none " \
+        element :indicator, "cn-checkbox-indicator grid place-content-center text-current transition-none " \
                             "data-unchecked:invisible"
 
-        element :icon, "size-3.5"
+        element :icon, ""
 
         # The form participant + the store: visually hidden, out of the
         # accessibility tree (the button is the accessible control).

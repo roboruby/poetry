@@ -1332,7 +1332,7 @@ components:
     - indicator
     - icon
     - input
-    capsule: b53eab315e38
+    capsule: 82a50988cc2b
     controllers:
     - identifier: poetry--core--checked
       targets: []
@@ -3388,7 +3388,7 @@ components:
     - description
     - footer
     - close
-    capsule: 9d5c940d5d91
+    capsule: c81409bd9b83
     controllers:
     - identifier: poetry--core--dialog
       targets:
@@ -8842,7 +8842,7 @@ components:
     - head
     - cell
     - caption
-    capsule: f01733872da3
+    capsule: ec028efa9111
     agent_rules:
     - Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell)
       - they carry the data-slot + classes onto real thead/tbody/tr/th/td.

@@ -23,7 +23,7 @@ module Poetry
         element :header, "cn-dialog-header flex flex-col"
         element :title, "cn-dialog-title"
         element :description, "cn-dialog-description"
-        element :footer, "flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
+        element :footer, "cn-dialog-footer flex flex-col-reverse gap-2 sm:flex-row sm:justify-end"
         element :close, "cn-dialog-close"
       end
     end
