@@ -3318,16 +3318,22 @@
     "path": "/components/select#default"
   },
   {
-    "title": "Aligned",
+    "title": "Align item with trigger",
     "page": "Select",
     "section": "components",
-    "path": "/components/select#aligned"
+    "path": "/components/select#align-item-with-trigger"
   },
   {
     "title": "Disabled",
     "page": "Select",
     "section": "components",
     "path": "/components/select#disabled"
+  },
+  {
+    "title": "Groups",
+    "page": "Select",
+    "section": "components",
+    "path": "/components/select#groups"
   },
   {
     "title": "Invalid",

@@ -1,10 +1,15 @@
-<%# aria-invalid: "true" lands on the trigger (the Field error chain's
-    target), lighting the destructive border and ring - no Select-side
-    code, the theme's aria-invalid: classes do the work. Pair with
-    required: so an empty submit is caught natively too. %>
-<%= poetry_select(placeholder: "Choose a priority", required: true, "aria-label": "Priority", "aria-invalid": "true") do |select| %>
-  <% select.with_item(value: "low") { "Low" } %>
-  <% select.with_item(value: "medium") { "Medium" } %>
-  <% select.with_item(value: "high") { "High" } %>
-  <% select.with_item(value: "urgent") { "Urgent" } %>
-<% end %>
+<%# The Field error chain: error: stamps data-invalid on the field and
+    control_attributes threads aria-invalid + aria-describedby (pointing
+    at the error text) onto the trigger - the destructive border and
+    ring come from the theme's aria-invalid: rules, no Select-side code. %>
+<div class="w-full max-w-48">
+  <%= poetry_field(id: "select-fruit", label_text: "Fruit",
+                   error: "Please select a fruit.") do |field| %>
+    <%= poetry_select(name: "fruit", placeholder: "Select a fruit",
+                      **field.control_attributes.transform_keys(&:to_sym)) do |select| %>
+      <% select.with_item(value: "apple") { "Apple" } %>
+      <% select.with_item(value: "banana") { "Banana" } %>
+      <% select.with_item(value: "blueberry") { "Blueberry" } %>
+    <% end %>
+  <% end %>
+</div>
