@@ -7584,7 +7584,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 63964d516134
+    capsule: 9f06c67d0e91
     controllers:
     - identifier: poetry--core--popper
       targets:

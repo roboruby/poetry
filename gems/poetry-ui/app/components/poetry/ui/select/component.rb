@@ -120,7 +120,7 @@ module Poetry
           attrs["data-text-value"] = @text_value if @text_value
           content_tag(:div, attrs.merge(@extra_attributes)) do
             safe_join([item_indicator,
-                       content_tag(:span, label_html, "data-slot" => "select-item-text")])
+                       content_tag(:span, label_html, "data-slot" => "select-item-text", "class" => "cn-select-item-text shrink-0 whitespace-nowrap")])
           end
         end
       end
@@ -460,7 +460,8 @@ module Poetry
         def scroll_button(direction)
           attrs = {
             "data-slot" => "select-scroll-#{direction}-button", "aria-hidden" => "true",
-            "hidden" => true, "class" => Style.css(:scroll_button)
+            "hidden" => true,
+            "class" => Style.css(:scroll_button, class: "cn-select-scroll-#{direction}-button")
           }.merge(stimulus_attributes_for(:scroll_button))
           content_tag(:div, attrs) do
             render(Icon::Component.new(name: :"chevron-#{direction}", class: Style.css(:scroll_icon)))
@@ -496,7 +497,7 @@ module Poetry
         # FOUC), or the placeholder text; data-placeholder on the span
         # carries the placeholder so a later clear can restore it.
         def value_display
-          attrs = { "data-slot" => "select-value" }
+          attrs = { "data-slot" => "select-value", "class" => "cn-select-value" }
           attrs["data-placeholder"] = placeholder if placeholder.present?
           content_tag(:span, selected_label || placeholder, attrs)
         end
@@ -561,7 +562,7 @@ module Poetry
         end
 
         def call
-          attrs = { "data-slot" => "select-group", "role" => "group" }
+          attrs = { "data-slot" => "select-group", "role" => "group", "class" => "cn-select-group" }
           attrs["aria-labelledby"] = label_id if @label_text
           content_tag(:div, attrs.merge(@extra_attributes)) do
             safe_join([label_part, *items].compact)

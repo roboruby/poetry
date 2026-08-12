@@ -39,7 +39,7 @@ module Poetry
 
         element :separator, "cn-select-separator pointer-events-none"
 
-        element :scroll_button, "flex cursor-default items-center justify-center py-1"
+        element :scroll_button, ""
 
         # Source-exact wrapper span (named select-item-indicator in
         # new-york-v4) - the RIGHT-2 gutter, the mirror image of
@@ -60,7 +60,7 @@ module Poetry
         # The source's inline lucide icon classes, named per part.
         element :trigger_icon, "cn-select-trigger-icon"
         element :indicator_check, "size-4"
-        element :scroll_icon, "size-4"
+        element :scroll_icon, ""
       end
     end
   end
