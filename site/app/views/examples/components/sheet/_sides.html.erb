@@ -1,9 +1,10 @@
-<%# One sheet per edge. Top and bottom panels hug their content; the
-    scrollable body div carries its own max-height so long content
-    scrolls inside the panel instead of growing it. %>
+<%# One sheet per edge. Top and bottom panels hug their content, capped
+    at half the viewport via content_class (the panel is a flex column,
+    so the overflow-y-auto body shrinks and scrolls inside the cap). %>
 <div class="flex flex-wrap items-center gap-2">
   <% %i[top right bottom left].each do |side| %>
-    <%= poetry_sheet(side: side) do |sheet| %>
+    <%= poetry_sheet(side: side,
+                     content_class: "data-[side=top]:max-h-[50vh] data-[side=bottom]:max-h-[50vh]") do |sheet| %>
       <% sheet.with_trigger(variant: :outline) { side.to_s.capitalize } %>
       <% sheet.with_title { "Edit profile" } %>
       <% sheet.with_description { "Make changes to your profile here. Click save when you're done." } %>
@@ -12,7 +13,7 @@
         <%= poetry_button(variant: :outline,
                           data: { action: "click->poetry--core--sheet#close" }) { "Close" } %>
       <% end %>
-      <div class="max-h-[40vh] overflow-y-auto px-4">
+      <div class="overflow-y-auto px-4">
         <% 6.times do %>
           <p class="mb-2 leading-relaxed">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
