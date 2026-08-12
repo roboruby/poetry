@@ -141,7 +141,7 @@ module Poetry
           {
             variant: :outline, size: :"icon-sm",
             label: direction == :previous ? "Previous slide" : "Next slide",
-            class: "#{css(:control)} #{css(:"control_#{direction}_#{orientation}")}",
+            class: "cn-carousel-#{direction} #{css(:control)} #{css(:"control_#{direction}_#{orientation}")}",
             data: { slot: "carousel-#{direction == :previous ? "previous" : "next"}" }
           }.merge(stimulus_attributes_for(direction))
         end

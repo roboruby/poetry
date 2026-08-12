@@ -29,7 +29,7 @@ module Poetry
         element :item_horizontal, "pl-4 -scroll-ml-4"
         element :item_vertical, "pt-4 -scroll-mt-4"
 
-        element :control, "absolute touch-manipulation rounded-full"
+        element :control, "absolute touch-manipulation"
         element :control_previous_horizontal, "inset-y-0 -left-12 my-auto"
         element :control_previous_vertical, "-top-12 left-1/2 -translate-x-1/2 rotate-90"
         element :control_next_horizontal, "inset-y-0 -right-12 my-auto"

@@ -1061,6 +1061,22 @@
   @apply gap-0.5;
 }
 
+.cn-carousel-previous {
+  @apply rounded-full;
+}
+
+.cn-carousel-next {
+  @apply rounded-full;
+}
+
+.cn-pagination-previous {
+  @apply pl-1.5!;
+}
+
+.cn-pagination-next {
+  @apply pr-1.5!;
+}
+
 .cn-pagination-ellipsis {
   @apply size-8 [&_svg:not([class*='size-'])]:size-4;
 }

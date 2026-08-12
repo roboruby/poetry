@@ -19,8 +19,8 @@ module Poetry
         # hover-box padding. Lives HERE because safelists harvest Style
         # dictionaries and templates - a class string inside component.rb
         # never compiles in any host.
-        element :edge_previous, "pl-2!"
-        element :edge_next, "pr-2!"
+        element :edge_previous, "cn-pagination-previous"
+        element :edge_next, "cn-pagination-next"
       end
     end
   end

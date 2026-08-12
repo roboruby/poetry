@@ -1071,6 +1071,14 @@
   @apply gap-1;
 }
 
+.cn-pagination-previous {
+  @apply pl-2!;
+}
+
+.cn-pagination-next {
+  @apply pr-2!;
+}
+
 .cn-pagination-ellipsis {
   @apply size-9 [&_svg:not([class*='size-'])]:size-4;
 }

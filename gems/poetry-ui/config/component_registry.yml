@@ -1223,7 +1223,7 @@ components:
     - control_previous_vertical
     - control_next_horizontal
     - control_next_vertical
-    capsule: e498e4887de0
+    capsule: 74025b4fc47f
     controllers:
     - identifier: poetry--core--carousel
       targets:
@@ -6589,7 +6589,7 @@ components:
     - label
     - edge_previous
     - edge_next
-    capsule: 2a43a1839dd2
+    capsule: a02ab1e87034
     agent_rules:
     - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
       list.
