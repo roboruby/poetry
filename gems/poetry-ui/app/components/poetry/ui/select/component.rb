@@ -191,6 +191,9 @@ module Poetry
         option :align_item_with_trigger, :boolean, default: false
         option :dir, :symbol
         option :size, :symbol, default: :default
+        # Merged onto the trigger button (upstream's SelectTrigger className
+        # seam - e.g. w-full over the base w-fit). class: styles the root.
+        option :trigger_class, :string
 
         validates :size, inclusion: { in: SIZES }
         validates :side, inclusion: { in: SIDES }
@@ -412,7 +415,7 @@ module Poetry
             "id" => trigger_id, "data-slot" => "select-trigger", "type" => "button",
             "role" => "combobox", "aria-expanded" => open.to_s, "aria-controls" => content_id,
             "aria-autocomplete" => "none", "data-size" => size.to_s,
-            "class" => css(:trigger)
+            "class" => css(:trigger, class: trigger_class)
           }
           # Base UI trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).

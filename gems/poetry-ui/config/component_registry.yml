@@ -7524,6 +7524,8 @@ components:
       - sm
       - default
       default: default
+    - name: trigger_class
+      type: string
     - name: value
       type: string
     slots:
