@@ -497,6 +497,8 @@ cn-navigation-menu-trigger
 cn-navigation-menu-trigger-icon
 cn-pagination-content
 cn-pagination-ellipsis
+cn-pagination-next
+cn-pagination-previous
 cn-popover-content
 cn-popover-description
 cn-popover-header
@@ -548,11 +550,13 @@ cn-sheet-side-top
 cn-sheet-title
 cn-sidebar-content
 cn-sidebar-footer
+cn-sidebar-gap
 cn-sidebar-group
 cn-sidebar-group-content
 cn-sidebar-group-label
 cn-sidebar-header
 cn-sidebar-inner
+cn-sidebar-inset
 cn-sidebar-menu
 cn-sidebar-menu-action
 cn-sidebar-menu-badge
@@ -565,6 +569,7 @@ cn-sidebar-menu-sub-button
 cn-sidebar-mobile
 cn-sidebar-mobile-left
 cn-sidebar-mobile-right
+cn-sidebar-rail
 cn-sidebar-separator
 cn-skeleton
 cn-slider
@@ -974,7 +979,6 @@ has-focus-visible:border-ring
 has-focus-visible:ring-[3px]
 has-focus-visible:ring-ring/50
 hidden
-hover:after:bg-sidebar-border
 hover:bg-accent/30
 hover:bg-accent/50
 hover:bg-muted
@@ -1033,11 +1037,6 @@ md:flex
 md:grid-cols-3
 md:hidden
 md:opacity-0
-md:peer-data-[variant=inset]:m-2
-md:peer-data-[variant=inset]:ml-0
-md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2
-md:peer-data-[variant=inset]:rounded-xl
-md:peer-data-[variant=inset]:shadow-sm
 md:text-sm
 min-h-0
 min-h-11
@@ -1110,7 +1109,6 @@ peer-data-[size=sm]/menu-button:top-1
 peer-data-active/menu-button:text-sidebar-accent-foreground
 peer-disabled:cursor-not-allowed
 peer/menu-button
-pl-2!
 pl-4
 pl-[calc(0.5rem+(var(--poetry-tree-level)-1)*1.25rem)]
 place-content-center
@@ -1119,7 +1117,6 @@ placeholder:text-muted-foreground
 pointer-events-auto
 pointer-events-none
 pr-2
-pr-2!
 pt-1
 pt-4
 px-2
@@ -1295,7 +1292,6 @@ transition-[transform,opacity]
 transition-[translate,scale,opacity]
 transition-[width,height,padding]
 transition-[width,height]
-transition-[width]
 transition-all
 transition-colors
 transition-none

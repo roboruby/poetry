@@ -1067,6 +1067,22 @@
   @apply gap-0.5;
 }
 
+.cn-carousel-previous {
+  @apply rounded-full;
+}
+
+.cn-carousel-next {
+  @apply rounded-full;
+}
+
+.cn-pagination-previous {
+  @apply pl-1.5!;
+}
+
+.cn-pagination-next {
+  @apply pr-1.5!;
+}
+
 .cn-pagination-ellipsis {
   @apply size-8 [&_svg:not([class*='size-'])]:size-4;
 }
@@ -1263,6 +1279,18 @@
 
 .cn-sidebar-content {
   @apply gap-0;
+}
+
+.cn-sidebar-gap {
+  @apply transition-[width] duration-200 ease-linear;
+}
+
+.cn-sidebar-rail {
+  @apply hover:after:bg-sidebar-border;
+}
+
+.cn-sidebar-inset {
+  @apply bg-background md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2;
 }
 
 .cn-sidebar-group {
