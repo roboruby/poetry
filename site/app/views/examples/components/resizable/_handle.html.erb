@@ -1,0 +1,11 @@
+<%# grip: true renders the visible pill on every separator - without it
+    the handle is a bare hairline (still draggable and keyboard-
+    operable; the grip only changes what you see). %>
+<%= poetry_resizable(grip: true, class: "h-48 max-w-sm rounded-lg border") do |group| %>
+  <% group.with_panel(default_size: 25) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm font-medium">Sidebar</div>
+  <% end %>
+  <% group.with_panel(default_size: 75) do %>
+    <div class="flex h-full items-center justify-center p-6 text-sm font-medium">Content</div>
+  <% end %>
+<% end %>

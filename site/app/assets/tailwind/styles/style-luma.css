@@ -1111,6 +1111,11 @@
   @apply bg-primary-foreground absolute top-1/2 left-1/2 size-2 -translate-x-1/2 -translate-y-1/2 rounded-full dark:size-2.5;
 }
 
+/* MARK: Resizable */
+.cn-resizable-handle-icon {
+  @apply bg-border h-6 w-1 rounded-lg;
+}
+
 /* MARK: Select */
 .cn-select-trigger {
   @apply bg-input/50 border-transparent data-placeholder:text-[oklch(from_var(--muted-foreground)_calc(l*0.85)_c_h)] dark:data-placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 gap-1.5 rounded-3xl border py-2 px-3 text-sm transition-[color,box-shadow,background-color] focus-visible:ring-3 aria-invalid:ring-3 data-[size=default]:h-9 data-[size=sm]:h-8 *:data-[slot=select-value]:flex *:data-[slot=select-value]:gap-1.5 [&_svg:not([class*='size-'])]:size-4;

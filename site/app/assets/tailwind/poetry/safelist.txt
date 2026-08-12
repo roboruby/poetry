@@ -523,6 +523,7 @@ cn-radio-group
 cn-radio-group-indicator
 cn-radio-group-indicator-icon
 cn-radio-group-item
+cn-resizable-handle-icon
 cn-select-content
 cn-select-item
 cn-select-item-indicator
@@ -943,7 +944,6 @@ h-14
 h-2.5
 h-3
 h-4
-h-6
 h-9
 h-96
 h-[calc(100%-1px)]

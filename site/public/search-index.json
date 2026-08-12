@@ -3216,6 +3216,12 @@
     "path": "/components/resizable#default"
   },
   {
+    "title": "Handle",
+    "page": "Resizable",
+    "section": "components",
+    "path": "/components/resizable#handle"
+  },
+  {
     "title": "Nested",
     "page": "Resizable",
     "section": "components",
