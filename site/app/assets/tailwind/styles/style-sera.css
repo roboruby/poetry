@@ -185,6 +185,14 @@
   @apply gap-1.5 rounded-none border-0 bg-transparent px-0 py-0 text-[0.625rem] font-semibold uppercase tracking-widest transition-colors has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 has-[>svg:first-child]:pl-0 has-[>svg:last-child]:pr-0 [&>svg]:size-3;
 }
 
+.cn-badge-variant-ghost {
+  @apply text-muted-foreground hover:text-foreground;
+}
+
+.cn-badge-variant-link {
+  @apply text-foreground underline-offset-4 hover:underline;
+}
+
 .cn-badge-variant-default {
   @apply text-foreground [a]:hover:text-foreground/70;
 }
