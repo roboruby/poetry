@@ -955,6 +955,18 @@
   @apply h-9 rounded-4xl border p-1;
 }
 
+.cn-menubar-checkbox-item-indicator {
+  @apply left-3 size-4 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-menubar-radio-item-indicator {
+  @apply left-3 size-4 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-navigation-menu {
+  @apply max-w-max;
+}
+
 .cn-menubar-trigger {
   @apply hover:bg-muted aria-expanded:bg-muted rounded-xl px-2 py-0.75 text-sm font-medium;
 }
@@ -1630,6 +1642,11 @@
 
 .cn-questionnaire-actions {
   @apply gap-2 sm:min-h-9;
+}
+
+/* MARK: Menu translucent (shared, LAST - wins the content bg cascade) */
+.cn-menu-translucent {
+  @apply animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-foreground/10 **:data-[slot$=-item]:data-highlighted:bg-foreground/10 **:data-[slot$=-separator]:bg-foreground/5 **:data-[slot$=-trigger]:focus:bg-foreground/10 **:data-[slot$=-trigger]:aria-expanded:bg-foreground/10! **:data-[variant=destructive]:focus:bg-foreground/10! **:data-[variant=destructive]:text-accent-foreground! **:data-[variant=destructive]:**:text-accent-foreground!;
 }
 }
 

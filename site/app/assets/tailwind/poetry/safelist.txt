@@ -467,11 +467,11 @@ cn-marker-content
 cn-marker-icon
 cn-marker-variant-border
 cn-marker-variant-separator
+cn-menu-translucent
 cn-menubar
 cn-menubar-checkbox-item
 cn-menubar-content
 cn-menubar-item
-cn-menubar-item-indicator
 cn-menubar-label
 cn-menubar-radio-item
 cn-menubar-separator
@@ -488,6 +488,7 @@ cn-message-header
 cn-message-scroller-content
 cn-native-select
 cn-native-select-icon
+cn-navigation-menu
 cn-navigation-menu-content
 cn-navigation-menu-link
 cn-navigation-menu-list

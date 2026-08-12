@@ -959,6 +959,18 @@
   @apply h-8 gap-0.5 rounded-none border p-1;
 }
 
+.cn-menubar-checkbox-item-indicator {
+  @apply left-1.5 size-4 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-menubar-radio-item-indicator {
+  @apply left-1.5 size-4 [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-navigation-menu {
+  @apply max-w-max;
+}
+
 .cn-menubar-trigger {
   @apply hover:bg-muted aria-expanded:bg-muted rounded-none px-1.5 py-[calc(--spacing(0.8))] text-xs font-medium;
 }
