@@ -23,7 +23,7 @@ module Poetry
                          "aria-[orientation=horizontal]:after:translate-x-0 " \
                          "aria-[orientation=horizontal]:after:-translate-y-1/2 " \
                          "[&[aria-orientation=horizontal]>div]:rotate-90"
-        element :grip, "z-10 flex h-6 w-1 shrink-0 rounded-lg bg-border"
+        element :grip, "cn-resizable-handle-icon z-10 flex shrink-0"
       end
     end
   end
