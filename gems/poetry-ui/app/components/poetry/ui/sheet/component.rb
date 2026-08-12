@@ -90,7 +90,7 @@ module Poetry
         # merges in here).
         def dialog_attributes
           attrs = {
-            "class" => css(:content, class: Style.side(side)),
+            "class" => css(:content, class: [Style.side(side), content_class]),
             "data-slot" => "sheet-content",
             "data-side" => side,
             "data-closed" => "",

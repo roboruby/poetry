@@ -3350,6 +3350,8 @@ components:
     bem_block: poetry-ui-dialog
     styles: []
     options:
+    - name: content_class
+      type: string
     - name: dismissible
       type: boolean
       default: true
@@ -3466,6 +3468,8 @@ components:
       default: down
       required: true
     options:
+    - name: content_class
+      type: string
     - name: dismissible
       type: boolean
       default: true
@@ -8024,6 +8028,8 @@ components:
       default: right
       required: true
     options:
+    - name: content_class
+      type: string
     - name: dismissible
       type: boolean
       default: true

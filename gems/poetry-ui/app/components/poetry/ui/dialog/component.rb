@@ -52,6 +52,10 @@ module Poetry
         # forced-choice recipe: footer actions and Esc remain). Sheet
         # inherits this.
         option :show_close_button, :boolean, default: true
+        # Merged onto the <dialog> panel (upstream's DialogContent/
+        # SheetContent className seam - e.g. max-h-[50vh] caps a
+        # top/bottom sheet).
+        option :content_class, :string
 
         part "dialog", "Root wrapper around the trigger and the <dialog> element"
         part "dialog-content", "The <dialog> panel - positioning, animation, and the open " \
@@ -106,7 +110,7 @@ module Poetry
 
         def dialog_attributes
           attrs = {
-            "class" => css(:content),
+            "class" => css(:content, class: content_class),
             "data-slot" => "dialog-content",
             "data-closed" => "",
             "aria-labelledby" => title_id
