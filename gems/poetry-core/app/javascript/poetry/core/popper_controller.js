@@ -182,6 +182,11 @@ export default class PopperController extends Controller {
 
     // Disconnected (or superseded) while awaiting: never write to a dead node.
     if (generation !== this.#generation) return
+    // Re-check after the await: aligned mode can engage DURING
+    // computePosition (open -> update starts -> select fixed-positions
+    // the content -> compute resolves), and a stale write here clobbers
+    // the fixed placement with absolute popper coordinates.
+    if (content.hasAttribute("data-align-item-with-trigger")) return
 
     const [side, align = "center"] = placement.split("-")
 
