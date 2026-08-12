@@ -18,16 +18,30 @@
           <% end %>
         <% end %>
       <% end %>
+      <%# The account row IS the dropdown trigger: compose: true yields
+          the menu's wiring and the sidebar button wears it; the menu
+          opens to the right of the collapsed-width footer. %>
       <%= poetry_sidebar_footer do %>
         <%= poetry_sidebar_menu do %>
           <%= poetry_sidebar_menu_item do %>
-            <%= poetry_sidebar_menu_button(size: :lg) do %>
-              <%= poetry_avatar(label: "Jamie Doyle") { "JD" } %>
-              <div class="grid flex-1 text-left text-sm leading-tight">
-                <span class="truncate font-semibold">Jamie Doyle</span>
-                <span class="truncate text-xs text-muted-foreground">jamie@northwind.co</span>
-              </div>
-              <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+            <%= poetry_dropdown_menu(side: :right, align: :end) do |menu| %>
+              <% menu.with_trigger(compose: true) do |wiring| %>
+                <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
+                  <%= poetry_avatar(label: "Jamie Doyle") { "JD" } %>
+                  <div class="grid flex-1 text-left text-sm leading-tight">
+                    <span class="truncate font-semibold">Jamie Doyle</span>
+                    <span class="truncate text-xs text-muted-foreground">jamie@northwind.co</span>
+                  </div>
+                  <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
+                <% end %>
+              <% end %>
+              <% menu.with_label { "jamie@northwind.co" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Account" } %>
+              <% menu.with_item { "Billing" } %>
+              <% menu.with_item { "Notifications" } %>
+              <% menu.with_separator %>
+              <% menu.with_item { "Log out" } %>
             <% end %>
           <% end %>
         <% end %>
