@@ -409,6 +409,10 @@
   @apply bg-input/90 data-checked:bg-primary data-checked:text-primary-foreground dark:data-checked:bg-primary data-checked:border-primary border-transparent aria-invalid:aria-checked:border-primary aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 focus-visible:border-ring focus-visible:ring-ring/30 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 flex size-4 items-center justify-center rounded-[5px] border transition-shadow focus-visible:ring-3 aria-invalid:ring-3;
 }
 
+.cn-checkbox-indicator {
+  @apply [&>svg]:size-3.5;
+}
+
 /* MARK: CodeBlock */
 /* The syntax palette: seven vars the dictionary's token map reads
  * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
@@ -557,6 +561,10 @@
 /* MARK: Dialog */
 .cn-dialog-content {
   @apply w-full max-w-[calc(100%-2rem)] bg-popover text-popover-foreground ring-foreground/5 dark:ring-foreground/10 gap-6 rounded-4xl p-6 text-sm shadow-xl ring-1 duration-100 sm:max-w-md backdrop:bg-black/30 supports-backdrop-filter:backdrop:backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95;
+}
+
+.cn-dialog-footer {
+  @apply gap-2;
 }
 
 .cn-dialog-header {
@@ -1316,6 +1324,10 @@
 /* MARK: Table */
 .cn-table {
   @apply w-full caption-bottom text-sm;
+}
+
+.cn-table-container {
+  @apply relative w-full overflow-x-auto;
 }
 
 .cn-table-header {

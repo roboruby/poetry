@@ -334,6 +334,7 @@ cn-chart-tooltip-name
 cn-chart-tooltip-row
 cn-chart-tooltip-value
 cn-checkbox
+cn-checkbox-indicator
 cn-code-block
 cn-combobox-chip
 cn-combobox-chip-input
@@ -370,6 +371,7 @@ cn-data-table-toolbar
 cn-dialog-close
 cn-dialog-content
 cn-dialog-description
+cn-dialog-footer
 cn-dialog-header
 cn-dialog-title
 cn-drawer-body
@@ -575,6 +577,7 @@ cn-table
 cn-table-body
 cn-table-caption
 cn-table-cell
+cn-table-container
 cn-table-footer
 cn-table-head
 cn-table-header

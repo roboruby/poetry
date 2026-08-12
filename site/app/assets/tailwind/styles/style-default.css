@@ -418,6 +418,10 @@
   @apply size-4 rounded-[4px] border border-input shadow-xs transition-shadow focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-checked:border-primary data-checked:bg-primary data-checked:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-checked:bg-primary;
 }
 
+.cn-checkbox-indicator {
+  @apply [&>svg]:size-3.5;
+}
+
 /* MARK: CodeBlock */
 /* The syntax palette: seven vars the dictionary's token map reads
  * (GitHub light/dark is the shared v1 baseline - a theme restyles code by
@@ -1328,6 +1332,10 @@
 /* MARK: Table */
 .cn-table {
   @apply w-full caption-bottom text-sm;
+}
+
+.cn-table-container {
+  @apply relative w-full overflow-x-auto;
 }
 
 .cn-table-header {
