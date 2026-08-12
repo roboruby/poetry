@@ -42,8 +42,8 @@ module Poetry
         end
 
         # The desktop gap that pushes the inset over.
-        element :gap, "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 " \
-                      "ease-linear group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 " \
+        element :gap, "cn-sidebar-gap relative w-(--sidebar-width) bg-transparent " \
+                      "group-data-[collapsible=offcanvas]:w-0 group-data-[side=right]:rotate-180 " \
                       "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
         element :gap_inset, "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)+(--spacing(4)))]"
 
@@ -60,17 +60,13 @@ module Poetry
 
         element :inner, "cn-sidebar-inner flex size-full flex-col"
 
-        element :inset,
-                "relative flex w-full flex-1 flex-col bg-background " \
-                "md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 " \
-                "md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm " \
-                "md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2"
+        element :inset, "cn-sidebar-inset relative flex w-full flex-1 flex-col"
 
         # The rail (desktop-only click strip).
         element :rail,
-                "absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear " \
+                "cn-sidebar-rail absolute inset-y-0 z-20 hidden w-4 transition-all ease-linear " \
                 "group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 " \
-                "after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex " \
+                "after:start-1/2 after:w-[2px] sm:flex " \
                 "group-data-[collapsible=offcanvas]:translate-x-0 " \
                 "group-data-[collapsible=offcanvas]:after:left-full hover:group-data-[collapsible=offcanvas]:bg-sidebar"
 

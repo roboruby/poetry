@@ -8228,7 +8228,7 @@ components:
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 6853e758d9af
+    capsule: 1ae2890a51e9
     controllers:
     - identifier: poetry--core--sidebar
       targets:
