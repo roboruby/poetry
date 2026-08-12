@@ -15,7 +15,7 @@ module Poetry
                           "*:data-[slot=select-value]:items-center " \
                           "[&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :content, "cn-select-content relative z-50 " \
+        element :content, "cn-select-content cn-menu-translucent relative z-50 " \
                           "max-h-(--available-height) " \
                           "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"

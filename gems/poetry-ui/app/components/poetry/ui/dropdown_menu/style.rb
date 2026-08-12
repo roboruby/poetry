@@ -9,7 +9,7 @@ module Poetry
       # stay inline. Icon glyph classes stay inline per upstream (TSX
       # inlines them on the lucide elements).
       class Style < Poetry::Core::Style
-        element :content, "cn-dropdown-menu-content z-50 " \
+        element :content, "cn-dropdown-menu-content cn-menu-translucent z-50 " \
                           "max-h-(--available-height) " \
                           "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"

@@ -1770,7 +1770,7 @@ components:
     - trigger_icon
     - indicator_check
     - chip_remove_icon
-    capsule: 62c8a75c3b73
+    capsule: 88bffd5818d2
     controllers:
     - identifier: poetry--core--combobox
       targets: []
@@ -2687,7 +2687,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: f5d8d74c9e50
+    capsule: bcb08b8b8632
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -3917,7 +3917,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: 7bafa0270ddb
+    capsule: f38561464410
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -5476,7 +5476,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: ed0fc659be02
+    capsule: 9bb56392d738
     controllers:
     - identifier: poetry--core--menu
       targets: []
@@ -6188,7 +6188,7 @@ components:
     - viewport_shell
     - viewport_panel
     - link
-    capsule: 9551c8f6a039
+    capsule: e3db403f9dac
     controllers:
     - identifier: poetry--core--navigation-menu
       targets: []
@@ -7584,7 +7584,7 @@ components:
     - trigger_icon
     - indicator_check
     - scroll_icon
-    capsule: 9f06c67d0e91
+    capsule: 74ca1c8083d8
     controllers:
     - identifier: poetry--core--popper
       targets:

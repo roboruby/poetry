@@ -36,9 +36,11 @@ module Poetry
 
         # data-slot="menubar-item-indicator" is a POETRY ADDITION
         # (new-york-v4's span is anonymous) - the self-identification rule.
-        def item_indicator(icon, icon_class)
+        def item_indicator(icon, icon_class, kind)
           content_tag(:span, "data-slot" => "menubar-item-indicator",
-                             "class" => Style.css(:item_indicator, class: Style.css(:item_indicator_state))) do
+                             "class" => Style.css(:item_indicator,
+                                                  class: [Style.css(:item_indicator_state),
+                                                          "cn-menubar-#{kind}-item-indicator"])) do
             render(Icon::Component.new(name: icon, class: icon_class))
           end
         end
@@ -132,7 +134,7 @@ module Poetry
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
           content_tag(:div, attrs.merge(options)) do
-            safe_join([item_indicator(:check, Style.css(:indicator_check)),
+            safe_join([item_indicator(:check, Style.css(:indicator_check), :checkbox),
                        capture(&block), shortcut_span(shortcut)].compact)
           end
         end
@@ -574,7 +576,7 @@ module Poetry
           }.merge(item_action_attributes)
           apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
           content_tag(:div, attrs.merge(options)) do
-            safe_join([item_indicator(:circle, Style.css(:indicator_circle)),
+            safe_join([item_indicator(:circle, Style.css(:indicator_circle), :radio),
                        capture(&block), shortcut_span(shortcut)].compact)
           end
         }

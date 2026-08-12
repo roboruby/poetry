@@ -10,7 +10,7 @@ module Poetry
       # surface, never the morph. The viewport=false chrome chain and the
       # trigger/link treatments ride the theme.
       class Style < Poetry::Core::Style
-        base "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center"
+        base "cn-navigation-menu group/navigation-menu relative flex max-w-max flex-1 items-center justify-center"
 
         element :list, "cn-navigation-menu-list group flex flex-1 list-none items-center justify-center"
         element :item, "relative"

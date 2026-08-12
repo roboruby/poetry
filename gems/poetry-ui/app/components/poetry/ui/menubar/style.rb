@@ -19,7 +19,7 @@ module Poetry
 
         element :trigger, "cn-menubar-trigger flex items-center outline-hidden select-none"
 
-        element :content, "cn-menubar-content z-50 " \
+        element :content, "cn-menubar-content cn-menu-translucent z-50 " \
                           "origin-(--transform-origin) overflow-hidden"
 
         # group/menubar-item (N12): bare marker, no CSS - the vega shortcut
@@ -52,7 +52,7 @@ module Poetry
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names
         # it menubar-item-indicator - the self-identification rule).
-        element :item_indicator, "cn-menubar-item-indicator pointer-events-none absolute " \
+        element :item_indicator, "pointer-events-none absolute " \
                                  "flex items-center justify-center"
 
         # POETRY ADDITION (family convention): the indicator stays in the

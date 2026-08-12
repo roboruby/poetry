@@ -8,7 +8,7 @@ module Poetry
       # adds text-foreground, the sub-trigger omits gap-2, the sub chevron
       # is a bare ml-auto); the trigger SURFACE still ships no classes.
       class Style < Poetry::Core::Style
-        element :content, "cn-context-menu-content z-50 " \
+        element :content, "cn-context-menu-content cn-menu-translucent z-50 " \
                           "max-h-(--available-height) " \
                           "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"

@@ -34,7 +34,7 @@ module Poetry
         # The popup: Popover's chrome retuned per the demo (p-0 - the
         # Command brings its own padding); the anchor-width binding stays
         # inline (popper measures the anchor and sets the generic var).
-        element :content, "cn-combobox-content z-50 w-(--anchor-width) origin-(--transform-origin) " \
+        element :content, "cn-combobox-content cn-menu-translucent z-50 w-(--anchor-width) origin-(--transform-origin) " \
                           "outline-hidden"
 
         # The demo's CommandInput className="h-9" retune, merged over
