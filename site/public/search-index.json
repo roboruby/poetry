@@ -3390,6 +3390,12 @@
     "path": "/components/sensitive-input#with-copy"
   },
   {
+    "title": "With copy and tooltip",
+    "page": "Sensitive Input",
+    "section": "components",
+    "path": "/components/sensitive-input#with-copy-and-tooltip"
+  },
+  {
     "title": "Wiring",
     "page": "Sensitive Input",
     "section": "components",
