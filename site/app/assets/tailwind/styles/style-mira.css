@@ -1135,6 +1135,26 @@
   @apply bg-popover text-popover-foreground data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 min-w-32 rounded-lg shadow-md ring-1 duration-100;
 }
 
+.cn-select-group {
+  @apply scroll-my-1 p-1;
+}
+
+.cn-select-value {
+  @apply flex flex-1 text-left;
+}
+
+.cn-select-item-text {
+  @apply flex flex-1 gap-2;
+}
+
+.cn-select-scroll-up-button {
+  @apply bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-3.5;
+}
+
+.cn-select-scroll-down-button {
+  @apply bg-popover z-10 flex cursor-default items-center justify-center py-1 [&_svg:not([class*='size-'])]:size-3.5;
+}
+
 .cn-select-viewport {
   @apply p-1 scroll-my-1;
 }
