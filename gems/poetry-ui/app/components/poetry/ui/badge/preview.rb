@@ -20,6 +20,15 @@ module Poetry
           render_component(variant: :outline) { "Beta" }
         end
 
+        def ghost
+          render_component(variant: :ghost) { "Muted on hover" }
+        end
+
+        # The link VARIANT (distinct from the badge-as-anchor example below).
+        def link_variant
+          render_component(variant: :link) { "Reference" }
+        end
+
         # Badge-as-link (upstream badge#link parity): a real <a>, so the
         # axe walk covers the anchor treatment and its contrast.
         def link

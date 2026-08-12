@@ -17,6 +17,8 @@ module Poetry
         # (upstream Badge has no status variants); every theme carries the
         # soft treatment on the new status tokens.
         variant :variant, {
+          ghost: "cn-badge-variant-ghost",
+          link: "cn-badge-variant-link",
           default: "cn-badge-variant-default",
           secondary: "cn-badge-variant-secondary",
           destructive: "cn-badge-variant-destructive",

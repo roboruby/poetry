@@ -10,7 +10,7 @@ module Poetry
       # tokens, the muted color-coded pills the judged benchmark measured
       # as missing). Template-less.
       class Component < Poetry::Core::Component
-        VARIANTS = %i[default secondary destructive outline success warning info].freeze
+        VARIANTS = %i[default secondary destructive outline ghost link success warning info].freeze
 
         AGENT_RULES = [
           "Badges are non-interactive status labels - never attach click handlers; use Button for " \
