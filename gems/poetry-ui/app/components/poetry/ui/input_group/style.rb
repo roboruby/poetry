@@ -29,9 +29,9 @@ module Poetry
         element :control_textarea, "cn-input-group-textarea flex-1 resize-none"
 
         # The tiny in-group Button sizes (merged over the ghost Button).
-        # :sm has no extra classes upstream - the helper simply adds none.
         element :button, "cn-input-group-button flex items-center shadow-none"
         element :button_xs, "cn-input-group-button-size-xs"
+        element :button_sm, "cn-input-group-button-size-sm"
         element :button_icon_xs, "cn-input-group-button-size-icon-xs"
         element :button_icon_sm, "cn-input-group-button-size-icon-sm"
       end

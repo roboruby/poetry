@@ -4853,9 +4853,10 @@ components:
     - control_textarea
     - button
     - button_xs
+    - button_sm
     - button_icon_xs
     - button_icon_sm
-    capsule: 4a85770e4326
+    capsule: 6adad2fc99b9
     agent_rules:
     - The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input
       keeps its own border+ring and double-chromes the group.

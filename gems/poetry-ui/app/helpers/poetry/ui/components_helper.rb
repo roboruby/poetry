@@ -449,7 +449,7 @@ module Poetry
         end
 
         style = Poetry::Ui::InputGroup::Style
-        size_css = size.to_sym == :sm ? nil : style.css(:"button_#{size.to_s.tr("-", "_")}")
+        size_css = style.css(:"button_#{size.to_s.tr("-", "_")}")
         classes = [style.css(:button), size_css, attrs.delete(:class)].compact.join(" ")
         render(Poetry::Ui::Button::Component.new(variant: :ghost, **attrs, class: classes,
                                                  "data-size": size), &)
