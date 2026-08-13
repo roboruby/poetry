@@ -168,6 +168,7 @@ aria-[orientation=horizontal]:after:h-1
 aria-[orientation=horizontal]:after:left-0
 aria-[orientation=horizontal]:after:translate-x-0
 aria-[orientation=horizontal]:after:w-full
+aria-[orientation=horizontal]:cursor-row-resize
 aria-[orientation=horizontal]:h-px
 aria-[orientation=horizontal]:w-full
 aria-disabled:opacity-50
@@ -219,6 +220,7 @@ cn-accordion-item
 cn-accordion-trigger
 cn-accordion-trigger-icon
 cn-alert
+cn-alert-action
 cn-alert-description
 cn-alert-dialog-content
 cn-alert-dialog-description
@@ -230,6 +232,7 @@ cn-alert-title
 cn-alert-variant-default
 cn-alert-variant-destructive
 cn-attachment
+cn-attachment-actions
 cn-attachment-content
 cn-attachment-description
 cn-attachment-group
@@ -240,6 +243,7 @@ cn-attachment-size-default
 cn-attachment-size-sm
 cn-attachment-size-xs
 cn-attachment-title
+cn-attachment-trigger
 cn-avatar
 cn-avatar-badge
 cn-avatar-fallback
@@ -248,7 +252,9 @@ cn-avatar-image
 cn-badge
 cn-badge-variant-default
 cn-badge-variant-destructive
+cn-badge-variant-ghost
 cn-badge-variant-info
+cn-badge-variant-link
 cn-badge-variant-outline
 cn-badge-variant-secondary
 cn-badge-variant-success
@@ -349,6 +355,7 @@ cn-command-empty
 cn-command-group
 cn-command-group-heading
 cn-command-input
+cn-command-input-icon
 cn-command-input-wrapper
 cn-command-item
 cn-command-list
@@ -430,12 +437,14 @@ cn-input-group-addon-align-inline-start
 cn-input-group-button
 cn-input-group-button-size-icon-sm
 cn-input-group-button-size-icon-xs
+cn-input-group-button-size-sm
 cn-input-group-button-size-xs
 cn-input-group-input
 cn-input-group-text
 cn-input-group-textarea
 cn-input-otp
 cn-input-otp-caret-line
+cn-input-otp-group
 cn-input-otp-slot
 cn-item
 cn-item-actions
@@ -620,6 +629,7 @@ col-start-2
 col-start-3
 contain-content
 contents
+cursor-col-resize
 cursor-default
 cursor-grab
 cursor-not-allowed
@@ -822,10 +832,6 @@ group-data-[orientation=horizontal]/timeline:pt-9
 group-data-[orientation=horizontal]/timeline:top-3
 group-data-[orientation=horizontal]/timeline:w-[calc(100%-2rem)]
 group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6!
-group-data-[orientation=vertical]/attachment:absolute
-group-data-[orientation=vertical]/attachment:gap-1
-group-data-[orientation=vertical]/attachment:right-3
-group-data-[orientation=vertical]/attachment:top-3
 group-data-[orientation=vertical]/timeline:-translate-x-1/2
 group-data-[orientation=vertical]/timeline:h-[calc(100%-2rem)]
 group-data-[orientation=vertical]/timeline:left-3
