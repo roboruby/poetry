@@ -460,6 +460,18 @@
   @apply bg-popover text-popover-foreground;
 }
 
+.cn-input-otp-group {
+  @apply has-aria-invalid:border-b-destructive dark:has-aria-invalid:border-b-destructive/50 rounded-none gap-1;
+}
+
+.cn-input-otp-separator {
+  @apply [&_svg:not([class*='size-'])]:size-3.5;
+}
+
+.cn-command-input-icon {
+  @apply size-3.5 shrink-0 opacity-50;
+}
+
 .cn-command-input-wrapper {
   @apply m-1 mb-0 gap-2 border-b px-3 py-1;
 }

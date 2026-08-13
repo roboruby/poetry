@@ -471,6 +471,18 @@
   @apply bg-popover text-popover-foreground rounded-none;
 }
 
+.cn-input-otp-group {
+  @apply has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40 has-aria-invalid:border-destructive rounded-none has-aria-invalid:ring-1;
+}
+
+.cn-input-otp-separator {
+  @apply [&_svg:not([class*='size-'])]:size-4;
+}
+
+.cn-command-input-icon {
+  @apply size-4 shrink-0 opacity-50;
+}
+
 .cn-command-input-wrapper {
   @apply m-1 mb-0 h-8 gap-2 rounded-none border border-input/30 bg-input/30 px-2 shadow-none;
 }
