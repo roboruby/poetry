@@ -1,0 +1,16 @@
+<%# The action corner holds the dismiss control (with_action). The
+    docs-only harness removes the alert; in an app the same click is
+    element.remove() or a Turbo Stream remove. %>
+<div data-controller="demo-dismiss" class="w-full max-w-md">
+  <%= poetry_alert do |alert| %>
+    <% alert.with_icon(name: :"circle-check") %>
+    <% alert.with_title { "Changes saved" } %>
+    <% alert.with_action do %>
+      <%= poetry_button(variant: :ghost, size: :"icon-xs", label: "Dismiss",
+                        data: { action: "click->demo-dismiss#dismiss" }) do %>
+        <%= poetry_icon(name: :x) %>
+      <% end %>
+    <% end %>
+    Your profile updates are live.
+  <% end %>
+</div>

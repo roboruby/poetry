@@ -282,6 +282,12 @@
     "path": "/components/alert#destructive"
   },
   {
+    "title": "Dismissible",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#dismissible"
+  },
+  {
     "title": "With action",
     "page": "Alert",
     "section": "components",
