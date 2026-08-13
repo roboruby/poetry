@@ -24,12 +24,15 @@ module Poetry
                                    values: VARIANTS.map(&:to_s) }
              }
         part "alert-title", "The heading line, rendered when the title slot is set"
+        part "alert-action", "The corner action well (with_action) - a dismiss or link " \
+                             "pinned to the top-right by the theme"
         part "alert-description", "The body copy - the content block renders here"
 
         # Typed slot: with_icon(name: :"triangle-alert") - agents pass icon
         # props, never a render block.
         renders_one :icon, Poetry::Ui::Icon::Component
         renders_one :title
+        renders_one :action
 
         def root_attributes
           html_attributes.merge_if_not_set(

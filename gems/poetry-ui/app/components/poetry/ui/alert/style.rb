@@ -15,6 +15,7 @@ module Poetry
         }
 
         element :title, "cn-alert-title"
+        element :action, "cn-alert-action"
         element :description, "cn-alert-description"
       end
     end

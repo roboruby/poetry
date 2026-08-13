@@ -170,11 +170,14 @@ components:
         icon: 1
     - name: title
       many: false
+    - name: action
+      many: false
     description: A callout that highlights an important inline message.
     elements:
     - title
+    - action
     - description
-    capsule: 46f5083339ca
+    capsule: '0358ff42034b'
     agent_rules:
     - Use poetry_alert for inline callouts - it carries role/aria-live; never a hand-rolled
       div.
@@ -192,6 +195,9 @@ components:
         - destructive
     - name: alert-title
       description: The heading line, rendered when the title slot is set
+    - name: alert-action
+      description: The corner action well (with_action) - a dismiss or link pinned
+        to the top-right by the theme
     - name: alert-description
       description: The body copy - the content block renders here
   poetry/ui/alert_dialog:

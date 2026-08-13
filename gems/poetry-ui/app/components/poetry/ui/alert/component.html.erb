@@ -2,4 +2,5 @@
   <%= icon %>
   <% if title? %><div data-slot="alert-title" class="<%= css(:title) %>"><%= title %></div><% end %>
   <div data-slot="alert-description" class="<%= css(:description) %>"><%= content %></div>
+  <% if action? %><div data-slot="alert-action" class="<%= css(:action) %>"><%= action %></div><% end %>
 <% end %>

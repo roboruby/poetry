@@ -18,6 +18,15 @@ module Poetry
             "Your card was declined - update your billing details."
           end
         end
+
+        # The corner action well (theme pins it top-right).
+        def with_action
+          render_component(variant: :default) do |alert|
+            alert.with_title { "Update available" }
+            alert.with_action { tag.button("Dismiss", type: "button", class: "text-sm underline-offset-4 hover:underline") }
+            "A new version is ready to install."
+          end
+        end
       end
     end
   end
