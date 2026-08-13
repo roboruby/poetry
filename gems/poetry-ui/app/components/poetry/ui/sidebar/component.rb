@@ -134,7 +134,8 @@ module Poetry
         part "sidebar-menu-button", "The row's link (href:) or button - the navigation entry itself",
              states: {
                "data-active" => "the current route (active: - links also get aria-current=page)",
-               "data-size" => "the row size variant (default, sm, or lg) - the action/badge tops key on it"
+               "data-size" => "the row size variant (default, sm, or lg) - the action/badge tops key on it",
+               "data-variant" => { condition: "always - the treatment", values: %w[default outline] }
              }
         part "sidebar-menu-action", "The item-corner action button, absolutely positioned in the row",
              states: {

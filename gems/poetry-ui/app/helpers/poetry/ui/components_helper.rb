@@ -279,17 +279,57 @@ module Poetry
       end
 
       # A menu button: an anchor (href:) or a button, with the active state
-      # + size variant. active: is the current route (data-active styles it).
-      def poetry_sidebar_menu_button(href: nil, active: false, size: :default, **attrs, &block)
+      # + size and variant axes. active: is the current route (data-active
+      # styles it); variant: :outline draws the bordered treatment.
+      def poetry_sidebar_menu_button(href: nil, active: false, size: :default,
+                                     variant: :default, **attrs, &block)
+        unless %i[default outline].include?(variant.to_sym)
+          raise ArgumentError, "sidebar menu button variant: must be :default or :outline"
+        end
+
         style = Poetry::Ui::Sidebar::Style
-        classes = [style.css(:menu_button), style.menu_button_size(size), attrs.delete(:class)].compact.join(" ")
-        data = { slot: "sidebar-menu-button", size: size,
+        classes = [style.css(:menu_button), style.menu_button_size(size),
+                   "cn-sidebar-menu-button-variant-#{variant}", attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-button", size: size, variant: variant,
                  active: active ? "" : nil }.compact.merge(attrs.delete(:data) || {})
         if href
           content_tag(:a, (capture(&block) if block), href: href, class: classes, data: data,
                                                       "aria-current": active ? "page" : nil, **attrs)
         else
           content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data, **attrs)
+        end
+      end
+
+      # The group-corner action (upstream SidebarGroupAction): pinned to the
+      # group's top-right by the theme.
+      def poetry_sidebar_group_action(label: nil, **attrs, &block)
+        classes = ["cn-sidebar-group-action", attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-group-action", sidebar: "group-action" }.merge(attrs.delete(:data) || {})
+        content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data,
+                                                         "aria-label": label, **attrs)
+      end
+
+      # The sidebar search input (upstream SidebarInput): the themed Input
+      # sized for the header well.
+      def poetry_sidebar_input(**attrs)
+        classes = ["cn-sidebar-input", attrs.delete(:class)].compact.join(" ")
+        render(Poetry::Ui::Input::Component.new(**attrs, class: classes, "data-slot": "sidebar-input"))
+      end
+
+      # A loading placeholder row (upstream SidebarMenuSkeleton): optional
+      # leading icon block + a text bar with a random-ish width the caller
+      # can pin via text_width:.
+      def poetry_sidebar_menu_skeleton(icon: false, text_width: "70%", **attrs)
+        classes = ["cn-sidebar-menu-skeleton flex items-center", attrs.delete(:class)].compact.join(" ")
+        data = { slot: "sidebar-menu-skeleton" }.merge(attrs.delete(:data) || {})
+        content_tag(:div, class: classes, data: data, **attrs) do
+          safe_join([
+            (render(Poetry::Ui::Skeleton::Component.new(class: "cn-sidebar-menu-skeleton-icon",
+                                                        "data-slot": "sidebar-menu-skeleton-icon")) if icon),
+            render(Poetry::Ui::Skeleton::Component.new(class: "cn-sidebar-menu-skeleton-text",
+                                                       "data-slot": "sidebar-menu-skeleton-text",
+                                                       style: "max-width: #{text_width}"))
+          ].compact)
         end
       end
 

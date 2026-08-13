@@ -8369,6 +8369,11 @@ components:
       - attr: data-size
         condition: the row size variant (default, sm, or lg) - the action/badge tops
           key on it
+      - attr: data-variant
+        condition: always - the treatment
+        values:
+        - default
+        - outline
     - name: sidebar-menu-action
       description: The item-corner action button, absolutely positioned in the row
       states:
@@ -10258,14 +10263,17 @@ helpers:
   poetry_sidebar_content: {}
   poetry_sidebar_footer: {}
   poetry_sidebar_group: {}
+  poetry_sidebar_group_action: {}
   poetry_sidebar_group_content: {}
   poetry_sidebar_group_label: {}
   poetry_sidebar_header: {}
+  poetry_sidebar_input: {}
   poetry_sidebar_menu: {}
   poetry_sidebar_menu_action: {}
   poetry_sidebar_menu_badge: {}
   poetry_sidebar_menu_button: {}
   poetry_sidebar_menu_item: {}
+  poetry_sidebar_menu_skeleton: {}
   poetry_sidebar_menu_sub: {}
   poetry_sidebar_menu_sub_button: {}
   poetry_sidebar_menu_sub_item: {}
@@ -10529,14 +10537,17 @@ helper_args:
   poetry_sidebar_content: 0
   poetry_sidebar_footer: 0
   poetry_sidebar_group: 0
+  poetry_sidebar_group_action: 0
   poetry_sidebar_group_content: 0
   poetry_sidebar_group_label: 0
   poetry_sidebar_header: 0
+  poetry_sidebar_input: 0
   poetry_sidebar_menu: 0
   poetry_sidebar_menu_action: 0
   poetry_sidebar_menu_badge: 0
   poetry_sidebar_menu_button: 0
   poetry_sidebar_menu_item: 0
+  poetry_sidebar_menu_skeleton: 0
   poetry_sidebar_menu_sub: 0
   poetry_sidebar_menu_sub_button: 0
   poetry_sidebar_menu_sub_item: 0
