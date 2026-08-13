@@ -14,7 +14,8 @@ module Poetry
 
         element :panel, "overflow-hidden"
 
-        element :handle, "relative flex w-px items-center justify-center bg-border " \
+        element :handle, "relative flex w-px touch-none items-center justify-center bg-border " \
+                         "cursor-col-resize aria-[orientation=horizontal]:cursor-row-resize " \
                          "ring-offset-background after:absolute after:inset-y-0 after:left-1/2 " \
                          "after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-ring " \
                          "focus-visible:outline-hidden aria-[orientation=horizontal]:h-px " \

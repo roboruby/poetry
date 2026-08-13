@@ -7479,7 +7479,7 @@ components:
     - panel
     - handle
     - grip
-    capsule: 664183b64ab9
+    capsule: e465b6e447ac
     controllers:
     - identifier: poetry--core--resizable
       targets: []
