@@ -638,6 +638,31 @@ module Poetry
       # IDs); text_to_copy: overrides the clipboard when the display
       # truncates. Editable text is poetry_input; masked secrets are
       # poetry_sensitive_input.
+      # The select-all family (upstream CheckboxGroup, the APG mixed-state
+      # parent): the wrapper carries the poetry--core--checkbox-group
+      # controller; the parent checkbox fans out to every enabled item and
+      # item toggles re-derive it (all -> checked, none -> unchecked,
+      # some -> indeterminate).
+      def poetry_checkbox_group(**attrs, &block)
+        classes = attrs.delete(:class)
+        data = { slot: "checkbox-group", controller: "poetry--core--checkbox-group",
+                 action: "poetry:checkbox:change->poetry--core--checkbox-group#changed" }
+               .merge(attrs.delete(:data) || {})
+        content_tag(:div, (capture(&block) if block), class: classes, data: data, **attrs)
+      end
+
+      # The group's parent checkbox (target: all) - checking it fans out.
+      def poetry_checkbox_group_all(**attrs)
+        data = { "poetry--core--checkbox-group-target": "all" }.merge(attrs.delete(:data) || {})
+        render(Poetry::Ui::Checkbox::Component.new(**attrs, data: data))
+      end
+
+      # One member checkbox (target: item) - toggles re-derive the parent.
+      def poetry_checkbox_group_item(**attrs)
+        data = { "poetry--core--checkbox-group-target": "item" }.merge(attrs.delete(:data) || {})
+        render(Poetry::Ui::Checkbox::Component.new(**attrs, data: data))
+      end
+
       def poetry_clipboard_text(**)
         render(Poetry::Ui::ClipboardText::Component.new(**))
       end

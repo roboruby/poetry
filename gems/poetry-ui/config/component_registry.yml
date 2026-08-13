@@ -1356,6 +1356,9 @@ components:
       events:
       - poetry--core--checked:change
     agent_rules:
+    - A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all
+      (the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan
+      out and re-derive automatically.
     - Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with
       hand-written Tailwind, and never a hand-rolled button[role=checkbox].
     - 'Always give it a name: in forms - a checkbox without one submits nothing (visual-only
@@ -10219,6 +10222,9 @@ helpers:
   poetry_bubble_group: {}
   poetry_button_group_separator: {}
   poetry_button_group_text: {}
+  poetry_checkbox_group: {}
+  poetry_checkbox_group_all: {}
+  poetry_checkbox_group_item: {}
   poetry_color_scheme_script: {}
   poetry_input_group_addon:
     options:
@@ -10468,6 +10474,9 @@ helper_args:
   poetry_card: 0
   poetry_carousel: 0
   poetry_checkbox: 0
+  poetry_checkbox_group: 0
+  poetry_checkbox_group_all: 0
+  poetry_checkbox_group_item: 0
   poetry_clipboard_text: 0
   poetry_code_block: 0
   poetry_collapsible: 0

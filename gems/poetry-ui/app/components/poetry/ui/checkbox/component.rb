@@ -34,6 +34,9 @@ module Poetry
         end
 
         AGENT_RULES = [
+          "A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all " \
+          "(the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan out " \
+          "and re-derive automatically.",
           "Use poetry_checkbox (or f.check_box) - never a raw input[type=checkbox] with hand-written " \
           "Tailwind, and never a hand-rolled button[role=checkbox].",
           "Always give it a name: in forms - a checkbox without one submits nothing (visual-only mode " \
