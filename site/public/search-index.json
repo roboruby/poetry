@@ -426,6 +426,36 @@
     "path": "/components/attachment#with-trigger"
   },
   {
+    "title": "Autocomplete",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete"
+  },
+  {
+    "title": "Installation",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#default"
+  },
+  {
+    "title": "Value override",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#value-override"
+  },
+  {
+    "title": "Wiring",
+    "page": "Autocomplete",
+    "section": "components",
+    "path": "/components/autocomplete#wiring"
+  },
+  {
     "title": "Avatar",
     "page": "Avatar",
     "section": "components",

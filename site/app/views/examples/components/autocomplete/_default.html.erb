@@ -1,0 +1,11 @@
+<%# The input IS the value: free text submits as-is; suggestions filter
+    as you type and selecting one writes the input. Constrained pick
+    (value must be an item) is Combobox territory. %>
+<%= poetry_autocomplete(name: "tag", label: "Search tags", placeholder: "e.g. feature",
+                        class: "w-64") do |auto| %>
+  <% auto.with_item(label: "feature") %>
+  <% auto.with_item(label: "fix") %>
+  <% auto.with_item(label: "docs") %>
+  <% auto.with_item(label: "refactor") %>
+  <% auto.with_item(label: "internal") %>
+<% end %>
