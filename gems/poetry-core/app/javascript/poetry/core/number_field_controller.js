@@ -180,6 +180,10 @@ export default class extends Controller {
   }
 
   #tick(direction, event) {
+    // Disabled/readonly mid-hold (a server morph can do this): stop the
+    // repeat rather than mutating a control the user can no longer reach.
+    if (this.inputTarget.disabled || this.inputTarget.readOnly) return false
+
     const before = this.#value
     this.#step(direction, event)
     const changed = this.#value !== before

@@ -169,6 +169,24 @@ describe("poetry--core--number-field", () => {
     expect(commits).toEqual(["5"])
   })
 
+  it("stops the press-and-hold repeat when the input is disabled mid-hold", async () => {
+    vi.useFakeTimers()
+    mount({ value: "0", max: 100 })
+    await vi.advanceTimersByTimeAsync(0)
+
+    el("inc").dispatchEvent(new MouseEvent("pointerdown", { bubbles: true, button: 0 }))
+    await vi.advanceTimersByTimeAsync(400 + 60 * 2)
+    const before = el("hidden").value
+    expect(Number(before)).toBeGreaterThan(1)
+
+    // A server morph disables the control while the pointer is still down.
+    el("input").disabled = true
+    await vi.advanceTimersByTimeAsync(60 * 5)
+    expect(el("hidden").value).toBe(before)
+
+    window.dispatchEvent(new MouseEvent("pointerup", { bubbles: true }))
+  })
+
   it("a quick tap (click without prior pointerdown tick) steps exactly once", async () => {
     mount({ value: "1" })
     await nextFrame()
