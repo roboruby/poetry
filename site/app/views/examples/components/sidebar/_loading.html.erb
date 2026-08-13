@@ -11,12 +11,10 @@
         <%= poetry_sidebar_group do %>
           <%= poetry_sidebar_group_label { "Platform" } %>
           <%= poetry_sidebar_menu do %>
-            <% ["w-24", "w-32", "w-20", "w-28", "w-16"].each do |width| %>
+            <%# The real loading surface: per-theme radii ride the theme. %>
+            <% ["70%", "85%", "55%", "75%", "45%"].each do |width| %>
               <%= poetry_sidebar_menu_item do %>
-                <div class="flex h-8 items-center gap-2 rounded-md px-2">
-                  <%= poetry_skeleton(class: "size-4 shrink-0 rounded-md") %>
-                  <%= poetry_skeleton(class: "h-4 #{width} rounded-md") %>
-                </div>
+                <%= poetry_sidebar_menu_skeleton(icon: true, text_width: width) %>
               <% end %>
             <% end %>
           <% end %>
