@@ -29,7 +29,7 @@
         the moment you've <%= poetry_link(href: "/installation") { "installed poetry" } %>,
         with no per-component step. To own the source and edit it, copy it into your app:
       </p>
-      <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "shell", label: "Copy-in") %>
+      <%= poetry_code_block(code: "bin/rails g poetry:add #{@entry.slug}", language: "plaintext", label: "Copy-in") %>
     </section>
   <% elsif @entry.section == "charts" %>
     <section class="flex flex-col gap-3">
