@@ -59,7 +59,7 @@ module Poetry
           end.to_html
 
           assert_match(/<button[^>]*data-slot="attachment-trigger"[^>]*type="button"/, html)
-          assert_includes html, "absolute inset-0 z-10"
+          assert_includes html, "cn-attachment-trigger"
         end
 
         def test_media_image_variant_and_unknown_variant_guard

@@ -46,13 +46,9 @@ module Poetry
         element :description, "cn-attachment-description block max-w-full min-w-0 truncate " \
                               "group-data-[upload-state=error]/attachment:text-destructive/80"
 
-        element :actions, "relative z-20 flex shrink-0 items-center " \
-                          "group-data-[orientation=vertical]/attachment:absolute " \
-                          "group-data-[orientation=vertical]/attachment:top-3 " \
-                          "group-data-[orientation=vertical]/attachment:right-3 " \
-                          "group-data-[orientation=vertical]/attachment:gap-1"
+        element :actions, "cn-attachment-actions flex shrink-0 items-center"
 
-        element :trigger, "absolute inset-0 z-10 outline-none"
+        element :trigger, "cn-attachment-trigger"
 
         element :group, "cn-attachment-group flex min-w-0 scroll-fade-x snap-x snap-mandatory " \
                         "scrollbar-none overflow-x-auto overscroll-x-contain " \

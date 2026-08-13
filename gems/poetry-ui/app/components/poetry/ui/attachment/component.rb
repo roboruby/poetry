@@ -60,8 +60,8 @@ module Poetry
         renders_one :media, lambda { |variant: :icon, &block|
           raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
 
-          content_tag(:div, class: css(:media), "data-slot" => "attachment-media",
-                            "data-variant" => variant, &block)
+          content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
+                            class: css(:media, class: ("cn-attachment-media-variant-image" if variant == :image)), &block)
         }
         renders_one :title
         renders_one :description
