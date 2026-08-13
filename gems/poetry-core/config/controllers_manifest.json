@@ -42,6 +42,39 @@
       "poetry:data-table:clear-selection"
     ]
   },
+  "poetry--core--autocomplete": {
+    "targets": [
+      "content",
+      "empty",
+      "input",
+      "list"
+    ],
+    "values": {
+      "open": {
+        "type": "Boolean",
+        "default": false
+      },
+      "openOnFocus": {
+        "type": "Boolean",
+        "default": true
+      }
+    },
+    "classes": [],
+    "methods": [
+      "blurred",
+      "disconnect",
+      "focus",
+      "input",
+      "itemEnter",
+      "itemPress",
+      "keydown"
+    ],
+    "events": [
+      "poetry:autocomplete:close",
+      "poetry:autocomplete:commit",
+      "poetry:autocomplete:open"
+    ]
+  },
   "poetry--core--calendar": {
     "targets": [
       "caption",

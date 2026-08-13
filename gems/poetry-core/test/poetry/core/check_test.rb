@@ -119,7 +119,6 @@ module Poetry
         }
       ).freeze
 
-
       def test_the_catalog_exposes_the_element_level_stimulus_wiring
         catalog = Poetry::Core::Check::Catalog.from_registry(Poetry::Core.root)
 

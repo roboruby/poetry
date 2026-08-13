@@ -8,6 +8,7 @@ import StateController from "@poetry/controllers/state_controller"
 import DialogController from "@poetry/controllers/dialog_controller"
 import MessageScrollerController from "@poetry/controllers/message_scroller_controller"
 import AccordionController from "@poetry/controllers/accordion_controller"
+import AutocompleteController from "@poetry/controllers/autocomplete_controller"
 import SearchFieldController from "@poetry/controllers/search_field_controller"
 import ClipboardTextController from "@poetry/controllers/clipboard_text_controller"
 import SensitiveInputController from "@poetry/controllers/sensitive_input_controller"
@@ -60,6 +61,7 @@ export { default as StateController } from "@poetry/controllers/state_controller
 export { default as DialogController } from "@poetry/controllers/dialog_controller"
 export { default as MessageScrollerController } from "@poetry/controllers/message_scroller_controller"
 export { default as AccordionController } from "@poetry/controllers/accordion_controller"
+export { default as AutocompleteController } from "@poetry/controllers/autocomplete_controller"
 export { default as SearchFieldController } from "@poetry/controllers/search_field_controller"
 export { default as ClipboardTextController } from "@poetry/controllers/clipboard_text_controller"
 export { default as SensitiveInputController } from "@poetry/controllers/sensitive_input_controller"
@@ -125,6 +127,7 @@ export const controllers = {
   "poetry--core--dialog": DialogController,
   "poetry--core--message-scroller": MessageScrollerController,
   "poetry--core--accordion": AccordionController,
+  "poetry--core--autocomplete": AutocompleteController,
   "poetry--core--search-field": SearchFieldController,
   "poetry--core--clipboard-text": ClipboardTextController,
   "poetry--core--sensitive-input": SensitiveInputController,
