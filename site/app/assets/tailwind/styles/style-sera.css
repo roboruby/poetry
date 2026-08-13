@@ -1340,6 +1340,34 @@
   @apply ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground active:bg-sidebar-accent active:text-sidebar-accent-foreground data-active:bg-sidebar-accent data-active:text-sidebar-accent-foreground data-open:hover:bg-sidebar-accent data-open:hover:text-sidebar-accent-foreground gap-2 rounded-none px-3 py-2 text-left text-sm transition-[width,height,padding] group-has-data-[sidebar=menu-action]/menu-item:pr-8 group-data-[collapsible=icon]:size-8! group-data-[collapsible=icon]:p-2! focus-visible:ring-2 data-active:font-medium;
 }
 
+.cn-sidebar-input {
+  @apply bg-transparent border-input h-8 w-full shadow-none;
+}
+
+.cn-sidebar-group-action {
+  @apply text-sidebar-foreground ring-sidebar-ring hover:bg-sidebar-accent hover:text-sidebar-accent-foreground absolute top-3.5 right-3 w-5 rounded-none p-0 focus-visible:ring-2 [&>svg]:size-3.5;
+}
+
+.cn-sidebar-menu-button-variant-default {
+  @apply hover:bg-sidebar-accent hover:text-sidebar-accent-foreground;
+}
+
+.cn-sidebar-menu-button-variant-outline {
+  @apply bg-background hover:bg-sidebar-accent hover:text-sidebar-accent-foreground shadow-[0_0_0_1px_var(--sidebar-border)] hover:shadow-[0_0_0_1px_var(--sidebar-accent)];
+}
+
+.cn-sidebar-menu-skeleton {
+  @apply h-8 gap-2 rounded-none px-2;
+}
+
+.cn-sidebar-menu-skeleton-icon {
+  @apply size-3.5 rounded-none;
+}
+
+.cn-sidebar-menu-skeleton-text {
+  @apply h-4;
+}
+
 .cn-sidebar-menu-button-size-default {
   @apply h-9 text-sm;
 }
