@@ -12,6 +12,11 @@ module Poetry
         def command
           render_component { "⌘" }
         end
+
+        # A chord run in the themed group wrapper.
+        def group
+          render_with_template(template: "poetry/ui/kbd/group_preview")
+        end
       end
     end
   end

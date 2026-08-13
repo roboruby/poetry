@@ -10234,6 +10234,7 @@ helpers:
   poetry_input_group_textarea: {}
   poetry_item_group: {}
   poetry_item_separator: {}
+  poetry_kbd_group: {}
   poetry_message_group: {}
   poetry_message_scroller_item: {}
   poetry_native_select_optgroup: {}
@@ -10488,6 +10489,7 @@ helper_args:
   poetry_item_group: 0
   poetry_item_separator: 0
   poetry_kbd: 0
+  poetry_kbd_group: 0
   poetry_label: 0
   poetry_link: 0
   poetry_marker: 0

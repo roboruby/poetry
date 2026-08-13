@@ -147,6 +147,13 @@ module Poetry
         render(Poetry::Ui::Kbd::Component.new(**), &)
       end
 
+      # A run of key chords (upstream KbdGroup): a wrapping <kbd> carrying
+      # the themed gap - poetry_kbd children render inside.
+      def poetry_kbd_group(**attrs, &block)
+        classes = ["cn-kbd-group inline-flex items-center", attrs.delete(:class)].compact.join(" ")
+        content_tag(:kbd, capture(&block), class: classes, "data-slot": "kbd-group", **attrs)
+      end
+
       # ratio: is a string fraction ("16/9") - Ruby's 16/9 would truncate.
       def poetry_aspect_ratio(**, &)
         render(Poetry::Ui::AspectRatio::Component.new(**), &)
