@@ -1,9 +1,0 @@
-<%# dir: :rtl flips the submenu side (the chevron mirrors via ml-auto). %>
-<%= poetry_dropdown_menu(dir: :rtl) do |menu| %>
-  <% menu.with_trigger(variant: :outline) { "فتح" } %>
-  <% menu.with_item { "الملف الشخصي" } %>
-  <% menu.with_sub do |sub| %>
-    <% sub.with_trigger { "المزيد" } %>
-    <% sub.with_item { "استيراد" } %>
-  <% end %>
-<% end %>
