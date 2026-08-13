@@ -1,0 +1,9 @@
+<%# The action corner (with_action) holding a call-to-action - upstream's
+    alert-action demo verbatim. %>
+<%= poetry_alert(class: "w-full max-w-md") do |alert| %>
+  <% alert.with_title { "Dark mode is now available" } %>
+  <% alert.with_action do %>
+    <%= poetry_button(size: :xs) { "Enable" } %>
+  <% end %>
+  Enable it under your profile settings to get started.
+<% end %>

@@ -270,6 +270,12 @@
     "path": "/components/alert#default"
   },
   {
+    "title": "Action",
+    "page": "Alert",
+    "section": "components",
+    "path": "/components/alert#action"
+  },
+  {
     "title": "Custom colors",
     "page": "Alert",
     "section": "components",
