@@ -40,6 +40,10 @@
   @apply grid grid-cols-[0_1fr] items-start gap-0.5 rounded-none border px-2.5 py-2 text-left text-xs has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 [&>svg]:size-4 [&>svg]:translate-y-0 [&>svg]:text-current;
 }
 
+.cn-alert-action {
+  @apply absolute top-[calc(--spacing(1.25))] right-[calc(--spacing(1.25))];
+}
+
 .cn-alert-title {
   @apply col-start-2 font-medium;
 }

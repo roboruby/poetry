@@ -37,6 +37,10 @@
   @apply grid grid-cols-[0_1fr] items-start gap-1 border bg-background px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current relative after:absolute after:-inset-y-px after:-left-px after:w-0.5;
 }
 
+.cn-alert-action {
+  @apply absolute top-2.5 right-3;
+}
+
 .cn-alert-title {
   @apply col-start-2 text-sm font-semibold;
 }
