@@ -55,7 +55,7 @@ module Poetry
         element :sr_only, "sr-only"
 
         # The source's inline SearchIcon classes, named per part.
-        element :search_icon, "size-4 shrink-0 opacity-50"
+        element :search_icon, "cn-command-input-icon"
 
         # CommandDialog: the DialogContent override (cross-component theme
         # section - p-0 must beat cn-dialog-content's p-6 in-layer).

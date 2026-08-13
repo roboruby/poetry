@@ -18,7 +18,7 @@ module Poetry
                         "caret-transparent outline-none selection:bg-transparent " \
                         "disabled:cursor-not-allowed"
 
-        element :group, "flex items-center"
+        element :group, "cn-input-otp-group flex items-center"
 
         element :slot, "cn-input-otp-slot relative flex items-center justify-center " \
                        "data-[active=true]:z-10"

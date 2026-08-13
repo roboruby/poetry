@@ -1,0 +1,97 @@
+# Hook-coverage manifest (the 2026-08-13 sweep's verdicts as data).
+# css:verify_hooks holds config/upstream_hooks.txt (the committed upstream
+# inventory - refresh via script/hook_coverage/refresh_snapshot.rb at delta
+# checks) against the classes poetry markup emits. Every upstream hook must
+# be emitted, interpolated, or accounted for here; every poetry theme rule
+# must be worn. Full verdict ledger: the vault's
+# "Tasks/shadcn hook coverage sweep" note.
+
+# Emitted via string interpolation - literal grep cannot see these; the
+# finite expansions are listed so both sweep directions resolve them.
+interpolated:
+  - cn-carousel-previous
+  - cn-carousel-next
+  - cn-select-scroll-up-button
+  - cn-select-scroll-down-button
+  - cn-menubar-checkbox-item-indicator
+  - cn-menubar-radio-item-indicator
+  - cn-sidebar-menu-button-variant-default
+  - cn-sidebar-menu-button-variant-outline
+
+# Not applicable by construction.
+not_applicable:
+  rtl-hold: # the standing RTL pass - logical-property variants
+    - cn-combobox-content-logical
+    - cn-context-menu-content-logical
+    - cn-dropdown-menu-content-logical
+    - cn-hover-card-content-logical
+    - cn-menubar-content-logical
+    - cn-popover-content-logical
+    - cn-select-content-logical
+    - cn-tooltip-arrow-logical
+    - cn-tooltip-content-logical
+  native-dialog-backdrop: # poetry overlays are real <dialog>s; ::backdrop is the scrim
+    - cn-alert-dialog-overlay
+    - cn-dialog-overlay
+    - cn-drawer-overlay
+    - cn-sheet-overlay
+  variant-only: # worn by no base-variant component - the shared upstream
+    # style files also serve the aria/radix variants
+    - cn-combobox-item-text
+    - cn-context-menu-sub-content
+    - cn-dropdown-menu-subcontent
+    - cn-progress
+    - cn-separator
+    - cn-separator-horizontal
+    - cn-separator-vertical
+  divergence-combobox: # poetry combobox renders the Command engine anatomy
+    # by documented design (composition, not nesting)
+    - cn-combobox-empty
+    - cn-combobox-item
+    - cn-combobox-label
+    - cn-combobox-list
+    - cn-combobox-separator
+    - cn-combobox-trigger-icon
+  divergence-bubble-axes: # side/align exist as slot options positioned via
+    # data-attr variants; upstream's translate makes the pill a containing
+    # block for fixed descendants (breaks composed tooltips/popovers)
+    - cn-bubble-reactions-align-start
+    - cn-bubble-reactions-align-end
+    - cn-bubble-reactions-side-top
+    - cn-bubble-reactions-side-bottom
+
+# Recorded leads - unemitted today, tracked for focused follow-ups.
+parked:
+  drawer-anatomy-read:
+    - cn-drawer-popup
+    - cn-drawer-header-base
+    - cn-drawer-footer-base
+    - cn-drawer-handle
+  calendar-caption-mapping:
+    - cn-calendar-caption-label
+  nav-menu-indicator-family: # controller support needed (measured indicator)
+    - cn-navigation-menu-indicator
+    - cn-navigation-menu-indicator-arrow
+    - cn-navigation-menu-positioner
+    - cn-navigation-menu-viewport
+# Emitted by a sibling gem - this gate scans poetry-ui sources only.
+emitted_elsewhere:
+  poetry-charts:
+    - cn-chart-tooltip
+
+# Additional recorded divergences surfaced by the gate's first run.
+divergence_lists:
+  # native-scrollbars: the W3 decision (scroll_area/style.rb) - Baseline CSS
+  # scrollbar-width/scrollbar-color replace Base UI's JS scrollbar/thumb.
+  # command-input-group: poetry's command input well IS the wrapper (no
+  # InputGroup nesting inside command).
+  native-scrollbars:
+    - cn-scroll-area-scrollbar
+    - cn-scroll-area-thumb
+  command-input-group: # poetry's command input well IS the wrapper - no
+    # InputGroup nesting inside command (predates the InputGroup component)
+    - cn-command-input-group
+
+# Reverse-direction allowances: poetry theme rules with no emitting markup
+# that are nonetheless correct to keep (none today).
+reverse_allowed: []

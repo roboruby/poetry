@@ -2187,7 +2187,7 @@ components:
     - search_icon
     - dialog_content
     - dialog_overrides
-    capsule: e73d58715288
+    capsule: a37a10969995
     controllers:
     - identifier: poetry--core--command
       targets: []
@@ -4927,7 +4927,7 @@ components:
     - slot
     - caret
     - caret_bar
-    capsule: ed09d64cf39e
+    capsule: 60050e29b0eb
     controllers:
     - identifier: poetry--core--otp
       targets:
