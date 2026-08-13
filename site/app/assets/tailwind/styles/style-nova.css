@@ -110,6 +110,18 @@
   @apply w-fit rounded-xl focus-within:ring-1 focus-within:ring-ring/50;
 }
 
+.cn-attachment-actions {
+  @apply group-data-[orientation=vertical]/attachment:absolute group-data-[orientation=vertical]/attachment:top-3 group-data-[orientation=vertical]/attachment:right-3 relative z-20 group-data-[orientation=vertical]/attachment:gap-1;
+}
+
+.cn-attachment-trigger {
+  @apply absolute inset-0 z-10 outline-none;
+}
+
+.cn-attachment-media-variant-image {
+  @apply opacity-60 group-data-[state=idle]/attachment:opacity-100 group-data-[state=done]/attachment:opacity-100;
+}
+
 .cn-attachment-size-default {
   @apply gap-2 text-sm has-data-[slot=attachment-content]:px-2.5 has-data-[slot=attachment-content]:py-2 has-data-[slot=attachment-media]:p-2;
 }
