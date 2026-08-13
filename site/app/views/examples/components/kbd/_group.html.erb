@@ -2,9 +2,9 @@
     carries the two Kbds. %>
 <p class="text-sm text-muted-foreground">
   Use
-  <span class="inline-flex items-center gap-1">
+  <%= poetry_kbd_group do %>
     <%= poetry_kbd { "Ctrl + B" } %>
     <%= poetry_kbd { "Ctrl + K" } %>
-  </span>
+  <% end %>
   to open the command palette
 </p>

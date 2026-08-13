@@ -913,6 +913,10 @@
   @apply h-5 w-fit min-w-5 gap-1 rounded-sm bg-muted px-1 font-sans text-xs font-medium text-muted-foreground in-data-[slot=tooltip-content]:bg-background/20 in-data-[slot=tooltip-content]:text-background dark:in-data-[slot=tooltip-content]:bg-background/10 [&_svg:not([class*='size-'])]:size-3;
 }
 
+.cn-kbd-group {
+  @apply gap-1;
+}
+
 /* MARK: Label */
 .cn-label {
   @apply gap-2 text-sm font-medium leading-none peer-disabled:opacity-50;
