@@ -1,0 +1,16 @@
+<%= content_tag(:div, **root_attributes.to_attributes) do %>
+  <%= tag.input(**input_attributes, class: Poetry::Ui::Input::Style.css) %>
+  <%= tag.div(**content_attributes) do %>
+    <div data-slot="autocomplete-list" role="listbox" id="<%= list_id %>"
+         class="<%= Poetry::Ui::Command::Style.css(:list) %>"
+         <%= tag.attributes(stimulus_attributes_for(:list)) %>>
+      <% item_models.each_with_index do |item, index| %>
+        <%= tag.div(**item_attributes(item, index)) do %>
+          <span><%= item.label %></span>
+        <% end %>
+      <% end %>
+    </div>
+    <div data-slot="autocomplete-empty" class="<%= Poetry::Ui::Command::Style.css(:empty) %>" hidden
+         <%= tag.attributes(stimulus_attributes_for(:empty)) %>><%= empty_text %></div>
+  <% end %>
+<% end %>

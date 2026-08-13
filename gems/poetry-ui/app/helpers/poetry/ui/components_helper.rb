@@ -171,6 +171,10 @@ module Poetry
       end
 
       # N9 statics. The Avatar's content block is the initials fallback.
+      def poetry_autocomplete(**, &)
+        render(Poetry::Ui::Autocomplete::Component.new(**), &)
+      end
+
       def poetry_avatar(**, &)
         render(Poetry::Ui::Avatar::Component.new(**), &)
       end

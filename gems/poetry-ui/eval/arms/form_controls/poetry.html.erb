@@ -86,3 +86,8 @@
                           accept: ".pdf", hint: "PDF up to 10 MB") %>
   </div>
 </div>
+
+<%= poetry_autocomplete(name: "city", label: "City", placeholder: "Start typing…") do |auto| %>
+  <% auto.with_item(label: "Springfield") %>
+  <% auto.with_item(label: "Spokane") %>
+<% end %>

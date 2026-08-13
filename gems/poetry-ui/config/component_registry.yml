@@ -485,6 +485,175 @@ components:
     - name: attachment-status
       description: sr-only role=status announcement for the in-flight and error states
         (uploading/processing/error)
+  poetry/ui/autocomplete:
+    class_name: Poetry::Ui::Autocomplete::Component
+    identifier: poetry--ui--autocomplete
+    bem_block: poetry-ui-autocomplete
+    styles: []
+    options:
+    - name: empty_text
+      type: string
+      default: No results.
+    - name: id
+      type: string
+    - name: label
+      type: string
+    - name: name
+      type: string
+      required: true
+    - name: open
+      type: boolean
+      default: false
+    - name: open_on_focus
+      type: boolean
+      default: true
+    - name: placeholder
+      type: string
+    - name: value
+      type: string
+    slots: []
+    description: An input that suggests options as you type - the text itself is the
+      value.
+    slot_extras:
+    - item
+    elements:
+    - content
+    capsule: 321d3966b80a
+    controllers:
+    - identifier: poetry--core--autocomplete
+      targets:
+      - content
+      - empty
+      - input
+      - list
+      values:
+      - open
+      - openOnFocus
+      actions:
+      - blurred
+      - focus
+      - input
+      - itemEnter
+      - itemPress
+      - keydown
+      events:
+      - poetry:autocomplete:close
+      - poetry:autocomplete:commit
+      - poetry:autocomplete:open
+    - identifier: poetry--core--popper
+      targets:
+      - anchor
+      - arrow
+      - content
+      values:
+      - align
+      - alignOffset
+      - anchor
+      - anchorPoint
+      - avoidCollisions
+      - side
+      - sideOffset
+      - strategy
+      actions:
+      - anchorPointValueChanged
+      - reposition
+      - setAnchor
+      - setAnchorElement
+      - strategyValueChanged
+      events: []
+    agent_rules:
+    - 'The input IS the value: name: is the param key and free text submits as-is
+      - suggestions are conveniences, not constraints (constrained pick = Combobox).'
+    - 'Items via with_item(label:) - label is what filtering matches and what commit
+      writes; value: overrides the committed text when it differs from the label.'
+    - 'empty_text: renders the no-matches state (hidden while anything matches).'
+    - 'open_on_focus: false waits for typing before suggesting.'
+    - 'Server-side filtering stays yours: render fewer items on re-render - the client
+      filter only narrows what the server sent.'
+    parts:
+    - name: autocomplete
+      description: Root wrapper carrying the controller + popper pair
+    - name: autocomplete-input
+      description: The REAL text input - role=combobox with aria-expanded tracking
+        the popup, the form value itself
+    - name: autocomplete-content
+      description: The popper-positioned popup shell
+      states:
+      - attr: data-open
+        condition: popup visible
+      - attr: data-closed
+        condition: popup hidden (the server-rendered default)
+      - attr: data-empty
+        condition: no item matches the query - the empty state shows
+    - name: autocomplete-list
+      description: role=listbox holding the options
+    - name: autocomplete-item
+      description: One suggestion - role=option; commit writes its label (or value:)
+        into the input
+      states:
+      - attr: data-label
+        condition: always - what filtering matches and commit writes
+      - attr: data-value
+        condition: 'value: given - overrides the committed text'
+      - attr: data-highlighted
+        condition: the keyboard/pointer highlight
+      - attr: data-disabled
+        condition: 'disabled: - skipped by filtering and commit'
+    - name: autocomplete-empty
+      description: The no-matches message (hidden while anything matches)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--autocomplete
+        registers: true
+        values:
+        - name: open_on_focus
+          conditional: if
+      - identifier: poetry--core--popper
+        registers: true
+    - element: input
+      controllers:
+      - identifier: poetry--core--autocomplete
+        targets:
+        - name: input
+        actions:
+        - method: input
+          'on': input
+        - method: focus
+          'on': focus
+        - method: blurred
+          'on': focusout
+        - method: keydown
+          'on': keydown
+      - identifier: poetry--core--popper
+        targets:
+        - name: anchor
+    - element: content
+      controllers:
+      - identifier: poetry--core--autocomplete
+        targets:
+        - name: content
+      - identifier: poetry--core--popper
+        targets:
+        - name: content
+    - element: list
+      controllers:
+      - identifier: poetry--core--autocomplete
+        targets:
+        - name: list
+    - element: empty
+      controllers:
+      - identifier: poetry--core--autocomplete
+        targets:
+        - name: empty
+    - element: item
+      controllers:
+      - identifier: poetry--core--autocomplete
+        actions:
+        - method: itemPress
+          'on': pointerdown
+        - method: itemEnter
+          'on': pointerenter
   poetry/ui/avatar:
     class_name: Poetry::Ui::Avatar::Component
     identifier: poetry--ui--avatar
@@ -10459,6 +10628,7 @@ helper_args:
   poetry_aspect_ratio: 0
   poetry_attachment: 0
   poetry_attachment_group: 0
+  poetry_autocomplete: 0
   poetry_avatar: 0
   poetry_avatar_group: 0
   poetry_avatar_group_count: 0

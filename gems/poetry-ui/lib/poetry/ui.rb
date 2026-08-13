@@ -54,7 +54,7 @@ module Poetry
     }.freeze
 
     SKILL_FAMILIES = {
-      "forms" => %w[button button_group calendar checkbox combobox date_field date_picker field
+      "forms" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker field
                     field_group field_separator fieldset
                     file_input input input_group input_otp label native_select number_field
                     questionnaire radio_group search_field select sensitive_input slider switch textarea time_field

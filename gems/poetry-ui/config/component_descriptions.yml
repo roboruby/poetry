@@ -9,6 +9,7 @@ poetry/ui/alert: A callout that highlights an important inline message.
 poetry/ui/alert_dialog: A modal dialog that interrupts the user and expects a response.
 poetry/ui/aspect_ratio: Locks its content to a fixed width-to-height ratio.
 poetry/ui/attachment: A file or image chip showing its name, type, and size.
+poetry/ui/autocomplete: An input that suggests options as you type - the text itself is the value.
 poetry/ui/avatar: A user's image with an initials fallback.
 poetry/ui/badge: A small count or status descriptor.
 poetry/ui/breadcrumb: Shows the path to the current page as a trail of links.
