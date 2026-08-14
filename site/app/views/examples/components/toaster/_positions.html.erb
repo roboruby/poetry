@@ -1,0 +1,13 @@
+<%# All six position anchors on one canvas - each toaster is its own
+    region (unique id) pinned by position:, each persistent toast names
+    its corner. Real layouts run ONE toaster per page; this canvas just
+    shows where each anchor lands. %>
+<div class="relative h-80 w-full overflow-hidden rounded-lg border contain-content">
+  <% %i[top-left top-center top-right bottom-left bottom-center bottom-right].each do |position| %>
+    <%= poetry_toaster(position: position, id: "toaster-#{position}") do %>
+      <%= poetry_toast(duration: 0) do |toast| %>
+        <% toast.with_title { position.to_s.tr("-", " ").capitalize } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

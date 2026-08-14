@@ -4134,10 +4134,10 @@
     "path": "/components/toaster#default"
   },
   {
-    "title": "Top center",
+    "title": "Positions",
     "page": "Toaster",
     "section": "components",
-    "path": "/components/toaster#top-center"
+    "path": "/components/toaster#positions"
   },
   {
     "title": "Wiring",
