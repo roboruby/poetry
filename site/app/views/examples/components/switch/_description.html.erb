@@ -1,0 +1,10 @@
+<%# The setting row (orientation: :setting): label + description stacked
+    left, switch right on the label line - upstream's content-first
+    horizontal Field. control_attributes threads id + aria-describedby. %>
+<div class="w-full max-w-sm">
+  <%= poetry_field(id: "switch-focus-mode", label_text: "Share across devices",
+                   hint: "Focus is shared across devices, and turns off when you leave the app.",
+                   orientation: :setting) do |field| %>
+    <%= poetry_switch(name: "focus_mode", **field.control_attributes.transform_keys(&:to_sym)) %>
+  <% end %>
+</div>

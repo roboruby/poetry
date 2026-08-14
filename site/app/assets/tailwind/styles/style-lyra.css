@@ -625,6 +625,13 @@
   @apply text-muted-foreground *:[a]:hover:text-foreground text-xs/relaxed *:[a]:underline *:[a]:underline-offset-3;
 }
 
+/* poetry-authored: upstream ships no footer rule for this theme; gap-2
+   mirrors the component's own inline utilities so the hook compiles
+   without a visual delta (css:verify_compiled). */
+.cn-dialog-footer {
+  @apply gap-2;
+}
+
 .cn-dialog-close {
   @apply absolute top-2 right-2;
 }
@@ -1879,4 +1886,12 @@
 .cn-chart-center-subtitle {
   @apply fill-muted-foreground;
 }
+}
+
+/* MARK: Menu translucent (shared, LAST - wins the content bg cascade).
+   Upstream style-lyra.css:1426 ships this rule WITHOUT its trailing
+   semicolon (the ledgered parse quirk) - transcribed here with the
+   semicolon restored; body is byte-identical otherwise. */
+.cn-menu-translucent {
+  @apply animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-foreground/10 **:data-[slot$=-item]:data-highlighted:bg-foreground/10 **:data-[slot$=-separator]:bg-foreground/5 **:data-[slot$=-trigger]:focus:bg-foreground/10 **:data-[slot$=-trigger]:aria-expanded:bg-foreground/10! **:data-[variant=destructive]:focus:bg-foreground/10! **:data-[variant=destructive]:text-accent-foreground! **:data-[variant=destructive]:**:text-accent-foreground!;
 }

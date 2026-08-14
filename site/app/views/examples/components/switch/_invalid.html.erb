@@ -1,13 +1,11 @@
-<%# Invalid: error: on the Field flips data-invalid=true and routes the
-    switch's aria-invalid + aria-describedby to the red message. The switch
-    itself stays strictly binary - the Field owns the whole validation skin,
+<%# Invalid as a setting row (upstream's switch-invalid arrangement):
+    error: flips data-invalid and routes the switch's aria-invalid +
+    aria-describedby to the message - the Field owns the validation skin,
     so there is never a bare red <p> hand-wired to the control. %>
-<div class="w-80">
-  <%= poetry_field(id: "switch-terms",
-                   label_text: "Accept the terms of service",
-                   error: "You must accept the terms before continuing.",
-                   required: true, orientation: :horizontal) do |field| %>
-    <%= poetry_switch(name: "accept_terms",
-                      **field.control_attributes.transform_keys(&:to_sym)) %>
+<div class="w-full max-w-sm">
+  <%= poetry_field(id: "switch-terms", label_text: "Accept terms and conditions",
+                   error: "You must accept the terms and conditions to continue.",
+                   orientation: :setting) do |field| %>
+    <%= poetry_switch(name: "accept_terms", **field.control_attributes.transform_keys(&:to_sym)) %>
   <% end %>
 </div>

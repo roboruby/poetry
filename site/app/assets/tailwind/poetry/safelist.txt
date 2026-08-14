@@ -41,8 +41,11 @@
 [&+[data-slot=item-content]]:flex-none
 [&::-webkit-search-cancel-button]:hidden
 [&::-webkit-search-decoration]:hidden
+[&>[data-slot=field-error]]:col-start-1
 [&>[data-slot=field-error]]:col-start-2
+[&>[data-slot=field-hint]]:col-start-1
 [&>[data-slot=field-hint]]:col-start-2
+[&>[data-slot=label]]:col-start-1
 [&>[data-slot=label]]:col-start-2
 [&>[data-slot=label]]:row-start-1
 [&>[data-slot=select-trigger]:not([class*='w-'])]:w-fit
@@ -445,6 +448,7 @@ cn-input-group-textarea
 cn-input-otp
 cn-input-otp-caret-line
 cn-input-otp-group
+cn-input-otp-separator
 cn-input-otp-slot
 cn-item
 cn-item-actions
@@ -800,6 +804,7 @@ grid
 grid-cols-1
 grid-cols-2
 grid-cols-3
+grid-cols-[1fr_auto]
 grid-cols-[auto_1fr]
 grid-cols-[minmax(0,1fr)_auto_auto]
 grid-rows-[auto_1fr]

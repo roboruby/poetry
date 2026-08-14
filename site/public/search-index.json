@@ -3798,6 +3798,12 @@
     "path": "/components/switch#card"
   },
   {
+    "title": "Description",
+    "page": "Switch",
+    "section": "components",
+    "path": "/components/switch#description"
+  },
+  {
     "title": "In a field",
     "page": "Switch",
     "section": "components",
@@ -3808,12 +3814,6 @@
     "page": "Switch",
     "section": "components",
     "path": "/components/switch#invalid"
-  },
-  {
-    "title": "Rtl",
-    "page": "Switch",
-    "section": "components",
-    "path": "/components/switch#rtl"
   },
   {
     "title": "Sizes",

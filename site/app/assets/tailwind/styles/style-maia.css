@@ -1650,6 +1650,12 @@
   @apply h-6 gap-1 px-1.5 [&>svg:not([class*='size-'])]:size-3.5;
 }
 
+/* poetry-authored: upstream themes this hook only in lyra/mira (gap-1
+   both); the class must compile in every theme (css:verify_compiled). */
+.cn-input-group-button-size-sm {
+  @apply gap-1;
+}
+
 .cn-input-group-button-size-icon-xs {
   @apply size-6 p-0 has-[>svg]:p-0;
 }
