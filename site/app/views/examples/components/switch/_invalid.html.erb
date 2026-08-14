@@ -1,11 +1,11 @@
 <%# Invalid as a setting row (upstream's switch-invalid arrangement):
-    error: flips data-invalid and routes the switch's aria-invalid +
-    aria-describedby to the message - the Field owns the validation skin,
-    so there is never a bare red <p> hand-wired to the control. %>
+    invalid: flips data-invalid + the switch's aria-invalid while the
+    requirement copy stays a MUTED hint (upstream keeps FieldDescription
+    muted - only the label and control wear the destructive skin). %>
 <div class="w-full max-w-sm">
   <%= poetry_field(id: "switch-terms", label_text: "Accept terms and conditions",
-                   error: "You must accept the terms and conditions to continue.",
-                   orientation: :setting) do |field| %>
+                   hint: "You must accept the terms and conditions to continue.",
+                   invalid: true, orientation: :setting) do |field| %>
     <%= poetry_switch(name: "accept_terms", **field.control_attributes.transform_keys(&:to_sym)) %>
   <% end %>
 </div>
