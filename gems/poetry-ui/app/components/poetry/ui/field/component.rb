@@ -21,7 +21,7 @@ module Poetry
           "recipe (it needs that FieldGroup ancestor to measure against)."
         ].freeze
 
-        ORIENTATIONS = %i[vertical horizontal responsive].freeze
+        ORIENTATIONS = %i[vertical horizontal setting responsive].freeze
 
         # Upstream fieldVariants' orientation axis. Horizontal is the
         # boolean-control pattern: the control lands in the first grid
@@ -56,6 +56,8 @@ module Poetry
                                "as a wrapper-free fragment, so its sibling form store sits " \
                                "directly in the field's DOM (the horizontal boolean-control " \
                                "layout)"
+        part "switch-input", "A nested Switch's hidden native input - the same wrapper-free " \
+                             "fragment escape as checkbox-input (the setting-row layout)"
 
         def hint_id = "#{id}-hint"
         def error_id = "#{id}-error"

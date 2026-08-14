@@ -28,6 +28,17 @@ module Poetry
                       input_options: { type: "email", name: "work_email" })
         end
 
+        # The SETTING ROW: label + hint stacked left, control right and
+        # centered on the label line (upstream's content-first horizontal
+        # Field - the switch-description pattern).
+        def setting_with_switch
+          render_with(component: Component.new(id: "field-share", label_text: "Share across devices",
+                                               hint: "Focus is shared across devices, and turns " \
+                                                     "off when you leave the app.",
+                                               orientation: :setting),
+                      switch_options: { name: "share" })
+        end
+
         # The container-driven layout: stacked by default, label-left /
         # control-right once the FieldGroup container passes the md mark
         # (the sidecar wraps this one in the FieldGroup @container scope).

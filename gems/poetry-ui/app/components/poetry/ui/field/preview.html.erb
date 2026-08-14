@@ -7,6 +7,9 @@
     <% if local_assigns[:checkbox_options] %>
       <%= render Poetry::Ui::Checkbox::Component.new(**checkbox_options,
                                                      **field.control_attributes.transform_keys(&:to_sym)) %>
+    <% elsif local_assigns[:switch_options] %>
+      <%= render Poetry::Ui::Switch::Component.new(**switch_options,
+                                                   **field.control_attributes.transform_keys(&:to_sym)) %>
     <% else %>
       <%= render Poetry::Ui::Input::Component.new(**input_options,
                                                   **field.control_attributes.transform_keys(&:to_sym)) %>

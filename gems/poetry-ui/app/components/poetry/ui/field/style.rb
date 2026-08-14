@@ -22,6 +22,12 @@ module Poetry
           horizontal: "cn-field-orientation-horizontal grid-cols-[auto_1fr] items-center " \
                       "[&>[data-slot=label]]:col-start-2 [&>[data-slot=label]]:row-start-1 " \
                       "[&>[data-slot=field-hint]]:col-start-2 [&>[data-slot=field-error]]:col-start-2",
+          # The SETTING ROW (label + hint left, control right - upstream's
+          # content-first horizontal Field): the horizontal treatment
+          # mirrored, control auto-places beside the label line.
+          setting: "cn-field-orientation-horizontal grid-cols-[1fr_auto] items-center " \
+                   "[&>[data-slot=label]]:col-start-1 [&>[data-slot=label]]:row-start-1 " \
+                   "[&>[data-slot=field-hint]]:col-start-1 [&>[data-slot=field-error]]:col-start-1",
           # Horizontal mirrored and container-gated: stacked below the
           # FieldGroup's md mark; above it the label + hint pair stacks
           # tight in column 1 (the theme narrows the row gap to its

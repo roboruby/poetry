@@ -4437,6 +4437,7 @@ components:
       variants:
       - vertical
       - horizontal
+      - setting
       - responsive
       default: vertical
       required: true
@@ -4461,7 +4462,7 @@ components:
     elements:
     - hint
     - error
-    capsule: 1aaa37ea0a25
+    capsule: a9242109ee53
     agent_rules:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
@@ -4487,6 +4488,7 @@ components:
         values:
         - vertical
         - horizontal
+        - setting
         - responsive
     - name: field-hint
       description: The hint <p> - its id lands in the control's aria-describedby
@@ -4497,6 +4499,9 @@ components:
       description: A nested Checkbox's hidden native input - the toggle renders as
         a wrapper-free fragment, so its sibling form store sits directly in the field's
         DOM (the horizontal boolean-control layout)
+    - name: switch-input
+      description: A nested Switch's hidden native input - the same wrapper-free fragment
+        escape as checkbox-input (the setting-row layout)
   poetry/ui/field_group:
     class_name: Poetry::Ui::FieldGroup::Component
     identifier: poetry--ui--field_group

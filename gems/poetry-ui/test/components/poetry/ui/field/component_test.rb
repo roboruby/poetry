@@ -42,10 +42,25 @@ module Poetry
                        "the grid reorders visually, never the DOM"
         end
 
+        def test_setting_mirrors_horizontal_with_the_control_on_the_right
+          root = doc(render_field(orientation: :setting)).at_css("[data-slot=field]")
+
+          assert_equal "setting", root["data-orientation"]
+          # Same themed treatment as horizontal (gap etc.) - the mirror is
+          # pure structure, so no new theme hook exists for it.
+          assert_includes root["class"], "cn-field-orientation-horizontal"
+          assert_includes root["class"], "grid-cols-[1fr_auto]"
+          # Label + hint pin LEFT; the control auto-places into column 2 on
+          # the label line (upstream's content-first horizontal Field).
+          assert_includes root["class"], "[&>[data-slot=label]]:col-start-1"
+          assert_includes root["class"], "[&>[data-slot=field-hint]]:col-start-1"
+          assert_includes root["class"], "[&>[data-slot=field-error]]:col-start-1"
+        end
+
         def test_orientation_is_a_registry_surfaced_style
           orientation = Component.prop_definitions[:styles].find { |style| style[:name] == :orientation }
 
-          assert_equal %i[vertical horizontal responsive], orientation[:variants]
+          assert_equal %i[vertical horizontal setting responsive], orientation[:variants]
           assert_equal :vertical, orientation[:default]
         end
 
