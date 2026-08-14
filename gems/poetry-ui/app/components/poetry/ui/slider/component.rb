@@ -227,9 +227,16 @@ module Poetry
         end
 
         def anchor_attributes(index)
-          anchor = range? && index.zero? ? :anchor_start : :anchor_end
-          { class: classnames(css(:anchor), css(anchor)), "data-slot" => "slider-anchor",
-            "data-orientation" => orientation }
+          anchor = if range? && index.zero? then :anchor_start
+                   elsif index == thumb_values.length - 1 then :anchor_end
+                   else :anchor_mid
+                   end
+          attrs = { class: classnames(css(:anchor), css(anchor)), "data-slot" => "slider-anchor",
+                    "data-orientation" => orientation }
+          if anchor == :anchor_mid
+            attrs[:style] = "--slider-mid: #{number(percent(thumb_values[index]).to_f)}%;"
+          end
+          attrs
         end
 
         def thumb_attributes(index)

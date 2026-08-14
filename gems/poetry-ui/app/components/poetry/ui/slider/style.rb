@@ -45,6 +45,11 @@ module Poetry
         # ...the high (or single) thumb at --slider-end.
         element :anchor_end, "data-[orientation=horizontal]:start-[calc(var(--slider-end)-0.5rem)] " \
                              "data-[orientation=vertical]:bottom-[calc(var(--slider-end)-0.5rem)]"
+
+        # Middle thumbs (N-thumb sliders) carry their own inline
+        # --slider-mid var - two shared vars cannot place N positions.
+        element :anchor_mid, "data-[orientation=horizontal]:start-[calc(var(--slider-mid)-0.5rem)] " \
+                             "data-[orientation=vertical]:bottom-[calc(var(--slider-mid)-0.5rem)]"
       end
     end
   end

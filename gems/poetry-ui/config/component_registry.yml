@@ -8673,7 +8673,8 @@ components:
     - anchor
     - anchor_start
     - anchor_end
-    capsule: cd8572084778
+    - anchor_mid
+    capsule: 6b28ca91b803
     controllers:
     - identifier: poetry--core--slider
       targets:
