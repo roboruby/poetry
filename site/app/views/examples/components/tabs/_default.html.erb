@@ -1,4 +1,27 @@
-<%= poetry_tabs(label: "Account settings", class: "w-full max-w-md") do |tabs| %>
-  <% tabs.with_tab("Account", value: "account") { "Make changes to your account here." } %>
-  <% tabs.with_tab("Password", value: "password") { "Change your password here." } %>
+<%# Upstream's tabs-demo: four sections, each panel a REAL Card
+    (title + description + muted content line). %>
+<% sections = [
+     ["Overview", "overview",
+      "View your key metrics and recent project activity. Track progress across all your active projects.",
+      "You have 12 active projects and 3 pending tasks."],
+     ["Analytics", "analytics",
+      "Track performance and user engagement metrics. Monitor trends and identify growth opportunities.",
+      "Page views are up 25% compared to last month."],
+     ["Reports", "reports",
+      "Generate and download your detailed reports. Export data in multiple formats for analysis.",
+      "You have 5 reports ready and available to export."],
+     ["Settings", "settings",
+      "Manage your account preferences and options. Customize your experience to fit your needs.",
+      "Configure notifications, security, and themes."]
+   ] %>
+<%= poetry_tabs(label: "Project sections", class: "w-[400px]") do |tabs| %>
+  <% sections.each do |title, value, description, line| %>
+    <% tabs.with_tab(title, value: value) do %>
+      <%= poetry_card do |card| %>
+        <% card.with_title { title } %>
+        <% card.with_description { description } %>
+        <span class="text-sm text-muted-foreground"><%= line %></span>
+      <% end %>
+    <% end %>
+  <% end %>
 <% end %>
