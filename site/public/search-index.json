@@ -3708,6 +3708,18 @@
     "path": "/components/spinner#default"
   },
   {
+    "title": "Button",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#button"
+  },
+  {
+    "title": "Custom",
+    "page": "Spinner",
+    "section": "components",
+    "path": "/components/spinner#custom"
+  },
+  {
     "title": "Empty state",
     "page": "Spinner",
     "section": "components",
@@ -3726,10 +3738,10 @@
     "path": "/components/spinner#in-input-group"
   },
   {
-    "title": "Large",
+    "title": "Size",
     "page": "Spinner",
     "section": "components",
-    "path": "/components/spinner#large"
+    "path": "/components/spinner#size"
   },
   {
     "title": "With context label",

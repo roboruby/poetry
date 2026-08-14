@@ -1,0 +1,7 @@
+<%# Any icon becomes a spinner: animate-spin + the status role and an
+    accessible name are the whole contract (upstream builds theirs from
+    the segmented loader glyph). %>
+<div class="flex items-center gap-4">
+  <%= poetry_icon(name: :loader, role: "status", "aria-label": "Loading",
+                  class: "size-4 animate-spin") %>
+</div>

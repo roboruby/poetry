@@ -1,15 +1,20 @@
-<%# A pending validation: the spinner sits in the leading addon while the
-    control stays borderless, so the group keeps a single focus ring through
-    the wait. A muted caption at the trailing edge names what is happening. %>
-<div class="w-80">
-  <%= poetry_label(for_id: "spinner-input-group-coupon", class: "sr-only") { "Coupon code" } %>
+<%# Upstream's pair: a waiting message input with the trailing spinner,
+    and a textarea whose block-end rail pairs the validating state with
+    the send action. %>
+<div class="flex w-full max-w-md flex-col gap-4">
   <%= poetry_input_group do %>
-    <%= poetry_input_group_addon do %>
-      <%= poetry_spinner(label: "Validating coupon") %>
-    <% end %>
-    <%= poetry_input_group_input(id: "spinner-input-group-coupon", name: "coupon", value: "SPRING20") %>
+    <%= poetry_input_group_input(name: "message", placeholder: "Send a message...", disabled: true) %>
     <%= poetry_input_group_addon(align: :"inline-end") do %>
-      <%= poetry_input_group_text { "Validating…" } %>
+      <%= poetry_spinner(label: "Sending") %>
+    <% end %>
+  <% end %>
+  <%= poetry_input_group do %>
+    <%= poetry_input_group_textarea(name: "notes", placeholder: "Autosaving draft...", disabled: true) %>
+    <%= poetry_input_group_addon(align: :"block-end") do %>
+      <%= poetry_spinner(label: "Validating") %> Validating...
+      <%= poetry_input_group_button(label: "Send", class: "ml-auto", variant: :default) do %>
+        <%= poetry_icon(name: :"arrow-up") %>
+      <% end %>
     <% end %>
   <% end %>
 </div>
