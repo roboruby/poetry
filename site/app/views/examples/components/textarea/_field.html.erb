@@ -1,10 +1,10 @@
-<%# Upstream's textarea-field demo: the Field trio - label, textarea,
-    description (poetry's hint renders below the control, the same order
-    upstream's own Field-page demo composes; aria-describedby is wired
-    through control_attributes either way). %>
+<%# Upstream's textarea-field demo: label, description, then the control -
+    hint_position: :above keeps the guidance visible before a tall
+    textarea; aria-describedby is wired through control_attributes
+    either way. %>
 <div class="w-full max-w-sm">
   <%= poetry_field(id: "textarea-field-message", label_text: "Message",
-                   hint: "Enter your message below.") do |field| %>
+                   hint: "Enter your message below.", hint_position: :above) do |field| %>
     <%= poetry_textarea(name: "message", placeholder: "Type your message here.",
                         **field.control_attributes.transform_keys(&:to_sym)) %>
   <% end %>
