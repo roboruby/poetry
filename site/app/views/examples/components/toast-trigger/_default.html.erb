@@ -1,0 +1,16 @@
+<%# The stamp pattern end-to-end: the trigger, the <template> holding one
+    rendered toast (byte-for-byte what a Turbo Stream would append), and
+    the viewport region it lands in. duration: auto-dismisses. %>
+<div>
+  <%= poetry_toast_trigger(template: "trigger-demo-toast",
+                           toaster: "toaster-trigger-demo") do %>
+    Show toast
+  <% end %>
+  <template id="trigger-demo-toast">
+    <%= poetry_toast(variant: :success, duration: 4000) do |toast| %>
+      <% toast.with_title { "Stamped into the region" } %>
+      <% toast.with_description { "No server round-trip involved." } %>
+    <% end %>
+  </template>
+  <%= poetry_toaster(id: "toaster-trigger-demo") %>
+</div>

@@ -4116,6 +4116,30 @@
     "path": "/components/toast#wiring"
   },
   {
+    "title": "Toast Trigger",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger"
+  },
+  {
+    "title": "Installation",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#default"
+  },
+  {
+    "title": "Wiring",
+    "page": "Toast Trigger",
+    "section": "components",
+    "path": "/components/toast-trigger#wiring"
+  },
+  {
     "title": "Toaster",
     "page": "Toaster",
     "section": "components",
