@@ -867,6 +867,7 @@ group-data-[upload-state=error]/attachment:text-destructive
 group-data-[upload-state=error]/attachment:text-destructive/80
 group-data-[upload-state=processing]/attachment:shimmer
 group-data-[upload-state=uploading]/attachment:shimmer
+group-data-[variant=line]/tabs-list:data-active:after:opacity-100
 group-data-[viewport=false]/navigation-menu:duration-300
 group-data-[viewport=true]/navigation-menu:h-full
 group-data-checked/questionnaire-choice:block
