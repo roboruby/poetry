@@ -9862,7 +9862,7 @@ components:
     slots: []
     description: A two-state button that can be pressed on or off.
     elements: []
-    capsule: e828a426aa14
+    capsule: a33e1008fa61
     controllers:
     - identifier: poetry--core--pressed
       targets: []
