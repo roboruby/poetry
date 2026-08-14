@@ -4449,6 +4449,9 @@ components:
       default: false
     - name: hint
       type: string
+    - name: hint_position
+      type: symbol
+      default: below
     - name: id
       type: string
       required: true

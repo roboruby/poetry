@@ -6,7 +6,11 @@
       <%= render Poetry::Ui::Label::Component.new(for_id: id).with_content(label_text) %>
     <% end %>
   <% end %>
+  <% hint_tag = capture do %>
+    <% if hint.present? %><p id="<%= hint_id %>" data-slot="field-hint" class="<%= css(:hint) %>"><%= hint %></p><% end %>
+  <% end %>
+  <%= hint_tag if hint_position == :above %>
   <%= content %>
-  <% if hint.present? %><p id="<%= hint_id %>" data-slot="field-hint" class="<%= css(:hint) %>"><%= hint %></p><% end %>
+  <%= hint_tag if hint_position == :below %>
   <% if error.present? %><p id="<%= error_id %>" data-slot="field-error" class="<%= css(:error) %>"><%= error %></p><% end %>
 <% end %>

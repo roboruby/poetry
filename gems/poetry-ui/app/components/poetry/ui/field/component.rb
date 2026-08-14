@@ -33,6 +33,11 @@ module Poetry
         option :id, :string, required: true
         option :label_text, :string
         option :hint, :string
+        # Where the hint renders relative to the control. :above puts the
+        # guidance before a tall control (upstream's textarea-field demo;
+        # instructions-before-input). aria-describedby is identical either
+        # way - this is visual order only.
+        option :hint_position, :symbol, default: :below
         option :error, :string
         # invalid: flips the invalid skin (data-invalid + aria-invalid)
         # WITHOUT an error line - upstream's `<Field data-invalid>` with a
@@ -68,6 +73,15 @@ module Poetry
         def hint_id = "#{id}-hint"
         def error_id = "#{id}-error"
         def label_id = "#{id}-label"
+
+        HINT_POSITIONS = %i[below above].freeze
+
+        def before_render
+          return if HINT_POSITIONS.include?(hint_position)
+
+          raise ArgumentError, "Field hint_position: #{hint_position.inspect} must be one of " \
+                               "#{HINT_POSITIONS.inspect}"
+        end
 
         def invalid? = invalid || error.present?
 

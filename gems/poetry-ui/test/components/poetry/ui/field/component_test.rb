@@ -42,6 +42,22 @@ module Poetry
                        "the grid reorders visually, never the DOM"
         end
 
+        def test_hint_position_above_moves_the_guidance_before_the_control
+          root = doc(render_field(hint_position: :above)).at_css("[data-slot=field]")
+
+          slots = root.element_children.map { |el| el["data-slot"] || el.name }
+
+          assert_equal "field-hint", slots[1], "hint renders between label and control: #{slots.inspect}"
+          # The aria contract is untouched - visual order only.
+          assert root.at_css("[data-slot=field-hint][id]")
+        end
+
+        def test_an_unknown_hint_position_raises
+          error = assert_raises(ArgumentError) { render_field(hint_position: :sideways) }
+
+          assert_match(/hint_position/, error.message)
+        end
+
         def test_invalid_flag_flips_the_skin_without_an_error_line
           component = Component.new(id: "field-terms", label_text: "Accept terms",
                                     hint: "You must accept to continue.", invalid: true)
