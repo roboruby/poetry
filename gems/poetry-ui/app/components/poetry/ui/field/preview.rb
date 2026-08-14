@@ -28,6 +28,14 @@ module Poetry
                       input_options: { type: "email", name: "work_email" })
         end
 
+        # The block-form hint: ERB-authored markup (the link) rides the
+        # same cn-field-description skin and aria-describedby wiring as
+        # the hint: option.
+        def with_hint_link
+          render_with(component: Component.new(id: "field-workspace", label_text: "Workspace"),
+                      input_options: { name: "workspace" }, hint_link: true)
+        end
+
         # The SETTING ROW: label + hint stacked left, control right and
         # centered on the label line (upstream's content-first horizontal
         # Field - the switch-description pattern).

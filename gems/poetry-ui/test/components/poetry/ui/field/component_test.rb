@@ -42,6 +42,57 @@ module Poetry
                        "the grid reorders visually, never the DOM"
         end
 
+        def test_with_hint_block_renders_authored_markup_and_wires_describedby
+          component = Component.new(id: "field-plan", label_text: "Plan")
+          html = render_inline(component) do |field|
+            # ERB authorship produces a SafeBuffer - simulated here; the
+            # captured buffer must render as-is (the link stays a link).
+            field.with_hint { %(Read the <a href="/docs">docs</a>).html_safe }
+            %(<input id="field-plan">).html_safe
+          end
+
+          hint = html.at_css("[data-slot=field-hint]")
+
+          assert_equal "/docs", hint.at_css("a")["href"]
+          assert_includes component.control_attributes["aria-describedby"], component.hint_id
+        end
+
+        def test_with_hint_plain_string_return_is_escaped
+          html = render_inline(Component.new(id: "field-esc", label_text: "Esc")) do |field|
+            field.with_hint { %(<b>bold</b> & <script>alert(1)</script>) }
+            %(<input id="field-esc">).html_safe
+          end
+
+          hint = html.at_css("[data-slot=field-hint]")
+          # capture escapes a plain-String return: no elements survive.
+          assert_nil hint.at_css("b")
+          assert_nil hint.at_css("script")
+          assert_includes hint.text, "<b>bold</b>"
+        end
+
+        def test_with_hint_after_control_attributes_raises
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(id: "field-late", label_text: "Late")) do |field|
+              field.control_attributes
+              field.with_hint { "too late" }
+              ""
+            end
+          end
+
+          assert_match(/before the control/, error.message)
+        end
+
+        def test_with_hint_conflicts_with_hint_option
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new(id: "field-both", label_text: "Both", hint: "text")) do |field|
+              field.with_hint { "also a block" }
+              ""
+            end
+          end
+
+          assert_match(/conflicts with hint:/, error.message)
+        end
+
         def test_hint_position_above_moves_the_guidance_before_the_control
           root = doc(render_field(hint_position: :above)).at_css("[data-slot=field]")
 

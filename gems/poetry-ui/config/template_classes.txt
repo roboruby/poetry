@@ -99,6 +99,8 @@ tracking-tight
 transition-[height]
 transition-[opacity,translate]
 truncate
+underline
+underline-offset-4
 w-64
 w-80
 w-96

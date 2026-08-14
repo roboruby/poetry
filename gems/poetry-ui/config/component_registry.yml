@@ -4465,6 +4465,8 @@ components:
       default: false
     slots: []
     description: Wraps a form control with its label, hint, and validation message.
+    slot_extras:
+    - hint
     elements:
     - hint
     - error
@@ -4473,6 +4475,8 @@ components:
     - Wire the control with field.control_attributes - never hand-write aria-describedby.
     - 'Error text arrives via error: (from model errors upstream) - never a bare red
       <p>.'
+    - 'hint: (escaped string) for pure data; with_hint { } for authored markup (links)
+      - call it BEFORE the control so the hint id lands in aria-describedby.'
     - 'orientation: :horizontal is the boolean-control layout (checkbox/switch left,
       label + hint stacked right) - text inputs and groups stay vertical.'
     - 'orientation: :responsive stacks by default and flips label-left / control-right

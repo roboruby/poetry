@@ -14,6 +14,8 @@ module Poetry
         AGENT_RULES = [
           "Wire the control with field.control_attributes - never hand-write aria-describedby.",
           "Error text arrives via error: (from model errors upstream) - never a bare red <p>.",
+          "hint: (escaped string) for pure data; with_hint { } for authored markup (links) - " \
+          "call it BEFORE the control so the hint id lands in aria-describedby.",
           "orientation: :horizontal is the boolean-control layout (checkbox/switch left, " \
           "label + hint stacked right) - text inputs and groups stay vertical.",
           "orientation: :responsive stacks by default and flips label-left / control-right " \
@@ -77,22 +79,50 @@ module Poetry
         HINT_POSITIONS = %i[below above].freeze
 
         def before_render
+          # Force the content block first: with_hint registers during the
+          # capture, and the template's hint tag must see it.
+          content
+
           return if HINT_POSITIONS.include?(hint_position)
 
           raise ArgumentError, "Field hint_position: #{hint_position.inspect} must be one of " \
                                "#{HINT_POSITIONS.inspect}"
         end
 
+        # Block-form hint for AUTHORED MARKUP (a link in the guidance -
+        # upstream styles [&>a] in cn-field-description). The captured
+        # buffer renders as-is and is never re-blessed: ERB-authored markup
+        # stays markup, every interpolated value escapes normally, and a
+        # plain-String return is escaped by capture. Untrusted data belongs
+        # in hint: (escaped wholesale) or inside <%= %> in the block -
+        # never pre-marked html_safe.
+        def with_hint(&block)
+          raise ArgumentError, "Field with_hint conflicts with hint: - use one or the other" if hint.present?
+          if @control_attributes_issued
+            raise ArgumentError, "Field with_hint must be called before the control renders - " \
+                                 "control_attributes already handed out aria-describedby " \
+                                 "without the hint id"
+          end
+
+          @hint_block = block
+          self
+        end
+
+        attr_reader :hint_block
+
+        def hint_present? = hint.present? || !@hint_block.nil?
+
         def invalid? = invalid || error.present?
 
         # Everything the control inside the field must carry - merged by
         # the FormBuilder (or the caller) into the control's attributes.
         def control_attributes
+          @control_attributes_issued = true
           attrs = { "id" => id }
           attrs["aria-labelledby"] = label_id if group && label_text.present?
           describedby = []
           describedby << error_id if error.present?
-          describedby << hint_id if hint.present?
+          describedby << hint_id if hint_present?
           attrs["aria-describedby"] = describedby.join(" ") if describedby.any?
           attrs["aria-invalid"] = true if invalid?
           # The aria-required-only rule (an external generator): never the native

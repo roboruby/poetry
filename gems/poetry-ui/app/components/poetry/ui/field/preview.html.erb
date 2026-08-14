@@ -4,6 +4,9 @@
     the field in the FieldGroup @container scope responsive fields key on. %>
 <% field_markup = capture do %>
   <%= render component do |field| %>
+    <% if local_assigns[:hint_link] %>
+      <% field.with_hint do %>Short and lowercase - see the <a class="underline underline-offset-4" href="#">naming guide</a>.<% end %>
+    <% end %>
     <% if local_assigns[:checkbox_options] %>
       <%= render Poetry::Ui::Checkbox::Component.new(**checkbox_options,
                                                      **field.control_attributes.transform_keys(&:to_sym)) %>
