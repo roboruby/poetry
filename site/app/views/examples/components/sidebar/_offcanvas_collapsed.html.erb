@@ -1,4 +1,4 @@
-<div class="h-96 w-full overflow-hidden rounded-lg border contain-content">
+<div class="h-96 w-full overflow-hidden rounded-lg border contain-content [&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute">
   <%= poetry_sidebar(collapsible: :offcanvas, open: false) do |shell| %>
     <% shell.with_nav do %>
       <%= poetry_sidebar_header do %>

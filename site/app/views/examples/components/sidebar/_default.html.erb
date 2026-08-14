@@ -3,7 +3,7 @@
     overlay's wiring and the sidebar control wears it - the team
     switcher and account rows open real dropdowns, the nav items are
     real collapsibles, and each project row carries an action menu. %>
-<div class="h-[32rem] w-full overflow-hidden rounded-lg border contain-content">
+<div class="h-[32rem] w-full overflow-hidden rounded-lg border contain-content [&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute">
   <%= poetry_sidebar(collapsible: :icon) do |shell| %>
     <% shell.with_nav do %>
       <%= poetry_sidebar_header do %>
