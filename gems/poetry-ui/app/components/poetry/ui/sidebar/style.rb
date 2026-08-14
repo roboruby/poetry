@@ -106,6 +106,14 @@ module Poetry
                 "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 " \
                 "peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 " \
                 "md:opacity-0"
+        # The 8c surface family - dictionary-held so the safelist harvests
+        # the classes (helper strings are invisible to it).
+        element :group_action_button, "cn-sidebar-group-action"
+        element :input_control, "cn-sidebar-input"
+        element :menu_skeleton, "cn-sidebar-menu-skeleton flex items-center"
+        element :menu_skeleton_icon, "cn-sidebar-menu-skeleton-icon"
+        element :menu_skeleton_text, "cn-sidebar-menu-skeleton-text max-w-(--skeleton-width) flex-1"
+
         element :menu_badge,
                 "cn-sidebar-menu-badge pointer-events-none absolute right-1 flex items-center " \
                 "justify-center select-none group-data-[collapsible=icon]:hidden " \

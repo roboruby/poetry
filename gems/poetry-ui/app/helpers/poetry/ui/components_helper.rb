@@ -307,7 +307,7 @@ module Poetry
       # The group-corner action (upstream SidebarGroupAction): pinned to the
       # group's top-right by the theme.
       def poetry_sidebar_group_action(label: nil, **attrs, &block)
-        classes = ["cn-sidebar-group-action", attrs.delete(:class)].compact.join(" ")
+        classes = [Poetry::Ui::Sidebar::Style.css(:group_action_button), attrs.delete(:class)].compact.join(" ")
         data = { slot: "sidebar-group-action", sidebar: "group-action" }.merge(attrs.delete(:data) || {})
         content_tag(:button, (capture(&block) if block), type: "button", class: classes, data: data,
                                                          "aria-label": label, **attrs)
@@ -316,7 +316,7 @@ module Poetry
       # The sidebar search input (upstream SidebarInput): the themed Input
       # sized for the header well.
       def poetry_sidebar_input(**attrs)
-        classes = ["cn-sidebar-input", attrs.delete(:class)].compact.join(" ")
+        classes = [Poetry::Ui::Sidebar::Style.css(:input_control), attrs.delete(:class)].compact.join(" ")
         render(Poetry::Ui::Input::Component.new(**attrs, class: classes, "data-slot": "sidebar-input"))
       end
 
@@ -324,15 +324,15 @@ module Poetry
       # leading icon block + a text bar with a random-ish width the caller
       # can pin via text_width:.
       def poetry_sidebar_menu_skeleton(icon: false, text_width: "70%", **attrs)
-        classes = ["cn-sidebar-menu-skeleton flex items-center", attrs.delete(:class)].compact.join(" ")
+        classes = [Poetry::Ui::Sidebar::Style.css(:menu_skeleton), attrs.delete(:class)].compact.join(" ")
         data = { slot: "sidebar-menu-skeleton" }.merge(attrs.delete(:data) || {})
         content_tag(:div, class: classes, data: data, **attrs) do
           safe_join([
-            (render(Poetry::Ui::Skeleton::Component.new(class: "cn-sidebar-menu-skeleton-icon",
+            (render(Poetry::Ui::Skeleton::Component.new(class: Poetry::Ui::Sidebar::Style.css(:menu_skeleton_icon),
                                                         "data-slot": "sidebar-menu-skeleton-icon")) if icon),
-            render(Poetry::Ui::Skeleton::Component.new(class: "cn-sidebar-menu-skeleton-text",
+            render(Poetry::Ui::Skeleton::Component.new(class: Poetry::Ui::Sidebar::Style.css(:menu_skeleton_text),
                                                        "data-slot": "sidebar-menu-skeleton-text",
-                                                       style: "max-width: #{text_width}"))
+                                                       style: "--skeleton-width: #{text_width}"))
           ].compact)
         end
       end

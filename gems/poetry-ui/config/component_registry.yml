@@ -8405,13 +8405,18 @@ components:
     - menu_button_default
     - menu_action
     - menu_action_hover
+    - group_action_button
+    - input_control
+    - menu_skeleton
+    - menu_skeleton_icon
+    - menu_skeleton_text
     - menu_badge
     - menu_button_sm
     - menu_button_lg
     - menu_sub
     - menu_sub_item
     - menu_sub_button
-    capsule: 1ae2890a51e9
+    capsule: 0120d6bd54d7
     controllers:
     - identifier: poetry--core--sidebar
       targets:
