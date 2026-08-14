@@ -1,0 +1,38 @@
+<%# Upstream's table-footer demo: the tfoot anatomy in isolation - a
+    colspan Total row closing the ledger. Upstream shows $2,500.00 (its
+    full seven-invoice total) over three sliced rows; the figure here sums
+    the rows actually shown. %>
+<% invoices = [
+     { number: "INV001", status: "Paid", method: "Credit Card", amount: "$250.00" },
+     { number: "INV002", status: "Pending", method: "PayPal", amount: "$150.00" },
+     { number: "INV003", status: "Unpaid", method: "Bank Transfer", amount: "$350.00" }
+   ] %>
+<div class="w-full max-w-2xl">
+  <%= poetry_table do %>
+    <%= poetry_table_caption { "A list of your recent invoices." } %>
+    <%= poetry_table_header do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_head(class: "w-[100px]") { "Invoice" } %>
+        <%= poetry_table_head { "Status" } %>
+        <%= poetry_table_head { "Method" } %>
+        <%= poetry_table_head(class: "text-right") { "Amount" } %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_body do %>
+      <% invoices.each do |invoice| %>
+        <%= poetry_table_row do %>
+          <%= poetry_table_cell(class: "font-medium") { invoice[:number] } %>
+          <%= poetry_table_cell { invoice[:status] } %>
+          <%= poetry_table_cell { invoice[:method] } %>
+          <%= poetry_table_cell(class: "text-right") { invoice[:amount] } %>
+        <% end %>
+      <% end %>
+    <% end %>
+    <%= poetry_table_footer do %>
+      <%= poetry_table_row do %>
+        <%= poetry_table_cell(colspan: 3) { "Total" } %>
+        <%= poetry_table_cell(class: "text-right") { "$750.00" } %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

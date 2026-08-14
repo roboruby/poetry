@@ -3858,6 +3858,12 @@
     "path": "/components/table#actions"
   },
   {
+    "title": "Footer",
+    "page": "Table",
+    "section": "components",
+    "path": "/components/table#footer"
+  },
+  {
     "title": "Minimal",
     "page": "Table",
     "section": "components",
