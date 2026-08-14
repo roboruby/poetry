@@ -1396,7 +1396,7 @@
 }
 
 .cn-sidebar-menu-button-size-lg {
-  @apply h-14 px-3 text-sm;
+  @apply h-14 px-3 text-sm group-data-[collapsible=icon]:p-0!;
 }
 
 .cn-sidebar-menu-action {
