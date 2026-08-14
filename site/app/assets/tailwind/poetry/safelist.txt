@@ -561,10 +561,12 @@ cn-sidebar-content
 cn-sidebar-footer
 cn-sidebar-gap
 cn-sidebar-group
+cn-sidebar-group-action
 cn-sidebar-group-content
 cn-sidebar-group-label
 cn-sidebar-header
 cn-sidebar-inner
+cn-sidebar-input
 cn-sidebar-inset
 cn-sidebar-menu
 cn-sidebar-menu-action
@@ -573,6 +575,9 @@ cn-sidebar-menu-button
 cn-sidebar-menu-button-size-default
 cn-sidebar-menu-button-size-lg
 cn-sidebar-menu-button-size-sm
+cn-sidebar-menu-skeleton
+cn-sidebar-menu-skeleton-icon
+cn-sidebar-menu-skeleton-text
 cn-sidebar-menu-sub
 cn-sidebar-menu-sub-button
 cn-sidebar-mobile
@@ -1025,6 +1030,7 @@ m-auto
 max-h-(--available-height)
 max-h-[calc(100dvh-6rem)]
 max-h-none
+max-w-(--skeleton-width)
 max-w-2xl
 max-w-3xl
 max-w-5xl
