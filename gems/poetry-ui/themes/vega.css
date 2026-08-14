@@ -1398,7 +1398,7 @@
 }
 
 .cn-sidebar-menu-button-size-lg {
-  @apply h-12 text-sm;
+  @apply h-12 text-sm group-data-[collapsible=icon]:p-0!;
 }
 
 .cn-sidebar-menu-action {
