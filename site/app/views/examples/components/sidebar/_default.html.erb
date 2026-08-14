@@ -9,7 +9,7 @@
       <%= poetry_sidebar_header do %>
         <%= poetry_sidebar_menu do %>
           <%= poetry_sidebar_menu_item do %>
-            <%= poetry_dropdown_menu do |menu| %>
+            <%= poetry_dropdown_menu(side: :right, align: :start, side_offset: 4) do |menu| %>
               <% menu.with_trigger(compose: true) do |wiring| %>
                 <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
                   <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
@@ -22,12 +22,24 @@
                   <%= poetry_icon(name: :"chevrons-up-down", class: "ml-auto") %>
                 <% end %>
               <% end %>
-              <% menu.with_label { "Teams" } %>
-              <% menu.with_item(shortcut: "⌘1") { "Acme Inc" } %>
-              <% menu.with_item(shortcut: "⌘2") { "Acme Corp." } %>
-              <% menu.with_item(shortcut: "⌘3") { "Evil Corp." } %>
+              <% menu.with_label(class: "text-xs text-muted-foreground") { "Teams" } %>
+              <% [["Acme Inc", :"gallery-vertical-end", "⌘1"],
+                  ["Acme Corp.", :"audio-waveform", "⌘2"],
+                  ["Evil Corp.", :command, "⌘3"]].each do |team, logo, key| %>
+                <% menu.with_item(shortcut: key, class: "gap-2 p-2") do %>
+                  <div class="flex size-6 items-center justify-center rounded-md border">
+                    <%= poetry_icon(name: logo, class: "size-3.5 shrink-0") %>
+                  </div>
+                  <%= team %>
+                <% end %>
+              <% end %>
               <% menu.with_separator %>
-              <% menu.with_item { "Add team" } %>
+              <% menu.with_item(class: "gap-2 p-2") do %>
+                <div class="flex size-6 items-center justify-center rounded-md border bg-transparent">
+                  <%= poetry_icon(name: :plus, class: "size-4") %>
+                </div>
+                <div class="font-medium text-muted-foreground">Add team</div>
+              <% end %>
             <% end %>
           <% end %>
         <% end %>
