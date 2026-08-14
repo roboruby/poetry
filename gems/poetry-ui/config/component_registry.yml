@@ -9141,6 +9141,8 @@ components:
     agent_rules:
     - 'Declare tabs with with_tab(title, value:) + the panel block (or defer: for
       a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.'
+    - 'panel: false declares a list-only tab (no tabpanel renders, the trigger drops
+      aria-controls) - for demos/pattern shells; real tab sets carry panels.'
     - 'default: picks the server-rendered active tab (the first enabled tab otherwise)
       - the panel is visible without JS.'
     - 'label: names the tablist (aria-label) - recommended whenever the page has several

@@ -74,6 +74,26 @@ module Poetry
           assert locked["data-disabled"], "the roving-focus collection filter"
         end
 
+        def test_panel_false_declares_a_list_only_tab
+          html = render_inline(Component.new) do |tabs|
+            tabs.with_tab("Overview", value: "overview", panel: false)
+            tabs.with_tab("Analytics", value: "analytics", panel: false)
+          end
+
+          # No tabpanel renders and the trigger drops aria-controls (there
+          # is no id to reference) - upstream's list-only demo shape.
+          assert_empty html.css('[role="tabpanel"]')
+          html.css('[role="tab"]').each { |trigger| assert_nil trigger["aria-controls"] }
+        end
+
+        def test_a_tab_without_panel_defer_or_optout_still_raises
+          error = assert_raises(ArgumentError) do
+            render_inline(Component.new) { |tabs| tabs.with_tab("Bare", value: "bare") }
+          end
+
+          assert_match(/panel block, defer:, or panel: false/, error.message)
+        end
+
         def test_the_two_controller_split_is_wired
           html = render_tabs
 

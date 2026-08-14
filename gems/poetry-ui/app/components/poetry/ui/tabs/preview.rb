@@ -21,6 +21,15 @@ module Poetry
           end
         end
 
+        # The list-only arrangement (panel: false): no tabpanels at all,
+        # triggers without aria-controls - upstream's line/disabled demos.
+        def list_only
+          render_component(label: "List-only demo") do |tabs|
+            tabs.with_tab("Home", value: "home", panel: false)
+            tabs.with_tab("Disabled", value: "settings", disabled: true, panel: false)
+          end
+        end
+
         def vertical_with_disabled
           render_component(orientation: :vertical, label: "Project areas") do |tabs|
             tabs.with_tab("General", value: "general") { "Project defaults." }

@@ -73,7 +73,7 @@ module Poetry
           ERB
         end
 
-        assert_match(/requires a panel block or defer:/, error.message)
+        assert_match(/requires a panel block, defer:, or panel: false/, error.message)
       end
 
       def test_hover_card_defer_swaps_the_body_for_a_frame_with_block_as_placeholder

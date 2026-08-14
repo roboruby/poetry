@@ -21,6 +21,8 @@ module Poetry
         AGENT_RULES = [
           "Declare tabs with with_tab(title, value:) + the panel block (or defer: for a " \
           "lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.",
+          "panel: false declares a list-only tab (no tabpanel renders, the trigger drops " \
+          "aria-controls) - for demos/pattern shells; real tab sets carry panels.",
           "default: picks the server-rendered active tab (the first enabled tab otherwise) - the " \
           "panel is visible without JS.",
           "label: names the tablist (aria-label) - recommended whenever the page has several tab sets.",
@@ -51,7 +53,7 @@ module Poetry
           end
         end
 
-        Tab = Data.define(:title, :value, :disabled, :panel, :defer)
+        Tab = Data.define(:title, :value, :disabled, :panel, :defer, :panel_less)
 
         option :default, :string
         option :label, :string
@@ -86,10 +88,17 @@ module Poetry
                "data-value" => "the owning tab's value"
              }
 
-        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, &panel|
-          raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block or defer:" unless panel || defer
+        # panel: false opts a tab out of having a panel AT ALL (upstream's
+        # list-only demos - tabs-line, tabs-disabled): no tabpanel renders
+        # and the trigger drops aria-controls. The raise still guards the
+        # accidental case - list-only is a declaration, never a default.
+        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
+          unless block || defer || panel == false
+            raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
+          end
 
-          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: panel, defer: defer)
+          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: block,
+                              defer: defer, panel_less: panel == false)
           nil
         }
 
@@ -157,10 +166,11 @@ module Poetry
             "type" => "button", "role" => "tab", "id" => trigger_id(tab),
             "data-slot" => "tabs-trigger", "data-value" => tab.value,
             "data-poetry-collection-item" => "",
-            "aria-selected" => active?(tab).to_s, "aria-controls" => panel_id(tab),
+            "aria-selected" => active?(tab).to_s,
             "tabindex" => active?(tab) ? "0" : "-1",
             "class" => css(:trigger)
           }.merge(stimulus_attributes_for(:trigger))
+          attrs["aria-controls"] = panel_id(tab) unless tab.panel_less
           attrs["data-active"] = "" if active?(tab)
           if tab.disabled
             attrs["disabled"] = true
