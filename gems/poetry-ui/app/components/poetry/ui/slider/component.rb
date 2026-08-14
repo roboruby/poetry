@@ -293,8 +293,8 @@ module Poetry
 
           if values.present?
             list = thumb_values
-            raise ArgumentError, "Slider values: takes exactly [low, high]" unless list.length == 2
-            raise ArgumentError, "Slider values: must be sorted [low, high]" unless list.first <= list.last
+            raise ArgumentError, "Slider values: takes two or more thumbs" unless list.length >= 2
+            raise ArgumentError, "Slider values: must be sorted ascending" unless list.each_cons(2).all? { |a, b| a <= b }
           end
           return if thumb_values.all? { |item| item.between?(min, max) }
 
@@ -306,9 +306,9 @@ module Poetry
         def validate_labels!
           if range?
             labels = Array(label)
-            return if labels.length == 2 && labels.all?(&:present?)
+            return if labels.length == thumb_values.length && labels.all?(&:present?)
 
-            raise ArgumentError, "a range Slider requires TWO distinct thumb names - " \
+            raise ArgumentError, "a multi-thumb Slider requires one distinct name per thumb - " \
                                  "label: ['Minimum price', 'Maximum price']"
           else
             return if Array(label).first.present? || labelled_by.present?
