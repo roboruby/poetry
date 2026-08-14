@@ -8,5 +8,5 @@
   <% end %>
   <%= content %>
   <% if hint.present? %><p id="<%= hint_id %>" data-slot="field-hint" class="<%= css(:hint) %>"><%= hint %></p><% end %>
-  <% if invalid? %><p id="<%= error_id %>" data-slot="field-error" class="<%= css(:error) %>"><%= error %></p><% end %>
+  <% if error.present? %><p id="<%= error_id %>" data-slot="field-error" class="<%= css(:error) %>"><%= error %></p><% end %>
 <% end %>

@@ -34,6 +34,11 @@ module Poetry
         option :label_text, :string
         option :hint, :string
         option :error, :string
+        # invalid: flips the invalid skin (data-invalid + aria-invalid)
+        # WITHOUT an error line - upstream's `<Field data-invalid>` with a
+        # muted FieldDescription (the switch-invalid demo). error: implies
+        # it; use invalid: alone when the hint copy IS the requirement.
+        option :invalid, :boolean, default: false
         option :required, :boolean, default: false
         # group: the control is a role-bearing <div> (RadioGroup, Slider) -
         # label[for] would be inert (Chrome flags it), so the label drops
@@ -43,7 +48,8 @@ module Poetry
 
         part "field", "The quartet's grid root - label, control, hint, and error stack inside",
              states: {
-               "data-invalid" => { condition: "always - true when error: is present, else false",
+               "data-invalid" => { condition: "always - true when error: is present " \
+                                              "or invalid: is set, else false",
                                    values: %w[true false] },
                "data-orientation" => { condition: "always - the resolved orientation " \
                                                   "(horizontal is the boolean-control layout)",
@@ -63,7 +69,7 @@ module Poetry
         def error_id = "#{id}-error"
         def label_id = "#{id}-label"
 
-        def invalid? = error.present?
+        def invalid? = invalid || error.present?
 
         # Everything the control inside the field must carry - merged by
         # the FormBuilder (or the caller) into the control's attributes.
@@ -71,7 +77,7 @@ module Poetry
           attrs = { "id" => id }
           attrs["aria-labelledby"] = label_id if group && label_text.present?
           describedby = []
-          describedby << error_id if invalid?
+          describedby << error_id if error.present?
           describedby << hint_id if hint.present?
           attrs["aria-describedby"] = describedby.join(" ") if describedby.any?
           attrs["aria-invalid"] = true if invalid?

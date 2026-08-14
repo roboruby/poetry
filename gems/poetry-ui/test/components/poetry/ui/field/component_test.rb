@@ -42,6 +42,24 @@ module Poetry
                        "the grid reorders visually, never the DOM"
         end
 
+        def test_invalid_flag_flips_the_skin_without_an_error_line
+          component = Component.new(id: "field-terms", label_text: "Accept terms",
+                                    hint: "You must accept to continue.", invalid: true)
+          root = doc(render_inline(component) { "<input id=\"field-terms\">".html_safe }.to_html)
+                 .at_css("[data-slot=field]")
+
+          # Upstream's `<Field data-invalid>` + muted FieldDescription: the
+          # skin flips, the hint stays a hint, no error <p> renders.
+          assert_equal "true", root["data-invalid"]
+          assert_nil root.at_css("[data-slot=field-error]")
+          assert root.at_css("[data-slot=field-hint]")
+          attrs = component.control_attributes
+
+          assert attrs["aria-invalid"]
+          # describedby carries the hint only - never a dangling error id.
+          assert_equal component.hint_id, attrs["aria-describedby"]
+        end
+
         def test_setting_mirrors_horizontal_with_the_control_on_the_right
           root = doc(render_field(orientation: :setting)).at_css("[data-slot=field]")
 

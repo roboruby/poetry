@@ -4452,6 +4452,9 @@ components:
     - name: id
       type: string
       required: true
+    - name: invalid
+      type: boolean
+      default: false
     - name: label_text
       type: string
     - name: required
@@ -4478,7 +4481,8 @@ components:
         inside
       states:
       - attr: data-invalid
-        condition: 'always - true when error: is present, else false'
+        condition: 'always - true when error: is present or invalid: is set, else
+          false'
         values:
         - 'true'
         - 'false'
