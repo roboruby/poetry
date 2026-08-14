@@ -83,7 +83,7 @@
                 <% end %>
                 <%= poetry_dropdown_menu do |menu| %>
                   <% menu.with_trigger(compose: true) do |wiring| %>
-                    <%= poetry_sidebar_menu_action(label: "#{name} options", **wiring) do %>
+                    <%= poetry_sidebar_menu_action(label: "#{name} options", show_on_hover: true, **wiring) do %>
                       <%= poetry_icon(name: :ellipsis) %>
                     <% end %>
                   <% end %>
