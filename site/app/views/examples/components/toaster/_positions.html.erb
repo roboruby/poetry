@@ -1,21 +1,19 @@
-<%# Six live toaster regions pinned to the REAL viewport (no containment
-    wrapper) - each button clones a template toast into its region, the
-    same append turbo_stream.poetry_toast performs; duration: 4000
-    auto-dismisses. Real layouts run ONE toaster per page. %>
-<div data-controller="demo-toast-positions">
+<%# Six live toaster regions pinned to the REAL viewport - each
+    poetry_toast_trigger stamps its <template>'s toast into the region
+    addressed by toaster: (the first-party no-round-trip delivery path);
+    duration: 4000 auto-dismisses. Real layouts run ONE toaster per page. %>
+<div>
   <div class="grid w-fit grid-cols-3 gap-2">
     <% %i[top-left top-center top-right bottom-left bottom-center bottom-right].each do |position| %>
-      <%= poetry_button(variant: :outline,
-                        data: { action: "demo-toast-positions#show",
-                                "demo-toast-positions-position-param": position }) do %>
+      <%= poetry_toast_trigger(template: "toast-demo-#{position}",
+                               toaster: "toaster-demo-#{position}") do %>
         <%= position.to_s.tr("-", " ").capitalize %>
       <% end %>
     <% end %>
   </div>
   <% %i[top-left top-center top-right bottom-left bottom-center bottom-right].each do |position| %>
-    <%= poetry_toaster(position: position, id: "toaster-demo-#{position}",
-                       data: { "demo-toast-positions-target": "toaster", position: position }) %>
-    <template data-demo-toast-positions-target="template" data-position="<%= position %>">
+    <%= poetry_toaster(position: position, id: "toaster-demo-#{position}") %>
+    <template id="toast-demo-<%= position %>">
       <%= poetry_toast(duration: 4000) do |toast| %>
         <% toast.with_title { "#{position.to_s.tr("-", " ").capitalize} toast" } %>
       <% end %>
