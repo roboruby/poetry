@@ -13,7 +13,8 @@ module Poetry
 
       def test_discovers_poetry_ui_components
         expected = %w[poetry/ui/accordion poetry/ui/alert poetry/ui/alert_dialog poetry/ui/aspect_ratio
-                      poetry/ui/attachment poetry/ui/autocomplete poetry/ui/avatar poetry/ui/badge poetry/ui/breadcrumb poetry/ui/bubble
+                      poetry/ui/attachment poetry/ui/autocomplete poetry/ui/avatar poetry/ui/badge
+                      poetry/ui/breadcrumb poetry/ui/bubble
                       poetry/ui/button poetry/ui/button_group poetry/ui/calendar poetry/ui/card poetry/ui/carousel
                       poetry/ui/checkbox poetry/ui/clipboard_text poetry/ui/code_block
                       poetry/ui/collapsible

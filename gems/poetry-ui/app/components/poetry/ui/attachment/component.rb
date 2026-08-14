@@ -61,7 +61,9 @@ module Poetry
           raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
 
           content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
-                            class: css(:media, class: ("cn-attachment-media-variant-image" if variant == :image)), &block)
+                            class: css(:media, class: (if variant == :image
+                                                         "cn-attachment-media-variant-image"
+                                                       end)), &block)
         }
         renders_one :title
         renders_one :description

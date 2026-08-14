@@ -9,10 +9,11 @@
 
 clone = ARGV[0] || File.expand_path("~/Desktop/save/shadcn-ui")
 themes = %w[luma lyra maia mira nova rhea sera vega]
-hooks = themes.flat_map do |t|
+raw = themes.flat_map do |t|
   `cd #{clone} && git show origin/main:apps/v4/registry/styles/style-#{t}.css`
     .scan(/^\s*\.(cn-[a-z0-9-]+)/).flatten
-end.uniq.sort.reject { |h| h.end_with?("-aria") }
+end
+hooks = raw.uniq.sort.reject { |h| h.end_with?("-aria") }
 
-File.write(File.expand_path("../../config/upstream_hooks.txt", __dir__), hooks.join("\n") + "\n")
+File.write(File.expand_path("../../config/upstream_hooks.txt", __dir__), "#{hooks.join("\n")}\n")
 puts "#{hooks.size} hooks -> config/upstream_hooks.txt"

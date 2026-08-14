@@ -23,7 +23,9 @@ module Poetry
         def with_action
           render_component(variant: :default) do |alert|
             alert.with_title { "Update available" }
-            alert.with_action { tag.button("Dismiss", type: "button", class: "text-sm underline-offset-4 hover:underline") }
+            alert.with_action do
+              tag.button("Dismiss", type: "button", class: "text-sm underline-offset-4 hover:underline")
+            end
             "A new version is ready to install."
           end
         end

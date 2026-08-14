@@ -4,7 +4,6 @@ namespace :css do
   desc "Hold upstream's cn-* hook inventory against the classes poetry emits (both directions)"
   task :verify_hooks do
     require "yaml"
-    require "set"
     root = File.expand_path("..", __dir__)
     snapshot = File.readlines(File.join(root, "config/upstream_hooks.txt")).map(&:strip).reject(&:empty?)
     manifest = YAML.safe_load_file(File.join(root, "config/hook_coverage.yml")) || {}
@@ -29,11 +28,17 @@ namespace :css do
     reverse = theme_rules.reject { |h| emitted.include?(h) || interpolated.include?(h) || reverse_allowed.include?(h) }
 
     failures = []
-    failures << "upstream hooks unemitted and unaccounted (fix, park, or record the divergence):\n  #{forward.join("\n  ")}" if forward.any?
-    failures << "poetry theme rules no markup wears (dead rules - remove or allow):\n  #{reverse.join("\n  ")}" if reverse.any?
+    if forward.any?
+      failures << "upstream hooks unemitted and unaccounted (fix, park, or record the " \
+                  "divergence):\n  #{forward.join("\n  ")}"
+    end
+    if reverse.any?
+      failures << "poetry theme rules no markup wears (dead rules - remove or allow):\n  #{reverse.join("\n  ")}"
+    end
 
     if failures.any?
-      abort "css:verify_hooks FAILED\n\n#{failures.join("\n\n")}\n\nManifest: config/hook_coverage.yml · Snapshot: config/upstream_hooks.txt"
+      abort "css:verify_hooks FAILED\n\n#{failures.join("\n\n")}\n\n" \
+            "Manifest: config/hook_coverage.yml · Snapshot: config/upstream_hooks.txt"
     end
 
     puts "hook coverage: #{snapshot.size} upstream hooks accounted " \

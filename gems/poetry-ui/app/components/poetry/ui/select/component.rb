@@ -120,7 +120,8 @@ module Poetry
           attrs["data-text-value"] = @text_value if @text_value
           content_tag(:div, attrs.merge(@extra_attributes)) do
             safe_join([item_indicator,
-                       content_tag(:span, label_html, "data-slot" => "select-item-text", "class" => "cn-select-item-text shrink-0 whitespace-nowrap")])
+                       content_tag(:span, label_html, "data-slot" => "select-item-text",
+                                                      "class" => "cn-select-item-text shrink-0 whitespace-nowrap")])
           end
         end
       end

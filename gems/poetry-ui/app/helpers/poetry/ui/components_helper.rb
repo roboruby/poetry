@@ -149,9 +149,9 @@ module Poetry
 
       # A run of key chords (upstream KbdGroup): a wrapping <kbd> carrying
       # the themed gap - poetry_kbd children render inside.
-      def poetry_kbd_group(**attrs, &block)
+      def poetry_kbd_group(**attrs, &)
         classes = ["cn-kbd-group inline-flex items-center", attrs.delete(:class)].compact.join(" ")
-        content_tag(:kbd, capture(&block), class: classes, "data-slot": "kbd-group", **attrs)
+        content_tag(:kbd, capture(&), class: classes, "data-slot": "kbd-group", **attrs)
       end
 
       # ratio: is a string fraction ("16/9") - Ruby's 16/9 would truncate.
@@ -328,8 +328,10 @@ module Poetry
         data = { slot: "sidebar-menu-skeleton" }.merge(attrs.delete(:data) || {})
         content_tag(:div, class: classes, data: data, **attrs) do
           safe_join([
-            (render(Poetry::Ui::Skeleton::Component.new(class: Poetry::Ui::Sidebar::Style.css(:menu_skeleton_icon),
-                                                        "data-slot": "sidebar-menu-skeleton-icon")) if icon),
+            (if icon
+               render(Poetry::Ui::Skeleton::Component.new(class: Poetry::Ui::Sidebar::Style.css(:menu_skeleton_icon),
+                                                          "data-slot": "sidebar-menu-skeleton-icon"))
+             end),
             render(Poetry::Ui::Skeleton::Component.new(class: Poetry::Ui::Sidebar::Style.css(:menu_skeleton_text),
                                                        "data-slot": "sidebar-menu-skeleton-text",
                                                        style: "--skeleton-width: #{text_width}"))

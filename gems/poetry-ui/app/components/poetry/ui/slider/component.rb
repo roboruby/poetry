@@ -233,9 +233,7 @@ module Poetry
                    end
           attrs = { class: classnames(css(:anchor), css(anchor)), "data-slot" => "slider-anchor",
                     "data-orientation" => orientation }
-          if anchor == :anchor_mid
-            attrs[:style] = "--slider-mid: #{number(percent(thumb_values[index]).to_f)}%;"
-          end
+          attrs[:style] = "--slider-mid: #{number(percent(thumb_values[index]).to_f)}%;" if anchor == :anchor_mid
           attrs
         end
 
@@ -301,7 +299,9 @@ module Poetry
           if values.present?
             list = thumb_values
             raise ArgumentError, "Slider values: takes two or more thumbs" unless list.length >= 2
-            raise ArgumentError, "Slider values: must be sorted ascending" unless list.each_cons(2).all? { |a, b| a <= b }
+            raise ArgumentError, "Slider values: must be sorted ascending" unless list.each_cons(2).all? do |a, b|
+              a <= b
+            end
           end
           return if thumb_values.all? { |item| item.between?(min, max) }
 

@@ -616,6 +616,13 @@
   @apply text-sm text-muted-foreground;
 }
 
+/* poetry-authored: upstream ships no footer rule for this theme; gap-2
+   mirrors the component's own inline utilities so the hook compiles
+   without a visual delta (css:verify_compiled). */
+.cn-dialog-footer {
+  @apply gap-2;
+}
+
 .cn-dialog-close {
   @apply absolute top-4 right-4;
 }
@@ -1646,6 +1653,12 @@
 
 .cn-input-group-button-size-xs {
   @apply h-6 gap-1 rounded-[calc(var(--radius)-5px)] px-1.5 [&>svg:not([class*='size-'])]:size-3.5;
+}
+
+/* poetry-authored: upstream themes this hook only in lyra/mira (gap-1
+   both); the class must compile in every theme (css:verify_compiled). */
+.cn-input-group-button-size-sm {
+  @apply gap-1;
 }
 
 .cn-input-group-button-size-icon-xs {

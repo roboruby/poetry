@@ -129,6 +129,9 @@ end
 
 def poetry_ui_var_scan_sources
   globs = ["app/components/**/*.rb", "app/components/**/*.erb",
+           # Part helpers emit markup too - the sidebar skeleton writes its
+           # --skeleton-width inline style from here (batch 8c).
+           "app/helpers/**/*.rb",
            "lib/generators/poetry/block/templates/*.html.erb"]
   globs.flat_map { |glob| Dir[Poetry::Ui.root.join(glob).to_s] }.map do |file|
     File.read(file).lines.reject { |line| line.strip.start_with?("#", "<%#") }.join
@@ -251,8 +254,12 @@ namespace :css do
         allowlist: %w[cn-font-heading cn-rtl-flip]
       )
 
-      problems = coverage.missing.map { |name| "missing theme rule: #{name}" } +
-                 coverage.orphans.map { |name| "orphan theme rule: #{name}" }
+      # One direction only: dictionary names missing a theme rule. The
+      # orphan direction (theme rules nothing wears) moved to
+      # css:verify_hooks - its scan sees component-code and helper-string
+      # emissions plus the hook_coverage.yml interpolated list, which this
+      # dictionary-only pass cannot (the 14 false orphans of 2026-08-14).
+      problems = coverage.missing.map { |name| "missing theme rule: #{name}" }
       abort "theme coverage (themes/#{theme}.css):\n  #{problems.join("\n  ")}" unless problems.empty?
 
       puts "theme coverage (#{theme}): #{coverage.theme_names.size} cn rules <-> " \
