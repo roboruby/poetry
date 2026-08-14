@@ -962,6 +962,7 @@ group/tabs-list
 group/timeline
 group/timeline-item
 group/toaster
+group/toggle
 group/tree-item
 grow
 grow-0
@@ -1322,6 +1323,7 @@ translate-y-[calc(-50%_-_2px)]
 translate-y-px
 truncate
 typeset
+underline
 underline-offset-4
 w-(--anchor-width)
 w-(--popup-width)

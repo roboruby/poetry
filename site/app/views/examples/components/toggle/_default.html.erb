@@ -1,5 +1,8 @@
-<%# Icon-only toggles require label: - and it must not change with
-    state ("Bookmark", never "Remove bookmark"). %>
-<%= poetry_toggle(label: "Bookmark") do %>
-  <%= poetry_icon(name: :bookmark) %>
+<%# Upstream's toggle-demo: a small outline bookmark toggle whose ICON
+    fills when pressed - the icon reads the root's group/toggle marker
+    (group-aria-pressed/toggle:fill-foreground). label: stays
+    state-invariant per APG. %>
+<%= poetry_toggle(label: "Toggle bookmark", size: :sm, variant: :outline) do %>
+  <%= poetry_icon(name: :bookmark, class: "group-aria-pressed/toggle:fill-foreground") %>
+  Bookmark
 <% end %>

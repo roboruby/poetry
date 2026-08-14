@@ -1,3 +1,11 @@
-<%= poetry_toggle(variant: :outline, label: "Italic") do %>
-  <%= poetry_icon(name: :italic) %>
-<% end %>
+<%# Upstream's toggle-outline pair: visible text is the accessible name. %>
+<div class="flex flex-wrap items-center gap-2">
+  <%= poetry_toggle(variant: :outline, label: "Toggle italic") do %>
+    <%= poetry_icon(name: :italic) %>
+    Italic
+  <% end %>
+  <%= poetry_toggle(variant: :outline, label: "Toggle bold") do %>
+    <%= poetry_icon(name: :bold) %>
+    Bold
+  <% end %>
+</div>
