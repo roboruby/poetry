@@ -1,0 +1,12 @@
+<%# The live readout rides poetry:slider:change (detail.value is the
+    full thumb array) - a docs-only harness mirrors it into the span;
+    in an app the same event drives whatever needs the value. %>
+<div class="mx-auto grid w-full max-w-xs gap-3" data-controller="demo-slider-value"
+     data-action="poetry:slider:change->demo-slider-value#update">
+  <div class="flex items-center justify-between gap-2">
+    <span class="text-sm font-medium">Temperature</span>
+    <span class="text-sm text-muted-foreground" data-demo-slider-value-target="output">0.3, 0.7</span>
+  </div>
+  <%= poetry_slider(name: "temperature", values: [0.3, 0.7], min: 0, max: 1, step: 0.1,
+                    label: ["Low temperature", "High temperature"]) %>
+</div>

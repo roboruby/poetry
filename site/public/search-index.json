@@ -3648,10 +3648,22 @@
     "path": "/components/slider#default"
   },
   {
+    "title": "Controlled",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#controlled"
+  },
+  {
     "title": "Disabled",
     "page": "Slider",
     "section": "components",
     "path": "/components/slider#disabled"
+  },
+  {
+    "title": "Multiple thumbs",
+    "page": "Slider",
+    "section": "components",
+    "path": "/components/slider#multiple-thumbs"
   },
   {
     "title": "Range",
