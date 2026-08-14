@@ -100,15 +100,15 @@
             <% profile = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjM2NmYxIi8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=" %>
             <% menu.with_trigger(compose: true) do |wiring| %>
                 <%= poetry_sidebar_menu_button(size: :lg, **wiring) do %>
-                  <%= poetry_avatar(src: profile, label: "shadcn", class: "size-8 rounded-lg") { "CN" } %>
+                  <%= poetry_avatar(src: profile, label: "poetry", class: "size-8 rounded-lg") { "PO" } %>
                   <div class="grid flex-1 text-left text-sm leading-tight">
-                    <span class="truncate font-semibold">shadcn</span>
-                    <span class="truncate text-xs">m@example.com</span>
+                    <span class="truncate font-semibold">poetry</span>
+                    <span class="truncate text-xs">p@example.com</span>
                   </div>
                   <%= poetry_icon(name: :settings, class: "ml-auto") %>
                 <% end %>
               <% end %>
-              <% menu.with_label { "shadcn — m@example.com" } %>
+              <% menu.with_label { "poetry — p@example.com" } %>
               <% menu.with_separator %>
               <% menu.with_item { "Upgrade to Pro" } %>
               <% menu.with_separator %>
