@@ -8,6 +8,11 @@ module Poetry
       # the trigger's whole text-color cluster moved theme-side TOGETHER
       # (split-side rule: the base dims must lose to data-active in-layer).
       # The after:* line-indicator geometry stays inline except its paint.
+      # The indicator's OPACITY PAIR (rest 0 / active 100) lives fully
+      # inline: the rest state is a utility, so a theme-side activation
+      # sits in layer(base) and loses to it unconditionally - the exact
+      # split-side violation that shipped the line variant with an
+      # invisible indicator until 2026-08-14.
       class Style < Poetry::Core::Style
         base "cn-tabs group/tabs flex data-horizontal:flex-col"
 
@@ -24,7 +29,8 @@ module Poetry
                 "focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none " \
                 "disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 " \
                 "[&_svg]:pointer-events-none [&_svg]:shrink-0 " \
-                "after:absolute after:opacity-0 after:transition-opacity"
+                "after:absolute after:opacity-0 after:transition-opacity " \
+                "group-data-[variant=line]/tabs-list:data-active:after:opacity-100"
 
         element :content, "cn-tabs-content flex-1 outline-none"
       end

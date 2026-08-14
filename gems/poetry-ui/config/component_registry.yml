@@ -9116,7 +9116,7 @@ components:
     - list_line
     - trigger
     - content
-    capsule: 1fb180a97362
+    capsule: 9c382bb49130
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []
