@@ -3978,22 +3978,28 @@
     "path": "/components/textarea#auto-grown"
   },
   {
+    "title": "Button",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#button"
+  },
+  {
     "title": "Disabled",
     "page": "Textarea",
     "section": "components",
     "path": "/components/textarea#disabled"
   },
   {
+    "title": "Field",
+    "page": "Textarea",
+    "section": "components",
+    "path": "/components/textarea#field"
+  },
+  {
     "title": "Invalid",
     "page": "Textarea",
     "section": "components",
     "path": "/components/textarea#invalid"
-  },
-  {
-    "title": "With button",
-    "page": "Textarea",
-    "section": "components",
-    "path": "/components/textarea#with-button"
   },
   {
     "title": "With hint",
