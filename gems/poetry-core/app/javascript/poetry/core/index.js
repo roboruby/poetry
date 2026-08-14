@@ -27,6 +27,7 @@ import TreeController from "@poetry/controllers/tree_controller"
 import TooltipController from "@poetry/controllers/tooltip_controller"
 import HoverCardController from "@poetry/controllers/hover_card_controller"
 import ToastController from "@poetry/controllers/toast_controller"
+import ToastTriggerController from "@poetry/controllers/toast_trigger_controller"
 import ToasterController from "@poetry/controllers/toaster_controller"
 import CheckedController from "@poetry/controllers/checked_controller"
 import CheckboxGroupController from "@poetry/controllers/checkbox_group_controller"
@@ -80,6 +81,7 @@ export { default as TreeController } from "@poetry/controllers/tree_controller"
 export { default as TooltipController } from "@poetry/controllers/tooltip_controller"
 export { default as HoverCardController } from "@poetry/controllers/hover_card_controller"
 export { default as ToastController } from "@poetry/controllers/toast_controller"
+export { default as ToastTriggerController } from "@poetry/controllers/toast_trigger_controller"
 export { default as ToasterController } from "@poetry/controllers/toaster_controller"
 export { default as CheckedController } from "@poetry/controllers/checked_controller"
 export { default as CheckboxGroupController } from "@poetry/controllers/checkbox_group_controller"
@@ -146,6 +148,7 @@ export const controllers = {
   "poetry--core--tooltip": TooltipController,
   "poetry--core--hover-card": HoverCardController,
   "poetry--core--toast": ToastController,
+  "poetry--core--toast-trigger": ToastTriggerController,
   "poetry--core--toaster": ToasterController,
   "poetry--core--checked": CheckedController,
   "poetry--core--checkbox-group": CheckboxGroupController,

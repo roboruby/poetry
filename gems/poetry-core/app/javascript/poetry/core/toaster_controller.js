@@ -12,7 +12,9 @@ import { stateOf } from "@poetry/controllers/helpers/state"
 // the stack reflow (--poetry-toast-index, newest = 0, for the offset/scale
 // stack styling).
 //
-// Items arrive by server render, Turbo Stream append, or poetry.toast();
+// Items arrive by server render, Turbo Stream append, or a stamp (the
+// poetry:toaster:stamp window event - poetry_toast_trigger's no-round-trip
+// path, cloning a <template> toast into the region);
 // a childList MutationObserver reconciles limit + reflow on every change,
 // so no append path needs to know about the toaster.
 const TOAST_SELECTOR = '[data-slot="toast"]'
@@ -32,11 +34,13 @@ export default class ToasterController extends Controller {
   #returnFocusTo = null
   #onKeydown = (event) => this.focusRegion(event)
   #onDismiss = (event) => this.#handleDismiss(event)
+  #onStamp = (event) => this.#stamp(event)
 
   connect() {
     acquire() // the singleton lives while a toaster is connected
 
     window.addEventListener("keydown", this.#onKeydown)
+    window.addEventListener("poetry:toaster:stamp", this.#onStamp)
     this.element.addEventListener("poetry:toast:dismiss", this.#onDismiss)
 
     this.#observer = new MutationObserver(() => this.#reconcile())
@@ -49,9 +53,28 @@ export default class ToasterController extends Controller {
     this.#observer?.disconnect()
     this.#observer = null
     window.removeEventListener("keydown", this.#onKeydown)
+    window.removeEventListener("poetry:toaster:stamp", this.#onStamp)
     this.element.removeEventListener("poetry:toast:dismiss", this.#onDismiss)
     this.#returnFocusTo = null
     release()
+  }
+
+  // The stamp delivery path: clone a <template>'s toast into the region.
+  // detail.toaster (an id) scopes multi-toaster pages - a stamp addressed
+  // elsewhere is ignored; unaddressed stamps land in every toaster that
+  // hears them (one per page canonically). The childList observer then
+  // reconciles limit + reflow like any other append.
+  #stamp(event) {
+    const { template, toaster } = event.detail || {}
+    if (toaster && toaster !== this.element.id) return
+
+    const node = template ? document.getElementById(template) : null
+    if (!(node instanceof HTMLTemplateElement)) {
+      console.warn(`poetry toaster: stamp template ${JSON.stringify(template)} not found or not a <template>`)
+      return
+    }
+
+    this.element.append(node.content.cloneNode(true))
   }
 
   // The hotkey (F8 default, configurable): move focus into the region -

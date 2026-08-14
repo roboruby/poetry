@@ -1432,6 +1432,24 @@
       "poetry:toast:show"
     ]
   },
+  "poetry--core--toast-trigger": {
+    "targets": [],
+    "values": {
+      "template": {
+        "type": "String"
+      },
+      "toaster": {
+        "type": "String"
+      }
+    },
+    "classes": [],
+    "methods": [
+      "fire"
+    ],
+    "events": [
+      "poetry:toaster:stamp"
+    ]
+  },
   "poetry--core--toaster": {
     "targets": [
       "item"
