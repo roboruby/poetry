@@ -1,0 +1,15 @@
+<%# The stamp delivery path end-to-end: a poetry_toast_trigger button, the
+    <template> holding a real rendered toast, and the toaster region the
+    stamp lands in. What the template holds is byte-for-byte what a Turbo
+    Stream would append. %>
+<div class="p-4">
+  <%= poetry_toast_trigger(template: "preview-stamp-toast", variant: :outline) do %>
+    Show toast
+  <% end %>
+</div>
+<template id="preview-stamp-toast">
+  <%= poetry_toast(variant: :success, duration: 4000) do |toast| %>
+    <% toast.with_title { "Stamped into the region" } %>
+  <% end %>
+</template>
+<%= poetry_toaster %>

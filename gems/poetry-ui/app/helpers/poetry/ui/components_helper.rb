@@ -232,6 +232,10 @@ module Poetry
 
       # The collapse toggle (lives in the inset): a ghost icon Button wired
       # to the sidebar controller on the wrapper.
+      def poetry_toast_trigger(**, &)
+        render(Poetry::Ui::ToastTrigger::Component.new(**), &)
+      end
+
       def poetry_sidebar_trigger(**attrs)
         action = Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click)
         render(Poetry::Ui::Button::Component.new(
@@ -515,6 +519,14 @@ module Poetry
       # :leading crash class). Plain wrapper helpers need no entry here;
       # registry generation lists them name-only.
       HELPER_CONTRACTS = {
+        "poetry_toast_trigger" => {
+          "options" => [
+            { "name" => "template", "type" => "string",
+              "description" => "id of the <template> holding the rendered poetry_toast" },
+            { "name" => "toaster", "type" => "string",
+              "description" => "optional toaster region id - omit for the page's toaster" }
+          ]
+        },
         "poetry_optimistic_form" => {
           "yields" => "the form builder - form.optimistic_template authors the predicted " \
                       "turbo-stream(s); form.optimistic_hidden_field places the submitted value; " \

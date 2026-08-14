@@ -1,0 +1,11 @@
+<div class="p-4">
+  <%= render Poetry::Ui::ToastTrigger::Component.new(template: "trigger-preview-toast") do %>
+    Show toast
+  <% end %>
+</div>
+<template id="trigger-preview-toast">
+  <%= poetry_toast(variant: :success, duration: 4000) do |toast| %>
+    <% toast.with_title { "Stamped into the region" } %>
+  <% end %>
+</template>
+<%= poetry_toaster %>

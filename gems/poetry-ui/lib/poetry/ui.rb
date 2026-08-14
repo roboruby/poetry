@@ -63,7 +63,7 @@ module Poetry
                        dropdown_menu hover_card menubar popover sheet tooltip],
       "data" => %w[accordion avatar badge card carousel clipboard_text code_block collapsible data_table empty
                    item metadata_list meter stat table tag_group timeline toolbar tree typeset],
-      "feedback" => %w[alert deferred progress skeleton spinner toast toaster],
+      "feedback" => %w[alert deferred progress skeleton spinner toast toast_trigger toaster],
       "navigation" => %w[breadcrumb navigation_menu pagination sidebar tabs],
       "foundations" => %w[icon kbd link marker separator],
       "chat" => %w[attachment bubble message message_scroller],

@@ -14,3 +14,14 @@
     <% toast.with_action { "Retry" } %>
   <% end %>
 <% end %>
+
+<%# The client-side path: a trigger stamps the templated toast into the
+    region with no round-trip (poetry_toast_trigger + <template>). %>
+<%= poetry_toast_trigger(template: "undo-toast") do %>
+  Undo last change
+<% end %>
+<template id="undo-toast">
+  <%= poetry_toast(duration: 5000) do |toast| %>
+    <% toast.with_title { "Change undone" } %>
+  <% end %>
+</template>

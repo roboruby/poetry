@@ -21,6 +21,12 @@ module Poetry
           end
         end
 
+        # The stamp path: trigger button + <template> toast + region (the
+        # no-round-trip delivery poetry_toast_trigger drives).
+        def stamp_trigger
+          render_with_template(template: "poetry/ui/toaster/stamp_preview")
+        end
+
         def positions
           # The four placements the examples above don't render, one canvas
           # (axis coverage) - see the template's fixture note.

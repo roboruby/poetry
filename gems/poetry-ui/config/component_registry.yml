@@ -9695,6 +9695,66 @@ components:
         actions:
         - method: dismiss
           'on': click
+  poetry/ui/toast_trigger:
+    class_name: Poetry::Ui::ToastTrigger::Component
+    identifier: poetry--ui--toast_trigger
+    bem_block: poetry-ui-toast_trigger
+    styles: []
+    options:
+    - name: size
+      type: symbol
+      default: default
+    - name: template
+      type: string
+      required: true
+    - name: toaster
+      type: string
+    - name: variant
+      type: symbol
+      default: outline
+    slots: []
+    controllers:
+    - identifier: poetry--core--toast-trigger
+      targets: []
+      values:
+      - template
+      - toaster
+      actions:
+      - fire
+      events:
+      - poetry:toaster:stamp
+    agent_rules:
+    - 'template: names a <template> element id holding ONE rendered poetry_toast -
+      the trigger stamps a clone into the toaster on press.'
+    - 'toaster: scopes the stamp to one region id on multi-toaster pages; omit it
+      for the page''s toaster.'
+    - Give the templated toast a duration (auto-dismiss) - repeated presses stack
+      persistent toasts.
+    - Server round-trips keep using turbo_stream.poetry_toast - this trigger is for
+      purely client-side moments (copied, undone, queued).
+    parts:
+    - name: toast-trigger
+      description: The stamping button - press clones the template's toast into the
+        toaster region
+      states:
+      - attr: data-variant
+        condition: always - the Button variant the trigger renders at
+      - attr: data-size
+        condition: always - the Button size the trigger renders at
+    - name: label
+      description: The Button's label span (the trigger renders AS a poetry Button)
+    stimulus:
+    - element: root
+      controllers:
+      - identifier: poetry--core--toast-trigger
+        registers: true
+        values:
+        - name: template
+        - name: toaster
+          conditional: if
+        actions:
+        - method: fire
+          'on': click
   poetry/ui/toaster:
     class_name: Poetry::Ui::Toaster::Component
     identifier: poetry--ui--toaster
@@ -9738,6 +9798,9 @@ components:
     - Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.
     - 'Server-side toasts go through turbo_stream.poetry_toast / the flash recipe
       - never hand-append into #poetry-toaster.'
+    - Client-side (no round-trip) toasts go through poetry_toast_trigger(template:)
+      + a <template> holding the rendered poetry_toast - the trigger stamps it into
+      the region.
     - Do not announce() toast content yourself - the toast controller already does;
       double-announcing is a regression.
     parts:
@@ -10776,6 +10839,7 @@ helper_args:
   poetry_time_field: 0
   poetry_timeline: 0
   poetry_toast: 0
+  poetry_toast_trigger: 0
   poetry_toaster: 0
   poetry_toggle: 0
   poetry_toggle_group: 0

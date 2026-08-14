@@ -39,6 +39,8 @@ module Poetry
           "Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.",
           "Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never " \
           "hand-append into #poetry-toaster.",
+          "Client-side (no round-trip) toasts go through poetry_toast_trigger(template:) + a " \
+          "<template> holding the rendered poetry_toast - the trigger stamps it into the region.",
           "Do not announce() toast content yourself - the toast controller already does; " \
           "double-announcing is a regression."
         ].freeze
