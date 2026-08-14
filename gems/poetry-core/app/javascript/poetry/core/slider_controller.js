@@ -326,6 +326,14 @@ export default class SliderController extends Controller {
 
     this.element.style.setProperty("--slider-start", `${start}%`)
     this.element.style.setProperty("--slider-end", `${end}%`)
+
+    // Middle thumbs (N-thumb sliders) position via their own anchor var.
+    const anchors = this.element.querySelectorAll('[data-slot="slider-anchor"]')
+    this.#values.forEach((value, index) => {
+      if (index === 0 || index === this.#values.length - 1) return
+
+      anchors[index]?.style.setProperty("--slider-mid", `${this.#percent(value)}%`)
+    })
   }
 
   #percent(value) {
