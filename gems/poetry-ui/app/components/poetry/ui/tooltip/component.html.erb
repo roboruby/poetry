@@ -12,8 +12,9 @@
     <% end %>
     <%# invisible until popper stamps data-side: an unpositioned arrow
         (pinned/server-open, popper not yet run) is a stray nub in-flow. %>
-    <span data-slot="tooltip-arrow" aria-hidden="true" class="invisible data-[side]:visible inline-block" <%= tag.attributes(**stimulus_attributes_for(:arrow)) %>>
-      <span class="<%= css(:arrow) %>"></span>
-    </span>
+    <%# no whitespace inside the wrapper: a stray text node makes a line
+        box that stacks above the block diamond and inflates the measured
+        arrow height (28px for a 10px diamond - the bottom-side gap bug). %>
+    <span data-slot="tooltip-arrow" aria-hidden="true" class="invisible data-[side]:visible inline-block leading-none" <%= tag.attributes(**stimulus_attributes_for(:arrow)) %>><span class="<%= css(:arrow) %>"></span></span>
   <% end %>
 <% end %>
