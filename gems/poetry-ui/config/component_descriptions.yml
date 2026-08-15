@@ -90,7 +90,7 @@ poetry/ui/toast: A brief, auto-dismissing notification message.
 poetry/ui/toaster: The region that stacks and manages toast notifications.
 poetry/ui/toggle: A two-state button that can be pressed on or off.
 poetry/ui/toggle_group: A set of toggle buttons for single or multiple selection.
-poetry/ui/toolbar: A horizontal group of controls that acts as one keyboard tab stop.
+poetry/ui/toolbar: A horizontal group of controls that acts as one keyboard tab stop - Tab passes over the group, Arrow keys move between its controls.
 poetry/ui/tooltip: A floating label describing an element on hover or focus.
 poetry/ui/tree: A hierarchical list of expandable, selectable nodes.
 poetry/ui/typeset: Prose styling for long-form and rendered-markdown content.

@@ -10108,7 +10108,8 @@ components:
         button: 0
         input: 0
         separator: 0
-    description: A horizontal group of controls that acts as one keyboard tab stop.
+    description: A horizontal group of controls that acts as one keyboard tab stop
+      - Tab passes over the group, Arrow keys move between its controls.
     elements: []
     capsule: 77a81ff9c40f
     controllers:
