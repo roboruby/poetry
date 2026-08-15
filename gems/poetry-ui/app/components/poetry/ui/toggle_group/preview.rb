@@ -33,7 +33,7 @@ module Poetry
         # The classic segmented control: single + outline + spacing 0
         # (joined corners, collapsed borders, focus ring painting over).
         def segmented
-          render_component(type: :single, variant: :outline, value: "list",
+          render_component(type: :single, variant: :outline, value: "list", spacing: 0,
                            label: "View") do |group|
             group.with_item(value: "list", label: "List view") { embed(Icon::Component.new(name: :list)) }
             group.with_item(value: "grid", label: "Grid view") { embed(Icon::Component.new(name: :"layout-grid")) }
@@ -46,6 +46,25 @@ module Poetry
           render_component(type: :multiple, variant: :outline, spacing: 2, values: %w[bold italic],
                            label: "Text formatting") do |group|
             formatting_items(group)
+          end
+        end
+
+        # orientation: :vertical - the column layout (data-vertical flips
+        # the root; segment chains and radii are orientation-guarded).
+        def vertical
+          render_component(type: :multiple, orientation: :vertical, spacing: 1,
+                           values: %w[bold italic], label: "Text formatting") do |group|
+            formatting_items(group)
+          end
+        end
+
+        # The vertical SEGMENTED control: the orientation-guarded border/
+        # radius chain (border-t collapse, first rounded-t / last rounded-b).
+        def vertical_segmented
+          render_component(type: :single, variant: :outline, orientation: :vertical, spacing: 0,
+                           value: "list", label: "View") do |group|
+            group.with_item(value: "list", label: "List view") { embed(Icon::Component.new(name: :list)) }
+            group.with_item(value: "grid", label: "Grid view") { embed(Icon::Component.new(name: :"layout-grid")) }
           end
         end
 

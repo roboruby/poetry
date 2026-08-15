@@ -73,8 +73,11 @@ module Poetry
         option :values, :list, default: -> { [] }
         # 0 = SEGMENTED: joined corners + collapsed outline borders (the
         # source's data-[spacing=0] chain); >0 = free-standing with a gap.
-        option :spacing, :integer, default: 0
-        # Roving axis + data-orientation; horizontal is the styled path.
+        # Default 2 = upstream's default (free-standing); pass spacing: 0
+        # explicitly for the classic segmented control.
+        option :spacing, :integer, default: 2
+        # Roving axis + data-orientation + layout (data-vertical flips the
+        # root to a column; the segment chain is orientation-guarded).
         option :orientation, :symbol, default: :horizontal
         # Disables every item (Radix root disabled).
         option :disabled, :boolean, default: false

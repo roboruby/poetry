@@ -9947,7 +9947,7 @@ components:
       default: horizontal
     - name: spacing
       type: integer
-      default: 0
+      default: 2
     - name: type
       type: symbol
       default: single
@@ -9966,7 +9966,7 @@ components:
     description: A set of toggle buttons for single or multiple selection.
     elements:
     - item
-    capsule: b5c1a9940c88
+    capsule: e11a7d4ead18
     controllers:
     - identifier: poetry--core--roving-focus
       targets: []

@@ -10,7 +10,8 @@ module Poetry
       # flagged-dead shadow selector ride the theme. Item variant/size
       # classes still come from Toggle::Style (shared, never copied).
       class Style < Poetry::Core::Style
-        base "cn-toggle-group flex w-fit items-center gap-[--spacing(var(--gap))]"
+        base "cn-toggle-group group/toggle-group flex w-fit flex-row items-center " \
+             "gap-[--spacing(var(--gap))] data-vertical:flex-col data-vertical:items-stretch"
 
         # The item overrides over Toggle's classes: w-auto/min-w-0 relax the
         # square-ish standalone shape, focus z-index lets the ring paint
@@ -22,8 +23,10 @@ module Poetry
         # order (a judge caught exactly that when only the edges moved).
         element :item, "cn-toggle-group-item w-auto min-w-0 shrink-0 focus:z-10 focus-visible:z-10 " \
                        "data-[spacing=0]:shadow-none " \
-                       "data-[spacing=0]:data-[variant=outline]:border-l-0 " \
-                       "data-[spacing=0]:data-[variant=outline]:first:border-l"
+                       "group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 " \
+                       "group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0 " \
+                       "group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l " \
+                       "group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t"
       end
     end
   end

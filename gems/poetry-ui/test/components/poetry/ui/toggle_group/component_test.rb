@@ -123,9 +123,11 @@ module Poetry
           %w[flex w-fit items-center cn-toggle-group].each do |token|
             assert_includes root["class"], token
           end
-          # The group/toggle-group marker is DROPPED (dead in source: zero
-          # group-*/toggle-group consumers - the compile gate rejects it).
-          refute_includes root["class"], "group/toggle-group"
+          # The group/toggle-group marker is LIVE again (2026-08-14): the
+          # orientation-guarded segment chains - border-l/t collapse in the
+          # dictionary, first/last radii in every theme - consume it.
+          assert_includes root["class"], "group/toggle-group"
+          assert_includes root["class"], "data-vertical:flex-col"
           assert_includes root["class"], "gap-[--spacing(var(--gap))]"
           # The dead-in-source selector rides .cn-toggle-group in the theme
           # (still ported verbatim + flagged there).
