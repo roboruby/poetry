@@ -307,6 +307,13 @@ export default class PopperController extends Controller {
     const { x, y } = middlewareData.arrow ?? {}
 
     arrowElement.style.position = "absolute"
+    // Clear EVERY edge before pinning: after a flip the stale opposite pin
+    // survives (top:0 + bottom:0 stretches the arrow to the bubble's full
+    // height, and that inflated box feeds the arrow-height gap offset).
+    arrowElement.style.top = ""
+    arrowElement.style.right = ""
+    arrowElement.style.bottom = ""
+    arrowElement.style.left = ""
     arrowElement.style.left = x != null ? `${x}px` : ""
     arrowElement.style.top = y != null ? `${y}px` : ""
     // Pin the arrow to the content's anchor-facing edge, then rotate it to
