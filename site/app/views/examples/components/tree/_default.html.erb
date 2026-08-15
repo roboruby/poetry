@@ -1,11 +1,16 @@
-<%= poetry_tree(label: "Files", class: "w-72") do |tree| %>
-  <% tree.with_item(text: "docs", value: "docs", expanded: true) do |docs| %>
-    <% docs.with_item(text: "guides", value: "guides") do |guides| %>
-      <% guides.with_item(text: "intro.md", value: "intro") %>
+<%# Top-anchored constant-height box: expanding rows grow DOWNWARD
+    inside it. Bare in the centered example shell, every toggle would
+    re-center the tree - rows jumping under the pointer mid-click. %>
+<div class="h-56 w-72 overflow-auto">
+  <%= poetry_tree(label: "Files", class: "w-72") do |tree| %>
+    <% tree.with_item(text: "docs", value: "docs", expanded: true) do |docs| %>
+      <% docs.with_item(text: "guides", value: "guides") do |guides| %>
+        <% guides.with_item(text: "intro.md", value: "intro") %>
+      <% end %>
+      <% docs.with_item(text: "README.md", value: "readme") %>
     <% end %>
-    <% docs.with_item(text: "README.md", value: "readme") %>
+    <% tree.with_item(text: "src", value: "src") do |src| %>
+      <% src.with_item(text: "main.rb", value: "main") %>
+    <% end %>
   <% end %>
-  <% tree.with_item(text: "src", value: "src") do |src| %>
-    <% src.with_item(text: "main.rb", value: "main") %>
-  <% end %>
-<% end %>
+</div>

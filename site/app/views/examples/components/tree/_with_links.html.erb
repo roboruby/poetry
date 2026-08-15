@@ -1,8 +1,13 @@
-<%# href: items render their labels as links; persist expansion by
-    listening for poetry:tree:toggle and re-rendering with expanded:. %>
-<%= poetry_tree(label: "Pages", class: "w-72") do |tree| %>
-  <% tree.with_item(text: "Getting started", value: "start", expanded: true) do |start| %>
-    <% start.with_item(text: "Install", value: "install", href: "#install") %>
-    <% start.with_item(text: "Theming", value: "theming", href: "#theming") %>
+<%# Top-anchored constant-height box: expanding rows grow DOWNWARD
+    inside it. Bare in the centered example shell, every toggle would
+    re-center the tree - rows jumping under the pointer mid-click. %>
+<div class="h-56 w-72 overflow-auto">
+  <%# href: items render their labels as links; persist expansion by
+      listening for poetry:tree:toggle and re-rendering with expanded:. %>
+  <%= poetry_tree(label: "Pages", class: "w-72") do |tree| %>
+    <% tree.with_item(text: "Getting started", value: "start", expanded: true) do |start| %>
+      <% start.with_item(text: "Install", value: "install", href: "#install") %>
+      <% start.with_item(text: "Theming", value: "theming", href: "#theming") %>
+    <% end %>
   <% end %>
-<% end %>
+</div>
