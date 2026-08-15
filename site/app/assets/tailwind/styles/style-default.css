@@ -1613,7 +1613,7 @@
 /* Segmented edge radii live theme-side (N12 W2 side-move): each theme
  * rounds spacing=0 segments in its own radius language. */
 .cn-toggle-group-item {
-  @apply px-3 data-[spacing=0]:rounded-none group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-md group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-md group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-md group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-md;
+  @apply data-[spacing=0]:px-3 data-[spacing=0]:rounded-none group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-md group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-md group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-md group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-md;
 }
 
 /* MARK: Tooltip */
