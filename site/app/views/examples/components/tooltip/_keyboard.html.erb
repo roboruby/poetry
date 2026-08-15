@@ -1,0 +1,9 @@
+<%# Upstream's tooltip-keyboard: an icon trigger whose tooltip carries the
+    shortcut as a real poetry_kbd (the themed has-data-[slot=kbd] content
+    treatment picks it up). %>
+<%= poetry_tooltip do |tooltip| %>
+  <% tooltip.with_trigger(variant: :outline, size: :"icon-sm", label: "Save changes") do %>
+    <%= poetry_icon(name: :save) %>
+  <% end %>
+  Save Changes <%= poetry_kbd { "S" } %>
+<% end %>
