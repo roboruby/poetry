@@ -4884,10 +4884,46 @@
     "path": "/blocks/action-bar"
   },
   {
+    "title": "Installation",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Action bar",
+    "section": "blocks",
+    "path": "/blocks/action-bar#styling"
+  },
+  {
     "title": "App shell",
     "page": "App shell",
     "section": "blocks",
     "path": "/blocks/app-shell"
+  },
+  {
+    "title": "Installation",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#installation"
+  },
+  {
+    "title": "Default",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#default"
+  },
+  {
+    "title": "Styling",
+    "page": "App shell",
+    "section": "blocks",
+    "path": "/blocks/app-shell#styling"
   },
   {
     "title": "Data index",
@@ -4896,10 +4932,40 @@
     "path": "/blocks/data-index"
   },
   {
+    "title": "Installation",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Data index",
+    "section": "blocks",
+    "path": "/blocks/data-index#styling"
+  },
+  {
     "title": "Destructive panel",
     "page": "Destructive panel",
     "section": "blocks",
     "path": "/blocks/destructive-panel"
+  },
+  {
+    "title": "Installation",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#default"
   },
   {
     "title": "Revoke deploy token",
@@ -4908,10 +4974,34 @@
     "path": "/blocks/destructive-panel#destructive-panel-title"
   },
   {
+    "title": "Styling",
+    "page": "Destructive panel",
+    "section": "blocks",
+    "path": "/blocks/destructive-panel#styling"
+  },
+  {
     "title": "Page header",
     "page": "Page header",
     "section": "blocks",
     "path": "/blocks/page-header"
+  },
+  {
+    "title": "Installation",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Page header",
+    "section": "blocks",
+    "path": "/blocks/page-header#styling"
   },
   {
     "title": "Section card",
@@ -4920,16 +5010,70 @@
     "path": "/blocks/section-card"
   },
   {
+    "title": "Installation",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Section card",
+    "section": "blocks",
+    "path": "/blocks/section-card#styling"
+  },
+  {
     "title": "Stepper",
     "page": "Stepper",
     "section": "blocks",
     "path": "/blocks/stepper"
   },
   {
+    "title": "Installation",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Stepper",
+    "section": "blocks",
+    "path": "/blocks/stepper#styling"
+  },
+  {
     "title": "Top nav",
     "page": "Top nav",
     "section": "blocks",
     "path": "/blocks/top-nav"
+  },
+  {
+    "title": "Installation",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#installation"
+  },
+  {
+    "title": "Default",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#default"
+  },
+  {
+    "title": "Styling",
+    "page": "Top nav",
+    "section": "blocks",
+    "path": "/blocks/top-nav#styling"
   },
   {
     "title": "Interactive Filter",

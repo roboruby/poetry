@@ -84,8 +84,12 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_select "[data-slot=table]", 1, "the preview renders the block live"
     assert_select "[data-slot=badge]", minimum: 4
-    assert_select "[data-slot=code-block]", 1 # the code tab: the source poetry:block copies in
-    assert_select "code.font-mono", text: /bin\/rails g poetry:block data-index/
+    # Two code blocks: the Installation copy-in command + the Code tab's
+    # exact source poetry:block copies in.
+    assert_select "[data-slot=code-block]", 2
+    assert_select "[data-slot=code-block]", text: /bin\/rails g poetry:block data-index/
+    assert_select "h2#installation", 1
+    assert_select "h2#styling", 1
   end
 
   test "the blocks gallery covers every registry block" do

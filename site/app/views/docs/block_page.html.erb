@@ -11,14 +11,21 @@
   <header class="flex flex-col gap-3">
     <h1 class="text-3xl font-semibold tracking-tight"><%= @entry.title %></h1>
     <p class="max-w-2xl text-muted-foreground"><%= @entry.description %></p>
-    <div class="flex flex-wrap items-center gap-2 text-sm">
-      <code class="rounded-md border bg-muted/30 px-2 py-1 font-mono"><%= "bin/rails g poetry:block #{@entry.slug}" %></code>
-      <span class="text-muted-foreground">copies this source into <code class="font-mono">app/views/blocks/</code> — it's yours to edit.</span>
-    </div>
-    <p class="text-sm text-muted-foreground">Composes: <%= @components.join(", ") %>.</p>
   </header>
 
   <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="installation">Installation</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      Blocks are copied source, not library calls — the generator writes this
+      exact template into <code class="text-foreground">app/views/blocks/</code>
+      and from there it's yours to edit. The preview below renders the same
+      source the copy-in produces.
+    </p>
+    <%= poetry_code_block(code: "bin/rails g poetry:block #{@entry.slug}", language: "plaintext", label: "Copy-in") %>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="default">Default</h2>
     <%= poetry_tabs(label: "#{@entry.title} block", variant: :line) do |tabs| %>
       <% tabs.with_tab("Preview", value: "preview") do %>
         <div class="max-h-[36rem] overflow-auto rounded-lg border <%= @entry.slug == "app-shell" ? "" : "p-8" %>">
@@ -29,5 +36,25 @@
         <%= highlight_erb(@source) %>
       <% end %>
     <% end %>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="styling">Styling</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      A block has no styling surface of its own — every element in the copied
+      template is a poetry component carrying its usual
+      <code class="text-foreground">data-slot</code> parts, and because you own
+      the source, utility classes can be edited directly in place. Per-part
+      contracts live on the composed components' pages:
+    </p>
+    <ul class="flex flex-wrap gap-2 text-sm">
+      <% @components.each do |name| %>
+        <li>
+          <%= poetry_link(href: "/components/#{name.tr("_", "-")}") do %>
+            <code><%= "poetry_#{name}" %></code>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
   </section>
 </div>
