@@ -696,6 +696,7 @@ data-[side=left]:left-0
 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]
 data-[side=right]:right-0
 data-[side=top]:-top-4.5
+data-[side]:visible
 data-[spacing=0]:shadow-none
 data-[upload-state=error]:border-destructive/30
 data-[upload-state=idle]:border-dashed
