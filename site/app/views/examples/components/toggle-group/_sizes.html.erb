@@ -1,14 +1,12 @@
+<%# Upstream's toggle-group-sizes: the same outline quartet at sm and
+    default. %>
 <div class="flex flex-col items-start gap-4">
-  <%= poetry_toggle_group(type: :multiple, size: :sm, variant: :outline,
-                          label: "Text formatting (small)") do |group| %>
-    <% group.with_item(value: "bold", label: "Toggle bold") { poetry_icon(name: :bold) } %>
-    <% group.with_item(value: "italic", label: "Toggle italic") { poetry_icon(name: :italic) } %>
-    <% group.with_item(value: "underline", label: "Toggle underline") { poetry_icon(name: :underline) } %>
-  <% end %>
-  <%= poetry_toggle_group(type: :multiple, size: :lg,
-                          label: "Text formatting (large)") do |group| %>
-    <% group.with_item(value: "bold", label: "Toggle bold") { poetry_icon(name: :bold) } %>
-    <% group.with_item(value: "italic", label: "Toggle italic") { poetry_icon(name: :italic) } %>
-    <% group.with_item(value: "underline", label: "Toggle underline") { poetry_icon(name: :underline) } %>
+  <% [{ size: :sm, label: "Sides (small)" }, { size: :default, label: "Sides" }].each do |row| %>
+    <%= poetry_toggle_group(type: :multiple, size: row[:size], variant: :outline,
+                            values: %w[top], label: row[:label]) do |group| %>
+      <% %w[Top Bottom Left Right].each do |side| %>
+        <% group.with_item(value: side.downcase, label: "Toggle #{side.downcase}") { side } %>
+      <% end %>
+    <% end %>
   <% end %>
 </div>

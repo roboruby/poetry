@@ -1,6 +1,23 @@
-<%= poetry_toggle_group(type: :single, variant: :outline, spacing: 1,
-                        value: "comfortable", label: "Row density") do |group| %>
-  <% group.with_item(value: "compact", class: "rounded-full px-4 text-xs font-medium") { "Compact" } %>
-  <% group.with_item(value: "comfortable", class: "rounded-full px-4 text-xs font-medium") { "Comfortable" } %>
-  <% group.with_item(value: "spacious", class: "rounded-full px-4 text-xs font-medium") { "Spacious" } %>
-<% end %>
+<%# Upstream's font-weight selector: size-16 flex-col items inside a
+    Field, the hint carrying a live <code> readout (the with_hint block
+    form) that follows poetry:toggle-group:change. %>
+<div data-controller="demo-font-weight" class="w-full max-w-md">
+  <%= poetry_field(id: "font-weight-group", label_text: "Font Weight", group: true) do |field| %>
+    <% field.with_hint do %>
+      Use <code class="rounded-md bg-muted px-1 py-0.5 font-mono"
+                data-demo-font-weight-target="readout">font-normal</code> to set the font weight.
+    <% end %>
+    <%= poetry_toggle_group(type: :single, variant: :outline, spacing: 2, size: :lg,
+                            value: "normal",
+                            data: { action: "poetry:toggle-group:change->demo-font-weight#update" },
+                            **field.control_attributes.transform_keys(&:to_sym)) do |group| %>
+      <% [%w[light Light], %w[normal Normal], %w[medium Medium], %w[bold Bold]].each do |value, title| %>
+        <% group.with_item(value: value, label: title,
+                           class: "flex size-16 flex-col items-center justify-center rounded-xl") do %>
+          <span class="text-2xl leading-none font-<%= value %>">Aa</span>
+          <span class="text-xs text-muted-foreground"><%= title %></span>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</div>

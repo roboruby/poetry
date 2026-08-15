@@ -696,8 +696,6 @@ data-[side=left]:left-0
 data-[side=right]:group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]
 data-[side=right]:right-0
 data-[side=top]:-top-4.5
-data-[spacing=0]:data-[variant=outline]:border-l-0
-data-[spacing=0]:data-[variant=outline]:first:border-l
 data-[spacing=0]:shadow-none
 data-[upload-state=error]:border-destructive/30
 data-[upload-state=idle]:border-dashed
@@ -735,7 +733,9 @@ data-starting-style:transform-(--closed-transform)
 data-swiping:backdrop:transition-none
 data-swiping:duration-0
 data-unchecked:invisible
+data-vertical:flex-col
 data-vertical:h-auto
+data-vertical:items-stretch
 data-vertical:my-px
 data-vertical:self-stretch
 data-vertical:w-px
@@ -871,12 +871,16 @@ group-data-[variant=line]/tabs-list:data-active:after:opacity-100
 group-data-[viewport=false]/navigation-menu:duration-300
 group-data-[viewport=true]/navigation-menu:h-full
 group-data-checked/questionnaire-choice:block
+group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0
+group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-l
 group-data-open/navigation-menu-trigger:rotate-180
 group-data-popup-open/navigation-menu-trigger:rotate-180
 group-data-vertical/tabs:flex-col
 group-data-vertical/tabs:h-fit
 group-data-vertical/tabs:justify-start
 group-data-vertical/tabs:w-full
+group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:border-t-0
+group-data-vertical/toggle-group:data-[spacing=0]:data-[variant=outline]:first:border-t
 group-focus-within/menu-item:opacity-100
 group-focus-within/sensitive:invisible
 group-focus-within/sensitive:visible
@@ -963,6 +967,7 @@ group/timeline
 group/timeline-item
 group/toaster
 group/toggle
+group/toggle-group
 group/tree-item
 grow
 grow-0

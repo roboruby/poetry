@@ -1598,7 +1598,7 @@
 /* Segmented edge radii live theme-side (N12 W2 side-move): each theme
  * rounds spacing=0 segments in its own radius language. */
 .cn-toggle-group-item {
-  @apply data-pressed:bg-muted data-[spacing=0]:px-3 data-[spacing=0]:shadow-none data-[spacing=0]:has-data-[icon=inline-end]:pr-2.5 data-[spacing=0]:has-data-[icon=inline-start]:pl-2.5 data-[spacing=0]:rounded-none data-[spacing=0]:first:rounded-l-3xl data-[spacing=0]:last:rounded-r-3xl;
+  @apply data-[state=on]:bg-muted group-data-[spacing=0]/toggle-group:rounded-none group-data-[spacing=0]/toggle-group:px-3 group-data-[spacing=0]/toggle-group:shadow-none group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-3xl group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-3xl group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-3xl group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-3xl group-data-[spacing=0]/toggle-group:has-data-[icon=inline-end]:pr-2.5 group-data-[spacing=0]/toggle-group:has-data-[icon=inline-start]:pl-2.5;
 }
 
 /* MARK: Tooltip */

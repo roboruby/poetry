@@ -1,6 +1,8 @@
-<%= poetry_toggle_group(type: :single, variant: :outline, orientation: :vertical,
-                        value: "center", label: "Text alignment") do |group| %>
-  <% group.with_item(value: "left", label: "Align left") { poetry_icon(name: :"text-align-start") } %>
-  <% group.with_item(value: "center", label: "Align center") { poetry_icon(name: :"text-align-center") } %>
-  <% group.with_item(value: "right", label: "Align right") { poetry_icon(name: :"text-align-end") } %>
+<%# Upstream's toggle-group-vertical: multiple + vertical + spacing 1 -
+    data-vertical flips the root to a column. %>
+<%= poetry_toggle_group(type: :multiple, orientation: :vertical, spacing: 1,
+                        values: %w[bold italic], label: "Text formatting") do |group| %>
+  <% group.with_item(value: "bold", label: "Toggle bold") { poetry_icon(name: :bold) } %>
+  <% group.with_item(value: "italic", label: "Toggle italic") { poetry_icon(name: :italic) } %>
+  <% group.with_item(value: "underline", label: "Toggle underline") { poetry_icon(name: :underline) } %>
 <% end %>

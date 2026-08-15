@@ -4248,6 +4248,12 @@
     "path": "/components/toggle-group#disabled"
   },
   {
+    "title": "Outline",
+    "page": "Toggle Group",
+    "section": "components",
+    "path": "/components/toggle-group#outline"
+  },
+  {
     "title": "Single",
     "page": "Toggle Group",
     "section": "components",

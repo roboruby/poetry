@@ -1,0 +1,7 @@
+<%# Upstream's toggle-group-outline: the free-standing pair (spacing
+    defaults to 2 - segmented is the explicit spacing: 0 opt-in). %>
+<%= poetry_toggle_group(type: :multiple, variant: :outline, values: %w[all],
+                        label: "Call filter") do |group| %>
+  <% group.with_item(value: "all", label: "Toggle all") { "All" } %>
+  <% group.with_item(value: "missed", label: "Toggle missed") { "Missed" } %>
+<% end %>
