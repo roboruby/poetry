@@ -10192,7 +10192,7 @@ components:
     elements:
     - content
     - arrow
-    capsule: fc21afb6426d
+    capsule: 6ecc2cdc3f1e
     controllers:
     - identifier: poetry--core--popper
       targets:

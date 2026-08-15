@@ -10,7 +10,9 @@
     <% else %>
       <%= content %>
     <% end %>
-    <span data-slot="tooltip-arrow" aria-hidden="true" <%= tag.attributes(**stimulus_attributes_for(:arrow)) %>>
+    <%# invisible until popper stamps data-side: an unpositioned arrow
+        (pinned/server-open, popper not yet run) is a stray nub in-flow. %>
+    <span data-slot="tooltip-arrow" aria-hidden="true" class="invisible data-[side]:visible inline-block" <%= tag.attributes(**stimulus_attributes_for(:arrow)) %>>
       <span class="<%= css(:arrow) %>"></span>
     </span>
   <% end %>

@@ -15,7 +15,9 @@ module Poetry
 
         # The arrow: popper positions/rotates the outer box; the visual
         # size/rounding rides the theme, the paint + geometry stay inline.
-        element :arrow, "cn-tooltip-arrow z-50 translate-y-[calc(-50%_-_2px)] rotate-45 " \
+        # block: the diamond is a bare span - inline boxes IGNORE size-2.5,
+        # which left the arrow 0x0 (invisible) in every theme since the port.
+        element :arrow, "cn-tooltip-arrow z-50 block translate-y-[calc(-50%_-_2px)] rotate-45 " \
                         "bg-foreground fill-foreground"
       end
     end

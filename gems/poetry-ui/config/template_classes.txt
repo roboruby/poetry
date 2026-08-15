@@ -12,6 +12,7 @@ border-primary
 bottom-2
 cn-input-otp-separator
 contents
+data-[side]:visible
 data-open:opacity-100
 data-open:translate-y-0
 flex
@@ -34,7 +35,9 @@ group-has-data-[collapsible=icon]/sidebar-wrapper:h-12
 h-14
 h-96
 h-px
+inline-block
 inset-x-8
+invisible
 items-center
 items-end
 items-start
