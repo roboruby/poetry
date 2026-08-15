@@ -78,6 +78,7 @@ export default class PopperController extends Controller {
   #stopAutoUpdate = null
   #anchorElement = null
   #contentElement = null
+  #arrowElement = null
   #generation = 0
   #connected = false
   #hidPointerEvents = false
@@ -392,7 +393,17 @@ export default class PopperController extends Controller {
   // The Tier-4 Arrow is markup-only: an explicit arrow target wins, else any
   // [data-slot=popper-arrow] inside the content is positioned.
   #arrow() {
-    if (this.hasArrowTarget) return this.arrowTarget
+    if (this.hasArrowTarget) {
+      this.#arrowElement = this.arrowTarget
+      return this.arrowTarget
+    }
+
+    // The portal seam, arrow edition (#content's cache, same reason):
+    // portaled content takes the arrow out of target scope, and the
+    // fallback selector can't see a component-slotted arrow
+    // (tooltip-arrow, not popper-arrow) - without the cache the arrow
+    // freezes at its first written position forever.
+    if (this.#arrowElement?.isConnected) return this.#arrowElement
 
     return this.#content()?.querySelector("[data-slot=popper-arrow]") ?? null
   }
