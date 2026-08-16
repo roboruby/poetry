@@ -2,13 +2,22 @@
 <%= poetry_sidebar(collapsible: :icon) do |shell| %>
   <% shell.with_nav do %>
     <%= poetry_sidebar_header do %>
-      <div class="flex items-center gap-2 px-2 py-1.5">
-        <%= poetry_icon(name: :"audio-waveform", class: "size-5") %>
-        <div class="grid text-left leading-tight">
-          <span class="text-sm font-semibold">Meridian</span>
-          <span class="text-xs text-muted-foreground">Operations</span>
-        </div>
-      </div>
+      <%# The collapse-aware header shape (a menu button, never a bare
+          div): at icon width the button shrinks to the tile and the
+          truncating spans disappear with it. %>
+      <%= poetry_sidebar_menu do %>
+        <%= poetry_sidebar_menu_item do %>
+          <%= poetry_sidebar_menu_button(size: :lg) do %>
+            <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <%= poetry_icon(name: :"audio-waveform", class: "size-4") %>
+            </div>
+            <div class="grid flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Meridian</span>
+              <span class="truncate text-xs">Operations</span>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
     <% end %>
     <%= poetry_sidebar_content do %>
       <%= poetry_sidebar_group do %>
