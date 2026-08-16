@@ -31,9 +31,15 @@
         <%# app-shell composes the sidebar, whose container is fixed h-svh -
             contain-content re-roots it and the overrides keep it inside
             the preview box (the sidebar examples' containment recipe). %>
-        <% preview_classes = if @entry.slug == "app-shell"
+        <% preview_classes = case @entry.slug
+           when "app-shell"
              "h-[36rem] overflow-hidden rounded-lg border contain-content " \
              "[&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute"
+           when "top-nav"
+             # Room for the nav dropdowns: the popper caps popup height at
+             # the clipping box (--available-height), so a bar-hugging
+             # preview truncates them after one row.
+             "min-h-[26rem] max-h-[36rem] overflow-auto rounded-lg border p-8"
            else
              "max-h-[36rem] overflow-auto rounded-lg border p-8"
            end %>
