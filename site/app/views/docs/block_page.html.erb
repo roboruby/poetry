@@ -28,7 +28,16 @@
     <h2 class="text-lg font-medium" id="default">Default</h2>
     <%= poetry_tabs(label: "#{@entry.title} block", variant: :line) do |tabs| %>
       <% tabs.with_tab("Preview", value: "preview") do %>
-        <div class="max-h-[36rem] overflow-auto rounded-lg border <%= @entry.slug == "app-shell" ? "" : "p-8" %>">
+        <%# app-shell composes the sidebar, whose container is fixed h-svh -
+            contain-content re-roots it and the overrides keep it inside
+            the preview box (the sidebar examples' containment recipe). %>
+        <% preview_classes = if @entry.slug == "app-shell"
+             "h-[36rem] overflow-hidden rounded-lg border contain-content " \
+             "[&_[data-slot=sidebar-container]]:h-full [&_[data-slot=sidebar-container]]:absolute"
+           else
+             "max-h-[36rem] overflow-auto rounded-lg border p-8"
+           end %>
+        <div class="<%= preview_classes %>">
           <%= render inline: @source %>
         </div>
       <% end %>
