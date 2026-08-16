@@ -203,9 +203,11 @@ module Poetry
         {
           "width" => width,
           "height" => height,
-          "margin" => Cartesian::DEFAULT_MARGIN
-                      .merge((margin || {}).to_h.symbolize_keys)
-                      .transform_keys(&:to_s),
+          # live_margin, NOT the raw margin: the brush reserve must survive
+          # into client recomputes, or every window change drops the plot
+          # into the brush strip (the y-baseline sliding ~35px down).
+          "margin" => Cartesian::DEFAULT_MARGIN.merge(live_margin)
+                                               .transform_keys(&:to_s),
           "layout" => cartesian.layout.to_s,
           "xScaleType" => live_x_scale_type.to_s,
           "categoryAxis" => live_category_axis?,
