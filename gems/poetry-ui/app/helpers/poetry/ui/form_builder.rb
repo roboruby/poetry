@@ -15,6 +15,8 @@ module Poetry
     #
     # Usage: form_with(model:, builder: Poetry::Ui::FormBuilder).
     class FormBuilder < ActionView::Helpers::FormBuilder
+      include TypeInference
+
       # One field entrypoint for field-shaped controls: as: :input (the
       # default, with type:) or as: :textarea (rows: passes through) -
       # Own-line controls slot in as as: values; group-shaped
@@ -281,6 +283,80 @@ module Poetry
             populate_combobox_choices(combobox, choices) if choices
             block&.call(combobox)
           end
+        end
+      end
+
+      # -- f.input: the inferred entrypoint -----------------------------
+      # form.input(:email) - one call, everything derived: type from `as:`
+      # -> attachment duck-typing -> AR enum -> attribute type -> name
+      # heuristics; hint/placeholder from the poetry_form (or simple_form)
+      # i18n chain when not passed; maxlength/min/max from validations.
+      INPUT_DISPATCH = {
+        string: :field, search: :search_field, password: :password_field,
+        text: :text_area, number: :number_field, date: :date_field,
+        time: :time_field, file: :file_input, sensitive: :sensitive_input,
+        select: :poetry_select, combobox: :poetry_combobox,
+        radio_group: :radio_group, autocomplete: :autocomplete,
+        tag_group: :tag_group, date_picker: :date_picker, calendar: :calendar
+      }.freeze
+      TYPED_FIELDS = %i[email url tel].freeze
+      COLLECTION_ARGS = %i[select combobox radio_group autocomplete].freeze
+
+      def input(method, as: nil, collection: nil, hint: nil, **options)
+        type = as || infer_input_type(method, collection: collection)
+        hint ||= form_i18n(:hints, method)
+        options[:placeholder] = form_i18n(:placeholders, method) if options[:placeholder].nil?
+        options.compact!
+
+        return boolean_input(method, hint: hint, **options) if type == :boolean
+        return enum_input(method, hint: hint, **options) if type == :enum
+        if TYPED_FIELDS.include?(type)
+          return field(method, hint: hint, type: type, **length_attributes(method),
+                               **options)
+        end
+
+        if type == :datetime
+          raise ArgumentError, "f.input cannot infer :datetime (no composite control yet) - " \
+                               "pass as: :date or as: :time explicitly"
+        end
+
+        options = length_attributes(method).merge(options) if %i[string password text].include?(type)
+        options = numeric_attributes(method).merge(options) if type == :number
+        dispatch = INPUT_DISPATCH.fetch(type) do
+          raise ArgumentError, "f.input does not know as: #{type.inspect} " \
+                               "(one of #{INPUT_DISPATCH.keys.inspect}, :email, :url, :tel, :boolean, :enum)"
+        end
+        args = COLLECTION_ARGS.include?(type) ? [method, collection] : [method]
+        send(dispatch, *args, hint: hint, **options)
+      end
+
+      # form.association(:company) - reflection-derived: belongs_to ->
+      # company_id + Combobox, has_many/HABTM -> singular_ids + the
+      # checkbox group; collection from the association klass, label
+      # method auto-detected (to_label/name/title/to_s - simple_form's
+      # chain). as: overrides (:select, :combobox, :checkbox_group).
+      def association(method, as: nil, collection: nil, hint: nil, **)
+        reflection = object.class.respond_to?(:reflect_on_association) &&
+                     object.class.reflect_on_association(method)
+        raise ArgumentError, "no association #{method.inspect} on #{object.class}" unless reflection
+        if reflection.macro == :has_one
+          raise ArgumentError, "has_one associations have no form control (build the record and use fields_for)"
+        end
+
+        collection ||= reflection.klass.all
+        pairs = collection.map { |item| [association_label(item), item.id] }
+
+        if reflection.macro == :belongs_to
+          attribute = association_attribute(reflection, method)
+          # radio_group items read [value, label] - the inverse of the
+          # select/combobox [label, value] pairs.
+          if as == :radio_group
+            radio_group(attribute, pairs.map { |label, value| [value, label] }, hint: hint, **)
+          else
+            send(INPUT_DISPATCH.fetch(as || :combobox), attribute, pairs, hint: hint, **)
+          end
+        else
+          collection_association(method, pairs, as, hint: hint, **)
         end
       end
 
@@ -589,6 +665,50 @@ module Poetry
         }
       end
 
+      # f.input's boolean story: the horizontal boolean-control layout
+      # (checkbox on the label line); switch: true renders the setting row
+      # (label + hint left, switch right).
+      def boolean_input(method, hint: nil, switch: false, **options)
+        orientation = switch ? :setting : :horizontal
+        field_component = field_for(method, hint: hint, orientation: orientation)
+        control = toggle_options(method, options, "1", "0")
+                  .merge(field_component.control_attributes.transform_keys(&:to_sym))
+        @template.render(field_component) do
+          @template.render((switch ? Switch::Component : Checkbox::Component).new(**control))
+        end
+      end
+
+      # AR enums: humanized keys as a select (as: :radio_group lays a
+      # small set flat).
+      def enum_input(method, hint: nil, **)
+        pairs = object.class.defined_enums.fetch(method.to_s).keys.map { |key| [key.humanize, key] }
+        poetry_select(method, pairs, hint: hint, **)
+      end
+
+      def association_label(item)
+        %i[to_label name title].each do |candidate|
+          return item.public_send(candidate) if item.respond_to?(candidate)
+        end
+        item.to_s
+      end
+
+      def association_attribute(reflection, method)
+        attribute = (reflection.respond_to?(:foreign_key) && reflection.foreign_key) || "#{method}_id"
+        attribute.to_sym
+      end
+
+      def collection_association(method, pairs, as, hint: nil, **)
+        attribute = :"#{method.to_s.singularize}_ids"
+        case as
+        when :combobox
+          poetry_combobox(attribute, pairs, hint: hint, multiple: true, **)
+        when :select, :radio_group
+          raise ArgumentError, "collection associations need a multi-value control (:checkbox_group or :combobox)"
+        else
+          checkbox_group(attribute, pairs.map { |label, value| [value, label] }, hint: hint, **)
+        end
+      end
+
       # The checkbox-group rows (extracted for the coverage the builder
       # method reads better without).
       def checkbox_group_all_row(base_id, select_all)
@@ -614,13 +734,34 @@ module Poetry
         end
       end
 
+      # The vcf dual-key recipe: company_id also reads errors on :company
+      # (validates :company, presence: true is the Rails idiom, but the
+      # form field is the _id attribute).
       def error_for(method)
-        object.errors.full_messages_for(method).first if object.respond_to?(:errors)
+        return nil unless object.respond_to?(:errors)
+
+        message = object.errors.full_messages_for(method).first
+        if message.nil? && (base = method.to_s[/\A(.+?)_ids?\z/, 1])
+          message = object.errors.full_messages_for(base.to_sym).first ||
+                    object.errors.full_messages_for(base.pluralize.to_sym).first
+        end
+        message
       end
 
+      # Presence -> required, with the vcf filtering recipe: conditional
+      # validators (:if/:unless) never claim required, and :on contexts
+      # must match the record's persistence.
       def required?(method)
-        object.class.respond_to?(:validators_on) &&
-          object.class.validators_on(method).any? { |validator| validator.kind == :presence }
+        return false unless object.class.respond_to?(:validators_on)
+
+        context = object.respond_to?(:persisted?) && object.persisted? ? :update : :create
+        object.class.validators_on(method).any? do |validator|
+          next false unless validator.kind == :presence
+          next false if validator.options[:if] || validator.options[:unless]
+
+          on = Array(validator.options[:on])
+          on.empty? || on.include?(context)
+        end
       end
 
       # The Rails 8 respellings (the vcf coverage lesson): ActionView 8

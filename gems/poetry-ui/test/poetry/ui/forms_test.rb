@@ -714,6 +714,178 @@ module Poetry
         assert_match(/\[query\]\[email\][^>]*/, html)
         assert_includes html, 'data-slot="field"', "the nested builder is still poetry"
       end
+      # -- Wave 2: f.input inference + f.association ------------------------
+
+      class Article
+        include ActiveModel::Model
+        include ActiveModel::Attributes
+
+        attribute :title, :string
+        attribute :body, :string
+        attribute :email, :string
+        attribute :published, :boolean
+        attribute :quantity, :integer
+        attribute :released_on, :date
+
+        validates :title, length: { maximum: 80 }
+        validates :quantity, numericality: { greater_than_or_equal_to: 1, less_than_or_equal_to: 99,
+                                             only_integer: true }
+
+        def self.type_for_attribute(name)
+          name == "body" ? Struct.new(:type).new(:text) : super
+        end
+      end
+
+      def render_w2(erb, model:, locals: {})
+        ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/a\", " \
+                  "builder: Poetry::Ui::FormBuilder) do |form| %>#{erb}<% end %>",
+          locals: { model: model, **locals }, layout: false
+        )
+      end
+
+      def test_input_infers_from_name_heuristics_column_types_and_validators
+        html = render_w2("<%= form.input(:email) %><%= form.input(:body) %>" \
+                         "<%= form.input(:title) %><%= form.input(:quantity) %>",
+                         model: Article.new)
+
+        assert_includes html[/<input[^>]*\[email\][^>]*>/], 'type="email"', "name heuristic"
+        assert_includes html, "<textarea", "text column type"
+        assert_includes html[/<input[^>]*\[title\][^>]*>/], 'maxlength="80"', "length validator"
+        number = html[/<input[^>]*type="number"[^>]*>/]
+
+        assert_includes number, 'min="1"'
+        assert_includes number, 'max="99"'
+        assert_includes number, 'step="1"'
+      end
+
+      def test_input_boolean_renders_the_horizontal_field_and_switch_the_setting_row
+        html = render_w2("<%= form.input(:published) %>", model: Article.new(published: true))
+
+        assert_includes html, 'data-orientation="horizontal"'
+        assert_includes html, 'role="checkbox"'
+
+        switched = render_w2("<%= form.input(:published, switch: true) %>", model: Article.new)
+
+        assert_includes switched, 'data-orientation="setting"'
+        assert_includes switched, 'role="switch"'
+      end
+
+      def test_input_collection_and_as_overrides
+        html = render_w2("<%= form.input(:title, collection: [[\"Draft\", \"draft\"]]) %>" \
+                         "<%= form.input(:body, as: :string) %>", model: Article.new)
+
+        assert_includes html, 'data-slot="select"'
+        assert_includes html[/<input[^>]*\[body\][^>]*>/].to_s, 'type="text"', "as: beats the column type"
+      end
+
+      def test_input_datetime_raises_with_guidance
+        error = assert_raises(ActionView::Template::Error) do
+          render_w2("<%= form.input(:created_at) %>", model: Timestamped.new)
+        end
+
+        assert_match(/as: :date or as: :time/, error.message)
+      end
+
+      class Timestamped
+        include ActiveModel::Model
+        include ActiveModel::Attributes
+
+        attribute :created_at, :datetime
+      end
+
+      def test_input_hint_reads_the_poetry_form_then_simple_form_i18n_chain
+        I18n.backend.store_translations(:en,
+                                        poetry_form: { hints: {
+                                          "poetry/ui/forms_test/article": { email: "From poetry_form." }
+                                        } })
+        I18n.backend.store_translations(:en,
+                                        simple_form: { hints: {
+                                          "poetry/ui/forms_test/article": { title: "From simple_form." }
+                                        } })
+
+        html = render_w2("<%= form.input(:email) %><%= form.input(:title) %>", model: Article.new)
+
+        assert_includes html, "From poetry_form."
+        assert_includes html, "From simple_form.", "simple_form locale keys keep working"
+      end
+
+      # -- association stubs (no database) ---------------------------------
+
+      FakeCompany = Struct.new(:id, :name)
+      FakeReflection = Struct.new(:macro, :klass, :foreign_key, keyword_init: true)
+
+      class FakeCompanyRelation
+        def self.all = [FakeCompany.new(1, "Initech"), FakeCompany.new(2, "Acme")]
+      end
+
+      class Employment
+        include ActiveModel::Model
+
+        attr_accessor :company_id, :team_ids
+
+        def self.reflect_on_association(name)
+          case name
+          when :company then FakeReflection.new(macro: :belongs_to, klass: FakeCompanyRelation,
+                                                foreign_key: "company_id")
+          when :teams then FakeReflection.new(macro: :has_many, klass: FakeCompanyRelation, foreign_key: nil)
+          end
+        end
+      end
+
+      def test_association_belongs_to_renders_a_combobox_on_the_foreign_key
+        html = render_w2("<%= form.association(:company) %>", model: Employment.new(company_id: 2))
+
+        assert_includes html, 'data-slot="combobox"'
+        assert_includes html, %(name="poetry_ui_forms_test_employment[company_id]")
+        assert_includes html, "Initech"
+        assert_match(/Acme/, html)
+      end
+
+      def test_association_collection_macro_renders_the_checkbox_group_on_ids
+        html = render_w2("<%= form.association(:teams) %>", model: Employment.new(team_ids: [1]))
+
+        assert_includes html, %(name="poetry_ui_forms_test_employment[team_ids][]")
+        assert_includes html, 'data-controller="poetry--core--checkbox-group"'
+        assert_match(/checked[^>]*value="1"|value="1"[^>]*checked/, html)
+      end
+
+      def test_association_as_radio_group_flips_the_pair_order
+        html = render_w2("<%= form.association(:company, as: :radio_group) %>", model: Employment.new)
+
+        assert_includes html, 'role="radiogroup"'
+        assert_match(/value="1"/, html)
+        assert_includes html, "Initech", "labels stay labels after the flip"
+      end
+
+      def test_association_errors_flow_through_the_dual_key_lookup
+        model = Employment.new
+        model.errors.add(:company, "must exist")
+        html = render_w2("<%= form.association(:company) %>", model: model)
+
+        assert_includes html, "Company must exist"
+        assert_includes html, 'data-invalid="true"'
+      end
+
+      def test_required_skips_conditional_and_mismatched_context_validators
+        model_class = Class.new do
+          include ActiveModel::Model
+
+          attr_accessor :nick, :tos
+
+          def self.name = "ContextModel"
+          validates :nick, presence: true, on: :update
+          validates :tos, presence: true, if: -> { false }
+        end
+        html = ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/c\", builder: Poetry::Ui::FormBuilder) do |form| %>" \
+                  "<%= form.field(:nick) %><%= form.field(:tos) %><% end %>",
+          locals: { model: model_class.new }, layout: false
+        )
+
+        refute_includes html, "aria-required", "on: :update never claims required on a new record; " \
+                                               "conditional validators never claim it at all"
+      end
     end
   end
 end
