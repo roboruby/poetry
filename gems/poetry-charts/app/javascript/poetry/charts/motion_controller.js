@@ -44,11 +44,32 @@ export default class ChartMotionController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry--charts--motion:settled"]
 
+  #onBeforeRender = null
+  #onTurboMorph = null
+
   connect() {
     this.svg = this.element.querySelector('[data-slot="chart-svg"]')
     if (!this.svg) return
     this.chartId = this.element.closest("[data-chart]")?.dataset.chart
 
+    // A Turbo PAGE morph preserves this element (no disconnect/connect),
+    // yet replaces the SVG - without these hooks the fresh render replays
+    // the CSS entrance from blank (the area chart's scaleX(0) frame).
+    // Capture geometry before the morph, then rejoin the normal flow.
+    this.#onBeforeRender = (event) => {
+      if (event.detail?.renderMethod !== "morph") return
+      if (this.chartId && this.svg?.isConnected) {
+        registry.set(this.chartId, { at: performance.now(), entries: captureGeometry(this.svg) })
+      }
+    }
+    this.#onTurboMorph = () => this.#restartAfterTurboMorph()
+    document.addEventListener("turbo:before-render", this.#onBeforeRender)
+    document.addEventListener("turbo:morph", this.#onTurboMorph)
+
+    this.#start()
+  }
+
+  #start() {
     if (!this.svg.hasAttribute("data-animate") || this.#reducedMotion()) {
       this.#settle()
       return
@@ -61,7 +82,19 @@ export default class ChartMotionController extends Controller {
     else this.#watchCssEntrance()
   }
 
+  #restartAfterTurboMorph() {
+    const svg = this.element.querySelector('[data-slot="chart-svg"]')
+    if (!svg) return
+
+    this.cancel?.()
+    this.cancel = null
+    this.svg = svg
+    this.#start()
+  }
+
   disconnect() {
+    document.removeEventListener("turbo:before-render", this.#onBeforeRender)
+    document.removeEventListener("turbo:morph", this.#onTurboMorph)
     this.cancel?.()
     this.cancel = null
     if (this.chartId && this.svg) {
