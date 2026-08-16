@@ -51,7 +51,26 @@ module Poetry
       # screen from a vetted composition without another fetch.
       def full
         sections = @registry.entries.map { |path, entry| component_section(path, entry) }
-        "#{PREAMBLE}\n#{sections.join("\n")}#{blocks_full}"
+        "#{PREAMBLE}\n#{sections.join("\n")}#{forms_full}#{blocks_full}"
+      end
+
+      # The Forms section (the registry's optional form_builder surface):
+      # the model-bound builder rules + method table, so an agent writing a
+      # form reaches for f.input before hand-composing Fields.
+      def forms_full
+        surface = @registry.respond_to?(:form_builder) ? @registry.form_builder : nil
+        return "" unless surface&.any?
+
+        lines = ["\n## Forms (Poetry::Ui::FormBuilder)\n"]
+        Array(surface["rules"]).each { |rule| lines << "- #{rule}" }
+        if (methods = surface["methods"])&.any?
+          lines << "\nBuilder methods:"
+          methods.each { |name, summary| lines << "- `f.#{name}` - #{summary}" }
+        end
+        if (types = surface["input_types"])&.any?
+          lines << "\n`f.input as:` values: #{types.join(", ")}."
+        end
+        "#{lines.join("\n")}\n"
       end
 
       private

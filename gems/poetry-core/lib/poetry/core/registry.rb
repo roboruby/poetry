@@ -30,9 +30,10 @@ module Poetry
       # source_root), so boot-free consumers (the MCP server, runtime skill
       # delivery) share one loader instead of each parsing the payload.
       class Committed
-        attr_reader :entries, :blocks, :helpers, :helper_args, :source_root
+        attr_reader :entries, :blocks, :helpers, :helper_args, :form_builder, :source_root
 
-        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:)
+        def initialize(entries:, blocks:, helpers:, helper_args:, source_root:, form_builder: nil)
+          @form_builder = form_builder
           @entries = entries
           @blocks = blocks
           @helpers = helpers
@@ -46,7 +47,7 @@ module Poetry
         payload = YAML.load_file(source_root.join(RELATIVE_PATH), aliases: true)
         Committed.new(entries: payload.fetch("components"), blocks: payload["blocks"],
                       helpers: payload["helpers"], helper_args: payload["helper_args"],
-                      source_root: source_root)
+                      form_builder: payload["form_builder"], source_root: source_root)
       end
 
       # @param components [Enumerable<Class>, nil] component classes; defaults
@@ -77,15 +78,24 @@ module Poetry
       #   component_path (the gem's editorial component_descriptions.yml),
       #   merged into each entry as "description" - the summary llms.txt, the
       #   MCP describe_component, and the docs page all read from one source.
+      # @param form_builder [Hash, nil] the gem's FormBuilder surface
+      #   ({"rules" => [...], "methods" => {name => one-liner}, "input_types"
+      #   => [...]}) - emitted as the registry's "form_builder" section so
+      #   llms.txt, the MCP server, and skills can teach the model-bound
+      #   form story without booting the gem. Optional like every other
+      #   section: absent -> the registry stays byte-identical.
+      # rubocop:disable Metrics/ParameterLists -- one keyword per optional registry section
       def initialize(components: nil, source_root: Poetry::Core.root, helpers: nil, blocks: nil,
-                     helper_args: nil, descriptions: nil)
+                     helper_args: nil, descriptions: nil, form_builder: nil)
         @source_root = Pathname.new(source_root)
         @components = (components || discover).sort_by(&:name)
         @helpers = helpers
         @blocks = blocks
         @helper_args = helper_args
         @descriptions = descriptions
+        @form_builder = form_builder
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # The discovered component classes (the registry's working set).
       attr_reader :components
@@ -93,6 +103,10 @@ module Poetry
       # The block catalog and the root template paths resolve against -
       # LlmsText reads both to inline block source into llms-full.txt.
       attr_reader :blocks, :source_root
+
+      # The FormBuilder surface (optional section) - LlmsText renders it as
+      # the Forms section.
+      attr_reader :form_builder
 
       def entries
         @components.to_h { |component| [component.component_path, entry_for(component)] }
@@ -103,6 +117,7 @@ module Poetry
         payload["helpers"] = plain(@helpers.sort.to_h) if @helpers&.any?
         payload["blocks"] = plain(@blocks.sort.to_h) if @blocks&.any?
         payload["helper_args"] = plain(@helper_args.sort.to_h) if @helper_args&.any?
+        payload["form_builder"] = plain(@form_builder) if @form_builder&.any?
         HEADER + YAML.dump(payload)
       end
 
