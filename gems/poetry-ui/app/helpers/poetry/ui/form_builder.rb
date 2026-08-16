@@ -70,6 +70,7 @@ module Poetry
       # controls get dedicated methods (radio_group, slider, otp_field).
       def field(method, as: :input, hint: nil, **input_options)
         field_component = field_for(method, hint: hint,
+                                            label: input_options.delete(:label),
                                             orientation: input_options.delete(:orientation),
                                             hint_position: input_options.delete(:hint_position))
         control_options = {
@@ -684,11 +685,11 @@ module Poetry
                        .transform_keys(&:to_sym)
       end
 
-      def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil)
+      def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil, label: nil)
         extras = { orientation: orientation, hint_position: hint_position }.compact
         Field::Component.new(
           id: field_id(method),
-          label_text: object.class.human_attribute_name(method),
+          label_text: label || object.class.human_attribute_name(method),
           hint: hint,
           error: error_for(method),
           required: required?(method),
