@@ -691,6 +691,7 @@ module Poetry
                        .transform_keys(&:to_sym)
       end
 
+      # rubocop:disable Metrics/ParameterLists -- one keyword per Field surface
       def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil, label: nil)
         extras = { orientation: orientation, hint_position: hint_position }.compact
         Field::Component.new(
@@ -703,6 +704,7 @@ module Poetry
           **extras
         )
       end
+      # rubocop:enable Metrics/ParameterLists
 
       # Shared derivation for the toggle-family builder methods: everything
       # from the object, never hand-wired. required maps to aria-required
