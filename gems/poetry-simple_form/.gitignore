@@ -1,0 +1,4 @@
+Gemfile.lock
+coverage/
+test/dummy/tmp/
+test/dummy/log/
