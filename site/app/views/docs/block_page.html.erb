@@ -37,9 +37,21 @@
            else
              "max-h-[36rem] overflow-auto rounded-lg border p-8"
            end %>
-        <div class="<%= preview_classes %>">
-          <%= render inline: @source %>
-        </div>
+        <%# The stepper is server-driven (?step=N links): a Turbo Frame
+            scopes those navigations to the preview, so clicking Continue
+            re-renders the block in place instead of reloading the page
+            to the top - the same embedding a host app would use. %>
+        <% if @entry.slug == "stepper" %>
+          <%= turbo_frame_tag "stepper-preview" do %>
+            <div class="<%= preview_classes %>">
+              <%= render inline: @source %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="<%= preview_classes %>">
+            <%= render inline: @source %>
+          </div>
+        <% end %>
       <% end %>
       <% tabs.with_tab("Code", value: "code") do %>
         <%= highlight_erb(@source) %>
