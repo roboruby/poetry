@@ -28,6 +28,11 @@ class DocsCatalog
               description: "Heading, paragraph, list, table, and inline-text recipes on poetry " \
                            "tokens — class strings transcribed from upstream at the pin. Fonts " \
                            "ride the theme: the same markup goes mono under lyra, serif under sera."),
+    Entry.new(slug: "forms", title: "Forms", section: "docs", icon: :pencil,
+              description: "The model-bound FormBuilder: form_with(builder:) + f.input for one-call " \
+                           "fields - label, value, errors, aria, and validation attributes all derived " \
+                           "from the object; type inference into poetry's vocabulary, f.association, " \
+                           "and the poetry_form -> simple_form i18n chain."),
     Entry.new(slug: "deferred", title: "Deferred Regions", section: "docs", icon: :timer,
               description: "poetry_deferred(src:) — Turbo owns the loading physics (lazy fetches " \
                            "on visibility, so hidden Tabs panels and HoverCards defer for free); " \

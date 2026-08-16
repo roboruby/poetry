@@ -33,6 +33,12 @@ class DocsController < ApplicationController
     render layout: false
   end
 
+  def forms
+    @entry = DocsCatalog.docs.find { |entry| entry.slug == "forms" }
+    @examples = helpers.docs_examples_for("docs", "forms")
+    render template: "docs/page"
+  end
+
   def optimistic_forms
     @entry = DocsCatalog.docs.find { |entry| entry.slug == "optimistic-forms" }
     @examples = helpers.docs_examples_for("docs", "optimistic-forms")

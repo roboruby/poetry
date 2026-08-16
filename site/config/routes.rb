@@ -16,6 +16,7 @@ Rails.application.routes.draw do
   get "deferred" => "docs#deferred", as: :deferred
   get "deferred/fragment" => "docs#deferred_fragment", as: :deferred_fragment
   get "optimistic-forms" => "docs#optimistic_forms", as: :optimistic_forms
+  get "forms" => "docs#forms", as: :forms
   post "optimistic-forms/favorite" => "docs#optimistic_favorite", as: :optimistic_favorite
   post "optimistic-forms/rejected" => "docs#optimistic_rejected", as: :optimistic_rejected
   get "editors" => "docs#editors", as: :editors

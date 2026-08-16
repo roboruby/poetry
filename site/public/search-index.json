@@ -126,6 +126,36 @@
     "path": "/typography#small"
   },
   {
+    "title": "Forms",
+    "page": "Forms",
+    "section": "docs",
+    "path": "/forms"
+  },
+  {
+    "title": "Default",
+    "page": "Forms",
+    "section": "docs",
+    "path": "/forms#default"
+  },
+  {
+    "title": "Errors",
+    "page": "Forms",
+    "section": "docs",
+    "path": "/forms#errors"
+  },
+  {
+    "title": "Inference",
+    "page": "Forms",
+    "section": "docs",
+    "path": "/forms#inference"
+  },
+  {
+    "title": "Layout",
+    "page": "Forms",
+    "section": "docs",
+    "path": "/forms#layout"
+  },
+  {
     "title": "Deferred Regions",
     "page": "Deferred Regions",
     "section": "docs",
