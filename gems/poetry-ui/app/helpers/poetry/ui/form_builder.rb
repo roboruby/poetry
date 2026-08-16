@@ -429,6 +429,12 @@ module Poetry
         field(method, as: :textarea, hint: hint, **)
       end
 
+      # Rails' range_field IS poetry's Slider (a naked native range would
+      # silently bypass the Field quartet).
+      def range_field(method, hint: nil, **)
+        slider(method, hint: hint, **)
+      end
+
       # form.search_field(:query) - a Field wrapping the SearchField
       # (native type=search + the clear affordance).
       def search_field(method, hint: nil, **options)

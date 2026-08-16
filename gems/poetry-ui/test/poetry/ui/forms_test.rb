@@ -688,6 +688,12 @@ module Poetry
         assert_includes html, 'role="radiogroup"'
       end
 
+      def test_range_field_maps_to_the_slider
+        html = render_snippet("<%= form.range_field(:email) %>")
+
+        assert_includes html, 'data-slot="slider"', "range_field renders the Slider, never a naked native range"
+      end
+
       def test_submit_renders_a_poetry_button_with_the_rails_default_label
         html = render_snippet("<%= form.submit %>")
 

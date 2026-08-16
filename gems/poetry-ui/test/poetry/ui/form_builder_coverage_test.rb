@@ -39,9 +39,14 @@ module Poetry
         "time_field" => :time_field
       }.freeze
 
-      # Not form participants: display, overlay, navigation, layout-only,
-      # and infrastructure components. A component moving OUT of this list
-      # must gain a BUILDER_MAPPED entry.
+      # Not model-attribute form controls: display, overlay, navigation,
+      # layout-only, and infrastructure components. A component moving OUT
+      # of this list must gain a BUILDER_MAPPED entry. Two conscious
+      # non-mappings verified 2026-08-16: data_table DOES post
+      # (selection_name[] row checkboxes) but as a collection operation,
+      # never a model attribute; questionnaire OWNS whole forms (a flow,
+      # not a control). toggle/toggle_group/tree carry no name: at all
+      # (pressed/selection state is view state).
       FORM_EXEMPT = %w[
         accordion alert alert_dialog aspect_ratio attachment avatar badge
         breadcrumb bubble button_group card carousel clipboard_text
