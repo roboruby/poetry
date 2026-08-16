@@ -20,7 +20,9 @@ module Poetry
       # Own-line controls slot in as as: values; group-shaped
       # controls get dedicated methods (radio_group, slider, otp_field).
       def field(method, as: :input, hint: nil, **input_options)
-        field_component = field_for(method, hint: hint)
+        field_component = field_for(method, hint: hint,
+                                            orientation: input_options.delete(:orientation),
+                                            hint_position: input_options.delete(:hint_position))
         control_options = {
           name: field_name(method),
           value: object.public_send(method).presence&.to_s,
@@ -282,6 +284,237 @@ module Poetry
         end
       end
 
+      # -- Rails-parity typed inputs ------------------------------------
+      # The stock helper names answer with poetry Fields: text_field ->
+      # field(type: :text) etc. password_field NEVER round-trips the value
+      # (Rails' own behavior); revealable SECRETS (API keys) are
+      # sensitive_input, login passwords stay type=password here.
+      { text_field: :text, email_field: :email, url_field: :url,
+        telephone_field: :tel }.each do |helper, type|
+        define_method(helper) do |method, hint: nil, **options|
+          field(method, hint: hint, type: type, **options)
+        end
+      end
+      alias phone_field telephone_field
+
+      def password_field(method, hint: nil, **)
+        field(method, hint: hint, type: :password, value: nil, **)
+      end
+
+      def text_area(method, hint: nil, **)
+        field(method, as: :textarea, hint: hint, **)
+      end
+
+      # form.search_field(:query) - a Field wrapping the SearchField
+      # (native type=search + the clear affordance).
+      def search_field(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render SearchField::Component.new(
+            name: field_name(method),
+            value: object.public_send(method).presence&.to_s,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # form.sensitive_input(:api_key) - the revealable-secret story
+      #: masked at rest, reveal + optional copy:.
+      def sensitive_input(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render SensitiveInput::Component.new(
+            name: field_name(method),
+            value: object.public_send(method).presence&.to_s,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { described_by: describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # form.autocomplete(:city, %w[...]) - the input IS the value
+      # (suggestions are conveniences, not constraints); items from the
+      # suggestions array ([label, value] pairs or bare strings) or a
+      # block of auto.with_item calls.
+      def autocomplete(method, suggestions = nil, hint: nil, **options, &block)
+        field_component = field_for(method, hint: hint)
+        control = {
+          name: field_name(method),
+          value: object.public_send(method).presence&.to_s,
+          **options.transform_keys(&:to_sym),
+          **field_component.control_attributes.transform_keys(&:to_sym)
+        }
+        @template.render(field_component) do
+          @template.render(Autocomplete::Component.new(**control)) do |auto|
+            Array(suggestions).each do |choice|
+              label, value = choice.is_a?(Array) ? choice : [choice.to_s, nil]
+              auto.with_item(label: label, **(value ? { value: value } : {}))
+            end
+            block&.call(auto)
+          end
+        end
+      end
+
+      # form.native_select(:country, [["USA", "us"], ...]) - the styled
+      # NATIVE <select> (zero JS); poetry_select/poetry_combobox stay the
+      # rich paths. include_blank: posts "" (Rails semantics).
+      def native_select(method, choices = nil, include_blank: nil, hint: nil, **options)
+        field_component = field_for(method, hint: hint)
+        pairs = Array(choices).map { |c| c.is_a?(Array) ? c : [c.to_s, c] }
+        pairs.unshift([include_blank.is_a?(String) ? include_blank : "", ""]) if include_blank
+        describedby = field_component.control_attributes["aria-describedby"]
+        @template.render(field_component) do
+          @template.render NativeSelect::Component.new(
+            name: field_name(method),
+            options: pairs,
+            selected: object.public_send(method).presence&.to_s,
+            invalid: field_component.invalid?,
+            id: field_component.control_attributes["id"],
+            **(describedby ? { "aria-describedby": describedby } : {}),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # form.tag_group(:topics) - the removable-chips story for an ARRAY
+      # attribute: one hidden name[] per tag, plus the leading empty
+      # hidden (Rails array convention: removing every tag still clears).
+      def tag_group(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint, group: true)
+        values = Array(object.public_send(method)).map(&:to_s)
+        @template.hidden_field_tag(field_name(method, multiple: true), "", id: nil) +
+          @template.render(field_component) do
+            @template.render(TagGroup::Component.new(
+                               name: field_name(method),
+                               label: field_component.label_text,
+                               **group_control_attributes(field_component).except(:"aria-labelledby"),
+                               **options.transform_keys(&:to_sym)
+                             )) do |group|
+              values.each { |value| group.with_tag(value: value, text: value) }
+            end
+          end
+      end
+
+      # The collection_check_boxes-equivalent: a Field(group) wrapping the
+      # APG select-all group (DD sweep) - items post name[] and the
+      # leading empty hidden clears when none are checked. select_all:
+      # true (or a label string) adds the mixed-state parent checkbox.
+      def checkbox_group(method, collection, hint: nil, select_all: false, **options)
+        field_component = field_for(method, hint: hint, group: true)
+        chosen = Array(object.public_send(method)).map(&:to_s)
+        base_id = field_id(method)
+        @template.hidden_field_tag(field_name(method, multiple: true), "", id: nil) +
+          @template.render(field_component) do
+            @template.poetry_checkbox_group(
+              class: "flex flex-col gap-2",
+              **group_control_attributes(field_component).slice(:id, :"aria-labelledby"),
+              **options.transform_keys(&:to_sym)
+            ) do
+              rows = []
+              rows << checkbox_group_all_row(base_id, select_all) if select_all
+              rows.concat(checkbox_group_item_rows(method, collection, chosen, base_id))
+              @template.safe_join(rows)
+            end
+          end
+      end
+
+      # form.date_picker(:due_on) - the calendar-popup pick; value posts
+      # ISO like date_field. (Quartet ids land on the composed control's
+      # root for now - the input-level aria refinement comes later.)
+      def date_picker(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint, group: true)
+        @template.render(field_component) do
+          @template.render DatePicker::Component.new(
+            name: field_name(method),
+            value: object.public_send(method).presence&.to_s,
+            **group_control_attributes(field_component).slice(:id, :"aria-describedby"),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # form.calendar(:starts_on) - the always-visible month grid as a
+      # form participant (mode: :range posts name[]).
+      def calendar(method, hint: nil, **options)
+        field_component = field_for(method, hint: hint, group: true)
+        value = object.public_send(method)
+        @template.render(field_component) do
+          @template.render Calendar::Component.new(
+            name: field_name(method),
+            value: value.is_a?(Array) ? value.map(&:to_s) : value.presence&.to_s,
+            **group_control_attributes(field_component).slice(:id, :"aria-describedby"),
+            **options.transform_keys(&:to_sym)
+          )
+        end
+      end
+
+      # -- Rails-arity adapters -----------------------------------------
+
+      # ActionView's select arity adapted onto poetry_select.
+      def select(method, choices = nil, options = {}, html_options = {}, &)
+        poetry_select(method, choices,
+                      include_blank: options[:include_blank] || options[:prompt],
+                      **html_options.transform_keys(&:to_sym), &)
+      end
+
+      # rubocop:disable Metrics/ParameterLists -- the ActionView arity, verbatim
+      def collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
+        pairs = collection.map { |item| [item.public_send(text_method), item.public_send(value_method)] }
+        poetry_select(method, pairs,
+                      include_blank: options[:include_blank] || options[:prompt],
+                      **html_options.transform_keys(&:to_sym))
+      end
+      # rubocop:enable Metrics/ParameterLists
+
+      def collection_radio_buttons(method, collection, value_method, text_method, **)
+        pairs = collection.map { |item| [item.public_send(value_method), item.public_send(text_method)] }
+        radio_group(method, pairs, **)
+      end
+
+      def collection_check_boxes(method, collection, value_method, text_method, **)
+        pairs = collection.map { |item| [item.public_send(value_method), item.public_send(text_method)] }
+        checkbox_group(method, pairs, **)
+      end
+
+      # -- Actions ------------------------------------------------------
+
+      # form.submit -> a poetry Button (type submit); label from Rails'
+      # own i18n default ("Create Model" / "Update Model"). loading: true
+      # opts into the Button loading treatment.
+      def submit(value = nil, **options)
+        value ||= submit_default_value
+        @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { value }
+      end
+
+      def button(value = nil, **options, &block)
+        content = block ? @template.capture(&block) : value || submit_default_value
+        @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { content }
+      end
+
+      # -- Layout -------------------------------------------------------
+
+      # form.fieldset(legend: "Shipping") { |f| ... } - the grouped-fields
+      # frame; yields the builder for nesting.
+      def fieldset(legend:, hint: nil, **options, &block)
+        @template.render(Fieldset::Component.new(legend: legend, hint: hint,
+                                                 **options.transform_keys(&:to_sym))) do
+          @template.capture(self, &block)
+        end
+      end
+
+      # form.group { |f| ... } - the FieldGroup stack (the @container the
+      # responsive Field orientation measures against).
+      def group(**options, &block)
+        @template.render(FieldGroup::Component.new(**options.transform_keys(&:to_sym))) do
+          @template.capture(self, &block)
+        end
+      end
+
       private
 
       # Rails choice shapes -> Select parts: a Hash groups (label part per
@@ -328,14 +561,16 @@ module Poetry
                        .transform_keys(&:to_sym)
       end
 
-      def field_for(method, hint: nil, group: false)
+      def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil)
+        extras = { orientation: orientation, hint_position: hint_position }.compact
         Field::Component.new(
           id: field_id(method),
           label_text: object.class.human_attribute_name(method),
           hint: hint,
           error: error_for(method),
           required: required?(method),
-          group: group
+          group: group,
+          **extras
         )
       end
 
@@ -354,6 +589,31 @@ module Poetry
         }
       end
 
+      # The checkbox-group rows (extracted for the coverage the builder
+      # method reads better without).
+      def checkbox_group_all_row(base_id, select_all)
+        all_id = "#{base_id}_all"
+        @template.content_tag(:div, class: "flex items-center gap-2") do
+          @template.poetry_checkbox_group_all(id: all_id) +
+            @template.poetry_label(for_id: all_id) do
+              select_all.is_a?(String) ? select_all : "All"
+            end
+        end
+      end
+
+      def checkbox_group_item_rows(method, collection, chosen, base_id)
+        collection.map do |item|
+          value, label = item.is_a?(Array) ? item : [item, item.to_s.humanize]
+          item_id = "#{base_id}_#{value.to_s.parameterize(separator: "_")}"
+          @template.content_tag(:div, class: "flex items-center gap-2") do
+            @template.poetry_checkbox_group_item(
+              name: field_name(method, multiple: true), value: value.to_s,
+              checked: chosen.include?(value.to_s), unchecked_value: nil, id: item_id
+            ) + @template.poetry_label(for_id: item_id) { label.to_s }
+          end
+        end
+      end
+
       def error_for(method)
         object.errors.full_messages_for(method).first if object.respond_to?(:errors)
       end
@@ -361,6 +621,24 @@ module Poetry
       def required?(method)
         object.class.respond_to?(:validators_on) &&
           object.class.validators_on(method).any? { |validator| validator.kind == :presence }
+      end
+
+      # The Rails 8 respellings (the vcf coverage lesson): ActionView 8
+      # aliases textarea/checkbox at ITS class body, so a subclass override
+      # of the old name never reaches them - define both, version-gated.
+      if ActionView::VERSION::MAJOR >= 8
+
+        public
+
+        def textarea(method, hint: nil, **) = text_area(method, hint: hint, **)
+
+        def checkbox(method, options = {}, checked_value = "1", unchecked_value = "0")
+          check_box(method, options, checked_value, unchecked_value)
+        end
+
+        def collection_checkboxes(method, collection, value_method, text_method, **)
+          collection_check_boxes(method, collection, value_method, text_method, **)
+        end
       end
     end
   end

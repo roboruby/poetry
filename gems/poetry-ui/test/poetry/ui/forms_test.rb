@@ -567,6 +567,153 @@ module Poetry
       ensure
         I18n.reload!
       end
+      # -- Wave 1: Rails-parity + roster coverage ---------------------------
+
+      class RosterProfile
+        include ActiveModel::Model
+
+        attr_accessor :email, :password, :bio, :query, :api_key, :city, :country,
+                      :topics, :roles, :due_on, :starts_on, :volume
+
+        validates :email, presence: true
+      end
+
+      def render_snippet(erb, model: RosterProfile.new)
+        ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/profiles\", " \
+                  "builder: Poetry::Ui::FormBuilder) do |form| %>#{erb}<% end %>",
+          locals: { model: model }, layout: false
+        )
+      end
+
+      def test_typed_inputs_map_to_input_types_and_password_never_round_trips
+        html = render_snippet(
+          "<%= form.email_field(:email) %><%= form.password_field(:password) %>",
+          model: RosterProfile.new(email: "a@b.c", password: "hunter2")
+        )
+
+        assert_includes html[/<input[^>]*\[email\][^>]*>/], 'type="email"'
+        password = html[/<input[^>]*\[password\][^>]*>/]
+
+        assert_includes password, 'type="password"'
+        refute_includes password, "hunter2", "password values never round-trip"
+      end
+
+      def test_text_area_and_rails8_respelling_render_a_textarea_field
+        html = render_snippet("<%= form.text_area(:bio) %>")
+
+        assert_includes html, "<textarea"
+        assert_includes html, %(name="poetry_ui_forms_test_roster_profile[bio]")
+
+        skip unless ActionView::VERSION::MAJOR >= 8
+
+        respelled = render_snippet("<%= form.textarea(:bio) %><%= form.checkbox(:query) %>")
+
+        assert_includes respelled, "<textarea"
+        assert_includes respelled, 'role="checkbox"'
+      end
+
+      def test_search_and_sensitive_fields_wear_the_quartet_wiring
+        html = render_snippet("<%= form.search_field(:query) %>" \
+                              "<%= form.sensitive_input(:api_key, hint: \"Keep it secret.\") %>",
+                              model: RosterProfile.new(api_key: "sk-123"))
+
+        assert_includes html, 'type="search"'
+        assert_includes html, "Keep it secret."
+        assert_includes html, "sk-123"
+      end
+
+      def test_autocomplete_renders_suggestions_with_the_input_as_value
+        html = render_snippet("<%= form.autocomplete(:city, [\"Lisbon\", [\"Porto\", \"porto\"]]) %>",
+                              model: RosterProfile.new(city: "Lis"))
+
+        assert_includes html, 'data-slot="autocomplete"'
+        assert_includes html, 'value="Lis"'
+        assert_includes html, 'data-label="Lisbon"'
+        assert_includes html, 'data-value="porto"'
+      end
+
+      def test_native_select_maps_choices_and_include_blank
+        html = render_snippet("<%= form.native_select(:country, [[\"USA\", \"us\"]], include_blank: \"Choose...\") %>",
+                              model: RosterProfile.new(country: "us"))
+
+        assert_includes html, "<select"
+        assert_includes html, "Choose..."
+        assert_match(/value="us"[^>]*selected/, html)
+      end
+
+      def test_tag_group_posts_array_semantics_with_the_clearing_hidden
+        html = render_snippet("<%= form.tag_group(:topics) %>", model: RosterProfile.new(topics: %w[ruby rails]))
+
+        assert_includes html, %(name="poetry_ui_forms_test_roster_profile[topics][]" value=""),
+                        "the leading clear-all hidden"
+        assert_includes html, "ruby"
+        assert_includes html, "rails"
+      end
+
+      def test_checkbox_group_checks_from_the_model_array_without_per_item_hiddens
+        html = render_snippet("<%= form.checkbox_group(:roles, [[\"admin\", \"Admin\"], " \
+                              "[\"editor\", \"Editor\"]], select_all: true) %>",
+                              model: RosterProfile.new(roles: %w[admin]))
+
+        boxes = html.scan(/<input[^>]*\[roles\]\[\][^>]*>/)
+        hidden_clears = boxes.count { |b| b.include?('type="hidden"') && b.include?('value=""') }
+
+        assert_equal 1, hidden_clears, "exactly ONE clearing hidden - never per-item unchecked pairs"
+        assert_includes html, %(>Admin</label>)
+        assert_match(/checked[^>]*value="admin"|value="admin"[^>]*checked/, html)
+        assert_includes html, 'data-poetry--core--checkbox-group-target="all"', "the select-all parent"
+      end
+
+      def test_date_picker_and_calendar_map_as_group_fields
+        html = render_snippet("<%= form.date_picker(:due_on) %><%= form.calendar(:starts_on) %>",
+                              model: RosterProfile.new(due_on: "2026-06-12"))
+
+        assert_includes html, 'data-slot="date-picker"'
+        assert_includes html, 'data-slot="calendar"'
+        assert_includes html, "2026-06-12"
+      end
+
+      def test_rails_arity_select_and_collection_adapters
+        struct = Struct.new(:id, :label_name)
+        rows = [struct.new(1, "One"), struct.new(2, "Two")]
+        html = ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/p\", builder: Poetry::Ui::FormBuilder) do |form| %>" \
+                  "<%= form.collection_select(:country, rows, :id, :label_name, include_blank: true) %>" \
+                  "<%= form.collection_radio_buttons(:city, rows, :id, :label_name) %><% end %>",
+          locals: { model: RosterProfile.new, rows: rows }, layout: false
+        )
+
+        assert_includes html, "One"
+        assert_includes html, 'role="radiogroup"'
+      end
+
+      def test_submit_renders_a_poetry_button_with_the_rails_default_label
+        html = render_snippet("<%= form.submit %>")
+
+        assert_match(/<button[^>]*type="submit"/, html)
+        assert_includes html, "Create Roster profile"
+      end
+
+      def test_fieldset_and_group_yield_the_builder
+        html = render_snippet("<%= form.fieldset(legend: \"Identity\") do |f| %><%= f.field(:email) %><% end %>")
+
+        assert_includes html, "<fieldset"
+        assert_includes html, "Identity"
+        assert_includes html, %(name="poetry_ui_forms_test_roster_profile[email]")
+      end
+
+      def test_fields_for_inherits_the_poetry_builder
+        html = ApplicationController.renderer.render(
+          inline: "<%= form_with(model: model, url: \"/p\", builder: Poetry::Ui::FormBuilder) do |form| %>" \
+                  "<%= form.fields_for(:query, sub) do |subform| %><%= subform.field(:email) %><% end %><% end %>",
+          locals: { model: RosterProfile.new, sub: RosterProfile.new }, layout: false
+        )
+
+        assert_includes html, %(name="poetry_ui_forms_test_roster_profile[query][email]")
+        assert_match(/\[query\]\[email\][^>]*/, html)
+        assert_includes html, 'data-slot="field"', "the nested builder is still poetry"
+      end
     end
   end
 end

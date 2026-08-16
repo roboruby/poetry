@@ -125,7 +125,9 @@ module Poetry
           content_tag(:div, attrs) do
             content_tag(:span, { "role" => "gridcell", "class" => css(:cell) }) do
               safe_join([
-                capture(&block),
+                # text: doubles as the visible content when no block is
+                # given (the builder's model-array path renders text-only).
+                block ? capture(&block) : text.to_s,
                 (remove_button(row_id, disabled: disabled) if removable),
                 (hidden_input(value) if name.present?)
               ].compact)
