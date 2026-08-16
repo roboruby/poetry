@@ -1,0 +1,27 @@
+<%# The poetry arm: the FormBuilder end-to-end - one f.input per
+    attribute, label/value/error/required/aria/maxlength ALL derived from
+    the model; the switch is the boolean setting row; the collection
+    renders the Select. %>
+<% profile_class = Class.new do
+     include ActiveModel::Model
+     include ActiveModel::Attributes
+
+     attribute :name, :string
+     attribute :email, :string
+     attribute :email_alerts, :boolean
+     attribute :role, :string
+
+     validates :name, presence: true, length: { maximum: 50 }
+
+     def self.name = "Profile"
+   end
+   profile = profile_class.new(name: "Ada", role: "editor", email_alerts: true)
+   profile.errors.add(:email, "is invalid") %>
+<%= form_with(model: profile, url: "/profile", builder: Poetry::Ui::FormBuilder,
+              class: "flex w-full max-w-md flex-col gap-6") do |f| %>
+  <%= f.input(:name) %>
+  <%= f.input(:email) %>
+  <%= f.input(:email_alerts, switch: true, hint: "Applied the moment it flips.") %>
+  <%= f.input(:role, collection: [["Admin", "admin"], ["Editor", "editor"], ["Viewer", "viewer"]]) %>
+  <div><%= f.submit %></div>
+<% end %>

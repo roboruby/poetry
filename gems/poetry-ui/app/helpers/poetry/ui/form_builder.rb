@@ -17,6 +17,53 @@ module Poetry
     class FormBuilder < ActionView::Helpers::FormBuilder
       include TypeInference
 
+      # The agent surface (W3): flows into the registry's form_builder
+      # section and llms.txt's Forms section.
+      AGENT_RULES = [
+        "Model-bound forms use form_with(model:, builder: Poetry::Ui::FormBuilder) - inside " \
+        "them, ALWAYS the builder methods, never bare components (the builder derives label/" \
+        "value/error/required/aria from the object).",
+        "f.input(:attribute) is the default call - the type is inferred (attachment -> file, " \
+        "AR enum -> select, column type, name heuristics); as: overrides it.",
+        "f.association(:company) reflects the association - belongs_to renders a Combobox on " \
+        "the foreign key, has_many the select-all checkbox group on singular_ids.",
+        "Validations become attributes: presence -> aria-required (NEVER native required), " \
+        "length -> maxlength/minlength, numericality -> min/max/step.",
+        "Hints/placeholders resolve from poetry_form.* i18n (simple_form.* keys keep working " \
+        "as a fallback); pass hint:/placeholder: to override.",
+        "f.submit renders a poetry Button with the Rails i18n label; f.fieldset(legend:)/" \
+        "f.group lay out sections; boolean f.input renders the horizontal Field " \
+        "(switch: true -> the setting row)."
+      ].freeze
+
+      METHOD_SUMMARIES = {
+        "input" => "the inferred entrypoint: type from as:/attachments/enums/column/name",
+        "association" => "reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)",
+        "field" => "Field-wrapped Input/Textarea (as: :textarea; orientation:/hint_position: pass through)",
+        "check_box / switch" => "bare toggles (Rails check_box parity; switch = role=switch)",
+        "radio_group" => "collection_radio_buttons-equivalent on RadioGroup",
+        "checkbox_group" => "collection_check_boxes-equivalent on the select-all group (ONE clearing hidden)",
+        "poetry_select / poetry_combobox" => "the rich pickers (Rails choice shapes; combobox multiple: chips)",
+        "native_select" => "the styled native <select> (zero JS)",
+        "slider / otp_field / number_field / date_field / time_field / file_input" =>
+          "dedicated Field-wrapped controls",
+        "search_field / sensitive_input / autocomplete / tag_group / date_picker / calendar" =>
+          "the poetry-only control mappings",
+        "submit / button" => "poetry Buttons (type submit; loading: opt-in)",
+        "fieldset / group" => "layout frames yielding the builder"
+      }.freeze
+
+      # The registry's form_builder section (consumed by LlmsText's Forms
+      # section, the MCP server, and skills - boot-free from the committed
+      # registry).
+      def self.registry_section
+        {
+          "rules" => AGENT_RULES,
+          "methods" => METHOD_SUMMARIES,
+          "input_types" => (INPUT_DISPATCH.keys + TYPED_FIELDS + %i[boolean enum]).map(&:to_s)
+        }
+      end
+
       # One field entrypoint for field-shaped controls: as: :input (the
       # default, with type:) or as: :textarea (rows: passes through) -
       # Own-line controls slot in as as: values; group-shaped

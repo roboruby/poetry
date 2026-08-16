@@ -1,0 +1,42 @@
+<%# The raw-Tailwind arm - realistic, not a strawman: labels ARE wired
+    and the select is native, but required is the NATIVE attribute (the
+    double-announcement), the server error floats unassociated with no
+    aria-invalid, the length validation never reaches maxlength, and the
+    "switch" is a styled button that submits nothing. %>
+<form action="/profile" method="post" class="flex w-full max-w-md flex-col gap-5">
+  <div class="space-y-1">
+    <label for="profile-name" class="text-sm font-medium">Name</label>
+    <input id="profile-name" name="profile[name]" type="text" value="Ada" required
+           class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm" />
+  </div>
+  <div class="space-y-1">
+    <label for="profile-email" class="text-sm font-medium">Email</label>
+    <input id="profile-email" name="profile[email]" type="email"
+           class="w-full rounded-md border border-red-500 px-3 py-2 text-sm" />
+    <p class="text-sm text-red-600">is invalid</p>
+  </div>
+  <div class="flex items-center justify-between">
+    <div>
+      <p class="text-sm font-medium">Email alerts</p>
+      <p class="text-xs text-gray-500">Applied the moment it flips.</p>
+    </div>
+    <button type="button" role="switch" aria-checked="true" aria-label="Email alerts"
+            class="relative h-6 w-11 rounded-full bg-blue-600">
+      <span class="absolute top-0.5 right-0.5 h-5 w-5 rounded-full bg-white"></span>
+    </button>
+  </div>
+  <div class="space-y-1">
+    <label for="profile-role" class="text-sm font-medium">Role</label>
+    <select id="profile-role" name="profile[role]"
+            class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm">
+      <option value="admin">Admin</option>
+      <option value="editor" selected>Editor</option>
+      <option value="viewer">Viewer</option>
+    </select>
+  </div>
+  <div>
+    <button type="submit" class="rounded-md bg-gray-900 px-4 py-2 text-sm font-medium text-white">
+      Update profile
+    </button>
+  </div>
+</form>

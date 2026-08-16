@@ -108,7 +108,8 @@ module Poetry
           helpers: registry_helpers(component_paths: component_paths),
           blocks: registry_blocks(component_paths: component_paths),
           helper_args: registry_helper_args,
-          descriptions: registry_descriptions
+          descriptions: registry_descriptions,
+          form_builder: Poetry::Ui::FormBuilder.registry_section
         )
       end
 

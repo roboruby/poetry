@@ -104,6 +104,52 @@ module Poetry
             })
           ]
         },
+        "model_form" => {
+          "description" => "A model-bound profile form: required 'Name' (max 50 characters), " \
+                           "'Email' carrying the server error 'is invalid', an instant-effect " \
+                           "'Email alerts' switch, a 'Role' choice (Admin/Editor/Viewer, Editor " \
+                           "selected), and a submit button",
+          "gates" => [
+            Gate.new(:real_form, :cross_arm, ->(doc, _html) { doc.css("form").any? }),
+            Gate.new(:every_control_labelled, :cross_arm, lambda { |doc, _html|
+              # aria-hidden/-1-tabindex mirrors are serialization stores AT
+              # never reaches (poetry's hidden native select / checkbox
+              # pair) - the LABELLED surface is the composed control.
+              selector = [
+                %(input[name]:not([type=hidden]):not([aria-hidden="true"]):not([tabindex="-1"])),
+                %(textarea[name]:not([aria-hidden="true"])),
+                %(select[name]:not([aria-hidden="true"]):not([tabindex="-1"]))
+              ].join(", ")
+              doc.css(selector).all? do |control|
+                doc.css(%(label[for="#{control["id"]}"])).any? || control["aria-label"] ||
+                  control["aria-labelledby"]
+              end
+            }),
+            Gate.new(:error_associated, :cross_arm, lambda { |doc, _html|
+              invalid = doc.css(%([aria-invalid="true"])).first
+              ids = invalid ? invalid["aria-describedby"].to_s.split : []
+              ids.any? && ids.all? { |id| doc.css(%([id="#{id}"])).any? }
+            }),
+            Gate.new(:maxlength_from_validation, :cross_arm, lambda { |doc, _html|
+              doc.css(%(input[maxlength="50"])).any?
+            }),
+            Gate.new(:required_never_native, :cross_arm, lambda { |doc, _html|
+              doc.css(%([aria-required="true"])).any? && doc.css("input[required]").empty?
+            }),
+            Gate.new(:switch_participates_in_the_form, :cross_arm, lambda { |doc, _html|
+              # role=switch announcing on/off AND a real form value behind
+              # it - a div toggle that submits nothing is the raw tell.
+              doc.css(%([role="switch"])).any? &&
+                doc.css(%(input[type="checkbox"][name*="alert"], input[type="hidden"][name*="alert"])).any?
+            }),
+            Gate.new(:role_choice_semantics, :cross_arm, lambda { |doc, _html|
+              doc.css("select[name], [role=listbox], [role=radiogroup]").any?
+            }),
+            Gate.new(:submit_button, :cross_arm, lambda { |doc, _html|
+              doc.css(%(button[type="submit"], input[type="submit"])).any?
+            })
+          ]
+        },
         "form_controls" => {
           "description" => "A notification settings panel: an 'Accept terms' checkbox staged for " \
                            "submit, an instant-effect 'Email alerts' switch, a bookmark toggle, " \
