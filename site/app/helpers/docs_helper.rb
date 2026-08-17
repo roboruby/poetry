@@ -38,6 +38,20 @@ module DocsHelper
        .sort_by { |name| [ name == "default" ? 0 : 1, name ] }
   end
 
+  # The pagination Adapters section's usage snippet lives here because ERB
+  # tags can't be embedded in a Ruby string inside a template (the literal
+  # %> would close the surrounding scriptlet).
+  def pagination_adapter_usage
+    <<~ERB.strip
+      <%= paginate @products, siblings: 2 %>
+
+      <%= poetry_pagy_nav(@pagy, edges: :icons) %>
+
+      <%= will_paginate @products, renderer: PoetryLinkRenderer,
+                        poetry: { current_variant: :filled } %>
+    ERB
+  end
+
   # Example/block source panels ride the CodeBlock component: the
   # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
   # every code tab gains the copy affordance.

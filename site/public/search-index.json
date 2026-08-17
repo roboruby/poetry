@@ -2988,6 +2988,12 @@
     "path": "/components/pagination#installation"
   },
   {
+    "title": "Adapters",
+    "page": "Pagination",
+    "section": "components",
+    "path": "/components/pagination#adapters"
+  },
+  {
     "title": "Default",
     "page": "Pagination",
     "section": "components",

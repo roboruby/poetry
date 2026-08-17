@@ -1,0 +1,35 @@
+<%# The pagination-adapter surface (poetry-ui W1/W2): generated host-app
+    code, so the gems' own view layers never fight poetry's. %>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="adapters">Adapters</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Already paginating with <code class="text-foreground">kaminari</code>,
+    <code class="text-foreground">pagy</code> (v43+), or
+    <code class="text-foreground">will_paginate</code>? One generator installs an
+    adapter so those gems render this component. The adapter is generated into your
+    app — host-owned code with no extra runtime dependency, yours to edit.
+  </p>
+  <%= poetry_code_block(code: "bin/rails g poetry:pagination            # detects every loaded paginator\nbin/rails g poetry:pagination kaminari   # or name one: kaminari | pagy | will_paginate",
+                        language: "shell", label: "Install an adapter") %>
+  <p class="max-w-2xl text-muted-foreground">
+    With <code class="text-foreground">kaminari</code>, your existing
+    <code class="text-foreground">paginate @products</code> calls just work — the adapter
+    replaces kaminari's paginator template wholesale, and poetry options ride the same call.
+    With <code class="text-foreground">pagy</code>, render the nav with
+    <code class="text-foreground">poetry_pagy_nav(@pagy)</code>. With
+    <code class="text-foreground">will_paginate</code>, pass the renderer.
+  </p>
+  <%= poetry_code_block(code: pagination_adapter_usage, language: "erb", label: "Usage per gem") %>
+  <p class="max-w-2xl text-muted-foreground">
+    poetry owns the window: the visible pages come from
+    <code class="text-foreground">siblings:</code> and
+    <code class="text-foreground">edges:</code>, one look across all three gems — the gems'
+    own window options (kaminari's <code class="text-foreground">window</code> /
+    <code class="text-foreground">outer_window</code>, will_paginate's
+    <code class="text-foreground">inner_window</code>, pagy's slot count) deliberately do
+    not apply. At a single page the adapters render nothing, matching the gems'
+    own behavior. Labels stay poetry's — pass
+    <code class="text-foreground">previous_label:</code> /
+    <code class="text-foreground">next_label:</code> to localize.
+  </p>
+</section>

@@ -43,6 +43,13 @@
     </section>
   <% end %>
 
+  <%# Page-specific sections (the rare page with prose beyond the generic
+      install/examples/styling flow) live in docs/extras/_<slug>.html.erb
+      and render between installation and the examples. %>
+  <% if lookup_context.exists?("docs/extras/#{@entry.slug}", [], true) %>
+    <%= render "docs/extras/#{@entry.slug}" %>
+  <% end %>
+
   <% if @examples.any? %>
     <% @examples.each do |name| %>
       <%= docs_example(@entry.section, @entry.slug, name) %>
