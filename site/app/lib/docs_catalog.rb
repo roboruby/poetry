@@ -33,6 +33,12 @@ class DocsCatalog
                            "fields - label, value, errors, aria, and validation attributes all derived " \
                            "from the object; type inference into poetry's vocabulary, f.association, " \
                            "and the poetry_form -> simple_form i18n chain."),
+    Entry.new(slug: "pagination", title: "Pagination", section: "docs", icon: :"chevrons-left-right",
+              description: "Pagination through the gem you already use: bin/rails g " \
+                           "poetry:pagination installs a host-owned adapter for kaminari, pagy " \
+                           "(v43+), or will_paginate - existing paginate / poetry_pagy_nav / " \
+                           "will_paginate calls render poetry's nav. This page's examples run " \
+                           "live on all three gems."),
     Entry.new(slug: "deferred", title: "Deferred Regions", section: "docs", icon: :timer,
               description: "poetry_deferred(src:) — Turbo owns the loading physics (lazy fetches " \
                            "on visibility, so hidden Tabs panels and HoverCards defer for free); " \

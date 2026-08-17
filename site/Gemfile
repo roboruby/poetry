@@ -30,6 +30,13 @@ gem "poetry-lucide", path: "../poetry-lucide" # icons; poetry-ui requires it at 
 gem "poetry-ui", path: "../poetry-ui"
 gem "poetry-charts", path: "../poetry-charts"
 
+# The three paginator gems the /pagination guide demos live - and the
+# standing install proof for `poetry:pagination` (detection mode ran here
+# for real; the generated adapters are committed app code).
+gem "kaminari"
+gem "pagy", "~> 43.0"
+gem "will_paginate"
+
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
 

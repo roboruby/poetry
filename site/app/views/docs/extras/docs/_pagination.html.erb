@@ -1,0 +1,63 @@
+<%# The /pagination guide (the /forms model): installation, per-gem
+    controller setup, and the window/label doctrine. The live examples
+    below render through the REAL generated adapters - poetry:pagination
+    ran in this app, and the three gems page one shared collection. %>
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="installation">Installation</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    poetry doesn't paginate your queries. kaminari, pagy (v43+), and will_paginate
+    already do that well. One generator installs an adapter so the gem you use renders
+    this library's <%= poetry_link(href: "/components/pagination") { "Pagination component" } %>
+    instead of its own markup. The adapter is generated into your app, host-owned
+    code with no extra runtime dependency, yours to edit.
+  </p>
+  <%= poetry_code_block(code: pagination_guide_snippets[:install], language: "shell",
+                        label: "Install") %>
+  <p class="max-w-2xl text-muted-foreground">
+    Per gem, that installs: a <code class="text-foreground">kaminari</code> paginator
+    template override (<code class="text-foreground">app/views/kaminari/_paginator.html.erb</code>),
+    a <code class="text-foreground">pagy</code> nav helper
+    (<code class="text-foreground">app/helpers/poetry_pagy_helper.rb</code>), or a
+    <code class="text-foreground">will_paginate</code> link renderer
+    (<code class="text-foreground">app/lib/poetry_link_renderer.rb</code>).
+  </p>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="setup">Wire your controller</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    Nothing changes about how you paginate: each gem's own controller API stays.
+    Only the view call differs per gem:
+  </p>
+  <h3 class="font-medium" id="setup-kaminari">kaminari</h3>
+  <%= poetry_code_block(code: pagination_guide_snippets[:kaminari], language: "ruby",
+                        label: "kaminari setup") %>
+  <h3 class="font-medium" id="setup-pagy">pagy</h3>
+  <%= poetry_code_block(code: pagination_guide_snippets[:pagy], language: "ruby",
+                        label: "pagy setup") %>
+  <h3 class="font-medium" id="setup-will-paginate">will_paginate</h3>
+  <%= poetry_code_block(code: pagination_guide_snippets[:will_paginate], language: "ruby",
+                        label: "will_paginate setup") %>
+</section>
+
+<section class="flex flex-col gap-3">
+  <h2 class="text-lg font-medium" id="doctrine">The window, labels, and one page</h2>
+  <p class="max-w-2xl text-muted-foreground">
+    poetry owns the window: the visible pages come from
+    <code class="text-foreground">siblings:</code> and
+    <code class="text-foreground">edges:</code>, one look across all three gems. The gems'
+    own window options (kaminari's <code class="text-foreground">window</code> /
+    <code class="text-foreground">outer_window</code>, will_paginate's
+    <code class="text-foreground">inner_window</code>, pagy's slot count) deliberately
+    do not apply. Labels stay poetry's; pass
+    <code class="text-foreground">previous_label:</code> /
+    <code class="text-foreground">next_label:</code> to localize. At a single page every
+    adapter renders nothing, matching the gems' own behavior.
+  </p>
+  <p class="max-w-2xl text-muted-foreground">
+    The examples below are live: all three gems paginate one shared 120-item
+    collection through the real generated adapters, and every nav reads the same
+    <code class="text-foreground">?page=</code> param. Click any of them and all
+    three page together.
+  </p>
+</section>

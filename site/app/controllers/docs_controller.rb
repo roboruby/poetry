@@ -1,4 +1,6 @@
 class DocsController < ApplicationController
+  include Pagy::Method
+
   def index
   end
 
@@ -31,6 +33,24 @@ class DocsController < ApplicationController
   def deferred_fragment
     sleep 0.5 unless Rails.env.test?
     render layout: false
+  end
+
+  def pagination
+    @entry = DocsCatalog.docs.find { |entry| entry.slug == "pagination" }
+    @examples = helpers.docs_examples_for("docs", "pagination")
+
+    # One shared collection drives all three live navs: every gem reads the
+    # same ?page= param, so clicking any nav pages them together. All three
+    # adapters here are real poetry:pagination output (committed app code).
+    page = params.fetch(:page, 3).to_i.clamp(1, 12)
+    items = (1..120).to_a
+    @kaminari_items = Kaminari.paginate_array(items).page(page).per(10)
+    @pagy, _pagy_items = pagy(:offset, items, page: page, limit: 10)
+    @will_paginate_items = WillPaginate::Collection.create(page, 10, items.size) do |pager|
+      pager.replace(items[pager.offset, pager.per_page])
+    end
+
+    render template: "docs/page"
   end
 
   def forms

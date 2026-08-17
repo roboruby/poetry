@@ -44,10 +44,12 @@
   <% end %>
 
   <%# Page-specific sections (the rare page with prose beyond the generic
-      install/examples/styling flow) live in docs/extras/_<slug>.html.erb
-      and render between installation and the examples. %>
-  <% if lookup_context.exists?("docs/extras/#{@entry.slug}", [], true) %>
-    <%= render "docs/extras/#{@entry.slug}" %>
+      install/examples/styling flow) live in docs/extras/<section>/_<slug>.html.erb
+      and render between installation and the examples. Keyed by section
+      because slugs repeat across sections (/components/pagination vs the
+      /pagination guide). %>
+  <% if lookup_context.exists?("docs/extras/#{@entry.section}/#{@entry.slug}", [], true) %>
+    <%= render "docs/extras/#{@entry.section}/#{@entry.slug}" %>
   <% end %>
 
   <% if @examples.any? %>

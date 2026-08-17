@@ -52,6 +52,40 @@ module DocsHelper
     ERB
   end
 
+  # The /pagination guide's per-gem setup snippets (same reason as above:
+  # ERB tags can't live in Ruby strings inside a template).
+  def pagination_guide_snippets
+    {
+      install: <<~SHELL.strip,
+        bundle add kaminari                      # or: pagy / will_paginate
+        bin/rails g poetry:pagination            # detects every loaded paginator
+        bin/rails g poetry:pagination kaminari   # or name one: kaminari | pagy | will_paginate
+      SHELL
+      kaminari: <<~RUBY.strip,
+        # controller - kaminari's own API, unchanged
+        @products = Product.page(params[:page]).per(10)
+
+        # view - your existing call; poetry options ride along
+        <%= paginate @products, siblings: 2 %>
+      RUBY
+      pagy: <<~RUBY.strip,
+        # controller - include Pagy::Method (ApplicationController), then
+        @pagy, @products = pagy(:offset, Product.all, limit: 10)
+
+        # view - the adapter's helper
+        <%= poetry_pagy_nav(@pagy) %>
+      RUBY
+      will_paginate: <<~RUBY.strip
+        # controller - will_paginate's own API, unchanged
+        @products = Product.paginate(page: params[:page], per_page: 10)
+
+        # view - pass the adapter renderer; poetry options under poetry:
+        <%= will_paginate @products, renderer: PoetryLinkRenderer,
+                          poetry: { edges: :icons } %>
+      RUBY
+    }
+  end
+
   # Example/block source panels ride the CodeBlock component: the
   # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
   # every code tab gains the copy affordance.

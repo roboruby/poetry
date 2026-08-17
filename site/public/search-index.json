@@ -156,6 +156,66 @@
     "path": "/forms#layout"
   },
   {
+    "title": "Pagination",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination"
+  },
+  {
+    "title": "Installation",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#installation"
+  },
+  {
+    "title": "Wire your controller",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup"
+  },
+  {
+    "title": "kaminari",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-kaminari"
+  },
+  {
+    "title": "pagy",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-pagy"
+  },
+  {
+    "title": "will_paginate",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#setup-will-paginate"
+  },
+  {
+    "title": "The window, labels, and one page",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#doctrine"
+  },
+  {
+    "title": "Kaminari",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#kaminari"
+  },
+  {
+    "title": "Pagy",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#pagy"
+  },
+  {
+    "title": "Will paginate",
+    "page": "Pagination",
+    "section": "docs",
+    "path": "/pagination#will-paginate"
+  },
+  {
     "title": "Deferred Regions",
     "page": "Deferred Regions",
     "section": "docs",
