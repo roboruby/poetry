@@ -46,4 +46,10 @@ group :test do
                glob: "gems/dommy/*.gemspec" # monorepo: dommy + dommy-rack + dommy-rails + capybara-dommy
   gem "dommy-js-quickjs", git: "https://github.com/takahashim/dommy-js-quickjs",
                           ref: "2b98eb6c5adc491f89425c2a08cc00a7462c90cb"
+
+  # The pagination-adapter integration tests (poetry:pagination) - the
+  # generated adapters are host-app code, never runtime deps.
+  gem "kaminari"
+  gem "pagy", "~> 43.0"
+  gem "will_paginate"
 end

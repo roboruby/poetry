@@ -15,5 +15,17 @@ Rails.application.routes.draw do
   # component_preview layout the browser gates screenshot.
   mount Lookbook::Engine => "/lookbook" if defined?(Lookbook)
 
+  # Pagination-adapter hosts (test/poetry/ui/pagination_adapters_test.rb).
+  # Drawn here permanently because runtime route mutation is unreliable in
+  # this suite: mutating at require time trips the Rails 8 lazy route set
+  # into a mid-suite reload that strands the engines' autoloaded constants,
+  # and additive draws from test setup get wiped by later route reloads.
+  # The controller is defined by the test file; the routes are inert
+  # otherwise (drawing to an undefined controller only fails at dispatch).
+  get "/phost/kaminari" => "pagination_host#kaminari_page"
+  get "/phost/kaminari_options" => "pagination_host#kaminari_options_page"
+  get "/phost/pagy" => "pagination_host#pagy_page"
+  get "/phost/will_paginate" => "pagination_host#will_paginate_page"
+
   mount Poetry::Ui::Engine => "/"
 end
