@@ -126,32 +126,32 @@
     "path": "/typography#small"
   },
   {
-    "title": "Forms",
-    "page": "Forms",
+    "title": "Form Builder",
+    "page": "Form Builder",
     "section": "docs",
     "path": "/forms"
   },
   {
     "title": "Default",
-    "page": "Forms",
+    "page": "Form Builder",
     "section": "docs",
     "path": "/forms#default"
   },
   {
     "title": "Errors",
-    "page": "Forms",
+    "page": "Form Builder",
     "section": "docs",
     "path": "/forms#errors"
   },
   {
     "title": "Inference",
-    "page": "Forms",
+    "page": "Form Builder",
     "section": "docs",
     "path": "/forms#inference"
   },
   {
     "title": "Layout",
-    "page": "Forms",
+    "page": "Form Builder",
     "section": "docs",
     "path": "/forms#layout"
   },
