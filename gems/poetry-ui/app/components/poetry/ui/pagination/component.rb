@@ -18,7 +18,12 @@ module Poetry
           "ghost links.",
           "edges: :icons renders chevron-only Previous/Next (the table-footer posture); " \
           ":none drops them for a bare page list; pages: false drops the numbers " \
-          "(pair with edges: :icons for the compact pager)."
+          "(pair with edges: :icons for the compact pager).",
+          "Host paginates with kaminari, pagy (v43+), or will_paginate? Run " \
+          "bin/rails g poetry:pagination (no argument = detect and install an adapter for " \
+          "each loaded gem) and keep calling paginate / poetry_pagy_nav / " \
+          "will_paginate(renderer: PoetryLinkRenderer) - never hand-wire poetry_pagination " \
+          "around a paginator gem."
         ].freeze
 
         # :outline is upstream parity and stays the default; :filled renders
