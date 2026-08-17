@@ -12,6 +12,10 @@
 # outer_window do not apply; will_paginate's container options are
 # absorbed by poetry's own <nav> landmark. Upstream behavior kept: the
 # helper returns nil when total_pages <= 1 (this class is never called).
+#
+# Note: will_paginate itself is in maintenance mode (no new features or
+# releases since mid-2024). This adapter supports apps that already use
+# it; for a new project, prefer kaminari or pagy.
 class PoetryLinkRenderer < WillPaginate::ActionView::LinkRenderer
   def to_html
     @template.poetry_pagination(

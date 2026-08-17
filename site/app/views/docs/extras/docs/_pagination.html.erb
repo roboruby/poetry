@@ -36,6 +36,11 @@
   <%= poetry_code_block(code: pagination_guide_snippets[:pagy], language: "ruby",
                         label: "pagy setup") %>
   <h3 class="font-medium" id="setup-will-paginate">will_paginate</h3>
+  <p class="max-w-2xl text-muted-foreground">
+    Note that will_paginate is in maintenance mode and no longer receives new
+    features (its last release was mid-2024). The adapter supports apps that
+    already use it; for a new project, pick kaminari or pagy instead.
+  </p>
   <%= poetry_code_block(code: pagination_guide_snippets[:will_paginate], language: "ruby",
                         label: "will_paginate setup") %>
 </section>

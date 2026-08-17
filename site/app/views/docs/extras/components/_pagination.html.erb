@@ -8,6 +8,8 @@
     <code class="text-foreground">will_paginate</code>? One generator installs an
     adapter so those gems render this component. The adapter is generated into your
     app — host-owned code with no extra runtime dependency, yours to edit.
+    (will_paginate is in maintenance mode and receives no new features; the adapter
+    supports existing apps, but for a new project pick kaminari or pagy.)
   </p>
   <%= poetry_code_block(code: "bin/rails g poetry:pagination            # detects every loaded paginator\nbin/rails g poetry:pagination kaminari   # or name one: kaminari | pagy | will_paginate",
                         language: "shell", label: "Install an adapter") %>
