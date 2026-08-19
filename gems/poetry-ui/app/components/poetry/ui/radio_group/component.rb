@@ -268,7 +268,9 @@ module Poetry
           # control inside a role=radio button is axe nested-interactive
           # (caught by the a11y rig, 2026-07-03).
           safe_join([
-                      content_tag(:button, attrs.merge(options)) { indicator(checked) },
+                      content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
+                        indicator(checked)
+                      end,
                       hidden_radio(item_value, item_id, checked, item_disabled)
                     ])
         end

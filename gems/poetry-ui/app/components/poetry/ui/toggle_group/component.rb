@@ -166,7 +166,7 @@ module Poetry
           attrs["aria-label"] = label if label.present?
           attrs.merge!(stimulus_attributes_for(:item))
 
-          content_tag(:button, content, attrs.merge(options))
+          content_tag(:button, content, Poetry::Core::HTML::Attributes.merged(attrs, options))
         }
 
         # The same facts the before_render raise enforces, stated statically

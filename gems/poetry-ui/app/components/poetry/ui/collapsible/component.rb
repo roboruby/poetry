@@ -64,7 +64,7 @@ module Poetry
             "aria-expanded" => open.to_s, "aria-controls" => content_id
           }.merge(stimulus_attributes_for(:trigger))
           composed_trigger(attrs, options, &block) ||
-            content_tag(:button, attrs.merge(options), &block)
+            content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options), &block)
         }
 
         # The same facts the before_render raise enforces, stated statically

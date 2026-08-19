@@ -118,7 +118,7 @@ module Poetry
             # block form renders a <button> (the string form renders an <input>).
             return helpers.button_to(submit,
                                      { method: method || :post, form: { class: "contents" } }
-                                       .merge(attrs).merge(options)) { content }
+                                       .merge(Poetry::Core::HTML::Attributes.merged(attrs, options))) { content }
           end
 
           link = href && !disabled
@@ -129,7 +129,7 @@ module Poetry
               attrs["rel"] = "noopener noreferrer"
             end
           end
-          content_tag(link ? :a : :div, attrs.merge(options)) { content }
+          content_tag(link ? :a : :div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { content }
         end
 
         def checkbox_item_part(**options, &block)
@@ -144,7 +144,7 @@ module Poetry
             "class" => Style.css(:checkbox_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, **options.extract!(:disabled, :text_value, :close_on_select))
-          content_tag(:div, attrs.merge(options)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
             safe_join([item_indicator(:check, Style.css(:indicator_check)),
                        capture(&block), shortcut_span(shortcut)].compact)
           end
@@ -156,7 +156,7 @@ module Poetry
             "class" => Style.css(:label, class: options.delete(:class))
           }
           attrs["data-inset"] = "true" if inset
-          content_tag(:div, attrs.merge(options)) { capture(&block) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
         end
 
         def separator_part(**options)
@@ -165,7 +165,7 @@ module Poetry
             "aria-orientation" => "horizontal",
             "class" => Style.css(:separator, class: options.delete(:class))
           }
-          content_tag(:div, nil, attrs.merge(options))
+          content_tag(:div, nil, Poetry::Core::HTML::Attributes.merged(attrs, options))
         end
       end
 
@@ -437,7 +437,7 @@ module Poetry
 
         def call
           attrs = { "data-slot" => "dropdown-menu-group", "role" => "group" }
-          content_tag(:div, attrs.merge(@extra_attributes)) { safe_join(items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(items.map(&:to_s)) }
         end
 
         private
@@ -479,7 +479,7 @@ module Poetry
             "class" => Style.css(:radio_item, class: options.delete(:class))
           }.merge(item_action_attributes)
           apply_item_flags(attrs, disabled:, text_value:, close_on_select:)
-          content_tag(:div, attrs.merge(options)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
             safe_join([item_indicator(:circle, Style.css(:indicator_circle)),
                        capture(&block), shortcut_span(shortcut)].compact)
           end
@@ -492,7 +492,7 @@ module Poetry
         def call
           attrs = { "data-slot" => "dropdown-menu-radio-group", "role" => "group" }
           attrs["data-value"] = group_value if group_value
-          content_tag(:div, attrs.merge(@extra_attributes)) { safe_join(radio_items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(radio_items.map(&:to_s)) }
         end
       end
 
@@ -521,7 +521,7 @@ module Poetry
             "class" => Style.css(:sub_trigger, class: options.delete(:class))
           }.merge(sub_trigger_stimulus_attributes)
           apply_item_flags(attrs, inset:, disabled:, text_value:)
-          content_tag(:div, attrs.merge(options)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
             safe_join([capture(&block), chevron])
           end
         }
@@ -565,7 +565,7 @@ module Poetry
               popper.with_value(:align, :start)
             end
           )
-          attrs.merge(@extra_attributes)
+          Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)
         end
 
         def sub_content

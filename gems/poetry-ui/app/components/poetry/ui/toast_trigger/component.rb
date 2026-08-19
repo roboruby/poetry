@@ -48,12 +48,16 @@ module Poetry
         part "label", "The Button's label span (the trigger renders AS a poetry Button)"
 
         def button_options
-          {
-            variant: variant, size: size,
-            data: { slot: "toast-trigger" }
-          }.merge(stimulus_attributes_for(:root))
-            .merge(component_data_attributes)
-            .merge(html_attributes.to_attributes)
+          wiring = { data: { slot: "toast-trigger" } }
+                   .merge(stimulus_attributes_for(:root))
+                   .merge(component_data_attributes)
+
+          # Caller attributes never clobber the trigger's wiring: both sides
+          # flow through Attributes, so a host data-controller/action
+          # concatenates instead of silently killing fire-on-click.
+          { variant: variant, size: size }
+            .merge(Poetry::Core::HTML::Attributes.merged(wiring, html_attributes))
+            .symbolize_keys
         end
       end
     end

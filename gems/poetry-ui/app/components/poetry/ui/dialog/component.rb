@@ -80,7 +80,9 @@ module Poetry
         # pass Button props: with_trigger(variant: :outline) { "Open" }.
         renders_one :trigger, lambda { |**options, &block|
           composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
+              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+            end
             Button::Component.new(**options, &block)
           end
         }

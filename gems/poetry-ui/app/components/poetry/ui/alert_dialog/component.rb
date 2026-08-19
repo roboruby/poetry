@@ -87,7 +87,9 @@ module Poetry
         # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
         renders_one :trigger, lambda { |**options, &block|
           composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
+              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+            end
             Button::Component.new(**options, &block)
           end
         }
@@ -109,7 +111,10 @@ module Poetry
         # dismisses the dialog through the shared controller - without this
         # wiring the modal is unclosable except by Esc.
         renders_one :cancel, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }.merge(options[:data] || {})
+          wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
+          options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
+            key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+          end
           Button::Component.new(variant: :outline, autofocus: true, **options, &block)
         }
 

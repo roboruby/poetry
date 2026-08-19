@@ -118,7 +118,7 @@ module Poetry
             attrs["data-disabled"] = ""
           end
           attrs["data-text-value"] = @text_value if @text_value
-          content_tag(:div, attrs.merge(@extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
             safe_join([item_indicator,
                        content_tag(:span, label_html, "data-slot" => "select-item-text",
                                                       "class" => "cn-select-item-text shrink-0 whitespace-nowrap")])
@@ -565,7 +565,7 @@ module Poetry
         def call
           attrs = { "data-slot" => "select-group", "role" => "group", "class" => "cn-select-group" }
           attrs["aria-labelledby"] = label_id if @label_text
-          content_tag(:div, attrs.merge(@extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
             safe_join([label_part, *items].compact)
           end
         end

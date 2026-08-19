@@ -155,7 +155,7 @@ module Poetry
           end
 
           attrs["href"] = href if href.present?
-          Trigger.new(tag_name: tag, attributes: attrs.merge(options))
+          Trigger.new(tag_name: tag, attributes: Poetry::Core::HTML::Attributes.merged(attrs, options))
         }
 
         # The same facts the before_render raise enforces, stated statically

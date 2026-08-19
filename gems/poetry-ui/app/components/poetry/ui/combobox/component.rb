@@ -159,7 +159,7 @@ module Poetry
           attrs["data-keywords"] = @keywords.join(" ") if @keywords.any?
           attrs["data-filter-value"] = @filter_value if @filter_value
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, attrs.merge(@extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
             safe_join([content_tag(:span, label_html, "data-slot" => "command-item-text",
                                                       "class" => Style.css(:item_text)),
                        item_indicator])
@@ -204,7 +204,7 @@ module Poetry
             "class" => Command::Style.css(:group, class: @extra_attributes.delete(:class))
           }
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, attrs.merge(@extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
             safe_join([heading_part, *items])
           end
         end
