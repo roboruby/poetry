@@ -286,6 +286,9 @@ module Poetry
         token = Poetry::Core::StableId.key_token(stable_key)
         return "#{prefix}-#{token}" if token
 
+        sequence = Poetry::Core::StableId.next_sequence_token
+        return "#{prefix}-#{sequence}" if sequence
+
         "#{prefix}-#{SecureRandom.hex(8)}"
       end
 

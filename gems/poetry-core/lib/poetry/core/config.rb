@@ -83,6 +83,15 @@ module Poetry
                                                      # auto: raise in Rails.env.local?, degrade to
                                                      # icon_fallback elsewhere. true/false force it.
                                                      raise_on_missing_icon: nil,
+                                                     # StableId sequence mode (OPT-IN, experimental):
+                                                     # :off (default) or :sequence - the engine's
+                                                     # around_action seeds a per-request deterministic
+                                                     # id sequence. Read the hazards in StableId before
+                                                     # enabling; keyed identity (key:) is the general
+                                                     # answer, this mode is for byte-stable content
+                                                     # pages only.
+                                                     stable_id_mode: :off,
+                                                     stable_id_seed: ->(request) { request.path }, # rubocop:disable Style/SymbolProc -- the documented override shape
                                                      # Rendered instead of a missing icon when not
                                                      # raising; nil re-raises. Must exist in every
                                                      # registered set (Lucide ships it).

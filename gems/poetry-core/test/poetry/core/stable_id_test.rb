@@ -92,6 +92,80 @@ module Poetry
         refute component.html_attributes.key?("key")
         assert_equal "faq", component.stable_key
       end
+
+      # --- S3: the opt-in sequence mode ---
+
+      def test_with_seed_is_deterministic_and_isolated
+        a = StableId.with_seed("/products") { Array.new(3) { StableId.next_sequence_token } }
+        b = StableId.with_seed("/products") { Array.new(3) { StableId.next_sequence_token } }
+        c = StableId.with_seed("/pricing") { Array.new(3) { StableId.next_sequence_token } }
+
+        assert_equal a, b, "same seed must replay the same sequence"
+        refute_equal a, c, "different seeds must not share sequences"
+        assert_nil StableId.next_sequence_token, "no sequence armed outside the block"
+      end
+
+      def test_with_seed_nests_and_restores_on_raise
+        outer = StableId.with_seed("/outer") do
+          first = StableId.next_sequence_token
+          StableId.with_seed("/inner") { StableId.next_sequence_token }
+          [first, StableId.next_sequence_token]
+        end
+
+        expected = StableId.with_seed("/outer") { Array.new(2) { StableId.next_sequence_token } }
+
+        assert_equal expected, outer, "the inner seed must not disturb the outer sequence"
+
+        assert_raises(RuntimeError) { StableId.with_seed("/x") { raise "boom" } }
+        assert_nil StableId.next_sequence_token, "ensure must clear the sequence after a raise"
+      end
+
+      def test_the_golden_vector_is_pinned
+        # THE UPGRADE CONTRACT: these literals are what seed "/products"
+        # allocates. Changing the allocator (digest, PRNG, token width)
+        # re-identifies every component on every sequence-mode page across
+        # a gem upgrade - if this test fails, that is what you are
+        # shipping. Bump the literals only with a changelog entry.
+        vector = StableId.with_seed("/products") { Array.new(3) { StableId.next_sequence_token } }
+
+        assert_equal %w[75ebad7272c22911 e3241b3f8dbd9be4 5d28a721bac8fc34], vector
+      end
+
+      def test_ladder_sequence_sits_between_key_and_random
+        ids = StableId.with_seed("/page") do
+          [LadderComponent.new.poetry_instance_id("poetry-tabs"),
+           LadderComponent.new(key: "faq").poetry_instance_id("poetry-tabs"),
+           LadderComponent.new(id: "settings").poetry_instance_id("poetry-tabs")]
+        end
+        replay = StableId.with_seed("/page") { LadderComponent.new.poetry_instance_id("poetry-tabs") }
+
+        assert_equal 28, ids[0].length # "poetry-tabs-" + hex(8)
+        assert_equal replay, ids[0], "unkeyed draws replay under the same seed"
+        assert_equal "poetry-tabs-faq", ids[1], "key: beats the sequence"
+        assert_equal "settings", ids[2], "explicit id beats everything"
+      end
+
+      def test_sequence_survives_the_live_style_thread_local_copy
+        # ActionController::Live copies Thread.current locals into its
+        # response thread (actionpack live.rb) - this mirrors that exact
+        # mechanism and proves an armed sequence keeps drawing there.
+        child_tokens = StableId.with_seed("/live") do
+          StableId.next_sequence_token # consume one on the request thread
+          t1 = Thread.current
+          locals = t1.keys.map { |key| [key, t1[key]] }
+          Thread.new do
+            locals.each { |k, v| Thread.current[k] = v }
+            Array.new(2) { StableId.next_sequence_token }
+          end.value
+        end
+
+        expected = StableId.with_seed("/live") do
+          StableId.next_sequence_token
+          Array.new(2) { StableId.next_sequence_token }
+        end
+
+        assert_equal expected, child_tokens
+      end
     end
   end
 end

@@ -18,6 +18,12 @@ module Poetry
       config.autoload_paths << "#{Poetry::Core.root}/app/components"
       config.eager_load_paths << "#{Poetry::Core.root}/app/components"
 
+      initializer "poetry_core.stable_id" do
+        ActiveSupport.on_load(:action_controller) do
+          include Poetry::Core::StableId::Controller
+        end
+      end
+
       initializer "poetry_core.tag_helper" do
         ActiveSupport.on_load(:action_view) do
           include Poetry::Core::TagHelper
