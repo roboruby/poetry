@@ -345,4 +345,40 @@ namespace :css do
 
     puts "data-selected bridge variant verified (poetry's last-wins extension holds)"
   end
+
+  # The compiled-artifact reduced-motion contract: the vendored
+  # @media (prefers-reduced-motion: reduce) shimmer kill must survive a
+  # real host compile (import flattening or a minifier rewrite would
+  # silently ship motion to users who asked for none - the preview rig's
+  # CDP emulation only proves the TEST pages honor it).
+  desc "Verify the reduced-motion block survives a real Tailwind compile"
+  task :verify_reduced_motion do
+    poetry_ui_boot!
+    require "tailwindcss/ruby"
+    require "tmpdir"
+
+    compiled = Dir.mktmpdir("poetry-motion-probe") do |dir|
+      File.write(File.join(dir, "probe.txt"), "shimmer\n")
+      File.write(File.join(dir, "entry.css"), <<~CSS)
+        @import "tailwindcss";
+        @import "#{Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css")}";
+        @import "#{Poetry::Core.root.join("tokens/aliases.css")}";
+        @source "#{File.join(dir, "probe.txt")}";
+      CSS
+      out = File.join(dir, "out.css")
+      system(Tailwindcss::Ruby.executable, "-i", File.join(dir, "entry.css"), "-o", out,
+             exception: true, out: File::NULL, err: File::NULL)
+      File.read(out)
+    end
+
+    blocks = compiled.scan(/@media \(prefers-reduced-motion: reduce\)\s*\{(.*?)\n\}/m).flatten
+    shimmer_kill = blocks.any? { |block| block.match?(/\.shimmer\s*\{[^}]*animation:\s*none/m) }
+
+    unless shimmer_kill
+      abort "reduced-motion probe FAILED: the vendored shimmer kill did not survive the " \
+            "compile - check the vendor import chain / minifier settings"
+    end
+
+    puts "reduced-motion contract verified in the compiled artifact (shimmer kill present)"
+  end
 end
