@@ -176,6 +176,38 @@ module Poetry
           assert_equal ["host-a", "host-b", "poetry--core--tabs"],
                        attrs["data"]["controller"].split.sort
         end
+
+        # --- Attributes.merged: the wiring-plus-caller combining recipe ---
+
+        def test_merged_concatenates_wiring_and_caller_stimulus_keys
+          result = Attributes.merged(
+            { "data-controller" => "poetry--core--menu", "data-action" => "click->menu#activate" },
+            { data: { controller: "host-thing", action: "click->host#track" } }
+          )
+
+          assert_equal "poetry--core--menu host-thing", result["data-controller"]
+          assert_equal "click->menu#activate click->host#track", result["data-action"]
+        end
+
+        def test_merged_tailwind_merges_classes_and_keeps_caller_extras
+          result = Attributes.merged(
+            { "class" => "px-2 text-sm", "data-slot" => "menu-item" },
+            { class: "px-4", "aria-label" => "Save" }
+          )
+
+          assert_equal "text-sm px-4", result["class"]
+          assert_equal "menu-item", result["data-slot"]
+          assert_equal "Save", result["aria-label"]
+        end
+
+        def test_merged_skips_nils_and_returns_flat_attributes
+          result = Attributes.merged({ "data-side" => "top" }, nil, { role: "menuitem" })
+
+          assert_equal "top", result["data-side"]
+          assert_equal "menuitem", result["role"]
+          refute result.key?("data"), "output is flat, render-ready"
+        end
+
       end
     end
   end

@@ -31,6 +31,21 @@ module Poetry
       #   attrs = Poetry::Core::HTML::Attributes.new(data: { id: 1, name: "test" })
       #   attrs.to_attributes # => { "data-id" => "1", "data-name" => "test" }
       class Attributes < ActiveSupport::HashWithIndifferentAccess
+        # The safe way to combine component wiring with caller-supplied
+        # attributes into a plain hash for content_tag / button_to: every
+        # hash flows through one Attributes instance, so stimulus keys
+        # (data-controller / data-action, either spelling) concatenate
+        # instead of clobbering, classes tailwind-merge, and to_attributes
+        # unifies double-spelled slots deterministically. Plain Hash#merge
+        # of wiring with caller options silently drops one side's wiring -
+        # never do that; call this.
+        #
+        # @param hashes [Array<Hash, nil>] wiring first, caller last
+        # @return [Hash] flat, render-ready attributes
+        def self.merged(*hashes)
+          hashes.compact.inject(new) { |merged, hash| merged.merge!(hash) }.to_attributes
+        end
+
         # List of HTML boolean attributes that should be rendered as attribute name only
         # when truthy, or omitted when falsy.
         #
