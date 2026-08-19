@@ -22,6 +22,10 @@ Rails.application.routes.draw do
   # and additive draws from test setup get wiped by later route reloads.
   # The controller is defined by the test file; the routes are inert
   # otherwise (drawing to an undefined controller only fails at dispatch).
+  # The StableId architectural gate (rake test:morph_identity) - permanent
+  # for the same reload-safety reason as /phost below.
+  get "/sgate" => "stable_id_gate#index"
+
   get "/phost/kaminari" => "pagination_host#kaminari_page"
   get "/phost/kaminari_options" => "pagination_host#kaminari_options_page"
   get "/phost/pagy" => "pagination_host#pagy_page"

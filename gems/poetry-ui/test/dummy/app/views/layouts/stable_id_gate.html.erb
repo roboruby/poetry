@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>StableId architectural gate</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%# The one dummy page that runs REAL Turbo (vendored 8.0.13 ESM, a
+        test asset): morphing page refreshes are the behavior under test.
+        Previews stay Turbo-free on purpose - only this gate needs it. %>
+    <meta name="turbo-refresh-method" content="morph">
+    <link rel="stylesheet" href="/assets/poetry.css">
+    <script type="importmap"><%= raw Rails.public_path.join("assets/importmap.json").read %></script>
+    <script type="module">
+      import { Application } from "@hotwired/stimulus"
+      import { registerPoetryControllers } from "@poetry/controllers"
+
+      const application = new Application()
+      registerPoetryControllers(application)
+      await application.start()
+      await import("/vendor/turbo.es2017-esm.js")
+      document.documentElement.dataset.poetryReady = "true"
+    </script>
+  </head>
+  <body>
+    <%= yield %>
+  </body>
+</html>

@@ -417,7 +417,7 @@ module Poetry
         # one page must not share ids); portal-safe (the controller
         # resolves content via aria-controls, not a Stimulus target).
         def instance_id
-          @instance_id ||= "poetry-dropdown-menu-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-dropdown-menu")
         end
       end
 

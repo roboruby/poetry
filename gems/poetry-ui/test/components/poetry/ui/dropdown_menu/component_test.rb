@@ -415,6 +415,50 @@ module Poetry
           assert_match(/don't combine with compose/, error.message)
         end
       end
+
+      # StableId S1: the replay proofs (the cache-composability foundation).
+      class StableIdReplayTest < ViewComponent::TestCase
+        def render_keyed(key)
+          render_inline(Component.new(key: key)) do |menu|
+            menu.with_trigger { "Actions" }
+            menu.with_item { "Archive" }
+          end.to_html
+        end
+
+        def test_keyed_renders_are_byte_identical_across_renders
+          # THE fragment-cache replay property: a keyed component's HTML is
+          # a pure function of its inputs, so cached copies and fresh
+          # renders can never disagree (and never consume any allocator).
+          assert_equal render_keyed("inbox-actions"), render_keyed("inbox-actions")
+        end
+
+        def test_distinct_keys_derive_distinct_namespaced_ids
+          a = render_keyed("inbox-actions")
+          b = render_keyed("archive-actions")
+
+          assert_includes a, 'id="poetry-dropdown-menu-inbox-actions'
+          assert_includes b, 'id="poetry-dropdown-menu-archive-actions'
+        end
+
+        def test_same_key_twice_on_one_page_is_the_documented_duplicate_hazard
+          # Pinned, not fixed: duplicate keys are the caller's bug - the
+          # composed-DOM tripwire (gate task) is what catches it live.
+          page_html = render_keyed("inbox-actions") + render_keyed("inbox-actions")
+
+          assert_equal 2, page_html.scan('id="poetry-dropdown-menu-inbox-actions-content"').size
+        end
+
+        def test_unkeyed_renders_stay_random
+          unkeyed = lambda do
+            render_inline(Component.new) do |menu|
+              menu.with_trigger { "Actions" }
+              menu.with_item { "Archive" }
+            end.to_html
+          end
+
+          refute_equal unkeyed.call, unkeyed.call
+        end
+      end
     end
   end
 end
