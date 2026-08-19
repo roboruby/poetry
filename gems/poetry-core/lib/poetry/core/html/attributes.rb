@@ -217,7 +217,7 @@ module Poetry
             elsif key.to_s.start_with?("data-")
               # Handle flat data attributes like "data-controller"
               nested_key = key.to_s.delete_prefix("data-").underscore
-              set_if_not_present!("data", nested_key, value)
+              merge_data_key_if_not_set!(nested_key, value)
             elsif key.to_s.start_with?("aria-")
               # Handle flat aria attributes like "aria-label"
               nested_key = key.to_s.delete_prefix("aria-").underscore
@@ -402,6 +402,32 @@ module Poetry
           self["data"] ||= {}
 
           data_hash.each do |key, value|
+            merge_data_key_if_not_set!(key, value)
+          end
+        end
+
+        # Stimulus wiring keys concatenate instead of first-wins: a caller
+        # attaching their own data-controller / data-action must not
+        # disconnect the wiring the component declares (first-wins here
+        # silently dropped the component's controller and broke its JS).
+        # Caller tokens stay first (the merge_stimulus_* convention);
+        # every other data key remains strictly first-wins.
+        #
+        # @param key [String, Symbol] The nested data key
+        # @param value [Object] The incoming (default) value
+        # @return [void]
+        # @api private
+        def merge_data_key_if_not_set!(key, value)
+          case key.to_s
+          when "controller"
+            merged = config.stimulus_merger.merge_controllers(dig("data", "controller"), value)
+            self["data"] ||= {}
+            self["data"]["controller"] = merged if merged
+          when "action"
+            merged = config.stimulus_merger.merge_actions(dig("data", "action"), value)
+            self["data"] ||= {}
+            self["data"]["action"] = merged if merged
+          else
             set_if_not_present!("data", key, value)
           end
         end
