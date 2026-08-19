@@ -112,3 +112,49 @@ make `<% cache @post do %>` invalidate automatically on poetry upgrades,
 with no version-key discipline. Recorded as a lead; the tildeio
 proof-of-concept above is the reference implementation for the hook
 points. Until then: version keys.
+
+## Ids inside cached fragments (the replay invariant)
+
+Fragment caching replays HTML that was rendered once — including every
+DOM id frozen into it at render time. The invariant that makes that
+safe:
+
+> **Cached HTML is safe only when every id frozen into it remains
+> unique under every composition and replay of that cached HTML.**
+
+Random ids satisfy uniqueness on the first render but cannot be paired
+by Turbo morph afterwards, and the same cached fragment rendered twice
+on one page duplicates even its random ids. So the rule is: **poetry
+components inside a `cache` block take `key:` (a record, or a literal)
+or an explicit `id:`.** A keyed component's HTML is a pure function of
+its inputs — cached copies and fresh renders can never disagree.
+`poetry:check` warns on unkeyed components in cache blocks
+(`stable-identity/cache`), and `poetry_id_integrity_script` (dev
+layouts) catches what static analysis can't: the composed page. Full
+identity story: `docs/stable-ids.md`.
+
+The same rule covers every other render that escapes the request cycle:
+broadcast partials destined for `turbo_stream.morph`, and pre-rendered
+HTML persisted anywhere.
+
+## HTTP caching, ETags, and CSRF
+
+Three separate mechanisms, often conflated:
+
+- **`Rack::ETag` (body-hash) 304s** need byte-identical responses.
+  poetry's keyed/sequence-stable ids remove the component-id churn, but
+  `csrf_meta_tags` masks a fresh token every render — the standard
+  layout makes even formless pages vary. Realistic scope: responses
+  with no request-varying output at all.
+- **`fresh_when` / `stale?`** compute validators from records *before*
+  rendering — poetry ids are irrelevant to their hit rate, and they are
+  the right 304 mechanism for form pages: CSRF tokens are per-session,
+  so an older masked token inside a browser-reused page still submits.
+  Two cautions: a session reset invalidates tokens inside
+  browser-cached pages — represent such dependencies via the `etag:`
+  hook — and `per_form_csrf_tokens`, when a host enables it, scopes
+  tokens to a form's action/method.
+- **Fragment caching and forms**: never cache the token — keep the
+  `<form>` tag outside the cached fragment and cache the expensive
+  content within. A cached hidden token field serves one session's
+  token to every visitor.

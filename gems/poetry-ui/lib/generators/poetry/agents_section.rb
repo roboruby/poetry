@@ -66,6 +66,14 @@ module Poetry
             registry-driven snippets).
           - One visual theme per app (chosen at install with `--theme`); components
             read tokens, never restate them.
+          - Component identity: pass `key:` (a record, or a literal string) on any
+            poetry component inside a collection loop, a fragment-cache block, or
+            a broadcast partial - keyed ids follow the record across Turbo morph
+            reorders and stay stable inside cached fragments, where random ids
+            force replacement. `key: record` derives via dom_id (a host `to_key`
+            override propagates); explicit `id:` wins outright; repeated NEW
+            records need explicit keys. `poetry:check` warns on unkeyed
+            components in cache blocks and loops. Full story: docs/stable-ids.md.
           - Upgrading poetry gems: after `bundle update`, re-run
             `bin/rails g poetry:install` - the vendored token/theme/safelist
             files refresh (the installed theme sticks; `--theme` switches),
