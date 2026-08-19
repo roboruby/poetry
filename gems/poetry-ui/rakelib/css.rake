@@ -192,6 +192,9 @@ namespace :css do
       end
       abort "classes missing from a real Tailwind build (theme #{theme}):\n#{failures.join("\n")}" if failures.any?
 
+      # Tripwire floor: scanning zero dictionaries is a broken eager-load,
+      # not a pass.
+      abort "tripwire: 0 Style dictionaries scanned (eager load broken?)" if styles.empty?
       puts "all #{styles.size} Style dictionaries verified against a compiled Tailwind build (theme #{theme})"
     end
   end
@@ -234,6 +237,8 @@ namespace :css do
             "preview source):\n  #{report.join("\n  ")}"
     end
 
+    abort "tripwire: rendered-class scan saw no preview pages" if pages.empty?
+    abort "tripwire: rendered-class scan harvested no tokens" if tokens.empty?
     puts "rendered-class coverage: #{tokens.size} tokens across #{pages.size} preview pages " \
          "all present in the compiled build"
   end
@@ -262,6 +267,7 @@ namespace :css do
       problems = coverage.missing.map { |name| "missing theme rule: #{name}" }
       abort "theme coverage (themes/#{theme}.css):\n  #{problems.join("\n  ")}" unless problems.empty?
 
+      abort "tripwire: theme coverage scanned no cn rules (theme CSS missing?)" if coverage.theme_names.empty?
       puts "theme coverage (#{theme}): #{coverage.theme_names.size} cn rules <-> " \
            "#{coverage.dictionary_names.size} dictionary names"
     end
@@ -298,6 +304,7 @@ namespace :css do
               "(build, @property, JS setProperty, inline style):\n  #{coverage.dead_reads.join("\n  ")}"
       end
 
+      abort "tripwire: var coverage scanned no reads (source scan broken?)" if coverage.reads.empty?
       puts "var coverage (#{theme}): #{coverage.reads.size} reads resolve against " \
            "#{coverage.definitions.size} definitions (+#{runtime_names.size} runtime, " \
            "#{runtime_prefixes.size} dynamic prefixes)"

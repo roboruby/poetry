@@ -214,6 +214,7 @@ namespace :test do
       abort "axe violations (#{POETRY_AXE_RULESETS.join("/")}):\n#{header}\n#{failures.join("\n")}"
     end
 
+    abort "tripwire: the axe walk audited zero pages (preview discovery broken?)" if pages.empty?
     puts "accessibility: #{pages.size} preview pages clean against #{POETRY_AXE_RULESETS.join("+")} " \
          "(#{skipped.size} documented skips)"
   end

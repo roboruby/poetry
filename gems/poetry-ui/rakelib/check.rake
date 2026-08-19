@@ -32,8 +32,9 @@ namespace :poetry do
     glob = args[:glob] || "app/**/*.html.erb"
     paths = Dir.glob(glob)
     if paths.empty?
-      warn "poetry check: no files matched #{glob.inspect}"
-      exit 0
+      # Tripwire floor: an empty glob means the path is wrong (or the boot
+      # is broken), and a linter that scanned nothing must not pass green.
+      abort "poetry check: no files matched #{glob.inspect} - check the glob/path"
     end
 
     findings = Poetry::Core::Check::Runner.new(poetry_check_catalog).run(paths)
