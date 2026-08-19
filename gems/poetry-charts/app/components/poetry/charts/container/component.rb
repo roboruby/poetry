@@ -38,7 +38,7 @@ module Poetry
         # The data-chart scope: explicit id when given (stable for tests /
         # multiple charts), else unique per render (shadcn's useId move).
         def chart_id
-          @chart_id ||= "chart-#{dom_id_token(id) || SecureRandom.hex(4)}"
+          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
         end
 
         def theme_css

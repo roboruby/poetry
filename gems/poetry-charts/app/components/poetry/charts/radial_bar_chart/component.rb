@@ -358,7 +358,7 @@ module Poetry
         end
 
         def chart_id
-          @chart_id ||= "chart-#{dom_id_token(id) || SecureRandom.hex(4)}"
+          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
         end
 
         def svg_label
