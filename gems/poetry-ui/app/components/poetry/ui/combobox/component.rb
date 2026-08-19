@@ -211,7 +211,7 @@ module Poetry
         private
 
         def group_id
-          @group_id ||= "poetry-combobox-group-#{SecureRandom.hex(4)}"
+          @group_id ||= poetry_instance_id("poetry-combobox-group")
         end
 
         def heading_id
@@ -581,7 +581,7 @@ module Poetry
         # aria-controls target of BOTH combobox roles) / '#{id}-native' /
         # '#{id}-input' / '#{id}-item-<n>'.
         def trigger_id
-          @trigger_id ||= id.presence || "poetry-combobox-#{SecureRandom.hex(4)}"
+          @trigger_id ||= id.presence || poetry_instance_id("poetry-combobox")
         end
 
         def content_id

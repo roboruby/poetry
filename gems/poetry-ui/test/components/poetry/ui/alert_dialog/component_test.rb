@@ -156,7 +156,7 @@ module Poetry
           html = render_alert
           dialog = alert(html)
 
-          assert_match(/\Apoetry-alert-dialog-\h{8}-title\z/, dialog["aria-labelledby"])
+          assert_match(/\Apoetry-alert-dialog-\h{16}-title\z/, dialog["aria-labelledby"])
           assert_equal dialog["aria-labelledby"], doc(html).css('[data-slot="alert-dialog-title"]').first["id"]
           assert_equal dialog["aria-describedby"],
                        doc(html).css('[data-slot="alert-dialog-description"]').first["id"]

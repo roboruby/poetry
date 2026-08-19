@@ -175,7 +175,7 @@ module Poetry
         end
 
         def tree_id
-          @tree_id ||= "poetry-tree-#{SecureRandom.hex(4)}"
+          @tree_id ||= poetry_instance_id("poetry-tree")
         end
 
         def first_visible_index

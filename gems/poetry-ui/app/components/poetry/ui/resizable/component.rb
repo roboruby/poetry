@@ -145,7 +145,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-resizable-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-resizable")
         end
       end
     end

@@ -215,7 +215,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-nav-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-nav")
         end
       end
     end

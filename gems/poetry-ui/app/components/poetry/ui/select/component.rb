@@ -368,7 +368,7 @@ module Poetry
         # click-focuses the combobox); content/native derive from it -
         # server-generated, portal-safe, stream-safe.
         def trigger_id
-          @trigger_id ||= id.presence || "poetry-select-#{SecureRandom.hex(4)}"
+          @trigger_id ||= id.presence || poetry_instance_id("poetry-select")
         end
 
         def content_id
@@ -577,7 +577,7 @@ module Poetry
         private
 
         def group_id
-          @group_id ||= "poetry-select-group-#{SecureRandom.hex(4)}"
+          @group_id ||= poetry_instance_id("poetry-select-group")
         end
 
         def label_id

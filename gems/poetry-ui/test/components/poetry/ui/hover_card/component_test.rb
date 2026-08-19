@@ -89,7 +89,7 @@ module Poetry
           assert content.key?("hidden")
           assert_equal "content", content["data-poetry--core--popper-target"]
           # The id pair is STRUCTURAL resolution only - never aria-wired.
-          assert_match(/\Apoetry-hover-card-\h{8}-trigger\z/, trigger["id"])
+          assert_match(/\Apoetry-hover-card-\h{16}-trigger\z/, trigger["id"])
           assert_equal trigger["id"].sub(/-trigger\z/, "-content"), content["id"]
           # The dismissable layer is token-activated while open, never
           # server-rendered.

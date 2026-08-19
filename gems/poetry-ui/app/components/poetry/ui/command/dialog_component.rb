@@ -158,7 +158,7 @@ module Poetry
         # Server-stable unique id for the aria wiring (two palettes on one
         # page must not share label ids).
         def instance_id
-          @instance_id ||= "poetry-command-dialog-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-command-dialog")
         end
       end
     end

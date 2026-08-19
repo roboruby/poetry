@@ -105,7 +105,11 @@ module Poetry
         end
 
         def autocomplete_id
-          @autocomplete_id ||= "poetry-autocomplete-#{dom_id_token(id) || SecureRandom.hex(4)}"
+          @autocomplete_id ||= if (token = dom_id_token(id))
+                                 "poetry-autocomplete-#{token}"
+                               else
+                                 poetry_instance_id("poetry-autocomplete")
+                               end
         end
 
         def list_id = "#{autocomplete_id}-list"

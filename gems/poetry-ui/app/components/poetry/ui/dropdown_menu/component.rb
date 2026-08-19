@@ -555,7 +555,7 @@ module Poetry
         end
 
         def instance_id
-          @instance_id ||= "poetry-dropdown-menu-sub-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-dropdown-menu-sub")
         end
 
         def sub_attributes

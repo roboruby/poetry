@@ -182,7 +182,7 @@ module Poetry
         # The label-for/aria target root id - server-stable (Field-issued
         # or auto) so item ids derive deterministically.
         def control_id
-          @control_id ||= html_attributes["id"].presence || "poetry-radio-group-#{SecureRandom.hex(4)}"
+          @control_id ||= poetry_instance_id("poetry-radio-group")
         end
 
         def root_attributes

@@ -119,7 +119,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-accordion-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-accordion")
         end
 
         def accordion_header(item_id, title, open_item, disabled: false)

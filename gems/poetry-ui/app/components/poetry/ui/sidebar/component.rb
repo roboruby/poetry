@@ -215,7 +215,7 @@ module Poetry
         end
 
         def mobile_title_id
-          @mobile_title_id ||= "poetry-sidebar-mobile-#{SecureRandom.hex(4)}"
+          @mobile_title_id ||= poetry_instance_id("poetry-sidebar-mobile")
         end
       end
     end

@@ -200,7 +200,7 @@ module Poetry
         end
 
         def filter_id
-          @filter_id ||= "poetry-data-table-#{SecureRandom.hex(4)}-filter"
+          @filter_id ||= "#{poetry_instance_id("poetry-data-table")}-filter"
         end
 
         # The filter form's action is the bare collection URL; the current

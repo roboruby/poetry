@@ -104,7 +104,7 @@ module Poetry
 
         # Sheet-scoped label ids (two overlays on a page never collide).
         def instance_id
-          @instance_id ||= "poetry-sheet-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-sheet")
         end
       end
     end

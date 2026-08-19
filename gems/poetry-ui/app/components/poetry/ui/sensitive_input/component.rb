@@ -123,7 +123,7 @@ module Poetry
         # tab stop wired to the clipboard-text engine.
 
         def control_id
-          @control_id ||= id.presence || "poetry-sensitive-input-#{SecureRandom.hex(4)}"
+          @control_id ||= id.presence || poetry_instance_id("poetry-sensitive-input")
         end
 
         def hint_id

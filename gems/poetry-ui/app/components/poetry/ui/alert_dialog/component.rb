@@ -196,7 +196,7 @@ module Poetry
 
         # Server-stable unique id for the aria wiring.
         def instance_id
-          @instance_id ||= "poetry-alert-dialog-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-alert-dialog")
         end
       end
     end

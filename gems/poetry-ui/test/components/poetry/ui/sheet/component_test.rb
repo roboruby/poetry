@@ -93,7 +93,7 @@ module Poetry
           html = render_sheet { |s| s.with_description { "Why" } }
           dialog = sheet_dialog(html)
 
-          assert_match(/\Apoetry-sheet-\h{8}-title\z/, dialog["aria-labelledby"])
+          assert_match(/\Apoetry-sheet-\h{16}-title\z/, dialog["aria-labelledby"])
           assert_equal dialog["aria-labelledby"], doc(html).css('[data-slot="sheet-title"]').first["id"]
           assert_equal dialog["aria-describedby"], doc(html).css('[data-slot="sheet-description"]').first["id"]
         end

@@ -469,7 +469,7 @@ module Poetry
         end
 
         def instance_id
-          @instance_id ||= "poetry-menubar-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-menubar")
         end
 
         # The per-menu machinery scope: the family menu controller (modal
@@ -646,7 +646,7 @@ module Poetry
         end
 
         def instance_id
-          @instance_id ||= "poetry-menubar-sub-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-menubar-sub")
         end
 
         def sub_attributes

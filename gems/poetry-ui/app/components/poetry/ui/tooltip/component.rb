@@ -209,7 +209,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-tooltip-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-tooltip")
         end
       end
     end

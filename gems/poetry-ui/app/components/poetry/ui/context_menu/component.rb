@@ -406,7 +406,7 @@ module Poetry
         # Server-stable unique id pair (aria-controls is the controller's
         # portal-safe trigger->content seam).
         def instance_id
-          @instance_id ||= "poetry-context-menu-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-context-menu")
         end
       end
 
@@ -539,7 +539,7 @@ module Poetry
         end
 
         def instance_id
-          @instance_id ||= "poetry-context-menu-sub-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-context-menu-sub")
         end
 
         def sub_attributes

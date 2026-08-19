@@ -79,7 +79,7 @@ module Poetry
         # keyboard path), hidden while empty, never steals focus.
 
         def control_id
-          @control_id ||= id.presence || "poetry-search-field-#{SecureRandom.hex(4)}"
+          @control_id ||= id.presence || poetry_instance_id("poetry-search-field")
         end
 
         def root_attributes

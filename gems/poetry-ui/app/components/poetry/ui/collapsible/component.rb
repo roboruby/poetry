@@ -103,7 +103,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-collapsible-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-collapsible")
         end
       end
     end

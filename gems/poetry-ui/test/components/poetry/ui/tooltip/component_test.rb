@@ -87,7 +87,7 @@ module Poetry
           assert_equal "content", content["data-poetry--core--popper-target"]
           # The id pair IS the controller's structural resolution seam
           # ("-trigger" -> "-content", portal-safe).
-          assert_match(/\Apoetry-tooltip-\h{8}-trigger\z/, trigger["id"])
+          assert_match(/\Apoetry-tooltip-\h{16}-trigger\z/, trigger["id"])
           assert_equal trigger["id"].sub(/-trigger\z/, "-content"), content["id"]
           # No layer controllers server-rendered: the dismissable is
           # token-activated while open (topmost-Esc correctness).

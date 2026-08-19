@@ -128,7 +128,7 @@ module Poetry
         # The label-for target (Field-issued or auto) - server-stable so the
         # sibling input resolves structurally by id, wrapper-free.
         def control_id
-          @control_id ||= html_attributes["id"].presence || "poetry-checkbox-#{SecureRandom.hex(4)}"
+          @control_id ||= poetry_instance_id("poetry-checkbox")
         end
 
         def input_id

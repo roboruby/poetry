@@ -96,7 +96,7 @@ module Poetry
         end
 
         def control_id
-          @control_id ||= html_attributes["id"].presence || "poetry-switch-#{SecureRandom.hex(4)}"
+          @control_id ||= poetry_instance_id("poetry-switch")
         end
 
         def input_id

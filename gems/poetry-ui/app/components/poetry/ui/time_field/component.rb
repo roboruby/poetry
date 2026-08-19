@@ -57,7 +57,7 @@ module Poetry
                                  "modes; tabindex -1 + aria-hidden once segments exist"
 
         def control_id
-          @control_id ||= id.presence || "poetry-time-field-#{SecureRandom.hex(4)}"
+          @control_id ||= id.presence || poetry_instance_id("poetry-time-field")
         end
 
         private

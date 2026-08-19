@@ -176,7 +176,7 @@ module Poetry
         end
 
         def control_id
-          @control_id ||= html_attributes["id"].presence || "poetry-slider-#{SecureRandom.hex(4)}"
+          @control_id ||= poetry_instance_id("poetry-slider")
         end
 
         def thumb_id(index)

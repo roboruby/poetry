@@ -148,7 +148,7 @@ module Poetry
         end
 
         def control_id
-          @control_id ||= id.presence || "poetry-number-field-#{SecureRandom.hex(4)}"
+          @control_id ||= id.presence || poetry_instance_id("poetry-number-field")
         end
 
         def root_attributes

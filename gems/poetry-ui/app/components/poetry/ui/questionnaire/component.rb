@@ -245,7 +245,11 @@ module Poetry
         end
 
         def questionnaire_id
-          @questionnaire_id ||= "questionnaire-#{dom_id_token(id) || SecureRandom.hex(4)}"
+          @questionnaire_id ||= if (token = dom_id_token(id))
+                                  "questionnaire-#{token}"
+                                else
+                                  poetry_instance_id("questionnaire")
+                                end
         end
 
         def enabled_items = item_models.reject(&:disabled)

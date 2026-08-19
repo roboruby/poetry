@@ -82,8 +82,16 @@ module Poetry
           raise ArgumentError, "TagGroup requires label: (the grid's accessible name)" if label.blank?
         end
 
+        # The scoped-descendant pattern: one instance id (ladder: caller
+        # id -> key -> random), every inner id derives from it - so a
+        # keyed group's label AND rows are all morph-stable, and rows
+        # never touch a group-level allocator.
+        def instance_id
+          @instance_id ||= poetry_instance_id("poetry-tag-group")
+        end
+
         def label_id
-          @label_id ||= "poetry-tag-group-label-#{SecureRandom.hex(4)}"
+          "#{instance_id}-label"
         end
 
         def root_attributes
@@ -113,7 +121,12 @@ module Poetry
         # the full row - content, remove button, hidden input - around the
         # consumer's block.
         def tag_row(value:, text:, disabled:, removable:, **options, &block)
-          row_id = options[:id].presence || "poetry-tag-#{SecureRandom.hex(4)}"
+          # Rows are the reorderable collection: identity derives from
+          # value: (the collection contract - unique within the group),
+          # namespaced under the group's instance id so two groups with
+          # the same tag values never collide.
+          row_id = options[:id].presence ||
+                   "#{instance_id}-tag-#{Poetry::Core::StableId.key_token(value) || SecureRandom.hex(8)}"
           attrs = {
             "id" => row_id, "role" => "row", "data-slot" => "tag-group-tag",
             "data-value" => value, "data-poetry-collection-item" => "",

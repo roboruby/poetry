@@ -129,7 +129,7 @@ module Poetry
         end
 
         def input_id
-          @input_id ||= html_attributes["id"].presence || "poetry-input-otp-#{SecureRandom.hex(4)}"
+          @input_id ||= poetry_instance_id("poetry-input-otp")
         end
 
         def complete?

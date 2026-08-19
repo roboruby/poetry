@@ -188,7 +188,7 @@ module Poetry
         private
 
         def group_id
-          @group_id ||= "poetry-command-group-#{SecureRandom.hex(4)}"
+          @group_id ||= poetry_instance_id("poetry-command-group")
         end
 
         def heading_id
@@ -363,7 +363,7 @@ module Poetry
         # Stable server ids: "#{id}-input" / "#{id}-list" / "#{id}-item-<n>"
         # (aria-activedescendant NEEDS server-stable option ids).
         def base_id
-          @base_id ||= id.presence || "poetry-command-#{SecureRandom.hex(4)}"
+          @base_id ||= id.presence || poetry_instance_id("poetry-command")
         end
 
         def input_id

@@ -211,7 +211,7 @@ module Poetry
         private
 
         def instance_id
-          @instance_id ||= "poetry-hover-card-#{SecureRandom.hex(4)}"
+          @instance_id ||= poetry_instance_id("poetry-hover-card")
         end
       end
 

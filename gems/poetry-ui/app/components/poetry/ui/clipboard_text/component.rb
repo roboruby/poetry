@@ -68,7 +68,7 @@ module Poetry
         # copy/check glyphs inside.
 
         def control_id
-          @control_id ||= id.presence || "poetry-clipboard-text-#{SecureRandom.hex(4)}"
+          @control_id ||= id.presence || poetry_instance_id("poetry-clipboard-text")
         end
 
         def root_attributes
