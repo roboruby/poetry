@@ -885,6 +885,72 @@ module Poetry
       def test_clean_text_output
         assert_equal "poetry check: no issues found", Check.to_text([])
       end
+
+      # --- StableId heuristics (plan S4): warnings only, never exit-flipping ---
+
+      def stable_identity_findings(erb)
+        Check::StableIdentity.new(CATALOG).lint(erb)
+      end
+
+      def test_cache_block_component_without_identity_warns
+        findings = stable_identity_findings(<<~ERB)
+          <% cache ["sidebar", current_user] do %>
+            <%= poetry_button(label: "Save") %>
+          <% end %>
+        ERB
+
+        assert_equal ["stable-identity/cache"], findings.map(&:rule)
+        assert_equal [:warning], findings.map(&:severity)
+      end
+
+      def test_cache_block_component_with_key_or_id_is_clean
+        findings = stable_identity_findings(<<~ERB)
+          <% cache @project do %>
+            <%= poetry_button(key: "save-action", label: "Save") %>
+            <%= poetry_select(id: "project-picker", name: "p") %>
+          <% end %>
+        ERB
+
+        assert_empty findings
+      end
+
+      def test_collection_loop_component_without_identity_warns
+        findings = stable_identity_findings(<<~ERB)
+          <% @messages.each do |message| %>
+            <%= poetry_button(label: message.subject) %>
+          <% end %>
+        ERB
+
+        assert_equal ["stable-identity/collection"], findings.map(&:rule)
+      end
+
+      def test_keyed_collection_and_outside_blocks_are_clean
+        findings = stable_identity_findings(<<~ERB)
+          <%= poetry_button(label: "Standalone") %>
+          <% @messages.each do |message| %>
+            <%= poetry_button(key: message, label: message.subject) %>
+          <% end %>
+          <% if admin? %>
+            <%= poetry_button(label: "Admin") %>
+          <% end %>
+        ERB
+
+        assert_empty findings, "standalone, keyed-in-loop, and plain-conditional calls are all fine"
+      end
+
+      def test_nested_blocks_resolve_extents
+        findings = stable_identity_findings(<<~ERB)
+          <% cache @page do %>
+            <% if @page.hero? %>
+              <%= poetry_button(label: "Hero") %>
+            <% end %>
+          <% end %>
+          <%= poetry_button(label: "After") %>
+        ERB
+
+        assert_equal 1, findings.size, "the if-block end must not close the cache frame"
+        assert_equal "stable-identity/cache", findings.first.rule
+      end
     end
   end
 end

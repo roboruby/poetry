@@ -1062,11 +1062,17 @@ module Poetry
         def initialize(catalog)
           @linter = Linter.new(catalog)
           @declarations = IconDeclarations.new(catalog)
+          @stable_identity = StableIdentity.new(catalog)
         end
 
         def run(paths)
           paths.flat_map do |path|
-            linter_for(path).lint(File.read(path)).each { |finding| finding.file = path }
+            source = File.read(path)
+            findings = linter_for(path).lint(source)
+            # The StableId heuristics ride every ERB pass (warnings only -
+            # they never flip the exit code).
+            findings += @stable_identity.lint(source) unless path.end_with?(".rb")
+            findings.each { |finding| finding.file = path }
           end
         end
 
