@@ -46,6 +46,35 @@ module Poetry
       end
     end
 
+    def test_generated_entry_compiles_with_the_real_tailwind_binary
+      # The output is EXECUTED, not just inspected: an emitted import path
+      # that does not resolve, an order bug between the generated pieces,
+      # or a fragment the compiler rejects all pass file-content
+      # assertions and detonate on a fresh host's first tailwindcss:build.
+      # The re-run first: the idempotent upgrade path must stay compilable.
+      run_generator
+      run_generator
+
+      require "open3"
+      require "tailwindcss/ruby"
+
+      compiled = Dir.chdir(destination_root) do
+        FileUtils.mkdir_p("tmp")
+        _out, err, status = Open3.capture3(
+          Tailwindcss::Ruby.executable,
+          "-i", "app/assets/tailwind/application.css", "-o", "tmp/compiled.css"
+        )
+
+        assert_predicate status, :success?, "the generated Tailwind entry failed to compile:\n#{err}"
+        File.read("tmp/compiled.css")
+      end
+
+      assert_includes compiled, "--background:", "tokens missing from the compiled host build"
+      assert_match(/\.cn-button[\s{,]/, compiled, "safelisted component classes missing from the compiled host build")
+      assert_includes compiled, "@media (prefers-reduced-motion: reduce)",
+                      "the reduced-motion guard missing from the compiled host build"
+    end
+
     def test_install_writes_both_claude_code_skills
       run_generator
 
