@@ -327,6 +327,12 @@ module Poetry
         #   #   "data-controller" => "dropdown",
         #   #   "aria-label" => "Close"
         #   # }
+        # When both spellings of the same attribute coexist in the store
+        # (flat "data-x" AND nested data: { x: }), the output is
+        # deterministic instead of insertion-order roulette: stimulus keys
+        # (data-controller / data-action) CONCATENATE so wiring is never
+        # lost, and every other duplicate resolves flat-spelling-wins (the
+        # normalize_flat_attributes! convention).
         def to_attributes
           each_with_object({}) do |(key, value), hash|
             next if value.nil?
@@ -337,6 +343,10 @@ module Poetry
               aria_attribute(hash, value)
             elsif BOOLEAN_ATTRIBUTES.include?(key)
               hash[key] = key if value
+            elsif key == "data-controller"
+              hash[key] = config.stimulus_merger.merge_controllers(hash[key], value)
+            elsif key == "data-action"
+              hash[key] = config.stimulus_merger.merge_actions(hash[key], value)
             else
               hash[key] = format_attribute_value(value)
             end
@@ -381,10 +391,21 @@ module Poetry
           # Remove flat attributes
           keys_to_delete.each { |key| delete(key) }
 
-          # Merge into nested format
+          # Merge into nested format. Flat-spelling-wins on collision,
+          # except stimulus wiring, which concatenates so a double-spelled
+          # controller/action never silently drops tokens.
           if flat_data.any?
             self["data"] ||= {}
-            self["data"].merge!(flat_data)
+            flat_data.each do |key, value|
+              self["data"][key] = case key.to_s
+                                  when "controller"
+                                    config.stimulus_merger.merge_controllers(self["data"][key], value)
+                                  when "action"
+                                    config.stimulus_merger.merge_actions(self["data"][key], value)
+                                  else
+                                    value
+                                  end
+            end
           end
 
           return unless flat_aria.any?
@@ -478,7 +499,20 @@ module Poetry
           data.each_pair do |key, value|
             next if value.nil?
 
-            attributes[prefixed_attribute(:data, key)] = format_attribute_value(value)
+            slot = prefixed_attribute(:data, key)
+
+            # Slot-collision rules (both spellings in one store): stimulus
+            # wiring concatenates, everything else is flat-spelling-wins -
+            # the nested expansion never overwrites an already-written flat
+            # value.
+            case slot
+            when "data-controller"
+              attributes[slot] = config.stimulus_merger.merge_controllers(attributes[slot], value)
+            when "data-action"
+              attributes[slot] = config.stimulus_merger.merge_actions(attributes[slot], value)
+            else
+              attributes[slot] = format_attribute_value(value) unless attributes.key?(slot)
+            end
           end
         end
 
@@ -507,7 +541,9 @@ module Poetry
               value = values.join(" ")
             end
 
-            attributes[prefixed_attribute(:aria, key)] = format_attribute_value(value)
+            slot = prefixed_attribute(:aria, key)
+            # Flat-spelling-wins on collision, matching data_attribute.
+            attributes[slot] = format_attribute_value(value) unless attributes.key?(slot)
           end
         end
 
@@ -598,6 +634,12 @@ module Poetry
             config.classname_merger.merge(old_value, new_value)
           elsif key == "data"
             config.stimulus_merger.merge(old_value, convert_value(new_value), &block)
+          elsif key == "data-controller"
+            # The flat spelling gets the same never-clobber treatment as the
+            # nested data: branch - stimulus wiring concatenates on conflict.
+            config.stimulus_merger.merge_controllers(old_value, new_value)
+          elsif key == "data-action"
+            config.stimulus_merger.merge_actions(old_value, new_value)
           elsif block
             yield(key, old_value, new_value)
           else

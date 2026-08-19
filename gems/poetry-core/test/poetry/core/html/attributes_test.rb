@@ -116,6 +116,66 @@ module Poetry
           assert_equal "top", attrs["data"]["side"]
           assert_equal "content", attrs["data"]["slot"]
         end
+
+        # --- spelling-aliasing rules: plain merge + to_attributes ---
+        # (both spellings of one attribute must never race by insertion
+        # order: stimulus wiring concatenates, other dupes are
+        # flat-spelling-wins)
+
+        def test_plain_merge_concatenates_flat_data_controller_on_conflict
+          attrs = Attributes.new("data-controller" => "host-thing")
+          merged = attrs.merge("data-controller" => "poetry--core--tabs")
+
+          assert_equal "host-thing poetry--core--tabs", merged["data-controller"]
+        end
+
+        def test_plain_merge_concatenates_flat_data_action_on_conflict
+          attrs = Attributes.new("data-action" => "click->host#track")
+          merged = attrs.merge("data-action" => "click->tabs#activate")
+
+          assert_equal "click->host#track click->tabs#activate", merged["data-action"]
+        end
+
+        def test_plain_merge_still_clobbers_other_flat_data_keys
+          attrs = Attributes.new("data-side" => "top")
+          merged = attrs.merge("data-side" => "bottom")
+
+          assert_equal "bottom", merged["data-side"]
+        end
+
+        def test_to_attributes_concatenates_double_spelled_stimulus_keys
+          flat_first = Attributes.new("data-controller" => "host-thing",
+                                      data: { controller: "poetry--core--tabs" })
+          nested_first = Attributes.new(data: { controller: "poetry--core--tabs" },
+                                        "data-controller" => "host-thing")
+
+          assert_equal "host-thing poetry--core--tabs",
+                       flat_first.to_attributes["data-controller"]
+          assert_equal ["host-thing", "poetry--core--tabs"],
+                       nested_first.to_attributes["data-controller"].split.sort
+        end
+
+        def test_to_attributes_resolves_other_double_spellings_flat_wins
+          flat_first = Attributes.new("data-side" => "top", data: { side: "bottom" })
+          nested_first = Attributes.new(data: { side: "bottom" }, "data-side" => "top")
+
+          assert_equal "top", flat_first.to_attributes["data-side"]
+          assert_equal "top", nested_first.to_attributes["data-side"]
+        end
+
+        def test_to_attributes_resolves_aria_double_spellings_flat_wins
+          attrs = Attributes.new(aria: { label: "Nested" }, "aria-label" => "Flat")
+
+          assert_equal "Flat", attrs.to_attributes["aria-label"]
+        end
+
+        def test_merge_if_not_set_unifies_a_double_spelled_caller_controller
+          attrs = Attributes.new(data: { controller: "host-a" }, "data-controller" => "host-b")
+          attrs.merge_if_not_set!("data-controller" => "poetry--core--tabs")
+
+          assert_equal ["host-a", "host-b", "poetry--core--tabs"],
+                       attrs["data"]["controller"].split.sort
+        end
       end
     end
   end
