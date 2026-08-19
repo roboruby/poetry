@@ -195,6 +195,14 @@ module Poetry
       # The base component intentionally does not chain to ViewComponent::Base#initialize:
       # it fully manages its own ActiveModel-backed attribute setup.
       def initialize(attributes = {}) # rubocop:disable Lint/MissingSuper
+        # key: is universal semantic identity (the StableId plan), not an
+        # HTML attribute - extracted here so it never renders literally.
+        # Not an ActiveModel option (yet): keeping it out of
+        # prop_definitions defers the registry/check surface decision to
+        # the migration slice.
+        @stable_key = attributes[:key] || attributes["key"]
+        attributes = attributes.except(:key, "key") if @stable_key
+
         # Initialize a fresh Set for this instance
         self.registered_styles = Set.new
         self.registered_options = Set.new
@@ -260,6 +268,25 @@ module Poetry
       #   component.html_attributes # => { class: "component-base-class custom-class" }
       def html_attributes
         @html_attributes.merge(class: classnames(css, @html_attributes[:class]))
+      end
+
+      # The caller-supplied semantic identity (key:), if any.
+      attr_reader :stable_key
+
+      # The instance-id ladder (the StableId plan): an explicit caller
+      # root id wins; a key: derives a stable component-namespaced token
+      # (Turbo morph pairs it across renders, cached fragments stay
+      # composable); otherwise random - unkeyed components over-replace
+      # under morph, they never falsely retain. Call sites memoize
+      # (`@instance_id ||=`); this stays pure.
+      def poetry_instance_id(prefix)
+        explicit = @html_attributes["id"].presence
+        return explicit.to_s if explicit
+
+        token = Poetry::Core::StableId.key_token(stable_key)
+        return "#{prefix}-#{token}" if token
+
+        "#{prefix}-#{SecureRandom.hex(8)}"
       end
 
       # Merges multiple class name values into a single string.
