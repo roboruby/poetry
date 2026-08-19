@@ -157,6 +157,22 @@ module Poetry
         assert_predicate Registry.new, :verified?,
                          "committed component registry drifted - run `bin/rake registry:generate` and commit"
       end
+
+      # The internal-component marker: full Component machinery without a
+      # registry entry (discovery rejects the flag; every registry-derived
+      # surface follows). Inherited so nested subclasses stay internal.
+      def test_internal_component_marker_semantics
+        refute Poetry::Core::Component.internal_component,
+               "the base class must not be internal (it would blank discovery)"
+
+        internal = Class.new(Poetry::Core::Component) { internal_component! }
+        nested = Class.new(internal)
+        regular = Class.new(Poetry::Core::Component)
+
+        assert internal.internal_component
+        assert nested.internal_component, "internal is inherited"
+        refute regular.internal_component
+      end
     end
   end
 end

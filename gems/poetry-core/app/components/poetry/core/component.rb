@@ -46,6 +46,22 @@ module Poetry
       include Poetry::Core::Concerns::Introspection
       include Poetry::Core::Concerns::Parts
 
+      # Implementation-detail component classes (a family's inner Item /
+      # Group / Sub / Menu classes) inherit the full Component machinery
+      # without becoming PUBLISHED components: registry discovery skips
+      # internal components, and everything derived from the registry
+      # (agent surface, llms, contract gates, docs) follows. Inherited, so
+      # a subclass of an internal component stays internal.
+      class_attribute :internal_component, default: false, instance_predicate: false
+
+      class << self
+        # Marks this class (and its descendants) as an implementation
+        # detail - full machinery, no registry entry.
+        def internal_component!
+          self.internal_component = true
+        end
+      end
+
       class << self
         # Returns the current Poetry::Core configuration.
         #

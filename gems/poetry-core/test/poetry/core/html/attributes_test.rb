@@ -207,7 +207,6 @@ module Poetry
           assert_equal "menuitem", result["role"]
           refute result.key?("data"), "output is flat, render-ready"
         end
-
       end
     end
   end

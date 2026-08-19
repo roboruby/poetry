@@ -148,7 +148,7 @@ module Poetry
         if defined?(Rails) && Rails.respond_to?(:autoloaders) && components_dir.directory?
           Rails.autoloaders.main.eager_load_dir(components_dir)
         end
-        Poetry::Core::Component.descendants.select(&:name).select do |component|
+        Poetry::Core::Component.descendants.select(&:name).reject(&:internal_component).select do |component|
           path = Object.const_source_location(component.name)&.first
           path&.start_with?(app_root.to_s)
         end
