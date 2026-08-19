@@ -23,6 +23,20 @@ module Poetry
           assert_match(/<div[^>]*role="region"[^>]*aria-labelledby="[^"]+-trigger"/, html)
         end
 
+        def test_host_supplied_controller_concatenates_with_the_component_wiring
+          # The host-attached-controller contract: a caller's own
+          # data-controller/action on the root must never disconnect the
+          # component's declared wiring (first-wins used to silently drop
+          # it and break the component's JS). Caller tokens stay first.
+          html = render_accordion(open: %w[a],
+                                  data: { controller: "host-thing",
+                                          action: "click->host#track" })
+
+          assert_includes html,
+                          'data-controller="host-thing poetry--core--accordion poetry--core--roving-focus"'
+          assert_match(/data-action="click->host#track [^"]+"/, html)
+        end
+
         def test_open_state_is_server_rendered
           html = render_accordion(open: %w[a])
           panel_a = html[/<div[^c]*?id="[^"]+-a-panel".*?>/m]
