@@ -33,7 +33,7 @@ module Poetry
       # Query wrapper over the committed registry hash + the controllers
       # manifest. Language-agnostic data in, poetry semantics out.
       class Catalog
-        PASSTHROUGH = %w[class id data aria role style if unless].freeze
+        PASSTHROUGH = %w[class id key data aria role style if unless].freeze
         COLOR_FAMILIES = %w[
           slate gray zinc neutral stone red orange amber yellow lime green emerald
           teal cyan sky blue indigo violet purple fuchsia pink rose

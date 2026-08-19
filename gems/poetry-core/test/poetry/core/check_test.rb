@@ -951,6 +951,16 @@ module Poetry
         assert_equal 1, findings.size, "the if-block end must not close the cache frame"
         assert_equal "stable-identity/cache", findings.first.rule
       end
+
+      def test_key_is_passthrough_not_an_unknown_option
+        # The linter must never flag the identity API its own
+        # stable-identity rules recommend (StableId S5 coherence).
+        findings = Check::Linter.new(CATALOG).lint(<<~ERB)
+          <%= poetry_button(key: "save-action", label: "Save") %>
+        ERB
+
+        assert_empty(findings.select { |f| f.rule == "unknown-option" })
+      end
     end
   end
 end
