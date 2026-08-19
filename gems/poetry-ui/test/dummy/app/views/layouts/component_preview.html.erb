@@ -21,6 +21,15 @@
           caret-color: transparent !important;
         }
       }
+      /* The install-parity body (poetry:install's base.css verbatim): a
+         real host's body rides the tokens, so the previews must too -
+         without this, flipping .dark leaves dark foregrounds on the UA's
+         white canvas (a page no host ever renders), and any theme whose
+         light background isn't pure white screenshots wrong. */
+      body {
+        background-color: var(--background);
+        color: var(--foreground);
+      }
     </style>
     <script type="importmap"><%= raw Rails.public_path.join("assets/importmap.json").read %></script>
     <script type="module">

@@ -10,6 +10,7 @@
 
 POETRY_BROWSER_VIEWPORT = [1024, 768].freeze
 POETRY_AXE_RULESETS = %w[wcag2a wcag2aa].freeze
+POETRY_AXE_SCHEMES = [nil, "dark"].freeze # each page audits light, then .dark in place
 
 # Preview examples with known, reviewed axe violations - the ONLY skip
 # mechanism (no silent skips). Key: "<component>/<example>"; value: the
@@ -23,6 +24,8 @@ POETRY_AXE_SKIPS = {
   # it clean now - the staleness rule caught the entry, as designed.)
   "attachment/error" => "color-contrast 4.11:1 - error-state description tint #ec333c on white at text-xs; " \
                         "shadcn destructive token, review with the token retune",
+  "attachment/error@dark" => "color-contrast 4.36:1 - the dark twin (#d15457 on #171717 at text-xs); " \
+                             "same destructive-token family, same token-retune review",
   "bubble/destructive" => "color-contrast 4.0:1 - destructive text #e7000b on destructive-tinted bubble #fde6e7; " \
                           "shadcn destructive token pair, review with the token retune"
 }.freeze
@@ -181,24 +184,35 @@ namespace :test do
     stale_skips = []
     pages = poetry_ui_preview_pages
 
+    # Every page audits in BOTH schemes: light as rendered, then dark by
+    # flipping the .dark class in place (one navigation, two audits - the
+    # CDP reduced-motion emulation keeps the flip transition-free). Until
+    # the dark pass existed, the walk only ever proved the palette the
+    # rig happened to render. Dark skip keys carry an @dark suffix.
     pages.each do |component, example, url|
-      key = "#{component}/#{example}"
       poetry_ui_visit_preview(session, url)
-      violations = poetry_ui_axe_violations(session)
 
-      if POETRY_AXE_SKIPS.key?(key)
-        if violations.empty?
-          stale_skips << key
-        else
-          skipped << "#{key} (#{violations.map { |v| v["id"] }.uniq.join(", ")}): #{POETRY_AXE_SKIPS[key]}"
+      POETRY_AXE_SCHEMES.each do |scheme|
+        session.execute_script(<<~JS)
+          document.documentElement.classList.toggle("dark", #{(scheme == "dark").to_json});
+        JS
+        key = scheme ? "#{component}/#{example}@#{scheme}" : "#{component}/#{example}"
+        violations = poetry_ui_axe_violations(session)
+
+        if POETRY_AXE_SKIPS.key?(key)
+          if violations.empty?
+            stale_skips << key
+          else
+            skipped << "#{key} (#{violations.map { |v| v["id"] }.uniq.join(", ")}): #{POETRY_AXE_SKIPS[key]}"
+          end
+          next
         end
-        next
-      end
 
-      violations.each do |violation|
-        violation["nodes"].each do |node|
-          failures << [key.ljust(32), violation["impact"].to_s.ljust(12),
-                       violation["id"].ljust(28), Array(node["target"]).join(" ")].join(" ")
+        violations.each do |violation|
+          violation["nodes"].each do |node|
+            failures << [key.ljust(38), violation["impact"].to_s.ljust(12),
+                         violation["id"].ljust(28), Array(node["target"]).join(" ")].join(" ")
+          end
         end
       end
     end
@@ -210,12 +224,12 @@ namespace :test do
     end
 
     unless failures.empty?
-      header = ["component/example".ljust(32), "impact".ljust(12), "rule".ljust(28), "selector"].join(" ")
+      header = ["component/example[@dark]".ljust(38), "impact".ljust(12), "rule".ljust(28), "selector"].join(" ")
       abort "axe violations (#{POETRY_AXE_RULESETS.join("/")}):\n#{header}\n#{failures.join("\n")}"
     end
 
     abort "tripwire: the axe walk audited zero pages (preview discovery broken?)" if pages.empty?
-    puts "accessibility: #{pages.size} preview pages clean against #{POETRY_AXE_RULESETS.join("+")} " \
+    puts "accessibility: #{pages.size} preview pages x light+dark clean against #{POETRY_AXE_RULESETS.join("+")} " \
          "(#{skipped.size} documented skips)"
   end
 

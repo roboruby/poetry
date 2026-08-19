@@ -799,6 +799,13 @@
   @apply rounded-md border p-4 has-data-checked:border-primary has-data-checked:bg-primary/5 dark:has-data-checked:bg-primary/10;
 }
 
+/* Tinted-surface AA compensation: on the checked card's primary/5 tint,
+   plain muted-foreground reads 4.46:1 (sub-AA, upstream ships it) - the
+   description inside choice cards rides a darker mix instead. */
+.cn-field-label-card .cn-field-description {
+  @apply text-foreground/70;
+}
+
 .cn-field-title {
   @apply gap-2 text-sm leading-snug font-medium;
 }
