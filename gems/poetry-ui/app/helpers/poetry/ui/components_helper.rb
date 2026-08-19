@@ -881,6 +881,23 @@ module Poetry
         render(Poetry::Ui::Menubar::Component.new(**), &)
       end
 
+      # The composed-DOM duplicate-id tripwire (StableId S4): a DEVELOPMENT
+      # guard that scans the live page for duplicate [id] values after
+      # every composition event (load, Turbo loads, frame loads, morphs,
+      # stream insertions) and console-warns - the runtime complement to
+      # poetry check's static stable-identity heuristics, and the only
+      # check that sees real composition. Render in the development
+      # layout's <head>; it emits nothing outside development unless
+      # force: true (the dummy's test pages dogfood it that way).
+      def poetry_id_integrity_script(force: false)
+        return unless force || Rails.env.development?
+
+        javascript_tag(<<~JS, type: "module", nonce: true)
+          import { installPoetryIdIntegrityCheck } from "@poetry/controllers/helpers/id_integrity"
+          installPoetryIdIntegrityCheck()
+        JS
+      end
+
       # The color-scheme bootstrap (, the pothole a classes-only port-rb patches
       # into every host by hand): tokens ship `.dark` + `color-scheme`, but
       # WHEN `.dark` applies is the host's job - and it must happen before

@@ -10487,6 +10487,7 @@ helpers:
   poetry_checkbox_group_all: {}
   poetry_checkbox_group_item: {}
   poetry_color_scheme_script: {}
+  poetry_id_integrity_script: {}
   poetry_input_group_addon:
     options:
     - name: align
@@ -10762,6 +10763,7 @@ helper_args:
   poetry_file_input: 0
   poetry_hover_card: 0
   poetry_icon: 0
+  poetry_id_integrity_script: 0
   poetry_input: 0
   poetry_input_group: 0
   poetry_input_group_addon: 0

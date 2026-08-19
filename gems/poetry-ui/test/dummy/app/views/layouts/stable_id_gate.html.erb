@@ -19,6 +19,7 @@
       await import("/vendor/turbo.es2017-esm.js")
       document.documentElement.dataset.poetryReady = "true"
     </script>
+    <%= poetry_id_integrity_script(force: true) %>
   </head>
   <body>
     <%= yield %>

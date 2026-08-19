@@ -31,6 +31,7 @@ poetry-core/app/javascript/poetry/core/helpers/escape.js bb18645a584e7b8f882856a
 poetry-core/app/javascript/poetry/core/helpers/filter_rank.js 1ddeaef02049c05cf34e04c60d2828dff9040a1c139a35b8b3b2be8d4fe6cbd5
 poetry-core/app/javascript/poetry/core/helpers/focus_guards.js be824687b64627a73fc43c7e60d42e29478f8c7dd7b96b949193167c57bcf2e1
 poetry-core/app/javascript/poetry/core/helpers/hotkey.js 06e2188d8d0a0e34e998fd3b283b3ecf96914cbd3b71bc529db81d6c97de46c8
+poetry-core/app/javascript/poetry/core/helpers/id_integrity.js 387469a59b35526de374754a95e0069cc4fab3945b08c5a2ff7c2c0959e4c93c
 poetry-core/app/javascript/poetry/core/helpers/incomplete_date.js b1b6a10cf8ebeb527bed1bfb0ff7346f79b30f1a87c41d0653030795adb05ebb
 poetry-core/app/javascript/poetry/core/helpers/mask.js 06d423777df287ae9f3fa91b561addb4f325088dbad0dd1f660566feb22b65ad
 poetry-core/app/javascript/poetry/core/helpers/portal.js fdc95bbd706e8232689aae5ea67641e2189114e4187ad7e5eeac7d6c8a7a2261
