@@ -219,16 +219,19 @@ module Poetry
       # Poetry::Core::Component descendants register in the component
       # registry, and the trigger is anatomy, not a component (the
       # DropdownMenu precedent).
-      class Trigger < ViewComponent::Base
-        # Carries pre-built wiring only; intentionally does not chain to
-        # ViewComponent::Base#initialize.
-        def initialize(tag_name:, attributes:) # rubocop:disable Lint/MissingSuper
+      class Trigger < Poetry::Core::Component
+        internal_component!
+
+        # Carries pre-built wiring only. (@attributes is Component's
+        # ActiveModel storage - the wiring rides its own ivar.)
+        def initialize(tag_name:, attributes:)
+          super({})
           @tag_name = tag_name
-          @attributes = attributes
+          @trigger_attributes = attributes
         end
 
         def call
-          content_tag(@tag_name, content, @attributes)
+          content_tag(@tag_name, content, @trigger_attributes)
         end
       end
     end

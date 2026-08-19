@@ -86,13 +86,14 @@ module Poetry
       # DOM-focused - the activedescendant design) and NO aria-selected
       # (reserved for committed values - a bare palette has none; the
       # highlight is data-highlighted + the input's activedescendant).
-      class Item < ViewComponent::Base
+      class Item < Poetry::Core::Component
+        internal_component!
         include Helpers
 
         attr_reader :item_set, :item_wiring
 
         def initialize(item_set:, value:, item_wiring: {}, **options)
-          super()
+          super(options)
           @item_set = item_set
           @item_wiring = item_wiring
           @value = value.to_s
@@ -101,7 +102,6 @@ module Poetry
           @filter_value = options.delete(:filter_value)
           @always_render = options.delete(:always_render) || false
           @shortcut = options.delete(:shortcut)
-          @extra_attributes = options
         end
 
         def call
@@ -109,7 +109,7 @@ module Poetry
           attrs = {
             "id" => item_id, "data-slot" => "command-item", "role" => "option",
             "data-poetry-collection-item" => "", "data-value" => @value,
-            "class" => Style.css(:item, class: @extra_attributes.delete(:class))
+            "class" => Style.css(:item, class: html_attributes.delete(:class))
           }.merge(@item_wiring)
           attrs["data-highlighted"] = "" if highlighted
           if @disabled
@@ -119,7 +119,7 @@ module Poetry
           attrs["data-keywords"] = @keywords.join(" ") if @keywords.any?
           attrs["data-filter-value"] = @filter_value if @filter_value
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([label_part, shortcut_part].compact)
           end
         end
@@ -149,7 +149,8 @@ module Poetry
       # PARENT's item set so ids and the initial highlight stay in DOM
       # order. Plain ViewComponent::Base ON PURPOSE: nested parts are
       # anatomy, not registered components.
-      class Group < ViewComponent::Base
+      class Group < Poetry::Core::Component
+        internal_component!
         include Helpers
 
         attr_reader :item_set, :item_wiring
@@ -162,12 +163,11 @@ module Poetry
         def initialize(item_set:, heading:, item_wiring: {}, always_render: false, **extra_attributes)
           raise ArgumentError, "Command group requires heading: (the group's accessible name)" if heading.blank?
 
-          super()
+          super(extra_attributes)
           @item_set = item_set
           @item_wiring = item_wiring
           @heading_text = heading
           @always_render = always_render
-          @extra_attributes = extra_attributes
         end
 
         def before_render
@@ -177,10 +177,10 @@ module Poetry
         def call
           attrs = {
             "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id,
-            "class" => Style.css(:group, class: @extra_attributes.delete(:class))
+            "class" => Style.css(:group, class: html_attributes.delete(:class))
           }
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([heading_part, *items])
           end
         end

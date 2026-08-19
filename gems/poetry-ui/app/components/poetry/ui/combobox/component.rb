@@ -107,14 +107,14 @@ module Poetry
       # happens in DOM order, so the shared OptionSet assigns server-
       # stable ids and registers native <option>s in exactly the order
       # the listbox renders - top level or grouped.
-      class Item < ViewComponent::Base
+      class Item < Poetry::Core::Component
+        internal_component!
         include Helpers
-        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :option_set, :selected_value
 
         def initialize(option_set:, selected_value:, value:, **options)
-          super()
+          super(options)
           @option_set = option_set
           @selected_value = selected_value
           @value = value.to_s
@@ -123,7 +123,6 @@ module Poetry
           @keywords = Array(options.delete(:keywords)).map(&:to_s)
           @filter_value = options.delete(:filter_value)
           @always_render = options.delete(:always_render) || false
-          @extra_attributes = options
         end
 
         def call
@@ -142,7 +141,7 @@ module Poetry
             "id" => item_id, "data-slot" => "command-item", "role" => "option",
             "data-poetry-collection-item" => "", "data-value" => @value,
             "aria-selected" => selected.to_s,
-            "class" => Command::Style.css(:item, class: @extra_attributes.delete(:class))
+            "class" => Command::Style.css(:item, class: html_attributes.delete(:class))
           }.merge(stimulus_attributes(:command) do |command|
             command.with_action(:activate, on: :click)
             command.with_action(:pointer_highlight, on: :pointermove)
@@ -159,7 +158,7 @@ module Poetry
           attrs["data-keywords"] = @keywords.join(" ") if @keywords.any?
           attrs["data-filter-value"] = @filter_value if @filter_value
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([content_tag(:span, label_html, "data-slot" => "command-item-text",
                                                       "class" => Style.css(:item_text)),
                        item_indicator])
@@ -173,7 +172,8 @@ module Poetry
       # and the value display see every option in DOM order. Plain
       # ViewComponent::Base ON PURPOSE: nested parts are anatomy, not
       # registered components.
-      class Group < ViewComponent::Base
+      class Group < Poetry::Core::Component
+        internal_component!
         include Helpers
 
         attr_reader :option_set, :selected_value
@@ -186,12 +186,11 @@ module Poetry
         def initialize(option_set:, selected_value:, heading:, always_render: false, **extra_attributes)
           raise ArgumentError, "Combobox group requires heading: (the group's accessible name)" if heading.blank?
 
-          super()
+          super(extra_attributes)
           @option_set = option_set
           @selected_value = selected_value
           @heading_text = heading
           @always_render = always_render
-          @extra_attributes = extra_attributes
         end
 
         def before_render
@@ -201,10 +200,10 @@ module Poetry
         def call
           attrs = {
             "data-slot" => "command-group", "role" => "group", "aria-labelledby" => heading_id,
-            "class" => Command::Style.css(:group, class: @extra_attributes.delete(:class))
+            "class" => Command::Style.css(:group, class: html_attributes.delete(:class))
           }
           attrs["data-always-render"] = "" if @always_render
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([heading_part, *items])
           end
         end

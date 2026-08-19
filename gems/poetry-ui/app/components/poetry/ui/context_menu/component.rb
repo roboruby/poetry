@@ -413,14 +413,13 @@ module Poetry
       # role=group semantic grouping between separators - the same item
       # union, one level down. Plain ViewComponent::Base ON PURPOSE (the
       # nested parts are anatomy, not registry components).
-      class Group < ViewComponent::Base
+      class Group < Poetry::Core::Component
+        internal_component!
         include ItemSlots
-        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
-          super()
+          super(extra_attributes)
           @dir = dir
-          @extra_attributes = extra_attributes
         end
 
         def before_render
@@ -429,7 +428,7 @@ module Poetry
 
         def call
           attrs = { "data-slot" => "context-menu-group", "role" => "group" }
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(items.map(&:to_s)) }
         end
 
         private
@@ -442,16 +441,15 @@ module Poetry
       # role=group scoping the single-select value for its radio items.
       # Duplicate radio values raise ArgumentError at render (the base-contract
       # base contract); radio items exist ONLY through this group.
-      class RadioGroup < ViewComponent::Base
+      class RadioGroup < Poetry::Core::Component
+        internal_component!
         include Helpers
-        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :group_value
 
         def initialize(value: nil, **extra_attributes)
-          super()
+          super(extra_attributes)
           @group_value = value&.to_s
-          @extra_attributes = extra_attributes
           @seen_values = Set.new
         end
 
@@ -484,21 +482,20 @@ module Poetry
         def call
           attrs = { "data-slot" => "context-menu-radio-group", "role" => "group" }
           attrs["data-value"] = group_value if group_value
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(radio_items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(radio_items.map(&:to_s)) }
         end
       end
 
       # A submenu scope: its own popper instance (sub_trigger = anchor,
       # sub_content = content; side flips under RTL) around the same item
       # union, recursively - family-identical to DropdownMenu's.
-      class Sub < ViewComponent::Base
+      class Sub < Poetry::Core::Component
+        internal_component!
         include ItemSlots
-        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
-          super()
+          super(extra_attributes)
           @dir = dir
-          @extra_attributes = extra_attributes
         end
 
         renders_one :trigger, lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
@@ -553,7 +550,7 @@ module Poetry
               popper.with_value(:align, :start)
             end
           )
-          Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)
+          Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)
         end
 
         def sub_content

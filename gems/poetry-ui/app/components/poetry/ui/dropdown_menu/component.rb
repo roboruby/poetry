@@ -425,14 +425,13 @@ module Poetry
       # union, one level down. Plain ViewComponent::Base ON PURPOSE:
       # Poetry::Core::Component descendants register in the component
       # registry, and the nested parts are anatomy, not components.
-      class Group < ViewComponent::Base
+      class Group < Poetry::Core::Component
+        internal_component!
         include ItemSlots
-        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
-          super()
           @dir = dir
-          @extra_attributes = extra_attributes
+          super(extra_attributes)
         end
 
         def before_render
@@ -441,7 +440,7 @@ module Poetry
 
         def call
           attrs = { "data-slot" => "dropdown-menu-group", "role" => "group" }
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(items.map(&:to_s)) }
         end
 
         private
@@ -454,17 +453,16 @@ module Poetry
       # role=group scoping the single-select value for its radio items.
       # Duplicate radio values raise ArgumentError at render (the base-contract
       # base contract); radio items exist ONLY through this group.
-      class RadioGroup < ViewComponent::Base
+      class RadioGroup < Poetry::Core::Component
+        internal_component!
         include Helpers
-        include Poetry::Core::Concerns::Stimulus
 
         attr_reader :group_value
 
         def initialize(value: nil, **extra_attributes)
-          super()
           @group_value = value&.to_s
-          @extra_attributes = extra_attributes
           @seen_values = Set.new
+          super(extra_attributes)
         end
 
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
@@ -496,7 +494,7 @@ module Poetry
         def call
           attrs = { "data-slot" => "dropdown-menu-radio-group", "role" => "group" }
           attrs["data-value"] = group_value if group_value
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) { safe_join(radio_items.map(&:to_s)) }
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) { safe_join(radio_items.map(&:to_s)) }
         end
       end
 
@@ -504,14 +502,13 @@ module Poetry
       # sub_content = content; side flips under RTL) around the same item
       # union, recursively. The sub layer controllers (dismissable +
       # roving-focus) are added by the menu controller when the sub opens.
-      class Sub < ViewComponent::Base
+      class Sub < Poetry::Core::Component
+        internal_component!
         include ItemSlots
-        include Poetry::Core::Concerns::Stimulus
 
         def initialize(dir: nil, **extra_attributes)
-          super()
           @dir = dir
-          @extra_attributes = extra_attributes
+          super(extra_attributes)
         end
 
         # role=menuitem in the PARENT's collection + aria wiring to its own
@@ -569,7 +566,7 @@ module Poetry
               popper.with_value(:align, :start)
             end
           )
-          Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)
+          Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)
         end
 
         def sub_content

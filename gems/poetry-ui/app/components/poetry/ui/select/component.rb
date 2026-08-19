@@ -82,20 +82,20 @@ module Poetry
       # (the family twin-write rule, aria-selected flavored; unselected =
       # data-selected ABSENT); disabled divs carry aria-disabled +
       # data-disabled together.
-      class Item < ViewComponent::Base
+      class Item < Poetry::Core::Component
+        internal_component!
         include Helpers
 
         attr_reader :option_set, :selected_value
 
         def initialize(option_set:, selected_value:, value:, item_wiring: {}, **options)
-          super()
+          super(options)
           @item_wiring = item_wiring
           @option_set = option_set
           @selected_value = selected_value
           @value = value.to_s
           @disabled = options.delete(:disabled) || false
           @text_value = options.delete(:text_value)
-          @extra_attributes = options
         end
 
         def call
@@ -108,7 +108,7 @@ module Poetry
             "data-slot" => "select-item", "role" => "option", "tabindex" => "-1",
             "data-poetry-collection-item" => "", "data-value" => @value,
             "aria-selected" => selected.to_s,
-            "class" => Style.css(:item, class: @extra_attributes.delete(:class))
+            "class" => Style.css(:item, class: html_attributes.delete(:class))
           }.merge(@item_wiring)
           # Base UI selected state: bare data-selected on the committed
           # option, NOTHING while unselected (absence IS the state).
@@ -118,7 +118,7 @@ module Poetry
             attrs["data-disabled"] = ""
           end
           attrs["data-text-value"] = @text_value if @text_value
-          merged = Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)
+          merged = Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)
           # data-value is RESERVED (the native-<select> mirror matches
           # options by it) - the value: argument beats any caller spelling.
           merged["data-value"] = @value
@@ -543,18 +543,18 @@ module Poetry
       # the PARENT's option set so the native select and value display see
       # every option. Plain ViewComponent::Base ON PURPOSE: nested parts
       # are anatomy, not registered components.
-      class Group < ViewComponent::Base
+      class Group < Poetry::Core::Component
+        internal_component!
         include Helpers
 
         attr_reader :option_set, :selected_value, :item_wiring
 
         def initialize(option_set:, selected_value:, label: nil, item_wiring: {}, **extra_attributes)
-          super()
+          super(extra_attributes)
           @item_wiring = item_wiring
           @option_set = option_set
           @selected_value = selected_value
           @label_text = label
-          @extra_attributes = extra_attributes
         end
 
         renders_many :items, types: {
@@ -569,7 +569,7 @@ module Poetry
         def call
           attrs = { "data-slot" => "select-group", "role" => "group", "class" => "cn-select-group" }
           attrs["aria-labelledby"] = label_id if @label_text
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, html_attributes)) do
             safe_join([label_part, *items].compact)
           end
         end
