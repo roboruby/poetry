@@ -238,9 +238,15 @@ module Poetry
 
       def poetry_sidebar_trigger(**attrs)
         action = Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click)
+        # A caller data: hash augments the toggle wiring instead of
+        # replacing it at the kwargs splat (actions token-join).
+        caller_data = attrs.delete(:data) || {}
+        data = { slot: "sidebar-trigger", action: action }.merge(caller_data) do |key, wired, caller|
+          key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+        end
         render(Poetry::Ui::Button::Component.new(
                  variant: :ghost, size: :"icon-sm", label: "Toggle Sidebar",
-                 data: { slot: "sidebar-trigger", action: action }, **attrs
+                 data: data, **attrs
                )) { poetry_icon(name: :"panel-left") }
       end
 
@@ -248,11 +254,11 @@ module Poetry
       # trigger is the keyboard affordance).
       def poetry_sidebar_rail(**attrs)
         classes = [Poetry::Ui::Sidebar::Style.css(:rail), attrs.delete(:class)].compact.join(" ")
-        content_tag(:button, nil, type: "button", "aria-label": "Toggle Sidebar", tabindex: "-1",
-                                  title: "Toggle Sidebar", class: classes,
-                                  data: { slot: "sidebar-rail",
-                                          action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) },
-                                  **attrs)
+        wiring = { type: "button", "aria-label": "Toggle Sidebar", tabindex: "-1",
+                   title: "Toggle Sidebar", class: classes,
+                   data: { slot: "sidebar-rail",
+                           action: Poetry::Ui::Sidebar::Component.stimulus_action(:toggle, on: :click) } }
+        content_tag(:button, nil, Poetry::Core::HTML::Attributes.merged(wiring, attrs))
       end
 
       # The simple content-part stamps (div/ul/li wrappers with the slot +
@@ -662,11 +668,11 @@ module Poetry
       # item toggles re-derive it (all -> checked, none -> unchecked,
       # some -> indeterminate).
       def poetry_checkbox_group(**attrs, &block)
-        classes = attrs.delete(:class)
-        data = { slot: "checkbox-group", controller: "poetry--core--checkbox-group",
-                 action: "poetry:checkbox:change->poetry--core--checkbox-group#changed" }
-               .merge(attrs.delete(:data) || {})
-        content_tag(:div, (capture(&block) if block), class: classes, data: data, **attrs)
+        wiring = { class: attrs.delete(:class),
+                   data: { slot: "checkbox-group", controller: "poetry--core--checkbox-group",
+                           action: "poetry:checkbox:change->poetry--core--checkbox-group#changed" } }
+        content_tag(:div, (capture(&block) if block),
+                    Poetry::Core::HTML::Attributes.merged(wiring, attrs))
       end
 
       # The group's parent checkbox (target: all) - checking it fans out.
@@ -779,9 +785,15 @@ module Poetry
       # find it (data-message-id; anchor: pins the reading position).
       def poetry_message_scroller_item(id:, anchor: false, **attrs, &)
         classes = [Poetry::Ui::MessageScroller::Style.css(:item), attrs.delete(:class)].compact.join(" ")
-        data = { slot: "message-scroller-item", "message-id": id }
+        # data-message-id is the anchoring/Turbo-Stream identity - RESERVED:
+        # the id: argument wins over any caller spelling. Other caller data
+        # keys (and stimulus wiring) ride along.
+        attrs.delete("data-message-id")
+        attrs.delete(:"data-message-id")
+        data = (attrs.delete(:data) || {}).merge(slot: "message-scroller-item", "message-id": id)
         data[:"scroll-anchor"] = "true" if anchor
-        tag.div(**attrs.merge(class: classes, data: data), &)
+        tag.div(**Poetry::Core::HTML::Attributes.merged({ class: classes, data: data }, attrs)
+                  .symbolize_keys, &)
       end
 
       def poetry_toast(**, &)

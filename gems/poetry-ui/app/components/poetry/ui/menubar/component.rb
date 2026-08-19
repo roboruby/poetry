@@ -105,6 +105,10 @@ module Poetry
           content = safe_join([capture(&), shortcut_span(shortcut)].compact)
 
           if submit && !disabled
+            # form: is RESERVED on submit items - the display:contents form
+            # IS the a11y mechanism (the button is the menuitem).
+            options.delete(:form)
+            options.delete("form")
             return helpers.button_to(submit,
                                      { method: method || :post, form: { class: "contents" } }
                                        .merge(Poetry::Core::HTML::Attributes.merged(attrs, options))) { content }

@@ -118,7 +118,11 @@ module Poetry
             attrs["data-disabled"] = ""
           end
           attrs["data-text-value"] = @text_value if @text_value
-          content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)) do
+          merged = Poetry::Core::HTML::Attributes.merged(attrs, @extra_attributes)
+          # data-value is RESERVED (the native-<select> mirror matches
+          # options by it) - the value: argument beats any caller spelling.
+          merged["data-value"] = @value
+          content_tag(:div, merged) do
             safe_join([item_indicator,
                        content_tag(:span, label_html, "data-slot" => "select-item-text",
                                                       "class" => "cn-select-item-text shrink-0 whitespace-nowrap")])

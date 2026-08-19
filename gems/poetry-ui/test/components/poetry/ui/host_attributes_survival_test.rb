@@ -159,6 +159,107 @@ module Poetry
         assert_survival button["data-controller"], "toast trigger controller"
         assert_survival button["data-action"], "toast trigger action"
       end
+
+      # --- S2 surfaces: helpers, slot splats, reserved keys ---
+
+      def render_erb(erb)
+        ApplicationController.renderer.render(inline: erb, layout: false)
+      end
+
+      def test_checkbox_group_helper_keeps_wiring_under_host_data
+        html = render_erb(<<~ERB)
+          <%= poetry_checkbox_group(data: { controller: "host-probe", action: "click->host#probe" }) do %>x<% end %>
+        ERB
+        doc = Nokogiri::HTML.fragment(html)
+        group = doc.at_css("[data-slot=checkbox-group]")
+
+        assert_includes group["data-controller"], "host-probe"
+        assert_includes group["data-controller"], "poetry--core--checkbox-group"
+        assert_includes group["data-action"], "host#probe"
+        assert_includes group["data-action"], "poetry--core--checkbox-group#changed"
+      end
+
+      def test_message_scroller_item_keeps_caller_data_and_reserves_message_id
+        html = render_erb(<<~ERB)
+          <%= poetry_message_scroller_item(id: "m-1", data: { controller: "host-probe" },
+                                           "data-message-id" => "evil") { "hi" } %>
+        ERB
+        item = Nokogiri::HTML.fragment(html).at_css("[data-slot=message-scroller-item]")
+
+        assert_includes item["data-controller"], "host-probe", "caller data was discarded"
+        assert_equal "m-1", item["data-message-id"], "the anchoring identity is reserved"
+      end
+
+      def test_sidebar_trigger_and_rail_keep_toggle_wiring_under_host_data
+        html = render_erb(<<~ERB)
+          <%= poetry_sidebar_trigger(data: { action: "click->host#probe" }) %>
+          <%= poetry_sidebar_rail(data: { action: "click->host#probe" }) %>
+        ERB
+        doc = Nokogiri::HTML.fragment(html)
+        trigger = doc.at_css("[data-slot=sidebar-trigger]")
+        rail = doc.at_css("[data-slot=sidebar-rail]")
+
+        [trigger, rail].each do |el|
+          assert_includes el["data-action"], "host#probe"
+          assert_includes el["data-action"], "#toggle"
+        end
+      end
+
+      def test_toast_action_and_attachment_slots_keep_wiring
+        render_inline(Toast::Component.new) do |toast|
+          toast.with_title { "Saved" }
+          toast.with_action(data: { action: HOST_ACTION }) { "Undo" }
+        end
+
+        assert_survival page.find("[data-slot=toast-action]", visible: :all)["data-action"], "toast action"
+
+        render_inline(Attachment::Component.new) do |attachment|
+          attachment.with_title { "report.pdf" }
+          attachment.with_action(label: "Remove", data: { action: HOST_ACTION }) { "x" }
+          attachment.with_trigger(class: "px-8", data: { action: HOST_ACTION }) { "Attach" }
+        end
+
+        action = page.find("[data-slot=attachment-action]", visible: :all)
+        trigger = page.find("[data-slot=attachment-trigger]", visible: :all)
+
+        assert_includes action["data-action"].to_s, "host#probe", "attachment action host token lost"
+        assert_includes trigger["data-action"].to_s, "host#probe", "attachment trigger host token lost"
+        assert_includes trigger["class"], "px-8", "attachment trigger caller class lost"
+      end
+
+      def test_tag_group_row_carries_caller_options_and_reserves_data_value
+        render_inline(TagGroup::Component.new(label: "Tags")) do |group|
+          group.with_tag(value: "ruby", "aria-describedby" => "hint", "data-value" => "evil")
+        end
+
+        row = page.find("[data-slot=tag-group-tag]", visible: :all)
+
+        assert_equal "hint", row["aria-describedby"], "caller options were discarded"
+        assert_equal "ruby", row["data-value"], "the collection identity is reserved"
+      end
+
+      def test_select_item_reserves_data_value_against_caller_override
+        render_inline(Select::Component.new(name: "fruit", "aria-label" => "Fruit")) do |select|
+          select.with_item(value: "apple", "data-value" => "evil") { "Apple" }
+        end
+
+        assert_equal "apple", page.find("[data-slot=select-item]", visible: :all)["data-value"]
+      end
+
+      def test_submit_item_reserves_the_transparent_form
+        render_inline(DropdownMenu::Component.new) do |menu|
+          menu.with_trigger { "Open" }
+          menu.with_item(submit: "/archive", form: { class: "big-form" },
+                         data: { action: HOST_ACTION }) { "Archive" }
+        end
+
+        form = page.find("form", visible: :all)
+        item = page.find("[data-slot=dropdown-menu-item]", visible: :all)
+
+        assert_includes form["class"].to_s, "contents", "the display:contents form is reserved"
+        refute_includes form["class"].to_s, "big-form"
+        assert_survival item["data-action"], "submit item"
+      end
     end
   end
 end

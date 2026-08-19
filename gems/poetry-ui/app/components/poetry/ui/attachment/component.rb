@@ -68,12 +68,17 @@ module Poetry
         renders_one :title
         renders_one :description
         renders_many :actions, lambda { |label:, **options, &block|
+          # Caller data: augments the slot marker instead of replacing it
+          # at the kwargs splat.
+          data = { slot: "attachment-action" }.merge(options.delete(:data) || {})
           Button::Component.new(variant: options.delete(:variant) || :ghost,
                                 size: options.delete(:size) || :"icon-xs",
-                                label: label, data: { slot: "attachment-action" }, **options, &block)
+                                label: label, data: data, **options, &block)
         }
         renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
-          attrs = { class: css(:trigger), "data-slot" => "attachment-trigger" }.merge(options)
+          attrs = Poetry::Core::HTML::Attributes.merged(
+            { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
+          )
           attrs[:type] = "button" if tag == :button
           attrs[:href] = href if tag == :a
           content_tag(tag, attrs, &block)

@@ -107,7 +107,13 @@ module Poetry
         # with reason "action" (the controller reads the origin slot).
         renders_one :action, lambda { |**options, &block|
           wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
-          Button::Component.new(variant: :outline, size: :sm, **wiring, **options, &block)
+          # Caller attribute keys merge WITH the wiring (stimulus concat)
+          # instead of replacing it at the kwargs splat; component options
+          # (variant: etc.) stay plain kwargs.
+          attr_keys = options.keys.select { |k| k == :data || k.to_s.start_with?("data-", "aria-") }
+          caller_attrs = attr_keys.to_h { |k| [k, options.delete(k)] }
+          merged = Poetry::Core::HTML::Attributes.merged(wiring, caller_attrs)
+          Button::Component.new(variant: :outline, size: :sm, **merged.symbolize_keys, **options, &block)
         }
 
         # The same facts the before_render raise enforces, stated statically

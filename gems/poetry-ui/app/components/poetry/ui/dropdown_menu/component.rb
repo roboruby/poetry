@@ -112,6 +112,10 @@ module Poetry
           content = safe_join([capture(&), shortcut_span(shortcut)].compact)
 
           if submit && !disabled
+            # form: is RESERVED on submit items - the display:contents form
+            # IS the a11y mechanism (the button is the menuitem).
+            options.delete(:form)
+            options.delete("form")
             # button_to's form is display:contents (transparent); the submit
             # button IS the menuitem, POSTing with CSRF + the method override -
             # the a11y-clean way to run a DELETE/POST action from a menu. The

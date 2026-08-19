@@ -122,7 +122,15 @@ module Poetry
           }
           attrs["data-disabled"] = "" if disabled
 
-          content_tag(:div, attrs) do
+          # Caller options ride along (they were silently discarded before);
+          # data-value is RESERVED - the row's collection identity comes
+          # from value:, any caller spelling loses.
+          options.delete(:"data-value")
+          options.delete("data-value")
+          merged = Poetry::Core::HTML::Attributes.merged(attrs, options.except(:id))
+          merged["data-value"] = value
+
+          content_tag(:div, merged) do
             content_tag(:span, { "role" => "gridcell", "class" => css(:cell) }) do
               safe_join([
                 # text: doubles as the visible content when no block is
