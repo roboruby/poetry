@@ -69,13 +69,22 @@ Source (adapt freely - the sample content is meant to be replaced):
 <%= poetry_sidebar(collapsible: :icon) do |shell| %>
   <% shell.with_nav do %>
     <%= poetry_sidebar_header do %>
-      <div class="flex items-center gap-2 px-2 py-1.5">
-        <%= poetry_icon(name: :"audio-waveform", class: "size-5") %>
-        <div class="grid text-left leading-tight">
-          <span class="text-sm font-semibold">Meridian</span>
-          <span class="text-xs text-muted-foreground">Operations</span>
-        </div>
-      </div>
+      <%# The collapse-aware header shape (a menu button, never a bare
+          div): at icon width the button shrinks to the tile and the
+          truncating spans disappear with it. %>
+      <%= poetry_sidebar_menu do %>
+        <%= poetry_sidebar_menu_item do %>
+          <%= poetry_sidebar_menu_button(size: :lg) do %>
+            <div class="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+              <%= poetry_icon(name: :"audio-waveform", class: "size-4") %>
+            </div>
+            <div class="grid flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Meridian</span>
+              <span class="truncate text-xs">Operations</span>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
     <% end %>
     <%= poetry_sidebar_content do %>
       <%= poetry_sidebar_group do %>
@@ -116,13 +125,21 @@ Source (adapt freely - the sample content is meant to be replaced):
       <% end %>
     <% end %>
     <%= poetry_sidebar_footer do %>
-      <div class="flex items-center gap-2 px-2 py-1.5">
-        <%= poetry_avatar(label: "Riley Chen", size: :sm) { "RC" } %>
-        <div class="grid leading-tight">
-          <span class="text-sm font-medium">Riley Chen</span>
-          <span class="text-xs text-muted-foreground">riley@meridian.dev</span>
-        </div>
-      </div>
+      <%# The footer rides the same collapse-aware shape as the header: at
+          icon width the menu button shrinks to the avatar tile and the
+          truncating spans clip with it instead of spilling into the inset. %>
+      <%= poetry_sidebar_menu do %>
+        <%= poetry_sidebar_menu_item do %>
+          <% profile = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjNjM2NmYxIi8+PHN0b3Agb2Zmc2V0PSIuNTUiIHN0b3AtY29sb3I9IiM4YjVjZjYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNlYzQ4OTkiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIGZpbGw9InVybCgjZykiLz48Y2lyY2xlIGN4PSIzMiIgY3k9IjI1IiByPSIxMCIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48cGF0aCBkPSJNMTIgNjRjMi0xMyAxMC0xOSAyMC0xOXMxOCA2IDIwIDE5eiIgZmlsbD0iI2ZmZiIgb3BhY2l0eT0iLjkiLz48L3N2Zz4=" %>
+          <%= poetry_sidebar_menu_button(size: :lg) do %>
+            <%= poetry_avatar(src: profile, label: "Matt Solt", class: "size-8 rounded-lg") { "MS" } %>
+            <div class="grid flex-1 text-left text-sm leading-tight">
+              <span class="truncate font-semibold">Matt Solt</span>
+              <span class="truncate text-xs">matt@roboruby.com</span>
+            </div>
+          <% end %>
+        <% end %>
+      <% end %>
     <% end %>
     <%= poetry_sidebar_rail %>
   <% end %>
@@ -171,7 +188,7 @@ Source (adapt freely - the sample content is meant to be replaced):
         <% card.with_description { "The latest changes across orders and customers." } %>
         <ul class="space-y-3 text-sm">
           <li class="flex items-center justify-between gap-4">
-            <span>ORD-1042 marked fulfilled by Riley</span>
+            <span>ORD-1042 marked fulfilled by Matt</span>
             <span class="text-xs text-muted-foreground tabular-nums">2m ago</span>
           </li>
           <li class="flex items-center justify-between gap-4">

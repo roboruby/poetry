@@ -37,7 +37,7 @@ visual layer leaks omitted-token defaults through the scoped style registry
 refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
 
 <!-- poetry:agents:begin -->
-## Building UI with poetry (84 components + 13 chart components + 8 blocks)
+## Building UI with poetry (87 components + 13 chart components + 8 blocks)
 
 - FIRST MOVE on any UI brief: call the poetry MCP `compose` tool with the
   task text, before writing any ERB. It routes to the matching vetted
@@ -67,6 +67,14 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   registry-driven snippets).
 - One visual theme per app (chosen at install with `--theme`); components
   read tokens, never restate them.
+- Component identity: pass `key:` (a record, or a literal string) on any
+  poetry component inside a collection loop, a fragment-cache block, or
+  a broadcast partial - keyed ids follow the record across Turbo morph
+  reorders and stay stable inside cached fragments, where random ids
+  force replacement. `key: record` derives via dom_id (a host `to_key`
+  override propagates); explicit `id:` wins outright; repeated NEW
+  records need explicit keys. `poetry:check` warns on unkeyed
+  components in cache blocks and loops. Full story: docs/stable-ids.md.
 - Upgrading poetry gems: after `bundle update`, re-run
   `bin/rails g poetry:install` - the vendored token/theme/safelist
   files refresh (the installed theme sticks; `--theme` switches),

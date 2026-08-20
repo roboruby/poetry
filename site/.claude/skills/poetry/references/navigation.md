@@ -42,8 +42,10 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - PART `navigation-menu-viewport` - The adoption container inside the popup - adopted panels stack absolutely in it
 - PART `navigation-menu-link` - A REAL destination link - top-level (with_link) or a panel entry (poetry_navigation_menu_link) | states: data-active (the current page (active: true))
 In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
-- WIRING `poetry--core--navigation-menu`: values closeDelay, openDelay; actions cancelClose, focusLeft, keydown, scheduleClose, scheduleOpen, toggle
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
+- WIRING root: `poetry--core--navigation-menu` registers; actions keydown on keydown, focusLeft on focusout | `poetry--core--popper` (if viewport) registers; values side, align, side_offset, strategy
+- WIRING item: `poetry--core--navigation-menu` actions scheduleOpen on pointerenter, scheduleClose on pointerleave
+- WIRING trigger: `poetry--core--navigation-menu` actions toggle on click
+- WIRING positioner: `poetry--core--popper` targets content | `poetry--core--navigation-menu` actions cancelClose on pointerenter, scheduleClose on pointerleave
 - RULE: label: is REQUIRED (the nav landmark's accessible name).
 - RULE: with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a top-level destination - use links for pages, panels for groups of links.
 - RULE: Panel content is poetry_navigation_menu_link entries (active: marks the current page) - never buttons; navigation navigates.
@@ -57,8 +59,10 @@ Navigation for moving between pages of content.
 Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
 - `current:` (integer) - required
 - `current_variant:` (symbol) - one of outline|filled, default "outline"
+- `edges:` (symbol) - one of labeled|icons|none, default "labeled"
 - `label:` (string) - default "pagination"
 - `next_label:` (string) - default "Next"
+- `pages:` (boolean) - default true
 - `previous_label:` (string) - default "Previous"
 - `siblings:` (integer) - default 1
 - `total:` (integer) - required
@@ -70,6 +74,8 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 - RULE: poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.
 - RULE: path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).
 - RULE: The current page is aria-current=page; current_variant: :outline (upstream parity, default) or :filled (the primary treatment - unambiguous active state); the rest are ghost links.
+- RULE: edges: :icons renders chevron-only Previous/Next (the table-footer posture); :none drops them for a bare page list; pages: false drops the numbers (pair with edges: :icons for the compact pager).
+- RULE: Host paginates with kaminari, pagy (v43+), or will_paginate? Run bin/rails g poetry:pagination (no argument = detect and install an adapter for each loaded gem) and keep calling paginate / poetry_pagy_nav / will_paginate(renderer: PoetryLinkRenderer) - never hand-wire poetry_pagination around a paginator gem.
 
 ## sidebar (`poetry_sidebar`)
 
@@ -97,11 +103,16 @@ Slots: nav, inset.
 - PART `sidebar-group-label` - The section heading - fades and collapses away in icon mode
 - PART `sidebar-menu` - The <ul> of menu items inside a group
 - PART `sidebar-menu-item` - One <li> menu row (the group/menu-item hover scope)
-- PART `sidebar-menu-button` - The row's link (href:) or button - the navigation entry itself | states: data-active (the current route (active: - links also get aria-current=page)); data-size (the row size variant (default, sm, or lg) - the action/badge tops key on it)
+- PART `sidebar-menu-button` - The row's link (href:) or button - the navigation entry itself | states: data-active (the current route (active: - links also get aria-current=page)); data-size (the row size variant (default, sm, or lg) - the action/badge tops key on it); data-variant=default|outline (always - the treatment)
 - PART `sidebar-menu-action` - The item-corner action button, absolutely positioned in the row | states: data-sidebar (always "menu-action" - the upstream sub-part marker)
 - PART `sidebar-menu-badge` - The trailing count/status chrome in the row corner - pointer-transparent | states: data-sidebar (always "menu-badge" - the upstream sub-part marker)
 In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
-- WIRING `poetry--core--sidebar`: targets inner, mobileDialog, mobileInner, sidebar; values collapsible, cookieMaxAge, cookieName, open, shortcut; actions close, closeMobile, mobileBackdropClose, open, toggle; events poetry--core--sidebar:mobile-toggle, poetry--core--sidebar:toggle
+- WIRING root: `poetry--core--sidebar` registers; values open, collapsible
+- WIRING peer: `poetry--core--sidebar` targets sidebar
+- WIRING inner: `poetry--core--sidebar` targets inner
+- WIRING mobile: `poetry--core--sidebar` actions closeMobile on cancel, mobileBackdropClose on click; targets mobileDialog
+- WIRING mobile_inner: `poetry--core--sidebar` targets mobileInner
+- WIRING trigger: `poetry--core--sidebar` actions toggle on click
 - RULE: Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page area (the trigger lives in the inset).
 - RULE: Read the persisted state server-side - open: cookies[:sidebar_state] != "false" - so the first paint has no collapse flash.
 - RULE: collapsible: :icon keeps icon rails visible when collapsed; :offcanvas slides it fully away; :none is a static column.
@@ -122,9 +133,11 @@ Slots: tabs (many; with_tab yields NOTHING to the block - no |param|, write cont
 - PART `tabs-list` - The role=tablist row of triggers - the roving-focus keyboard group and the visual variant ride here | states: data-variant (the list treatment - default (filled capsule) or line (underline indicator))
 - PART `tabs-trigger` - One role=tab button per tab | states: data-active (the selected tab (the controller moves it with aria-selected on activation)); data-disabled (tab is disabled - also filters it from the roving-focus collection); data-value (the tab's value - the key the controller matches panels against)
 - PART `tabs-content` - One role=tabpanel per tab - only the active panel is visible | states: data-hidden (panel is inactive (paired with the hidden property - the controller flips both)); data-value (the owning tab's value)
-- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
-- WIRING `poetry--core--tabs`: values activateOnFocus; actions activate, focusActivate, setValue; events poetry--core--tabs:change
+- WIRING root: `poetry--core--tabs` registers
+- WIRING list: `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown | `poetry--core--tabs` actions focusActivate on poetry--core--roving-focus:entry
+- WIRING trigger: `poetry--core--tabs` actions activate on click
 - RULE: Declare tabs with with_tab(title, value:) + the panel block (or defer: for a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.
+- RULE: panel: false declares a list-only tab (no tabpanel renders, the trigger drops aria-controls) - for demos/pattern shells; real tab sets carry panels.
 - RULE: default: picks the server-rendered active tab (the first enabled tab otherwise) - the panel is visible without JS.
 - RULE: label: names the tablist (aria-label) - recommended whenever the page has several tab sets.
 - RULE: Tabs switch VIEWS of one context; use navigation (links) when the URL should change.

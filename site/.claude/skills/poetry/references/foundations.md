@@ -49,13 +49,13 @@ Class: Poetry::Ui::Marker::Component - BEM block `poetry-ui-marker`.
 - `variant:` (symbol) - one of default|separator|border, default "default", required
 - `announce:` (symbol) - one of none|status, default "none"
 - `tag:` (symbol) - default "div"
-Slots: icon (takes poetry_icon props, not a block).
+Slots: icon (with_icon yields NOTHING to the block - no |param|, write content directly).
 - PART `marker` - The divider/status root - the label is real announced content (role=status when announce: :status; never role=separator) | states: data-variant=default|separator|border (always - the resolved variant)
 - PART `marker-icon` - Decorative icon wrapper (aria-hidden always)
 - PART `marker-content` - The label span - the marker text itself
 - RULE: The marker text is real announced content - never mark it aria-hidden or role=separator.
 - RULE: announce: :status is for the ONE in-flight marker (streaming status); static dividers never announce.
-- RULE: Icons in markers ride the typed icon slot (decorative always).
+- RULE: Icons ride the icon slot (decorative always): with_icon(name:) for a lucide glyph, with_icon { } for other media (a Spinner mid-run).
 - RULE: Use variant: :separator for date/section breaks; :border under pinned headers.
 
 ## separator (`poetry_separator`)

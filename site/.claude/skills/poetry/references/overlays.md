@@ -20,7 +20,11 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `alert-dialog-title` - The heading - the alertdialog's accessible name (required slot)
 - PART `alert-dialog-description` - The explanation, wired to aria-describedby (required slot)
 - PART `alert-dialog-footer` - The choice row - cancel then action
-- WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
+- WIRING root: `poetry--core--dialog` registers; values dismissible
+- WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
+- WIRING trigger: `poetry--core--dialog` actions open
+- WIRING close: `poetry--core--dialog` actions close
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
 - RULE: The action must be an explicit user activation - agents NEVER auto-submit the action.
@@ -55,7 +59,9 @@ Slots: empty, loading, items (many; types item|group|separator - one with_<type>
 - PART `command-shortcut` - Presentational keyboard hint - excluded from the filter text; Command never binds the hinted key
 - PART `command-separator` - Decorative divider (aria-hidden) - hidden by the controller whenever the query is non-empty
 - PART `command-status` - The sr-only polite result-count live region - the controller writes the debounced count from the localized templates | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
-- WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
+- WIRING root: `poetry--core--command` registers; values filter, loop
+- WIRING input: `poetry--core--command` actions filterInput on input, keydown on keydown
+- WIRING item: `poetry--core--command` actions activate on click, pointerHighlight on pointermove
 - RULE: Use poetry_command - never hand-roll a filterable listbox with an input + a list and ad-hoc JS.
 - RULE: Command items DO things; they carry no form value. Picking a value for a form is Combobox (which wraps this) - never bind a hidden input to a bare Command.
 - RULE: Every item needs a unique value: (ArgumentError) and gets a server id - never strip item ids (aria-activedescendant depends on them).
@@ -87,8 +93,10 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - PART `dialog-header` - Dialog's title block, sr-only here - the palette owns the visible surface
 - PART `dialog-title` - The sr-only heading - the dialog's accessible name (defaults to the source string)
 - PART `dialog-description` - The sr-only description wired to aria-describedby
-- WIRING `poetry--core--command`: values debounce, filter, loop; actions activate, filterInput, highlightItem, keydown, pointerHighlight, reset; events poetry:command:filter, poetry:command:highlight, poetry:command:select
-- WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
+- WIRING root: `poetry--core--dialog` registers; values dismissible, hotkey (if)
+- WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
+- WIRING trigger: `poetry--core--dialog` actions open
+- WIRING close: `poetry--core--dialog` actions close
 - RULE: App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired window keydown listener around poetry_dialog.
 - RULE: Open it with with_trigger(...) too - the hotkey is an accelerator, not the only way in.
 - RULE: The sr-only title/description default to the source strings - override title:/description: rather than removing them (they are the dialog's accessible name).
@@ -124,9 +132,11 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - PART `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
 - PART `context-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state)); data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `context-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
-- WIRING `poetry--core--context-menu`: values disabled, longPressDelay; actions disabledValueChanged, open, pressCancel, pressStart; events poetry:context-menu:open
-- WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
+- WIRING root: `poetry--core--context-menu` registers; values long_press_delay, disabled | `poetry--core--menu` registers; values open, modal | `poetry--core--popper` registers; values side, align, side_offset, avoid_collisions
+- WIRING trigger: `poetry--core--context-menu` actions open on contextmenu, pressStart on pointerdown, pressCancel on pointermove/pointerup/pointercancel | `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- WIRING item: `poetry--core--menu` actions activate on click
+- WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
 - RULE: NEVER make a context menu the only path to an action - it is an invisible affordance; every item needs a visible equivalent (a '...' DropdownMenu button, a toolbar, a detail page).
 - RULE: Choose ContextMenu only for right-click-on-an-object semantics; a visible button opening a menu is DropdownMenu.
 - RULE: Do not add aria-haspopup or a role to the trigger surface; do not make it focusable except via focusable_surface: true.
@@ -142,6 +152,7 @@ A window overlaid on the page for content that requires attention.
 
 Class: Poetry::Ui::Dialog::Component - BEM block `poetry-ui-dialog`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
+- `content_class:` (string)
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
@@ -151,7 +162,11 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `dialog-title` - The heading - the dialog's accessible name (required slot)
 - PART `dialog-description` - Muted copy under the title, wired to aria-describedby
 - PART `dialog-footer` - Action row at the bottom of the panel
-- WIRING `poetry--core--dialog`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
+- WIRING root: `poetry--core--dialog` registers; values dismissible
+- WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
+- WIRING trigger: `poetry--core--dialog` actions open
+- WIRING close: `poetry--core--dialog` actions close
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
 - RULE: Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).
@@ -165,6 +180,7 @@ A gesture-driven panel that slides in from a screen edge.
 Class: Poetry::Ui::Drawer::Component - BEM block `poetry-ui-drawer`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `direction:` (symbol) - one of down|up|left|right, default "down", required
+- `content_class:` (string)
 - `dismissible:` (boolean) - default true
 - `modal:` (boolean) - default true
 - `show_swipe_handle:` (boolean) - default false
@@ -178,7 +194,10 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `drawer-description` - Muted copy under the title, wired to aria-describedby
 - PART `drawer-body` - The scrollable content region between header and footer
 - PART `drawer-footer` - Action row pinned to the bottom of the popup
-- WIRING `poetry--core--drawer`: targets dialog; values direction, dismissible, hotkey, modal, snapPoints; actions backdropClose, close, escapeClose, lockScroll, open, swipeCancel, swipeEnd, swipeMove, swipeStart, toggle, unlockScroll
+- WIRING root: `poetry--core--drawer` registers; values dismissible, direction, modal, snap_points (if)
+- WIRING content: `poetry--core--drawer` actions close on cancel, backdropClose on click, escapeClose on keydown (unless modal), swipeStart on pointerdown, swipeMove on pointermove, swipeEnd on pointerup, swipeCancel on pointercancel; targets dialog
+- WIRING trigger: `poetry--core--drawer` actions open
+- WIRING close: 
 - RULE: Open drawers with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: direction: is the DISMISS direction: :down is the mobile bottom sheet (the default); left/right make an edge panel - prefer Sheet on desktop.
@@ -219,8 +238,12 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - PART `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
 - PART `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
 - PART `dropdown-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
-- WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
+- WIRING root: `poetry--core--menu` registers; values open, modal, loop | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
+- WIRING trigger: `poetry--core--menu` actions toggle on click, triggerKeydown on keydown | `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- WIRING item: `poetry--core--menu` actions activate on click
+- WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
 - RULE: Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.
 - RULE: Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a DELETE) passes with_item(submit:, method:). The item renders AS the anchor / submit button (role=menuitem on the <a> or <button>) - one interactive element - so NEVER nest a link_to or button_to inside an item.
@@ -252,8 +275,10 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - PART `hover-card` - Root wrapper around the trigger link and the panel
 - PART `hover-card-trigger` - The enriched link itself - simultaneously the no-JS fallback, the touch path, and the keyboard path | states: data-popup-open (bare while the card is open; absent while closed (Base UI absence-is-the-state))
 - PART `hover-card-content` - The role-less preview panel (invisible to AT on purpose) - positioning, animation, and the open state ride here | states: data-open (card is open (the controller flips the pair at runtime)); data-closed (card is closed (the server-rendered state; hidden rides along)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the panel (popper, post-flip)); --available-height (viewport space left for the panel (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
-- WIRING `poetry--core--hover-card`: values closeDelay, open, openDelay; actions blurClose, focusOpen, openValueChanged, pointerEnter, pointerLeave, touchGuard; events poetry:hover-card:closed, poetry:hover-card:open
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
+- WIRING root: `poetry--core--hover-card` registers; values open, open_delay, close_delay | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
+- WIRING trigger: `poetry--core--hover-card` actions pointerEnter on pointerenter, pointerLeave on pointerleave, focusOpen on focus, blurClose on blur, touchGuard on touchstart | `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
 - RULE: THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). The card is pointer-only enrichment - keyboard and touch users never see inside it.
 - RULE: The trigger must be a REAL link with a real href - it is the fallback, the touch path, and the keyboard path all at once. For a button LOOK, pass variant:/size: (renders through Button, still an <a> via href:) - never swap the tag to :button.
@@ -287,10 +312,12 @@ Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the t
 - PART `menubar-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
 - PART `menubar-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
 - PART `menubar-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
-- WIRING `poetry--core--menu`: values closeOnSelect, loop, modal, open, typeaheadTimeout; actions activate, close, closeSub, keydown, open, openSub, openValueChanged, subEnter, subLeave, toggle, triggerKeydown; events poetry:menu:change, poetry:menu:closed, poetry:menu:edge-navigate, poetry:menu:open, poetry:menu:select
-- WIRING `poetry--core--menubar`: values loop, value; actions hoverSlide, onMenuClosed, slideAdjacent, toggle, triggerKeydown, valueValueChanged; events poetry:menubar:value-changed
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
-- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
+- WIRING root: `poetry--core--menubar` registers; values value, loop; actions slideAdjacent on poetry:menu:edge-navigate, onMenuClosed on poetry:menu:closed | `poetry--core--roving-focus` registers; values orientation, manage_tabindex, loop; actions keydown on keydown
+- WIRING menu_wrapper: `poetry--core--menu` registers; values open, modal | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
+- WIRING trigger: `poetry--core--menubar` actions toggle on pointerdown, hoverSlide on pointerenter, triggerKeydown on keydown | `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- WIRING item: `poetry--core--menu` actions activate on click
+- WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
 - RULE: Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu (untrapped), a single actions menu is DropdownMenu.
 - RULE: label: is REQUIRED (the bar's accessible name).
 - RULE: Never put non-menuitem interactive elements directly in the bar (breaks roving focus + APG roles) - a Toolbar is the component for mixed controls.
@@ -320,8 +347,11 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `popover-header` - Title block wrapping the title and description (renders only when either is present)
 - PART `popover-title` - The heading - the panel's accessible name via aria-labelledby
 - PART `popover-description` - Muted copy under the title, wired to aria-describedby
-- WIRING `poetry--core--popover`: values modal, open; actions close, open, openValueChanged, toggle; events poetry:popover:closed, poetry:popover:open
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
+- WIRING root: `poetry--core--popover` registers; values open, modal | `poetry--core--popper` registers; values anchor (unless anchor?), side, align, side_offset, align_offset, avoid_collisions
+- WIRING trigger: `poetry--core--popover` actions toggle on click
+- WIRING anchor_part: `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
 - RULE: Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for pointer-only previews use HoverCard.
 - RULE: Give the panel a name: use with_title (preferred) or label: - a role=dialog without a name fails the audit.
@@ -337,6 +367,7 @@ A dialog that slides in from a screen edge.
 Class: Poetry::Ui::Sheet::Component - BEM block `poetry-ui-sheet`.
 Slot REQUIRED: with_title (the accessible name) - a call without it raises.
 - `side:` (symbol) - one of top|right|bottom|left, default "right", required
+- `content_class:` (string)
 - `dismissible:` (boolean) - default true
 - `show_close_button:` (boolean) - default true
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, footer.
@@ -346,7 +377,10 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `sheet-title` - The heading - the sheet's accessible name (required slot)
 - PART `sheet-description` - Muted copy under the title, wired to aria-describedby
 - PART `sheet-footer` - Action row pinned to the bottom of the panel
-- WIRING `poetry--core--sheet`: targets dialog; values dismissible, hotkey; actions backdropClose, close, lockScroll, open, toggle, unlockScroll
+- WIRING root: `poetry--core--sheet` registers; values dismissible
+- WIRING content: `poetry--core--sheet` actions close on cancel, backdropClose on click; targets dialog
+- WIRING trigger: `poetry--core--sheet` actions open
+- WIRING close: `poetry--core--sheet` actions close
 - RULE: Open sheets with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name) - the inherited Dialog rule.
 - RULE: Pick side by content: navigation left, detail/edit right, pickers bottom.
@@ -371,8 +405,11 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `tooltip` - Root wrapper around the trigger and the bubble
 - PART `tooltip-content` - The role=tooltip bubble - positioning, animation, and the open state ride here | states: data-open (bubble is open (the controller flips the pair at runtime)); data-closed (bubble is closed (the server-rendered state; hidden rides along)); data-instant=delay|focus (the open skipped the delay - warm-grace/programmatic or keyboard focus (runtime-only; absent on a delayed open)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the bubble (popper, post-flip)); --available-height (viewport space left for the bubble (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
 - PART `tooltip-arrow` - The arrow wrapper (aria-hidden) - popper pins it to the bubble's anchor-facing edge and rotates it toward the anchor | states: data-side=top|right|bottom|left (written by popper alongside the content's - the resolved side, for per-side restyling)
-- WIRING `poetry--core--popper`: targets anchor, arrow, content; values align, alignOffset, anchor, anchorPoint, avoidCollisions, side, sideOffset, strategy; actions anchorPointValueChanged, reposition, setAnchor, setAnchorElement, strategyValueChanged
-- WIRING `poetry--core--tooltip`: values delayDuration, disableHoverableContent, open; actions blurClose, clickClose, focusOpen, openValueChanged, pointerDown, pointerLeave, pointerMove; events poetry:tooltip:closed, poetry:tooltip:open
+- WIRING root: `poetry--core--tooltip` registers; values open, delay_duration (unless), disable_hoverable_content (unless) | `poetry--core--popper` registers; values side, align, side_offset
+- WIRING trigger: `poetry--core--tooltip` actions pointerMove on pointermove, pointerLeave on pointerleave, pointerDown on pointerdown, clickClose on click, focusOpen on focus, blurClose on blur | `poetry--core--popper` targets anchor
+- WIRING content: `poetry--core--popper` targets content
+- WIRING arrow: `poetry--core--popper` targets arrow
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
 - RULE: Tooltip content is TEXT and never interactive/focusable - links, buttons, or inputs inside are a contract violation (use Popover).
 - RULE: Never put essential information only in a tooltip - touch users NEVER see it (no long-press path, by design).

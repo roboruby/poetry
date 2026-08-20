@@ -17,6 +17,9 @@ Class: Poetry::Charts::AdapterChart::Component - BEM block `poetry-charts-adapte
 - `label:` (string)
 - `series:` () - required
 - `type:` (symbol) - one of area|bar|line|pie|radar|radial, required
+- WIRING frame: `poetry--charts--adapter` registers; values engine
+- WIRING mount: `poetry--charts--adapter` targets mount
+- WIRING spec: `poetry--charts--adapter` targets spec
 - RULE: The adapter path takes series:/axes: ARGUMENTS (the closed spec), not slots.
 - RULE: The host must register the engine first: registerChartAdapter(name, adapter) - poetry ships createChartJsAdapter(Chart) as the reference.
 - RULE: The Container contract still applies: config colors, --chart tokens, dark mode.
@@ -43,6 +46,12 @@ Class: Poetry::Charts::AreaChart::Component - BEM block `poetry-charts-area_char
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
 Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), areas (many; with_area keywords: data_key:, stack:, curve:, fill_opacity:, gradient:, stroke_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
+- PART `chart-brush` - The brush strip group (with_brush): track + window + two handles below the x axis
+- PART `chart-brush-track` - The full-width brush rail
+- PART `chart-brush-window` - The selected-range rect the drag moves
+- PART `chart-brush-handle` - One draggable window edge | states: data-edge=start|end (always - which edge)
+- PART `chart-zoom-selection` - The zoom drag-selection overlay (zoom: true), hidden until a drag starts
+- PART `chart-live-payload` - The embedded {spec, frame} JSON the live renderer recomputes geometry from
 - PART `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches | states: data-animate (present when animate (the default) - the motion stylesheet and controller key the entrance off it); data-motion=entrance|morph|settled (runtime - the motion rig stamps the animation lifecycle (entrance/morph, then settled)) | vars: --poetry-motion-duration (the entrance/morph duration (animation_duration, ms)); --poetry-motion-easing (the animation easing keyword (animation_easing)); --poetry-motion-delay (the pre-animation hold (animation_begin, ms))
 - PART `chart-motion-reveal` - The entrance clipPath rect (recharts' area reveal) - the motion stylesheet scales it 0 -> 1; only when animate
 - PART `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot
@@ -55,6 +64,12 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - PART `chart-x-axis` - The x-axis tick-label group (with_x_axis)
 - PART `chart-y-axis` - The y-axis tick-label group (with_y_axis)
 - PART `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers | `poetry--charts--live` (if live?) registers; actions receive on poetry-chart:update | `poetry--charts--tooltip` (if) actions refresh on poetry--charts--live:updated | `poetry--charts--window` (if window_features?) registers; values zoom, plot, brush (if)
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--window` (if zoom?) actions startZoom on pointerdown, reset on dblclick
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- WIRING live_payload: `poetry--charts--live` targets payload
+- WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.
 - RULE: Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.
 - RULE: Colors come from the config - never set fill/stroke on an area directly.
@@ -86,6 +101,12 @@ Class: Poetry::Charts::BarChart::Component - BEM block `poetry-charts-bar_chart`
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
 Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), bars (many; with_bar keywords: data_key:, stack:, radius:, labels:, label_key:, color_key:, cell_fill:, active_index:, stroke_width:, error_key:, error_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: data_key:, tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
+- PART `chart-brush` - The brush strip group (with_brush): track + window + two handles below the x axis
+- PART `chart-brush-track` - The full-width brush rail
+- PART `chart-brush-window` - The selected-range rect the drag moves
+- PART `chart-brush-handle` - One draggable window edge | states: data-edge=start|end (always - which edge)
+- PART `chart-zoom-selection` - The zoom drag-selection overlay (zoom: true), hidden until a drag starts
+- PART `chart-live-payload` - The embedded {spec, frame} JSON the live renderer recomputes geometry from
 - PART `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches | states: data-animate (present when animate (the default) - the motion stylesheet and controller key the entrance off it); data-motion=entrance|morph|settled (runtime - the motion rig stamps the animation lifecycle (entrance/morph, then settled)) | vars: --poetry-motion-duration (the entrance/morph duration (animation_duration, ms)); --poetry-motion-easing (the animation easing keyword (animation_easing)); --poetry-motion-delay (the pre-animation hold (animation_begin, ms))
 - PART `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot
 - PART `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)
@@ -96,6 +117,12 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - PART `chart-x-axis` - The x-axis tick-label group (with_x_axis)
 - PART `chart-y-axis` - The y-axis tick-label group (with_y_axis)
 - PART `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers | `poetry--charts--live` (if live?) registers; actions receive on poetry-chart:update | `poetry--charts--tooltip` (if) actions refresh on poetry--charts--live:updated | `poetry--charts--window` (if window_features?) registers; values zoom, plot, brush (if)
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--window` (if zoom?) actions startZoom on pointerdown, reset on dblclick
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- WIRING live_payload: `poetry--charts--live` targets payload
+- WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_bar(data_key:) / with_legend.
 - RULE: radius: 8 rounds all corners; stacked bars use arrays - [0,0,4,4] bottom bar, [4,4,0,0] top bar.
 - RULE: Stack bars with the same stack: id; negatives automatically drop below the zero line.
@@ -140,6 +167,10 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - PART `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot | states: data-key (the series key); data-index (the datum index); data-active (runtime - rides the marker while its index is the active one)
 - PART `chart-x-axis` - The x-axis tick-label group (with_x_axis)
 - PART `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - RULE: Mix marks freely: with_area / with_bar / with_line - declaration order is paint order.
 - RULE: All marks share the x band and ONE y domain; lines and areas ride the band centers.
 - RULE: stack: ids only combine within the same mark type (a bar stack never joins an area stack).
@@ -191,6 +222,12 @@ Class: Poetry::Charts::LineChart::Component - BEM block `poetry-charts-line_char
 - `width:` (integer) - default 640
 - `zoom:` (boolean) - default false
 Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stroke_dasharray: ONLY), reference_areas (many; with_reference_area keywords: x1:, x2:, y1:, y2:, label:, fill_opacity: ONLY), reference_dots (many; with_reference_dot keywords: x:, y:, r:, label: ONLY), brush (with_brush keywords: height: ONLY), lines (many; with_line keywords: data_key:, curve:, stroke_width:, dots:, dot_radius:, dot_color_key:, labels:, error_key:, error_width: ONLY), x_axis (with_x_axis keywords: data_key:, tick_formatter:, tick_margin: ONLY), y_axis (with_y_axis keywords: tick_count:, tick_formatter:, tick_margin: ONLY), grid (with_grid keywords: vertical:, horizontal: ONLY), legend, tooltip.
+- PART `chart-brush` - The brush strip group (with_brush): track + window + two handles below the x axis
+- PART `chart-brush-track` - The full-width brush rail
+- PART `chart-brush-window` - The selected-range rect the drag moves
+- PART `chart-brush-handle` - One draggable window edge | states: data-edge=start|end (always - which edge)
+- PART `chart-zoom-selection` - The zoom drag-selection overlay (zoom: true), hidden until a drag starts
+- PART `chart-live-payload` - The embedded {spec, frame} JSON the live renderer recomputes geometry from
 - PART `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches | states: data-animate (present when animate (the default) - the motion stylesheet and controller key the entrance off it); data-motion=entrance|morph|settled (runtime - the motion rig stamps the animation lifecycle (entrance/morph, then settled)) | vars: --poetry-motion-duration (the entrance/morph duration (animation_duration, ms)); --poetry-motion-easing (the animation easing keyword (animation_easing)); --poetry-motion-delay (the pre-animation hold (animation_begin, ms))
 - PART `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot
 - PART `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)
@@ -205,6 +242,12 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - PART `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot | states: data-key (the series key); data-index (the datum index); data-active (runtime - rides the marker while its index is the active one)
 - PART `chart-x-axis` - The x-axis tick-label group (with_x_axis)
 - PART `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers | `poetry--charts--live` (if live?) registers; actions receive on poetry-chart:update | `poetry--charts--tooltip` (if) actions refresh on poetry--charts--live:updated | `poetry--charts--window` (if window_features?) registers; values zoom, plot, brush (if)
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--window` (if zoom?) actions startZoom on pointerdown, reset on dblclick
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
+- WIRING live_payload: `poetry--charts--live` targets payload
+- WIRING brush: `poetry--charts--window` (if) actions startBrush on pointerdown
 - RULE: Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.
 - RULE: Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.
 - RULE: dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors block).
@@ -236,6 +279,10 @@ Slots: pies (many; with_pie keywords: data_key:, data:, name_key:, inner_radius:
 - PART `chart-labels` - A series' value labels (<g> of <text>, aria-hidden), rendered when the series opts into labels | states: data-key (always - the series key)
 - PART `chart-center-label` - The center text (<text>) - title tspan plus optional subtitle filling the chart's middle
 - PART `chart-coordinates` - The embedded JSON payload (<script>) the tooltip controller reads - per-category anchors and pre-formatted values, zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - RULE: Rows carry their slice color in a fill key (var(--color-<name>)); the config maps names to labels.
 - RULE: inner_radius: 60 makes the donut; with_center_label(title:, subtitle:) fills the hole.
 - RULE: Stacked pies: two with_pie slots with their own data: and non-overlapping radii.
@@ -272,6 +319,10 @@ Slots: radars (many; with_radar keywords: data_key:, fill_opacity:, stroke_width
 - PART `chart-hit-wedges` - The tooltip's hit layer (<g>), rendered when the tooltip attaches
 - PART `chart-hit-wedge` - One per-category hit wedge (<path>, transparent but painted so it hit-tests) - the tooltip's hover target | states: data-index (always - the datum index); data-active (the hovered/arrow-keyed category - the tooltip controller reflects the active index here at runtime)
 - PART `chart-coordinates` - The embedded JSON payload (<script>) the tooltip controller reads - per-category anchors and pre-formatted values, zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - RULE: Compose from slots: with_angle_axis(data_key:) / with_grid / with_radar(data_key:) / with_legend.
 - RULE: Radars fill at 0.6 opacity by default; lines-only = fill_opacity: 0, stroke_width: 2.
 - RULE: with_grid type: :circle swaps polygons for circles; fill: :desktop tints every grid ring (opacity 0.2, compounding toward the center - the grid-fill look).
@@ -311,6 +362,10 @@ Slots: radial_bars (many; with_radial_bar keywords: data_key:, stack:, backgroun
 - PART `chart-labels` - A series' value labels (<g> of <text>, aria-hidden), rendered when the series opts into labels | states: data-key (always - the series key)
 - PART `chart-center-label` - The center text (<text>) - title tspan plus optional subtitle filling the chart's middle
 - PART `chart-coordinates` - The embedded JSON payload (<script>) the tooltip controller reads - per-category anchors and pre-formatted values, zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - RULE: One ring per data row; rows carry their color in a fill key (var(--color-<name>)).
 - RULE: background: true draws the muted track ring behind each bar (the gauge look).
 - RULE: Stack two radial bars with the same stack: id - they share the ring and stack by ANGLE.
@@ -345,6 +400,10 @@ Slots: reference_lines (many; with_reference_line keywords: x:, y:, label:, stro
 - PART `chart-x-axis` - The x-axis tick-label group (with_x_axis)
 - PART `chart-y-axis` - The y-axis tick-label group (with_y_axis)
 - PART `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser
+- WIRING frame: `poetry--charts--tooltip` (if tooltip?) registers; values sync (if) | `poetry--charts--motion` (if animate?) registers
+- WIRING svg: `poetry--charts--tooltip` (if tooltip?) actions move on pointermove, leave on pointerleave, focus on focus, blur on blur, keydown on keydown; targets svg | `poetry--charts--tooltip` (if tooltip?) actions enter on pointerover
+- WIRING coordinates: `poetry--charts--tooltip` (if tooltip?) targets data
+- WIRING tooltip_layer: `poetry--charts--tooltip` (if tooltip?) targets tooltip
 - RULE: Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.
 - RULE: with_scatter(key:) colors points var(--color-<key>); data: gives a series its own rows.
 - RULE: with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension - the range is marker AREA in px2 (recharts ZAxis).
@@ -378,4 +437,5 @@ Class: Poetry::Charts::TooltipLayer::Component - BEM block `poetry-charts-toolti
 - `hide_label:` (boolean) - default false
 - `indicator:` (symbol) - default "dot"
 - `series_keys:` () - required
+- WIRING root: `poetry--charts--tooltip` targets tooltip
 

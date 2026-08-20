@@ -197,6 +197,7 @@ bg-muted
 bg-popover
 bg-primary
 bg-secondary
+bg-sidebar-primary
 bg-transparent
 block
 border
@@ -1160,6 +1161,7 @@ relative
 resize-none
 right-0
 right-1
+right-2
 ring-0
 ring-2
 ring-background
@@ -1292,6 +1294,7 @@ text-primary
 text-primary-foreground
 text-secondary-foreground
 text-sidebar-foreground
+text-sidebar-primary-foreground
 text-sm
 text-start
 text-transparent

@@ -19,8 +19,8 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - PART `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button
 - PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (Base UI trigger parity, controller-written; absent while closed)); data-disabled (with_item(disabled: true) - stamped beside the native disabled attribute; roving focus filters it out at query time)
 - PART `accordion-content` - The role=region panel - the presence animation and the measured height var ride here | states: data-open (panel is open or entering); data-closed (panel is closed or animating out (hidden lands after the exit finishes)) | vars: --accordion-panel-height (the measured content height (controller-written) that feeds the accordion-down/up keyframes)
-- WIRING `poetry--core--accordion`: values collapsible, type; actions toggle; events poetry--core--accordion:change
-- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
+- WIRING root: `poetry--core--accordion` registers; values type, collapsible | `poetry--core--roving-focus` registers; values orientation, manage_tabindex; actions keydown on keydown
+- WIRING trigger: `poetry--core--accordion` actions toggle on click
 - RULE: Items via with_item(value:, title:) { panel content } - value is the open-state key.
 - RULE: type: :single (default) opens one at a time; pass collapsible: true to allow closing it.
 - RULE: Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.
@@ -54,9 +54,9 @@ A small count or status descriptor.
 
 Class: Poetry::Ui::Badge::Component - BEM block `poetry-ui-badge`.
 Content block REQUIRED (the visible status text) - a blockless call raises.
-- `variant:` (symbol) - one of default|secondary|destructive|outline|success|warning|info, default "default", required
+- `variant:` (symbol) - one of default|secondary|destructive|outline|ghost|link|success|warning|info, default "default", required
 - `href:` (string)
-- PART `badge` - The status pill itself (a <span>; a real <a> when href: is given) - the whole component is this one element | states: data-variant=default|secondary|destructive|outline|success|warning|info (always - the resolved variant)
+- PART `badge` - The status pill itself (a <span>; a real <a> when href: is given) - the whole component is this one element | states: data-variant=default|secondary|destructive|outline|ghost|link|success|warning|info (always - the resolved variant)
 In blocks: `data-index`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions. The one interactive form is href:, which renders the badge AS a real link (a navigational chip - the themes' [a&]:hover treatments activate).
 - RULE: The visible text is the content block: render ... { "beta" } - there is no label: option.
@@ -68,6 +68,8 @@ In blocks: `data-index`, `section-card` - for a screen, start from the block (MC
 A container that groups related content and actions.
 
 Class: Poetry::Ui::Card::Component - BEM block `poetry-ui-card`.
+- `content_class:` (string)
+- `header_class:` (string)
 - `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
 Slots: title, description, action, footer (with_footer yields NOTHING to the block - no |param|, write content directly).
 - PART `card` - Root container - the vertical flex stack
@@ -96,7 +98,10 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 - PART `carousel` - The role=region root - the controller (paging, button state, arrow keys) rides here | states: data-orientation=horizontal|vertical (the scroll axis)
 - PART `carousel-content` - The viewport - a real scroll-snap container (tabindex=0); the platform owns the physics
 - PART `carousel-item` - One role=group slide - sized by item classes (basis-full default)
-- WIRING `poetry--core--carousel`: targets next, previous, viewport; values orientation; actions keydown, next, previous, scrollTo, scrolled; events poetry--core--carousel:select
+- WIRING root: `poetry--core--carousel` registers; values orientation; actions keydown on keydown
+- WIRING viewport: `poetry--core--carousel` actions scrolled on scroll; targets viewport
+- WIRING previous: `poetry--core--carousel` actions previous on click; targets previous
+- WIRING next: `poetry--core--carousel` actions next on click; targets next
 - RULE: label: is REQUIRED - the carousel region's accessible name.
 - RULE: Declare slides with with_item - the component stamps the slide roles (role=group + aria-roledescription=slide).
 - RULE: Slides are REAL scroll content: they stay reachable by swipe, wheel, and keyboard even before JS - never gate content behind the buttons alone.
@@ -118,7 +123,9 @@ Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_tex
 - PART `clipboard-text-group` - The bordered field surface - InputGroup's chrome
 - PART `input-group-control` - The readonly mono <input> showing the value - selectable, never editable; InputGroup's control slot
 - PART `input-group-addon` - The trailing cell holding the copy affordance - InputGroup's addon vocabulary | states: data-align=inline-end (always - inline-end holds the copy button)
-- WIRING `poetry--core--clipboard-text`: targets input, source; values message, text; actions copy; events poetry:clipboard-text:copied
+- WIRING root: `poetry--core--clipboard-text` registers; values message, text (if)
+- WIRING input: `poetry--core--clipboard-text` targets input
+- WIRING copy_button: `poetry--core--clipboard-text` actions copy on click
 - RULE: A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install commands, IDs. Editable text is an Input; a secret that needs masking is a SensitiveInput.
 - RULE: value: is what SHOWS; text_to_copy: overrides what lands on the clipboard when the display truncates - never truncate the copied text itself.
 - RULE: Give it label: (or compose under a Field/Label) - the readonly input still needs its accessible name.
@@ -137,7 +144,9 @@ Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
 - PART `code-block` - Root - the syntax-palette surface (cn-code-block) | states: data-language (always - the lexer name, a styling/tooling hook); data-line-numbers (line_numbers: - turns on the ::before CSS counters); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine))
 - PART `code-block-pre` - The scroll container - tabindex 0 + role region + label (a scrollable region must be keyboard-reachable and named)
 - PART `code-block-code` - The code element - rouge's .line/.hll spans and the seven --syntax-* token maps live under it; the copy affordance reads ITS textContent
-- WIRING `poetry--core--clipboard-text`: targets input, source; values message, text; actions copy; events poetry:clipboard-text:copied
+- WIRING root (if copy): `poetry--core--clipboard-text` registers; values message
+- WIRING source (if copy): `poetry--core--clipboard-text` targets source
+- WIRING copy_button: `poetry--core--clipboard-text` actions copy on click
 - RULE: Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code with utility classes; the syntax palette, line counters, and copy affordance ride it.
 - RULE: Highlighting needs `gem "rouge"` in the host Gemfile - without it the block renders plain (same markup, no colors). Inline code stays plain <code> typography.
 - RULE: highlight_lines: takes 1-based line numbers; line numbers are CSS counters and never pollute copied text.
@@ -153,7 +162,10 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - PART `collapsible` - The disclosure root - the state controller flips the pair here | states: data-open (expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (collapsed (the server-rendered default))
 - PART `collapsible-trigger` - The disclosure button - mirrors aria-expanded | states: data-panel-open (its content is open (Base UI trigger parity, controller-written; absent while closed))
 - PART `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit | states: data-open (content is open or entering); data-closed (content is closed or animating out (hidden lands after the exit finishes))
-- WIRING `poetry--core--state`: targets content, trigger; values state; actions close, open, toggle
+- WIRING root: `poetry--core--state` registers
+- WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
+- WIRING content: `poetry--core--state` targets content
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
 - RULE: Server-render the initial state via open: - never toggle data-open/data-closed by hand.
 - RULE: Content stays in the DOM when closed (hidden) - do not conditionally render it.
@@ -184,7 +196,9 @@ Slots: columns (many; with_column REQUIRES a content block (the cell renderer - 
 - PART `table-container` - The composed W1 Table's scroll container - Table renders it, this surface owns where it sits
 - PART `data-table-footer` - The Pagination row - renders when total: is more than one page
 In blocks: `action-bar` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
-- WIRING `poetry--core--table-selection`: targets all; values label; actions press, toggleAll, toggled; events poetry:data-table:selection-change
+- WIRING root (if selectable?): `poetry--core--table-selection` registers; values label
+- WIRING select_all: `poetry--core--table-selection` actions toggleAll on change; targets all
+- WIRING row_checkbox: `poetry--core--table-selection` actions press on pointerdown/keydown, toggled on change
 - RULE: Build State.from_params(params, sortable: [...]) in the controller - NEVER order by raw params; the whitelist is what makes state.order_clause injection-safe.
 - RULE: Column cell blocks RETURN the cell content ({ |row| row.title }) - they must not write to the template buffer.
 - RULE: Sort/filter/page are URL state over GET links and a GET form. Row mutations (inline edit, row actions) belong to poetry-reactive components rendered inside cells - never to this component.
@@ -327,8 +341,8 @@ Slots: tags (many; with_tag yields NOTHING to the block - no |param|, write cont
 - PART `tag-group-grid` - The tag collection (role=grid; role=group + the tab stop when empty) - roving focus, removal keys, and the focus-scoped live region ride here | states: data-empty (no tags remain (controller-kept after removals))
 - PART `tag-group-tag` - One chip (role=row > gridcell): content, the remove button, and - in form mode - the hidden name[] input | states: data-disabled (the tag is disabled (skipped by arrows and removal)); data-value (always - the tag's value (the remove event's detail and the hidden input's value))
 - PART `tag-group-remove` - The per-tag remove button - tabbable (Tab steps from the row into it), removes exactly its own tag
-- WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
-- WIRING `poetry--core--tag-group`: actions keydown, remove; events poetry:tag-group:remove
+- WIRING grid: `poetry--core--tag-group` registers; actions keydown on keydown | `poetry--core--roving-focus` registers; values orientation, loop; actions keydown on keydown
+- WIRING remove: `poetry--core--tag-group` actions remove on click
 - RULE: Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.
 - RULE: label: is REQUIRED (the grid's accessible name, rendered as a caption span).
 - RULE: name: turns the group into a form value - one hidden <name>[] input per tag submits; removing a tag removes its input.
@@ -358,7 +372,7 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 
 ## toolbar (`poetry_toolbar`)
 
-A horizontal group of controls that acts as one keyboard tab stop.
+A horizontal group of controls that acts as one keyboard tab stop - Tab passes over the group, Arrow keys move between its controls.
 
 Class: Poetry::Ui::Toolbar::Component - BEM block `poetry-ui-toolbar`.
 Slot REQUIRED: with_button (at least one control (with_button / with_input)) - a call without it raises.
@@ -383,7 +397,8 @@ Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
 - PART `tree-item` - One row (role=row > gridcell) - hierarchy in aria-level/posinset/setsize, indentation via --poetry-tree-level; rows under a collapsed ancestor render hidden | states: data-expanded (the row's subtree is open (parents only; aria-expanded is the canonical twin)); data-disabled (the item is disabled (skipped by arrows and typeahead)); data-value (always - the toggle event's identity); data-level (always - the 1-based depth (aria-level's twin; --poetry-tree-level drives the indent)) | vars: --poetry-tree-level (the 1-based depth - indentation is calc((level - 1) * step) in the dictionary)
 - PART `tree-item-toggle` - The chevron (parents only): tabindex -1, never steals focus, aria-label flips Expand/Collapse | states: data-expand-label (always - the localized Expand string the controller swaps in on collapse); data-collapse-label (always - the localized Collapse string the controller swaps in on expand)
 - PART `tree-item-label` - The row's text - a link when href: is given
-- WIRING `poetry--core--tree`: actions keydown, press, pressStart, toggle; events poetry:tree:toggle
+- WIRING root: `poetry--core--tree` registers; actions keydown on keydown, press on click
+- WIRING toggle: `poetry--core--tree` actions pressStart on pointerdown, toggle on click
 - RULE: Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with click handlers; the treegrid semantics, expansion keys, and focus rules ride the controller.
 - RULE: label: is REQUIRED (the treegrid's accessible name).
 - RULE: Items: tree.with_item(text:, value:, expanded:, disabled:, href:) with nesting via the block - the component flattens and computes aria-level/posinset/setsize.

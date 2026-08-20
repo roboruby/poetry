@@ -25,7 +25,8 @@ Slots: panels (many; with_panel yields NOTHING to the block - no |param|, write 
 - PART `resizable-panel-group` - The flex group root - the splitter controller rides here | states: data-orientation=horizontal|vertical (the group axis)
 - PART `resizable-panel` - One flex child whose flex-grow IS its percentage - the controller rewrites the inline flex on every resize | states: data-min-size (the panel's minimum percentage, rendered when with_panel passes min_size: (the controller's clamp floor)); data-max-size (the panel's maximum percentage, rendered when with_panel passes max_size: (the controller's clamp ceiling))
 - PART `resizable-handle` - The role=separator splitter between panels - drag and keyboard resizing live here; its aria-valuenow tracks the preceding panel
-- WIRING `poetry--core--resizable`: values orientation; actions dragEnd, dragMove, dragStart, keydown; events poetry--core--resizable:resize
+- WIRING root: `poetry--core--resizable` registers; values orientation
+- WIRING handle: `poetry--core--resizable` actions dragStart on pointerdown, dragMove on pointermove, dragEnd on pointerup, keydown on keydown
 - RULE: Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes are PERCENTAGES and the component interleaves the separator handles.
 - RULE: direction: :horizontal is side-by-side (the default); :vertical stacks.
 - RULE: Handles are keyboard splitters (arrows step, Home/End jump) - never replace them with styled divs.

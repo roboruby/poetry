@@ -9,7 +9,7 @@ description: >-
 
 # poetry - component usage
 
-Generated from the poetry registry (84 components + 13 chart components + 8 blocks). After updating
+Generated from the poetry registry (87 components + 13 chart components + 8 blocks). After updating
 poetry gems, regenerate with `bin/rails g poetry:skill`.
 
 ## Guardrails
@@ -54,10 +54,10 @@ Load the reference for the family you are composing in - each file
 carries the full contracts (options, variants, slots, wiring, RULE
 lines) for its components:
 
-- **forms** (`references/forms.md`): button, button_group, calendar, checkbox, combobox, date_field, date_picker, field, field_group, field_separator, fieldset, file_input, input, input_group, input_otp, label, native_select, number_field, radio_group, search_field, select, sensitive_input, slider, switch, textarea, time_field, toggle, toggle_group
+- **forms** (`references/forms.md`): autocomplete, button, button_group, calendar, checkbox, combobox, date_field, date_picker, field, field_group, field_separator, fieldset, file_input, input, input_group, input_otp, label, native_select, number_field, questionnaire, radio_group, search_field, select, sensitive_input, slider, switch, textarea, time_field, toggle, toggle_group
 - **overlays** (`references/overlays.md`): alert_dialog, command, command_dialog, context_menu, dialog, drawer, dropdown_menu, hover_card, menubar, popover, sheet, tooltip
 - **data** (`references/data.md`): accordion, avatar, badge, card, carousel, clipboard_text, code_block, collapsible, data_table, empty, item, metadata_list, meter, stat, table, tag_group, timeline, toolbar, tree, typeset
-- **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toaster
+- **feedback** (`references/feedback.md`): alert, deferred, progress, skeleton, spinner, toast, toast_trigger, toaster
 - **navigation** (`references/navigation.md`): breadcrumb, navigation_menu, pagination, sidebar, tabs
 - **foundations** (`references/foundations.md`): icon, kbd, link, marker, separator
 - **chat** (`references/chat.md`): attachment, bubble, message, message_scroller

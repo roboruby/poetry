@@ -77,7 +77,11 @@ Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scr
 - PART `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions
 - PART `message-scroller-item` - One transcript row (poetry_message_scroller_item) - the id is how anchoring and Streams find it | states: data-message-id (always - the row's message id); data-scroll-anchor (anchor: true - the turn the controller holds at the reading line)
 - PART `message-scroller-spacer` - Tail spacer faking scroll room below a short anchored turn - hidden at height 0
-- WIRING `poetry--core--message-scroller`: targets button, content, spacer, viewport; values autoScroll, defaultScrollPosition, preserveScrollOnPrepend, scrollEdgeThreshold, scrollMargin, scrollPreviousItemPeek, trackVisibility; actions autoScrollValueChanged, defaultScrollPositionValueChanged, jump, keydownIntent, scrollToEnd, scrollToMessage, scrollToStart, syncAfterScroll, userScrollIntent; events poetry--core--message-scroller:mode, poetry--core--message-scroller:pinned, poetry--core--message-scroller:scrollable, poetry--core--message-scroller:unpinned, poetry--core--message-scroller:visibility
+- WIRING root: `poetry--core--message-scroller` registers; values auto_scroll, default_scroll_position, preserve_scroll_on_prepend, track_visibility
+- WIRING viewport: `poetry--core--message-scroller` targets viewport
+- WIRING content: `poetry--core--message-scroller` targets content
+- WIRING spacer: `poetry--core--message-scroller` targets spacer
+- WIRING jump_button: `poetry--core--message-scroller` actions scrollToEnd; targets button
 - RULE: Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.
 - RULE: Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.
 - RULE: Append new turns with a Turbo Stream targeting the content element's dom id.
