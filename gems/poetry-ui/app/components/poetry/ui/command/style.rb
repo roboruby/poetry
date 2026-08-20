@@ -71,6 +71,12 @@ module Poetry
                                    "[&_[data-slot=command-group]]:px-2 " \
                                    "[&_[data-slot=command-item]]:px-2 [&_[data-slot=command-item]]:py-3 " \
                                    "[&_[data-slot=command-item]_svg]:h-5 [&_[data-slot=command-item]_svg]:w-5"
+
+        # CommandDialog: the close recenter. Dialog's themed offset (top-4)
+        # suits p-6 content; the palette centers the 32px button in its
+        # h-12 input row instead. Stays inline (dictionary-held so the
+        # safelist harvests it): utilities beat the themed cn-dialog-close.
+        element :dialog_close, "top-2 right-2"
       end
     end
   end

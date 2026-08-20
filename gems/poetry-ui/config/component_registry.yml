@@ -2359,7 +2359,8 @@ components:
     - search_icon
     - dialog_content
     - dialog_overrides
-    capsule: a37a10969995
+    - dialog_close
+    capsule: 4cb32d7e0dcc
     controllers:
     - identifier: poetry--core--command
       targets: []

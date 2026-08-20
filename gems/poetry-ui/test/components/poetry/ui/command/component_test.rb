@@ -402,6 +402,16 @@ module Poetry
 
           assert_empty without.css("dialog [data-component=\"button\"][aria-label=\"Close\"]")
         end
+
+        def test_dialog_variant_close_button_recenters_in_the_input_row
+          close = doc(render_dialog).css("dialog [data-component=\"button\"][aria-label=\"Close\"]").first
+
+          # Dialog's themed close offset (top-4) suits p-6 content; the
+          # palette recenters the 32px button in its h-12 input row.
+          assert_includes close["class"], "cn-dialog-close"
+          assert_includes close["class"], "top-2"
+          assert_includes close["class"], "right-2"
+        end
       end
     end
   end

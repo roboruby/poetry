@@ -11,7 +11,7 @@
     <% if show_close_button %>
       <%= render Poetry::Ui::Button::Component.new(variant: :ghost, size: :"icon-sm",
                                                    label: t("poetry.dialog.close"),
-                                                   class: Poetry::Ui::Dialog::Style.css(:close),
+                                                   class: Poetry::Ui::Dialog::Style.css(:close, class: Poetry::Ui::Command::Style.css(:dialog_close)),
                                                    data: { action: close_action }) do %>
         <%= render Poetry::Ui::Icon::Component.new(name: :x) %>
       <% end %>
