@@ -16,6 +16,12 @@
 # Note: will_paginate itself is in maintenance mode (no new features or
 # releases since mid-2024). This adapter supports apps that already use
 # it; for a new project, prefer kaminari or pagy.
+
+# will_paginate wires its ActionView integration on_load(:action_view);
+# eager-loading contexts (generators, some rake tasks) can autoload this
+# class before that hook fires, so pull the superclass in explicitly.
+require "will_paginate/view_helpers/action_view"
+
 class PoetryLinkRenderer < WillPaginate::ActionView::LinkRenderer
   def to_html
     @template.poetry_pagination(
