@@ -67,3 +67,10 @@ visual fragments under `themes/`.
 - The naming hold: never push, publish, or claim gems.
 - Commit per logical change; registry and safelist artifacts are generated —
   regenerate, don't edit.
+- Third-party code: adapt only from MIT-compatible sources (MIT/ISC/BSD;
+  Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL), restricted-use,
+  and commercial sources are patterns-and-ideas only — never code. Every
+  adaptation: source URL in the file/component comment + a
+  THIRD_PARTY_NOTICES.md section (upstream, license, adapted files, full
+  license text). An adaptation change that doesn't touch
+  THIRD_PARTY_NOTICES.md is incomplete.
