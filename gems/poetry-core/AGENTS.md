@@ -36,9 +36,10 @@ files against the manifest stamped at last bless.
   tolerant section walker). `DesignMd::Import` plans token overrides with
   WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
   L-walk, chroma held) and DROP-not-fabricate for the rest.
-- `Poetry::Core::DesignLint` — twelve deterministic design-slop rules
-  (AST tier on the herb walk, ERB or plain HTML; DOM tier on computed
-  styles). Warnings that name the fix; provenance cited per rule.
+- `Poetry::Core::DesignLint` — twenty-three deterministic design-slop
+  rules (AST tier on the herb walk, ERB or plain HTML; DOM tier on
+  computed styles; motion-floor tier). Warnings that name the
+  fix; provenance cited per rule.
 
 ## Controller conventions
 
@@ -51,6 +52,14 @@ files against the manifest stamped at last bless.
   llms-full all render from the declaration.
 - Subclasses (Drawer extends Dialog) get their statics merged up the class
   chain by the manifest — declare only what the subclass itself adds.
+- The Ruby side declares wiring with the `use_stimulus` DSL;
+  `Poetry::Core::StimulusContract.verify` gates every declaration against
+  the controllers manifest (both component gems run it) — the registry,
+  agent surface, and docs all project from the declaration.
+- Component DOM ids derive through `Poetry::Core::StableId` (`key:` →
+  dom_id-first token, explicit `id:` wins) so Turbo morph pairs identity
+  across renders and cached fragments stay composable — never mint bare
+  random ids in components.
 - The dommy tier runs controllers on QuickJS + a real DOM: no layout, no
   matchMedia (reports desktop), no Intl — server-feed what needs those.
 
