@@ -1,9 +1,10 @@
 # AGENTS.md — poetry-docs
 
 The docs site and standing fresh-app install proof: a Rails app (importmap +
-tailwindcss-rails + propshaft, no ActiveRecord, no Node) consuming the poetry
-gems as path-pinned siblings. Gallery + Demos + `/theming` with the nine-theme
-switcher.
+tailwindcss-rails + propshaft, sqlite-backed demo data, no Node) consuming the
+poetry gems as path-pinned siblings. Gallery + Demos + the blocks catalog +
+`/theming` with the nine-theme switcher + guide pages (installation, forms,
+pagination, typography, optimistic-forms, editors).
 
 ## Commands
 
@@ -14,7 +15,10 @@ switcher.
 - `ruby script/build_style_registry.rb` — regenerate the nine wrapped
   `.style-<name>` theme files after ANY gem fragment change, then rebuild CSS
 - Dev server convention: port 4100 (`bin/rails server -p 4100 -d`;
-  pid in `tmp/pids/server.pid`)
+  pid in `tmp/pids/server.pid`). `bin/dev` needs a real terminal —
+  `tailwindcss:watch` exits immediately without a TTY and foreman then
+  kills every Procfile process; headless sessions run
+  `bin/rails tailwindcss:build` once + `bin/rails server` instead
 
 ## Conventions
 
