@@ -24,3 +24,7 @@ Contents, unmodified:
 Rebuild: `npm run vendor:d3`. Drift gates: `npm run vendor:d3:verify`
 (byte compare, part of `npm test`) and the KERNEL_VERSIONS check +
 fixture-parity suite in `test/javascript/d3_kernel.test.js`.
+
+License texts for everything bundled here: `LICENSE-d3.txt`,
+`LICENSE-decimal.js-light.txt`, `LICENSE-recharts.txt` (this directory;
+see also the repo-root `THIRD_PARTY_NOTICES.md`).
