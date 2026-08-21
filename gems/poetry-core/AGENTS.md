@@ -64,3 +64,12 @@ Highlights that recur: value callbacks fire async
 ## Standing rules
 
 The naming hold: never push, publish, or claim gems.
+
+Third-party code: adapt or vendor only from MIT-compatible sources
+(MIT/ISC/BSD; Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL),
+restricted-use, and commercial sources are patterns-and-ideas only —
+never code. Every adaptation gets a source URL in the file header AND a
+THIRD_PARTY_NOTICES.md section (upstream, license, adapted files, full
+license text); vendored assets keep their LICENSE next to the code under
+vendor/. An adaptation PR that doesn't touch THIRD_PARTY_NOTICES.md is
+incomplete.
