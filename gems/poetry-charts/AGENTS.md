@@ -35,3 +35,11 @@ are the swappability door.
 ## Standing rules
 
 The naming hold: never push, publish, or claim gems.
+
+Third-party code: adapt or bundle only from MIT-compatible sources
+(MIT/ISC/BSD; Apache-2.0 carries its notice). Copyleft (GPL/LGPL/AGPL),
+restricted-use, and commercial sources are patterns-and-ideas only —
+never code. Every adaptation or bundled upstream: attribution in the
+artifact banner or file header + license text under vendor/ + a
+THIRD_PARTY_NOTICES.md entry. An adaptation change that doesn't touch
+THIRD_PARTY_NOTICES.md is incomplete.
