@@ -15,6 +15,9 @@ visual fragments under `themes/`.
   dictionary ↔ compiled ↔ theme drift (all nine themes)
 - `bundle exec rake registry:verify` — component_registry.yml drift
   (regenerate with `rake registry:generate`, never hand-edit)
+- `bundle exec rake css:template_classes:verify` — the safelist-harvest
+  drift gate (regenerate with `css:template_classes:generate` after any
+  template class change; hosts purge what this scan doesn't see)
 - `bundle exec rake poetry:check[<glob>]` — the consumer-markup linter
   (`POETRY_CHECK_DESIGN=1` adds the 23 design-slop rules)
 - `bundle exec rake design:lint` — design-slop, both tiers (AST + dommy DOM);
@@ -36,6 +39,10 @@ visual fragments under `themes/`.
   browser); `docs/*-port-ledger.txt` — per-theme residuals, kept current
 - `eval/` — the harness: frozen arms + runner (mechanical), judge + captures
   + committed results (judged); `eval/README.md` is the doctrine
+- `lib/generators/poetry/` — the install surface (installer, per-adapter
+  generators, the AGENTS/skills sections) and `block/templates/*.html.erb`,
+  the canonical source of the eight blocks (docs previews render these
+  files per request)
 - `lib/poetry/ui/testing/` — the shipped interaction testers:
   `require "poetry/ui/testing"`, include `Poetry::Ui::Testing` in a Capybara
   system test, then drive components through their REAL keyboard/pointer
@@ -44,6 +51,22 @@ visual fragments under `themes/`.
   tests THROUGH the testers, never with hand-rolled click sequences — they
   assert on the data-open/aria contract, and `bundle exec rake test:testers`
   proves them against the live preview pages (browser-gated, like visual/axe)
+
+## Component conventions
+
+- Stimulus wiring is declared in Ruby via the `use_stimulus` DSL (48
+  components do); the StimulusContract gate verifies declarations against
+  poetry-core's controllers manifest, and the registry / agent surface /
+  docs all project from them — wire nothing by hand-writing `data-*`.
+- DOM ids go through the StableId plumbing (`key:` derives dom_id-first,
+  explicit `id:` wins); never mint bare random ids — keyed identity is
+  what keeps Turbo morph and fragment caches honest (`poetry:check` warns
+  on unkeyed components in loops and cache blocks).
+- Utilities live where the harvest sees them: the template-class scan
+  reads literal classes in templates, NOT strings interpolated from Ruby.
+  Anything that must reach host safelists belongs in a Style dictionary
+  element or a literal template attribute — an interpolated utility
+  builds fine here and purges in every host.
 
 ## Known traps
 
