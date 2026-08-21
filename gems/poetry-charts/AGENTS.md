@@ -28,7 +28,8 @@ are the swappability door.
 - Polar families render in the square 250 viewBox (upstream px-ratio parity);
   the chart color ramp comes from poetry-core tokens.
 - `static events` declarations follow the poetry-core rule
-  (events_declaration.test.js enforces).
+  (events_declaration.test.js enforces); Ruby-side wiring is declared via
+  `use_stimulus`, gated by the StimulusContract like poetry-ui.
 - Scope edges are declared, not implied: streaming trio only for live,
   references/errors vertical-only, brush + streaming undefined together.
 
