@@ -53,11 +53,13 @@ module Poetry
     def install_local(local)
       names = local.map { |address| address.name.tr("-", "_") }
       components, rest = names.partition { |name| source_dir(name).directory? }
-      blocks, missing = rest.partition { |name| gem_blocks.include?(name.tr("_", "-")) }
+      blocks, rest = rest.partition { |name| gem_blocks.include?(name.tr("_", "-")) }
+      recipes, missing = rest.partition { |name| gem_recipes.include?(name.tr("_", "-")) }
       raise ArgumentError, "unknown component(s): #{missing.join(", ")}" if missing.any?
 
       copy_components(components) if components.any?
       blocks.each { |name| install_block(name.tr("_", "-")) }
+      recipes.each { |name| install_recipe(name.tr("_", "-")) }
     end
 
     def copy_components(names)
@@ -142,6 +144,25 @@ module Poetry
       BlockGenerator.new([name], [], destination_root: destination_root).invoke_all
     end
 
+    # -- recipes (Recipes Channel v1) ---------------------------------------
+
+    # A recipe's files write to their declared targets (skip-if-exists:
+    # local edits win, always); its registryDependencies are block names,
+    # installed through the same block path. Recorded in the manifest
+    # under recipes:.
+    def install_recipe(name)
+      item = Poetry::Ui.recipe_items.item(name)
+      item["files"].each { |file| create_file file["target"], file["content"], skip: true }
+      item["registryDependencies"].each { |dep| install_block(dep) }
+      record_in_manifest({ name => { "version" => Poetry::Ui::VERSION } }, section: "recipes")
+      routes_hint = item["description"][/Add `[^`]+` to routes/]
+      say_status :note, routes_hint, :yellow if routes_hint
+    end
+
+    def gem_recipes
+      @gem_recipes ||= Poetry::Ui.recipe_items.names
+    end
+
     # The gems' own item names (kebab), read boot-free from the committed
     # registries - what "provided at runtime" means on this host.
     def gem_components
@@ -170,10 +191,10 @@ module Poetry
       config.is_a?(Hash) ? config : {}
     end
 
-    def record_in_manifest(entries)
+    def record_in_manifest(entries, section: "components")
       manifest = manifest_config
-      manifest["components"] = {} unless manifest["components"].is_a?(Hash)
-      entries.each { |name, record| manifest["components"][name] ||= record }
+      manifest[section] = {} unless manifest[section].is_a?(Hash)
+      entries.each { |name, record| manifest[section][name] ||= record }
       create_file MANIFEST, YAML.dump(manifest), force: true
     end
 

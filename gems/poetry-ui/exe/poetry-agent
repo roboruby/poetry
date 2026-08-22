@@ -37,5 +37,6 @@ end
 # steps read its config/theme. A miss just degrades those steps gracefully.
 Poetry::Core::Agent::Server.from_registry(
   Poetry::Ui.root, helpers: Poetry::Ui.helper_names, icon_names: icon_names,
-                   skills: Poetry::Ui.agent_skills, app_root: Dir.pwd
+                   skills: Poetry::Ui.agent_skills, app_root: Dir.pwd,
+                   recipes: Poetry::Ui.recipe_items.summaries
 ).serve

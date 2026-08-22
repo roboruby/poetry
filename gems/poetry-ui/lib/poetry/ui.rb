@@ -5,6 +5,7 @@ require "yaml"
 require_relative "ui/version"
 require_relative "ui/themes"
 require_relative "ui/code_block_highlighter"
+require_relative "ui/recipes"
 
 module Poetry
   # The component library: shadcn-parity ViewComponents built entirely on
@@ -131,6 +132,16 @@ module Poetry
           registry: YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH)),
           root: root, gem_name: "poetry-ui", gem_version: VERSION,
           dependencies: COMPONENT_DEPENDENCIES
+        )
+      end
+
+      # The recipes projection (Recipes Channel v1): skill bundles,
+      # scaffold template sets, and screen slices as registry items -
+      # served at /r/*.json beside components and blocks, installed by
+      # poetry:add or any shadcn-compatible client.
+      def recipe_items
+        Poetry::Core::RecipeItems.new(
+          recipes: Recipes.definitions, gem_name: "poetry-ui", gem_version: VERSION
         )
       end
 

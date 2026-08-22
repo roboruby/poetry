@@ -288,6 +288,31 @@ module Poetry
     destination File.expand_path("../tmp/add-dest", __dir__)
     setup :prepare_destination
 
+    def test_add_recipe_installs_files_blocks_and_manifest_entry
+      run_generator ["screen-settings"]
+
+      assert_file "app/controllers/settings_controller.rb", /class SettingsController/
+      assert_file "app/views/settings/show.html.erb", %r{render "blocks/page_header"}
+      assert_file "test/system/settings_show_test.rb", /Usage-based billing/
+      # registryDependencies pull the composed blocks through the block path
+      assert_file "app/views/blocks/_page_header.html.erb"
+      assert_file "app/views/blocks/_section_card.html.erb"
+      assert_file "app/views/blocks/_destructive_panel.html.erb"
+      assert_file "config/poetry_components.yml" do |manifest|
+        assert_includes YAML.safe_load(manifest)["recipes"].keys, "screen-settings"
+      end
+    end
+
+    def test_add_recipe_skill_bundle_writes_skill_files_and_skips_existing
+      FileUtils.mkdir_p(File.join(destination_root, ".claude/skills/poetry"))
+      File.write(File.join(destination_root, ".claude/skills/poetry/SKILL.md"), "mine\n")
+
+      run_generator ["skill-poetry"]
+
+      assert_file ".claude/skills/poetry/SKILL.md", "mine\n"
+      assert_file ".claude/skills/poetry/references/deciding.md"
+    end
+
     def test_add_button_copies_the_component_and_its_icon_dependency
       run_generator %w[Button]
 
