@@ -6,6 +6,7 @@ require_relative "ui/version"
 require_relative "ui/themes"
 require_relative "ui/code_block_highlighter"
 require_relative "ui/recipes"
+require_relative "ui/chat"
 
 module Poetry
   # The component library: shadcn-parity ViewComponents built entirely on
