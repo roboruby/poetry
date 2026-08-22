@@ -11,6 +11,17 @@ class SkillsController < ApplicationController
     render json: { skills: skill_sets.map { |name, files| index_entry(name, files) } }
   end
 
+  # The settled discovery convention (the agent-skills discovery RFC over RFC 8615,
+  # schemas.agentskills.io/discovery/0.2.0): five fields per skill, and a
+  # sha256 digest a conformant installer MUST verify. `npx skills add
+  # <site-url>` installs from this document.
+  def discovery
+    render json: {
+      "$schema": "https://schemas.agentskills.io/discovery/0.2.0/schema.json",
+      skills: skill_sets.map { |name, files| discovery_entry(name, files) }
+    }
+  end
+
   def show
     content = skill_sets.dig(params[:skill], params[:file])
     raise ActionController::RoutingError, "unknown skill file" unless content
@@ -18,7 +29,32 @@ class SkillsController < ApplicationController
     render plain: content, content_type: "text/markdown"
   end
 
+  # The archive payload a discovery entry's url points at: a flat tar.gz
+  # built deterministically from the same file map, so the digest the
+  # index advertised on one request matches the bytes this one serves.
+  def archive
+    files = skill_sets[params[:skill].to_s.delete_suffix(".tar.gz")]
+    raise ActionController::RoutingError, "unknown skill" unless files
+
+    send_data SkillArchive.build(files), filename: params[:skill], type: "application/gzip"
+  end
+
   private
+
+  # A lone SKILL.md is served as itself (type skill-md); anything more is
+  # a flat tarball (type archive). Either way the digest is computed over
+  # the exact bytes the url serves.
+  def discovery_entry(name, files)
+    single = files.keys == [ "SKILL.md" ]
+    payload = single ? files["SKILL.md"] : SkillArchive.build(files)
+    {
+      name: name,
+      description: frontmatter_description(files["SKILL.md"].to_s),
+      type: single ? "skill-md" : "archive",
+      url: "#{request.base_url}/.well-known/agent-skills/#{name}#{single ? '/SKILL.md' : '.tar.gz'}",
+      digest: SkillArchive.digest(payload)
+    }
+  end
 
   def skill_sets
     @skill_sets ||= {

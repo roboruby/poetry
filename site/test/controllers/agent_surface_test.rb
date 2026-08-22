@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "rubygems/package"
 
 # The agent surface: markdown mirrors (append.md to a component
 # page) and the web-installable skills at .well-known/skills - both served
@@ -114,13 +115,68 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     end
   end
 
-  test "the agent-skills alias serves the same index and files" do
+  test "the agent-skills discovery index is a conformant RFC document" do
     get "/.well-known/agent-skills/index.json"
 
     assert_response :success
-    assert_equal %w[poetry poetry-design poetry-docs-site],
-                 JSON.parse(response.body)["skills"].map { |skill| skill["name"] }
+    doc = JSON.parse(response.body)
 
+    assert_equal "https://schemas.agentskills.io/discovery/0.2.0/schema.json", doc["$schema"]
+    assert_equal %w[$schema skills], doc.keys.sort
+    assert_equal %w[poetry poetry-design poetry-docs-site], doc["skills"].map { |skill| skill["name"] }
+
+    doc["skills"].each do |entry|
+      assert_equal %w[name description type url digest], entry.keys, "no fields the schema does not define"
+      assert_match(/\A[a-z0-9]+(?:-[a-z0-9]+)*\z/, entry["name"])
+      assert entry["description"].present?, "#{entry["name"]} needs its use-this-when line"
+      assert_match(/\Asha256:[0-9a-f]{64}\z/, entry["digest"])
+      assert entry["type"] == "archive" ?
+               entry["url"].end_with?("/.well-known/agent-skills/#{entry["name"]}.tar.gz") :
+               entry["url"].end_with?("/.well-known/agent-skills/#{entry["name"]}/SKILL.md"),
+             "#{entry["name"]} url must match its type"
+    end
+    assert_equal "skill-md", doc["skills"].find { |s| s["name"] == "poetry-docs-site" }["type"],
+                 "a lone SKILL.md is served as itself"
+    assert_equal "archive", doc["skills"].find { |s| s["name"] == "poetry" }["type"]
+  end
+
+  test "every advertised digest matches the exact bytes its url serves" do
+    get "/.well-known/agent-skills/index.json"
+
+    JSON.parse(response.body)["skills"].each do |entry|
+      get URI.parse(entry["url"]).path
+
+      assert_response :success
+      assert_equal entry["digest"], "sha256:#{Digest::SHA256.hexdigest(response.body)}",
+                   "the digest for #{entry["name"]} must be computed over what is served"
+    end
+  end
+
+  test "skill archives are flat, deterministic, and reject unknown names" do
+    get "/.well-known/agent-skills/poetry.tar.gz"
+
+    assert_response :success
+    assert_equal "application/gzip", response.media_type
+    first = response.body
+
+    names = []
+    Zlib::GzipReader.wrap(StringIO.new(first)) do |gz|
+      Gem::Package::TarReader.new(gz) { |tar| tar.each { |entry| names << entry.full_name } }
+    end
+
+    assert_includes names, "SKILL.md", "SKILL.md must sit at the archive root"
+    assert(names.none? { |name| name.start_with?("poetry/") }, "a wrapping folder is the classic broken install")
+
+    get "/.well-known/agent-skills/poetry.tar.gz"
+
+    assert_equal first, response.body, "the advertised digest depends on byte-identical rebuilds"
+
+    get "/.well-known/agent-skills/nope.tar.gz"
+
+    assert_response :not_found
+  end
+
+  test "the agent-skills path still serves individual skill files" do
     get "/.well-known/agent-skills/poetry-docs-site/SKILL.md"
 
     assert_response :success
@@ -135,7 +191,8 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
 
     assert_equal "3.1.0", doc["openapi"]
 
-    substitutions = { "{name}" => "registry.json", "{skill}/{file}" => "poetry/SKILL.md" }
+    substitutions = { "{name}" => "registry.json", "{skill}/{file}" => "poetry/SKILL.md",
+                      "{archive}" => "poetry.tar.gz" }
     doc["paths"].each_key do |path|
       concrete = substitutions.reduce(path) { |p, (from, to)| p.sub(from, to) }
       next if concrete.include?("{")

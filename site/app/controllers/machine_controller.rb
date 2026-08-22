@@ -17,6 +17,8 @@ class MachineController < ApplicationController
     "/r/{name}" => { summary: "One registry item as <name>.json (shadcn registry-item schema: https://ui.shadcn.com/schema/registry-item.json)", type: "application/json" },
     "/.well-known/skills/index.json" => { summary: "Installable agent skills: names, descriptions, file rosters", type: "application/json" },
     "/.well-known/skills/{skill}/{file}" => { summary: "One skill file as markdown", type: "text/markdown" },
+    "/.well-known/agent-skills/index.json" => { summary: "Agent-skills discovery index (schemas.agentskills.io/discovery/0.2.0): name, description, type, payload url, sha256 digest per skill - what `npx skills add` reads", type: "application/json" },
+    "/.well-known/agent-skills/{archive}" => { summary: "One skill payload as a flat <name>.tar.gz, the digest target", type: "application/gzip" },
     "/.well-known/api-catalog" => { summary: "RFC 9727 API catalog (this document's address)", type: "application/linkset+json" },
     "/openapi.json" => { summary: "This OpenAPI description", type: "application/json" },
     "/operator-register.json" => { summary: "The operator register: poetry's component contract in GUI-operator vocabulary (system + per-page instructions)", type: "application/json" },

@@ -32,14 +32,18 @@ Rails.application.routes.draw do
   get "r/:name" => "registry#show", as: :registry_item, format: false,
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 
-  # Web-installable Agent Skills: discovery index + skill files,
-  # served from the same generators the installed skills use. The
-  # agent-skills spelling is an alias - two conventions are emerging in the
-  # wild; we answer both until one wins.
+  # Web-installable Agent Skills: poetry's own inventory (index +
+  # per-file) at /.well-known/skills, and the settled discovery convention
+  # at /.well-known/agent-skills - the agent-skills discovery RFC
+  # (schemas.agentskills.io/discovery/0.2.0) with a payload url and sha256
+  # digest per skill, which `npx skills add <site-url>` installs from.
+  # Both serve from the same generators the installed skills use.
   get "/.well-known/skills/index.json" => "skills#index", as: :skills_index, format: false
   get "/.well-known/skills/:skill/*file" => "skills#show", as: :skill_file, format: false,
       constraints: { skill: /[a-z-]+/ }
-  get "/.well-known/agent-skills/index.json" => "skills#index", format: false
+  get "/.well-known/agent-skills/index.json" => "skills#discovery", as: :skills_discovery, format: false
+  get "/.well-known/agent-skills/:skill" => "skills#archive", as: :skill_archive, format: false,
+      constraints: { skill: /[a-z-]+\.tar\.gz/ }
   get "/.well-known/agent-skills/:skill/*file" => "skills#show", format: false,
       constraints: { skill: /[a-z-]+/ }
 
