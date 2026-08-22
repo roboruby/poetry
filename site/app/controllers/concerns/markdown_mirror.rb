@@ -13,6 +13,8 @@ module MarkdownMirror
 
   included do
     before_action :serve_markdown_mirror, if: :markdown_wanted?
+    after_action :advertise_markdown_mirror
+    helper_method :markdown_alternate_path
   end
 
   private
@@ -29,4 +31,28 @@ module MarkdownMirror
   end
 
   def markdown_mirror = nil
+
+  # Where this page's markdown twin lives, or nil. The root's twin is the
+  # llms.txt index (there is no routable "/.md").
+  def markdown_alternate_path
+    return @markdown_alternate_path if defined?(@markdown_alternate_path)
+
+    @markdown_alternate_path =
+      begin
+        if request.get? && markdown_mirror.present?
+          request.path == "/" ? "/llms.txt" : "#{request.path}.md"
+        end
+      rescue ActionController::RoutingError
+        nil
+      end
+  end
+
+  # Advertise the twin on the HTML response too (the crawler-facing half
+  # of the contract: HTTP Link header + the layout's <link> tag).
+  def advertise_markdown_mirror
+    return unless response.media_type == "text/html" && (path = markdown_alternate_path)
+
+    response.headers["Link"] = [ response.headers["Link"],
+                                 %(<#{path}>; rel="alternate"; type="text/markdown") ].compact.join(", ")
+  end
 end

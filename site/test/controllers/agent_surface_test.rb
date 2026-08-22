@@ -146,6 +146,33 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "HTML pages advertise their markdown twin via link tag and Link header" do
+    get "/components/badge"
+
+    assert_response :success
+    assert_includes response.headers["Link"], '</components/badge.md>; rel="alternate"; type="text/markdown"'
+    assert_includes response.body, '<link rel="alternate" type="text/markdown" href="/components/badge.md">'
+
+    get "/"
+
+    assert_includes response.headers["Link"], "</llms.txt>"
+    assert_includes response.body, 'href="/llms.txt"'
+  end
+
+  test "robots.txt welcomes crawlers with a Content-Signal line" do
+    get "/robots.txt"
+
+    assert_response :success
+    assert_includes response.body, "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
+    assert_includes response.body, "Allow: /"
+  end
+
+  test "root llms-full.txt redirects to the engine's full catalog" do
+    get "/llms-full.txt"
+
+    assert_redirected_to "/poetry/llms-full.txt"
+  end
+
   test "the api catalog is an RFC 9727 linkset pointing at the OpenAPI description" do
     get "/.well-known/api-catalog"
 

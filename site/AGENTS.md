@@ -35,9 +35,11 @@ pagination, typography, optimistic-forms, editors).
   send `Accept: text/markdown`. Controllers implement `markdown_mirror`
   (the MarkdownMirror concern serves it on either signal; a page without
   one answers 406, never a MissingTemplate 500). Discovery surfaces: root
-  `/llms.txt` (DocsCatalog-generated), `/openapi.json` +
-  `/.well-known/api-catalog`, skills at `/.well-known/skills/` (with an
-  `agent-skills` alias). A new machine endpoint gets an ENDPOINTS row in
+  `/llms.txt` (DocsCatalog-generated, `/llms-full.txt` redirects into the
+  engine), `/openapi.json` + `/.well-known/api-catalog`, skills at
+  `/.well-known/skills/` (with an `agent-skills` alias); HTML pages
+  advertise their twin via `<link rel="alternate">` + the HTTP `Link`
+  header, and robots.txt carries the Content-Signal line. A new machine endpoint gets an ENDPOINTS row in
   MachineController - the openapi test GETs every documented path, so the
   description can't drift into a document that lies.
 

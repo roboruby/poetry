@@ -1,1 +1,7 @@
-# See https://www.robotstxt.org/robotstxt.html for documentation on how to use the robots.txt file
+# Crawlers are welcome - this site exists to be read by humans and agents
+# alike. Content-Signal (contentsignals.org, inside the User-agent group)
+# states what fetched bytes may be used for; the agent-facing index is
+# /llms.txt and every page mirrors as markdown at <url>.md.
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /

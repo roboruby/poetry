@@ -10,6 +10,12 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
+    <%# Advertise the page's markdown twin to crawlers (paired with the
+        HTTP Link header the MarkdownMirror concern sets). %>
+    <% if respond_to?(:markdown_alternate_path) && (md_path = markdown_alternate_path) %>
+      <link rel="alternate" type="text/markdown" href="<%= md_path %>">
+    <% end %>
+
     <%# Apply the stored dark mode AND component style BEFORE first paint.
         The style axis (N12 W5) swaps the server-rendered style-default for
         the stored choice; style_controller.js switches it live. %>
