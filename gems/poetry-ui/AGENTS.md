@@ -43,6 +43,12 @@ visual fragments under `themes/`.
   generators, the AGENTS/skills sections) and `block/templates/*.html.erb`,
   the canonical source of the eight blocks (docs previews render these
   files per request)
+- `lib/poetry/ui/recipes.rb` — the recipes channel roster (Recipes
+  Channel v1): registry items projected LIVE from gem-shipped sources
+  (skills via the boot-free seams, scaffold .tt set, screen slices under
+  `lib/generators/poetry/recipes/`). A recipe's files must be the same
+  bytes a generator installs — never author recipe-only content except
+  screen slices, and keep targets traversal-free (RecipeItems raises).
 - `lib/poetry/ui/testing/` — the shipped interaction testers:
   `require "poetry/ui/testing"`, include `Poetry::Ui::Testing` in a Capybara
   system test, then drive components through their REAL keyboard/pointer
