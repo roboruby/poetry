@@ -82,6 +82,15 @@ class DocsMarkdown
       ([ header(entry) ] + sections).join("\n\n") + "\n"
     end
 
+    # The agent guide's mirror.
+    def agent(entry)
+      <<~MD
+        #{header(entry)}
+
+        This page embeds page-agent v1.12.2 (MIT, vendored) configured with poetry's OPERATOR REGISTER - the component contract in GUI-operator vocabulary: `includeAttributes: ["data-component", "data-slot"]` plus per-page instructions served at [/operator-register.json](/operator-register.json). Nothing loads until a visitor activates it (bring-your-own OpenAI-compatible key, session-only). The task list on the page is the findings pass: each task is pre-classified as ARIA-alone / register-helps / expected-failure-on-the-agent's-input-layer (keyboard-first components cannot be driven by synthetic clicks).
+      MD
+    end
+
     # The root llms.txt: the whole site, indexed for agents - every docs
     # page with its one-liner, plus the machine-readable resources.
     def site_index

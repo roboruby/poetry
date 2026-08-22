@@ -19,6 +19,7 @@ class MachineController < ApplicationController
     "/.well-known/skills/{skill}/{file}" => { summary: "One skill file as markdown", type: "text/markdown" },
     "/.well-known/api-catalog" => { summary: "RFC 9727 API catalog (this document's address)", type: "application/linkset+json" },
     "/openapi.json" => { summary: "This OpenAPI description", type: "application/json" },
+    "/operator-register.json" => { summary: "The operator register: poetry's component contract in GUI-operator vocabulary (system + per-page instructions)", type: "application/json" },
     "/up" => { summary: "Health check", type: "text/html" }
   }.freeze
 
@@ -32,6 +33,10 @@ class MachineController < ApplicationController
       },
       paths: ENDPOINTS.to_h { |path, meta| [ path, path_item(path, meta) ] }
     }
+  end
+
+  def operator_register
+    render json: OperatorRegister.as_json
   end
 
   def api_catalog

@@ -1,0 +1,101 @@
+<% entry = DocsCatalog.docs.find { |candidate| candidate.slug == "agent" } %>
+<% content_for :title, entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item(entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10" data-controller="agent-demo">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight">Operate this site with an agent</h1>
+    <p class="max-w-2xl text-muted-foreground"><%= entry.description %></p>
+  </header>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="what">What this is</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      This page embeds <a class="underline underline-offset-4" href="https://github.com/alibaba/page-agent">page-agent</a>
+      (pinned v1.12.2, MIT — vendored with its license) configured with poetry's
+      <strong>operator register</strong>: the component contract projected in GUI-operator vocabulary
+      (<code class="text-foreground">data-component</code>/<code class="text-foreground">data-slot</code>
+      whitelisted into the model, plus per-page instructions served at
+      <a class="underline underline-offset-4" href="/operator-register.json">/operator-register.json</a>).
+      Nothing loads until you activate it; your key lives in this browser session only and is sent
+      only to the endpoint you configure.
+    </p>
+  </section>
+
+  <section class="flex max-w-md flex-col gap-3">
+    <h2 class="text-lg font-medium" id="activate">Activate</h2>
+    <%= poetry_field_group do %>
+      <%= poetry_field(id: "agent-model", label_text: "Model") do |field| %>
+        <%= poetry_input(value: "claude-sonnet-5", data: { "agent-demo-target": "model" },
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_field(id: "agent-base-url", label_text: "OpenAI-compatible base URL") do |field| %>
+        <%= poetry_input(value: "https://api.anthropic.com/v1/", data: { "agent-demo-target": "baseUrl" },
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+      <%= poetry_field(id: "agent-api-key", label_text: "API key") do |field| %>
+        <%= poetry_input(type: "password", placeholder: "sk-ant-…", data: { "agent-demo-target": "apiKey" },
+                         **field.control_attributes.transform_keys(&:to_sym)) %>
+      <% end %>
+    <% end %>
+    <p class="text-sm text-muted-foreground">The key is session-only: cleared on deactivate or when the tab closes, and sent only to the base URL above.</p>
+    <div class="flex items-center gap-2">
+      <%= poetry_button(data: { action: "agent-demo#activate" }) { "Activate agent" } %>
+      <%= poetry_button(variant: :outline, data: { action: "agent-demo#deactivate" }) { "Deactivate" } %>
+    </div>
+    <p class="text-sm text-muted-foreground" data-agent-demo-target="status" aria-live="polite"></p>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="tasks">Task list (the findings pass)</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      Curated tasks with pre-registered expectations. Classify each run:
+      <em>ARIA alone</em> / <em>needed the register</em> / <em>failed on the agent's input layer</em>
+      (page-agent's own synthetic-input gaps: scrim click-through, forced focus, no keyboard —
+      keyboard-first components are EXPECTED failures and labeled).
+    </p>
+    <div class="overflow-x-auto">
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Task (paste into the panel)" } %>
+            <%= poetry_table_head { "Expected" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% [
+            ["Switch this site's visual style to sera using the style switcher in the header", "succeeds — switcher is a labeled menu"],
+            ["Open the search palette and navigate to the Combobox component page", "succeeds — command palette is ARIA listbox"],
+            ["On the Select component page, open the first example's select and choose any option", "succeeds — popup listbox via ARIA"],
+            ["On the Dialog component page, open the first example's dialog, then close it", "succeeds — dialog + close button"],
+            ["On the Tabs component page, switch the first example to its Code tab", "register helps — nearest-tab-group disambiguation"],
+            ["On the Data Table component page, sort by the first sortable column and select two rows", "register helps — sort/selection verbs"],
+            ["On the Slider component page, set the first slider to its maximum", "EXPECTED FAILURE — keyboard-first, no synthetic keyboard"],
+            ["On the Date Field component page, set the first example's date to any past date", "EXPECTED FAILURE — segment typing needs keyboard"]
+          ].each do |task, expected| %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell { tag.code(task, class: "text-xs") } %>
+              <%= poetry_table_cell { tag.span(expected, class: "text-sm text-muted-foreground") } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="provenance">Provenance & limits</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      The vendored build is the upstream IIFE loaded with <code class="text-foreground">?autoInit=false</code>
+      (no demo agent, no third-party LLM endpoint). page-agent drives the page with synthetic
+      events — text-only DOM reading, no screenshots; its known infidelities (clicking through
+      pointer-events scrims, no keyboard synthesis) are part of what this demo measures, not bugs
+      in the components. Agent activity stays on whatever pages you visit here.
+    </p>
+  </section>
+</div>

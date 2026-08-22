@@ -25,6 +25,9 @@ class DocsController < ApplicationController
     @recipes = Poetry::Ui.recipe_items.summaries
   end
 
+  def agent
+  end
+
   def theming
   end
 
@@ -107,6 +110,7 @@ class DocsController < ApplicationController
     when "theming" then DocsMarkdown.theming(guide_entry("theming"))
     when "editors" then DocsMarkdown.editors(guide_entry("editors"))
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
+    when "agent" then DocsMarkdown.agent(guide_entry("agent"))
     when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))
     end
   end

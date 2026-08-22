@@ -53,6 +53,11 @@ class DocsCatalog
                            "template set, and screen slices (controller + view + system test, " \
                            "blocks pulled as dependencies) - installable with bin/rails g " \
                            "poetry:add <name> or any shadcn-compatible registry client."),
+    Entry.new(slug: "agent", title: "Agent", section: "docs", icon: :bot,
+              description: "The operator-register demo: this site embeds page-agent (pinned, " \
+                           "opt-in, bring-your-own key) configured with poetry's operator " \
+                           "register - watch a GUI agent operate the components, and see which " \
+                           "tasks succeed through ARIA alone."),
     Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
               description: "bin/rails g poetry:editor wires poetry's MCP server and registry-driven " \
                            "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \

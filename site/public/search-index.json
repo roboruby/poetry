@@ -300,6 +300,36 @@
     "path": "/recipes#skill-poetry-design"
   },
   {
+    "title": "Agent",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent"
+  },
+  {
+    "title": "What this is",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent#what"
+  },
+  {
+    "title": "Activate",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent#activate"
+  },
+  {
+    "title": "Task list (the findings pass)",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent#tasks"
+  },
+  {
+    "title": "Provenance & limits",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent#provenance"
+  },
+  {
     "title": "Editors",
     "page": "Editors",
     "section": "docs",
