@@ -5,7 +5,9 @@
     when the shape holds (dataset toggle) - a shape change (period toggle)
     replays the entrance instead. %>
 <div class="flex w-full max-w-xl flex-col gap-6">
-  <%= form_with url: "/demos/interactive", method: :get, data: { turbo_action: "replace" },
+  <%# Submit to WHEREVER this example is rendered - the demo page or the
+    standalone view both prepare the same data (ExampleData concern). %>
+<%= form_with url: request.path, method: :get, data: { turbo_action: "replace" },
                 class: "flex flex-wrap items-end gap-3" do %>
     <div class="grid gap-2">
       <%= poetry_label(for_id: "demo-period") { "Period" } %>
