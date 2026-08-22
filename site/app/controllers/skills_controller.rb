@@ -23,12 +23,20 @@ class SkillsController < ApplicationController
   def skill_sets
     @skill_sets ||= {
       "poetry" => Poetry::Ui.skill_files,
-      "poetry-design" => design_skill_files
+      "poetry-design" => design_skill_files,
+      "poetry-docs-site" => site_skill_files
     }
   end
 
   def design_skill_files
     base = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-design")
+    Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
+  end
+
+  # The site-usage skill (S3 of the agent-legibility pass): how to navigate
+  # THIS site as an agent - docs-app content, not gem content.
+  def site_skill_files
+    base = Rails.root.join("lib/skills/poetry-docs-site")
     Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
   end
 

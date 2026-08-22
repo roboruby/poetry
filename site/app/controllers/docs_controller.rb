@@ -1,7 +1,18 @@
 class DocsController < ApplicationController
+  include MarkdownMirror
   include Pagy::Method
 
+  # Guide pages that ride the shared docs/page template: their mirrors are
+  # the generic gallery projection (header + example sources).
+  EXAMPLE_GUIDES = %w[typography deferred pagination forms optimistic_forms].freeze
+
   def index
+  end
+
+  # The root llms.txt (S1 of the agent-legibility pass): the whole site
+  # indexed for agents, served at the conventional root address.
+  def llms
+    render plain: DocsMarkdown.site_index, content_type: "text/markdown"
   end
 
   def installation
@@ -78,5 +89,24 @@ class DocsController < ApplicationController
   def optimistic_rejected
     flash[:alert] = "The server rejected this one on purpose - watch the morph put truth back."
     head :unprocessable_entity
+  end
+
+  private
+
+  # One dispatch for every guide page's mirror. `installation` serves the
+  # curated agent instructions - the SAME file the static /installation.md
+  # fast-path serves (public/), so the suffix and the Accept header agree.
+  def markdown_mirror
+    case action_name
+    when "index" then DocsMarkdown.site_index
+    when "installation" then Rails.public_path.join("installation.md").read
+    when "theming" then DocsMarkdown.theming(guide_entry("theming"))
+    when "editors" then DocsMarkdown.editors(guide_entry("editors"))
+    when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))
+    end
+  end
+
+  def guide_entry(slug)
+    DocsCatalog.docs.find { |entry| entry.slug == slug }
   end
 end

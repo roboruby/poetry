@@ -30,10 +30,22 @@ Rails.application.routes.draw do
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 
   # Web-installable Agent Skills: discovery index + skill files,
-  # served from the same generators the installed skills use.
+  # served from the same generators the installed skills use. The
+  # agent-skills spelling is an alias - two conventions are emerging in the
+  # wild; we answer both until one wins.
   get "/.well-known/skills/index.json" => "skills#index", as: :skills_index, format: false
   get "/.well-known/skills/:skill/*file" => "skills#show", as: :skill_file, format: false,
       constraints: { skill: /[a-z-]+/ }
+  get "/.well-known/agent-skills/index.json" => "skills#index", format: false
+  get "/.well-known/agent-skills/:skill/*file" => "skills#show", format: false,
+      constraints: { skill: /[a-z-]+/ }
+
+  # The agent-legibility discovery surfaces: the root llms.txt site index,
+  # the OpenAPI description of the machine endpoints, and the RFC 9727
+  # catalog pointing at it.
+  get "llms.txt" => "docs#llms", as: :llms, format: false
+  get "openapi.json" => "machine#openapi", as: :openapi, format: false
+  get "/.well-known/api-catalog" => "machine#api_catalog", as: :api_catalog, format: false
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart

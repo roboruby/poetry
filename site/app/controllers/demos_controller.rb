@@ -3,6 +3,8 @@
 # that the filter is a real form and the data comes back from the server,
 # so the controller owns the datasets and reads the params.
 class DemosController < ApplicationController
+  include MarkdownMirror
+
   DATASETS = {
     "current" => [
       { month: "January", desktop: 186, mobile: 80 },
@@ -34,6 +36,13 @@ class DemosController < ApplicationController
   end
 
   private
+
+  def markdown_mirror
+    entry = DocsCatalog.find("demos", params[:slug])
+    raise ActionController::RoutingError, "unknown demo #{params[:slug]}" unless entry
+
+    DocsMarkdown.example_page(entry)
+  end
 
   def prepare_interactive
     @period = PERIODS.key?(params[:period]) ? params[:period] : "6m"

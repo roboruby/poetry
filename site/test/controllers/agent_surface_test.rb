@@ -20,14 +20,14 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "the skills index lists both skills with their file rosters" do
+  test "the skills index lists all three skills with their file rosters" do
     get "/.well-known/skills/index.json"
 
     assert_response :success
     payload = JSON.parse(response.body)
     names = payload["skills"].map { |skill| skill["name"] }
 
-    assert_equal %w[poetry poetry-design], names
+    assert_equal %w[poetry poetry-design poetry-docs-site], names
 
     usage = payload["skills"].first
 
@@ -56,5 +56,103 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     get "/.well-known/skills/poetry/references/nope.md"
 
     assert_response :not_found
+  end
+
+  # === The site-wide mirror matrix (agent-legibility S0+S2) ===
+
+  test "every catalog page mirrors as markdown under its own address" do
+    DocsCatalog.all.each do |entry|
+      get "#{entry.path}.md"
+
+      assert_response :success, "#{entry.path}.md"
+      assert_match %r{text/(markdown|plain)}, response.content_type, "#{entry.path}.md"
+      assert response.body.present?, "#{entry.path}.md is blank"
+      # Components mirror their registry contract (helper name, not the
+      # page title); /installation.md is the curated agent variant whose
+      # H1 deliberately differs from the page title.
+      unless entry.section == "components" || entry.slug == "installation"
+        assert_includes response.body, entry.title, "#{entry.path}.md missing its title"
+      end
+    end
+  end
+
+  test "Accept: text/markdown serves the same mirrors - and never 500s" do
+    [ "/components/badge", "/charts/#{DocsCatalog.charts.first.slug}",
+      "/blocks/#{DocsCatalog.blocks.first.slug}", "/demos/interactive",
+      "/typography", "/theming", "/" ].each do |path|
+      get path, headers: { "Accept" => "text/markdown" }
+
+      assert_response :success, path
+      assert_match %r{text/markdown}, response.content_type, path
+    end
+  end
+
+  test "a page with no mirror answers 406 to a markdown ask, not a 500" do
+    get "/deferred/fragment", headers: { "Accept" => "text/markdown" }
+
+    assert_response :not_acceptable
+  end
+
+  test "a block mirror carries the generator source and composition roster" do
+    entry = DocsCatalog.blocks.first
+    get "/blocks/#{entry.slug}.md"
+
+    assert_response :success
+    assert_includes response.body, "poetry:block #{entry.slug}"
+    assert_includes response.body, "```erb"
+  end
+
+  # === Discovery surfaces (S1, S3, S4) ===
+
+  test "the root llms.txt indexes every docs page" do
+    get "/llms.txt"
+
+    assert_response :success
+    assert_match %r{text/markdown}, response.content_type
+    DocsCatalog.all.each do |entry|
+      assert_includes response.body, "(#{entry.path})", "llms.txt missing #{entry.path}"
+    end
+  end
+
+  test "the agent-skills alias serves the same index and files" do
+    get "/.well-known/agent-skills/index.json"
+
+    assert_response :success
+    assert_equal %w[poetry poetry-design poetry-docs-site],
+                 JSON.parse(response.body)["skills"].map { |skill| skill["name"] }
+
+    get "/.well-known/agent-skills/poetry-docs-site/SKILL.md"
+
+    assert_response :success
+    assert_includes response.body, "/llms.txt"
+  end
+
+  test "openapi.json documents only endpoints that actually answer" do
+    get "/openapi.json"
+
+    assert_response :success
+    doc = JSON.parse(response.body)
+
+    assert_equal "3.1.0", doc["openapi"]
+
+    substitutions = { "{name}" => "registry.json", "{skill}/{file}" => "poetry/SKILL.md" }
+    doc["paths"].each_key do |path|
+      concrete = substitutions.reduce(path) { |p, (from, to)| p.sub(from, to) }
+      next if concrete.include?("{")
+
+      get concrete
+
+      assert_response :success, "documented endpoint #{path} does not answer at #{concrete}"
+    end
+  end
+
+  test "the api catalog is an RFC 9727 linkset pointing at the OpenAPI description" do
+    get "/.well-known/api-catalog"
+
+    assert_response :success
+    assert_match %r{application/linkset\+json}, response.content_type
+    linkset = JSON.parse(response.body)["linkset"]
+
+    assert_equal "/openapi.json", linkset.first["service-desc"].first["href"]
   end
 end

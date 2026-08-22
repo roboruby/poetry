@@ -31,6 +31,15 @@ pagination, typography, optimistic-forms, editors).
 - Exactly ONE `style-<name>` class lives on `<html>` at all times
   (server-rendered `style-default`, pre-paint localStorage swap). Never ship
   an unscoped visual theme layer.
+- Every docs page serves a markdown mirror - append `.md` to its URL or
+  send `Accept: text/markdown`. Controllers implement `markdown_mirror`
+  (the MarkdownMirror concern serves it on either signal; a page without
+  one answers 406, never a MissingTemplate 500). Discovery surfaces: root
+  `/llms.txt` (DocsCatalog-generated), `/openapi.json` +
+  `/.well-known/api-catalog`, skills at `/.well-known/skills/` (with an
+  `agent-skills` alias). A new machine endpoint gets an ENDPOINTS row in
+  MachineController - the openapi test GETs every documented path, so the
+  description can't drift into a document that lies.
 
 ## The one hard rule
 

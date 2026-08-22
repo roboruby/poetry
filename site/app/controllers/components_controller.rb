@@ -1,10 +1,7 @@
 class ComponentsController < ApplicationController
-  def show
-    # The markdown mirror (the append-.md contract): the same page
-    # address with .md serves the component's registry-derived contract
-    # section - what an agent wants from the page, without the chrome.
-    return markdown if params[:format] == "md"
+  include MarkdownMirror
 
+  def show
     @entry = DocsCatalog.find("components", params[:slug])
     raise ActionController::RoutingError, "unknown component #{params[:slug]}" unless @entry
 
@@ -14,15 +11,20 @@ class ComponentsController < ApplicationController
 
   private
 
-  def markdown
-    path = "poetry/ui/#{params[:slug].tr('-', '_')}"
+  # The markdown mirror (the append-.md contract): the same page
+  # address serves the component's registry-derived contract section -
+  # what an agent wants from the page, without the chrome. The key lookup
+  # inverts DocsCatalog's slug derivation, so nested keys (command/dialog
+  # -> command-dialog) mirror too - a plain tr("-", "_") missed them.
+  def markdown_mirror
     registry = Poetry::Ui.registry
-    raise ActionController::RoutingError, "unknown component #{params[:slug]}" unless registry.entries.key?(path)
+    path = registry.entries.keys.find do |key|
+      key.split("/")[2..].join("-").tr("_", "-") == params[:slug]
+    end
+    raise ActionController::RoutingError, "unknown component #{params[:slug]}" unless path
 
-    sections = Poetry::Core::SkillText.new(
+    Poetry::Core::SkillText.new(
       registry: registry, families: Poetry::Ui::SKILL_FAMILIES
     ).sections([ path ])
-
-    render plain: sections, content_type: "text/markdown"
   end
 end
