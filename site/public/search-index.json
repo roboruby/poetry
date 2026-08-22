@@ -258,6 +258,48 @@
     "path": "/optimistic-forms#reconciliation"
   },
   {
+    "title": "Recipes",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes"
+  },
+  {
+    "title": "How it works",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#how-it-works"
+  },
+  {
+    "title": "poetry scaffold templates",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#scaffold-templates"
+  },
+  {
+    "title": "Data index screen",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-data-index"
+  },
+  {
+    "title": "Settings screen",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#screen-settings"
+  },
+  {
+    "title": "poetry skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry"
+  },
+  {
+    "title": "poetry-design skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry-design"
+  },
+  {
     "title": "Editors",
     "page": "Editors",
     "section": "docs",

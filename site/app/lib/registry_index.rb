@@ -32,7 +32,8 @@ class RegistryIndex
     private
 
     def sources
-      @sources ||= [ Poetry::Ui.registry_items, Poetry::Charts.registry_items ]
+      @sources ||= [ Poetry::Ui.registry_items, Poetry::Charts.registry_items,
+                     Poetry::Ui.recipe_items ]
     end
   end
 end

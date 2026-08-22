@@ -48,6 +48,11 @@ class DocsCatalog
                            "server-authored Turbo Stream; the server corrects only on rejection " \
                            "(morph refresh). One vocabulary for prediction and truth, plus the " \
                            "204/no-redirect server contract."),
+    Entry.new(slug: "recipes", title: "Recipes", section: "docs", icon: :package,
+              description: "Multi-file payloads beyond components: skill bundles, the scaffold " \
+                           "template set, and screen slices (controller + view + system test, " \
+                           "blocks pulled as dependencies) - installable with bin/rails g " \
+                           "poetry:add <name> or any shadcn-compatible registry client."),
     Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
               description: "bin/rails g poetry:editor wires poetry's MCP server and registry-driven " \
                            "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \

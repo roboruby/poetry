@@ -65,6 +65,23 @@ class DocsMarkdown
       MD
     end
 
+    # The recipes guide's mirror: the live projection, so the mirror lists
+    # exactly what /r/ serves.
+    def recipes(entry)
+      sections = Poetry::Ui.recipe_items.summaries.map do |recipe|
+        targets = recipe["files"].map { |file| "`#{file["target"]}`" }.join(", ")
+        deps = recipe["registryDependencies"]
+        <<~RECIPE.strip
+          ## #{recipe["name"]}
+
+          #{recipe["description"]}
+
+          Install: `bin/rails g poetry:add #{recipe["name"]}` (or `npx shadcn@latest add @poetry/#{recipe["name"]}`). Files: #{targets}.#{deps.any? ? " Pulls blocks: #{deps.join(", ")}." : ""}
+        RECIPE
+      end
+      ([ header(entry) ] + sections).join("\n\n") + "\n"
+    end
+
     # The root llms.txt: the whole site, indexed for agents - every docs
     # page with its one-liner, plus the machine-readable resources.
     def site_index

@@ -1,0 +1,48 @@
+<% entry = DocsCatalog.docs.find { |candidate| candidate.slug == "recipes" } %>
+<% content_for :title, entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item(entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= entry.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= entry.description %></p>
+  </header>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="how-it-works">How it works</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      Recipes are registry items like components and blocks — served live at
+      <code class="text-foreground">/r/&lt;name&gt;.json</code>, projected from the same gem sources
+      the generators install, so they can never drift. Files copy to their declared targets and are
+      yours to edit; existing files are never overwritten. Screen recipes pull the blocks they
+      compose automatically, and tell you the one route line to add.
+    </p>
+  </section>
+
+  <% @recipes.each do |recipe| %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="<%= recipe["name"] %>"><%= recipe["title"] %></h2>
+      <p class="max-w-2xl text-muted-foreground"><%= recipe["description"] %></p>
+      <%= poetry_code_block(code: "bin/rails g poetry:add #{recipe["name"]}", language: "plaintext", label: "Install") %>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm text-muted-foreground">Installs:</span>
+        <% recipe["files"].each do |file| %>
+          <%= poetry_badge(variant: :outline) { file["target"] } %>
+        <% end %>
+      </div>
+      <% if recipe["registryDependencies"].any? %>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="text-sm text-muted-foreground">Pulls blocks:</span>
+          <% recipe["registryDependencies"].each do |dep| %>
+            <%= poetry_badge { dep } %>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+  <% end %>
+</div>
