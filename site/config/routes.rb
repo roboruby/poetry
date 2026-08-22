@@ -47,6 +47,8 @@ Rails.application.routes.draw do
   # the OpenAPI description of the machine endpoints, and the RFC 9727
   # catalog pointing at it.
   get "llms.txt" => "docs#llms", as: :llms, format: false
+  get "sitemap.xml" => "machine#sitemap", as: :sitemap, format: false
+  get "robots.txt" => "machine#robots", format: false
   get "llms-full.txt" => redirect("/poetry/llms-full.txt", status: 302), format: false
   get "openapi.json" => "machine#openapi", as: :openapi, format: false
   get "/.well-known/api-catalog" => "machine#api_catalog", as: :api_catalog, format: false

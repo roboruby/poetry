@@ -39,7 +39,9 @@ pagination, typography, optimistic-forms, editors).
   engine), `/openapi.json` + `/.well-known/api-catalog`, skills at
   `/.well-known/skills/` (with an `agent-skills` alias); HTML pages
   advertise their twin via `<link rel="alternate">` + the HTTP `Link`
-  header, and robots.txt carries the Content-Signal line. A new machine endpoint gets an ENDPOINTS row in
+  header. robots.txt and `/sitemap.xml` are DYNAMIC (MachineController) -
+  absolute URLs derive from the request host since the naming hold means
+  no fixed domain; robots carries Content-Signal + the sitemap pointer. A new machine endpoint gets an ENDPOINTS row in
   MachineController - the openapi test GETs every documented path, so the
   description can't drift into a document that lies.
 

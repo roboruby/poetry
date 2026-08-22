@@ -20,6 +20,8 @@ class MachineController < ApplicationController
     "/.well-known/api-catalog" => { summary: "RFC 9727 API catalog (this document's address)", type: "application/linkset+json" },
     "/openapi.json" => { summary: "This OpenAPI description", type: "application/json" },
     "/operator-register.json" => { summary: "The operator register: poetry's component contract in GUI-operator vocabulary (system + per-page instructions)", type: "application/json" },
+    "/sitemap.xml" => { summary: "Sitemap of every docs page (DocsCatalog-generated)", type: "application/xml" },
+    "/robots.txt" => { summary: "Crawler welcome + Content-Signal + sitemap pointer", type: "text/plain" },
     "/up" => { summary: "Health check", type: "text/html" }
   }.freeze
 
@@ -33,6 +35,32 @@ class MachineController < ApplicationController
       },
       paths: ENDPOINTS.to_h { |path, meta| [ path, path_item(path, meta) ] }
     }
+  end
+
+  # Absolute URLs derive from the request host - the site has no fixed
+  # domain under the naming hold, so nothing is hardcoded.
+  def sitemap
+    urls = ([ "/" ] + DocsCatalog.all.map(&:path)).map do |path|
+      "  <url><loc>#{request.base_url}#{path}</loc></url>"
+    end
+    xml = [ %(<?xml version="1.0" encoding="UTF-8"?>),
+            %(<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">),
+            *urls, "</urlset>", "" ].join("\n")
+    render plain: xml, content_type: "application/xml"
+  end
+
+  def robots
+    render plain: <<~TXT, content_type: "text/plain"
+      # Crawlers are welcome - this site exists to be read by humans and agents
+      # alike. Content-Signal (contentsignals.org) states what fetched bytes may
+      # be used for; the agent-facing index is /llms.txt and every page mirrors
+      # as markdown at <url>.md.
+      User-agent: *
+      Content-Signal: search=yes, ai-input=yes, ai-train=yes
+      Allow: /
+
+      Sitemap: #{request.base_url}/sitemap.xml
+    TXT
   end
 
   def operator_register

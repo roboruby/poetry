@@ -159,12 +159,24 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'href="/llms.txt"'
   end
 
-  test "robots.txt welcomes crawlers with a Content-Signal line" do
+  test "robots.txt welcomes crawlers with Content-Signal and the sitemap pointer" do
     get "/robots.txt"
 
     assert_response :success
     assert_includes response.body, "Content-Signal: search=yes, ai-input=yes, ai-train=yes"
     assert_includes response.body, "Allow: /"
+    assert_match %r{Sitemap: http://[^/]+/sitemap\.xml}, response.body
+  end
+
+  test "the sitemap covers the root and every catalog page" do
+    get "/sitemap.xml"
+
+    assert_response :success
+    assert_match %r{application/xml}, response.content_type
+    assert_includes response.body, "<urlset"
+    DocsCatalog.all.each do |entry|
+      assert_includes response.body, "#{entry.path}</loc>", "sitemap missing #{entry.path}"
+    end
   end
 
   test "root llms-full.txt redirects to the engine's full catalog" do
