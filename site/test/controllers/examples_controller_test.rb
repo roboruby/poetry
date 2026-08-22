@@ -43,6 +43,29 @@ class ExamplesControllerTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "Open standalone"
   end
 
+  test "blocks render standalone at viewport scale, stepper included" do
+    get "/examples/blocks/app-shell"
+
+    assert_response :success
+    assert_includes response.body, "data-slot=\"sidebar-container\""
+    refute_includes response.body, "contain-content", "the docs containment recipe must not leak standalone"
+
+    get "/examples/blocks/stepper?step=2"
+
+    assert_response :success
+
+    get "/examples/blocks/never-shipped"
+
+    assert_response :not_found
+  end
+
+  test "block pages link to their standalone view" do
+    get "/blocks/app-shell"
+
+    assert_includes response.body, "/examples/blocks/app-shell"
+    assert_includes response.body, "Open standalone"
+  end
+
   def self.first_example(section, slug)
     Rails.root.join("app/views/examples/#{section}/#{slug}")
          .glob("_*.html.erb").map { |f| f.basename.to_s.delete_prefix("_").delete_suffix(".html.erb") }

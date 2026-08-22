@@ -25,6 +25,18 @@ class ExamplesController < ApplicationController
     @partial = "examples/#{entry.section}/#{entry.slug}/#{params[:name]}"
   end
 
+  # A block standalone is the block at REAL viewport scale - no containment
+  # recipes needed (the docs preview constrains fixed-position blocks like
+  # app-shell; a window IS the app frame). The stepper's ?step=N links are
+  # relative, so they drive the standalone URL directly.
+  def block
+    entry = DocsCatalog.find("blocks", params[:slug])
+    raise ActionController::RoutingError, "unknown block" unless entry
+
+    @entry = entry
+    @source = DocsMarkdown.block_source(DocsCatalog.block_meta(entry.slug))
+  end
+
   private
 
   def find_entry

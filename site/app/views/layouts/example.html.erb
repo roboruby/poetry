@@ -26,7 +26,7 @@
     <%= javascript_importmap_tags %>
   </head>
   <body class="min-h-screen bg-background text-foreground antialiased">
-    <main class="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
+    <main class="<%= content_for(:main_class) || "flex min-h-screen flex-col items-center justify-center gap-4 p-8" %>">
       <%= yield %>
     </main>
   </body>

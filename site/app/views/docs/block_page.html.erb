@@ -26,6 +26,14 @@
 
   <section class="flex flex-col gap-3">
     <h2 class="text-lg font-medium" id="default">Default</h2>
+    <div class="relative">
+    <%= link_to standalone_block_path(slug: @entry.slug),
+                target: "_blank", rel: "noopener",
+                class: "absolute top-1.5 right-0 z-10 inline-flex items-center text-muted-foreground transition-colors hover:text-foreground",
+                title: "Open standalone" do %>
+      <%= poetry_icon(name: :"external-link", class: "size-4") %>
+      <span class="sr-only">Open <%= @entry.title %> standalone</span>
+    <% end %>
     <%= poetry_tabs(label: "#{@entry.title} block", variant: :line) do |tabs| %>
       <% tabs.with_tab("Preview", value: "preview") do %>
         <%# app-shell composes the sidebar, whose container is fixed h-svh -
@@ -63,6 +71,7 @@
         <%= highlight_erb(@source) %>
       <% end %>
     <% end %>
+    </div>
   </section>
 
   <section class="flex flex-col gap-3">

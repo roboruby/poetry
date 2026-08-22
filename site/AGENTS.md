@@ -25,7 +25,8 @@ pagination, typography, optimistic-forms, editors).
 - Pages are registry-driven: add entries via DocsCatalog; the sidebar, ⌘K
   palette, and both whole-gallery gates pick new pages up automatically.
 - Examples are self-contained partials riding the shared Preview/Code tabs
-  (+ an "Open standalone" link per frame: /examples/:section/:slug/:name
+  (+ an "Open standalone" link per frame: /examples/:section/:slug/:name,
+  and /examples/blocks/:slug for blocks - viewport-scale, no containment recipes
   renders just the partial in the bare `example` layout; the two
   data-dependent sets — pagination guide, interactive demo — share their
   prep via the ExampleData concern so it can't fork);

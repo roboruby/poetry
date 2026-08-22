@@ -55,6 +55,8 @@ Rails.application.routes.draw do
 
   get "examples/:section/:slug/:name" => "examples#show", as: :standalone_example, format: false,
       constraints: { section: /components|charts|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
+  get "examples/blocks/:slug" => "examples#block", as: :standalone_block, format: false,
+      constraints: { slug: /[a-z0-9-]+/ }
 
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
