@@ -26,6 +26,16 @@ function pageInstructions(register, url) {
 }
 
 async function mountAgent() {
+  // Turbo body swaps and hard loads can leave a live instance with a dead
+  // panel (the panel element rides <body>); rebuild rather than limp - but
+  // ONLY when idle: a running task survives the body swap headless and
+  // completes (URL-state components like DataTable navigate mid-task), and
+  // disposing it here aborts the task out from under the agent.
+  if (window.pageAgent && !document.getElementById("page-agent-runtime_agent-panel") &&
+      window.pageAgent.status !== "running") {
+    try { window.pageAgent.dispose?.() } catch { /* replaced below */ }
+    window.pageAgent = undefined
+  }
   if (window.pageAgent) return
   const config = JSON.parse(sessionStorage.getItem(FLAG) || "null")
   if (!config) return
@@ -56,6 +66,9 @@ async function mountAgent() {
 }
 
 document.addEventListener("turbo:load", mountAgent)
+// Hard loads race module evaluation against the first turbo:load - catch up
+// once at module init (modules are deferred, so the DOM is parsed by now).
+mountAgent()
 
 export default class extends Controller {
   static targets = ["model", "baseUrl", "apiKey", "status"]
