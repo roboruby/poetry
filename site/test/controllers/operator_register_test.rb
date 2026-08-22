@@ -61,7 +61,10 @@ class OperatorRegisterTest < ActionDispatch::IntegrationTest
     assert_response :success
     assert_includes response.body, "Activate agent"
     assert_includes response.body, "EXPECTED FAILURE"
-    refute_includes response.body, "page-agent-1.12.2.js", "the script must load on demand, never in HTML"
+    # The sample-implementation section DISPLAYS the loader source (which
+    # names the vendored file); the opt-in contract is about script TAGS.
+    refute_match %r{<script[^>]*src="[^"]*page-agent}, response.body,
+                 "the script must load on demand, never via a server-rendered tag"
 
     get "/components/button"
 

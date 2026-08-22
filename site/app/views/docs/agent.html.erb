@@ -17,7 +17,7 @@
     <h2 class="text-lg font-medium" id="what">What this is</h2>
     <p class="max-w-2xl text-muted-foreground">
       This page embeds <a class="underline underline-offset-4" href="https://github.com/alibaba/page-agent">page-agent</a>
-      (pinned v1.12.2, MIT — vendored with its license) configured with poetry's
+      (pinned v1.12.2, MIT, vendored with its license) configured with poetry's
       <strong>operator register</strong>: the component contract projected in GUI-operator vocabulary
       (<code class="text-foreground">data-component</code>/<code class="text-foreground">data-slot</code>
       whitelisted into the model, plus per-page instructions served at
@@ -56,7 +56,7 @@
     <p class="max-w-2xl text-muted-foreground">
       Curated tasks with pre-registered expectations. Classify each run:
       <em>ARIA alone</em> / <em>needed the register</em> / <em>failed on the agent's input layer</em>
-      (page-agent's own synthetic-input gaps: scrim click-through, forced focus, no keyboard —
+      (page-agent's own synthetic-input gaps: scrim click-through, forced focus, no keyboard;
       keyboard-first components are EXPECTED failures and labeled).
     </p>
     <div class="overflow-x-auto">
@@ -69,14 +69,14 @@
         <% end %>
         <%= poetry_table_body do %>
           <% [
-            ["Switch this site's visual style to sera using the style switcher in the header", "succeeds — switcher is a labeled menu"],
-            ["Open the search palette and navigate to the Combobox component page", "succeeds — command palette is ARIA listbox"],
-            ["On the Select component page, open the first example's select and choose any option", "succeeds — popup listbox via ARIA"],
-            ["On the Dialog component page, open the first example's dialog, then close it", "succeeds — dialog + close button"],
-            ["On the Tabs component page, switch the first example to its Code tab", "register helps — nearest-tab-group disambiguation"],
-            ["On the Data Table component page, sort by the first sortable column and select two rows", "register helps — sort/selection verbs"],
-            ["On the Slider component page, set the first slider to its maximum", "EXPECTED FAILURE — confirmed 2026-08-22: 39 track clicks moved it coarsely, never to max; needs keyboard"],
-            ["On the Date Field component page, set the first example's date to any past date", "succeeds via TYPED input — measured 2026-08-22: 40 steps without the register hint; clicks alone never set segments"]
+            ["Switch this site's visual style to sera using the style switcher in the header", "succeeds: switcher is a labeled menu"],
+            ["Open the search palette and navigate to the Combobox component page", "succeeds: command palette is ARIA listbox"],
+            ["On the Select component page, open the first example's select and choose any option", "succeeds: popup listbox via ARIA"],
+            ["On the Dialog component page, open the first example's dialog, then close it", "succeeds: dialog + close button"],
+            ["On the Tabs component page, switch the first example to its Code tab", "register helps: nearest-tab-group disambiguation"],
+            ["On the Data Table component page, sort by the first sortable column and select two rows", "register helps: sort/selection verbs"],
+            ["On the Slider component page, set the first slider to its maximum", "EXPECTED FAILURE (confirmed 2026-08-22): 39 track clicks moved it coarsely, never to max; needs keyboard"],
+            ["On the Date Field component page, set the first example's date to any past date", "succeeds via TYPED input (measured 2026-08-22: 40 steps without the register hint; clicks alone never set segments)"]
           ].each do |task, expected| %>
             <%= poetry_table_row do %>
               <%= poetry_table_cell { tag.code(task, class: "text-xs") } %>
@@ -86,6 +86,21 @@
         <% end %>
       <% end %>
     </div>
+  </section>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="sample">Sample implementation</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      The loader below is this page's <em>actual</em> implementation. The Turbo rules it encodes
+      (remount on <code class="text-foreground">turbo:load</code>, rebuild only when the agent is
+      idle, catch up once at module init) came out of the findings pass. For your own app, install
+      the host variant as a recipe (pinned CDN script, register optional, poetry ground rules
+      embedded):
+    </p>
+    <%= poetry_code_block(code: "bin/rails g poetry:add agent-embed", language: "plaintext", label: "Install") %>
+    <%= poetry_code_block(code: Rails.root.join("app/javascript/controllers/agent_demo_controller.js").read,
+                          language: "javascript",
+                          label: "app/javascript/controllers/agent_demo_controller.js") %>
   </section>
 
   <section class="flex flex-col gap-3">

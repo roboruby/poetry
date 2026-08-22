@@ -270,6 +270,12 @@
     "path": "/recipes#how-it-works"
   },
   {
+    "title": "In-page agent embed",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#agent-embed"
+  },
+  {
     "title": "poetry scaffold templates",
     "page": "Recipes",
     "section": "docs",
@@ -322,6 +328,12 @@
     "page": "Agent",
     "section": "docs",
     "path": "/agent#tasks"
+  },
+  {
+    "title": "Sample implementation",
+    "page": "Agent",
+    "section": "docs",
+    "path": "/agent#sample"
   },
   {
     "title": "Provenance & limits",
