@@ -58,6 +58,11 @@ class DocsCatalog
                            "opt-in, bring-your-own key) configured with poetry's operator " \
                            "register - watch a GUI agent operate the components, and see which " \
                            "tasks succeed through ARIA alone."),
+    Entry.new(slug: "agent-skills", title: "Agent Skills", section: "docs", icon: :"graduation-cap",
+              description: "The installable skills catalog: what each skill teaches, served live " \
+                           "with a discovery index (agentskills.io schema, sha256 digests) so " \
+                           "npx skills, a curl one-liner, or bin/rails g poetry:skill drops the " \
+                           "same SKILL.md set into any agent's skills directory."),
     Entry.new(slug: "editors", title: "Editors", section: "docs", icon: :code,
               description: "bin/rails g poetry:editor wires poetry's MCP server and registry-driven " \
                            "snippets into the editors a Rails team uses (VS Code, Cursor, Claude Code, " \

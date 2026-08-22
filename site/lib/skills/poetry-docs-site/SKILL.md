@@ -25,7 +25,8 @@ This site documents poetry, an AI-native, Rails-first component library. Every s
 ## Skills
 
 - `/.well-known/skills/index.json` lists the installable skills with file rosters; fetch files at `/.well-known/skills/<name>/<path>`.
-- `/.well-known/agent-skills/index.json` is the discovery index (agentskills.io schema 0.2.0): each entry carries a payload `url` and `sha256:` digest, so `npx skills add <this site's url>` installs from here.
+- `/.well-known/agent-skills/index.json` is the discovery index (agentskills.io schema 0.2.0): each entry carries a payload `url` and `sha256:` digest, so `npx skills add <this site's origin>/agent-skills` installs from here.
+- `/agent-skills` is the human catalog page: per-skill install commands (npx skills, dependency-free curl) with the payloads served under the same prefix.
 - In a Rails app, `bin/rails g poetry:skill` installs the same skills locally.
 
 ## Working in an app that has poetry

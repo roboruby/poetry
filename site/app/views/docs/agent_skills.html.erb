@@ -1,0 +1,64 @@
+<% entry = DocsCatalog.docs.find { |candidate| candidate.slug == "agent-skills" } %>
+<% content_for :title, entry.title %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item(entry.title) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= entry.title %></h1>
+    <p class="max-w-2xl text-muted-foreground"><%= entry.description %></p>
+  </header>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="how-it-works">How it works</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      A skill is a <code class="text-foreground">SKILL.md</code> folder that teaches a coding agent
+      a repeatable practice — here, how to build with poetry. The skills below are projected live
+      from the same sources <code class="text-foreground">bin/rails g poetry:skill</code> installs,
+      and the discovery index at
+      <a class="underline underline-offset-4" href="/.well-known/agent-skills/index.json"><code>/.well-known/agent-skills/index.json</code></a>
+      lists each one with a payload url and a <code class="text-foreground">sha256:</code> digest
+      that a conformant installer verifies before writing anything to disk. One command installs
+      the whole catalog:
+    </p>
+    <%= poetry_code_block(code: "npx skills add #{request.base_url}/agent-skills", language: "plaintext", label: "Install (interactive picker)") %>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Add <code class="text-foreground">--skill &lt;name&gt;</code> to skip the prompt,
+      <code class="text-foreground">-a &lt;agent&gt;</code> to target one of 70+ agents, and
+      <code class="text-foreground">-g</code> for a global install. Repo-based install paths
+      (a Claude plugin marketplace, <code class="text-foreground">gh skill</code>) arrive when the
+      source repositories are public.
+    </p>
+  </section>
+
+  <% @skills.each do |skill| %>
+    <section class="flex flex-col gap-3">
+      <h2 class="text-lg font-medium" id="<%= skill[:name] %>"><%= skill[:name] %></h2>
+      <p class="max-w-2xl text-muted-foreground"><%= skill[:description] %></p>
+      <%= poetry_code_block(code: "npx skills add #{request.base_url}/agent-skills --skill #{skill[:name]}", language: "plaintext", label: "Install") %>
+      <% curl = skill[:single] ?
+           "curl -fsSL #{request.base_url}#{skill[:payload_path]} --create-dirs -o ~/.claude/skills/#{skill[:name]}/SKILL.md" :
+           "mkdir -p ~/.claude/skills/#{skill[:name]} && curl -fsSL #{request.base_url}#{skill[:payload_path]} | tar -xz -C ~/.claude/skills/#{skill[:name]}" %>
+      <%= poetry_code_block(code: curl, language: "plaintext", label: "Install (dependency-free)") %>
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="text-sm text-muted-foreground">Files:</span>
+        <% skill[:files].each do |file| %>
+          <%= poetry_badge(variant: :outline) { file } %>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+
+  <section class="flex flex-col gap-3">
+    <h2 class="text-lg font-medium" id="in-app">In a Rails app with poetry</h2>
+    <p class="max-w-2xl text-muted-foreground">
+      Skip the network entirely: <code class="text-foreground">bin/rails g poetry:skill</code>
+      installs the poetry and poetry-design skills from the gems themselves — the same files
+      served here, generated from the same registry.
+    </p>
+  </section>
+</div>

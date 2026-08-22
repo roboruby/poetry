@@ -25,6 +25,17 @@ class DocsController < ApplicationController
     @recipes = Poetry::Ui.recipe_items.summaries
   end
 
+  # The human half of the skills surface: cards projected from the same
+  # SkillCatalog the discovery index serves, with install commands built
+  # on the live origin.
+  def agent_skills
+    @skills = SkillCatalog.sets.map do |name, files|
+      { name: name, description: SkillCatalog.description(files),
+        files: files.keys.sort, single: SkillCatalog.single_file?(files),
+        payload_path: SkillCatalog.payload_path(name, files) }
+    end
+  end
+
   def agent
   end
 
@@ -111,6 +122,7 @@ class DocsController < ApplicationController
     when "editors" then DocsMarkdown.editors(guide_entry("editors"))
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
     when "agent" then DocsMarkdown.agent(guide_entry("agent"))
+    when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)
     when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))
     end
   end

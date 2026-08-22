@@ -342,6 +342,30 @@
     "path": "/agent#provenance"
   },
   {
+    "title": "Agent Skills",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills"
+  },
+  {
+    "title": "How it works",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#how-it-works"
+  },
+  {
+    "title": "poetry",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#poetry"
+  },
+  {
+    "title": "In a Rails app with poetry",
+    "page": "Agent Skills",
+    "section": "docs",
+    "path": "/agent-skills#in-app"
+  },
+  {
     "title": "Editors",
     "page": "Editors",
     "section": "docs",

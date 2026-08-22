@@ -33,18 +33,28 @@ Rails.application.routes.draw do
                    constraints: { name: /[a-z0-9.-]+\.json/ }
 
   # Web-installable Agent Skills: poetry's own inventory (index +
-  # per-file) at /.well-known/skills, and the settled discovery convention
-  # at /.well-known/agent-skills - the agent-skills discovery RFC
+  # per-file) at /.well-known/skills, the settled discovery convention at
+  # /.well-known/agent-skills - the agent-skills discovery RFC
   # (schemas.agentskills.io/discovery/0.2.0) with a payload url and sha256
-  # digest per skill, which `npx skills add <site-url>` installs from.
-  # Both serve from the same generators the installed skills use.
+  # digest per skill - and the payloads + human catalog page under
+  # /agent-skills, one prefix so `npx skills add <site-url>/agent-skills`
+  # finds every entry when it scopes by path. All of it serves from the
+  # same generators the installed skills use.
   get "/.well-known/skills/index.json" => "skills#index", as: :skills_index, format: false
   get "/.well-known/skills/:skill/*file" => "skills#show", as: :skill_file, format: false,
       constraints: { skill: /[a-z-]+/ }
   get "/.well-known/agent-skills/index.json" => "skills#discovery", as: :skills_discovery, format: false
-  get "/.well-known/agent-skills/:skill" => "skills#archive", as: :skill_archive, format: false,
-      constraints: { skill: /[a-z-]+\.tar\.gz/ }
   get "/.well-known/agent-skills/:skill/*file" => "skills#show", format: false,
+      constraints: { skill: /[a-z-]+/ }
+  get "agent-skills" => "docs#agent_skills", as: :agent_skills
+  # Path-scoped discovery: handed <origin>/agent-skills, the installer
+  # looks for the index UNDER that prefix (both spellings) and refuses to
+  # fall back to the root index, so the same document answers here.
+  get "agent-skills/.well-known/agent-skills/index.json" => "skills#discovery", format: false
+  get "agent-skills/.well-known/skills/index.json" => "skills#discovery", format: false
+  get "agent-skills/:skill" => "skills#archive", as: :skill_archive, format: false,
+      constraints: { skill: /[a-z-]+\.tar\.gz/ }
+  get "agent-skills/:skill/*file" => "skills#show", format: false,
       constraints: { skill: /[a-z-]+/ }
 
   # The agent-legibility discovery surfaces: the root llms.txt site index,

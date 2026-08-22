@@ -82,6 +82,39 @@ class DocsMarkdown
       ([ header(entry) ] + sections).join("\n\n") + "\n"
     end
 
+    # The agent-skills catalog's mirror: the live projection, so the
+    # mirror lists exactly what the discovery index serves. Commands carry
+    # the requesting origin so they stay copy-pastable.
+    def agent_skills(entry, base_url:)
+      sections = SkillCatalog.sets.map do |name, files|
+        <<~SKILL.strip
+          ## #{name}
+
+          #{SkillCatalog.description(files)}
+
+          Files: #{files.keys.sort.map { |file| "`#{file}`" }.join(", ")}.
+
+          Install: `npx skills add #{base_url}/agent-skills --skill #{name}` (add `-a <agent>` to target one of 70+ agents, `-g` for a global install). Dependency-free: `#{curl_command(name, files, base_url)}`.
+        SKILL
+      end
+      intro = <<~MD.strip
+        #{header(entry)}
+
+        The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with poetry, `bin/rails g poetry:skill` installs the poetry and poetry-design skills without touching the network.
+      MD
+      ([ intro ] + sections).join("\n\n") + "\n"
+    end
+
+    # The dependency-free install one-liner: curl for a lone SKILL.md,
+    # curl | tar for an archive payload.
+    def curl_command(name, files, base_url)
+      if SkillCatalog.single_file?(files)
+        "curl -fsSL #{base_url}/agent-skills/#{name}/SKILL.md --create-dirs -o ~/.claude/skills/#{name}/SKILL.md"
+      else
+        "mkdir -p ~/.claude/skills/#{name} && curl -fsSL #{base_url}/agent-skills/#{name}.tar.gz | tar -xz -C ~/.claude/skills/#{name}"
+      end
+    end
+
     # The agent guide's mirror.
     def agent(entry)
       <<~MD
@@ -109,7 +142,7 @@ class DocsMarkdown
 
         - [Component catalog for agents](/poetry/llms.txt) and [full contracts + Stimulus wiring](/poetry/llms-full.txt)
         - [Registry index](/r/registry.json) - shadcn-schema items; install with `bin/rails g poetry:add <name>` or `npx shadcn add`
-        - [Agent skills](/.well-known/skills/index.json) - web-installable skill files (also at /.well-known/agent-skills/)
+        - [Agent skills inventory](/.well-known/skills/index.json) with per-file serving, and the [discovery index](/.well-known/agent-skills/index.json) (agentskills.io schema 0.2.0, sha256 digests) - `npx skills add <origin>/agent-skills` installs from it
         - [Agent install instructions](/installation.md)
         - [OpenAPI description](/openapi.json) and [API catalog](/.well-known/api-catalog)
       MD

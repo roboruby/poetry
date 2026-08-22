@@ -131,8 +131,8 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
       assert entry["description"].present?, "#{entry["name"]} needs its use-this-when line"
       assert_match(/\Asha256:[0-9a-f]{64}\z/, entry["digest"])
       assert entry["type"] == "archive" ?
-               entry["url"].end_with?("/.well-known/agent-skills/#{entry["name"]}.tar.gz") :
-               entry["url"].end_with?("/.well-known/agent-skills/#{entry["name"]}/SKILL.md"),
+               entry["url"].end_with?("/agent-skills/#{entry["name"]}.tar.gz") :
+               entry["url"].end_with?("/agent-skills/#{entry["name"]}/SKILL.md"),
              "#{entry["name"]} url must match its type"
     end
     assert_equal "skill-md", doc["skills"].find { |s| s["name"] == "poetry-docs-site" }["type"],
@@ -153,7 +153,7 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
   end
 
   test "skill archives are flat, deterministic, and reject unknown names" do
-    get "/.well-known/agent-skills/poetry.tar.gz"
+    get "/agent-skills/poetry.tar.gz"
 
     assert_response :success
     assert_equal "application/gzip", response.media_type
@@ -167,11 +167,11 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_includes names, "SKILL.md", "SKILL.md must sit at the archive root"
     assert(names.none? { |name| name.start_with?("poetry/") }, "a wrapping folder is the classic broken install")
 
-    get "/.well-known/agent-skills/poetry.tar.gz"
+    get "/agent-skills/poetry.tar.gz"
 
     assert_equal first, response.body, "the advertised digest depends on byte-identical rebuilds"
 
-    get "/.well-known/agent-skills/nope.tar.gz"
+    get "/agent-skills/nope.tar.gz"
 
     assert_response :not_found
   end
@@ -181,6 +181,37 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
 
     assert_response :success
     assert_includes response.body, "/llms.txt"
+  end
+
+  test "path-scoped discovery serves the same document under the /agent-skills prefix" do
+    get "/.well-known/agent-skills/index.json"
+    root_doc = response.body
+
+    get "/agent-skills/.well-known/agent-skills/index.json"
+
+    assert_response :success
+    assert_equal root_doc, response.body, "the installer scopes by path and must find the same index there"
+
+    get "/agent-skills/.well-known/skills/index.json"
+
+    assert_equal root_doc, response.body
+  end
+
+  test "the human catalog page lists every skill with path-scoped install commands" do
+    get "/agent-skills"
+
+    assert_response :success
+    SkillCatalog.sets.each_key do |name|
+      assert_includes response.body, "npx skills add http://www.example.com/agent-skills --skill #{name}"
+    end
+    assert_includes response.body, "/.well-known/agent-skills/index.json"
+    assert_includes response.body, "poetry.tar.gz", "archive curl commands point at the payloads"
+
+    get "/agent-skills.md"
+
+    assert_response :success
+    assert_match %r{text/markdown}, response.content_type
+    assert_includes response.body, "npx skills add http://www.example.com/agent-skills --skill poetry"
   end
 
   test "openapi.json documents only endpoints that actually answer" do
