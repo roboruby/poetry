@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html class="style-default">
+  <head>
+    <title><%= content_for(:title) || "Example" %> — poetry</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="robots" content="noindex">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%# Same pre-paint dark/style boot as the main layout, so the
+        standalone view matches whatever the visitor chose in the docs. %>
+    <script>
+      try {
+        const stored = localStorage.getItem("poetry-docs-theme")
+        if (stored === "dark" || (!stored && matchMedia("(prefers-color-scheme: dark)").matches)) {
+          document.documentElement.classList.add("dark")
+        }
+        const style = localStorage.getItem("poetry-docs-style")
+        if (style && style !== "default" && /^[a-z]{4,7}$/.test(style)) {
+          document.documentElement.classList.replace("style-default", "style-" + style)
+        }
+      } catch {}
+    </script>
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <%= stylesheet_link_tag :app %>
+    <%= javascript_importmap_tags %>
+  </head>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <main class="flex min-h-screen flex-col items-center justify-center gap-4 p-8">
+      <%= yield %>
+    </main>
+  </body>
+</html>

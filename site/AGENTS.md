@@ -24,7 +24,11 @@ pagination, typography, optimistic-forms, editors).
 
 - Pages are registry-driven: add entries via DocsCatalog; the sidebar, ⌘K
   palette, and both whole-gallery gates pick new pages up automatically.
-- Examples are self-contained partials riding the shared Preview/Code tabs;
+- Examples are self-contained partials riding the shared Preview/Code tabs
+  (+ an "Open standalone" link per frame: /examples/:section/:slug/:name
+  renders just the partial in the bare `example` layout; the two
+  data-dependent sets — pagination guide, interactive demo — share their
+  prep via the ExampleData concern so it can't fork);
   the example frame is ITSELF a line-variant poetry_tabs — scope any
   automated queries to the demo's own group, never the first
   `.cn-tabs-trigger` on the page.

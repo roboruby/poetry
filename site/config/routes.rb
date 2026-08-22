@@ -53,6 +53,9 @@ Rails.application.routes.draw do
   get "openapi.json" => "machine#openapi", as: :openapi, format: false
   get "/.well-known/api-catalog" => "machine#api_catalog", as: :api_catalog, format: false
 
+  get "examples/:section/:slug/:name" => "examples#show", as: :standalone_example, format: false,
+      constraints: { section: /components|charts|demos|docs/, slug: /[a-z0-9-]+/, name: /[a-z0-9_]+/ }
+
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block

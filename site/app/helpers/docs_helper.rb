@@ -9,6 +9,8 @@ module DocsHelper
     render "shared/example",
            partial: partial,
            source: source.strip,
+           section: section,
+           slug: slug,
            name: name,
            heading: name.tr("_", " ").capitalize,
            note: example_note(section, slug)

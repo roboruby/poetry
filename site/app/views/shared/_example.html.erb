@@ -1,5 +1,13 @@
 <section class="flex flex-col gap-3">
   <h2 class="text-lg font-medium" id="<%= name.dasherize %>"><%= heading %></h2>
+  <div class="relative">
+    <%= link_to standalone_example_path(section: section, slug: slug, name: name),
+                target: "_blank", rel: "noopener",
+                class: "absolute top-1.5 right-0 z-10 inline-flex items-center text-muted-foreground transition-colors hover:text-foreground",
+                title: "Open standalone" do %>
+      <%= poetry_icon(name: :"external-link", class: "size-4") %>
+      <span class="sr-only">Open <%= heading %> standalone</span>
+    <% end %>
   <%= poetry_tabs(label: "#{heading} example", variant: :line) do |tabs| %>
     <% tabs.with_tab("Preview", value: "preview") do %>
       <div class="flex min-h-48 flex-col items-center justify-center gap-4 rounded-lg border p-8">
@@ -13,4 +21,5 @@
       <%= highlight_erb(source) %>
     <% end %>
   <% end %>
+  </div>
 </section>
