@@ -42,7 +42,7 @@ class OperatorRegister
     "command" => "type to filter the list, click an item to run it; Escape closes the palette",
     "context-menu" => "right-click the surface to open; click an item",
     "data-table" => "click column headers to sort; row checkboxes select; the action bar appears on selection",
-    "date-field" => "keyboard-first: click a segment, then type or arrow-key it - plain clicks do not set values",
+    "date-field" => "keyboard-first: click a segment, then TYPE the value (typed input works; clicking alone never sets it - measured: typing succeeds where 26 clicks failed)",
     "dialog" => "opens on its trigger; the X button or Escape closes; clicking the scrim closes",
     "drawer" => "opens on its trigger from the edge; Escape or the scrim closes",
     "dropdown-menu" => "click the trigger, click an item (items may be links); Escape closes",
@@ -59,12 +59,12 @@ class OperatorRegister
     "radio-group" => "click one option or its label; selection is exclusive",
     "select" => "click the trigger, then click an option in the popup listbox; Escape closes",
     "sidebar" => "the rail toggle collapses/expands it; menu entries are links",
-    "slider" => "keyboard-first: focus the thumb and arrow-key it - dragging may be unreliable",
+    "slider" => "keyboard-first: arrow-key the focused thumb; track clicks move it COARSELY but cannot hit exact values (measured: 39 clicks never landed max)",
     "switch" => "click it or its label to toggle",
     "table" => "read it; if selectable, row checkboxes select",
     "tabs" => "click a tab to switch panels - scope to the NEAREST tab group",
     "tag-group" => "click a tag's remove button to delete it",
-    "time-field" => "keyboard-first: click a segment, then type or arrow-key it",
+    "time-field" => "keyboard-first: click a segment, then TYPE the value (typed input works; clicking alone never sets it)",
     "toggle" => "click to press/unpress",
     "toggle-group" => "click one (or more, if multiple) of the pressed-state buttons",
     "tooltip" => "hover to reveal; never required for operation",
@@ -87,7 +87,7 @@ class OperatorRegister
       case entry.section
       when "components" then component_line(entry)
       when "charts"
-        "This page documents the #{entry.title} (data-component=#{entry.slug}-chart): " \
+        "This page documents the #{entry.title} (data-component=#{entry.slug.tr('-', '_')}_chart): " \
           "server-rendered SVG - hover for tooltips; interactive demos are separate pages. #{examples_line}"
       when "blocks"
         components = DocsCatalog.block_meta(entry.slug)&.fetch("components", []) || []
@@ -101,7 +101,25 @@ class OperatorRegister
 
     def component_line(entry)
       verbs = FAMILY_VERBS.fetch(entry.slug, GENERIC_VERB)
-      "This page documents #{entry.title} (data-component=#{entry.slug}): #{verbs}. #{examples_line}"
+      "This page documents #{entry.title} (data-component=#{data_component(entry.slug)}): #{verbs}. #{examples_line}"
+    end
+
+    # The ACTUAL data-component value: underscores survive in the DOM
+    # (date_field, navigation_menu) and only path nesting joins with a
+    # dash (command/dialog -> command-dialog). DocsCatalog slugs kebab
+    # BOTH, so derive from the registry key - the findings pass caught the
+    # register claiming values the DOM never stamps.
+    def data_component(slug)
+      component_values.fetch(slug, slug)
+    end
+
+    def component_values
+      @component_values ||= YAML.safe_load_file(
+        Poetry::Ui.root.join("config/component_registry.yml")
+      )["components"].keys.to_h do |key|
+        parts = key.split("/")[2..]
+        [ parts.join("-").tr("_", "-"), parts.join("-") ]
+      end
     end
 
     def examples_line

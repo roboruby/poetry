@@ -75,8 +75,8 @@
             ["On the Dialog component page, open the first example's dialog, then close it", "succeeds — dialog + close button"],
             ["On the Tabs component page, switch the first example to its Code tab", "register helps — nearest-tab-group disambiguation"],
             ["On the Data Table component page, sort by the first sortable column and select two rows", "register helps — sort/selection verbs"],
-            ["On the Slider component page, set the first slider to its maximum", "EXPECTED FAILURE — keyboard-first, no synthetic keyboard"],
-            ["On the Date Field component page, set the first example's date to any past date", "EXPECTED FAILURE — segment typing needs keyboard"]
+            ["On the Slider component page, set the first slider to its maximum", "EXPECTED FAILURE — confirmed 2026-08-22: 39 track clicks moved it coarsely, never to max; needs keyboard"],
+            ["On the Date Field component page, set the first example's date to any past date", "succeeds via TYPED input — measured 2026-08-22: 40 steps without the register hint; clicks alone never set segments"]
           ].each do |task, expected| %>
             <%= poetry_table_row do %>
               <%= poetry_table_cell { tag.code(task, class: "text-xs") } %>

@@ -35,6 +35,26 @@ class OperatorRegisterTest < ActionDispatch::IntegrationTest
     assert_includes pages["/blocks/app-shell"], "block"
   end
 
+  test "register data-component claims match what the DOM actually stamps" do
+    get "/operator-register.json"
+    pages = JSON.parse(response.body)["pages"]
+
+    # The findings pass caught the register claiming kebab values where the
+    # DOM stamps underscores (date_field, navigation_menu) - gate the claim
+    # against the RENDERED page for the tricky shapes.
+    { "/components/date-field" => "date_field",
+      "/components/navigation-menu" => "navigation_menu",
+      "/components/command-dialog" => "command-dialog",
+      "/components/select" => "select" }.each do |path, expected|
+      assert_includes pages[path], "data-component=#{expected}", "register claim for #{path}"
+
+      get path
+
+      assert_includes response.body, %(data-component="#{expected}"),
+                      "#{path} DOM does not stamp #{expected}"
+    end
+  end
+
   test "the demo is opt-in: the vendored script rides no server-rendered page" do
     get "/agent"
 
