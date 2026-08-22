@@ -101,7 +101,7 @@ module Poetry
         names = tools.map { |tool| tool["name"] }
 
         assert_equal %w[compose build_page list_components describe_component check list_blocks
-                        describe_block get_skill guidance], names
+                        describe_block list_recipes get_skill guidance], names
         assert(tools.all? { |tool| tool.dig("annotations", "readOnlyHint") })
         compose = tools.first
 
@@ -175,6 +175,20 @@ module Poetry
           assert_includes text, "- data-index: Data index - A records screen. [composes: badge, button, table]"
         end
         assert_includes call("list_blocks"), "no blocks in this registry"
+      end
+
+      def test_list_recipes_teaches_the_channel_and_empty_registries_say_so
+        recipes = [{ "name" => "skill-poetry", "title" => "poetry skill bundle",
+                     "description" => "The component-usage skill.",
+                     "files" => [{ "path" => "SKILL.md", "target" => ".claude/skills/poetry/SKILL.md" }] }]
+        catalog = Check::Catalog.new(ENTRIES, helper_entries: HELPER_ENTRIES)
+        server = Agent::Server.new(entries: ENTRIES, catalog: catalog, recipes: recipes)
+        text = call_on(server, "list_recipes")
+
+        assert_includes text, "- skill-poetry: poetry skill bundle - The component-usage skill."
+        assert_includes text, "[installs: .claude/skills/poetry/SKILL.md]"
+
+        assert_includes call("list_recipes"), "no recipes in this registry"
       end
 
       def test_describe_block_inlines_the_source_without_the_metadata_header

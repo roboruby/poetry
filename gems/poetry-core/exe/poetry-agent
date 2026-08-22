@@ -38,15 +38,16 @@ end
 # (rubygems binstubs hardcode a gem name, last install wins), so the two
 # exes must project the SAME agent surface or hosts silently lose get_skill
 # depending on install order.
-skills, helpers = begin
+skills, helpers, recipes = begin
   require "poetry/ui"
-  [Poetry::Ui.agent_skills, Poetry::Ui.helper_names]
+  [Poetry::Ui.agent_skills, Poetry::Ui.helper_names, Poetry::Ui.recipe_items.summaries]
 rescue LoadError
-  [{}, nil]
+  [{}, nil, []]
 end
 
 # app_root (Dir.pwd) is the app the agent runs in: build_page's probe/direct
 # steps read its config/theme, degrading gracefully when they cannot.
 Poetry::Core::Agent::Server.from_registry(
-  root, icon_names: icon_names, helpers: helpers, skills: skills, app_root: Dir.pwd
+  root, icon_names: icon_names, helpers: helpers, skills: skills, app_root: Dir.pwd,
+        recipes: recipes
 ).serve

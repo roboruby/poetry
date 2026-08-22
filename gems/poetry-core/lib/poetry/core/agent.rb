@@ -125,6 +125,15 @@ module Poetry
           "annotations" => { "readOnlyHint" => true }
         },
         {
+          "name" => "list_recipes",
+          "description" => "List the installable recipes - multi-file payloads beyond components " \
+                           "(skill bundles, scaffold template sets, screen slices) served by the " \
+                           "poetry registry. Install one with `bin/rails g poetry:add <name>` or " \
+                           "any shadcn-compatible client.",
+          "inputSchema" => { "type" => "object", "properties" => {} },
+          "annotations" => { "readOnlyHint" => true }
+        },
+        {
           "name" => "get_skill",
           "description" => "A poetry Claude Code skill served at runtime - for hosts where " \
                            "the installed .claude/skills files are absent (hosted agents, sessions " \
@@ -173,21 +182,25 @@ module Poetry
         # {relative path => content} file map (the get_skill tool).
         # Lazy because the usage skill is generated from the registry on
         # first fetch - server boot stays instant.
-        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil)
+        def self.from_registry(root, helpers: nil, icon_names: nil, skills: {}, app_root: nil, recipes: [])
           committed = Registry.committed(root)
           catalog = Check::Catalog.new(committed.entries, helpers: helpers,
                                                           helper_entries: committed.helpers,
                                                           icon_names: icon_names,
                                                           helper_args: committed.helper_args)
           new(entries: committed.entries, catalog: catalog, blocks: committed.blocks || {},
-              root: root, skills: skills, app_root: app_root)
+              root: root, skills: skills, app_root: app_root, recipes: recipes)
         end
 
         # app_root: the HOST app directory (where `bundle exec poetry-agent`
         # runs, i.e. Dir.pwd), so build_page's probe/direct steps can read
         # the app's config/theme. nil => the host is not inspected and those
         # steps degrade gracefully; the registry read (root) is unaffected.
-        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil)
+        # recipes: registry-item SUMMARIES (content-free) from the owning
+        # gem's RecipeItems projection - the exe passes them so this class
+        # stays poetry-ui-free.
+        # rubocop:disable Metrics/ParameterLists
+        def initialize(entries:, catalog:, blocks: {}, root: nil, skills: {}, app_root: nil, recipes: [])
           @entries = entries
           @catalog = catalog
           @blocks = blocks
@@ -195,7 +208,9 @@ module Poetry
           @skills = skills
           @skill_files = {}
           @app_root = app_root
+          @recipes = recipes
         end
+        # rubocop:enable Metrics/ParameterLists
 
         # compose routing: the strong-match threshold, and the words
         # too generic to signal a block - connectives, task verbs, and
@@ -272,6 +287,7 @@ module Poetry
             when "check" then check(arguments)
             when "list_blocks" then list_blocks
             when "describe_block" then describe_block(arguments)
+            when "list_recipes" then list_recipes
             when "get_skill" then get_skill(arguments)
             when "guidance" then guidance(arguments)
             else return tool_content("unknown tool: #{name}", error: true)
@@ -726,6 +742,15 @@ module Poetry
           @blocks.map do |name, entry|
             "- #{name}: #{entry["title"]} - #{entry["description"]} " \
               "[composes: #{entry["components"].join(", ")}]"
+          end.join("\n")
+        end
+
+        def list_recipes
+          return "no recipes in this registry" if @recipes.empty?
+
+          @recipes.map do |recipe|
+            targets = recipe["files"].map { |file| file["target"] }.join(", ")
+            "- #{recipe["name"]}: #{recipe["title"]} - #{recipe["description"]} [installs: #{targets}]"
           end.join("\n")
         end
 
