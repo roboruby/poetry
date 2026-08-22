@@ -10,7 +10,7 @@ module Poetry
       end
 
       test "the roster projects all five recipes with valid items" do
-        assert_equal %w[scaffold-templates screen-data-index screen-settings
+        assert_equal %w[agent-embed scaffold-templates screen-data-index screen-settings
                         skill-poetry skill-poetry-design], items.names
 
         items.names.each do |name|

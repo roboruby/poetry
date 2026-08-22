@@ -15,7 +15,7 @@ module Poetry
 
       class << self
         def definitions
-          [skill_poetry, skill_poetry_design, scaffold_templates,
+          [agent_embed, skill_poetry, skill_poetry_design, scaffold_templates,
            screen(
              "screen-data-index", title: "Data index screen",
                                   description: "The data-index block as a working feature slice: OrdersController, " \
@@ -85,6 +85,30 @@ module Poetry
                            "lib/templates/erb/scaffold/#{name}"
                          end
                 { "path" => name, "target" => target, "content" => file.read }
+              end
+            }
+          }
+        end
+
+        # The in-page GUI agent loader (operator-register findings pass,
+        # 2026-08-22): the Turbo-hardened page-agent embed as a copy-in
+        # Stimulus controller - CDN-pinned script, opt-in, BYO key, and
+        # the poetry operator ground rules embedded as fallback
+        # instructions.
+        def agent_embed
+          {
+            "name" => "agent-embed",
+            "title" => "In-page agent embed",
+            "description" => "An opt-in page-agent loader for a poetry app as a Stimulus " \
+                             "controller: pinned CDN script (?autoInit=false), session-only " \
+                             "BYO key, Turbo-hardened (remounts on turbo:load, idle-only " \
+                             "rebuild, module-init catch-up), poetry operator instructions " \
+                             "built in. Wire a form with targets model/baseUrl/apiKey/status.",
+            "files" => lambda {
+              base = Poetry::Ui.root.join(SCREEN_SOURCES, "agent_embed")
+              base.glob("**/*").select(&:file?).sort.map do |file|
+                rel = file.relative_path_from(base).to_s
+                { "path" => rel, "target" => rel, "content" => file.read }
               end
             }
           }
