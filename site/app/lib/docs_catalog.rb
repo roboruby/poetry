@@ -69,6 +69,13 @@ class DocsCatalog
   # machinery (server round trips, streaming, cross-chart sync) that no
   # single registry component owns.
   DEMOS = [
+    Entry.new(slug: "chat-replay", title: "Chat Replay", section: "demos",
+              description: "A scripted AI conversation replayed through the REAL streaming " \
+                           "pipeline - Poetry::Ui::Chat's deterministic frames arriving as " \
+                           "versioned Turbo Stream morphs into MessageScroller: token-paced " \
+                           "text, a tool call flipping loading to done, and a human-in-the-loop " \
+                           "approval where the pause is a form and the continuation is the " \
+                           "stream after your decision. No model, no key, same bytes every run."),
     Entry.new(slug: "interactive", title: "Interactive Filter", section: "demos",
               description: "Upstream's interactive blocks are useState filters. Here the filter " \
                            "is a real form: submitting re-renders the chart on the server and Turbo " \

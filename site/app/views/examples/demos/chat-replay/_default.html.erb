@@ -1,0 +1,41 @@
+<%# The replay rig live: completed turns server-rendered, the
+    current assistant turn streaming in as versioned Turbo Stream morphs
+    from /demos/chat-replay/stream. State is the URL (?s=segment&a=decision)
+    - every point is shareable, every stream byte-identical. %>
+<div class="w-full max-w-lg">
+  <%= poetry_message_scroller(id: "chat-replay-scroller", class: "h-96 rounded-lg border pt-4") do %>
+    <% ChatReplay.segments.first(@replay_cursor).each do |seg| %>
+      <% if seg.kind == :user %>
+        <%= poetry_message_scroller_item(id: "row-#{seg.id}", anchor: true, class: "px-4") do %>
+          <%= poetry_message(align: :end) do |message| %>
+            <%= poetry_bubble { seg.text } %>
+          <% end %>
+        <% end %>
+      <% else %>
+        <%= poetry_message_scroller_item(id: "item-#{seg.id}", class: "px-4") do %>
+          <%= render "chat_replay/row", seg_id: seg.id,
+                     parts: seg.final_parts(approved: @replay_decision.nil? ? true : @replay_decision),
+                     version: 9999 %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% current = ChatReplay.segments[@replay_cursor] %>
+    <% if current&.kind == :assistant %>
+      <%= poetry_message_scroller_item(id: "item-#{current.id}", class: "px-4") do %>
+        <% if @replay_decision.nil? %>
+          <%= render "chat_replay/row", seg_id: current.id, parts: [], version: 0 %>
+        <% else %>
+          <%# Continuation: start from the paused state; the stream takes over. %>
+          <%= render "chat_replay/row", seg_id: current.id,
+                     parts: current.frames.last.parts, version: current.frames.last.version %>
+        <% end %>
+      <% end %>
+      <% stream_src = chat_replay_stream_path(s: @replay_cursor, a: params[:a].presence,
+                                              instant: params[:instant].presence, page: request.path) %>
+      <turbo-stream-source id="chat-replay-source" src="<%= stream_src %>"></turbo-stream-source>
+    <% end %>
+
+    <div id="chat-replay-next" class="px-4 pb-4 text-xs text-muted-foreground">streaming…</div>
+  <% end %>
+</div>

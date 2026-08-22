@@ -4,6 +4,7 @@
 # so the controller owns the datasets and reads the params.
 class DemosController < ApplicationController
   include MarkdownMirror
+  include ExampleData
 
   DATASETS = {
     "current" => [
@@ -31,6 +32,7 @@ class DemosController < ApplicationController
     raise ActionController::RoutingError, "unknown demo #{params[:slug]}" unless @entry
 
     prepare_interactive if @entry.slug == "interactive"
+    prepare_chat_replay if @entry.slug == "chat-replay"
     @examples = helpers.docs_examples_for("demos", @entry.slug)
     render template: "docs/page"
   end

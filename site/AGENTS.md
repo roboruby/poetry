@@ -36,6 +36,12 @@ pagination, typography, optimistic-forms, editors).
 - Exactly ONE `style-<name>` class lives on `<html>` at all times
   (server-rendered `style-default`, pre-paint localStorage swap). Never ship
   an unscoped visual theme layer.
+- The Chat Replay demo is the rig: Poetry::Ui::Chat frames stream
+  as versioned vreplace Turbo Streams over SSE (ChatReplayController;
+  the custom action in application.js applies only strictly-newer
+  data-version frames). State is entirely URL params - streams must stay
+  byte-identical per URL, and the closing batch must remove the
+  turbo-stream-source (SSE reconnects replay otherwise).
 - Every docs page serves a markdown mirror - append `.md` to its URL or
   send `Accept: text/markdown`. Controllers implement `markdown_mirror`
   (the MarkdownMirror concern serves it on either signal; a page without

@@ -1,0 +1,40 @@
+<%# One assistant message row, rendered from a Poetry::Ui::Chat frame's
+    accumulated parts. The stream vreplace-s this same row as frames
+    arrive; data-version is the morph guard's monotonic clock. %>
+<div id="row-<%= seg_id %>" data-version="<%= version %>">
+  <%= poetry_message do |message| %>
+    <div class="flex min-w-0 flex-col gap-2">
+      <% parts.each do |part| %>
+        <% case part[:kind] %>
+        <% when :reasoning %>
+          <p class="text-xs italic text-muted-foreground"><%= part[:text] %></p>
+        <% when :text %>
+          <% if part[:text].present? %>
+            <%= poetry_bubble(variant: :muted) { part[:text] } %>
+          <% end %>
+        <% when :tool %>
+          <div class="flex flex-col gap-1 rounded-md border px-3 py-2 text-xs">
+            <div class="flex items-center gap-2">
+              <code class="font-medium"><%= part[:name] %></code>
+              <% case part[:state] %>
+              <% when :loading %>
+                <%= poetry_spinner(class: "size-3") %>
+                <span class="text-muted-foreground">running…</span>
+              <% when :awaiting_approval %>
+                <%= poetry_badge(variant: :outline) { "awaiting approval" } %>
+              <% when :denied %>
+                <%= poetry_badge(variant: :destructive) { "denied" } %>
+              <% else %>
+                <%= poetry_badge { "done" } %>
+              <% end %>
+            </div>
+            <code class="text-muted-foreground">in: <%= part[:input].to_json %></code>
+            <% if part[:output] %>
+              <code>out: <%= part[:output].to_json %></code>
+            <% end %>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

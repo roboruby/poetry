@@ -29,6 +29,11 @@ module ExampleData
 
   private
 
+  def prepare_chat_replay
+    @replay_cursor = ChatReplay.cursor(params)
+    @replay_decision = ChatReplay.decision(params)
+  end
+
   def prepare_interactive_demo
     @period = ExampleData::DEMO_PERIODS.key?(params[:period]) ? params[:period] : "6m"
     @dataset = ExampleData::DEMO_DATASETS.key?(params[:dataset]) ? params[:dataset] : "current"

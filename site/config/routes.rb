@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block
+  get "demos/chat-replay/stream" => "chat_replay#stream", as: :chat_replay_stream, format: false
   get "demos/:slug" => "demos#show", as: :demo
 
   # Defines the root path route ("/")

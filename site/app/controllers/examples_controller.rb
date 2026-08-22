@@ -19,6 +19,7 @@ class ExamplesController < ApplicationController
     raise ActionController::RoutingError, "unknown example" unless names.include?(params[:name])
 
     prepare_interactive_demo if entry.section == "demos" && entry.slug == "interactive"
+    prepare_chat_replay if entry.section == "demos" && entry.slug == "chat-replay"
     prepare_pagination_examples if entry.section == "docs" && entry.slug == "pagination"
 
     @entry = entry

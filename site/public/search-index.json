@@ -5256,6 +5256,18 @@
     "path": "/blocks/top-nav#styling"
   },
   {
+    "title": "Chat Replay",
+    "page": "Chat Replay",
+    "section": "demos",
+    "path": "/demos/chat-replay"
+  },
+  {
+    "title": "Default",
+    "page": "Chat Replay",
+    "section": "demos",
+    "path": "/demos/chat-replay#default"
+  },
+  {
     "title": "Interactive Filter",
     "page": "Interactive Filter",
     "section": "demos",

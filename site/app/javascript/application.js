@@ -36,3 +36,17 @@ import "controllers"
     requestAnimationFrame(() => { save(); ticking = false })
   }, true)
 })()
+
+// The chat-replay versioned replace (rig): streaming re-morphs the
+// SAME message row from a server stream, which inherits an out-of-order
+// delivery race - so every payload carries data-version and this action
+// applies only strictly-newer frames (Radan Skoric's versioned-replace
+// pattern). Older or duplicate frames are dropped silently.
+window.Turbo.StreamActions.vreplace = function () {
+  this.targetElements.forEach((el) => {
+    const incoming = this.templateContent.firstElementChild
+    const version = Number(incoming?.dataset?.version || 0)
+    const current = Number(el.dataset.version || -1)
+    if (version > current) el.replaceWith(this.templateContent.cloneNode(true))
+  })
+}

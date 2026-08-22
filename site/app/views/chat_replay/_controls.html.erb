@@ -1,0 +1,19 @@
+<%# What follows a finished stream segment: the approval decision, the
+    next scripted user turn, or the replay. Everything is a plain GET -
+    state IS the URL, so any point in the conversation is shareable and
+    every stream replays byte-identical. %>
+<% index = ChatReplay.segments.index { |s| s.id == seg.id } %>
+<% link = ->(q) { "#{page}?#{q.merge(instant: params[:instant].presence).compact.to_query}" } %>
+<div id="chat-replay-next" class="flex items-center gap-2 px-4 pb-4">
+  <% if seg.pause? && decision.nil? %>
+    <%= poetry_button(size: :sm, href: link.call(s: index, a: 1)) { "Approve" } %>
+    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: index, a: 0)) { "Deny" } %>
+  <% elsif (next_user = ChatReplay.segments[index + 1]) && next_user.kind == :user %>
+    <%= poetry_button(size: :sm, href: link.call(s: index + 2)) do |button| %>
+      <% button.with_leading { poetry_icon(name: :send, class: "size-3.5") } %>
+      Send: “<%= next_user.text.truncate(32) %>”
+    <% end %>
+  <% else %>
+    <%= poetry_button(size: :sm, variant: :outline, href: link.call(s: 1)) { "Replay from the top" } %>
+  <% end %>
+</div>
