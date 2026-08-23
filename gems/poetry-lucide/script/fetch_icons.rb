@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Vendors the Lucide icon set at a PINNED COMMIT SHA (never a mutable tag -
-# the supply-chain stance/): downloads the upstream tarball,
+# the supply-chain stance): downloads the upstream tarball,
 # sanitizes every SVG, and writes each icon's INNER markup to icons/<name>.svg
 # (the Icon component owns the <svg> wrapper). Run from the gem root:
 #
