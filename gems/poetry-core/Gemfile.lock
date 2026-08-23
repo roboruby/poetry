@@ -325,6 +325,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rake
   simplecov
+  yard
 
 CHECKSUMS
   action_text-trix (2.1.19) sha256=7012f59421009cf284aa651294896414d653a61a2417c9b8714c8476d2f74009

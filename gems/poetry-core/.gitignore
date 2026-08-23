@@ -27,3 +27,4 @@
 
 # npm (the @poetry/controllers dev install)
 /node_modules/
+.gstack/

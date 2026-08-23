@@ -138,14 +138,15 @@ module Poetry
           "description" => "A poetry Claude Code skill served at runtime - for hosts where " \
                            "the installed .claude/skills files are absent (hosted agents, sessions " \
                            "that never ran the generator). name: poetry (component usage, generated " \
-                           "from this registry) or poetry-design (page-composition taste). Returns " \
+                           "from this registry), poetry-design (page-composition taste), or " \
+                           "poetry-component (authoring app-owned components). Returns " \
                            "SKILL.md plus the file index; pass file: to fetch one reference " \
                            "(e.g. references/forms.md). The installed skills are the same text - " \
                            "when .claude/skills/poetry exists, read it there instead.",
           "inputSchema" => {
             "type" => "object",
             "properties" => {
-              "name" => { "type" => "string", "enum" => %w[poetry poetry-design],
+              "name" => { "type" => "string", "enum" => %w[poetry poetry-design poetry-component],
                           "default" => "poetry" },
               "file" => { "type" => "string",
                           "description" => "one skill file, e.g. references/deciding.md " \

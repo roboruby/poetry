@@ -21,3 +21,4 @@ gem "lookbook", "~> 2.3"
 gem "bundler-audit", require: false
 gem "herb", "~> 0.10"
 gem "simplecov", require: false
+gem "yard", require: false
