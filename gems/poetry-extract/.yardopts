@@ -1,0 +1,7 @@
+--markup markdown
+--no-private
+--readme README.md
+lib/**/*.rb
+-
+THIRD_PARTY_NOTICES.md
+LICENSE.txt
