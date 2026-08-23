@@ -100,7 +100,7 @@ class DocsMarkdown
       intro = <<~MD.strip
         #{header(entry)}
 
-        The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with poetry, `bin/rails g poetry:skill` installs the poetry and poetry-design skills without touching the network.
+        The discovery index at [/.well-known/agent-skills/index.json](/.well-known/agent-skills/index.json) (agentskills.io discovery schema 0.2.0) lists every skill with a payload url and a `sha256:` digest a conformant installer verifies before writing anything. In a Rails app with poetry, `bin/rails g poetry:skill` installs the poetry, poetry-design, and poetry-component skills without touching the network.
       MD
       ([ intro ] + sections).join("\n\n") + "\n"
     end

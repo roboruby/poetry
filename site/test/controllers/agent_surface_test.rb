@@ -21,14 +21,14 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  test "the skills index lists all three skills with their file rosters" do
+  test "the skills index lists every skill with its file roster" do
     get "/.well-known/skills/index.json"
 
     assert_response :success
     payload = JSON.parse(response.body)
     names = payload["skills"].map { |skill| skill["name"] }
 
-    assert_equal %w[poetry poetry-design poetry-docs-site], names
+    assert_equal %w[poetry poetry-design poetry-component poetry-docs-site], names
 
     usage = payload["skills"].first
 
@@ -123,7 +123,7 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
 
     assert_equal "https://schemas.agentskills.io/discovery/0.2.0/schema.json", doc["$schema"]
     assert_equal %w[$schema skills], doc.keys.sort
-    assert_equal %w[poetry poetry-design poetry-docs-site], doc["skills"].map { |skill| skill["name"] }
+    assert_equal %w[poetry poetry-design poetry-component poetry-docs-site], doc["skills"].map { |skill| skill["name"] }
 
     doc["skills"].each do |entry|
       assert_equal %w[name description type url digest], entry.keys, "no fields the schema does not define"

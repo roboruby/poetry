@@ -300,6 +300,12 @@
     "path": "/recipes#skill-poetry"
   },
   {
+    "title": "poetry-component skill bundle",
+    "page": "Recipes",
+    "section": "docs",
+    "path": "/recipes#skill-poetry-component"
+  },
+  {
     "title": "poetry-design skill bundle",
     "page": "Recipes",
     "section": "docs",

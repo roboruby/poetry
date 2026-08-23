@@ -12,6 +12,7 @@ class SkillCatalog
     {
       "poetry" => Poetry::Ui.skill_files,
       "poetry-design" => design_skill_files,
+      "poetry-component" => component_skill_files,
       "poetry-docs-site" => site_skill_files
     }
   end
@@ -39,7 +40,15 @@ class SkillCatalog
   end
 
   def self.design_skill_files
-    base = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-design")
+    gem_template_files("poetry-design")
+  end
+
+  def self.component_skill_files
+    gem_template_files("poetry-component")
+  end
+
+  def self.gem_template_files(skill)
+    base = Poetry::Ui.root.join("lib/generators/poetry/skill/templates", skill)
     Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
   end
 
@@ -50,5 +59,6 @@ class SkillCatalog
     Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
   end
 
-  private_class_method :design_skill_files, :site_skill_files
+  private_class_method :design_skill_files, :component_skill_files,
+                       :gem_template_files, :site_skill_files
 end
