@@ -30,4 +30,5 @@ bin/rails "poetry:design:extract[stripe.com]"
 
 ## License
 
-MIT. Portions adapted from agentcn (MIT) — see THIRD_PARTY_NOTICES.md.
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+Portions adapted from agentcn (MIT) — see `THIRD_PARTY_NOTICES.md`.
