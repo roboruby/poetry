@@ -4,8 +4,8 @@ Approved 2026-07-30 ("match upstream's architecture - we shouldn't be
 diverging from it"). One mechanism, rolled out consumer by consumer.
 
 **SHIPPED IN FULL 2026-07-30** - S0 through S5 landed in order (+ the
-poetry-ui tester/dommy
-commits alongside each). Every popper consumer portals; the headline
+poetry-ui tester/dommy commits alongside each). Every popper consumer
+portals; the headline
 scroll-detach measurement went 40px -> 0px live. The decisions below
 held; the shipped record at the bottom lists what the build ADDED to
 them.
@@ -88,8 +88,7 @@ component CSS. Subtree-scoped HOST apps are covered by D2 below.
 - **S2 - popover** (+ date_picker riding). SHIPPED.
 - **S3 - select** (aligned mode rides unchanged). SHIPPED.
 - **S4 - combobox** (both modes; D6 landed here). SHIPPED.
-- **S5 - menu family** (dropdown, context menu, menubar). SHIPPED
-  (complete).
+- **S5 - menu family** (dropdown, context menu, menubar). SHIPPED.
 - **S6 - docs + ledger pass.** DONE: per-style + dark sweep green
   (portaled content themed in all styles, style flip live while open),
   theming doc gained the D2 container section, gotchas ledgers updated.
