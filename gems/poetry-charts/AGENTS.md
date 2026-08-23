@@ -2,8 +2,8 @@
 
 The chart gem: an own server-SVG engine porting the Recharts surface —
 Ruby runs the full geometry pipeline and ships finished SVG; the client only
-interpolates between server-computed states or, in opt-in `live:`
-mode, runs the vendored d3 kernel. Adapters (Chart.js reference)
+interpolates between server-computed states or, in opt-in `live:` mode,
+runs the vendored d3 kernel. Adapters (Chart.js reference)
 are the swappability door.
 
 ## Gates
