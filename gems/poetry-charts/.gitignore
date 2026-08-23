@@ -18,3 +18,5 @@
 /.ruby-lsp/
 
 /node_modules/
+.gstack/
+/.yardoc

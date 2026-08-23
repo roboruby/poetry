@@ -40,3 +40,4 @@ group :test do
   gem "dommy-js-quickjs", git: "https://github.com/takahashim/dommy-js-quickjs",
                           ref: "2b98eb6c5adc491f89425c2a08cc00a7462c90cb"
 end
+gem "yard", require: false
