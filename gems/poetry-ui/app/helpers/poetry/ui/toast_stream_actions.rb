@@ -2,7 +2,7 @@
 
 module Poetry
   module Ui
-    # The canonical server-side toast (Toast's
+    # The canonical server-side toast (the Toast contract's
     # Rails-native path):
     #
     #   turbo_stream.poetry_toast(title: "Saved", variant: :success)

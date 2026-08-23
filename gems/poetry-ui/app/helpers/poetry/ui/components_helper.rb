@@ -60,7 +60,7 @@ module Poetry
         render(Poetry::Ui::Card::Component.new(**), &)
       end
 
-      # The Table (N8): the component renders the overflow container + real
+      # The Table: the component renders the overflow container + real
       # `<table>`; the part helpers stamp the data-slot + source-exact classes
       # onto the semantic table elements the consumer composes.
       def poetry_table(**, &)
@@ -83,7 +83,7 @@ module Poetry
         end
       end
 
-      # Data-driven pagination (N8): poetry_pagination(current:, total:,
+      # Data-driven pagination: poetry_pagination(current:, total:,
       # path:) - path: is a callable ->(page) { url }; the component owns the
       # truncation math and the accessible nav.
       def poetry_pagination(**)
@@ -163,7 +163,7 @@ module Poetry
         render(Poetry::Ui::Empty::Component.new(**), &)
       end
 
-      # The server-driven DataTable (N8 W3): rows/state/path come from the
+      # The server-driven DataTable: rows/state/path come from the
       # controller (State.from_params with a sortable: whitelist); columns
       # are declared in the block. Sorting/filter/page are URL state.
       def poetry_data_table(**, &)
@@ -212,19 +212,19 @@ module Poetry
         render(Poetry::Ui::Separator::Component.new(**attrs, class: classes, "data-slot": "item-separator"))
       end
 
-      # The Calendar (N9 W6): a server-rendered month grid; name: makes it
+      # The Calendar: a server-rendered month grid; name: makes it
       # a form control. poetry--core--calendar adds nav + selection.
       def poetry_calendar(**, &)
         render(Poetry::Ui::Calendar::Component.new(**), &)
       end
 
-      # The DatePicker (N9 W6): a field-shaped trigger opening a Calendar in
+      # The DatePicker: a field-shaped trigger opening a Calendar in
       # a Popover; name: is the form field.
       def poetry_date_picker(**, &)
         render(Poetry::Ui::DatePicker::Component.new(**), &)
       end
 
-      # The Sidebar (N9 W5): the app-shell frame - with_nav is the column,
+      # The Sidebar: the app-shell frame - with_nav is the column,
       # with_inset the page area; poetry--core--sidebar owns the collapse.
       def poetry_sidebar(**, &)
         render(Poetry::Ui::Sidebar::Component.new(**), &)
@@ -385,7 +385,7 @@ module Poetry
         content_tag(tag_name, (capture(&block) if block), class: classes, data: data, **extra, **attrs)
       end
 
-      # The NavigationMenu (N9 W4c): a disclosure bar - with_item for
+      # The NavigationMenu: a disclosure bar - with_item for
       # trigger+panel, with_link for destinations; label: names the nav.
       def poetry_navigation_menu(**, &)
         render(Poetry::Ui::NavigationMenu::Component.new(**), &)
@@ -399,30 +399,30 @@ module Poetry
         content_tag(:a, (capture(&block) if block), **attrs, href: href, class: classes, data: data)
       end
 
-      # The Carousel (N9 W4): native scroll-snap slides - with_item per
+      # The Carousel: native scroll-snap slides - with_item per
       # slide; label: names the region.
       def poetry_carousel(**, &)
         render(Poetry::Ui::Carousel::Component.new(**), &)
       end
 
-      # The Resizable panel group (N9 W4): with_panel x N; handles are
+      # The Resizable panel group: with_panel x N; handles are
       # interleaved automatically (APG window splitters).
       def poetry_resizable(**, &)
         render(Poetry::Ui::Resizable::Component.new(**), &)
       end
 
-      # The Drawer (N9 W3b): the swipeable edge dialog - trigger/title/
+      # The Drawer: the swipeable edge dialog - trigger/title/
       # description/footer slots, direction: down/up/left/right.
       def poetry_drawer(**, &)
         render(Poetry::Ui::Drawer::Component.new(**), &)
       end
 
-      # The native scroll region (N9 W3a): size it with classes; label: names it.
+      # The native scroll region: size it with classes; label: names it.
       def poetry_scroll_area(**, &)
         render(Poetry::Ui::ScrollArea::Component.new(**), &)
       end
 
-      # Tabs (N9 W2): declare with with_tab(title, value:) + panel blocks;
+      # Tabs: declare with with_tab(title, value:) + panel blocks;
       # the component owns the ARIA wiring and the two-controller split.
       def poetry_tabs(**, &)
         render(Poetry::Ui::Tabs::Component.new(**), &)
@@ -521,7 +521,7 @@ module Poetry
       # The value contracts runtime-enforced inside wrapper helpers, in
       # registry shape - emitted as the registry's "helpers" section
       # (rakelib/registry.rake) so poetry check and the MCP server validate
-      # these literals statically (: the W2 filter_toolbar align:
+      # these literals statically (the filter_toolbar align:
       # :leading crash class). Plain wrapper helpers need no entry here;
       # registry generation lists them name-only.
       HELPER_CONTRACTS = {
@@ -739,7 +739,7 @@ module Poetry
       end
 
       # A styled wrapper stacking one sender's consecutive bubbles - a
-      # dictionary element, not a component (see Bubble).
+      # dictionary element, not a component (a Bubble concern).
       def poetry_bubble_group(**attrs, &)
         poetry_chat_group(Poetry::Ui::Bubble::Style, "bubble-group", **attrs, &)
       end
@@ -898,7 +898,7 @@ module Poetry
         JS
       end
 
-      # The color-scheme bootstrap (, the pothole a classes-only port-rb patches
+      # The color-scheme bootstrap (the pothole other ports patch
       # into every host by hand): tokens ship `.dark` + `color-scheme`, but
       # WHEN `.dark` applies is the host's job - and it must happen before
       # first paint or every visit flashes light. Render inside <head>,

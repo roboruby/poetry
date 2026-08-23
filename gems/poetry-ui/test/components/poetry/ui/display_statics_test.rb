@@ -172,7 +172,7 @@ module Poetry
         assert_equal "/setting", root["href"]
       end
 
-      # -- Timeline ----------------------------------------------------
+      # -- Timeline --------------------------------------------------------------
 
       def test_timeline_is_an_ordered_list_with_progress_and_optional_parts
         html = render_inline(Timeline::Component.new) do |timeline|

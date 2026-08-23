@@ -8,9 +8,9 @@ module Poetry
     #
     #   label    from human_attribute_name (Rails i18n)
     #   value    from the object
-    # error from object.errors (auto-flow)
+    #   error    from object.errors (auto-flow)
     #   required from the model's presence validators (-> aria-required
-    # only - the external generator rule; never the native attribute)
+    #            only - the label-station rule; never the native attribute)
     #   ids/aria field_id + aria-describedby via Field#control_attributes
     #
     # Usage: form_with(model:, builder: Poetry::Ui::FormBuilder).
@@ -452,7 +452,7 @@ module Poetry
       end
 
       # form.sensitive_input(:api_key) - the revealable-secret story
-      #: masked at rest, reveal + optional copy:.
+      # : masked at rest, reveal + optional copy:.
       def sensitive_input(method, hint: nil, **options)
         field_component = field_for(method, hint: hint)
         describedby = field_component.control_attributes["aria-describedby"]
@@ -708,7 +708,7 @@ module Poetry
 
       # Shared derivation for the toggle-family builder methods: everything
       # from the object, never hand-wired. required maps to aria-required
-      # only (the lock - the components never render native required).
+      # only (the label lock - the components never render native required).
       def toggle_options(method, options, checked_value, unchecked_value)
         {
           name: field_name(method),
