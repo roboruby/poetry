@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # Phase C-W3: reference lines/areas/dots across the cartesian families
+    # Reference lines/areas/dots across the cartesian families
     # and error-bar whiskers on line/bar/scatter. The contracts: values
     # speak the chart's own axes (categories on the category axis, numbers
     # on the value axis, both numeric on scatter), the group paints above

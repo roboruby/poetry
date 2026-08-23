@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ComposedChart
-      # The Composed family (Phase C-W2, beyond the shadcn surface):
+      # The Composed family (beyond the shadcn surface):
       # area, bar, and line marks on ONE shared cartesian - recharts
       # ComposedChart. All mark slots push into a single accumulator, so
       # slot declaration order IS paint order (recharts' children order).
@@ -155,7 +155,7 @@ module Poetry
         }
 
         def series_entries
-          # Force every mark slot (the N8 lazy-slot lesson); the shared
+          # Force every mark slot (slots evaluate lazily); the shared
           # accumulator preserves declaration order across slot types.
           areas?
           bars?

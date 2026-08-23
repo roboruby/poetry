@@ -3,7 +3,7 @@
 ## [Unreleased]
 
 - Polar calibration against the live ui.shadcn.com/charts render (the
-   upstream comparison): the pie/radar/radial families move to the
+  upstream comparison): the pie/radar/radial families move to the
   square 250x250 viewBox upstream's `aspect-square max-h-[250px]` blocks
   use, so recharts' absolute-px options (`innerRadius: 60`, `outerRadius:
   110`, dot `r: 4`, `+10` pop-outs, the `+24` center-label offset) mean
@@ -40,4 +40,4 @@
   `bin/rails g poetry:install --charts` (copies the motion stylesheet,
   registers the controllers).
 
-- N10 W1: gem skeleton (engine, dummy host, gates bootstrap).
+- Gem skeleton (engine, dummy host, gates bootstrap).

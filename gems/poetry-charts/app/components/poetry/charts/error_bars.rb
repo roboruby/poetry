@@ -2,7 +2,7 @@
 
 module Poetry
   module Charts
-    # Error bars (Phase C-W3): recharts ErrorBar for line, bar, and
+    # Error bars: recharts ErrorBar for line, bar, and
     # scatter series. A series slot takes error_key: naming a row key
     # holding either a symmetric offset (err) or [low, high] offsets from
     # the value; the whisker renders cap - stem - cap in the foreground

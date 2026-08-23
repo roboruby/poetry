@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 
 import { applyCartesian, displayValue } from "../../app/javascript/poetry/charts/live/renderer.js"
 
-// The Phase B-W2 parity gate: load the SERVER render of dataset A, apply
+// The live-renderer parity gate: load the SERVER render of dataset A, apply
 // the CLIENT renderer with dataset B, and compare every geometry attribute
 // against the SERVER render of dataset B - the live renderer is proven
 // byte-equal to the Ruby engine (paths, positions, ticks, the regenerated

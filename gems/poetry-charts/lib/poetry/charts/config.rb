@@ -11,6 +11,12 @@ module Poetry
     # Values land inside a <style> element and inline style attributes, so
     # every color (and key) is validated against a conservative character
     # set at wrap time - a config can never smuggle CSS out of its block.
+    #
+    # @example
+    #   config = Poetry::Charts::Config.new(
+    #     revenue: { label: "Revenue", color: "var(--chart-1)" }
+    #   )
+    #   config.label_for("revenue") # => "Revenue"
     class Config
       # A series key becomes a --color-<key> custom property.
       KEY = /\A[a-zA-Z][a-zA-Z0-9_-]*\z/
@@ -33,6 +39,9 @@ module Poetry
 
       class << self
         # Accepts a Config (pass-through) or a Hash keyed by series name.
+        #
+        # @param source [Config, Hash, nil]
+        # @return [Config]
         def wrap(source)
           source.is_a?(Config) ? source : new(source || {})
         end
@@ -63,6 +72,10 @@ module Poetry
 
       # The label for a series key, falling back to the key itself - the
       # tooltip/legend resolution rule (shadcn: config[key]?.label ?? name).
+      #
+      # @param key [String, Symbol] the series key
+      # @param fallback [String, nil] preferred over the key when no label is set
+      # @return [String]
       def label_for(key, fallback = nil)
         self[key]&.label || fallback || key.to_s
       end

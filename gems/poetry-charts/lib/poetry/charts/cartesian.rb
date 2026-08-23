@@ -14,6 +14,12 @@ module Poetry
     # add left/right margin 12), numeric y domain [0, auto] niced by the
     # recharts algorithm (implicit tickCount 5), stacking per stack id
     # with d3's offsets.
+    #
+    # @example Lay out a plot and read one series' pixel points
+    #   plot = Poetry::Charts::Cartesian.new(
+    #     data: rows, series: series, width: 600, height: 300
+    #   )
+    #   plot.points(series.first) # => [{x:, y0:, y1:, value:}, ...]
     class Cartesian
       DEFAULT_MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
       X_AXIS_HEIGHT = 30
@@ -26,6 +32,18 @@ module Poetry
 
       attr_reader :width, :height, :margin, :y_tick_count, :offset, :layout
 
+      # @param data [Array<Hash>] the rows, one hash per category
+      # @param series [Array<#key>] series entries (key + optional stack id)
+      # @param width [Numeric] outer SVG width in pixels
+      # @param height [Numeric] outer SVG height in pixels
+      # @param x_key [String, Symbol, nil] the category key; nil indexes rows
+      # @param margin [Hash] per-side overrides merged over DEFAULT_MARGIN
+      # @param category_axis [Boolean] reserve the category-axis strip
+      # @param value_axis [Boolean] a visible value axis reserves the left strip
+      # @param y_tick_count [Integer] requested tick count for the niced domain
+      # @param offset [Symbol] :none, or :expand for 100%-stacked
+      # @param x_scale_type [Symbol] :point (line/area) or :band (bars)
+      # @param layout [Symbol] :vertical (values up y) or :horizontal
       def initialize(data:, series:, width:, height:, x_key: nil, margin: {},
                      category_axis: true, value_axis: false, y_tick_count: 5, offset: :none,
                      x_scale_type: :point, layout: :vertical)
@@ -54,8 +72,8 @@ module Poetry
       # The category-axis strip sits at the bottom (vertical layout, height
       # 30) or the left (horizontal layout, the implicit YAxis width 60).
       # A VISIBLE value axis in the vertical layout reserves the same left
-      # strip (recharts YAxis width 60 - the pre-N10 gap where shown y
-      # labels clipped at the plot edge).
+      # strip (recharts YAxis width 60 - without the reserved strip, shown
+      # y labels clipped at the plot edge).
 
       def plot_left
         reserved = (horizontal? && @category_axis) || (!horizontal? && @value_axis)
@@ -145,6 +163,9 @@ module Poetry
       # their stack group's d3 offsets; independent entries base on the
       # baseline. NaN values (missing data) flow through as NaN, which the
       # generators' defined-gap machinery turns into path gaps.
+      #
+      # @param entry [#key] a series entry (key + optional stack id)
+      # @return [Array<Hash>] one orientation-aware point hash per category
       def points(entry)
         key = entry.key
         if entry.stack
@@ -159,7 +180,7 @@ module Poetry
         end
       end
 
-      # -- W5 handoff: the embedded coordinates ----------------------------------
+      # -- the tooltip handoff: the embedded coordinates -------------------------
 
       # Compact per-series pixel coordinates the tooltip controller reads -
       # no chart math in the browser.

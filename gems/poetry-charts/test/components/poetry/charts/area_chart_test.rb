@@ -4,11 +4,11 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W3a: the first visible chart. The render contracts: the SVG
+    # The first visible chart. The render contracts: the SVG
     # arrives complete from the server (paths, grid, ticks - no JS), the
     # geometry matches the oracle-tested pipeline recomputed independently,
     # stacking/expand/gradients follow the shadcn block grammar, and the
-    # W5 coordinates are embedded.
+    # tooltip coordinates are embedded.
     class AreaChartTest < ViewComponent::TestCase
       DATA = [
         { month: "January", desktop: 186, mobile: 80 },

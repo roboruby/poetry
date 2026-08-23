@@ -2,7 +2,7 @@
 
 module Poetry
   module Charts
-    # The geometry core (N10 W2): faithful Ruby ports of the exact math the
+    # The geometry core: faithful Ruby ports of the exact math the
     # shadcn charts stand on - d3-array ticks, d3-scale linear/band/point,
     # d3-shape line/area/curves/stack (the modules recharts vendors), and
     # recharts' decimal-exact nice-ticks. Every port is oracle-tested:
@@ -14,6 +14,9 @@ module Poetry
     # d3-shape byte-for-byte - so rounding and stringification go through
     # js_round / js_number below, never through Ruby defaults (Ruby rounds
     # half away from zero and prints "80.0"; JS floors x+0.5 and prints "80").
+    #
+    # @example
+    #   Poetry::Charts::Geometry.js_number(80.0) # => "80"
     module Geometry
       module_function
 

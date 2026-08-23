@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ScatterChart
-      # The Scatter family (Phase C-W1, beyond the shadcn surface): BOTH
+      # The Scatter family (beyond the shadcn surface): BOTH
       # axes numeric - two recharts-niced linear scales - with per-point
       # marks. Each with_scatter series brings its own rows (or shares the
       # chart data); z sizing ports recharts' ZAxis semantics exactly (the
@@ -121,8 +121,16 @@ module Poetry
           nil
         }
 
+        # Points are hit by pointerover on the marked circle, not bisect -
+        # the svg gains the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
+          end
+        end
+
         def series_entries
-          scatters? # force slot evaluation (the N8 lazy-slot lesson)
+          scatters? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -277,14 +285,6 @@ module Poetry
             hide_label: tooltip_config.fetch(:hide_label, false),
             hide_indicator: tooltip_config.fetch(:hide_indicator, false)
           )
-        end
-
-        # Points are hit by pointerover on the marked circle, not bisect -
-        # the svg gains the enter action after the module's set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
         end
 
         def chart_id

@@ -7,6 +7,9 @@ module Poetry
       # line-for-line. The 1-2-5-10 step selection against sqrt thresholds
       # and the inverted-increment encoding (negative inc = divisor) are
       # d3's exact trick for float-exact tick values.
+      #
+      # @example
+      #   Poetry::Charts::Geometry::Ticks.ticks(0, 10, 5) # => [0, 2, 4, 6, 8, 10]
       module Ticks
         E10 = Math.sqrt(50)
         E5 = Math.sqrt(10)

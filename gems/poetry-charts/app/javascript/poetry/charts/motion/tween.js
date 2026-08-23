@@ -1,7 +1,7 @@
-// The tween kernel (Phase A-W2): one rAF loop, the CSS-named cubic-bezier
-// easings, cancelable. This is the react-smooth equivalent scoped to
-// poetry's doctrine - the client only interpolates between
-// server-computed states, so the whole kernel is eased time.
+// The tween kernel: one rAF loop, the CSS-named cubic-bezier
+// easings, cancelable. This is the equivalent of recharts' animation
+// runtime scoped to poetry's doctrine - the client only interpolates
+// between server-computed states, so the whole kernel is eased time.
 
 // Newton-Raphson with a bisection fallback - the standard CSS timing
 // function solver (the same approach WebKit ships).

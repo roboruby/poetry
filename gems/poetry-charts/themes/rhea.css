@@ -1,4 +1,4 @@
-/* poetry-charts rhea theme (N12 W2) - chart chrome under upstream
+/* poetry-charts rhea theme - chart chrome under upstream
  * style-rhea.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip); rhea reskins it (popover surface, ring-for-border, rounded-xl) - everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=rhea drives the gates and golden set. */

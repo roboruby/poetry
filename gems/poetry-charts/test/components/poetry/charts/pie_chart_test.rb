@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W6a: the pie family render contracts - row-fill slices, the donut
+    # The pie family render contracts - row-fill slices, the donut
     # hole, nested stacked rings, the center label, inside labels, the
     # popped active slice, and the polar tooltip payload (names/colors/
     # anchors driving the single retinted chrome row).

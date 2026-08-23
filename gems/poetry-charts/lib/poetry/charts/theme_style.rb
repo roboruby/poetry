@@ -12,10 +12,15 @@ module Poetry
     # reference var(--color-<key>) and follow theme flips with ZERO
     # re-render. Emission is safe by construction: Config validated every
     # key and color at wrap time.
+    #
+    # @example
+    #   Poetry::Charts::ThemeStyle.new(id: "chart-revenue", config: config).css
     class ThemeStyle
-      # Theme name -> selector prefix (the.dark class convention).
+      # Theme name -> selector prefix (the .dark class convention).
       THEMES = { light: "", dark: ".dark " }.freeze
 
+      # @param id [String] the container's data-chart identifier
+      # @param config [Config, Hash] the chart config the colors come from
       def initialize(id:, config:)
         @id = id
         @config = Config.wrap(config)
@@ -23,6 +28,8 @@ module Poetry
 
       # The stylesheet text, or nil when no entry carries a color (shadcn
       # renders no <style> at all in that case - so do we).
+      #
+      # @return [String, nil]
       def css
         entries = @config.color_entries
         return nil if entries.empty?

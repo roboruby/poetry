@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ScatterChart
-      # The scatter family (Phase C-W1, beyond the shadcn surface):
+      # The scatter family (beyond the shadcn surface):
       # simple, two series, and z-sized bubbles.
       class Preview < Poetry::Core::Preview::Base
         SAMPLE = [
@@ -77,7 +77,7 @@ module Poetry
           end
         end
 
-        # A sync group member (C-W4): the sync value the stimulus contract
+        # A sync group member: the sync value the stimulus contract
         # holds to the DOM.
         def synced
           render_component(data: SAMPLE, config: ONE, id: "scatter-synced",

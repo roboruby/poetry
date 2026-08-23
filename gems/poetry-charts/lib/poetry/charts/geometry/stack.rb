@@ -8,8 +8,11 @@ module Poetry
       # Missing values behave as JS +undefined = NaN (the offsets carry the
       # exact NaN fallbacks). :expand normalizes each row to sum 1;
       # :diverging routes negatives below the axis - the beyond-shadcn
-      # offsets ship because they are ~20 lines here and Phase C consumes
-      # them.
+      # offsets are ~20 lines here, cheap to carry for the chart families
+      # that need them.
+      #
+      # @example Stack two series over shared rows
+      #   Poetry::Charts::Geometry::Stack.new(keys: %w[a b]).series(rows)
       class Stack
         OFFSETS = %i[none expand diverging].freeze
 

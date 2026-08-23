@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module RadialBarChart
-      # The radial chrome on the cn-chart-* theme rules (N11): the muted
+      # The radial chrome on the cn-chart-* theme rules: the muted
       # track ring, the disc track fills (the first:fill-muted /
       # last:fill-background hack, still explicit), the insideStart label,
       # and the per-family center typography (4xl gauge / 2xl compact;

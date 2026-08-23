@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # Phase B-W2: the live-mode option surface. live: true embeds the
+    # The live-mode option surface. live: true embeds the
     # {spec, frame} payload (spec = the FROZEN v1 the adapter door speaks,
     # frame = the private geometry envelope); lambdas and labels raise
     # teaching errors; live: false leaves the markup untouched.

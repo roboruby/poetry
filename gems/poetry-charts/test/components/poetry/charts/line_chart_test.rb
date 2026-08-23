@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W3b: the line family render contracts - stroked curves only
+    # The line family render contracts - stroked curves only
     # (no fills), stroke-width 2 defaults, the dots variants (series color
     # and per-point colors), and point labels.
     class LineChartTest < ViewComponent::TestCase

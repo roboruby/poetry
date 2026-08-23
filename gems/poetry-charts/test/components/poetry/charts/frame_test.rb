@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W1 frame render contracts: the Container scopes + emits the theme
+    # The frame render contracts: the Container scopes + emits the theme
     # style, the tooltip chrome resolves items through the config, the
     # legend derives from the config. The chrome IS the shadcn chart.tsx
     # layer - no engine yet.

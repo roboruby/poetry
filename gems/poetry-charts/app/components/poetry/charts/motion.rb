@@ -7,7 +7,7 @@ module Poetry
     # animationDuration / animationEasing / animationBegin, defaults read
     # from the recharts v3 source per family), emitted as data-animate plus
     # --poetry-motion-* custom properties on the SVG. The animations
-    # themselves are CSS (the motion stylesheet) and the A-W2 controller -
+    # themselves are CSS (the motion stylesheet) and the motion controller -
     # the server computes all geometry; the client only interpolates
     # between server-computed states.
     module Motion
@@ -69,7 +69,7 @@ module Poetry
         nil
       end
 
-      # data-motion-sector: the server-computed sector params the A-W2
+      # data-motion-sector: the server-computed sector params the
       # fan-out sweep reads (4-decimal formatting, matching sector_path's
       # own fmt so mid-sweep client paths stay byte-compatible).
       def motion_sector_value(cx, cy, inner, outer, start_angle, end_angle)

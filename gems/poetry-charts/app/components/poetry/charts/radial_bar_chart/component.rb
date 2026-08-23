@@ -130,8 +130,16 @@ module Poetry
           nil
         }
 
+        # Arcs are hit by pointerover on the marked sector, not bisect -
+        # the svg gains the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
+          end
+        end
+
         def series_entries
-          radial_bars? # force slot evaluation (the N8 lazy-slot lesson)
+          radial_bars? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -363,14 +371,6 @@ module Poetry
 
         def svg_label
           label.presence || "Radial bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
-
-        # Arcs are hit by pointerover on the marked sector, not bisect -
-        # the svg gains the enter action after the module's set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
         end
 
         def tooltip_layer_component

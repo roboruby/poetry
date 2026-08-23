@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryChartsControllers } from "../../app/javascript/poetry/charts/index.js"
 
-// Phase B-W3: the live channel. The fixture is the REAL server render
+// The live channel. The fixture is the REAL server render
 // (live_fixtures area case, full frame wiring); the tests prove the two
 // channels feed one render path, the renderer's own coordinates rewrite
 // never re-triggers the observer, the tooltip refresh dispatch fires,

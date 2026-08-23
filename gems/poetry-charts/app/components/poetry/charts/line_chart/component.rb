@@ -130,14 +130,15 @@ module Poetry
           nil
         }
 
-        # Accepted for grammar stability; the tooltip layer is N10 W5.
+        # The slot captures options only; the tooltip layer itself
+        # (controller + chrome wiring) is declared by TooltipWiring.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
         }
 
         def series_entries
-          lines? # force slot evaluation (the N8 lazy-slot lesson)
+          lines? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -238,7 +239,7 @@ module Poetry
           Geometry.js_number((value * 100).round / 100.0)
         end
 
-        # -- live mode (Phase B) -----------------------------------------
+        # -- live mode ---------------------------------------------------
 
         def live_type = :line
 

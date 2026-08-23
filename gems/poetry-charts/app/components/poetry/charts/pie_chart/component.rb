@@ -111,8 +111,17 @@ module Poetry
           nil
         }
 
+        # Pie slices are hit by pointerover on the marked sector, not
+        # bisect - the svg gains the enter action after the module's
+        # pointer/keyboard set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
+          end
+        end
+
         def series_entries
-          pies? # force slot evaluation (the N8 lazy-slot lesson)
+          pies? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -230,15 +239,6 @@ module Poetry
 
         def svg_label
           label.presence || "Pie chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
-
-        # Pie slices are hit by pointerover on the marked sector, not
-        # bisect - the svg gains the enter action after the module's
-        # pointer/keyboard set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
         end
 
         def tooltip_layer_component

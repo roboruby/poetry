@@ -2,13 +2,11 @@
 
 module Poetry
   module Charts
-    # The poetry_chart_* view helpers - the agent-facing chart surface.
-    # The chart-root helpers (poetry_chart :area, ...) arrive with the
-    # engine (N10 W3+); W1 ships the frame.
+    # The poetry_chart_* view helpers - the agent-facing chart surface,
+    # from the chart-root dispatcher down to the per-family helpers.
     module ComponentsHelper
       # The chart-root dispatcher: poetry_chart :area, data:, config: do |c| ... end
-      # Families arrive wave by wave (N10 plan); unknown types raise with
-      # the known list (agent-teachable).
+      # Unknown types raise with the known list (agent-teachable).
       CHART_TYPES = {
         area: "Poetry::Charts::AreaChart::Component",
         line: "Poetry::Charts::LineChart::Component",
@@ -21,7 +19,7 @@ module Poetry
       }.freeze
 
       def poetry_chart(type, engine: nil, **, &block)
-        # The one-word swap (Door 2): engine: routes the same call to
+        # The one-word swap: engine: routes the same call to
         # the adapter mount, which consumes the closed spec instead of slots.
         if engine
           if block

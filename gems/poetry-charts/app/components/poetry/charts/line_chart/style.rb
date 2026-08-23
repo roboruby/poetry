@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module LineChart
-      # The cartesian chrome on the shared cn-chart-* theme rules (N11)
+      # The cartesian chrome on the shared cn-chart-* theme rules
       # + the point-label look.
       class Style < Poetry::Core::Style
         base ""

@@ -8,6 +8,9 @@ module Poetry
       # single toggle loop, transcribed). Accessors are lambdas (d, i),
       # symbols/strings (hash key lookup), or numeric constants; x/y default
       # to the [x, y] pair convention.
+      #
+      # @example
+      #   Poetry::Charts::Geometry::Line.new(curve: :monotone_x).path(points)
       class Line
         def initialize(x: nil, y: nil, curve: :linear, defined: nil, digits: 3)
           @x = Accessor.wrap(x) { |d, _i| d[0] }

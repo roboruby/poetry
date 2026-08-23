@@ -84,5 +84,5 @@ fresh values mid-stream, and `prefers-reduced-motion` snaps. Live data
 carries pre-formatted category strings (lambdas can't ride JSON — the
 server raises a teaching error on `tick_formatter`/`labels`).
 
-Part of the [poetry](../poetry) gem family. Status: N10 complete —
+Part of the [poetry](../poetry) gem family. Status:
 six families, 52 gallery examples, the frozen spec-v1 adapter seam.

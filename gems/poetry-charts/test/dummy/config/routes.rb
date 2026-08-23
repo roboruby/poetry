@@ -10,9 +10,9 @@ Rails.application.routes.draw do
   # renderer through the payload-script channel - zero server round trips.
   get "/live", to: "demo#live"
 
-  # The C-W4 demo: two sync-grouped charts + an interactive legend.
+  # The sync demo: two sync-grouped charts + an interactive legend.
   get "/sync", to: "demo#sync"
 
-  # The C-W5 demo: brush + drag-zoom over the live window.
+  # The window demo: brush + drag-zoom over the live window.
   get "/window", to: "demo#window"
 end

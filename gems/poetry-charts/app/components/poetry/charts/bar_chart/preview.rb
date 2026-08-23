@@ -5,8 +5,8 @@ module Poetry
     module BarChart
       # The bar family (vertical), mirroring the shadcn blocks: default
       # (radius 8), multiple, stacked (outer-edge radius arrays), negative
-      # (sign-colored cells + month labels), value labels, and the active
-      # highlight. Horizontal + mixed are W4b.
+      # (sign-colored cells + month labels), value labels, the active
+      # highlight, and the horizontal + mixed layouts.
       class Preview < Poetry::Core::Preview::Base
         DATA = AreaChart::Preview::DATA
         ONE = AreaChart::Preview::ONE

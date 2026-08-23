@@ -2,8 +2,8 @@
 
 module Poetry
   module Charts
-    # The bar geometry shared by BarChart and ComposedChart (C-W2
-    # extraction): recharts' combineAllBarPositions slot math (no explicit
+    # The bar geometry shared by BarChart and ComposedChart:
+    # recharts' combineAllBarPositions slot math (no explicit
     # barSize - stacked bars share a slot, groups sit side by side inside
     # the band), the per-corner rounded rect path (Rectangle), and the
     # entrance origin. Hosts provide cartesian, data, horizontal?, fnum,
@@ -81,6 +81,7 @@ module Poetry
           "#{"A#{f.call(bl)},#{f.call(bl)},0,0,1,#{f.call(x)},#{f.call(y + h - bl)}" if bl.positive?}Z"
       end
 
+      # recharts getPercentValue: "10%" of the band, or a plain px number.
       def bar_percent_value(value, total)
         text = value.to_s
         text.end_with?("%") ? total * (text.to_f / 100.0) : text.to_f

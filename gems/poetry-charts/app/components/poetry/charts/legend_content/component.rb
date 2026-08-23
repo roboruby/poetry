@@ -13,17 +13,17 @@ module Poetry
           "align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching the chart edge it sits on."
         ].freeze
 
+        # A style axis, not an option - options silently drop the
+        # dictionary's variant classes.
+        style :align, default: :bottom, required: true, variants: %i[top bottom]
+
         option :config, ActiveModel::Type::Value.new, required: true
         option :items, ActiveModel::Type::Value.new
         option :hide_icon, :boolean, default: false
-        # Interactive legend (C-W4): items render as buttons that toggle
+        # Interactive legend: items render as buttons that toggle
         # their series through the live controller (the host chart guards
         # that live: is on).
         option :toggle, :boolean, default: false
-
-        # A style axis, not an option - options silently drop the
-        # dictionary's variant classes (the N9 W1a learning).
-        style :align, default: :bottom, required: true, variants: %i[top bottom]
 
         part "chart-legend-content", "The legend row (<div>) - centered swatch + label pairs"
         part "chart-legend-item", "One legend entry (<div>; a <button> in toggle mode)",

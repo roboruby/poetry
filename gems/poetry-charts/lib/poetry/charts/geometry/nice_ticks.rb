@@ -6,8 +6,8 @@ module Poetry
   module Charts
     module Geometry
       # recharts' nice-ticks algorithm (src/util/scale/getNiceTickValues.ts +
-      # util/arithmetic.ts, v3.9.2), ported to BigDecimal - the plan's
-      # "decimal-exact nice ticks". decimal.js-light maps as: new Decimal(x)
+      # util/arithmetic.ts, v3.9.2), ported to BigDecimal so the ticks stay
+      # decimal-exact. decimal.js-light maps as: new Decimal(x)
       # -> BigDecimal(x.to_s) (both construct from the double's shortest
       # string), mod -> #remainder (truncated, sign of dividend), div ->
       # #div(x, 20) (decimal.js-light's default 20 significant digits),
@@ -15,6 +15,9 @@ module Poetry
       #
       # Oracle: the translated cases from recharts' own
       # test/util/scale/getNiceTickValues.spec.ts.
+      #
+      # @example Nice a raw domain into tick values
+      #   Poetry::Charts::Geometry::NiceTicks.nice_ticks([0, 97], 5)
       module NiceTicks
         PRECISION = 20
         SNAP_STEPS = [1r, 2r, 2.5r, 5r].map { |step| BigDecimal(step, 10) }.freeze

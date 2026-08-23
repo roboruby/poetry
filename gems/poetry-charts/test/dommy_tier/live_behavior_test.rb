@@ -126,7 +126,7 @@ module DommyTier
       harness = render_in_dommy(chart)
       before = area_path(harness, "desktop")
 
-      # The C-W5 window seam (the brush/zoom controllers call this; the
+      # The window seam (the brush/zoom controllers call this; the
       # drag geometry itself is browser-pass territory): [start, end]
       # inclusive indices into the FULL data, rendered without a tween so
       # a drag tracks the pointer.

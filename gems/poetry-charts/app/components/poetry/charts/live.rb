@@ -6,7 +6,7 @@ module Poetry
     # {spec, frame} payload the client renderer recomputes geometry from
     # when data changes too often to round-trip to the server. `spec` is
     # the FROZEN spec v1 built by the same Poetry::Charts::Spec the
-    # adapter door uses (Door 2 stays closed); `frame` is a PRIVATE engine
+    # adapter seam uses (the spec stays closed); `frame` is a PRIVATE engine
     # envelope carrying the geometry-affecting knobs the spec deliberately
     # omits. Everything else about the chart stays server-rendered.
     #
@@ -77,7 +77,7 @@ module Poetry
       module ClassMethods
         def live_option
           option :live, :boolean, default: false
-          # The window features (C-W5): both slice the data client-side, so
+          # The window features: both slice the data client-side, so
           # both need the live renderer.
           option :zoom, :boolean, default: false
           renders_one :brush, lambda { |height: 30|
@@ -230,15 +230,15 @@ module Poetry
                                "pre-format the category strings in your data instead"
         end
         if series_entries.any? { |entry| entry.respond_to?(:error_key) && entry.error_key }
-          raise ArgumentError, "live: charts do not support error bars yet (Phase C scope) - " \
+          raise ArgumentError, "live: charts do not support error bars yet - " \
                                "drop error_key: or render without live:"
         end
         if respond_to?(:reference_marks) && reference_marks.any?
-          raise ArgumentError, "live: charts do not support reference marks yet (Phase C scope)"
+          raise ArgumentError, "live: charts do not support reference marks yet"
         end
         return unless live_labels_configured?
 
-        raise ArgumentError, "live: charts do not support labels yet (Phase B scope) - " \
+        raise ArgumentError, "live: charts do not support labels yet - " \
                              "drop labels: or render without live:"
       end
 

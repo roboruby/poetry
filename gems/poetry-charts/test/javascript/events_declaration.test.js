@@ -1,5 +1,5 @@
 // Every event a controller dispatches must appear in its OWN `static
-// events` declaration, full name as emitted (the poetry-core N13 W1
+// events` declaration, full name as emitted (the poetry-core
 // pattern, charts-sized) - the manifest / registry surfaces render the
 // declaration, this scan keeps it honest against the source.
 import { describe, it, expect } from "vitest"

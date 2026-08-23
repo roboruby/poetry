@@ -32,7 +32,7 @@ export default class ChartTooltipController extends Controller {
     this.band = payload.band ?? null
     this.activeIndex = null
 
-    // Synced charts (C-W4, recharts syncId): same-group tooltips follow
+    // Synced charts (recharts syncId): same-group tooltips follow
     // each other's active index over a window event.
     if (this.syncValue && !this.onSync) {
       this.onSync = (event) => this.#applySync(event)
@@ -194,7 +194,7 @@ export default class ChartTooltipController extends Controller {
     cursor.removeAttribute("display")
   }
 
-  // -- synced charts (C-W4) -------------------------------------------------
+  // -- synced charts --------------------------------------------------------
 
   #broadcastSync(index) {
     if (!this.syncValue || this.applyingSync) return

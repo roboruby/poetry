@@ -3,13 +3,17 @@
 module Poetry
   module Charts
     module AdapterChart
-      # The BYO-engine mount (Door 2): `poetry_chart:bar, engine:
+      # The BYO-engine mount: `poetry_chart :bar, engine:
       # "chartjs", ...` renders the Container frame (theming intact), a
       # mount element, and the FROZEN chart-spec v1 - the registered
       # adapter draws whatever it likes inside. The seam is deliberately
-      # whole-chart coarse (the proven whole-chart grain): the compositional
-      # slot grammar belongs to the default engine; adapters consume the
-      # closed spec via series:/axes: arguments.
+      # whole-chart coarse: the compositional slot grammar belongs to the
+      # default engine; adapters consume the closed spec via series:/axes:
+      # arguments.
+      #
+      # @example
+      #   <%= poetry_chart :bar, engine: "chartjs", data: data, config: config,
+      #                    series: [{ data_key: :desktop }], axes: { x: { data_key: :month } } %>
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "The adapter path takes series:/axes: ARGUMENTS (the closed spec), not slots.",
@@ -49,9 +53,9 @@ module Poetry
         validates :type, inclusion: { in: Spec::TYPES }
 
         # No part contract yet: adapter_chart has no preview, so the
-        # tier cannot DOM-verify a declaration (the tooltip_layer rule -
-        # declare only what verifies). Add previews first, then declare
-        # chart-adapter-mount + chart-spec.
+        # part-contract tier cannot DOM-verify a declaration (the
+        # tooltip_layer rule - declare only what verifies). Add previews
+        # first, then declare chart-adapter-mount + chart-spec.
 
         # Built (and validated) server-side - a bad series/axis key raises
         # at render, never in the browser.

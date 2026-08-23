@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# The interactive-chart doctrine demo (N10 W9): upstream's "interactive"
+# The interactive-chart doctrine demo: upstream's "interactive"
 # blocks are useState filters; in poetry the filter is a real form and the
 # chart re-renders ON THE SERVER - a GET round trip Turbo turns into a
-# same-context body swap. The A-W3 morph rides that swap: the dataset
+# same-context body swap. The cross-render morph rides that swap: the dataset
 # toggle keeps the shape (same months, same series) so the chart MORPHS
 # between renders; the period toggle changes the shape, so the entrance
 # replays instead.
@@ -36,14 +36,14 @@ class DemoController < ApplicationController
     render layout: "component_preview"
   end
 
-  # The C-W4 demo: two charts in one sync group (hover either, both
+  # The sync demo: two charts in one sync group (hover either, both
   # tooltips follow) + a live chart with the interactive legend.
   def sync
     @data = DATASETS["current"]
     render layout: "component_preview"
   end
 
-  # The C-W5 demo: a year of data behind a brush strip + drag-zoom.
+  # The window demo: a year of data behind a brush strip + drag-zoom.
   def window
     @data = Array.new(12) do |i|
       { month: Date::ABBR_MONTHNAMES[i + 1],

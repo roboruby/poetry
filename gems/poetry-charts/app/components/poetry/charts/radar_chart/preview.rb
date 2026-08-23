@@ -70,7 +70,7 @@ module Poetry
           end
         end
 
-        # A sync group member (C-W4): the sync value the stimulus contract
+        # A sync group member: the sync value the stimulus contract
         # holds to the DOM.
         def synced
           render_component(data: DATA, config: ONE, id: "radar-synced", sync: "radar-demo") do |chart|

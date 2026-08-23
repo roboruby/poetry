@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # Phase C-W1: both axes numeric (recharts-niced linear scales),
+    # Both axes numeric (recharts-niced linear scales),
     # per-point marks with global indexes, z sizing on recharts' AREA
     # semantics, and the per-index tooltip wire.
     class ScatterChartTest < ViewComponent::TestCase

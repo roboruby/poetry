@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module PieChart
-      # The polar chrome on the cn-chart-* theme rules (N11): inside labels
+      # The polar chrome on the cn-chart-* theme rules: inside labels
       # ride fill-background, the donut center label keeps its 3xl type.
       class Style < Poetry::Core::Style
         base ""

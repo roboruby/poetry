@@ -2,15 +2,21 @@
 
 module Poetry
   module Charts
-    # The chart-spec (Door 2): the CLOSED, VERSIONED description every
-    # poetry chart compiles to. The server engine consumes it Ruby-side;
-    # swappable adapters consume the same spec JSON-side through the
-    # duck-typed protocol (render(el, spec) / update / destroy). No
-    # engine-specific key ever enters this schema - engine styling lives in
-    # the adapter, declared, which is the open-options-bag lesson.
+    # The chart-spec: the CLOSED, VERSIONED description every poetry chart
+    # compiles to. The server engine consumes it Ruby-side; swappable
+    # adapters consume the same spec JSON-side through the duck-typed
+    # protocol (render(el, spec) / update / destroy). No engine-specific key
+    # ever enters this schema - engine styling lives in the adapter,
+    # declared; a pass-through options bag would tie call sites to one
+    # engine and the spec could never close.
     #
     # Key naming follows recharts (dataKey, stackId) so the mechanical
     # shadcn-block translation reads across both sides of the seam.
+    #
+    # @example Compile a spec and serialize it for an adapter
+    #   Poetry::Charts::Spec.new(
+    #     type: :bar, data: rows, series: [{ data_key: :revenue }]
+    #   ).to_json
     class Spec
       VERSION = 1
 
@@ -21,6 +27,11 @@ module Poetry
 
       attr_reader :type, :data, :series, :axes, :config
 
+      # @param type [Symbol, String] one of TYPES
+      # @param data [Array<Hash>] the rows, one hash per data point
+      # @param series [Array<Hash>] series entries; data_key: is required
+      # @param axes [Hash] per-axis settings (SERIES_KEYS/AXIS_KEYS closed sets)
+      # @param config [Config, Hash, nil] label/color config, wrapped via Config.wrap
       def initialize(type:, data:, series:, axes: {}, config: nil)
         @type = type.to_sym
         unless TYPES.include?(@type)

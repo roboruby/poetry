@@ -1,4 +1,4 @@
-/* poetry-charts maia theme (N12 W3) - chart chrome under upstream
+/* poetry-charts maia theme - chart chrome under upstream
  * style-maia.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip) and maia's is a token-order twin of default (same set) - the whole file carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=maia drives the gates and golden set. */

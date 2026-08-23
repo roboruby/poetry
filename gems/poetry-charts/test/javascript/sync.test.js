@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryChartsControllers } from "../../app/javascript/poetry/charts/index.js"
 
-// C-W4 synced charts (recharts syncId): tooltips sharing a sync value
+// Synced charts (recharts syncId): tooltips sharing a sync value
 // follow each other's active index over a window event - show follows,
 // leave follows, different groups stay independent, and the loop guard
 // keeps the broadcast from echoing forever.

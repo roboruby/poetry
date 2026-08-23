@@ -1,17 +1,18 @@
-// The BYO-engine seam (Door 2): adapters register by name and
+// The BYO-engine seam: adapters register by name and
 // implement the duck-typed protocol over the FROZEN chart-spec v1 -
 //
 //   {
 //     render(el, spec, helpers)  -> instance   (required)
 //     destroy(instance, el)                    (required)
-//     update(instance, spec)                   (optional - Phase B)
+//     update(instance, spec)                   (optional - live updates)
 //     themeChanged(instance, spec, helpers)    (optional - dark-mode repaint)
 //     degradations: ["..."]                    (declared, never discovered)
 //     supports: ["area", "bar", ...]           (optional type allowlist)
 //   }
 //
-// The spec is closed: no engine-specific key ever enters it (the pass-through options-bag
-// library:{} lesson). Engine-specific styling lives INSIDE the adapter.
+// The spec is closed: no engine-specific key ever enters it - a
+// pass-through options bag would leak engine keys into every call site.
+// Engine-specific styling lives INSIDE the adapter.
 
 const adapters = new Map()
 

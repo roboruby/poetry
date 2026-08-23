@@ -5,7 +5,7 @@ module Poetry
     module TooltipContent
       # The tooltip chrome (shadcn ChartTooltipContent) - the styled info
       # box: optional label, then one row per series item (indicator +
-      # name + tabular value). Pure server-rendered markup; the W5 tooltip
+      # name + tabular value). Pure server-rendered markup; the tooltip
       # controller positions and repopulates it from server-embedded
       # coordinates. Indicator colors ride the --color-bg/--color-border
       # inline custom properties, so a row's swatch follows its series.

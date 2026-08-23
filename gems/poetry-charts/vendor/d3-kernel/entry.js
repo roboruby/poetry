@@ -6,7 +6,7 @@
 // ticks match Geometry::NiceTicks decimal-for-decimal.
 //
 // Not a public d3 distribution: this is an implementation detail of live
-// mode behind a host-remappable importmap pin.
+// mode behind a host-remappable importmap pin (the vendoring pattern).
 // Rebuild with `npm run vendor:d3`; CI drift-gates the committed bundle.
 
 export { ticks, tickIncrement, tickStep, bisector, extent, max, min, range } from "d3-array"

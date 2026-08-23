@@ -3,7 +3,7 @@
 require_relative "dommy_helper"
 
 module DommyTier
-  # The adapter door (Door 2) end-to-end: a chart rendered with
+  # The adapter door end-to-end: a chart rendered with
   # engine: mounts through the REAL poetry--charts--adapter controller -
   # the registry lookup, the frozen spec handoff, the rendered dispatch
   # with declared degradations, and destroy on disconnect (the Turbo-away

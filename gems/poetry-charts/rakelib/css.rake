@@ -18,7 +18,7 @@ def poetry_charts_styles
   Poetry::Core::Style.descendants.select { |style| style.name&.start_with?("Poetry::Charts::") }
 end
 
-# The theme roster (N12), mirroring poetry-ui: every themes/*.css fragment
+# The theme roster, mirroring poetry-ui: every themes/*.css fragment
 # is a complete visual theme; POETRY_THEME picks one, unset loops all.
 def poetry_charts_theme_names
   Dir[Poetry::Charts.root.join("themes/*.css").to_s].map { |file| File.basename(file, ".css") }.sort
@@ -132,7 +132,7 @@ namespace :css do
          "all present in the compiled build"
   end
 
-  desc "Verify bidirectional cn-* coverage between the charts Style dictionaries and every themes/*.css (N12)"
+  desc "Verify bidirectional cn-* coverage between the charts Style dictionaries and every themes/*.css"
   task :verify_theme do
     poetry_charts_boot!
 

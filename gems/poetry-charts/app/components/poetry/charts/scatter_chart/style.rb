@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ScatterChart
-      # The scatter chrome on the shared cn-chart-* theme rules (N11).
+      # The scatter chrome on the shared cn-chart-* theme rules.
       # Point fills are var(--color-<key>) ATTRIBUTES.
       class Style < Poetry::Core::Style
         base ""

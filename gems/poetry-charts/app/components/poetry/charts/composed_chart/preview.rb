@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ComposedChart
-      # The composed family (Phase C-W2, beyond the shadcn surface):
+      # The composed family (beyond the shadcn surface):
       # bars with a trend line, and the full area + bar + line mix.
       class Preview < Poetry::Core::Preview::Base
         DATA = [
@@ -43,7 +43,7 @@ module Poetry
           end
         end
 
-        # A sync group member (C-W4, recharts syncId): charts sharing sync:
+        # A sync group member (recharts syncId): charts sharing sync:
         # broadcast/receive the active index - the sync value the stimulus
         # contract holds to the DOM.
         def synced

@@ -8,6 +8,9 @@ module Poetry
       # BACKWARD along the buffered baseline per defined-segment - the exact
       # d3 loop, including the x0z/y0z buffers. Stacked areas feed y0/y1
       # from Stack series; simple areas use a constant y0 (the axis line).
+      #
+      # @example A simple area over a constant baseline
+      #   Poetry::Charts::Geometry::Area.new(y0: 250.0).path(points)
       class Area
         def initialize(x: nil, x1: nil, y0: nil, y1: nil, curve: :linear, defined: nil, digits: 3)
           @x0 = Line::Accessor.wrap(x) { |d, _i| d[0] }

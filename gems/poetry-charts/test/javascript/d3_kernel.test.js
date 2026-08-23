@@ -13,7 +13,7 @@ import {
   KERNEL_VERSIONS,
 } from "../../app/javascript/poetry/charts/d3.js"
 
-// The Phase B kernel parity gate: the COMMITTED bundle (the exact bytes
+// The kernel parity gate: the COMMITTED bundle (the exact bytes
 // hosts load) is run against test/fixtures/geometry_fixtures.json - the
 // same ground truth the Ruby geometry port is fixture-tested against - so
 // client and server geometry agree with one oracle by construction. The

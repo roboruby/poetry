@@ -1,5 +1,5 @@
 // Builds the committed @poetry/charts/d3 kernel bundle from
-// vendor/d3-kernel/entry.js.
+// vendor/d3-kernel/entry.js (the vendoring pattern).
 //
 //   npm run vendor:d3          rebuild app/javascript/poetry/charts/d3.js
 //   npm run vendor:d3:verify   rebuild in memory and fail on drift

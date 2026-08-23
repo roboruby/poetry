@@ -1,4 +1,4 @@
-/* poetry-charts mira theme (N12 W2) - chart chrome under upstream
+/* poetry-charts mira theme - chart chrome under upstream
  * style-mira.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip); mira compacts its type (text-xs/relaxed) - everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=mira drives the gates and golden set. */

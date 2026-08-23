@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module LegendContent
-      # Re-expressed through the cn-* theme layer (N11). flex-wrap stays
+      # Re-expressed through the cn-* theme layer. flex-wrap stays
       # poetry's one structural addition (long lists wrap in the real flex
       # column); order-first stays inline in the top align (layout
       # mechanism - the padding rides the theme rule). The toggle's

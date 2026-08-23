@@ -10,6 +10,10 @@ module Poetry
         # Geometry::Ticks, and the linearish nice() domain extension.
         # Degenerate domains map every input to the range midpoint (the d3
         # normalize() contract).
+        #
+        # @example Map a value into an inverted pixel range
+        #   Poetry::Charts::Geometry::Scale::Linear
+        #     .new(domain: [0, 100], range: [300, 5]).call(50)
         class Linear
           attr_reader :domain, :range
 

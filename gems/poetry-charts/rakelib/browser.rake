@@ -5,7 +5,7 @@
 # headless Chrome; rake test:visual screenshots the same corpus against
 # committed baselines. Neither joins the default gate - they need Chrome.
 # The corpus is the preview classes directly (the registry roster takes
-# over when the charts registry lands, N10 W9).
+# over when the charts registry lands).
 
 POETRY_BROWSER_VIEWPORT = [1024, 768].freeze
 POETRY_AXE_RULESETS = %w[wcag2a wcag2aa].freeze
@@ -46,8 +46,8 @@ def poetry_charts_browser_session(reduced_motion: false)
   # The visual + axe passes emulate prefers-reduced-motion: reduce (CDP,
   # persists across navigations): deterministic screenshots regardless of
   # entrance animation, AND a standing proof that reduced-motion users get
-  # the untouched chart - the Phase A baselines must match the pre-motion
-  # recordings. The interaction task keeps real motion.
+  # the untouched chart - the motion-tier baselines must match the
+  # pre-motion recordings. The interaction task keeps real motion.
   if reduced_motion
     session.driver.browser.page.command(
       "Emulation.setEmulatedMedia",
@@ -91,7 +91,7 @@ namespace :browser do
     abort "missing #{stimulus} - run npm install in poetry-charts" unless stimulus.exist?
     FileUtils.cp(stimulus, dir.join("stimulus.js"))
 
-    # Turbo drives the /interactive morph demo (A-W3): the form submit
+    # Turbo drives the /interactive morph demo: the form submit
     # becomes a same-context body swap, so the motion registry survives.
     turbo = Poetry::Charts.root.join("node_modules/@hotwired/turbo/dist/turbo.es2017-esm.js")
     abort "missing #{turbo} - run npm install in poetry-charts" unless turbo.exist?
@@ -195,7 +195,7 @@ namespace :test do
     require "fileutils"
 
     session = poetry_charts_browser_session(reduced_motion: true)
-    # Per-theme goldens (N12): the default set stays flat; non-default
+    # Per-theme goldens: the default set stays flat; non-default
     # themes keep their own subdirectory (POETRY_THEME=<name>).
     theme = poetry_charts_theme_name
     baseline_dir = Poetry::Charts.root.join("test/visual_baselines")

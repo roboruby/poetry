@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module BarChart
-      # The cartesian chrome on the shared cn-chart-* theme rules (N11)
+      # The cartesian chrome on the shared cn-chart-* theme rules
       # + the bar label look.
       class Style < Poetry::Core::Style
         base ""

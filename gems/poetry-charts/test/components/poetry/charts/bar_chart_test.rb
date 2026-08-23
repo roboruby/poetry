@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W4a: the bar family render contracts - the recharts band math
+    # The bar family render contracts - the recharts band math
     # (10% category trim, 4px gaps, stacked share a slot), per-corner
     # radius paths, negatives below the zero line, guarded per-cell fills,
     # and the active highlight.
@@ -143,7 +143,7 @@ module Poetry
         assert_includes html, "chart-bar"
       end
 
-      # -- the horizontal orientation (W4b) --------------------------------------
+      # -- the horizontal orientation --------------------------------------------
 
       def render_horizontal(data: DATA, **options)
         render_inline(BarChart::Component.new(data: data, config: CONFIG, id: "h",

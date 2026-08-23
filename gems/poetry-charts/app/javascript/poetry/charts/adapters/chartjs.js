@@ -1,4 +1,4 @@
-// The Chart.js reference adapter (Door 2): the proof of the seam,
+// The Chart.js reference adapter: the proof of the seam,
 // and the documented escape valve for the one case the SVG default is
 // weak on (huge point counts - canvas draws one bitmap). poetry ships NO
 // Chart.js: the host imports it and passes the constructor in -

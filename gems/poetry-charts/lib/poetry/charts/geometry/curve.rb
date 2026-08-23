@@ -9,6 +9,9 @@ module Poetry
       # truthiness via Geometry.js_truthy?; `1 - undefined` becomes NaN via
       # js_flip). The shadcn blocks use exactly this set: linear, step
       # (+before/after), natural, and monotoneX (recharts' "monotone").
+      #
+      # @example Build a curve writing into a fresh path buffer
+      #   Poetry::Charts::Geometry::Curve.build(:natural, Path.new)
       module Curve
         REGISTRY = {
           linear: ->(context) { Linear.new(context) },

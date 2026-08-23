@@ -3,12 +3,17 @@
 module Poetry
   module Charts
     module Container
-      # The chart frame (shadcn ChartContainer) - Door 1 of: the
-      # engine-agnostic outer layer every chart (poetry's own SVG engine,
-      # an adapter engine, or a island) sits inside. It scopes the
-      # chart id, emits the per-series --color-<key> custom properties from
-      # the config (ThemeStyle, both themes), and carries the aspect-ratio
-      # sizing chrome. The content block is the chart body.
+      # The chart frame (shadcn ChartContainer): the engine-agnostic outer
+      # layer every chart (poetry's own SVG engine, an adapter engine, or a
+      # Stimulus-mounted island) sits inside. It scopes the chart id, emits
+      # the per-series --color-<key> custom properties from the config
+      # (ThemeStyle, both themes), and carries the aspect-ratio sizing
+      # chrome. The content block is the chart body.
+      #
+      # @example
+      #   <%= poetry_chart_container(config: { desktop: { label: "Desktop", color: "var(--chart-1)" } }) do %>
+      #     ...the chart body...
+      #   <% end %>
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Every chart lives inside poetry_chart_container(config:) - the config maps series keys to labels/colors.",

@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryChartsControllers } from "../../app/javascript/poetry/charts/index.js"
 
-// C-W5 the window: brush handle drags and drag-zoom both funnel into
+// The window: brush handle drags and drag-zoom both funnel into
 // frame.window - the renderer slices the FULL data, the strip repaints
 // from index fractions, double-click resets. The fixture is the real
 // server render (live_fixtures area case) with the brush strip injected

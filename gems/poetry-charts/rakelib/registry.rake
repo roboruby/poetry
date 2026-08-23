@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The agent-surface registry (the poetry-ui / pattern): the chart
+# The agent-surface registry (the poetry-ui pattern): the chart
 # components' options/slots/elements/controllers introspected from source
 # into config/component_registry.yml, drift-gated in CI - the same file
 # poetry check / llms.txt / poetry-agent project from.

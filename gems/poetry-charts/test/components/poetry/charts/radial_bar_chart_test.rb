@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W6b: the radial family render contracts - rings per row with
+    # The radial family render contracts - rings per row with
     # value-proportional sweeps, muted track backgrounds, angle-stacked
     # gauge segments, tangent-circle corner rounding, grid discs, and the
     # ring-anchored polar tooltip payload.

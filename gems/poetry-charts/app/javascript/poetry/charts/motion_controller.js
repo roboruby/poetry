@@ -10,7 +10,7 @@ import { captureGeometry, matchJobs, applyJobs, finishJobs } from "@poetry/chart
 // data-motion lifecycle attribute ("entrance" / "morph" -> "settled") on
 // the SVG so tests and hosts can observe the engine.
 //
-// ENTRANCE (A-W2). The fan-out is recharts' Pie stepData accumulator
+// ENTRANCE. The fan-out is recharts' Pie stepData accumulator
 // (Pie.tsx): every sector's angular width interpolates 0 -> final
 // simultaneously, re-accumulated end-to-end each frame from the group's
 // first startAngle, with the FINAL-geometry gaps preserved as constant
@@ -20,12 +20,12 @@ import { captureGeometry, matchJobs, applyJobs, finishJobs } from "@poetry/chart
 // sectors; the exact server d (corner rounding included) is restored on
 // the final frame.
 //
-// MORPH (A-W3). Charts with a stable id keep their last geometry in a
+// MORPH. Charts with a stable id keep their last geometry in a
 // module registry when they disconnect; when a same-id chart connects
 // within the freshness window (any same-context DOM swap - Turbo Drive /
 // Frames / Streams / morph), the new render starts FROM the old geometry
 // and tweens to its own via the shared FLIP machinery (motion/flip.js -
-// the live tier rides the same module in live mode). Any structure change
+// the live tier rides the same module). Any structure change
 // aborts the morph and the normal entrance replays instead
 // (recharts-faithful for added or removed data).
 //
@@ -102,7 +102,7 @@ export default class ChartMotionController extends Controller {
     }
   }
 
-  // -- the cross-render morph (A-W3) ----------------------------------------
+  // -- the cross-render morph -----------------------------------------------
 
   #morphFromRegistry() {
     if (!this.chartId) return false
@@ -132,7 +132,7 @@ export default class ChartMotionController extends Controller {
     return true
   }
 
-  // -- the polar fan-out (A-W2) -----------------------------------------
+  // -- the polar fan-out ------------------------------------------------
 
   #sweep(elements) {
     const groups = new Map()

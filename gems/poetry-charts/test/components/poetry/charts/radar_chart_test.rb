@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W7: the radar family render contracts - categories clockwise from
+    # The radar family render contracts - categories clockwise from
     # 12 o'clock, value-proportional polygon vertices, the grid variants,
     # rim labels anchored by side, vertex dots, and the transparent hit
     # wedges driving the multi-series tooltip.

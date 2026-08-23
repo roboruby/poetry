@@ -1,7 +1,7 @@
 import { sectorPath } from "@poetry/charts/motion/sector"
 
-// The FLIP geometry machinery (Phase A-W3, shared with the live tier in
-// live mode): snapshot a chart's animatable geometry, pair it against the
+// The FLIP geometry machinery (shared by the motion and live tiers):
+// snapshot a chart's animatable geometry, pair it against the
 // current DOM, and tween old -> new. Paths morph by pairwise numeric lerp
 // behind a structure fingerprint, sectors by param lerp through the same
 // sectorPath port, dots by cx/cy. Both endpoints are always

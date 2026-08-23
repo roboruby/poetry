@@ -20,11 +20,14 @@ module Poetry
   # adds tooltip/legend/active interactivity by reading SERVER-EMBEDDED
   # coordinates - no chart math in the browser.
   #
-  # Engines stay swappable (the three doors): the container contract is
+  # Engines stay swappable (three doors): the container contract is
   # engine-agnostic; every chart also compiles to a closed, VERSIONED
   # chart-spec consumed by duck-typed adapters (render/update/destroy -
   # Chart.js ships as the reference adapter); React chart libraries remain
-  # reachable through the island.
+  # reachable through a Stimulus-mounted island.
+  #
+  # @example Render a chart through the dispatcher helper
+  #   poetry_chart :bar, data: rows, series: [{ data_key: :revenue }]
   module Charts
     class << self
       # Gem root (the directory containing lib/, app/, config/).
@@ -58,9 +61,9 @@ module Poetry
         path.exist? ? YAML.safe_load_file(path) : nil
       end
 
-      # The shadcn-interop item projection (Ecosystem v1), boot-free
-      # from the COMMITTED registry - the docs site aggregates this with
-      # poetry-ui's for /r/*.json.
+      # The shadcn-interop item projection, boot-free from the COMMITTED
+      # registry - the docs site aggregates this with poetry-ui's for
+      # /r/*.json.
       def registry_items
         Poetry::Core::RegistryItems.new(
           registry: YAML.safe_load_file(root.join(Poetry::Core::Registry::RELATIVE_PATH)),

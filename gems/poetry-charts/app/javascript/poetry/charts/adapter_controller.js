@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { chartAdapter } from "@poetry/charts/adapter_registry"
 
-// The adapter mount (Door 2): reads the FROZEN chart-spec v1 the
+// The adapter mount: reads the FROZEN chart-spec v1 the
 // server embedded, hands it to the registered engine adapter, and owns
 // the lifecycle - render on connect, destroy on disconnect (Turbo-safe),
 // themeChanged on dark-mode flips. The helpers close the canvas gap:

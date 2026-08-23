@@ -1,4 +1,4 @@
-/* poetry-charts lyra theme (N12 W4) - chart chrome under upstream
+/* poetry-charts lyra theme - chart chrome under upstream
  * style-lyra.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip) and lyra squares it (rounded-none); everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=lyra drives the gates and golden set. */

@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The window controller (Phase C-W5): brush + zoom over the live
+// The window controller: brush + zoom over the live
 // renderer. One concept drives both - frame.window = [start, end]
 // (inclusive indices into the FULL data) slices the data before the
 // kernel computes. The brush drags the window (handles resize it, the

@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module TooltipContent
-      # Re-expressed through the cn-* theme layer (N11): the box, type,
+      # Re-expressed through the cn-* theme layer: the box, type,
       # and row treatments ride cn-chart-tooltip-* rules. The indicator's
       # border-(--color-border)/bg-(--color-bg) arbitrary properties stay
       # inline - they read the per-row inline custom properties the

@@ -1,4 +1,4 @@
-/* poetry-charts luma theme (N12 W3) - chart chrome under upstream
+/* poetry-charts luma theme - chart chrome under upstream
  * style-luma.css (pinned clone d0fae528). Upstream ships ONE chart rule (cn-chart-tooltip); luma reskins it exactly as rhea does (popover surface, ring-for-border, rounded-xl) - everything else carries the default treatment.
  * Same contract as default.css: imported layer(base) by the host entry;
  * POETRY_THEME=luma drives the gates and golden set. */

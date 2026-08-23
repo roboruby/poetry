@@ -2,7 +2,7 @@
 
 module Poetry
   module Charts
-    # Shared tooltip wiring for the chart families (N10 W5): the frame
+    # Shared tooltip wiring for the chart families: the frame
     # wrapper carries the controller, the SVG carries targets/actions plus
     # the accessibilityLayer floor (focusable, role=application, arrows walk
     # categories), and the hidden chrome pre-renders per-series rows the
@@ -10,7 +10,7 @@ module Poetry
     module TooltipWiring
       CONTROLLER = "poetry--charts--tooltip"
 
-      # Every chart with a tooltip can join a sync group (C-W4, recharts
+      # Every chart with a tooltip can join a sync group (recharts
       # syncId): charts sharing a sync: broadcast/receive the active index.
       #
       # The wiring is declared, not hand-built: the frame carries the
@@ -107,7 +107,7 @@ module Poetry
       # Attributes for the frame div (display: contents) wrapping svg +
       # chrome + coordinates: the declared frame wiring - tooltip
       # registration + sync here, whichever of motion/live/window the
-      # family mixes in declared by those modules - plus the
+      # family mixes in declared by those modules - plus the part-contract
       # self-identification: the frame is the chart type's own root (the
       # Container wrapper self-ids as "container", so without this the
       # SVG anatomy would have no owner in the part contract).
@@ -117,7 +117,7 @@ module Poetry
 
       # role=img for static charts; the accessibilityLayer contract when
       # the tooltip attaches (recharts: role=application + focusable).
-      # Motion (Phase A) rides the same tag: data-animate + the
+      # Motion rides the same tag: data-animate + the
       # --poetry-motion-* knobs.
       def svg_interaction_attributes
         base = tooltip? ? { "role" => "application", "tabindex" => "0" } : { "role" => "img" }

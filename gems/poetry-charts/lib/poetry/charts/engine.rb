@@ -4,6 +4,13 @@ require "rails/engine"
 
 module Poetry
   module Charts
+    # The Rails engine: wires poetry-charts into the host app - component
+    # autoload paths, the Stimulus controllers manifest, the view helper,
+    # preview and asset paths, and the importmap pins. Loading the gem is
+    # the only integration step.
+    #
+    # @example Install via the host Gemfile
+    #   gem "poetry-charts"
     class Engine < ::Rails::Engine
       # Standard engine layout: app/components is picked up like poetry-ui's.
       config.autoload_paths << "#{Poetry::Charts.root}/app/components"

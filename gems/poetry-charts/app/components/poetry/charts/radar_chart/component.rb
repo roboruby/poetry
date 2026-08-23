@@ -3,8 +3,8 @@
 module Poetry
   module Charts
     module RadarChart
-      # The Radar family (shadcn RadarChart, 14 blocks - the biggest, and
-      # the one shadcn-vue still cannot draw): categories spaced clockwise
+      # The Radar family (shadcn RadarChart, 14 blocks - the biggest
+      # block set in the suite): categories spaced clockwise
       # from 12 o'clock (recharts: startAngle 90, endAngle -270), values on
       # a nice [0, auto] radius scale, series as closed polygons with the
       # 0.6 fill, polygon/circle grids at the radius ticks, and angle-axis
@@ -114,8 +114,16 @@ module Poetry
           nil
         }
 
+        # Vertex dots are hit by pointerover, not bisect - the svg gains
+        # the enter action after the module's set.
+        use_stimulus do
+          on :svg do
+            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
+          end
+        end
+
         def series_entries
-          radars? # force slot evaluation (the N8 lazy-slot lesson)
+          radars? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -264,14 +272,6 @@ module Poetry
 
         def svg_label
           label.presence || "Radar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
-
-        # Vertex dots are hit by pointerover, not bisect - the svg gains
-        # the enter action after the module's set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
         end
 
         # The polar center, so the motion stylesheet can scale the entrance

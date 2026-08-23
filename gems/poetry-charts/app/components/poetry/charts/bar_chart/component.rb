@@ -3,8 +3,8 @@
 module Poetry
   module Charts
     module BarChart
-      # The Bar chart family (shadcn BarChart), vertical columns (the
-      # horizontal layout is W4b): band-scale positioning with recharts'
+      # The Bar chart family (shadcn BarChart), vertical columns by default
+      # (orientation: :horizontal flips them): band-scale positioning with recharts'
       # exact bar math - barCategoryGap 10% trims each side of the band,
       # barGap 4 separates side-by-side groups, stacked bars share a slot.
       # Rounded corners are per-corner (radius: 8 or [tl, tr, br, bl] - the
@@ -137,14 +137,15 @@ module Poetry
           nil
         }
 
-        # Accepted for grammar stability; the tooltip layer is N10 W5.
+        # The slot captures options only; the tooltip layer itself
+        # (controller + chrome wiring) is declared by TooltipWiring.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
         }
 
         def series_entries
-          bars? # force slot evaluation (the N8 lazy-slot lesson)
+          bars? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
@@ -264,7 +265,7 @@ module Poetry
           Geometry.js_number((value * 100).round / 100.0)
         end
 
-        # -- live mode (Phase B) -----------------------------------------
+        # -- live mode ---------------------------------------------------
 
         def live_type = :bar
 
@@ -293,8 +294,6 @@ module Poetry
             "series" => series_entries.to_h { |e| [e.key, { "radius" => e.radius }] }
           }
         end
-
-        # recharts getPercentValue: "10%" of the band, or a plain px number.
       end
     end
   end

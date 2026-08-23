@@ -9,6 +9,10 @@ module Poetry
         # Point (d3 scalePoint) is band with paddingInner = 1 (bandwidth 0),
         # where padding: drives the outer padding - the axis shape line/area
         # charts position categories with.
+        #
+        # @example
+        #   Poetry::Charts::Geometry::Scale::Band
+        #     .new(domain: %w[a b c], range: [0, 300]).positions
         class Band
           attr_reader :domain, :range, :padding_inner, :padding_outer, :align, :step, :bandwidth, :positions
 
@@ -58,6 +62,10 @@ module Poetry
 
         # d3 scalePoint: band with paddingInner pinned to 1 - every category
         # is a zero-width position, padding: is the outer padding.
+        #
+        # @example
+        #   Poetry::Charts::Geometry::Scale::Point
+        #     .new(domain: %w[a b c], range: [0, 300]).positions
         class Point < Band
           def initialize(domain:, range:, padding: 0.0, align: 0.5, round: false)
             super(domain:, range:, padding_inner: 1.0, padding_outer: padding.to_f, align:, round:)

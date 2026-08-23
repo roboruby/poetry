@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The live-renderer parity fixtures (Phase B-W2): render each streaming-trio
+# The live-renderer parity fixtures: render each streaming-trio
 # case TWICE on the server (dataset A and dataset B) and commit both. The
 # vitest suite loads render A, applies the client renderer with dataset B,
 # and compares every geometry attribute against render B - so the kernel

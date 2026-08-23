@@ -4,8 +4,8 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # The chart-spec: closed and versioned. Unknown keys raise (the
-    # a pass-through charting wrapper library:{} cliff, designed out), the wire format is
+    # The chart-spec: closed and versioned. Unknown keys raise (an open
+    # options bag would leak engine keys - designed out), the wire format is
     # camelCase recharts vocabulary, and every spec carries its version.
     class SpecTest < ActiveSupport::TestCase
       DATA = [{ month: "Jan", desktop: 186 }, { month: "Feb", desktop: 305 }].freeze

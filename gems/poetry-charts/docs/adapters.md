@@ -63,7 +63,7 @@ registerChartAdapter("myengine", {
 `resolveColor("var(--color-desktop)")` returns the concrete value at the
 chart's scope — the helper that closes the canvas/CSS-variable gap.
 
-**A typed-core charting engine** fits this seam naturally (its `@a typed-core charting engine/ts` core is
+A typed-core charting engine fits this seam naturally (one whose framework-free core is
 framework-free): `render` instantiates an `XYContainer` with components
 built from the spec's series, `destroy` tears it down. Its CSS-variable
 theming (`--vis-color0..5`) bridges from `--chart-1..5` in a few lines.
@@ -71,7 +71,7 @@ theming (`--vis-color0..5`) bridges from `--chart-1..5` in a few lines.
 ## Door 3 — the React island (Recharts itself)
 
 For a React charting library, use poetry's bounded island escape-hatch
-: a Stimulus-mounted island (`props-in / events-out, never a client
+a Stimulus-mounted island (`props-in / events-out, never a client
 router`) rendered INSIDE `poetry_chart_container`, so the theme tokens
 still flow. This is the sanctioned home for actual Recharts — with the
 caveat that it inherits Recharts' blank-until-hydration behavior, which

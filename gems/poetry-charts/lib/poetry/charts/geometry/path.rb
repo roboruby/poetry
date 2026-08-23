@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-path Path (d3-path src/path.js), the subset the W2 generators
+      # d3-path Path (d3-path src/path.js), the subset the shape generators
       # need: moveTo/lineTo/bezierCurveTo/quadraticCurveTo/closePath. Numbers
       # are rounded to `digits` decimals with JS Math.round semantics and
       # stringified as JS does (d3-shape v3 defaults digits to 3) - the
@@ -11,8 +11,17 @@ module Poetry
       # Internal cursor state keeps FULL precision (rounding is
       # output-formatting only, exactly as d3's appendRound).
       #
-      # The arc/sector verbs land with the polar wave (N10 W6).
+      # The arc/sector verbs are deliberately absent - polar sector paths
+      # are built by Polar, not through this class.
+      #
+      # @example
+      #   path = Path.new
+      #   path.move_to(0, 0)
+      #   path.line_to(10, 20.5)
+      #   path.to_s # => "M0,0L10,20.5"
       class Path
+        # @param digits [Integer, nil] output rounding decimals; nil disables
+        #   rounding (full-precision output)
         def initialize(digits: 3)
           @x0 = @y0 = @x1 = @y1 = nil
           @data = +""

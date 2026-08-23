@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module RadarChart
-      # The radar chrome on the cn-chart-* theme rules (N11): polar grid
+      # The radar chrome on the cn-chart-* theme rules: polar grid
       # lines take FULL border (cartesian grids use /50, polar does not).
       # The tinted grid-fill discs keep stroke-none inline (no paint - a
       # mechanism guard, they overlay the linework).

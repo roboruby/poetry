@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # The W1 bootstrap proof: the gem loads inside a Rails host, the engine
+    # The bootstrap proof: the gem loads inside a Rails host, the engine
     # mounts, and core's machinery (the component model the frame builds on)
     # is reachable. Real contracts arrive with the frame components.
     class SkeletonTest < ActiveSupport::TestCase

@@ -6,7 +6,7 @@ import {
   getNiceTickValues,
 } from "@poetry/charts/d3"
 
-// The live cartesian renderer (Phase B-W2): {spec, frame} + data ->
+// The live cartesian renderer: {spec, frame} + data ->
 // geometry via the vendored kernel, applied to the server-rendered SVG as
 // IN-PLACE attribute updates - never innerHTML - so the tooltip's targets,
 // focus state, and host listeners survive every tick.
@@ -63,12 +63,12 @@ export function displayValue(value) {
 
 export function computeCartesian(payload) {
   const { spec, frame } = payload
-  // The window (C-W5 brush/zoom): [start, end] inclusive indices slice
+  // The window (brush/zoom): [start, end] inclusive indices slice
   // the FULL data before anything computes.
   const data = frame.window
     ? spec.data.slice(frame.window[0], frame.window[1] + 1)
     : spec.data
-  // Hidden series (the C-W4 legend toggle) leave the domain and the
+  // Hidden series (the legend toggle) leave the domain and the
   // stacks entirely - recharts' rescale-on-hide semantics.
   const hidden = new Set(frame.hidden ?? [])
   const series = spec.series.filter((entry) => !hidden.has(entry.key))

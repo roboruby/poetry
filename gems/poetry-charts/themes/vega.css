@@ -1,8 +1,8 @@
-/* poetry-charts vega theme (N12 W1) - same contract as default.css
+/* poetry-charts vega theme - same contract as default.css
  * (layer(base), shared chrome names). Upstream style-vega.css touches a
  * single chart surface (.cn-chart-tooltip) and its body is byte-identical
  * to poetry defaults; every other chart treatment is poetry-own and
- * carries the default look (ledgered in the N12 plan note). The file
+ * carries the default look (a deliberate, recorded choice). The file
  * exists so every poetry gem ships every theme (install --theme vega
  * fails fast otherwise) and diverges when a later theme restyles charts.
  */

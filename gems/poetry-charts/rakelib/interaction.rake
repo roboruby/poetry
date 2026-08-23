@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The real-browser interaction proof (N10 W5): hover the area-default
+# The real-browser interaction proof: hover the area-default
 # preview in headless Chrome and assert the tooltip engine end to end -
 # controller boots off the importmap, bisects the embedded coordinates,
 # swaps the pre-formatted values into the chrome, keyboard walks, Escape
@@ -49,7 +49,7 @@ namespace :test do
     six_month_ticks = session.all('[data-slot="chart-x-axis"] text').length
     raise "expected 6 months, got #{six_month_ticks}" unless six_month_ticks == 6
 
-    # -- the A-W3 morph: same shape, new values -> FLIP between renders -------
+    # -- the cross-render morph: same shape, new values -> FLIP between renders
     before_d = session.find('path[data-slot="chart-area"]', match: :first)["d"]
     session.select("Last year", from: "dataset")
     session.click_button("Apply")
@@ -77,7 +77,7 @@ namespace :test do
       raise "the tooltip engine did not survive the server round-trip"
     end
 
-    # -- live mode: the streaming demo, zero server round trips -----
+    # -- live mode: the streaming demo, zero server round trips ---------------
     session.visit("/live")
     raise "live demo missing" unless session.has_css?('[data-slot="demo-live"]')
     raise "live chart never settled" unless session.has_css?('[data-slot="chart-svg"][data-motion="settled"]', wait: 6)
@@ -122,7 +122,7 @@ namespace :test do
     live_label = session.find("#{live_tooltip} [data-slot='chart-tooltip-label']", visible: :all).text
     raise "tooltip label #{live_label.inspect} is not a stream category" unless live_label.match?(/\AT\d+\z/)
 
-    # -- C-W4: synced charts + the interactive legend --------------------------
+    # -- synced charts + the interactive legend --------------------------------
     session.visit("/sync")
     raise "sync demo missing" unless session.has_css?('[data-slot="demo-sync-a"]')
 
@@ -160,7 +160,7 @@ namespace :test do
       raise "the legend toggle did not restore"
     end
 
-    # -- C-W5: the window (brush drag + drag-zoom + reset) ---------------------
+    # -- the window (brush drag + drag-zoom + reset) ---------------------------
     session.visit("/window")
     raise "window demo missing" unless session.has_css?('[data-slot="demo-window"]')
     raise "expected 12 months" unless session.all('[data-slot="chart-x-axis"] text').length == 12

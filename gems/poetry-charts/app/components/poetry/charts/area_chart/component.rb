@@ -17,7 +17,7 @@ module Poetry
       #   <% end %>
       #
       # Series colors ride var(--color-<key>) (the Container emission);
-      # per-x pixel coordinates are embedded for the W5 tooltip controller.
+      # per-x pixel coordinates are embedded for the tooltip controller.
       class Component < Poetry::Core::Component
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
@@ -101,7 +101,7 @@ module Poetry
         # Lambda slots accumulate config into ivars and return nil (the
         # breadcrumb pattern - slot wrappers do not delegate to lambda
         # return values); readers force evaluation via the slot predicate
-        # (the N8 lazy-slot lesson).
+        # (slots evaluate lazily).
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
@@ -131,8 +131,8 @@ module Poetry
           nil
         }
 
-        # Accepted now so the block grammar is stable; the tooltip layer
-        # (controller + chrome wiring) is the N10 W5 wave.
+        # The slot captures options only; the tooltip layer itself
+        # (controller + chrome wiring) is declared by TooltipWiring.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
@@ -241,7 +241,7 @@ module Poetry
           Geometry.js_number((value * 100).round / 100.0)
         end
 
-        # -- live mode (Phase B) -----------------------------------------
+        # -- live mode ---------------------------------------------------
 
         def live_type = :area
 

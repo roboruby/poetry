@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W5: the tooltip engine's render contracts. with_tooltip turns the
+    # The tooltip engine's render contracts. with_tooltip turns the
     # frame into the controller scope, the SVG into the accessibilityLayer
     # surface (role=application, focusable, actions), pre-renders the hidden
     # chrome with one row per series, embeds PRE-FORMATTED values, and
@@ -49,7 +49,7 @@ module Poetry
       def test_without_the_slot_no_tooltip_attaches
         html = render_area(tooltip: false)
 
-        # The motion controller (Phase A) still rides the frame by default;
+        # The motion controller still rides the frame by default;
         # the tooltip engine must not.
         assert_empty html.css("[data-controller~='poetry--charts--tooltip']")
         assert_equal "img", html.css('[data-slot="chart-svg"]').first["role"]

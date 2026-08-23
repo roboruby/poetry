@@ -7,7 +7,7 @@ module Poetry
     module Geometry
       # The recharts nice-ticks oracle: every case below is translated
       # 1:1 from recharts' own test/util/scale/getNiceTickValues.spec.ts
-      # (v3.9.2) - the porting contract committed to.
+      # (v3.9.2) - the porting contract this gem committed to.
       class NiceTicksTest < ActiveSupport::TestCase
         INF = Float::INFINITY
 

@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module ComposedChart
-      # The composed chrome on the shared cn-chart-* theme rules (N11).
+      # The composed chrome on the shared cn-chart-* theme rules.
       # Mark fills/strokes are var(--color-<key>) ATTRIBUTES.
       class Style < Poetry::Core::Style
         base ""

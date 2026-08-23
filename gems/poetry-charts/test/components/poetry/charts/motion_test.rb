@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # Phase A-W1: the animation option surface + the CSS entrance hooks.
+    # The animation option surface + the CSS entrance hooks.
     # The contracts: data-animate + --poetry-motion-* land on the SVG with
     # the family's recharts defaults (Bar 400ms, Pie begin 400ms), each
     # family emits its entrance hook (line pathLength, area clip reveal,
@@ -140,7 +140,7 @@ module Poetry
         assert_match(/--poetry-motion-center: [\d.]+px [\d.]+px/, svg(html)["style"])
       end
 
-      # -- A-W2: the motion controller wiring ------------------------------
+      # -- the motion controller wiring ------------------------------------
 
       PIE_DATA = [
         { browser: "chrome", visitors: 275, fill: "var(--color-chrome)" },

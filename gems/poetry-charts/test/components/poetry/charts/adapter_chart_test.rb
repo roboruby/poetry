@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # N10 W8: the adapter door's render contracts - the one-word engine
+    # The adapter door's render contracts - the one-word engine
     # swap, the server-validated frozen spec, the mount wiring, and the
     # spec-v1 schema freeze itself.
     class AdapterChartTest < ViewComponent::TestCase

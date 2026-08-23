@@ -2,7 +2,7 @@
 
 module Poetry
   module Charts
-    # Reference marks (Phase C-W3): recharts' ReferenceLine / ReferenceArea
+    # Reference marks: recharts' ReferenceLine / ReferenceArea
     # / ReferenceDot for every cartesian family. Values speak the chart's
     # own axes - categories on the category axis (the band/point center),
     # numbers on the value axis (scatter overrides both to numeric) - and
@@ -12,8 +12,8 @@ module Poetry
     #
     # Hosts provide ref_x_pixel/ref_y_pixel (the concern's defaults speak
     # cartesian), plot edges via cartesian, css(:reference_line/:reference_area/:tick),
-    # and fnum. Vertical layouts only (a horizontal bar raises - declared
-    # C-W3 scope).
+    # and fnum. Vertical layouts only (a horizontal bar raises - a
+    # declared limit).
     module ReferenceMarks
       def self.included(base)
         base.renders_many :reference_lines, lambda { |x: nil, y: nil, label: nil, stroke_dasharray: "3 3"|
@@ -65,7 +65,7 @@ module Poetry
       def reference_marks_svg
         marks = reference_marks
         return if marks.empty?
-        raise ArgumentError, "reference marks support vertical layouts only (C-W3 scope)" if
+        raise ArgumentError, "reference marks support vertical layouts only" if
           respond_to?(:horizontal?) && horizontal?
 
         tag.g("data-slot": "chart-reference", "aria-hidden": true) do

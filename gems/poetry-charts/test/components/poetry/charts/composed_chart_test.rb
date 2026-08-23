@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Charts
-    # Phase C-W2: mixed marks on one shared cartesian. The contracts:
+    # Mixed marks on one shared cartesian. The contracts:
     # declaration order is paint order, every mark shares the band x and
     # ONE y domain, stack ids stay inside their mark type, and the tooltip
     # wire carries every series.

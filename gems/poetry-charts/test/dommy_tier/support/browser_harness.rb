@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Vendored from dommy-js-quickjs test/support/browser_harness.rb @
-# 2b98eb6c5adc491f89425c2a08cc00a7462c90cb (the gem does not ship it -
+# 2b98eb6c5adc491f89425c2a08cc00a7462c90cb (the gem does not ship it - a
 # spike finding). Keep byte-identical below this header; re-sync when the
 # pinned SHA moves, and drop it if a released dommy-js-quickjs starts
 # shipping a public harness.

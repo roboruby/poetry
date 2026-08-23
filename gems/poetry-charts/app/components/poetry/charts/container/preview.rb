@@ -4,7 +4,7 @@ module Poetry
   module Charts
     module Container
       # The frame previewed standalone: config-driven series colors flowing
-      # into inline SVG through var(--color-<key>) - the whole Door-1
+      # into inline SVG through var(--color-<key>) - the whole container
       # contract, before any engine exists.
       class Preview < Poetry::Core::Preview::Base
         CONFIG = {

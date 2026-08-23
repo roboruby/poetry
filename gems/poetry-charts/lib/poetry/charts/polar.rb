@@ -2,12 +2,15 @@
 
 module Poetry
   module Charts
-    # The polar geometry (N10 W6): recharts' OWN math, ported from source -
+    # The polar geometry: recharts' OWN math, ported from source -
     # this is the part that is NOT d3 (src/util/PolarUtils.ts,
     # src/shape/Sector.tsx getSectorPath, src/polar/Pie.tsx sector
     # accumulation). Angles are degrees COUNTERCLOCKWISE from 3 o'clock,
     # negated into SVG's y-down plane by polar_to_cartesian; pies start at
     # startAngle 0 and sweep to endAngle 360.
+    #
+    # @example Slice values into pie sector angles
+    #   Poetry::Charts::Polar.pie_sectors([3, 1], padding_angle: 2)
     module Polar
       RADIAN = Math::PI / 180
 
