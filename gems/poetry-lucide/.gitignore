@@ -2,3 +2,5 @@
 /tmp/
 /coverage/
 Gemfile.lock
+/.yardoc
+/doc/
