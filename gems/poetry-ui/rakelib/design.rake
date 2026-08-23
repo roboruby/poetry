@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# DESIGN.md interop exports (N14 W1): every shipped theme serialized as the
+# DESIGN.md interop exports: every shipped theme serialized as the
 # design-skill ecosystem's shared artifact (google-labs front matter +
 # canonical sections), committed under docs/design/ and drift-gated like
 # every other generated artifact. Hosts get their own export via
@@ -58,7 +58,7 @@ namespace :design do
   # The motion self-audit: run the motion floor over the theme
   # layer's own @apply utilities, where poetry's motion actually lives.
   # REPORT-ONLY, not a gate: the findings are upstream-ported timings, so
-  # re-timing them is a design decision (it diverges from the faithful N12
+  # re-timing them is a design decision (it diverges from the faithful
   # port and re-feels all nine themes), surfaced here rather than silently
   # changed. The floor still GATES host + component ERB through design:lint.
   desc "Motion self-audit: the motion floor over the theme layer (report-only)"

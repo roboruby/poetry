@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Progress
-      # Re-expressed through the cn-* theme layer (N11). The root keeps no
+      # Re-expressed through the cn-* theme layer. The root keeps no
       # cn name (its whole poetry surface is structural; upstream's
       # cn-progress-root returns with content in a future theme).
       class Style < Poetry::Core::Style

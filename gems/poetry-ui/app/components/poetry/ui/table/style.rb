@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Table
-      # Re-expressed through the cn-* theme layer (N11). Zero JS - the
+      # Re-expressed through the cn-* theme layer. Zero JS - the
       # row's selected state stays the Base UI vocabulary (data-selected),
       # its tint now in the theme with every other row tint (same-side).
       # The scroll container carries the themed hook (upstream ships the

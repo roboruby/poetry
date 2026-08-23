@@ -13,6 +13,8 @@ module Poetry
       # value: option, else the first enabled item) is decided in render
       # order before the input derives its activedescendant. Duplicate or
       # blank values raise at render (the base contract).
+      #
+      # @api private
       class ItemSet
         attr_reader :highlighted_id, :count
 
@@ -54,6 +56,8 @@ module Poetry
       # Shared part builders for the item union - mixed into the root
       # Component and the nested Group so both levels render the same
       # anatomy through the same Builder. Hosts must expose #item_set.
+      #
+      # @api private
       module Helpers
         private
 
@@ -86,6 +90,8 @@ module Poetry
       # DOM-focused - the activedescendant design) and NO aria-selected
       # (reserved for committed values - a bare palette has none; the
       # highlight is data-highlighted + the input's activedescendant).
+      #
+      # @api private
       class Item < Poetry::Core::Component
         internal_component!
         include Helpers
@@ -149,6 +155,8 @@ module Poetry
       # PARENT's item set so ids and the initial highlight stay in DOM
       # order. Plain ViewComponent::Base ON PURPOSE: nested parts are
       # anatomy, not registered components.
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include Helpers
@@ -203,7 +211,7 @@ module Poetry
         end
       end
 
-      # The Command palette (Command): a filterable
+      # The Command palette: a filterable
       # command list - an always-visible search input over a listbox of
       # actions, filtered client-side as you type. THE NET-NEW APG BUILD
       # (no Radix primitive; shadcn wraps cmdk): the APG editable-combobox
@@ -221,7 +229,15 @@ module Poetry
       # action - the host (or Combobox, which wraps this engine) owns the
       # consequences. filter: false is the server-driven mode (cmdk
       # shouldFilter parity) - the Turbo-frame async seam.
+      #
+      # @example
+      #   render Poetry::Ui::Command::Component.new("aria-label": "Command menu") do |command|
+      #     command.with_item(value: "new-file") { "New file" }
+      #     command.with_item(value: "search") { "Search" }
+      #   end
       class Component < Poetry::Core::Component
+        include Helpers
+
         AGENT_RULES = [
           "Use poetry_command - never hand-roll a filterable listbox with an input + a list and ad-hoc JS.",
           "Command items DO things; they carry no form value. Picking a value for a form is Combobox " \
@@ -243,15 +259,29 @@ module Poetry
         # interactive control the label must reach - never on the root div.
         INPUT_ARIA_KEYS = %w[label labelledby describedby].freeze
 
-        option :filter, :boolean, default: true
-        option :loop, :boolean, default: false
-        option :placeholder, :string
-        option :list_label, :string, default: -> { I18n.t("poetry.command.list_label") }
-        option :value, :string
-        option :disabled, :boolean, default: false
-        option :id, :string
+        # The named? disjunction, stated statically: the command-palette
+        # crash class - id-or-aria, checkable at write time.
+        REQUIRES_ANY = [
+          { hint: "the input's accessible name",
+            options: %w[id aria-label aria-labelledby aria] }
+        ].freeze
 
-        include Helpers
+        # Custom zero-results content (defaults to t('poetry.command.empty')).
+        renders_one :empty
+        # Custom pending content (a spinner); the HOST toggles visibility
+        # (Turbo frame events) - Command renders the part, never sets it.
+        renders_one :loading
+
+        # The item UNION: item | group (heading + items) | separator - one
+        # ordered collection (interleaving preserved; items and groups are
+        # part COMPONENTS so id assignment follows render/DOM order).
+        renders_many :items, types: {
+          item: { renders: ->(**options) { item_component(**options) }, as: :item },
+          group: { renders: lambda { |**options|
+            Group.new(item_set: item_set, item_wiring: item_wiring, **options)
+          }, as: :group },
+          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+        }
 
         use_stimulus do
           on :root do
@@ -276,6 +306,14 @@ module Poetry
             end
           end
         end
+
+        option :filter, :boolean, default: true
+        option :loop, :boolean, default: false
+        option :placeholder, :string
+        option :list_label, :string, default: -> { I18n.t("poetry.command.list_label") }
+        option :value, :string
+        option :disabled, :boolean, default: false
+        option :id, :string
 
         part "command", "Root of the palette - the input row over the listbox, carrying the " \
                         "engine controller"
@@ -324,34 +362,10 @@ module Poetry
                                "placeholder the controller interpolates)"
              }
 
-        # Custom zero-results content (defaults to t('poetry.command.empty')).
-        renders_one :empty
-        # Custom pending content (a spinner); the HOST toggles visibility
-        # (Turbo frame events) - Command renders the part, never sets it.
-        renders_one :loading
-
-        # The item UNION: item | group (heading + items) | separator - one
-        # ordered collection (interleaving preserved; items and groups are
-        # part COMPONENTS so id assignment follows render/DOM order).
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: { renders: lambda { |**options|
-            Group.new(item_set: item_set, item_wiring: item_wiring, **options)
-          }, as: :group },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
-
         def initialize(attributes = {})
           super
           @input_aria = extract_input_aria!
         end
-
-        # The named? disjunction, stated statically: the
-        # command_palette crash class - id-or-aria, checkable at write time.
-        REQUIRES_ANY = [
-          { hint: "the input's accessible name",
-            options: %w[id aria-label aria-labelledby aria] }
-        ].freeze
 
         def before_render
           return if named?

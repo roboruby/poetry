@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-# Host-side DESIGN.md export (N14 W1): serialize THIS app's poetry design as
-# the design-skill ecosystem's shared artifact, so external skills
-# (the slop-gate analogue, the design-rule analogue, frontend-design, an external design tool) can read the system the
-# app actually ships. Loaded automatically by the engine (lib/tasks).
+# Host-side DESIGN.md export: serialize THIS app's poetry design as
+# the design-skill ecosystem's shared artifact, so external design
+# skills can read the system the app actually ships. Loaded
+# automatically by the engine (lib/tasks).
 namespace :poetry do
   namespace :design do
     desc "Export this app's poetry design to DESIGN.md " \
@@ -30,7 +30,7 @@ namespace :poetry do
       puts "poetry:design:export: wrote #{path} (theme #{theme})"
     end
 
-    # The.cn-* override contract (, the intent-vs-accident
+    # The .cn-* override contract (the intent-vs-accident
     # model): token-level restyling has a sanctioned channel
     # (poetry:design:import -> design-overrides.css); host CSS that targets
     # theme-owned .cn-* classes is the OTHER channel, and every such
@@ -125,7 +125,7 @@ def poetry_design_run_import(source, task:)
   end
 end
 
-# The declared.cn-* overrides from the host manifest - tolerant
+# The declared .cn-* overrides from the host manifest - tolerant
 # like every other manifest reader (missing file/key = none declared).
 def poetry_design_declared_overrides
   path = Rails.root.join("config/poetry_components.yml")

@@ -5,7 +5,7 @@ require_relative "benchmark"
 
 module Poetry
   module Eval
-    # Degradation mode (a review borrow): the standing
+    # Degradation mode: the standing
     # benchmark measures ONE-SHOT output; this measures whether convention
     # adherence SURVIVES a working session - follow-up edits, unrelated
     # side questions polluting the context, and one explicit temptation to

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Switch
-      # Second of the toggle family (Switch) - the
+      # The Switch - the toggle family's
       # instant-effect on/off control: Checkbox's architecture wearing a
       # different ARIA skin and a thumb. Same store inversion (the hidden
       # native input is the form participant and the store), same
@@ -20,20 +20,12 @@ module Poetry
       # forms submit switches too - the flagship recipe is the Turbo
       # auto-submit (form data-action: "change->form#requestSubmit" hangs
       # off the store input's REAL change event).
+      #
+      # @example A named setting switch
+      #   render Poetry::Ui::Switch::Component.new(name: "notifications", checked: true,
+      #                                            label: "Email notifications")
       class Component < Poetry::Core::Component
         SIZES = %i[default sm].freeze
-
-        # The SHARED family controller (shipped by Checkbox, reused with
-        # zero fork): input first, real change event, then reflect.
-        use_stimulus do
-          on :root do
-            controller :checked do
-              register
-              value :input_id, if: :form_participant?
-              action :toggle, on: :click
-            end
-          end
-        end
 
         AGENT_RULES = [
           "Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces " \
@@ -49,6 +41,18 @@ module Poetry
           "the input sync (the controller writes all three)."
         ].freeze
 
+        # The SHARED family controller (shipped by Checkbox, reused with
+        # zero fork): input first, real change event, then reflect.
+        use_stimulus do
+          on :root do
+            controller :checked do
+              register
+              value :input_id, if: :form_participant?
+              action :toggle, on: :click
+            end
+          end
+        end
+
         # data-size on the control; the thumb reads it via
         # group-data-[size=*]/switch - no per-element size classes.
         style :size, default: :default, required: true, variants: SIZES
@@ -58,7 +62,7 @@ module Poetry
         option :value, :string, default: "1"
         option :unchecked_value, :string, default: "0"
         option :disabled, :boolean, default: false
-        # aria-required ONLY, never native required (the Field lock).
+        # aria-required ONLY, never native required (the Field family rule).
         option :required, :boolean, default: false
         option :label, :string
 
@@ -81,8 +85,8 @@ module Poetry
 
         def initialize(attributes = {})
           # A switch is strictly binary: aria-checked on role=switch must
-          # never be "mixed" - the violation is unrepresentable (the base-contract
-          # base-contract borrow). Guarded BEFORE the boolean cast would
+          # never be "mixed" - the violation is unrepresentable (the
+          # base-contract rule). Guarded BEFORE the boolean cast would
           # silently truthy it away.
           if attributes.values_at(:checked, "checked").any? { |value| value.to_s == "indeterminate" }
             raise ArgumentError, "Switch is strictly binary - no :indeterminate (use Checkbox for tri-state)"

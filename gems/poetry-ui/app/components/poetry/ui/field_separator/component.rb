@@ -8,6 +8,9 @@ module Poetry
       # row, with an optional inline caption riding on top ("Or continue
       # with"). The caption is visual chrome on a decorative rule - the
       # Separator inside stays aria-hidden either way.
+      #
+      # @example A captioned divider between stacked fields
+      #   render Poetry::Ui::FieldSeparator::Component.new { "Or continue with" }
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Divides stacked fields inside a poetry_field_group - not a general-purpose rule " \

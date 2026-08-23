@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module ToggleGroup
-      # Re-expressed through the cn-* theme layer (N11). The gap mechanism
+      # Re-expressed through the cn-* theme layer. The gap mechanism
       # (gap-[--spacing(var(--gap))]) and the whole data-[spacing=0]
       # segmented-control chain stay inline - upstream's own split keeps
       # the segmentation machinery in markup; the group radius + the
@@ -18,9 +18,9 @@ module Poetry
         # OVER adjacent joined segments, and the data-[spacing=0] chain is
         # the segmented control (joined corners + collapsed outline borders).
         # The WHOLE segment-radius cluster (rounded-none + first/last edge
-        # radii) moved theme-side at N12 W2 - split-side rule: an inline
+        # radii) is theme-side - split-side rule: an inline
         # rounded-none would beat every theme's edge rounding by layer
-        # order (a judge caught exactly that when only the edges moved).
+        # order (exactly that happened when only the edges moved).
         element :item, "cn-toggle-group-item w-auto min-w-0 shrink-0 focus:z-10 focus-visible:z-10 " \
                        "data-[spacing=0]:shadow-none " \
                        "group-data-horizontal/toggle-group:data-[spacing=0]:data-[variant=outline]:border-l-0 " \

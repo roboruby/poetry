@@ -3,14 +3,14 @@
 module Poetry
   module Ui
     module Combobox
-      # Re-expressed through the cn-* theme layer (N11). The embedded
+      # Re-expressed through the cn-* theme layer. The embedded
       # Command parts still reuse Command::Style verbatim. The demo's
       # h-9 input retune stays INLINE (a utilities-layer override that
       # beats the themed cn-command-input h-10 - the cn() behavior). The
       # themed demo width still loses to the width: knob (caller
       # utilities beat the base layer).
       class Style < Poetry::Core::Style
-        # The demo trigger IS the golden Button shape with the demo deltas
+        # The demo trigger IS Button's reference shape with the demo deltas
         # (justify-between, font-normal, the w-50 demo width) - all riding
         # .cn-combobox-trigger now.
         element :trigger, "cn-combobox-trigger inline-flex shrink-0 items-center justify-between " \

@@ -5,8 +5,8 @@
     <% end %>
     <% if dropdown_caption? %>
       <%# No caption target here: the controller reflects navigation into
-          the selects and their visible labels (data-calendar-unit /
-         ). Upstream's overlay pattern: the label span
+          the selects and their visible labels (data-calendar-unit).
+          Upstream's overlay pattern: the label span
           is what you SEE (aria-hidden - the select carries the value);
           the real select sits invisibly on top. %>
       <div data-slot="calendar-caption" class="<%= css(:caption_dropdowns) %>">

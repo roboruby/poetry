@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Textarea
-      # Input's multiline sibling (Textarea): the
+      # Input's multiline sibling: the
       # native <textarea> on poetry's semantic tokens, template-less,
       # ZERO JS - auto-grow is the field-sizing-content CSS property
       # (unsupported browsers keep min-h-16/rows: + the native resize
@@ -14,6 +14,10 @@ module Poetry
       # Field layer (label pairing, describedby, aria-invalid,
       # aria-required-not-native) - this component just refuses to bypass
       # it.
+      #
+      # @example A free-text field
+      #   render Poetry::Ui::Textarea::Component.new(name: "bio", rows: 4,
+      #                                              placeholder: "Tell us about yourself")
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Wire through Field/FormBuilder (control_attributes) - never hand-write the aria plumbing.",

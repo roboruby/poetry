@@ -189,7 +189,7 @@ module Poetry
         end
 
         def test_the_parents_show_close_button_is_hidden_from_the_contract
-          # A Drawer renders no corner X (vaul parity), so the inherited
+          # A Drawer renders no corner X (source parity), so the inherited
           # Dialog option must not project - a listed option the template
           # ignores would be a contract lie.
           refute_includes Component.option_attributes, :show_close_button

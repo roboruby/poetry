@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Select
-      # Re-expressed through the cn-* theme layer (N11). Still popper-only
+      # Re-expressed through the cn-* theme layer. Still popper-only
       # (the source's popper-conditional classes stay baked in - now inside
       # the theme rules). Mechanisms inline: popper vars, the viewport's
       # trigger-size binding (whole part machinery, unnamed), the
@@ -21,11 +21,11 @@ module Poetry
                           "overflow-x-hidden overflow-y-auto"
 
         # Padding/scroll-margin are theme-owned via cn-select-viewport
-        # (W5 roster pass; sera runs p-1.5). Sizing vars stay structural.
+        # (sera runs p-1.5). Sizing vars stay structural.
         # min-h, NOT upstream's h: Radix neutralizes its own h binding with
         # injected flex styles poetry doesn't carry - a hard h collapses the
         # whole popup to trigger height (62px for a five-item list) the
-        # moment the var is fed (the wiring made it live; goldens
+        # moment the var is fed (the part-var wiring made it live; goldens
         # never see open popups, so only a human caught it).
         element :viewport, "cn-select-viewport min-h-[var(--radix-select-trigger-height)] w-full " \
                            "min-w-[var(--radix-select-trigger-width)]"

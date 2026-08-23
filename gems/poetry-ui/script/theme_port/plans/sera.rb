@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# N12 W4 sera plan ("editorial and typographic") for write_theme.rb. The
+# sera plan ("editorial and typographic") for write_theme.rb. The
 # editorial theme: uppercase tracked type everywhere (buttons/menus/
 # labels/titles at text-xs font-semibold tracking-wider/widest), sizes
 # one step UP (h-10 default button, h-11 lg, generous menu px-3 py-2),
@@ -14,17 +14,17 @@
 # dot), shadow-md overlay temperature, black/20 blur-sm scrims. Fonts:
 # the serif pairing is upstream create-flow metadata only - the
 # fragment speaks tracking/uppercase/size/weight, ported verbatim; the
-# family story belongs to the docs site (W5).
+# family story belongs to the docs site.
 #
 # AA posture: no tinted form surfaces (fields are transparent with
 # underlines; the lone bg-input/50 is the decorative slider track), so
-# the kit reduces to the soft-destructive pair (maia's body) on
+# the kit reduces to the soft-destructive pair (AA-held, maia's body) on
 # button + the text-only destructive badge, plus mira's 0.8 kbd pair on
 # the addon (kbd chips sit on bg-muted-foreground/10 there).
 #
 # Judged notes: button-group orientation follows upstream (caps-only at
 # rounded-none!, neighbor border-collapse dropped) but poetry's
-# structural flex-col stays on the vertical rule (the W2 delta-rule
+# structural flex-col stays on the vertical rule (the delta-rule
 # lesson); tabs-trigger ships poetry's full machinery with sera
 # geometry (upstream's active state lives inline in its base component,
 # theme-side in poetry); the swipe-axis drawer-handle anatomy is
@@ -62,7 +62,7 @@ PLAN = {
   "cn-alert-dialog-header" => "gap-2",
   # media chip: upstream sera is size-16 rounded-none svg-8 - poetry's default
   # differs only in radius, and a rounded-md chip inside a radius-0 theme is
-  # an identity break (W4 judge flag on the lyra twin; poetry-own surface,
+  # an identity break (judge flag on the lyra twin; poetry-own surface,
   # theme radius)
   "cn-alert-dialog-media" => "mb-2 size-16 rounded-none bg-muted *:[svg:not([class*='size-'])]:size-8",
   "cn-alert-dialog-title" => "text-lg font-semibold uppercase tracking-wider",
@@ -111,7 +111,7 @@ PLAN = {
     "h-11 gap-1.5 px-8 has-data-[icon=inline-end]:pr-5 has-data-[icon=inline-start]:pl-5 " \
     "has-[>svg:first-child]:pl-5 has-[>svg:last-child]:pr-5",
 
-  # --- soft destructive, AA-held (posture; maia's exact body) ------
+  # --- soft destructive, AA-held (AA-contrast posture; maia's exact body) ------
   "cn-button-variant-destructive" =>
     "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 " \
     "dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 " \
@@ -136,7 +136,7 @@ PLAN = {
   #     theme the per-slot segmentation is the control's primary visual
   #     structure, so the gap ports as not-first:ml-1 on the SLOT (each
   #     group is its own flex parent, so :first-child scopes per group;
-  #     the swipe-handle vocabulary move, W4 judge catch) -----------------
+  #     the swipe-handle vocabulary move, judge catch) -----------------
   "cn-input-otp-slot" => { base: :upstream, add: %w[not-first:ml-1] },
 
   # --- addon inline aligns: upstream sera COMMENTS THESE RULES OUT (the
@@ -150,7 +150,7 @@ PLAN = {
   #     underline command box collapses onto the wrapper (border-b is
   #     poetry's own, px-3 = upstream's inner box, py-1 = its outer p-1,
   #     m-1 mb-0 = the inset that seats the underline 4px off the panel
-  #     edges like upstream's inner box - W4 judge nuance). Also covers
+  #     edges like upstream's inner box - judge nuance). Also covers
   #     the combobox search row (poetry mounts the command wrapper there;
   #     the combobox-content *:input-group cluster is inert, roster-wide) -
   "cn-command-input-wrapper" => "m-1 mb-0 gap-2 border-b px-3 py-1",
@@ -165,7 +165,7 @@ PLAN = {
 
   # --- dialog / sheet / sidebar-mobile: shadow-md, black/20 scrim; the
   #     bare `grid` display token is dropped so the native <dialog> closed
-  #     state survives (the W3 rule) ---------------------------------------
+  #     state survives (the native-dialog rule) ---------------------------------------
   "cn-dialog-content" =>
     "w-full max-w-[calc(100%-2rem)] bg-popover text-popover-foreground ring-foreground/10 " \
     "gap-6 rounded-none p-6 text-sm shadow-md ring-1 duration-100 sm:max-w-md #{BACKDROP} " \
@@ -179,15 +179,15 @@ PLAN = {
 
   # --- drawer: square panel, borders per side via poetry's own direction
   #     rules ---------------------------------------------------------------
-  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # Roster pass: drawer scrim (native ::backdrop) is theme-owned now;
   # values = upstream sera drawer-overlay at d0fae528.
   "cn-drawer-content" =>
     "bg-popover text-popover-foreground text-sm " \
     "backdrop:bg-black/20 supports-backdrop-filter:backdrop:backdrop-blur-sm",
 
-  # W5 roster pass: upstream sera pads menus per-group (cn-select-group
+  # Roster pass: upstream sera pads menus per-group (cn-select-group
   # p-1.5 scroll-my-1.5); poetry's single viewport carries it menu-level,
-  # closing the W4 KNOWN-DELTA. Poetry-only name - explicit String (W4 lesson).
+  # closing the ledgered KNOWN-DELTA. Poetry-only name - explicit String.
   "cn-select-viewport" => "p-1.5 scroll-my-1.5",
   "cn-drawer-direction-down" => "rounded-none border-t",
   "cn-drawer-direction-left" => "rounded-none border-r",
@@ -240,8 +240,8 @@ PLAN = {
   #     whole-cluster discipline; upstream's active state lives inline in
   #     its base component, theme-side in poetry). The default-variant
   #     active shadow-sm is DROPPED: at d0fae528 only vega's upstream rule
-  #     ships it - every other style renders box-shadow none (W4 judge
-  #     catch, settled-read receipt; roster follow-on for the W1-W3 five) -
+  #     ships it - every other style renders box-shadow none (judge
+  #     catch, settled-read receipt; roster follow-on for the five earlier themes) -
   "cn-tabs-trigger" =>
     "gap-2 rounded-none border border-transparent px-4 py-1.5 text-xs font-semibold uppercase " \
     "tracking-wider text-foreground/60 hover:text-foreground " \
@@ -288,7 +288,7 @@ PLAN = {
   "cn-toast" => { base: :default, sub: { "rounded-md" => "rounded-none" } },
 
   # --- form controls: underline fields; the placeholder token returns
-  #     with the W2 side-move (upstream omits it) --------------------------
+  #     with the side-move (upstream omits it) --------------------------
   "cn-input" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
   "cn-textarea" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
 
@@ -304,21 +304,21 @@ PLAN = {
 }.freeze
 
 HEADER = <<~CSS
-  /* poetry sera theme (N12 W4) - upstream style-sera.css ported onto the
+  /* poetry sera theme - upstream style-sera.css ported onto the
    * cn-* layer (pinned clone d0fae528). Same contract as default.css:
    * imported layer(base); bare selectors while installs carry ONE theme;
    * rule order per component = base < elements < variants < compounds;
    * split-side, no-empty-rules and cross-component-last rules apply.
    *
-   * Port disciplines identical to vega/rhea (see the N12 plan note
-   * close-outs + docs/sera-port-ledger.txt): verbatim where poetry
+   * Port disciplines identical to vega/rhea (see
+   * docs/sera-port-ledger.txt): verbatim where poetry
    * speaks the vocabulary; data-vertical -> data-[orientation=*];
    * data-[state=on] -> data-pressed; overlays -> native-dialog
    * backdrop:* (black/20 blur-sm); upstream ! stripped except the
    * sidebar collapse geometry and default-inherited precedents; icon
    * paddings ship upstream's has-data-[icon=*] (inert) plus working
    * >svg:first/last-child twins; soft destructive holds AA via
-   * relative-oklch light-mode darkening (posture). Sera-specific:
+   * relative-oklch light-mode darkening (AA-contrast posture). Sera-specific:
    * editorial uppercase tracked type at every level with sizes one step
    * up (h-10 buttons), rounded-none universal, underline-only form
    * fields (border-b transitions instead of focus rings), text-only

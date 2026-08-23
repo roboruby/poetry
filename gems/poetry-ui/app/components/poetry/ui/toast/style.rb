@@ -3,8 +3,9 @@
 module Poetry
   module Ui
     module Toast
-      # Re-expressed through the cn-* theme layer (N11) - still poetry's
-      # OWN visual (the source ships the sonner library). The corner-aware
+      # Re-expressed through the cn-* theme layer - still poetry's
+      # OWN visual (the source delegates to a React-only toast
+      # library). The corner-aware
       # slide chains ride the theme with the rest of the treatment (they
       # key on the TOASTER's data-position through group/toaster at
       # runtime); the default variant stays an empty string (the base IS

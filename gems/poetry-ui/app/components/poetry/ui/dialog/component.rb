@@ -3,12 +3,19 @@
 module Poetry
   module Ui
     module Dialog
-      # The Dialog - the depth-moat overlay, on the PLATFORM trap:
+      # The Dialog - the depth-moat overlay, built ON the platform:
       # a native <dialog> + showModal() owns focus trapping, Esc, top-layer
       # stacking, and focus return; the poetry--core--dialog controller adds
       # the data-open/data-closed pair, backdrop dismissal, and the scroll
       # lock. The title is
       # REQUIRED (the accessible name - aria-labelledby is always wired).
+      #
+      # @example A confirmation dialog
+      #   render Poetry::Ui::Dialog::Component.new do |dialog|
+      #     dialog.with_trigger(variant: :outline) { "Open" }
+      #     dialog.with_title { "Are you sure?" }
+      #     dialog.with_description { "This cannot be undone." }
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -24,6 +31,29 @@ module Poetry
           "show_close_button: false removes the corner X - keep a footer action (Esc still closes).",
           "Destructive confirmations pair a destructive Button in the footer - never auto-submit."
         ].freeze
+
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { title: "the accessible name" }.freeze
+
+        # The forwarding-lambda fact: with_trigger renders a Button -
+        # callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
+        # The trigger is a poetry Button wired to open the dialog - agents
+        # pass Button props: with_trigger(variant: :outline) { "Open" }.
+        renders_one :trigger, lambda { |**options, &block|
+          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
+              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+            end
+            Button::Component.new(**options, &block)
+          end
+        }
+        renders_one :title
+        renders_one :description
+        renders_one :footer
 
         # Sheet and Drawer subclass this and REDECLARE both elements with
         # their own controllers (replace-on-redeclare); the trigger lambda
@@ -75,29 +105,6 @@ module Poetry
         part "dialog-title", "The heading - the dialog's accessible name (required slot)"
         part "dialog-description", "Muted copy under the title, wired to aria-describedby"
         part "dialog-footer", "Action row at the bottom of the panel"
-
-        # The trigger is a poetry Button wired to open the dialog - agents
-        # pass Button props: with_trigger(variant: :outline) { "Open" }.
-        renders_one :trigger, lambda { |**options, &block|
-          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
-              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-            end
-            Button::Component.new(**options, &block)
-          end
-        }
-        renders_one :title
-        renders_one :description
-        renders_one :footer
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { title: "the accessible name" }.freeze
-
-        # The forwarding-lambda component fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { trigger: Button::Component }.freeze
 
         def before_render
           raise ArgumentError, "Dialog requires with_title (the accessible name)" unless title?

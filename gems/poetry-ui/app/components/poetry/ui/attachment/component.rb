@@ -3,12 +3,18 @@
 module Poetry
   module Ui
     module Attachment
-      # File/image chip for the AI-chat set (Attachment).
-      # poetry ships the ATTRIBUTE CONTRACT: the server renders data-upload-state
+      # File/image chip for the AI-chat set. poetry ships the ATTRIBUTE
+      # CONTRACT: the server renders data-upload-state
       # (idle|uploading|processing|error|done) and flips it by re-render /
       # Turbo Stream replace - upload orchestration is explicitly the
       # host's. In-flight and error states carry an sr-only role=status
       # announcement (i18n'd); the visual lifecycle is pure CSS.
+      #
+      # @example A finished upload
+      #   render Poetry::Ui::Attachment::Component.new do |attachment|
+      #     attachment.with_title { "quarterly-report.pdf" }
+      #     attachment.with_description { "1.2 MB" }
+      #   end
       class Component < Poetry::Core::Component
         STATES = %i[idle uploading processing error done].freeze
         SIZES = %i[default sm xs].freeze
@@ -26,6 +32,33 @@ module Poetry
           "actions) - don't also wrap the chip in a link.",
           "error state needs a with_description explaining the failure - the tint alone is not the message."
         ].freeze
+
+        renders_one :media, lambda { |variant: :icon, &block|
+          raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
+
+          content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
+                            class: css(:media, class: (if variant == :image
+                                                         "cn-attachment-media-variant-image"
+                                                       end)), &block)
+        }
+        renders_one :title
+        renders_one :description
+        renders_many :actions, lambda { |label:, **options, &block|
+          # Caller data: augments the slot marker instead of replacing it
+          # at the kwargs splat.
+          data = { slot: "attachment-action" }.merge(options.delete(:data) || {})
+          Button::Component.new(variant: options.delete(:variant) || :ghost,
+                                size: options.delete(:size) || :"icon-xs",
+                                label: label, data: data, **options, &block)
+        }
+        renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
+          attrs = Poetry::Core::HTML::Attributes.merged(
+            { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
+          )
+          attrs[:type] = "button" if tag == :button
+          attrs[:href] = href if tag == :a
+          content_tag(tag, attrs, &block)
+        }
 
         style :size, default: :default, required: true, variants: SIZES
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
@@ -56,33 +89,6 @@ module Poetry
         part "attachment-actions", "Row of with_action poetry Buttons"
         part "attachment-status", "sr-only role=status announcement for the in-flight and " \
                                   "error states (uploading/processing/error)"
-
-        renders_one :media, lambda { |variant: :icon, &block|
-          raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
-
-          content_tag(:div, "data-slot" => "attachment-media", "data-variant" => variant,
-                            class: css(:media, class: (if variant == :image
-                                                         "cn-attachment-media-variant-image"
-                                                       end)), &block)
-        }
-        renders_one :title
-        renders_one :description
-        renders_many :actions, lambda { |label:, **options, &block|
-          # Caller data: augments the slot marker instead of replacing it
-          # at the kwargs splat.
-          data = { slot: "attachment-action" }.merge(options.delete(:data) || {})
-          Button::Component.new(variant: options.delete(:variant) || :ghost,
-                                size: options.delete(:size) || :"icon-xs",
-                                label: label, data: data, **options, &block)
-        }
-        renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
-          attrs = Poetry::Core::HTML::Attributes.merged(
-            { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
-          )
-          attrs[:type] = "button" if tag == :button
-          attrs[:href] = href if tag == :a
-          content_tag(tag, attrs, &block)
-        }
 
         def announced?
           ANNOUNCED_STATES.include?(state)

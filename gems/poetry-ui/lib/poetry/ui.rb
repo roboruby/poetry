@@ -11,26 +11,22 @@ require_relative "ui/chat"
 module Poetry
   # The component library: shadcn-parity ViewComponents built entirely on
   # poetry-core's PUBLIC DSL - if a component here needs private core API,
-  # that is a core API gap, not a license to reach in (dogfooding).
+  # that is a core API gap, not a license to reach in.
   module Ui
     # The committed static-template-class list (herb-extracted in poetry's
     # CI, drift-gated) - poetry:install reads it so hosts never need herb.
     TEMPLATE_CLASSES_PATH = "config/template_classes.txt"
 
-    # Where the block templates live (Blocks v1): the generator's source
-    # tree, scanned by the registry builder, the template-class extraction,
+    # Where the block templates live: the generator's source tree,
+    # scanned by the registry builder, the template-class extraction,
     # the dummy's /blocks previews, and the MCP server's describe_block.
     BLOCKS_DIR = "lib/generators/poetry/block/templates"
 
-    # The usage skill's family partition (Skills v1): every
-    # component in exactly one reference file, so the skill's menu stays
-    # lean and an agent loads only the family it is composing in. The
-    # coverage gate fails on any new component until it is mapped here.
     # Curated composition edges: which components a copy-in of X also needs
-    # locally. Single-sourced here since Ecosystem v1 - the add
-    # generator's recursive copy AND every registry item's
-    # registryDependencies read this one map. (Replaced by registry-carried
-    # anatomy when the contract's anatomy section lands.)
+    # locally. Single-sourced here - the add generator's recursive copy AND
+    # every registry item's registryDependencies read this one map.
+    # (Replaced by registry-carried anatomy when the contract's anatomy
+    # section lands.)
     COMPONENT_DEPENDENCIES = {
       "button" => %w[icon],
       "dialog" => %w[button icon],
@@ -55,6 +51,10 @@ module Poetry
       "code_block" => %w[button icon] # the copy affordance
     }.freeze
 
+    # The usage skill's family partition: every component in exactly one
+    # reference file, so the skill's menu stays lean and an agent loads
+    # only the family it is composing in. The coverage gate fails on any
+    # new component until it is mapped here.
     SKILL_FAMILIES = {
       "forms" => %w[autocomplete button button_group calendar checkbox combobox date_field date_picker field
                     field_group field_separator fieldset
@@ -124,7 +124,7 @@ module Poetry
         path.exist? ? YAML.safe_load_file(path) : nil
       end
 
-      # The shadcn-interop item projection (Ecosystem v1), boot-free
+      # The shadcn-interop item projection, boot-free
       # from the COMMITTED registry - the docs site serves /r/*.json from
       # this, and the add generator matches gem-satisfied dependencies
       # against its names.
@@ -136,8 +136,8 @@ module Poetry
         )
       end
 
-      # The recipes projection (Recipes Channel v1): skill bundles,
-      # scaffold template sets, and screen slices as registry items -
+      # The recipes projection: skill bundles, scaffold template
+      # sets, and screen slices as registry items -
       # served at /r/*.json beside components and blocks, installed by
       # poetry:add or any shadcn-compatible client.
       def recipe_items
@@ -146,8 +146,8 @@ module Poetry
         )
       end
 
-      # The installable component-usage skill (Skills v1): a lean
-      # SKILL.md menu + per-family references, generated from the live
+      # The installable component-usage skill: a lean SKILL.md menu +
+      # per-family references, generated from the live
       # registry - the seam the poetry:skill generator and the eval
       # harness share (the agents_section_text pattern).
       def skill_files
@@ -205,7 +205,7 @@ module Poetry
 
       # The registry "helper_args" map: max positional arity for EVERY
       # poetry_* helper, introspected from the real method signatures (the
-      # blocks-gate site_nav crash: `poetry_link "text", href:` on a
+      # site_nav crash: `poetry_link "text", href:` on a
       # kwargs-only helper). Rest-signatures are omitted - the linter
       # enforces arity only where a key exists.
       POSITIONAL_PARAM_KINDS = %i[req opt].freeze
@@ -230,8 +230,8 @@ module Poetry
         end
       end
 
-      # The registry "blocks" section (Blocks v1): every block template's
-      # metadata, all source-derived - title/description/keywords from the
+      # The registry "blocks" section: every block template's metadata,
+      # all source-derived - title/description/keywords from the
       # mandatory poetry:block header (keywords power the MCP compose
       # tool's brief routing), the composed component list from the
       # template's own poetry_* calls (longest-prefix fold:

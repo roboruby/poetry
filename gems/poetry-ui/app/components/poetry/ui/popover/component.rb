@@ -3,14 +3,13 @@
 module Poetry
   module Ui
     module Popover
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # The placement vocabularies, declared ONCE at module level - shared
+      # by the validations and the part-state declarations.
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
-      # The popper-consumer trio's click-open member ([[CL Component -
-      # Popover]]): a role=dialog panel anchored to its trigger - the APG
+      # The popper-consumer trio's click-open member: a role=dialog panel
+      # anchored to its trigger - the APG
       # dialog-pattern-lite. Two hosts, one owned controller: the root
       # carries poetry--core--popover (toggle / dismiss / focus-in+return)
       # + poetry--core--popper (anchored positioning); the content's layer
@@ -23,6 +22,13 @@ module Poetry
       # (Radix Popover parity), focus moves to the first tabbable on open
       # (focus-scope's mount default, not vetoed - no data-open-reason),
       # and the trigger has no custom keydown (native button Enter/Space).
+      #
+      # @example
+      #   render Poetry::Ui::Popover::Component.new do |popover|
+      #     popover.with_trigger(variant: :outline) { "Open popover" }
+      #     popover.with_title { "Dimensions" }
+      #     tag.p("Set the dimensions for the layer.")
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -46,83 +52,14 @@ module Poetry
           "comprehension does not)."
         ].freeze
 
-        option :open, :boolean, default: false
-        # Radix Popover default FALSE - the deliberate contrast with the
-        # menu family's modal: true (documented in both contracts).
-        option :modal, :boolean, default: false
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :center # shadcn Content default
-        option :side_offset, :integer, default: 4 # shadcn Content default
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
-        # role=dialog fallback name when no title part is present.
-        option :label, :string
-        # The panel's class merge seam (shadcn demo parity: the caller
-        # overrides the w-72 default with content_class: "w-80"; root-level
-        # class: styles the wrapper, not the panel).
-        option :content_class, :string
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the panel's control" }.freeze
 
-        use_stimulus do
-          on :root do
-            controller :popover do
-              register
-              value :open
-              value :modal
-            end
-            controller :popper do
-              register
-              # The trigger anchors by id selector; an anchor part
-              # overrides it with the anchor TARGET (render-time decision -
-              # slots may be set in any order, so the trigger itself
-              # carries no popper target).
-              value :anchor, from: :trigger_anchor_selector, unless: :anchor?
-              value :side
-              value :align
-              value :side_offset
-              value :align_offset
-              value :avoid_collisions
-            end
-          end
-          on :trigger do
-            controller(:popover) { action :toggle, on: :click }
-          end
-          on :anchor_part do
-            controller(:popper) { target :anchor }
-          end
-          on :content do
-            controller(:popper) { target :content }
-          end
-        end
-
-        validates :side, inclusion: { in: SIDES }
-        validates :align, inclusion: { in: ALIGNS }
-
-        part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
-        part "popover-anchor", "Optional alternate popper anchor (Radix PopoverAnchor) - when " \
-                               "present the panel positions against it instead of the trigger"
-        part "popover-content", "The role=dialog panel - positioning, animation, and the open " \
-                                "state ride here",
-             states: {
-               "data-open" => "panel is open (the controller flips the pair at runtime)",
-               "data-closed" => "panel is closed (the server-rendered state; hidden rides along)",
-               "data-side" => { condition: "always - the side (initial placement, re-resolved " \
-                                           "live by popper after flip)",
-                                values: SIDES.map(&:to_s) },
-               "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
-                                 values: ALIGNS.map(&:to_s) }
-             },
-             vars: {
-               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
-                                       "animation",
-               "--available-width" => "viewport space left for the panel (popper, post-flip)",
-               "--available-height" => "viewport space left for the panel (popper, post-flip)",
-               "--anchor-width" => "the anchor's measured width (popper)",
-               "--anchor-height" => "the anchor's measured height (popper)"
-             }
-        part "popover-header", "Title block wrapping the title and description (renders only " \
-                               "when either is present)"
-        part "popover-title", "The heading - the panel's accessible name via aria-labelledby"
-        part "popover-description", "Muted copy under the title, wired to aria-describedby"
+        # The forwarding-lambda fact: with_trigger renders a Button -
+        # callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
 
         # The trigger is a poetry Button wired as the dialog control (demo
         # parity: with_trigger(variant: :outline) { "Open popover" }) - the
@@ -160,14 +97,83 @@ module Poetry
         # Supporting text - presence wires the content's aria-describedby.
         renders_one :description
 
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { trigger: "the panel's control" }.freeze
+        use_stimulus do
+          on :root do
+            controller :popover do
+              register
+              value :open
+              value :modal
+            end
+            controller :popper do
+              register
+              # The trigger anchors by id selector; an anchor part
+              # overrides it with the anchor TARGET (render-time decision -
+              # slots may be set in any order, so the trigger itself
+              # carries no popper target).
+              value :anchor, from: :trigger_anchor_selector, unless: :anchor?
+              value :side
+              value :align
+              value :side_offset
+              value :align_offset
+              value :avoid_collisions
+            end
+          end
+          on :trigger do
+            controller(:popover) { action :toggle, on: :click }
+          end
+          on :anchor_part do
+            controller(:popper) { target :anchor }
+          end
+          on :content do
+            controller(:popper) { target :content }
+          end
+        end
 
-        # The forwarding-lambda component fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { trigger: Button::Component }.freeze
+        option :open, :boolean, default: false
+        # Radix Popover default FALSE - the deliberate contrast with the
+        # menu family's modal: true (documented in both contracts).
+        option :modal, :boolean, default: false
+        option :side, :symbol, default: :bottom
+        option :align, :symbol, default: :center # shadcn Content default
+        option :side_offset, :integer, default: 4 # shadcn Content default
+        option :align_offset, :integer, default: 0
+        option :avoid_collisions, :boolean, default: true
+        # role=dialog fallback name when no title part is present.
+        option :label, :string
+        # The panel's class merge seam (shadcn demo parity: the caller
+        # overrides the w-72 default with content_class: "w-80"; root-level
+        # class: styles the wrapper, not the panel).
+        option :content_class, :string
+
+        validates :side, inclusion: { in: SIDES }
+        validates :align, inclusion: { in: ALIGNS }
+
+        part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
+        part "popover-anchor", "Optional alternate popper anchor (Radix PopoverAnchor) - when " \
+                               "present the panel positions against it instead of the trigger"
+        part "popover-content", "The role=dialog panel - positioning, animation, and the open " \
+                                "state ride here",
+             states: {
+               "data-open" => "panel is open (the controller flips the pair at runtime)",
+               "data-closed" => "panel is closed (the server-rendered state; hidden rides along)",
+               "data-side" => { condition: "always - the side (initial placement, re-resolved " \
+                                           "live by popper after flip)",
+                                values: SIDES.map(&:to_s) },
+               "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
+                                 values: ALIGNS.map(&:to_s) }
+             },
+             vars: {
+               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
+                                       "animation",
+               "--available-width" => "viewport space left for the panel (popper, post-flip)",
+               "--available-height" => "viewport space left for the panel (popper, post-flip)",
+               "--anchor-width" => "the anchor's measured width (popper)",
+               "--anchor-height" => "the anchor's measured height (popper)"
+             }
+        part "popover-header", "Title block wrapping the title and description (renders only " \
+                               "when either is present)"
+        part "popover-title", "The heading - the panel's accessible name via aria-labelledby"
+        part "popover-description", "Muted copy under the title, wired to aria-describedby"
 
         def before_render
           raise ArgumentError, "Popover requires with_trigger (the panel's control)" unless trigger?

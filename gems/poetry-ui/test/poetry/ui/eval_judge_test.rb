@@ -5,7 +5,7 @@ require_relative "../../../eval/judge"
 
 module Poetry
   module Ui
-    # The paired judge's vote math and honesty invariants (N15 W1) - pure
+    # The paired judge's vote math and honesty invariants - pure
     # functions, tested without the claude CLI. The subprocess seam
     # (claude_vote) is exercised by the calibration run, not here.
     class EvalJudgeTest < Minitest::Test

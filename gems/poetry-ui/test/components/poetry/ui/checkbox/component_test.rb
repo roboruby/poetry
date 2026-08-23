@@ -116,8 +116,8 @@ module Poetry
 
           assert_equal "true", control["aria-required"]
           assert_equal "Accept terms", control["aria-label"]
-          # Never native required (the Field lock): no unfocusable
-          # native validation bubbles on an aria-hidden tabindex=-1 input.
+          # Never native required: no unfocusable native validation
+          # bubbles on an aria-hidden tabindex=-1 input.
           assert(fragment.css("input").none? { |input| input.key?("required") })
         end
 

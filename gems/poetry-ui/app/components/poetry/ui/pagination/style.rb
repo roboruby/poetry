@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Pagination
-      # Re-expressed through the cn-* theme layer (N11). The page links
+      # Re-expressed through the cn-* theme layer. The page links
       # reuse Button styling; the nav root and the responsive label pair
       # (hidden sm:block - a split-side responsive pair, kept together
       # inline) stay utility-only.

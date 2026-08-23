@@ -10,6 +10,7 @@ module Poetry
       # the two-controller split: poetry--core--tabs (activation) on the
       # root + poetry--core--roving-focus (keyboard) on the tablist.
       #
+      # @example
       #   <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
       #     <% tabs.with_tab("Account", value: "account") do %>...panel...<% end %>
       #     <% tabs.with_tab("Password", value: "password") do %>...panel...<% end %>
@@ -28,6 +29,25 @@ module Poetry
           "label: names the tablist (aria-label) - recommended whenever the page has several tab sets.",
           "Tabs switch VIEWS of one context; use navigation (links) when the URL should change."
         ].freeze
+
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
+
+        # panel: false opts a tab out of having a panel AT ALL (upstream's
+        # list-only demos - tabs-line, tabs-disabled): no tabpanel renders
+        # and the trigger drops aria-controls. The raise still guards the
+        # accidental case - list-only is a declaration, never a default.
+        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
+          unless block || defer || panel == false
+            raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
+          end
+
+          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: block,
+                              defer: defer, panel_less: panel == false)
+          nil
+        }
 
         use_stimulus do
           on :root do
@@ -52,8 +72,6 @@ module Poetry
             controller(:tabs) { action :activate, on: :click }
           end
         end
-
-        Tab = Data.define(:title, :value, :disabled, :panel, :defer, :panel_less)
 
         option :default, :string
         option :label, :string
@@ -88,29 +106,6 @@ module Poetry
                "data-value" => "the owning tab's value"
              }
 
-        # panel: false opts a tab out of having a panel AT ALL (upstream's
-        # list-only demos - tabs-line, tabs-disabled): no tabpanel renders
-        # and the trigger drops aria-controls. The raise still guards the
-        # accidental case - list-only is a declaration, never a default.
-        renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
-          unless block || defer || panel == false
-            raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
-          end
-
-          tab_defs << Tab.new(title: title, value: value.to_s, disabled: disabled, panel: block,
-                              defer: defer, panel_less: panel == false)
-          nil
-        }
-
-        def tab_defs
-          @tab_defs ||= []
-        end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
-
         def before_render
           raise ArgumentError, "Tabs requires at least one with_tab" unless tabs?
 
@@ -118,6 +113,10 @@ module Poetry
 
           raise ArgumentError, "Tabs default: #{default.inspect} matches no tab value " \
                                "(#{tab_defs.map(&:value).inspect})"
+        end
+
+        def tab_defs
+          @tab_defs ||= []
         end
 
         # The server-rendered active tab: default: when given, else the
@@ -133,7 +132,7 @@ module Poetry
         def trigger_id(tab) = "#{instance_id}-trigger-#{tab.value}"
         def panel_id(tab) = "#{instance_id}-panel-#{tab.value}"
 
-        # N13 W5: defer: swaps the panel body for a lazy turbo-frame - a
+        # defer: swaps the panel body for a lazy turbo-frame - a
         # hidden panel is not visible, so Turbo fetches on first
         # activation with zero tabs-controller involvement. The panel
         # block (if given) becomes the frame's placeholder.
@@ -191,6 +190,8 @@ module Poetry
           end
           attrs
         end
+
+        Tab = Data.define(:title, :value, :disabled, :panel, :defer, :panel_less)
 
         private
 

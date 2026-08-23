@@ -5,14 +5,13 @@ module Poetry
     module Dialog
       # The root is a non-visual wrapper; the visual surface is the native
       # <dialog> element (the :content element), centered by the top layer.
-      # Re-expressed through the cn-* theme layer (N11): the panel chrome,
+      # Re-expressed through the cn-* theme layer: the panel chrome,
       # backdrop tint, and enter animation ride themes/default.css; the
       # native-dialog mechanisms stay inline.
       class Style < Poetry::Core::Style
         # open:grid, NOT grid: a bare display class would defeat the UA's
         # dialog:not([open]) { display: none } and render the dialog inline
-        # while closed (caught by the 2026-07-01 browser pass - invisible
-        # to jsdom, which has no UA stylesheet).
+        # while closed (invisible to jsdom, which has no UA stylesheet).
         # No `relative`: a modal <dialog> lives in the top layer, where the
         # browser drops a `position: relative` back to the UA `absolute` and
         # pins the panel to the DOCUMENT origin (it then scrolls off-screen

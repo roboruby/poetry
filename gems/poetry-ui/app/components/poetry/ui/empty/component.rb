@@ -7,6 +7,13 @@ module Poetry
       # it: an optional media glyph, a title, a description, and the actions
       # that fix the emptiness (the content block). Slots compose the header;
       # the content block becomes empty-content.
+      #
+      # @example Empty collection with a next action
+      #   render Poetry::Ui::Empty::Component.new do |empty|
+      #     empty.with_title { "No projects yet" }
+      #     empty.with_description { "Create your first project to get started." }
+      #     poetry_button { "New project" }
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "An empty collection gets an Empty state with a next action - never a bare 'No results' div.",
@@ -15,9 +22,13 @@ module Poetry
           "media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon in with_media."
         ].freeze
 
+        renders_one :media
+        renders_one :title
+        renders_one :description
+
         # A real HEADING (h3 by default) - the same deliberate a11y
-        # improvement over shadcn's div as Card's title (2026-07-01);
-        # visual classes unchanged, so parity holds.
+        # improvement over shadcn's div as Card's title; visual classes
+        # unchanged, so parity holds.
         option :title_tag, :symbol, default: :h3
         option :media_variant, :symbol, default: :default
 
@@ -37,10 +48,6 @@ module Poetry
         part "empty-description", "Muted copy under the title"
         part "empty-content", "The actions that fix the emptiness - the content block " \
                               "renders here"
-
-        renders_one :media
-        renders_one :title
-        renders_one :description
 
         def header?
           media? || title? || description?

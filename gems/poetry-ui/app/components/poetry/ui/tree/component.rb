@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Tree
-      # The Tree (the react-aria flat-treegrid contract): a
+      # The Tree (the flat-treegrid contract): a
       # hierarchical expandable list - file navigators, nested categories,
       # org structures. The DOM is a FLAT list of role=row siblings;
       # hierarchy lives entirely in server-computed aria-level/posinset/
@@ -15,33 +15,18 @@ module Poetry
       # toggling, and typeahead. Expansion state IS the DOM - the host
       # persists it by listening for poetry:tree:toggle.
       #
-      # Items build through a plain nested builder (not slots):
+      # Items build through a plain nested builder (not slots).
       #
+      # Documented divergence: selection modes are deferred (the TagGroup
+      # reasoning) - v1 is navigation + expansion; href: items navigate.
+      #
+      # @example
       #   <%= poetry_tree(label: "Files") do |tree| %>
       #     <% tree.with_item(text: "docs", value: "docs", expanded: true) do |docs| %>
       #       <% docs.with_item(text: "intro.md", value: "intro", href: "/docs/intro") %>
       #     <% end %>
       #   <% end %>
-      #
-      # Documented divergence: selection modes are deferred (the TagGroup
-      # reasoning) - v1 is navigation + expansion; href: items navigate.
       class Component < Poetry::Core::Component
-        use_stimulus do
-          on :root do
-            controller :tree do
-              register
-              action :keydown, on: :keydown
-              action :press, on: :click
-            end
-          end
-          on :toggle do
-            controller :tree do
-              action :pressStart, on: :pointerdown
-              action :toggle, on: :click
-            end
-          end
-        end
-
         AGENT_RULES = [
           "Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with " \
           "click handlers; the treegrid semantics, expansion keys, and focus rules ride the " \
@@ -55,27 +40,19 @@ module Poetry
           "menu - actions belong to DropdownMenu, picking to Select/Combobox."
         ].freeze
 
-        # One flattened row (built by Item#flatten below).
-        Row = Struct.new(
-          :text, :value, :href, :level, :posinset, :setsize,
-          :expanded, :expandable, :disabled, :hidden,
-          keyword_init: true
-        )
-
-        # The nested builder handed to consumer blocks.
-        class Item
-          attr_reader :options, :children
-
-          def initialize(**options)
-            @options = options
-            @children = []
+        use_stimulus do
+          on :root do
+            controller :tree do
+              register
+              action :keydown, on: :keydown
+              action :press, on: :click
+            end
           end
-
-          def with_item(**)
-            child = Item.new(**)
-            @children << child
-            yield child if block_given?
-            child
+          on :toggle do
+            controller :tree do
+              action :pressStart, on: :pointerdown
+              action :toggle, on: :click
+            end
           end
         end
 
@@ -108,6 +85,14 @@ module Poetry
              }
         part "tree-item-label", "The row's text - a link when href: is given"
 
+        def before_render
+          raise ArgumentError, "Tree requires label: (the treegrid's accessible name)" if label.blank?
+
+          # Consume the content block: it runs for its with_item side
+          # effects (the builder API), never for output.
+          content
+        end
+
         def with_item(**options, &block)
           root_items << Item.new(**options).tap { |item| block&.call(item) }
           nil
@@ -115,14 +100,6 @@ module Poetry
 
         def root_items
           @root_items ||= []
-        end
-
-        def before_render
-          raise ArgumentError, "Tree requires label: (the treegrid's accessible name)" if label.blank?
-
-          # Consume the content block: it runs for its with_item side
-          # effects (the builder API), never for output.
-          content
         end
 
         def rows
@@ -180,6 +157,30 @@ module Poetry
 
         def first_visible_index
           @first_visible_index ||= rows.index { |row| !row.hidden } || 0
+        end
+
+        # One flattened row (built by #flatten above).
+        Row = Struct.new(
+          :text, :value, :href, :level, :posinset, :setsize,
+          :expanded, :expandable, :disabled, :hidden,
+          keyword_init: true
+        )
+
+        # The nested builder handed to consumer blocks.
+        class Item
+          attr_reader :options, :children
+
+          def initialize(**options)
+            @options = options
+            @children = []
+          end
+
+          def with_item(**)
+            child = Item.new(**)
+            @children << child
+            yield child if block_given?
+            child
+          end
         end
 
         private

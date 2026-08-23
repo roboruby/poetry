@@ -5,7 +5,7 @@ require "test_helper"
 module Poetry
   module Ui
     module Table
-      # The Table (N8): a real semantic <table> in an overflow container,
+      # The Table: a real semantic <table> in an overflow container,
       # composed with the part helpers. Contract = the data-slot vocabulary
       # on real thead/tbody/tr/th/td + the selected-row hook. Part helpers
       # run through a real view flow (capture needs it); orphan table cells

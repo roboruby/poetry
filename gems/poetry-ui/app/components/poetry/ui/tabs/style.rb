@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Tabs
-      # Re-expressed through the cn-* theme layer (N11). The group/tabs and
+      # Re-expressed through the cn-* theme layer. The group/tabs and
       # group/tabs-list markers stay inline (the theme rules key on them);
       # the trigger's whole text-color cluster moved theme-side TOGETHER
       # (split-side rule: the base dims must lose to data-active in-layer).

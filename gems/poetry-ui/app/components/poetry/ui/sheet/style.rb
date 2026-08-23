@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Sheet
-      # Re-expressed through the cn-* theme layer (N11), still on the
+      # Re-expressed through the cn-* theme layer, still on the
       # native-dialog spine. m-0 and the per-side auto margins moved to the
       # theme TOGETHER (the split-side conflict rule: the side margins must
       # beat m-0, which they only can from the same layer); the UA display

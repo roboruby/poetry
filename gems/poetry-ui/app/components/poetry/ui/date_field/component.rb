@@ -3,16 +3,30 @@
 module Poetry
   module Ui
     module DateField
-      # The segmented date editor (the react-aria segment model):
-      # a real native <input type=date> that IS the form value - no JS
-      # means native pickers, and its value format is already the ISO wire
-      # contract - progressively enhanced by poetry--core--date-field into
-      # per-segment role=spinbutton editing (locale decides segment order
-      # via Intl.formatToParts; arrows cycle, digits accumulate and
-      # auto-advance, blur constrains February 31st). The enhanced input
-      # drops out of the tab order but keeps carrying name/required/min/
-      # max - native constraint validation stays on.
+      # The segmented date editor: a real native <input type=date> that IS
+      # the form value - no JS means native pickers, and its value format
+      # is already the ISO wire contract - progressively enhanced by
+      # poetry--core--date-field into per-segment role=spinbutton editing
+      # (locale decides segment order via Intl.formatToParts; arrows
+      # cycle, digits accumulate and auto-advance, blur constrains
+      # February 31st). The enhanced input drops out of the tab order but
+      # keeps carrying name/required/min/max - native constraint
+      # validation stays on.
+      #
+      # @example
+      #   render Poetry::Ui::DateField::Component.new(name: "event[on]", label: "Event date")
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
+          "Input, three selects, or a bare input type=date when the design system is in play.",
+          "The native input is the form value: params[<name>] is ISO (yyyy-mm-dd) with or " \
+          "without JS; min:/max: take Date or ISO strings and ride native validation.",
+          "Pair with a Label/Field for the accessible name (label for= the input id); " \
+          "standalone use takes label: - segments announce it themselves.",
+          "Locale drives segment order and numerals automatically; pass locale: only to pin " \
+          "a field to a different locale than the page."
+        ].freeze
+
         # TimeField subclasses this and EXTENDS the root element with its
         # seconds/hour-cycle values - the declarations-inheritance seam.
         use_stimulus do
@@ -37,17 +51,6 @@ module Poetry
           end
         end
 
-        AGENT_RULES = [
-          "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
-          "Input, three selects, or a bare input type=date when the design system is in play.",
-          "The native input is the form value: params[<name>] is ISO (yyyy-mm-dd) with or " \
-          "without JS; min:/max: take Date or ISO strings and ride native validation.",
-          "Pair with a Label/Field for the accessible name (label for= the input id); " \
-          "standalone use takes label: - segments announce it themselves.",
-          "Locale drives segment order and numerals automatically; pass locale: only to pin " \
-          "a field to a different locale than the page."
-        ].freeze
-
         option :name, :string, required: true
         # Date, or an ISO yyyy-mm-dd string; nil renders empty.
         option :value, ActiveModel::Type::Value.new
@@ -63,8 +66,8 @@ module Poetry
         option :label, :string
         option :described_by, :string
         option :locale, :string
-        # What the first arrow press on an empty segment lands on
-        # (react-aria's placeholderValue); defaults to today.
+        # What the first arrow press on an empty segment lands on;
+        # defaults to today.
         option :placeholder_value, ActiveModel::Type::Value.new
 
         part "date-field", "Root - the controller and the enhanced/disabled surface ride here",

@@ -3,7 +3,7 @@
     "results.json",
     "generated-scorecard.json",
     "generation-manifest.json",
-    "poetry-ui/eval/results/2026-07-07/results.json (frozen baseline + controls)"
+    "eval/results/2026-07-07/results.json (frozen baseline + controls)"
   ],
   "headline": {
     "raw_tailwind": 16,
@@ -11,7 +11,7 @@
     "inconclusive": 3
   },
   "prior_baselines": {
-    "dd70_full": {
+    "baseline_full": {
       "raw_tailwind": 18,
       "poetry": 13
     },
@@ -87,12 +87,12 @@
   },
   "predictions": {
     "d1": {
-      "statement": "poetry overall wins >= 16 of 31 (13; remediated fold: 15)",
+      "statement": "poetry overall wins >= 16 of 31 (baseline run: 13; remediated fold: 15)",
       "observed": "12/31 ({\"raw_tailwind\" => 16, \"poetry\" => 12, \"inconclusive\" => 3})",
       "pass": false
     },
     "d2": {
-      "statement": "poetry composition-axis tally >= 14 of 31 (9)",
+      "statement": "poetry composition-axis tally >= 14 of 31 (baseline run: 9)",
       "observed": "5/31",
       "pass": false
     },

@@ -10,7 +10,17 @@ module Poetry
       # and stamp data-slot=input-group-control, which the group's
       # focus-within/invalid selectors key on). Addons align inline
       # (start/end) or block (start/end - full-width rows).
+      #
+      # @example
+      #   <%= poetry_input_group do %>
+      #     <%= poetry_input_group_addon do %>
+      #       <%= poetry_icon(name: :search) %>
+      #     <% end %>
+      #     <%= poetry_input_group_input(name: "q", placeholder: "Search...") %>
+      #   <% end %>
       class Component < Poetry::Core::Component
+        requires_content "its control + addons"
+
         AGENT_RULES = [
           "The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input " \
           "keeps its own border+ring and double-chromes the group.",
@@ -18,8 +28,6 @@ module Poetry
           "poetry_input_group_text for muted captions and poetry_input_group_button for tiny actions.",
           "The group is a surface, not a label - the control still needs its Label/Field pairing."
         ].freeze
-
-        requires_content "its control + addons"
 
         part "input-group", "The bordered group surface (role=group) - wears the border, the " \
                             "focus-within ring, and the invalid ring for the borderless " \

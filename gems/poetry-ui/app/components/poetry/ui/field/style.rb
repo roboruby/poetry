@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Field
-      # Re-expressed through the cn-* theme layer (N11). Poetry's Field is
+      # Re-expressed through the cn-* theme layer. Poetry's Field is
       # its own small shape (grid + hint + error); the cn names borrow
       # upstream's vocabulary where semantics align (:hint wears
       # cn-field-description - the style hook tracks upstream naming, the

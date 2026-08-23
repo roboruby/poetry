@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module FileInput
-      # The FileInput (a review wave's #1 roster gap): file
+      # The FileInput - file
       # selection in two shapes. variant: :input is the plain styled native
       # control (the Input component with type=file - zero JS, the browser
       # shows the selection). variant: :dropzone is the drag-and-drop
@@ -14,7 +14,24 @@ module Poetry
       # form value; ActiveStorage direct upload rides it untouched
       # (data: { direct_upload_url: ... } passes straight through).
       # Styling is utility-only (the Separator/Spinner rule).
+      #
+      # @example Drag-and-drop upload surface
+      #   render Poetry::Ui::FileInput::Component.new(
+      #     variant: :dropzone, name: "attachments[]", multiple: true,
+      #     hint: "PDF or PNG, up to 10 MB"
+      #   )
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "File selection is a FileInput: variant: :input for compact forms, :dropzone when " \
+          "dragging is expected (uploads as the page's point) - never a hand-rolled drop div.",
+          "The native input is the form value: set name: (multiple: true wants a name ending " \
+          "in [] for Rails params); ActiveStorage direct upload attaches to it as usual.",
+          "The dropzone's selected-file list and clear button are controller-rendered - compose " \
+          "prompt:/hint: copy instead of adding your own list markup.",
+          "In a Field, prefer form.file_input (the builder wires id/label/errors); the bare " \
+          "component suits standalone dropzones."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :file_input do
@@ -46,17 +63,6 @@ module Poetry
             end
           end
         end
-
-        AGENT_RULES = [
-          "File selection is a FileInput: variant: :input for compact forms, :dropzone when " \
-          "dragging is expected (uploads as the page's point) - never a hand-rolled drop div.",
-          "The native input is the form value: set name: (multiple: true wants a name ending " \
-          "in [] for Rails params); ActiveStorage direct upload attaches to it as usual.",
-          "The dropzone's selected-file list and clear button are controller-rendered - compose " \
-          "prompt:/hint: copy instead of adding your own list markup.",
-          "In a Field, prefer form.file_input (the builder wires id/label/errors); the bare " \
-          "component suits standalone dropzones."
-        ].freeze
 
         style :variant, default: :input, variants: %i[input dropzone]
 
@@ -106,7 +112,7 @@ module Poetry
         # The input variant renders the Input component AS the whole
         # surface, so the FileInput's own extra attributes (aria-label,
         # class, data-*) forward onto it - dropping them stranded the
-        # accessible name (axe caught it at the wave gate).
+        # accessible name (axe caught it).
         def input_variant_component
           Input::Component.new(
             type: "file", name: name, disabled: disabled, invalid: invalid,

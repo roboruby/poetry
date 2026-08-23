@@ -20,7 +20,7 @@ module Poetry
           assert_includes html, 'data-variant="default"'
           assert_includes html, 'data-size="default"'
           assert_includes html, 'type="button"'
-          # The design rides the theme layer (N11): the block class plus the
+          # The design rides the theme layer: the block class plus the
           # variant name are the markup-level contract; themes/default.css
           # carries bg-primary / the focus-visible ring under these names.
           assert_includes html, "cn-button "
@@ -66,7 +66,7 @@ module Poetry
           assert_includes html, "cn-button-size-lg"
         end
 
-        # The variant_smoke bar from the plan: every variant x size renders.
+        # The variant_smoke bar: every variant x size renders.
         def test_every_variant_by_size_combination_renders
           Component::VARIANTS.each do |variant|
             Component::SIZES.each do |size|

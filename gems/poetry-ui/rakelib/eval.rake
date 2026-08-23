@@ -12,7 +12,7 @@ POETRY_JUDGE_UNDECIDED = %w[inconclusive error].freeze
 
 # Candidates carry every arm's actual spelling, tried in order - frozen
 # arms match their original entries first (committed captures untouched);
-# the tail entries are the W2 generated arms' spellings (N15).
+# the tail entries are the generated arms' spellings.
 POETRY_EVAL_REVEAL = {
   "dialog" => ["Settings"],
   "overlay" => ["Delete API key", "Delete"],
@@ -31,7 +31,7 @@ POETRY_EVAL_INTERACTIVE_TAGS = %w[button summary a].freeze
 # every wrapper whose text contains the needle, so take the shortest text
 # (most specific), preferring real interactive tags on ties. Falls back to
 # input values (a raw arm's readonly-input trigger). Matching is
-# case-insensitive (N15 W2): generated arms spell their triggers freely
+# case-insensitive: generated arms spell their triggers freely
 # ("Open settings" vs the table's "Settings"); the frozen captures stay
 # byte-identical under this widening - verified at the change.
 def poetry_ui_eval_reveal_target(session, candidates)
@@ -76,7 +76,7 @@ def poetry_ui_eval_capture_all(runner, captures_root, tolerant: false, only: nil
 
   session = poetry_ui_browser_session
   count = 0
-  # The runner's OWN task set (: the page-scale companion gate's
+  # The runner's OWN task set (the page-scale companion gate's
   # tasks are not Runner::TASKS).
   runner.tasks.keys.sort.each do |task|
     arms = runner.arms(task)
@@ -177,7 +177,7 @@ namespace :eval do
       spec["arms"].each do |arm, result|
         if result["render_error"]
           # A frozen arm must always render; the rescue that keeps a
-          # GENERATED corpus scoreable (N15 W2) must never let a frozen
+          # GENERATED corpus scoreable must never let a frozen
           # crash sit quiet here.
           failures << "#{task}/#{arm} failed to render: #{result["render_error"]}"
         elsif result.key?("poetry_only_diagnostics")
@@ -301,16 +301,16 @@ namespace :eval do
     puts "scorecard: #{path}"
   end
 
-  # --- The generated-arm benchmark (N15 W2 - the thesis test) --------------
+  # --- The generated-arm benchmark (the thesis test) -----------------------
   #
-  # Protocol pre-registered in the vault plan note. Stages, each idempotent
+  # Protocol pre-registered before the run. Stages, each idempotent
   # and resumable, all writing under eval/results/<POETRY_BENCH_DATE>/:
   #
   #   hosts     build the twin fixture hosts (token-free)
   #   generate  62 claude CLI agents write the arms  -> generated/, manifest
   #   score     mechanical gate array on generated arms -> generated-scorecard.json
   #   capture   superset-stylesheet screenshots -> captures/
-  #   judge     the W1 paired judge -> benchmark-verdicts.json (NEVER
+  #   judge     the paired judge -> benchmark-verdicts.json (NEVER
   #             judge-verdicts.json - that file is the frozen calibration)
   #   aggregate fold everything -> results.json (schema results-v1)
   #
@@ -348,7 +348,7 @@ namespace :eval do
       units = poetry_bench_task_names.flat_map do |task|
         Poetry::Eval::Benchmark::ARM_HOSTS.keys.map { |arm| [task, arm] }
       end
-      # POETRY_BENCH_ARMS=poetry regenerates only the treated arm (the
+      # POETRY_BENCH_ARMS=poetry regenerates only the treated arm (a
       # remediation re-run keeps the control arm's pre-registered
       # sample frozen - resampling the control would confound the delta).
       if (arm_filter = ENV.fetch("POETRY_BENCH_ARMS", nil))
@@ -423,7 +423,7 @@ namespace :eval do
       card = Poetry::Eval::Runner.new(arms_root: poetry_bench_results_root.join("generated"),
                                       tasks: poetry_bench_spec_tasks)
                                  .scorecard(fold_judged: false)
-      card["generated_note"] = "GENERATED arms (N15 W2 benchmark run), deterministic gates. " \
+      card["generated_note"] = "GENERATED arms (benchmark run), deterministic gates. " \
                                "cross_arm gates are the only comparable numbers; poetry_only " \
                                "gates are diagnostics."
       path = poetry_bench_results_root.join("generated-scorecard.json")
@@ -492,7 +492,7 @@ namespace :eval do
       puts "themed capture (#{theme}): #{count} poetry screenshots + #{copied} raw reused in #{captures}"
     end
 
-    desc "Judge the generated pairs (the W1 paired judge) -> benchmark-verdicts.json"
+    desc "Judge the generated pairs (the paired judge) -> benchmark-verdicts.json"
     task :judge do
       poetry_ui_boot!
       require_relative "../eval/runner"
@@ -510,7 +510,7 @@ namespace :eval do
       captures = poetry_bench_results_root.join(ENV.fetch("POETRY_BENCH_CAPTURES_DIR", "captures"))
       card = Poetry::Eval::Runner.new(arms_root: generated, tasks: poetry_bench_spec_tasks)
                                  .scorecard(fold_judged: false)
-      # POETRY_JUDGE_VOTES deepens the anti-bias harness (: votes per
+      # POETRY_JUDGE_VOTES deepens the anti-bias harness (votes per
       # presentation order; the default 3 = 6 calls/pair, 5 = 10). Pair a
       # non-default depth with POETRY_BENCH_VERDICTS so the canonical
       # verdicts file stays frozen.
@@ -546,7 +546,7 @@ namespace :eval do
 
       payload = {
         "schema" => Poetry::Eval::Judge::SCHEMA,
-        "context" => "generated-arm benchmark (N15 W2) - agent output, unknown intended winner; " \
+        "context" => "generated-arm benchmark - agent output, unknown intended winner; " \
                      "no calibration key by design (the frozen-arm judge-verdicts.json carries it)",
         "generated_on" => ENV.fetch("POETRY_BENCH_DATE", Date.today.iso8601),
         "model" => judge.model,
@@ -648,7 +648,7 @@ namespace :eval do
       }
       prior_receipted = manifest.dig("usage", "receipted_cost_usd") || 0.0
 
-      # POETRY_BENCH_TASKS chunks the run (the lesson: long
+      # POETRY_BENCH_TASKS chunks the run (long
       # CLI-spawning rakes die to SIGTERM in the background - foreground
       # chunks are the kill-proof procedure; the manifest resumes exactly).
       sample = Poetry::Eval::Degradation::SAMPLE

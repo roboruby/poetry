@@ -9,14 +9,14 @@ require_relative "judge"
 
 module Poetry
   module Eval
-    # The generated-arm benchmark (N15 W2, the thesis test - protocol
-    # pre-registered in the vault plan note before the run). Frozen arms
+    # The generated-arm benchmark (the thesis test - protocol
+    # pre-registered before the run). Frozen arms
     # measure the system's floor; this measures AGENT OUTPUT: per brief,
     # generation agent A works in a fixture host WITH poetry (the installed
     # agent surface: AGENTS.md section, materialized llms.txt/llms-full.txt,
     # bin/check), agent B in a raw-Tailwind twin - same model, same turn
     # budget, one identical prompt. Both outputs run the full mechanical
-    # array, then the W1 paired judge. Results schema: results-v1.
+    # array, then the paired judge. Results schema: results-v1.
     #
     # Fairness mechanisms (each load-bearing):
     # - Hermetic generation: agents run through the claude CLI cwd'd into a
@@ -51,10 +51,10 @@ module Poetry
       HERMETIC_NEEDLE = "poetry"
       ARM_HOSTS = { "poetry" => "a", "raw_tailwind" => "b" }.freeze
       # The toolbelt asymmetry IS the treatment: host A's poetry surface is
-      # runnable - bin/check plus the poetry MCP server ( remediation:
+      # runnable - bin/check plus the poetry MCP server (the remediation additions:
       # boot-free check/describe/list, attacking the turn-exhaustion tail
       # that cost menu/app_shell in the pre-registered run); host B has
-      # nothing to run. `Skill` is in BOTH belts (Skills v1): the
+      # nothing to run. `Skill` is in BOTH belts: the
       # asymmetry stays in the hosts' files - host A carries poetry's two
       # skills, host B has none, and --setting-sources project keeps
       # user-scoped skills out of both arms (the CLI's built-in skills
@@ -344,7 +344,7 @@ module Poetry
             "held" => top_two == %w[a11y slop]
           },
           "p3_blocks_signal" => {
-            "registered" => "raw_tailwind winning any composition axis is the Blocks signal ",
+            "registered" => "raw_tailwind winning any composition axis is the Blocks signal",
             "tasks_where_raw_won_composition" => raw_composition,
             "triggered" => raw_composition.any?
           }
@@ -493,7 +493,7 @@ module Poetry
       end
 
       # The two Claude Code skills, written exactly as `rails g poetry:skill`
-      # installs them (Skills v1) - host A's fourth agent surface.
+      # installs them - host A's fourth agent surface.
       # Host B gets none; with --setting-sources project on both arms, the
       # project skills ARE the arm's whole non-built-in skill surface.
       def write_skills(host)
@@ -598,7 +598,7 @@ module Poetry
         mcp_args = ["--strict-mcp-config"]
         mcp_args.push("--mcp-config", ".mcp.json") if host.join(".mcp.json").exist?
         # stream-json (needs --verbose) so the tool-call TRACE is captured,
-        # not just the final envelope: the question is whether
+        # not just the final envelope: the graded question is whether
         # build_page was USED and moved composition, so per-unit adoption
         # must be auditable (the eval/guided.md linkable-traces upgrade). The
         # final {"type":"result"} object carries the same usage fields the

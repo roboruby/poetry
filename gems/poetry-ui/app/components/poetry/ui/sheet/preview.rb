@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module Sheet
+      # The Sheet preview: one example per edge (previews render CLOSED,
+      # the trigger page - the Dialog convention).
       class Preview < Poetry::Core::Preview::Base
         # side: :right - the detail/edit panel default.
         def default

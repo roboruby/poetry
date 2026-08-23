@@ -1,4 +1,4 @@
-/* poetry default theme — the cn-* named-class layer (N11).
+/* poetry default theme — the cn-* named-class layer.
  *
  * The visual half of every Style dictionary lives HERE: dictionaries emit
  * stable `cn-*` names plus structural/behavioral utilities; these rules
@@ -12,7 +12,7 @@
  *     mirrors the resolver's merge order per component:
  *     base < elements < variants < compounds.
  *
- * The look is new-york-v4 re-expressed (the N11 pixel-neutral gate: all
+ * The look is new-york-v4 re-expressed (the pixel-neutral gate: all
  * visual baselines held). Restyling = override `.cn-*` rules or swap this
  * file — never edit component source. Upstream nests theme rules under a
  * `.style-<name>` wrapper; poetry ships bare selectors while exactly one
@@ -58,7 +58,7 @@
 }
 
 /* MARK: Accordion */
-/* Root hook (N12 W2): boxed-root themes (mira/rhea, later luma/maia)
+/* Root hook: boxed-root themes (mira/rhea, later luma/maia)
  * style this; every fragment must give the name content (the compile
  * gate), so default carries the upstream demo idiom. */
 .cn-accordion {
@@ -106,7 +106,7 @@
   @apply text-sm text-muted-foreground;
 }
 
-/* Footer hook (N12 W2): nova bands it; gap-2 moved here from the inline
+/* Footer hook: nova bands it; gap-2 moved here from the inline
  * set with the name (direction/justify stay inline - the sm-size grid
  * branch replaces them consumer-side). */
 .cn-alert-dialog-footer {
@@ -1303,7 +1303,7 @@
 }
 
 /* MARK: SensitiveInput */
-/* The masked MASK OVERLAY is the focusable reveal button (; the
+/* The masked MASK OVERLAY is the focusable reveal button (the
  * group would trip axe nested-interactive around the inert input) - the
  * bordered group wears the ring when the mask inside holds focus. */
 .cn-sensitive-input-group:has([data-slot=sensitive-input-mask]:focus-visible) {
@@ -1611,7 +1611,7 @@
   @apply rounded-md data-[spacing=default]:data-[variant=outline]:shadow-xs;
 }
 
-/* Segmented edge radii live theme-side (N12 W2 side-move): each theme
+/* Segmented edge radii live theme-side (side-move): each theme
  * rounds spacing=0 segments in its own radius language. */
 .cn-toggle-group-item {
   @apply data-[spacing=0]:px-3 data-[spacing=0]:rounded-none group-data-horizontal/toggle-group:data-[spacing=0]:first:rounded-l-md group-data-vertical/toggle-group:data-[spacing=0]:first:rounded-t-md group-data-horizontal/toggle-group:data-[spacing=0]:last:rounded-r-md group-data-vertical/toggle-group:data-[spacing=0]:last:rounded-b-md;

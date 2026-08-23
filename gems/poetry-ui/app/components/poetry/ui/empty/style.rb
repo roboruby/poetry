@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module Empty
-      # Re-expressed through the cn-* theme layer (N11). The title wears
-      # cn-font-heading (upstream parity, W4): a no-op until a theme
+      # Re-expressed through the cn-* theme layer. The title wears
+      # cn-font-heading (upstream parity): a no-op until a theme
       # defines --font-heading - the sanctioned heading-font hook.
       class Style < Poetry::Core::Style
         base "cn-empty flex w-full min-w-0 flex-1 flex-col items-center justify-center " \

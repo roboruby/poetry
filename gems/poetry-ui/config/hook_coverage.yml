@@ -81,7 +81,7 @@ emitted_elsewhere:
 
 # Additional recorded divergences surfaced by the gate's first run.
 divergence_lists:
-  # native-scrollbars: the W3 decision (scroll_area/style.rb) - Baseline CSS
+  # native-scrollbars: the deliberate native-scrollbar decision (scroll_area/style.rb) - Baseline CSS
   # scrollbar-width/scrollbar-color replace Base UI's JS scrollbar/thumb.
   # command-input-group: poetry's command input well IS the wrapper (no
   # InputGroup nesting inside command).

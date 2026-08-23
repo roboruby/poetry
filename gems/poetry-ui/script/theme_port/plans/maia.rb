@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-# N12 W3 maia plan ("rounded, generous spacing") for write_theme.rb. The
+# maia plan ("rounded, generous spacing") for write_theme.rb. The
 # soft-round standard: rounded-4xl dialogs/pills/tabs-lists on ring-only
 # surfaces (ring-foreground/5, cards ring-foreground/10, NO dialog
-# shadow), boxed rounded-2xl accordion (the W2 carrier), rounded-xl tab
+# shadow), boxed rounded-2xl accordion (the boxed-root carrier), rounded-xl tab
 # triggers inside rounded-4xl lists, bg-input/30 LIGHT-MODE form tints,
 # black/80 blur-xs scrims, soft destructive (AA-held). Anatomy set is
 # byte-identical to rhea's triage - this plan mirrors plans/rhea.rb with
-# maia values; deviations from W2: tabs-trigger ships poetry's full
+# maia values; deviations from the earlier ports: tabs-trigger ships poetry's full
 # machinery with maia geometry swapped in (the whole-cluster discipline;
-# W2's :default was only safe because nova/mira kept default radius),
+# the earlier :default was only safe because nova/mira kept default radius),
 # and button-group end-caps port via :default+sub (rhea inherited).
 # Judged notes: accordion trigger gains poetry's focus-visible cluster
 # (upstream ships none); calendar keeps :default (poetry consumes
@@ -44,7 +44,7 @@ PLAN = {
   "cn-alert-dialog-title" => "text-lg font-medium",
   # (cn-alert-dialog-footer: maia does not band it - inherits default's gap-2)
 
-  # --- accordion: the boxed root (the W2 carrier); poetry focus cluster
+  # --- accordion: the boxed root (the boxed-root carrier); poetry focus cluster
   #     added (upstream ships no focus-visible) ---------------------------
   "cn-accordion" => "w-full overflow-hidden rounded-2xl border",
   "cn-accordion-trigger" =>
@@ -83,7 +83,7 @@ PLAN = {
     "h-10 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 " \
     "has-[>svg:first-child]:pl-3 has-[>svg:last-child]:pr-3",
 
-  # --- soft destructive, AA-held (posture) --------------------------
+  # --- soft destructive, AA-held (AA-contrast posture) --------------------------
   "cn-button-variant-destructive" =>
     "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 " \
     "dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 " \
@@ -124,14 +124,14 @@ PLAN = {
     "data-open:animate-in data-closed:animate-out #{BACKDROP}",
 
   # --- drawer: maia does not speak to the popup; poetry idiom kept -------
-  # W5 roster pass: drawer scrim theme-owned; upstream maia drawer-overlay
+  # Roster pass: drawer scrim theme-owned; upstream maia drawer-overlay
   # runs black/80 (heavier than its dialogs - same posture as mira).
   "cn-drawer-content" => {
     base: :default,
     sub: { "backdrop:bg-black/10" => "backdrop:bg-black/80" }
   },
 
-  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # Roster pass: viewport padding is theme-owned now (poetry-only name -
   # explicit String; default geometry unchanged).
   "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-0.5 p-4 md:gap-1.5 md:text-left",
@@ -173,9 +173,9 @@ PLAN = {
     "border-b transition-colors hover:bg-muted/50 has-aria-expanded:bg-muted/50 data-selected:bg-muted",
 
   # --- tabs: poetry's full active/line machinery, maia geometry (the
-  #     whole-cluster discipline; nova/mira kept default radius so W2's
+  #     whole-cluster discipline; nova/mira kept default radius so the earlier
   #     :default was a coincidence, not the rule) --------------------------
-  # W5 roster pass: default-variant active shadow-sm dropped (only vega
+  # Roster pass: default-variant active shadow-sm dropped (only vega
   # ships it upstream at d0fae528; settled-read receipt).
   "cn-tabs-trigger" =>
     "gap-1.5 rounded-xl border border-transparent px-2 py-1 text-sm font-medium text-foreground/60 " \
@@ -195,7 +195,7 @@ PLAN = {
     "group-data-vertical/tabs:px-2.5 group-data-vertical/tabs:py-1.5",
 
   # --- toggle group: per-item translation (data-[state=on] -> pressed);
-  #     whole radius cluster theme-side (the W2 lesson) --------------------
+  #     whole radius cluster theme-side (the whole-cluster lesson) --------------------
   "cn-toggle-group-item" =>
     "data-pressed:bg-muted data-[spacing=0]:px-3 data-[spacing=0]:shadow-none " \
     "data-[spacing=0]:has-data-[icon=inline-end]:pr-2.5 data-[spacing=0]:has-data-[icon=inline-start]:pl-2.5 " \
@@ -226,7 +226,7 @@ PLAN = {
   "cn-toast" => { base: :default, sub: { "rounded-md" => "rounded-2xl" } },
 
   # --- form controls: /30 light tints; placeholder token returns with the
-  #     W2 side-move (default carries it theme-side, upstream omits it) ---
+  #     side-move (default carries it theme-side, upstream omits it) ---
   "cn-input" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
   "cn-textarea" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
 
@@ -242,23 +242,23 @@ PLAN = {
 }.freeze
 
 HEADER = <<~CSS
-  /* poetry maia theme (N12 W3) - upstream style-maia.css ported onto the
+  /* poetry maia theme - upstream style-maia.css ported onto the
    * cn-* layer (pinned clone d0fae528). Same contract as default.css:
    * imported layer(base); bare selectors while installs carry ONE theme;
    * rule order per component = base < elements < variants < compounds;
    * split-side, no-empty-rules and cross-component-last rules apply.
    *
-   * Port disciplines identical to vega/rhea (see the N12 plan note
-   * close-outs + docs/maia-port-ledger.txt): verbatim where poetry
+   * Port disciplines identical to vega/rhea (see
+   * docs/maia-port-ledger.txt): verbatim where poetry
    * speaks the vocabulary; data-vertical -> data-[orientation=*];
    * data-[state=on] -> data-pressed; overlays -> native-dialog
    * backdrop:* (black/80 blur-xs); upstream ! stripped except the
    * sidebar collapse geometry and default-inherited precedents; icon
    * paddings ship upstream's has-data-[icon=*] (inert) plus working
    * >svg:first/last-child twins; soft destructive holds AA via
-   * relative-oklch light-mode darkening (posture). Maia-specific:
+   * relative-oklch light-mode darkening (AA-contrast posture). Maia-specific:
    * flat ring-only dialogs (no shadow), rounded-2xl boxed accordion (the
-   * W2 carrier), tabs-trigger ships poetry's full machinery with maia
+   * boxed-root carrier), tabs-trigger ships poetry's full machinery with maia
    * geometry (whole-cluster discipline), bg-input/30 light-mode form
    * tints with mira's 0.8 kbd pair on the doubled addon tint.
    */

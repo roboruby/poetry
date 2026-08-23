@@ -4,6 +4,9 @@ require "rails/engine"
 
 module Poetry
   module Ui
+    # The Rails engine: wires the component classes, the poetry_* view
+    # helpers, the Turbo Stream toast action, and the preview paths into
+    # the host app.
     class Engine < ::Rails::Engine
       # Standard engine layout: app/components, app/helpers, and
       # config/locales are picked up by Rails' engine path conventions.
@@ -12,9 +15,9 @@ module Poetry
 
       # ComponentsHelper lives in app/helpers (Zeitwerk-autoloaded), so unlike
       # a lib/ helper it is NOT already loaded at gem-require time. A host gem
-      # that forces ActionView to load *during* initialization - e.g. lexxy /
-      # ActionText prepending to ActionView::Helpers::FormHelper, exactly what
-      # Jumpstart Pro pulls in - fires this on_load hook before the engine's
+      # that forces ActionView to load *during* initialization - e.g. an
+      # ActionText editor prepending to ActionView::Helpers::FormHelper,
+      # exactly what Jumpstart Pro pulls in - fires this on_load hook before the engine's
       # app/helpers constant is resolvable, raising NameError at boot. Deferring
       # the hook registration into a to_prepare block runs it only once autoload
       # paths are wired (and re-runs safely on reload), so the constant always

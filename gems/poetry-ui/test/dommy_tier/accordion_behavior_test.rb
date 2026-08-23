@@ -54,7 +54,7 @@ module DommyTier
                    "the clicked item must open"
     end
 
-    # The N6 W2 regression: the chevron selector must target an attribute
+    # The chevron-selector regression: the selector must target an attribute
     # the runtime actually maintains. The old [&[data-state=open]>svg]
     # selector silently lost its writer when the state layer migrated -
     # this pins the chevron's COMPUTED rotation through the real cascade,

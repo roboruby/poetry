@@ -14,7 +14,7 @@ module Poetry
       # The server-side option registry: every rendered option (DOM order)
       # lands here so the hidden native <select> and the trigger's value
       # display are rendered from the same truth as the listbox items.
-      # Duplicate values raise at render (the base contract).
+      # Duplicate values raise at render (the base-contract rule).
       class OptionSet
         Entry = Struct.new(:value, :label, :disabled)
 
@@ -82,6 +82,8 @@ module Poetry
       # (the family twin-write rule, aria-selected flavored; unselected =
       # data-selected ABSENT); disabled divs carry aria-disabled +
       # data-disabled together.
+      #
+      # @api private
       class Item < Poetry::Core::Component
         internal_component!
         include Helpers
@@ -130,7 +132,7 @@ module Poetry
         end
       end
 
-      # The listbox capstone (Select): the APG
+      # The listbox capstone: the APG
       # select-only combobox on the menus machinery (popper + token-
       # activated focus-scope/dismissable/roving-focus + the shared
       # typeahead) driven by the NEW poetry--core--select controller -
@@ -148,6 +150,13 @@ module Poetry
       # item-aligned overlay (content covers the trigger); poetry drops
       # below the trigger like every other popper consumer - a documented
       # parity delta.
+      #
+      # @example A named form select
+      #   render Poetry::Ui::Select::Component.new(name: "fruit", id: "fruit",
+      #                                            placeholder: "Pick a fruit") do |select|
+      #     select.with_item(value: "apple") { "Apple" }
+      #     select.with_item(value: "banana") { "Banana" }
+      #   end
       class Component < Poetry::Core::Component
         include Helpers
 
@@ -176,34 +185,32 @@ module Poetry
         # interactive control the label must reach - never on the root div.
         TRIGGER_ARIA_KEYS = %w[label labelledby describedby invalid required].freeze
 
-        option :value, :string
-        option :name, :string
-        option :placeholder, :string
-        option :id, :string
-        option :open, :boolean, default: false
-        option :required, :boolean, default: false
-        option :disabled, :boolean, default: false
-        option :modal, :boolean, default: true
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :start
-        option :side_offset, :integer, default: 4
-        option :avoid_collisions, :boolean, default: true
-        option :loop, :boolean, default: false
-        # N13 W2: Base UI alignItemWithTrigger - the popup opens OVER the
-        # trigger with the selected item aligned on it (native-select feel);
-        # falls back to popper positioning on touch, viewport-edge triggers,
-        # or squeezed heights. Default off (the shadcn posture is popper).
-        option :align_item_with_trigger, :boolean, default: false
-        option :dir, :symbol
-        option :size, :symbol, default: :default
-        # Merged onto the trigger button (upstream's SelectTrigger className
-        # seam - e.g. w-full over the base w-fit). class: styles the root.
-        option :trigger_class, :string
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        validates :size, inclusion: { in: SIZES }
-        validates :side, inclusion: { in: SIDES }
-        validates :align, inclusion: { in: ALIGNS }
-        validates :dir, inclusion: { in: DIRS }, allow_nil: true
+        # Optional custom trigger content rendered BEFORE the value span
+        # (rare); the component owns role=combobox + the aria wiring + the
+        # chevron regardless, so composition cannot drop the contract.
+        renders_one :trigger
+
+        # The option UNION: item | group (label + items) | separator - one
+        # ordered collection (interleaving preserved; items and groups are
+        # part COMPONENTS so option registration follows render/DOM order).
+        # Scroll buttons, the viewport, and the native select are
+        # component-owned anatomy, never caller-placed.
+        renders_many :items, types: {
+          item: { renders: ->(**options) { item_component(**options) }, as: :item },
+          group: {
+            renders: lambda { |**options|
+              Group.new(option_set: option_set, selected_value: selected_value,
+                        item_wiring: item_wiring, **options)
+            },
+            as: :group
+          },
+          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+        }
 
         use_stimulus do
           on :root do
@@ -251,6 +258,35 @@ module Poetry
             end
           end
         end
+
+        option :value, :string
+        option :name, :string
+        option :placeholder, :string
+        option :id, :string
+        option :open, :boolean, default: false
+        option :required, :boolean, default: false
+        option :disabled, :boolean, default: false
+        option :modal, :boolean, default: true
+        option :side, :symbol, default: :bottom
+        option :align, :symbol, default: :start
+        option :side_offset, :integer, default: 4
+        option :avoid_collisions, :boolean, default: true
+        option :loop, :boolean, default: false
+        # Base UI alignItemWithTrigger parity - the popup opens OVER the
+        # trigger with the selected item aligned on it (native-select feel);
+        # falls back to popper positioning on touch, viewport-edge triggers,
+        # or squeezed heights. Default off (the shadcn posture is popper).
+        option :align_item_with_trigger, :boolean, default: false
+        option :dir, :symbol
+        option :size, :symbol, default: :default
+        # Merged onto the trigger button (upstream's SelectTrigger className
+        # seam - e.g. w-full over the base w-fit). class: styles the root.
+        option :trigger_class, :string
+
+        validates :size, inclusion: { in: SIZES }
+        validates :side, inclusion: { in: SIDES }
+        validates :align, inclusion: { in: ALIGNS }
+        validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
         part "select", "Root wrapper carrying both controllers (select + popper) and the " \
                        "optional dir attribute"
@@ -319,28 +355,6 @@ module Poetry
         part "select-item-text", "The option's label span - the value display copies from it"
         part "select-separator", "Decorative divider between options (aria-hidden)"
 
-        # Optional custom trigger content rendered BEFORE the value span
-        # (rare); the component owns role=combobox + the aria wiring + the
-        # chevron regardless, so composition cannot drop the contract.
-        renders_one :trigger
-
-        # The option UNION: item | group (label + items) | separator - one
-        # ordered collection (interleaving preserved; items and groups are
-        # part COMPONENTS so option registration follows render/DOM order).
-        # Scroll buttons, the viewport, and the native select are
-        # component-owned anatomy, never caller-placed.
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: {
-            renders: lambda { |**options|
-              Group.new(option_set: option_set, selected_value: selected_value,
-                        item_wiring: item_wiring, **options)
-            },
-            as: :group
-          },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
-
         def initialize(attributes = {})
           if attributes.key?(:multiple) || attributes.key?("multiple")
             raise ArgumentError, "Select does not support multiple: - multi-select is Combobox territory"
@@ -349,11 +363,6 @@ module Poetry
           super
           @trigger_aria = extract_trigger_aria!
         end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         def before_render
           raise ArgumentError, "Select requires at least one item (with_item / with_group)" unless items?
@@ -437,7 +446,7 @@ module Poetry
         def content_attributes
           # No widget role here: the popup shell holds scroll buttons too,
           # and role=listbox permits only option/group children (axe
-          # aria-required-children, 2026-07-03) - the role lives on the
+          # aria-required-children) - the role lives on the
           # viewport, the options' actual parent.
           attrs = {
             "id" => content_id,
@@ -543,11 +552,18 @@ module Poetry
       # the PARENT's option set so the native select and value display see
       # every option. Plain ViewComponent::Base ON PURPOSE: nested parts
       # are anatomy, not registered components.
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include Helpers
 
         attr_reader :option_set, :selected_value, :item_wiring
+
+        renders_many :items, types: {
+          item: { renders: ->(**options) { item_component(**options) }, as: :item },
+          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+        }
 
         def initialize(option_set:, selected_value:, label: nil, item_wiring: {}, **extra_attributes)
           super(extra_attributes)
@@ -556,11 +572,6 @@ module Poetry
           @selected_value = selected_value
           @label_text = label
         end
-
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
 
         def before_render
           raise ArgumentError, "Select group requires at least one item" unless items?

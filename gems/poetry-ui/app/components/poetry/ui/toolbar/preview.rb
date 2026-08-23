@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module Toolbar
+      # The Toolbar preview: a formatting strip, the table bulk-action
+      # row with a filter input, and the vertical orientation.
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component(label: "Text formatting") do |toolbar|

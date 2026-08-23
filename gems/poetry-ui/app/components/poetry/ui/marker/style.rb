@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Marker
-      # Re-expressed through the cn-* theme layer (N11). The separator
+      # Re-expressed through the cn-* theme layer. The separator
       # lines stay ::before/::after pseudo-elements (AT never sees them) -
       # now in the variant theme rule.
       class Style < Poetry::Core::Style

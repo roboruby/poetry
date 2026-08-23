@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Attachment
-      # Re-expressed through the cn-* theme layer (N11). The upload
+      # Re-expressed through the cn-* theme layer. The upload
       # lifecycle stays PURE CSS and INLINE per upstream's own split (idle
       # dashes, error tints, the in-flight image dim) - it is coupled to
       # the data-[upload-state] machine; sizes/orientation/surface ride the

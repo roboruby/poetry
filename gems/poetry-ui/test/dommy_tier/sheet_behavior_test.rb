@@ -4,7 +4,7 @@ require_relative "dommy_helper"
 
 module DommyTier
   # The Sheet rides poetry--core--sheet (the dialog machinery + the
-  # presence-hold close, W5b commit 1) - this proves the
+  # presence-hold close) - this proves the
   # inherited machinery drives the re-skinned markup end to end: the UA
   # keeps the closed <dialog> display:none, the real trigger Button opens
   # it through the controller, and the built-in close button closes it.

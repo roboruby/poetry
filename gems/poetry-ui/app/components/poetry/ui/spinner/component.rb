@@ -6,6 +6,9 @@ module Poetry
       # The Spinner - a spinning loader glyph that announces itself
       # (role=status + aria-label). Renders the lucide loader-circle as its
       # own svg (so the root carries the spinner identity, not the icon's).
+      #
+      # @example
+      #   render Poetry::Ui::Spinner::Component.new(label: "Saving...")
       class Component < Poetry::Core::Component
         GLYPH = :"loader-circle"
         SVG_BOX = {

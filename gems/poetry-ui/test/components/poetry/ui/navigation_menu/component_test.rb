@@ -55,7 +55,7 @@ module Poetry
           assert_nil docs_item["data-action"], "link items schedule nothing"
         end
 
-        # -- the morphing shared viewport --------------------
+        # -- the morphing shared viewport ------------------------------------
 
         def render_viewport_nav
           render_inline(Component.new(label: "Main", viewport: true)) do |nav|

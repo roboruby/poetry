@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-# vote-depth grade: the depth-5 re-judge of the SAME 31 capture pairs
-# against the pre-registered d1-d4 (vault note "Judge Vote Depth ",
-# committed before the run) and the pre-registered decision rule.
+# Vote-depth grade: the depth-5 re-judge of the SAME 31 capture pairs
+# against the pre-registered d1-d4 (committed before the run) and the
+# pre-registered decision rule.
 # Run from the poetry-ui root:
 #   bundle exec ruby eval/results/2026-07-09-rebaseline/results_depth5.rb
 require "json"
@@ -67,7 +67,7 @@ decision = if d1_holds
 payload = {
   "assembled_from" => ["benchmark-verdicts.json (depth 3, canonical)",
                        "benchmark-verdicts-depth5.json (this re-judge)"],
-  "usage_note" => "the first 27 pairs' spend is ESTIMATED (270 calls at the $0.1333/call " \
+  "usage_note" => "the first 27 pairs' spend is ESTIMATED (270 calls at the re-baseline $0.1333/call " \
                   "rate): the run was externally killed and its in-memory receipts were lost; " \
                   "only the 4-pair resume is receipted exactly",
   "depth5_tally" => tally,

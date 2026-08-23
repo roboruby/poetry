@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module TimeField
+      # The TimeField preview: empty and valued fields, seconds, a pinned
+      # 24-hour cycle, disabled, and a pinned locale.
       class Preview < Poetry::Core::Preview::Base
         # Empty: hour/minute placeholders (plus AM/PM under twelve-hour
         # locales) once enhanced; the styled native input before that.

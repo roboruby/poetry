@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module ContextMenu
-      # Re-expressed through the cn-* theme layer (N11). The family deltas
+      # Re-expressed through the cn-* theme layer. The family deltas
       # vs DropdownMenu now read off the theme rules (context-menu label
       # adds text-foreground, the sub-trigger omits gap-2, the sub chevron
       # is a bare ml-auto); the trigger SURFACE still ships no classes.
@@ -13,7 +13,7 @@ module Poetry
                           "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
-        # group/context-menu-item (N12): bare marker, no CSS - the vega
+        # group/context-menu-item: bare marker, no CSS - the vega theme's
         # shortcut re-color (group-focus/context-menu-item) keys on it.
         element :item, "cn-context-menu-item group/context-menu-item relative flex cursor-default " \
                        "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \

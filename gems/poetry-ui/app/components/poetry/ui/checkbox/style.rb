@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Checkbox
-      # Re-expressed through the cn-* theme layer (N11): the well treatment
+      # Re-expressed through the cn-* theme layer: the well treatment
       # rides .cn-checkbox in themes/default.css. Poetry mechanisms stay
       # inline: data-unchecked:invisible keeps the indicator in the DOM
       # CSS-hidden (Radix unmounts via Presence; there is no exit animation

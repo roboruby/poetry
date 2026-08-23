@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module DataTable
-      # Re-expressed through the cn-* theme layer (N11): the chrome rides
+      # Re-expressed through the cn-* theme layer: the chrome rides
       # poetry-named rules (own component - no upstream cn vocabulary).
       class Style < Poetry::Core::Style
         base "w-full"

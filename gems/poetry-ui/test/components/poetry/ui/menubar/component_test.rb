@@ -36,7 +36,7 @@ module Poetry
           assert_equal "menubar", bar["data-component"]
           assert_equal "menubar", bar["role"]
           assert_equal "Application menu", bar["aria-label"]
-          # The bar ROOT keeps the mounted open/closed pair (W1 resolution).
+          # The bar ROOT keeps the mounted open/closed pair.
           assert bar.key?("data-closed")
           refute bar.key?("data-open")
           # ONE shared Attributes instance: token-concatenated, not overwritten.

@@ -171,7 +171,7 @@ module Poetry
 
           assert_equal "true", fragment.css('[data-slot="radio-group"]').first["aria-required"]
           assert(fragment.css("input").none? { |input| input.key?("required") },
-                 "never native required on aria-hidden inputs (the /Field rule)")
+                 "never native required on aria-hidden inputs (the Field rule)")
         end
 
         def test_invalid_marks_every_item_aria_invalid

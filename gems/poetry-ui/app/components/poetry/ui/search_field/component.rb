@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module SearchField
-      # The SearchField (the react-aria contract): a type=search
+      # The SearchField: a type=search
       # input on InputGroup's chrome - leading search glyph, trailing
       # clear affordance. The seams live in poetry--core--search-field:
       # Escape CLEARS a non-empty field and is consumed (the NEXT press
@@ -13,7 +13,18 @@ module Poetry
       # never intercepted: native form submission is the Rails path. The
       # native WebKit cancel affordance is suppressed so poetry's clear
       # button is the only one.
+      #
+      # @example
+      #   render Poetry::Ui::SearchField::Component.new(name: "q", label: "Search", placeholder: "Search...")
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
+          "hand-rolled clear button; Escape-clears and focus retention ride the controller.",
+          "Enter submits the surrounding form natively - wrap it in a form/turbo-frame for " \
+          "live search; listen for poetry:search-field:clear to reset results.",
+          "Pair with a Label/Field for the accessible name, or pass label: standalone."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller(:search_field) { register }
@@ -35,14 +46,6 @@ module Poetry
             end
           end
         end
-
-        AGENT_RULES = [
-          "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
-          "hand-rolled clear button; Escape-clears and focus retention ride the controller.",
-          "Enter submits the surrounding form natively - wrap it in a form/turbo-frame for " \
-          "live search; listen for poetry:search-field:clear to reset results.",
-          "Pair with a Label/Field for the accessible name, or pass label: standalone."
-        ].freeze
 
         option :name, :string, required: true
         option :value, :string

@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module Calendar
-      # poetry's OWN calendar engine (N9 W6), re-expressed through the cn-*
-      # theme layer (N11). The cell-size var + grid geometry stay inline
+      # poetry's OWN calendar engine, re-expressed through the cn-*
+      # theme layer. The cell-size var + grid geometry stay inline
       # (mechanism); the day-button's whole state chain (selected / today /
       # outside / range tints) rides .cn-calendar-day-button TOGETHER
       # (split-side rule - the tints override each other in-layer). The

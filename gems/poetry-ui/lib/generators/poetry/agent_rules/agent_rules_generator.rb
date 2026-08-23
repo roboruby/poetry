@@ -4,7 +4,7 @@ require "rails/generators"
 
 module Poetry
   # `rails g poetry:agent_rules` - the two-file, opposite-lifecycle agent
-  # ruleset (the external generator / the base contract borrow):
+  # ruleset:
   #
   #   .poetry/agent-rules.md  gem-owned, FORCE-overwritten every run
   #                           (generated live from the component registry)

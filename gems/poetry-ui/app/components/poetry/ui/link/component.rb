@@ -7,6 +7,9 @@ module Poetry
       # docs still say "links for navigation, buttons for actions", so
       # poetry makes the navigation half real). Renders a real <a>;
       # `current: true` marks the active nav item via aria-current.
+      #
+      # @example
+      #   render Poetry::Ui::Link::Component.new(href: "/docs") { "Documentation" }
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Use poetry_link for navigation - poetry_button for actions (never an <a> styled by hand).",

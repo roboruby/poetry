@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Toggle
-      # Re-expressed through the cn-* theme layer (N11). Still the family's
+      # Re-expressed through the cn-* theme layer. Still the family's
       # shared dictionary: ToggleGroup items consume it through
       # Toggle::Style.css (shared, never copied). The muted-not-accent
       # hover note now reads off the theme rules: .cn-toggle hovers MUTED

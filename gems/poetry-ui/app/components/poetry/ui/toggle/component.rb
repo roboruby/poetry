@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module Toggle
-      # Third of the toggle family (Toggle) - and the
-      # family member that is NOT a form control. A Toggle is a styled
+      # The toggle-family member that is NOT a form
+      # control. A Toggle is a styled
       # pressed-state button: aria-pressed + the bare data-pressed presence
       # boolean (Base UI vocabulary; unpressed = attribute absent) on a plain
       # <button> (no ARIA role - that IS the APG toggle-button pattern),
@@ -16,24 +16,18 @@ module Poetry
       #
       # Machinery: the poetry--core--pressed micro-controller (the smallest
       # in the suite) - deliberately separate from poetry--core--checked
-      # (different ARIA vocabulary, no input to sync). The exported
-      # `toggleVariants` cva ports as the shared Toggle::Style dictionary
-      # (+ the VARIANTS/SIZES constants) that ToggleGroup items consume.
+      # (different ARIA vocabulary, no input to sync). The source's
+      # exported `toggleVariants` helper ports as the shared Toggle::Style
+      # dictionary (+ the VARIANTS/SIZES constants) that ToggleGroup items
+      # consume.
+      #
+      # @example An icon-only bookmark toggle
+      #   render Poetry::Ui::Toggle::Component.new(label: "Bookmark", pressed: bookmarked?) do
+      #     poetry_icon(name: :bookmark)
+      #   end
       class Component < Poetry::Core::Component
         VARIANTS = %i[default outline].freeze
         SIZES = %i[default sm lg].freeze
-
-        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
-        # written together; the DOM is the store (no Values). No keydown
-        # code - Space AND Enter activate a native button (Radix-exact).
-        use_stimulus do
-          on :root do
-            controller :pressed do
-              register
-              action :toggle, on: :click
-            end
-          end
-        end
 
         AGENT_RULES = [
           "Use poetry_toggle - never a Button with hand-managed aria-pressed.",
@@ -46,6 +40,18 @@ module Poetry
           "a pressed toggle whose effect failed is a lie.",
           "Pressed visual is accent - don't override data-pressed colors per-instance (theme-level only)."
         ].freeze
+
+        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
+        # written together; the DOM is the store (no Values). No keydown
+        # code - Space AND Enter activate a native button (Radix-exact).
+        use_stimulus do
+          on :root do
+            controller :pressed do
+              register
+              action :toggle, on: :click
+            end
+          end
+        end
 
         style :variant, default: :default, required: true, variants: VARIANTS
         style :size, default: :default, required: true, variants: SIZES
@@ -67,7 +73,7 @@ module Poetry
              }
 
         # An icon-only (or empty) toggle without an accessible name never
-        # ships (the golden Button's rule).
+        # ships (the base-contract rule).
         def before_render
           return if label.present? || visible_text?
 

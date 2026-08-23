@@ -173,8 +173,8 @@ module Poetry
         end
       end
 
-      # The menus-family ANCHOR (DropdownMenu): a
-      # button-triggered role=menu popup on the shipped primitive stack.
+      # The menus-family ANCHOR: a button-triggered role=menu popup on
+      # the shipped primitive stack.
       # Two hosts, one owned controller: the root carries poetry--core--menu
       # (open/activate/typeahead/submenus) + poetry--core--popper (trigger-
       # anchored positioning); the content's layer controllers (focus-scope,
@@ -182,6 +182,13 @@ module Poetry
       # controller on open - a statically-connected trap on a hidden menu
       # would steal focus at page load, so the markup renders NO layer
       # tokens (menu_controller.js appends/removes them).
+      #
+      # @example A menu button with actions
+      #   render Poetry::Ui::DropdownMenu::Component.new do |menu|
+      #     menu.with_trigger(variant: :outline) { "Open" }
+      #     menu.with_item { "Rename" }
+      #     menu.with_item(variant: :destructive) { "Delete" }
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -210,16 +217,27 @@ module Poetry
           "Critical actions must exist somewhere reachable without JS (menus are JS-required interaction)."
         ].freeze
 
-        option :open, :boolean, default: false
-        option :modal, :boolean, default: true
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :center
-        option :side_offset, :integer, default: 4
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
-        option :loop, :boolean, default: false
-        option :dir, :symbol
-        option :disabled, :boolean, default: false
+        # The forwarding-lambda fact: with_trigger renders a Button -
+        # callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
+        # The trigger is a poetry Button wired as the menu button (demo
+        # parity: with_trigger(variant: :outline) { "Open" }) - the slot
+        # owns the aria-haspopup/expanded/controls wiring regardless of
+        # the composed content, so composition cannot drop the aria.
+        renders_one :trigger, lambda { |**options, &block|
+          wiring = {
+            "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
+            "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
+          }.merge(stimulus_attributes_for(:trigger))
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          wiring["data-popup-open"] = "" if open
+          composed_trigger(wiring, options, &block) || begin
+            options[:disabled] = true if disabled && !options.key?(:disabled)
+            Button::Component.new(**wiring, **options, &block)
+          end
+        }
 
         use_stimulus do
           on :root do
@@ -263,6 +281,17 @@ module Poetry
             controller(:popper) { target :anchor }
           end
         end
+
+        option :open, :boolean, default: false
+        option :modal, :boolean, default: true
+        option :side, :symbol, default: :bottom
+        option :align, :symbol, default: :center
+        option :side_offset, :integer, default: 4
+        option :align_offset, :integer, default: 0
+        option :avoid_collisions, :boolean, default: true
+        option :loop, :boolean, default: false
+        option :dir, :symbol
+        option :disabled, :boolean, default: false
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
@@ -351,28 +380,6 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
-        # The trigger is a poetry Button wired as the menu button (demo
-        # parity: with_trigger(variant: :outline) { "Open" }) - the slot
-        # owns the aria-haspopup/expanded/controls wiring regardless of
-        # the composed content, so composition cannot drop the aria.
-        renders_one :trigger, lambda { |**options, &block|
-          wiring = {
-            "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
-            "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
-          }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          wiring["data-popup-open"] = "" if open
-          composed_trigger(wiring, options, &block) || begin
-            options[:disabled] = true if disabled && !options.key?(:disabled)
-            Button::Component.new(**wiring, **options, &block)
-          end
-        }
-
-        # The forwarding-lambda component fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { trigger: Button::Component }.freeze
-
         def before_render
           raise ArgumentError, "DropdownMenu requires with_trigger (the menu button)" unless trigger?
           raise ArgumentError, "DropdownMenu requires at least one item" unless items?
@@ -425,6 +432,8 @@ module Poetry
       # union, one level down. Plain ViewComponent::Base ON PURPOSE:
       # Poetry::Core::Component descendants register in the component
       # registry, and the nested parts are anatomy, not components.
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include ItemSlots
@@ -451,19 +460,15 @@ module Poetry
       end
 
       # role=group scoping the single-select value for its radio items.
-      # Duplicate radio values raise ArgumentError at render (the base-contract
-      # base contract); radio items exist ONLY through this group.
+      # Duplicate radio values raise ArgumentError at render (the
+      # base-contract rule); radio items exist ONLY through this group.
+      #
+      # @api private
       class RadioGroup < Poetry::Core::Component
         internal_component!
         include Helpers
 
         attr_reader :group_value
-
-        def initialize(value: nil, **extra_attributes)
-          @group_value = value&.to_s
-          @seen_values = Set.new
-          super(extra_attributes)
-        end
 
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
@@ -487,6 +492,12 @@ module Poetry
           end
         }
 
+        def initialize(value: nil, **extra_attributes)
+          @group_value = value&.to_s
+          @seen_values = Set.new
+          super(extra_attributes)
+        end
+
         def before_render
           raise ArgumentError, "DropdownMenu radio group requires at least one with_radio_item" unless radio_items?
         end
@@ -502,14 +513,11 @@ module Poetry
       # sub_content = content; side flips under RTL) around the same item
       # union, recursively. The sub layer controllers (dismissable +
       # roving-focus) are added by the menu controller when the sub opens.
+      #
+      # @api private
       class Sub < Poetry::Core::Component
         internal_component!
         include ItemSlots
-
-        def initialize(dir: nil, **extra_attributes)
-          @dir = dir
-          super(extra_attributes)
-        end
 
         # role=menuitem in the PARENT's collection + aria wiring to its own
         # sub-content; the trailing chevron ships built in (flips via
@@ -526,6 +534,11 @@ module Poetry
             safe_join([capture(&block), chevron])
           end
         }
+
+        def initialize(dir: nil, **extra_attributes)
+          @dir = dir
+          super(extra_attributes)
+        end
 
         def before_render
           raise ArgumentError, "DropdownMenu sub requires with_trigger (the sub-menu item)" unless trigger?

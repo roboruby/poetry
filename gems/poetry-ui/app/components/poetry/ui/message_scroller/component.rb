@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module MessageScroller
-      # The streaming-aware transcript (MessageScroller) -
+      # The streaming-aware transcript -
       # the Gen-UI centerpiece: a native scroll region driven by the
       # poetry--core--message-scroller 4-state machine. Baseline without
       # JS: a plain scrollable region, fully readable. The content element
@@ -13,7 +13,22 @@ module Poetry
       # The controller's autoScroll default is the source-faithful FALSE;
       # this wrapper is poetry's opinionated chat posture and renders the
       # value TRUE unless auto_scroll: false.
+      #
+      # @example A chat transcript
+      #   render Poetry::Ui::MessageScroller::Component.new(id: "chat") do
+      #     # poetry_message_scroller_item rows
+      #   end
       class Component < Poetry::Core::Component
+        SCROLL_POSITIONS = %i[start end last-anchor].freeze
+
+        AGENT_RULES = [
+          "Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.",
+          "Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.",
+          "Append new turns with a Turbo Stream targeting the content element's dom id.",
+          "History loads PREPEND into the content element - the controller preserves the reading position.",
+          "Never nest a second scroll container inside the viewport."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :message_scroller do
@@ -42,15 +57,6 @@ module Poetry
             end
           end
         end
-        SCROLL_POSITIONS = %i[start end last-anchor].freeze
-
-        AGENT_RULES = [
-          "Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.",
-          "Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.",
-          "Append new turns with a Turbo Stream targeting the content element's dom id.",
-          "History loads PREPEND into the content element - the controller preserves the reading position.",
-          "Never nest a second scroll container inside the viewport."
-        ].freeze
 
         option :id, :string, required: true
         option :auto_scroll, :boolean, default: true

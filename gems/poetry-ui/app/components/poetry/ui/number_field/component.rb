@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module NumberField
-      # The NumberField (Wave 1): Base UI's number-field contract on
+      # The NumberField: Base UI's number-field contract on
       # poetry's InputGroup visual language. Base UI dropped the spinbutton
       # ARIA pattern - the anatomy is a formatted visible <input type=text>
       # (aria-roledescription "Number field") beside a visually-hidden
@@ -11,7 +11,7 @@ module Poetry
       # number submits (a currency field showing $1,234.50 submits 1234.5),
       # and native required/min/max validation rides the hidden input.
       #
-      # Visuals compose from existing primitives (the decision):
+      # Visuals compose from existing primitives:
       # the group wears InputGroup's chrome (the input keeps data-slot=
       # input-group-control - the themes' focus-ring hook), the steppers
       # are ghost icon Buttons in addon cells. Zero new theme CSS.
@@ -20,7 +20,24 @@ module Poetry
       # Latin-digit parsing only (locale separators and currency/percent
       # symbols ARE handled via Intl.formatToParts), and the server renders
       # the raw number - the display formats on connect.
+      #
+      # @example
+      #   render Poetry::Ui::NumberField::Component.new(
+      #     name: "quantity", value: 2, min: 0, label: "Quantity"
+      #   )
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
+          "input type=number.",
+          "The server reads params[<name>] as the raw number string - display formatting " \
+          "(format:) never changes what submits.",
+          "Steppers are mouse/touch affordances (tabindex -1); keyboard users step with " \
+          "ArrowUp/Down (Shift = large_step, Alt = small_step) on the input itself.",
+          "Pair it with a Label/Field for the accessible name - the component ships none.",
+          "format: takes Intl.NumberFormatOptions as a Hash ({ style: \"currency\", " \
+          "currency: \"USD\" }); pick locale: to pin parsing separators."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :number_field do
@@ -66,18 +83,6 @@ module Poetry
           end
         end
 
-        AGENT_RULES = [
-          "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
-          "input type=number.",
-          "The server reads params[<name>] as the raw number string - display formatting " \
-          "(format:) never changes what submits.",
-          "Steppers are mouse/touch affordances (tabindex -1); keyboard users step with " \
-          "ArrowUp/Down (Shift = large_step, Alt = small_step) on the input itself.",
-          "Pair it with a Label/Field for the accessible name - the component ships none.",
-          "format: takes Intl.NumberFormatOptions as a Hash ({ style: \"currency\", " \
-          "currency: \"USD\" }); pick locale: to pin parsing separators."
-        ].freeze
-
         option :name, :string, required: true
         # Initial value - a number; nil renders empty (null semantics).
         option :value, ActiveModel::Type::Value.new
@@ -107,6 +112,8 @@ module Poetry
         # aria-describedby wiring for Field hint/error pairing.
         option :described_by, :string
 
+        validates :step, numericality: { greater_than: 0 }
+
         part "number-field", "Root wrapper - the controller, disabled/invalid/filled state, " \
                              "and the two-input pair ride here",
              states: {
@@ -131,8 +138,6 @@ module Poetry
         # data-slot=number-field-increment/-decrement on Button's root -
         # ownership attributes them to Button (the date-picker-trigger
         # pattern), so they are documented here in prose only.
-
-        validates :step, numericality: { greater_than: 0 }
 
         def initialize(attributes = {})
           super

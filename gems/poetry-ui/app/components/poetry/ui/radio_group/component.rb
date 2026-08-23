@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module RadioGroup
-      # First of the forms family (RadioGroup) - the
-      # first roving-focus consumer with SELECTION semantics. Two machines
+      # The RadioGroup - the first roving-focus consumer with SELECTION
+      # semantics. Two machines
       # compose on one root (the Accordion/ToggleGroup shape): the thin
       # poetry--core--radio-group checked-value machine (zero keyboard
       # code) and poetry--core--roving-focus in its DEFAULT tabindex-
@@ -21,7 +21,76 @@ module Poetry
       # none is checked, so presence validation stays honest). The server
       # renders the roving tab stop (checked item tabindex=0, rest -1) so
       # the one-Tab-stop contract holds before JS connects.
+      #
+      # @example
+      #   render Poetry::Ui::RadioGroup::Component.new(
+      #     name: "plan", value: "monthly", label: "Billing plan"
+      #   ) do |group|
+      #     group.with_item(value: "monthly", label: "Monthly")
+      #     group.with_item(value: "yearly", label: "Yearly")
+      #   end
       class Component < Poetry::Core::Component
+        ORIENTATIONS = %i[both vertical horizontal].freeze
+
+        ITEM_VARIANTS = %i[default card].freeze
+
+        AGENT_RULES = [
+          "Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.",
+          "Every item MUST have a unique value: (ArgumentError on duplicates).",
+          "The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup is an " \
+          "APG violation (ArgumentError).",
+          "Pair every item with a visible label (item label: renders the Label for= pairing) - a bare " \
+          "dot is not an option.",
+          "variant: :card renders the choice-card row (title + description: inside a selectable " \
+          "bordered label) - the pick-a-plan pattern; the whole card toggles the radio.",
+          "NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked (the " \
+          "controller writes both; agents patching DOM must too).",
+          "Do not use RadioGroup for navigation or immediate actions; checking must not submit or " \
+          "navigate by itself.",
+          "7+ options: use Select instead.",
+          "Wire errors through Field/FormBuilder (invalid: + describedby on the root) - never a bare " \
+          "red ring."
+        ].freeze
+
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
+
+        # One item per option: a real button[role=radio] carrying its own
+        # hidden native radio; label: renders the demo's item+Label row.
+        # variant: :card renders the choice-card row instead - title (+
+        # optional description:) inside a selectable bordered label, the
+        # radio pinned to the right (upstream's FieldLabel-wrapping-Field
+        # Choice Card recipe, flattened onto the label).
+        renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
+                                       description: nil, variant: :default, **options|
+          unless ITEM_VARIANTS.include?(variant)
+            raise ArgumentError,
+                  "unknown RadioGroup item variant #{variant.inspect} - known: #{ITEM_VARIANTS.join(", ")}"
+          end
+
+          item_value = register_item_value!(value)
+          item_id = id.presence || "#{control_id}-#{slug(item_value)}"
+          item_disabled = disabled || self.disabled
+          item = radio_item(item_value, item_id, item_disabled, options)
+
+          next card_row(item, item_id, label, description) if variant == :card
+
+          if description.present?
+            raise ArgumentError, "RadioGroup description: rides the choice-card form - pass variant: :card"
+          end
+
+          next item if label.blank?
+
+          # Source parity (radio-group-demo): the item + Label pairing row.
+          # The for= targets the BUTTON id - label clicks check via the
+          # controller (native label->button activation).
+          content_tag(:div, class: css(:row)) do
+            safe_join([item, render(Label::Component.new(for_id: item_id).with_content(label))])
+          end
+        }
+
         use_stimulus do
           on :root do
             controller :radio_group do
@@ -49,25 +118,6 @@ module Poetry
             controller(:radio_group) { target :input }
           end
         end
-        ORIENTATIONS = %i[both vertical horizontal].freeze
-
-        AGENT_RULES = [
-          "Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.",
-          "Every item MUST have a unique value: (ArgumentError on duplicates).",
-          "The GROUP must be labelled - label: (or aria-labelledby) - an unlabelled radiogroup is an " \
-          "APG violation (ArgumentError).",
-          "Pair every item with a visible label (item label: renders the Label for= pairing) - a bare " \
-          "dot is not an option.",
-          "variant: :card renders the choice-card row (title + description: inside a selectable " \
-          "bordered label) - the pick-a-plan pattern; the whole card toggles the radio.",
-          "NEVER write the checked attributes (data-checked/data-unchecked) without aria-checked (the " \
-          "controller writes both; agents patching DOM must too).",
-          "Do not use RadioGroup for navigation or immediate actions; checking must not submit or " \
-          "navigate by itself.",
-          "7+ options: use Select instead.",
-          "Wire errors through Field/FormBuilder (invalid: + describedby on the root) - never a bare " \
-          "red ring."
-        ].freeze
 
         # The shared form name for every hidden radio (FormBuilder derives
         # object[method]).
@@ -76,7 +126,7 @@ module Poetry
         option :value, :string
         # aria-required on the ROOT only - never native required on the
         # hidden inputs (constraint-validation focus would land on an
-        # aria-hidden input; the/Field rule).
+        # aria-hidden input; the Field rule).
         option :required, :boolean, default: false
         # Disables every item (root-level).
         option :disabled, :boolean, default: false
@@ -123,47 +173,6 @@ module Poetry
         part "radio-group-card-title", "The choice card's title line (the item label:)"
         part "radio-group-card-description", "Muted copy under the choice card's title " \
                                              "(description:)"
-
-        ITEM_VARIANTS = %i[default card].freeze
-
-        # One item per option: a real button[role=radio] carrying its own
-        # hidden native radio; label: renders the demo's item+Label row.
-        # variant: :card renders the choice-card row instead - title (+
-        # optional description:) inside a selectable bordered label, the
-        # radio pinned to the right (upstream's FieldLabel-wrapping-Field
-        # Choice Card recipe, flattened onto the label).
-        renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
-                                       description: nil, variant: :default, **options|
-          unless ITEM_VARIANTS.include?(variant)
-            raise ArgumentError,
-                  "unknown RadioGroup item variant #{variant.inspect} - known: #{ITEM_VARIANTS.join(", ")}"
-          end
-
-          item_value = register_item_value!(value)
-          item_id = id.presence || "#{control_id}-#{slug(item_value)}"
-          item_disabled = disabled || self.disabled
-          item = radio_item(item_value, item_id, item_disabled, options)
-
-          next card_row(item, item_id, label, description) if variant == :card
-
-          if description.present?
-            raise ArgumentError, "RadioGroup description: rides the choice-card form - pass variant: :card"
-          end
-
-          next item if label.blank?
-
-          # Source parity (radio-group-demo): the item + Label pairing row.
-          # The for= targets the BUTTON id - label clicks check via the
-          # controller (native label->button activation).
-          content_tag(:div, class: css(:row)) do
-            safe_join([item, render(Label::Component.new(for_id: item_id).with_content(label))])
-          end
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
 
         def before_render
           raise ArgumentError, "RadioGroup requires at least one with_item" unless items?

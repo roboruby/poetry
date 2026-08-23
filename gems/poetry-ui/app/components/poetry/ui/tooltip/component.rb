@@ -3,14 +3,12 @@
 module Poetry
   module Ui
     module Tooltip
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # Shared placement vocabularies, declared once at module level.
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
-      # The popper-consumer trio's timing machine ([[CL Component -
-      # Tooltip]]): the hover/focus text hint that must never receive
+      # The popper-consumer trio's timing machine: the
+      # hover/focus text hint that must never receive
       # focus. Two hosts, one owned controller: the root carries
       # poetry--core--tooltip (delay timers, the provider-scoped warm
       # grace, one-open-globally, close-on-scroll, open-only
@@ -25,6 +23,14 @@ module Poetry
       # hidden content mis-announces); no aria-haspopup/expanded (a tooltip
       # is a description, not a popup the user operates); touch never opens
       # one (no long-press path, Radix-exact).
+      #
+      # @example A described icon button
+      #   render Poetry::Ui::Tooltip::Component.new do |tooltip|
+      #     tooltip.with_trigger(variant: :outline, size: :icon, label: "Print") do
+      #       poetry_icon(name: :printer)
+      #     end
+      #     "Print the current page"
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -47,21 +53,32 @@ module Poetry
           "Do not pin tooltips open as onboarding callouts - that is a Popover."
         ].freeze
 
-        option :open, :boolean, default: false
-        # nil = inherit the provider's data-delay-duration (default 0 -
-        # shadcn's provider override of Radix's 700, kept source-exact).
-        option :delay_duration, :integer
-        # nil = inherit the provider (the controller checks attribute
-        # PRESENCE, so an unset value must render no attribute at all).
-        option :disable_hoverable_content, :boolean
-        option :side, :symbol, default: :top # Radix Tooltip default - the trio's odd one out
-        option :align, :symbol, default: :center
-        option :side_offset, :integer, default: 0 # shadcn Content default (the arrow supplies the gap)
-        # Plain-text announcement override for rich content (the visual
-        # children stay; the announced body becomes this text).
-        option :label, :string
-        # The bubble's class merge seam (caller classes win on conflicts).
-        option :content_class, :string
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the described control" }.freeze
+
+        # The forwarding-lambda fact: with_trigger renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component }.freeze
+
+        # The described control - commonly a poetry Button (demo parity:
+        # with_trigger(variant: :outline) { "Hover" }). The slot owns the
+        # state + timing wiring regardless of the composed content.
+        # NO aria-haspopup/expanded/controls - the tooltip is invisible as
+        # a popup; aria-describedby is written by the controller on open
+        # (and server-rendered only when open: true).
+        renders_one :trigger, lambda { |**options, &block|
+          wiring = {
+            "id" => trigger_id, "data-slot" => "tooltip-trigger"
+          }.merge(stimulus_attributes_for(:trigger))
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          wiring["data-popup-open"] = "" if open
+          wiring["aria-describedby"] = content_id if open
+          composed_trigger(wiring, options, &block) ||
+            Button::Component.new(**wiring, **options, &block)
+        }
 
         use_stimulus do
           on :root do
@@ -106,6 +123,22 @@ module Poetry
           end
         end
 
+        option :open, :boolean, default: false
+        # nil = inherit the provider's data-delay-duration (default 0 -
+        # shadcn's provider override of Radix's 700, kept source-exact).
+        option :delay_duration, :integer
+        # nil = inherit the provider (the controller checks attribute
+        # PRESENCE, so an unset value must render no attribute at all).
+        option :disable_hoverable_content, :boolean
+        option :side, :symbol, default: :top # Radix Tooltip default - the trio's odd one out
+        option :align, :symbol, default: :center
+        option :side_offset, :integer, default: 0 # shadcn Content default (the arrow supplies the gap)
+        # Plain-text announcement override for rich content (the visual
+        # children stay; the announced body becomes this text).
+        option :label, :string
+        # The bubble's class merge seam (caller classes win on conflicts).
+        option :content_class, :string
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
@@ -140,33 +173,6 @@ module Poetry
                                            "resolved side, for per-side restyling",
                                 values: SIDES.map(&:to_s) }
              }
-
-        # The described control - commonly a poetry Button (demo parity:
-        # with_trigger(variant: :outline) { "Hover" }). The slot owns the
-        # state + timing wiring regardless of the composed content.
-        # NO aria-haspopup/expanded/controls - the tooltip is invisible as
-        # a popup; aria-describedby is written by the controller on open
-        # (and server-rendered only when open: true).
-        renders_one :trigger, lambda { |**options, &block|
-          wiring = {
-            "id" => trigger_id, "data-slot" => "tooltip-trigger"
-          }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          wiring["data-popup-open"] = "" if open
-          wiring["aria-describedby"] = content_id if open
-          composed_trigger(wiring, options, &block) ||
-            Button::Component.new(**wiring, **options, &block)
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { trigger: "the described control" }.freeze
-
-        # The forwarding-lambda component fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { trigger: Button::Component }.freeze
 
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?

@@ -3,14 +3,20 @@
 module Poetry
   module Ui
     module Carousel
-      # The Carousel - slides on the PLATFORM's scroll-snap (the W4
-      # decision: no embla): the viewport is a real scroll container (touch,
+      # The Carousel - slides on the PLATFORM's scroll-snap, no JS
+      # carousel engine: the viewport is a real scroll container (touch,
       # momentum, snapping for free), and poetry--core--carousel adds
       # prev/next paging, button state, and arrow keys. Declare slides with
       # with_item; the component owns the region/slide ARIA and the
       # controls.
       #
-      # Deferred with embla's machinery: loop, autoplay, plugins.
+      # Deferred (each would need an engine): loop, autoplay, plugins.
+      #
+      # @example
+      #   render Poetry::Ui::Carousel::Component.new(label: "Featured") do |carousel|
+      #     carousel.with_item { "Slide one" }
+      #     carousel.with_item { "Slide two" }
+      #   end
       class Component < Poetry::Core::Component
         ORIENTATIONS = %i[horizontal vertical].freeze
 
@@ -24,6 +30,22 @@ module Poetry
           "Change slide spacing as a TRIO: track_classes: \"-ml-1\" plus item classes " \
           "\"pl-1 -scroll-ml-1\" - the gutter padding and its snap scroll-margin move together."
         ].freeze
+
+        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
+        # check states the same requirement statically.
+        SLOT_REQUIRED_CONTENT = { item: "the slide" }.freeze
+
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one slide" }.freeze
+
+        renders_many :items, lambda { |classes: nil, &block|
+          raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
+
+          slides << Slide.new(classes: classes, block: block)
+          nil
+        }
 
         use_stimulus do
           on :root do
@@ -56,8 +78,8 @@ module Poetry
         end
 
         # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
+        # the flag carries the fact to the registry (the floating-crash
+        # class - a required option the static tier could not see).
         option :label, :string, required: true
         option :orientation, :symbol, default: :horizontal
         option :show_controls, :boolean, default: true
@@ -77,31 +99,13 @@ module Poetry
                                  "platform owns the physics"
         part "carousel-item", "One role=group slide - sized by item classes (basis-full default)"
 
-        Slide = Data.define(:classes, :block)
-
-        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
-        # check states the same requirement statically.
-        SLOT_REQUIRED_CONTENT = { item: "the slide" }.freeze
-
-        renders_many :items, lambda { |classes: nil, &block|
-          raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
-
-          slides << Slide.new(classes: classes, block: block)
-          nil
-        }
-
-        def slides
-          @slides ||= []
-        end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one slide" }.freeze
-
         def before_render
           raise ArgumentError, "Carousel requires label: (the region's accessible name)" if label.blank?
           raise ArgumentError, "Carousel requires at least one with_item" unless items?
+        end
+
+        def slides
+          @slides ||= []
         end
 
         def vertical? = orientation == :vertical
@@ -145,6 +149,8 @@ module Poetry
             data: { slot: "carousel-#{direction == :previous ? "previous" : "next"}" }
           }.merge(stimulus_attributes_for(direction))
         end
+
+        Slide = Data.define(:classes, :block)
       end
     end
   end

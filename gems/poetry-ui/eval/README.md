@@ -1,6 +1,6 @@
 # The eval harness
 
-The empirical backbone (completed by): poetry's thesis — *an
+The empirical backbone: poetry's thesis — *an
 LLM operating inside a constrained, legible UI system produces better UI than
 one generating raw markup* — is a falsifiable claim, and this directory is the
 experiment that tests it. Two halves:
@@ -21,10 +21,10 @@ experiment that tests it. Two halves:
   arms — an arm whose trigger does nothing captures that truth).
 - `results/<date>/judge-verdicts.json` — committed FROZEN-arm judge runs
   (`judge-v1`; the calibration lives here and only here).
-- `results/2026-07-07/` is the FROZEN pre-registered W2 run — never
-  rewritten; `results/2026-07-08/` is the remediation run (subset
+- `results/2026-07-07/` is the FROZEN pre-registered benchmark run — never
+  rewritten; `results/2026-07-08/` is its remediation run (subset
   regeneration + theme variants) layered beside it.
-- `results/<date>/` benchmark artifacts (N15 W2): `generated/<task>/<arm>.html.erb`
+- `results/<date>/` benchmark artifacts: `generated/<task>/<arm>.html.erb`
   (the agent-written arms), `generation-manifest.json`, `generated-scorecard.json`,
   `captures/`, `benchmark-verdicts.json`, `results.json` (`results-v1`).
 - `runner.rb` — the mechanical scorer (arms_root swaps the corpus).
@@ -41,7 +41,7 @@ experiment that tests it. Two halves:
    cross-arm ledgers — never the poetry_only diagnostics, never which arm is
    which. Captures stage to position-named tmp files outside the repo (the
    repo path itself says "poetry"); `Judge.assert_blind!` raises on any leak.
-3. **The judge is paired, never absolute** (the Design Crit finding: judges
+3. **The judge is paired, never absolute** (the calibration finding: judges
    are near chance on absolute design scores, usable on paired comparison
    with concrete axes): forced choice per axis — hierarchy · composition ·
    clarity · brief_fit — plus overall, with rationale.
@@ -82,11 +82,10 @@ and are excluded in `agreement_rate_decided`.
   even with the swap discipline). Re-record captures first when components
   or themes changed.
 
-## The generated-arm benchmark (W2 — the thesis test)
+## The generated-arm benchmark (the thesis test)
 
 Frozen arms measure the *system's floor*; the thesis claim is about **agent
-output**. Protocol pre-registered in the vault plan note ("Components
-Library - N15 Judged Eval Plan"): per brief, generation agent A works in a
+output**. Protocol pre-registered before the run: per brief, generation agent A works in a
 fixture host WITH poetry (the installed surface: the AGENTS.md section from
 `rails g poetry:agents`, llms.txt/llms-full.txt materialized from the live
 registry, `bin/check` wrapping `poetry:check`), agent B in a raw-Tailwind
@@ -101,8 +100,8 @@ chains them):
 | `rake eval:benchmark:generate` | claude CLI agents write every arm → `generated/` + manifest |
 | `rake eval:benchmark:score` | Mechanical gates on generated arms → `generated-scorecard.json` |
 | `rake eval:benchmark:capture` | Screenshots, stylesheet compiled WITH the generated arms as a Tailwind source (no purge bias) |
-| `rake eval:benchmark:judge` | The W1 paired judge → `benchmark-verdicts.json` (never `judge-verdicts.json`) |
-| `rake eval:benchmark:capture_themed` | theme variant: poetry arms recaptured under `POETRY_BENCH_THEME` (default vega), raw PNGs reused byte-for-byte from the source run |
+| `rake eval:benchmark:judge` | The paired judge → `benchmark-verdicts.json` (never `judge-verdicts.json`) |
+| `rake eval:benchmark:capture_themed` | Theme variant: poetry arms recaptured under `POETRY_BENCH_THEME` (default vega), raw PNGs reused byte-for-byte from the source run |
 | `rake eval:benchmark:aggregate` | Fold into `results.json` (`results-v1`) with the pre-registered prediction checks |
 
 Env: `POETRY_BENCH_DATE`, `POETRY_BENCH_MODEL`, `POETRY_BENCH_MAX_TURNS`,
@@ -160,7 +159,7 @@ holdout.
 control-vs-treatment pair: the treatment (`POETRY_BENCH_GUIDED=1`) adds
 `mcp__poetry__build_page` to the poetry belt, the control is the standing
 belt, the raw arm is untouched. The graded question — does the guided
-workflow move the judged **composition** score where/79 did not — plus
+workflow move the judged **composition** score where the earlier surface levers did not — plus
 the full protocol (known-perfect ceiling, three trials, linkable traces),
 the pre-registered predictions, and the run commands live in
 `eval/guided.md`. On-demand, real token cost, never CI; report every run in

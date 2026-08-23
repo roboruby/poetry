@@ -1,6 +1,6 @@
 {
   "schema": "results-blocks-gate-v1",
-  "headline_stands": "'s pre-registered result (raw 18 - poetry 13) and the remediation numbers are untouched; this is the Blocks v1 gate re-run the plan note pre-registered, graded against its own predictions.",
+  "headline_stands": "The pre-registered result (raw 18 - poetry 13) and the remediation numbers are untouched; this is the blocks gate re-run pre-registered before the run, graded against its own predictions.",
   "gate": {
     "covered_tasks": [
       "table",

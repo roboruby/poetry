@@ -11,6 +11,7 @@ module Poetry
       # (cookies[:sidebar_state] != "false") so the first paint matches the
       # user's last choice with no flash.
       #
+      # @example App shell wired to the persisted cookie
       #   <%= poetry_sidebar(open: cookies[:sidebar_state] != "false", collapsible: :icon) do |shell| %>
       #     <% shell.with_nav do %>
       #       <%= poetry_sidebar_group do %>...menu...<% end %>
@@ -20,12 +21,15 @@ module Poetry
       #       <main>...page...</main>
       #     <% end %>
       #   <% end %>
-      #
-      # v1 is desktop-complete; the mobile-Sheet mode is deferred (W5b).
       class Component < Poetry::Core::Component
         SIDES = %i[left right].freeze
         VARIANTS = %i[sidebar floating inset].freeze
         COLLAPSIBLE = %i[offcanvas icon none].freeze
+
+        WIDTH = "16rem"
+        WIDTH_ICON = "3rem"
+        # SIDEBAR_WIDTH_MOBILE (source): the mobile sheet's panel width.
+        WIDTH_MOBILE = "18rem"
 
         AGENT_RULES = [
           "Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page area " \
@@ -37,6 +41,14 @@ module Poetry
           "Menu entries are poetry_sidebar_menu_button(href:) links (active: marks the current route) - " \
           "navigation navigates."
         ].freeze
+
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
+
+        renders_one :nav
+        renders_one :inset
 
         use_stimulus do
           on :root do
@@ -71,11 +83,6 @@ module Poetry
             controller(:sidebar) { action :toggle, on: :click }
           end
         end
-
-        WIDTH = "16rem"
-        WIDTH_ICON = "3rem"
-        # SIDEBAR_WIDTH_MOBILE (source): the mobile sheet's panel width.
-        WIDTH_MOBILE = "18rem"
 
         option :open, :boolean, default: true
         option :side, :symbol, default: :left
@@ -146,14 +153,6 @@ module Poetry
              states: {
                "data-sidebar" => "always \"menu-badge\" - the upstream sub-part marker"
              }
-
-        renders_one :nav
-        renders_one :inset
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
 
         def before_render
           raise ArgumentError, "Sidebar requires with_nav (the sidebar column)" unless nav?

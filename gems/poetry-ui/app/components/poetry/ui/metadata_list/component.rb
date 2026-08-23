@@ -3,13 +3,19 @@
 module Poetry
   module Ui
     module MetadataList
-      # The MetadataList - the detail-page vocabulary (, the
-      # review add): labeled facts about one record as a real
-      # description list (<dl>), in one or more columns, with the label
-      # above the value (vertical) or beside it (horizontal). No upstream
-      # shadcn/Base UI analogue; the anatomy follows an upstream MetadataList
-      # on platform semantics. Styling is utility-only (the Separator/
-      # Spinner rule): data-slot names are the restyle seam.
+      # The MetadataList - the detail-page vocabulary: labeled facts
+      # about one record as a real description list (<dl>), in one or
+      # more columns, with the label above the value (vertical) or beside
+      # it (horizontal). No upstream shadcn/Base UI analogue - a
+      # poetry-original anatomy on platform semantics. Styling is
+      # utility-only (the Separator/Spinner rule): data-slot names are
+      # the restyle seam.
+      #
+      # @example A record's fact sheet
+      #   render Poetry::Ui::MetadataList::Component.new(columns: :two) do |list|
+      #     list.with_item(label: "Status") { "Active" }
+      #     list.with_item(label: "Owner") { "Ada Lovelace" }
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Record facts on a detail page belong in a MetadataList - never a hand-rolled grid of " \
@@ -21,6 +27,19 @@ module Poetry
           "For editable facts pair each value with its edit affordance inside the item block; " \
           "the list itself stays read-only vocabulary."
         ].freeze
+
+        # The same fact the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering.
+        REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
+
+        renders_many :items, lambda { |label:, **options, &block|
+          content_tag(:div, { "data-slot" => "metadata-list-item", class: css(:item) }.merge(options)) do
+            safe_join([
+                        content_tag(:dt, label, "data-slot" => "metadata-list-label", class: css(:label)),
+                        content_tag(:dd, { "data-slot" => "metadata-list-value", class: css(:value) }, &block)
+                      ])
+          end
+        }
 
         style :orientation, default: :vertical, variants: %i[vertical horizontal]
         style :columns, default: :one, variants: %i[one two three]
@@ -35,19 +54,6 @@ module Poetry
         part "metadata-list-item", "One fact group (a <div> holding its <dt>/<dd> pair)"
         part "metadata-list-label", "The fact's name (<dt>) - muted, small"
         part "metadata-list-value", "The fact's value (<dd>) - composes text, badges, links"
-
-        renders_many :items, lambda { |label:, **options, &block|
-          content_tag(:div, { "data-slot" => "metadata-list-item", class: css(:item) }.merge(options)) do
-            safe_join([
-                        content_tag(:dt, label, "data-slot" => "metadata-list-label", class: css(:label)),
-                        content_tag(:dd, { "data-slot" => "metadata-list-value", class: css(:value) }, &block)
-                      ])
-          end
-        }
-
-        # The same fact the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering.
-        REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
 
         def before_render
           raise ArgumentError, "MetadataList requires at least one with_item" unless items?

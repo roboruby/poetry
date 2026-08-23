@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module InputOtp
-      # Re-expressed through the cn-* theme layer (N11). The invisible-
+      # Re-expressed through the cn-* theme layer. The invisible-
       # control mechanism stays ENTIRELY inline (:input stretched over the
       # slot row at opacity 0.005 - clickable, focusable, AT-visible; NEVER
       # sr-only) as does the caret overlay geometry + blink motion; the

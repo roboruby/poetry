@@ -3,15 +3,16 @@
 module Poetry
   module Ui
     module DataTable
-      # The DataTable - a server-driven recipe-as-component: the W1 Table
-      # with sortable column headers, a filter box, and Pagination, with
-      # sort/filter/page as URL STATE (shareable, back-button-correct; GET is
-      # the only transport the back button can replay). Data stays with the
-      # host: the controller builds a sanitized State from params, runs
-      # its own scope, and hands the page of rows in. Row-level mutation
-      # (inline edit, row actions) belongs to the reactive tier
+      # The DataTable - a server-driven recipe-as-component: the composed
+      # Table with sortable column headers, a filter box, and Pagination,
+      # with sort/filter/page as URL STATE (shareable, back-button-correct;
+      # GET is the only transport the back button can replay). Data stays
+      # with the host: the controller builds a sanitized State from params,
+      # runs its own scope, and hands the page of rows in. Row-level
+      # mutation (inline edit, row actions) belongs to the reactive tier
       # (poetry-reactive) - each tier owns the state that belongs to it.
       #
+      # @example A sortable notes table
       #   <%= poetry_data_table(rows: @notes, state: state, total: @pages,
       #                         path: ->(p) { notes_path(**p) }, caption: "Notes") do |t| %>
       #     <% t.with_column("Title", key: :title, sortable: true) { |note| note.title } %>
@@ -28,9 +29,34 @@ module Poetry
           "Give the table a caption: - it is the table's accessible purpose."
         ].freeze
 
-        # A declared column: header label, the whitelisted sort key, and the
-        # cell block (called per row, returns the cell content).
-        Column = Data.define(:label, :key, :sortable, :classes, :cell)
+        # The cell block is a per-row RENDERER, not captured content: it
+        # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
+        # yieldless contract), and a column cannot exist without one.
+        SLOT_BLOCK_YIELDS = { column: "the row record" }.freeze
+        SLOT_REQUIRED_CONTENT = { column: "the cell renderer - { |row| ... }" }.freeze
+
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { column: "at least one column" }.freeze
+
+        # Columns are DECLARED here and rendered per row by the template. A
+        # sortable column's key must be in the state's whitelist - catching
+        # drift between the view's columns and the controller's sortable:
+        # list at render, not as a silently unsortable header.
+        renders_many :columns, lambda { |label, key: nil, sortable: false, classes: nil, &cell|
+          raise ArgumentError, "DataTable column #{label.inspect}: sortable: true requires a key:" if sortable && !key
+          if sortable && !state.sortable?(key)
+            raise ArgumentError,
+                  "DataTable column #{key.inspect} is sortable in the view but missing from the " \
+                  "controller's State sortable: whitelist (#{state.sortable.inspect}) - add it there"
+          end
+          raise ArgumentError, "DataTable column #{label.inspect} requires a cell block" unless cell
+
+          column_defs << Column.new(label: label, key: key&.to_s, sortable: sortable, classes: classes, cell: cell)
+          nil
+        }
+
         # The whole selection surface is selectable?-gated.
         use_stimulus do
           on :root, if: :selectable? do
@@ -85,7 +111,7 @@ module Poetry
                                    "renders unless filter: false"
         part "data-table-filter", "The GET filter form (role=search) - hidden fields carry the " \
                                   "current sort; a new filter resets the page"
-        part "table-container", "The composed W1 Table's scroll container - Table renders it, " \
+        part "table-container", "The composed Table's scroll container - Table renders it, " \
                                 "this surface owns where it sits"
         part "data-table-footer", "The Pagination row - renders when total: is more than one page"
         # The selection checkboxes (selectable: only) render INSIDE the
@@ -97,42 +123,14 @@ module Poetry
         # form value (selection_name[], value from the selectable: lambda);
         # the controller mirrors aria-selected/data-selected onto rows.
 
-        # The cell block is a per-row RENDERER, not captured content: it
-        # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
-        # yieldless contract), and a column cannot exist without one.
-        SLOT_BLOCK_YIELDS = { column: "the row record" }.freeze
-        SLOT_REQUIRED_CONTENT = { column: "the cell renderer - { |row| ... }" }.freeze
-
-        # Columns are DECLARED here and rendered per row by the template. A
-        # sortable column's key must be in the state's whitelist - catching
-        # drift between the view's columns and the controller's sortable:
-        # list at render, not as a silently unsortable header.
-        renders_many :columns, lambda { |label, key: nil, sortable: false, classes: nil, &cell|
-          raise ArgumentError, "DataTable column #{label.inspect}: sortable: true requires a key:" if sortable && !key
-          if sortable && !state.sortable?(key)
-            raise ArgumentError,
-                  "DataTable column #{key.inspect} is sortable in the view but missing from the " \
-                  "controller's State sortable: whitelist (#{state.sortable.inspect}) - add it there"
-          end
-          raise ArgumentError, "DataTable column #{label.inspect} requires a cell block" unless cell
-
-          column_defs << Column.new(label: label, key: key&.to_s, sortable: sortable, classes: classes, cell: cell)
-          nil
-        }
-
         attr_reader :rows, :state, :total
-
-        def column_defs
-          @column_defs ||= []
-        end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { column: "at least one column" }.freeze
 
         def before_render
           raise ArgumentError, "DataTable requires at least one with_column" unless columns?
+        end
+
+        def column_defs
+          @column_defs ||= []
         end
 
         def root_attributes
@@ -168,7 +166,7 @@ module Poetry
           @path.call(params)
         end
 
-        # th attributes: the W1 Table head classes plus aria-sort on the
+        # th attributes: the Table head classes plus aria-sort on the
         # actively sorted column (the APG announcement mechanism - one
         # column at a time).
         def head_attributes(column)
@@ -213,6 +211,10 @@ module Poetry
         def pagination?
           total.present? && total > 1
         end
+
+        # A declared column: header label, the whitelisted sort key, and the
+        # cell block (called per row, returns the cell content).
+        Column = Data.define(:label, :key, :sortable, :classes, :cell)
 
         private
 

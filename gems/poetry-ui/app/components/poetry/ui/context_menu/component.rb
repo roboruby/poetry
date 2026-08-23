@@ -3,9 +3,8 @@
 module Poetry
   module Ui
     module ContextMenu
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # Shared vocabularies, declared once at module level so the root
+      # Component and the nested menu-level classes read the same lists.
       ITEM_VARIANTS = %i[default destructive].freeze
       DIRS = %i[ltr rtl].freeze
       SIDES = %i[top right bottom left].freeze
@@ -55,7 +54,7 @@ module Poetry
       end
 
       # The item UNION every menu level accepts (family-identical to
-      # DropdownMenu): item | checkbox_item |
+      # DropdownMenu's): item | checkbox_item |
       # radio_group | label | separator | group | sub - one ordered
       # collection, polymorphic setters named per part. Included by the
       # root Component, Sub (recursive submenus), and Group.
@@ -161,8 +160,8 @@ module Poetry
         end
       end
 
-      # The menus-family sibling (ContextMenu): the same
-      # shared machinery as DropdownMenu, with the trigger DELTA - a
+      # The menus-family sibling of DropdownMenu: the same
+      # shared machinery, with the trigger DELTA - a
       # right-click/long-press SURFACE, not a button. The surface is NOT a
       # widget: no role, no aria-haspopup, not in the tab order (unless
       # focusable_surface: opts in); with no JS the browser-native context
@@ -171,6 +170,13 @@ module Poetry
       # default right); align start / offset 2 stay fixed - context menus
       # anchor at the pointer via popper's virtual-anchor mode, written by
       # the thin poetry--core--context-menu controller.
+      #
+      # @example Right-click surface with actions
+      #   render Poetry::Ui::ContextMenu::Component.new do |menu|
+      #     menu.with_trigger(tag: :div) { "Right-click this card" }
+      #     menu.with_item { "Rename" }
+      #     menu.with_item(variant: :destructive) { "Delete" }
+      #   end
       class Component < Poetry::Core::Component
         include ItemSlots
 
@@ -189,14 +195,30 @@ module Poetry
           "Do not nest a ContextMenu trigger surface inside another ContextMenu trigger surface."
         ].freeze
 
-        option :open, :boolean, default: false
-        option :modal, :boolean, default: true
-        option :long_press_delay, :integer, default: 700
-        option :disabled, :boolean, default: false
-        option :label, :string
-        option :focusable_surface, :boolean, default: false
-        option :dir, :symbol
-        option :side, :symbol, default: :right
+        # DELTA - the right-click/long-press SURFACE: wraps arbitrary
+        # content (a card, a row, a region); polymorphic tag: (default
+        # :span, set tag: :div to wrap block content). NOT a button: no
+        # role, no aria-haspopup, no tabindex by default. The inline
+        # -webkit-touch-callout suppresses the iOS callout so long-press
+        # can run (iOS never fires contextmenu; the timer is the only
+        # touch path there).
+        renders_one :trigger, lambda { |**options, &block|
+          tag_name = options.delete(:tag) || :span
+          attrs = {
+            "id" => trigger_id, "data-slot" => "context-menu-trigger",
+            "aria-controls" => content_id,
+            "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
+          }.merge(stimulus_attributes_for(:trigger))
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
+          attrs["data-disabled"] = "" if disabled
+          if focusable_surface
+            attrs["tabindex"] = "0"
+            attrs["aria-keyshortcuts"] = "Shift+F10"
+          end
+          content_tag(tag_name, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
+        }
 
         use_stimulus do
           on :root do
@@ -246,6 +268,15 @@ module Poetry
             controller(:popper) { target :anchor }
           end
         end
+
+        option :open, :boolean, default: false
+        option :modal, :boolean, default: true
+        option :long_press_delay, :integer, default: 700
+        option :disabled, :boolean, default: false
+        option :label, :string
+        option :focusable_surface, :boolean, default: false
+        option :dir, :symbol
+        option :side, :symbol, default: :right
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
         validates :side, inclusion: { in: SIDES }
@@ -335,31 +366,6 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
-        # DELTA - the right-click/long-press SURFACE: wraps arbitrary
-        # content (a card, a row, a region); polymorphic tag: (default
-        # :span, set tag: :div to wrap block content). NOT a button: no
-        # role, no aria-haspopup, no tabindex by default. The inline
-        # -webkit-touch-callout suppresses the iOS callout so long-press
-        # can run (iOS never fires contextmenu; the timer is the only
-        # touch path there).
-        renders_one :trigger, lambda { |**options, &block|
-          tag_name = options.delete(:tag) || :span
-          attrs = {
-            "id" => trigger_id, "data-slot" => "context-menu-trigger",
-            "aria-controls" => content_id,
-            "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
-          }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          attrs["data-popup-open"] = "" if open
-          attrs["data-disabled"] = "" if disabled
-          if focusable_surface
-            attrs["tabindex"] = "0"
-            attrs["aria-keyshortcuts"] = "Shift+F10"
-          end
-          content_tag(tag_name, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
-        }
-
         def before_render
           raise ArgumentError, "ContextMenu requires with_trigger (the right-click surface)" unless trigger?
           raise ArgumentError, "ContextMenu requires at least one item" unless items?
@@ -413,6 +419,8 @@ module Poetry
       # role=group semantic grouping between separators - the same item
       # union, one level down. Plain ViewComponent::Base ON PURPOSE (the
       # nested parts are anatomy, not registry components).
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include ItemSlots
@@ -439,19 +447,15 @@ module Poetry
       end
 
       # role=group scoping the single-select value for its radio items.
-      # Duplicate radio values raise ArgumentError at render (the base-contract
-      # base contract); radio items exist ONLY through this group.
+      # Duplicate radio values raise ArgumentError at render (the
+      # base-contract rule); radio items exist ONLY through this group.
+      #
+      # @api private
       class RadioGroup < Poetry::Core::Component
         internal_component!
         include Helpers
 
         attr_reader :group_value
-
-        def initialize(value: nil, **extra_attributes)
-          super(extra_attributes)
-          @group_value = value&.to_s
-          @seen_values = Set.new
-        end
 
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
@@ -475,6 +479,12 @@ module Poetry
           end
         }
 
+        def initialize(value: nil, **extra_attributes)
+          super(extra_attributes)
+          @group_value = value&.to_s
+          @seen_values = Set.new
+        end
+
         def before_render
           raise ArgumentError, "ContextMenu radio group requires at least one with_radio_item" unless radio_items?
         end
@@ -489,14 +499,11 @@ module Poetry
       # A submenu scope: its own popper instance (sub_trigger = anchor,
       # sub_content = content; side flips under RTL) around the same item
       # union, recursively - family-identical to DropdownMenu's.
+      #
+      # @api private
       class Sub < Poetry::Core::Component
         internal_component!
         include ItemSlots
-
-        def initialize(dir: nil, **extra_attributes)
-          super(extra_attributes)
-          @dir = dir
-        end
 
         renders_one :trigger, lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
           attrs = {
@@ -510,6 +517,11 @@ module Poetry
             safe_join([capture(&block), chevron])
           end
         }
+
+        def initialize(dir: nil, **extra_attributes)
+          super(extra_attributes)
+          @dir = dir
+        end
 
         def before_render
           raise ArgumentError, "ContextMenu sub requires with_trigger (the sub-menu item)" unless trigger?

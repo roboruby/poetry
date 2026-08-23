@@ -5,8 +5,8 @@ require "rake"
 
 module Poetry
   module Ui
-    # The doc-prose tier (an external review's docPropReferences insight, ported):
-    # curated prose is LLM steering text - a backticked helper, path, rake
+    # The doc-prose tier: curated prose is LLM steering text - a
+    # backticked helper, path, rake
     # task, design-lint rule, token, or count that doesn't exist steers
     # agents toward hallucinated APIs. Scope is the HAND-CURATED surfaces
     # only - the poetry-design skill templates and AGENTS.md; the usage

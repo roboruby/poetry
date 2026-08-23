@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Avatar
-      # shadcn Avatar, re-expressed through the cn-* theme layer (N11).
+      # shadcn Avatar, re-expressed through the cn-* theme layer.
       # :image keeps poetry's "absolute inset-0" deviation inline (the
       # server-native layered fallback keeps BOTH fallback and image in the
       # DOM, so the image must cover the initials); the after:* ring

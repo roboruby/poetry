@@ -5,8 +5,8 @@ require "rails/generators/test_case"
 require "generators/poetry/add/add_generator"
 
 module Poetry
-  # The ecosystem address path of poetry:add (Ecosystem v1),
-  # end-to-end over FILE addresses - the same resolve/validate/write
+  # The ecosystem address path of poetry:add, end-to-end over FILE
+  # addresses - the same resolve/validate/write
   # pipeline url and @namespace addresses ride, with no network in the
   # suite (the client's remote conduct is covered in poetry-core).
   class AddRemoteGeneratorTest < Rails::Generators::TestCase

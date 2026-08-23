@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The Blocks v1 gates: every shipped block is held to a stricter
+    # The block gates: every shipped block is held to a stricter
     # standard than consumer templates - ZERO check findings (not just zero
     # errors) with the full production catalog, a clean render through the
     # app, and a registry entry whose metadata stays source-derived.
@@ -60,7 +60,7 @@ module Poetry
         end
       end
 
-      # W4's outcome, locked: every block renders DesignLint-clean (the
+      # Locked: every block renders DesignLint-clean (the
       # app_shell h1->h3 lesson - source lint cannot see Card internals,
       # so blocks are held at the rendered tier).
       def test_every_block_renders_design_lint_clean
@@ -72,7 +72,7 @@ module Poetry
         end
       end
 
-      # The mixed-status-weight fixture (lead): the v1.1 table arm
+      # The mixed-status-weight fixture: the archived v1.1 table arm
       # mixed a solid destructive pill into a soft status column - the rule
       # exists because this shipped past every other gate.
       def test_the_v11_table_arm_is_the_mixed_status_fixture
@@ -89,7 +89,7 @@ module Poetry
         source = Poetry::Ui.root.join(Poetry::Ui::BLOCKS_DIR, "app_shell.html.erb").read
 
         assert_includes source, "group-has-data-[collapsible=icon]/sidebar-wrapper:",
-                        "the marker returned WITH its consumer ('s condition)"
+                        "the marker ships only WITH its consumer"
         assert_includes Poetry::Ui::Sidebar::Style.css(:wrapper), "group/sidebar-wrapper"
       end
 

@@ -3,7 +3,7 @@
 require_relative "dommy_helper"
 
 module DommyTier
-  # UA-semantics + JS integration (the bug class that motivated): a
+  # UA-semantics + JS integration (this tier's motivating bug class): a
   # closed <dialog> computes display:none from the UA stylesheet alone; the
   # real poetry--core--dialog controller's open() (via the real trigger
   # Button) must clear it. JSDOM-style stacks miss this entirely.

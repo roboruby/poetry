@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-# any-of contract grade: the crash-floor closer (REQUIRES_ANY +
+# Any-of contract grade: the crash-floor closer (REQUIRES_ANY +
 # SLOT_RENDERS) re-gated on the 31 briefs against the pre-registered
-# d1-d4 (vault note "Any-Of Contracts ", committed before
-# generation). Run from the poetry-ui root:
+# d1-d4 (committed before generation). Run from the poetry-ui root:
 #   bundle exec ruby eval/results/2026-07-11-anyof/results_anyof.rb
 require "json"
 
@@ -48,7 +47,7 @@ predictions = {
   "d1" => { "statement" => "31/31 delivery, ZERO render crashes, zero pairs lost",
             "observed" => "delivery #{delivered}/31; crashes: #{crashes.empty? ? "none" : crashes.join(", ")}",
             "pass" => delivered == 31 && crashes.empty? },
-  "d2" => { "statement" => "poetry overall >= 12/31 (11 - both crashed arms lost 4-0)",
+  "d2" => { "statement" => "poetry overall >= 12/31 (block-path run: 11 - both crashed arms lost 4-0)",
             "observed" => "#{poetry_wins}/31 (#{overall.inspect})", "pass" => poetry_wins >= 12 },
   "d3" => { "statement" => "command_palette and toast are no longer 4-0 raw sweeps",
             "observed" => remediated.transform_values { |r| "#{r["verdict"]} #{r["axes"].values.tally}" },
@@ -61,20 +60,20 @@ predictions = {
 payload = {
   "assembled_from" => ["results.json", "generated-scorecard.json", "generation-manifest.json",
                        "fresh-arm-sweep.json",
-                       "#{PRIOR}/results.json (baseline; raw controls frozen from 2026-07-07)"],
+                       "#{PRIOR}/results.json (block-path baseline; raw controls frozen from 2026-07-07)"],
   "headline" => overall,
-  "prior_baselines" => { "dd79_blockpath" => prior["summary"]["overall"],
-                         "dd78_designfire" => { "raw_tailwind" => 19, "poetry" => 11 },
-                         "dd70_full" => { "raw_tailwind" => 18, "poetry" => 13 } },
+  "prior_baselines" => { "blockpath_run" => prior["summary"]["overall"],
+                         "designfire_run" => { "raw_tailwind" => 19, "poetry" => 11 },
+                         "baseline_full" => { "raw_tailwind" => 18, "poetry" => 13 } },
   "axes" => axes,
-  "composition_recorded_not_gated" => "#{composition}/31 (closed the surface ledger)",
-  "verdict_changes_vs_dd79" => flips,
+  "composition_recorded_not_gated" => "#{composition}/31 (the block-path run closed the surface ledger)",
+  "verdict_changes_vs_blockpath" => flips,
   "remediated_tasks" => remediated,
   "generation_usage" => manifest["usage"],
   "predictions" => predictions,
   "grade" => "#{predictions.count { |_k, p| p["pass"] }}/4 pre-registered predictions pass",
   "decision_rule" => "this tally SUPERSEDES raw 17 - poetry 11 - inc 3 as the standing headline " \
-                     "(pre-registered); no composition outcome reopens the closure"
+                     "(pre-registered); no composition outcome reopens the block-path closure"
 }
 
 path = File.join(RUN, "results-anyof-grade.json")

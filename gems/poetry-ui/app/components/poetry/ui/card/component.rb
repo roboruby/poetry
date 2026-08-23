@@ -3,10 +3,17 @@
 module Poetry
   module Ui
     module Card
-      # The Card - shadcn new-york-v4 parity via data-slot composition
-      # One component whose parts are slots arranged by the template;
+      # The Card - shadcn new-york-v4 parity via data-slot composition:
+      # one component whose parts are slots arranged by the template;
       # every part carries its data-slot role, and the header grid reacts
       # to the presence of an action via has-data-[slot=card-action].
+      #
+      # @example
+      #   render Poetry::Ui::Card::Component.new do |card|
+      #     card.with_title { "Team" }
+      #     card.with_description { "Invite and manage members." }
+      #     "Body content"
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Compose with the slots (title/description/action/footer) - never rebuild the header grid by hand.",
@@ -14,9 +21,19 @@ module Poetry
           "The title renders as a real heading (h3 default) - set title_tag: to fit the page outline."
         ].freeze
 
+        renders_one :title
+        renders_one :description
+        renders_one :action
+        # class: merges into the footer div (upstream CardFooter className -
+        # the border-t divider variant is the canonical use).
+        renders_one :footer, lambda { |**options, &block|
+          @footer_class = options[:class]
+          @footer_block = block
+          nil
+        }
+
         # A real HEADING (h3 by default) - a deliberate a11y improvement
-        # over shadcn's div, caught by the eval harness's heading_semantics
-        # gate (2026-07-01). Visual classes unchanged, so parity holds.
+        # over shadcn's div. Visual classes unchanged, so parity holds.
         option :title_tag, :symbol, default: :h3
 
         # The body cell's class merge seam (caller classes win via
@@ -41,17 +58,6 @@ module Poetry
         part "card-action", "The header's trailing corner control"
         part "card-content", "The body - the content block renders here"
         part "card-footer", "The bottom row (actions/meta)"
-
-        renders_one :title
-        renders_one :description
-        renders_one :action
-        # class: merges into the footer div (upstream CardFooter className -
-        # the border-t divider variant is the canonical use).
-        renders_one :footer, lambda { |**options, &block|
-          @footer_class = options[:class]
-          @footer_block = block
-          nil
-        }
 
         attr_reader :footer_class, :footer_block
 

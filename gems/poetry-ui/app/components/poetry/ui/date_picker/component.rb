@@ -7,11 +7,16 @@ module Poetry
     module DatePicker
       # The DatePicker - a text-field-shaped trigger that opens a Calendar in
       # a Popover. Composition, not a new primitive: the Popover owns the
-      # overlay, the Calendar (W6 own-the-engine grid) owns selection + the
+      # overlay, the Calendar (the own-the-engine grid) owns selection + the
       # form value (name: -> its hidden input), and poetry--core--date-picker
       # glues them (formats the trigger label, closes on pick). Server-first:
       # a preselected value: renders the formatted label + the chosen day
       # with no JS.
+      #
+      # @example
+      #   render Poetry::Ui::DatePicker::Component.new(
+      #     name: "due_on", label: "Due date", value: Date.new(2026, 6, 5)
+      #   )
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).",
@@ -78,22 +83,22 @@ module Poetry
           @month = to_date(month)
         end
 
-        attr_reader :value, :min, :max, :month, :range_start, :range_end
-
-        def range? = mode == :range
-
-        def input_variant? = variant == :input
-
         def before_render
           raise ArgumentError, "DatePicker requires name: (the form field)" if name.blank?
           raise ArgumentError, "DatePicker variant: must be :button or :input" unless %i[button input].include?(variant)
           raise ArgumentError, "DatePicker variant: :input is single-mode only" if input_variant? && range?
         end
 
+        attr_reader :value, :min, :max, :month, :range_start, :range_end
+
+        def range? = mode == :range
+
+        def input_variant? = variant == :input
+
         # Range mode joins the pair with SHORT month names ("Jun 5, 2026 -
         # Jun 12, 2026" - upstream's range demo formats LLL dd for the same
         # reason: two long-month dates outgrow any reasonable trigger); a
-        # start-only value shows one date (the rdp/shadcn convention).
+        # start-only value shows one date (the shadcn convention).
         def formatted
           if range?
             return placeholder unless @range_start
@@ -129,6 +134,31 @@ module Poetry
           }.compact
         end
 
+        def label_target_attributes
+          stimulus_attributes_for(:label)
+        end
+
+        # The input variant's text field: the picker's input target plus the
+        # typed-date sync and ArrowDown-opens actions. It carries NO name -
+        # the calendar's hidden ISO input stays THE form value.
+        def input_attributes
+          stimulus_attributes_for(:input).merge(
+            "value" => (formatted if value), "placeholder" => placeholder,
+            "aria-label" => label.presence || "Date"
+          ).compact
+        end
+
+        # The addon's icon button IS the popover trigger - InputGroup's own
+        # icon-xs chrome on Popover's wired Button.
+        def input_trigger_options
+          style = Poetry::Ui::InputGroup::Style
+          {
+            variant: :ghost, label: label.presence || "Choose date",
+            class: [style.css(:button), style.css(:button_icon_xs)].join(" "),
+            "data-size": "icon-xs", data: { slot: "date-picker-trigger" }
+          }
+        end
+
         private
 
         def to_date(value)
@@ -151,34 +181,6 @@ module Poetry
             [to_date(value), nil]
           end
         end
-
-        def label_target_attributes
-          stimulus_attributes_for(:label)
-        end
-        public :label_target_attributes
-
-        # The input variant's text field: the picker's input target plus the
-        # typed-date sync and ArrowDown-opens actions. It carries NO name -
-        # the calendar's hidden ISO input stays THE form value.
-        def input_attributes
-          stimulus_attributes_for(:input).merge(
-            "value" => (formatted if value), "placeholder" => placeholder,
-            "aria-label" => label.presence || "Date"
-          ).compact
-        end
-        public :input_attributes
-
-        # The addon's icon button IS the popover trigger - InputGroup's own
-        # icon-xs chrome on Popover's wired Button.
-        def input_trigger_options
-          style = Poetry::Ui::InputGroup::Style
-          {
-            variant: :ghost, label: label.presence || "Choose date",
-            class: [style.css(:button), style.css(:button_icon_xs)].join(" "),
-            "data-size": "icon-xs", data: { slot: "date-picker-trigger" }
-          }
-        end
-        public :input_trigger_options
       end
     end
   end

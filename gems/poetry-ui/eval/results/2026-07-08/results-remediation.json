@@ -1,6 +1,6 @@
 {
   "schema": "results-remediation-v1",
-  "headline_stands": "'s pre-registered result (raw 18 - poetry 13) is untouched; everything here is a post-hoc remediation demonstration.",
+  "headline_stands": "The pre-registered result (raw 18 - poetry 13) is untouched; everything here is a post-hoc remediation demonstration.",
   "remediation": {
     "legs": [
       "check value-contract tier (icon names, enum values, typed-slot props) - poetry-core b3095ee",
@@ -20,7 +20,7 @@
     "alert": {
       "before": {
         "verdict": "raw_tailwind",
-        "failure": "render/turn failure "
+        "failure": "render/turn failure (see the pre-registered run)"
       },
       "after": {
         "delivered": true,
@@ -40,7 +40,7 @@
     "app_shell": {
       "before": {
         "verdict": "raw_tailwind",
-        "failure": "render/turn failure "
+        "failure": "render/turn failure (see the pre-registered run)"
       },
       "after": {
         "delivered": true,
@@ -60,7 +60,7 @@
     "empty_state": {
       "before": {
         "verdict": "raw_tailwind",
-        "failure": "render/turn failure "
+        "failure": "render/turn failure (see the pre-registered run)"
       },
       "after": {
         "delivered": true,
@@ -80,7 +80,7 @@
     "filter_toolbar": {
       "before": {
         "verdict": "raw_tailwind",
-        "failure": "render/turn failure "
+        "failure": "render/turn failure (see the pre-registered run)"
       },
       "after": {
         "delivered": true,
@@ -100,7 +100,7 @@
     "menu": {
       "before": {
         "verdict": "raw_tailwind",
-        "failure": "render/turn failure "
+        "failure": "render/turn failure (see the pre-registered run)"
       },
       "after": {
         "delivered": true,

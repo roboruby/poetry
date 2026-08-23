@@ -4,8 +4,7 @@ module Poetry
   module Ui
     # The CodeBlock's rouge seam: highlighting is a SOFT capability -
     # `gem "rouge"` in the host Gemfile turns it on; without it the component
-    # renders the plain escaped code unchanged (kumo ships a plain-text
-    # fallback while Shiki loads; server-side the fallback is simply
+    # renders the plain escaped code unchanged (the fallback is simply
     # "no rouge", and nothing shifts because the markup shape is identical).
     module CodeBlockHighlighter
       module_function

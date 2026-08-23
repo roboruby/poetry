@@ -7,6 +7,9 @@ module Poetry
       # it separates visually but adds nothing for AT). Set decorative: false
       # for a semantic boundary (role=separator with the orientation), e.g.
       # between toolbar groups.
+      #
+      # @example Horizontal divider between sections
+      #   render Poetry::Ui::Separator::Component.new
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "A purely visual divider stays decorative (the default): aria-hidden, role absent.",

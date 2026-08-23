@@ -5,7 +5,7 @@ require "test_helper"
 module Poetry
   module Ui
     # llms.txt / llms-full.txt: generated from the registry, served by the
-    # engine (the M4 DoD: "llms.txt is served").
+    # engine ("llms.txt is served" is the contract).
     class LlmsTest < ActionDispatch::IntegrationTest
       def test_llms_txt_is_served_with_the_component_index
         get "/llms.txt"

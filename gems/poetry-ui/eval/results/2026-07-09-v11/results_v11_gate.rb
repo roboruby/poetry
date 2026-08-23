@@ -67,8 +67,8 @@ predictions = {
 
 payload = {
   "schema" => "results-v11-gate-v1",
-  "headline_stands" => "// numbers untouched; this is the v1.1 vocabulary gate " \
-                       "pre-registered in the plan note (vault 494f549) BEFORE generation.",
+  "headline_stands" => "Baseline, remediation, and blocks-gate numbers untouched; this is the v1.1 vocabulary gate " \
+                       "pre-registered BEFORE generation.",
   "vocabulary_adoption" => {
     "table" => "3x variant: :success + 2x :warning (the status badges, unprompted)",
     "data_table" => "current_variant: :filled",

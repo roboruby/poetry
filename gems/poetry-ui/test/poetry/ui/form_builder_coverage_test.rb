@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The W1 builder-coverage gate (the form-builder plan): every
+    # The builder-coverage gate: every
     # form-participant component in the registry must be reachable from
     # Poetry::Ui::FormBuilder, and every registry component must be
     # CLASSIFIED - mapped or exempt - so a new component cannot ship

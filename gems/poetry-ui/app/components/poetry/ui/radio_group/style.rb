@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module RadioGroup
-      # Re-expressed through the cn-* theme layer (N11): the well + dot
+      # Re-expressed through the cn-* theme layer: the well + dot
       # treatments ride the themes. The indicator is a theme-SIZED box
       # (upstream's 2026-07 refactor) so the absolutely-centered dot
       # anchors against a real rect regardless of the item's display -

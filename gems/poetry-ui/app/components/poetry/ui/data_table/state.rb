@@ -5,18 +5,18 @@ module Poetry
     module DataTable
       # The DataTable's URL state - sort/filter/page as query params
       # (shareable, back-button-correct), sanitized at the door so request
-      # params can never reach an ORDER BY. Build it in the controller:
+      # params can never reach an ORDER BY. `sort` is kept ONLY when it
+      # appears in the `sortable:` whitelist and `dir` only when it is
+      # asc/desc - so #order_clause is safe by construction, never by
+      # caller discipline.
       #
+      # @example Building state in the controller
       #   state = Poetry::Ui::DataTable::State.from_params(
       #     params, sortable: %w[title created_at], default_sort: "created_at", default_dir: "desc"
       #   )
       #   scope = Note.all
       #   scope = scope.where("title LIKE ?", "%#{Note.sanitize_sql_like(state.q)}%") if state.q
       #   notes = scope.order(state.order_clause).offset(...).limit(per)
-      #
-      # `sort` is kept ONLY when it appears in the `sortable:` whitelist and
-      # `dir` only when it is asc/desc - so #order_clause is safe by
-      # construction, never by caller discipline.
       class State
         DIRECTIONS = %w[asc desc].freeze
 

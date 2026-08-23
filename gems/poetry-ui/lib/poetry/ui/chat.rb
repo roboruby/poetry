@@ -2,8 +2,8 @@
 
 module Poetry
   module Ui
-    # The chat replay DSL ('s designed lead, built 2026-08-22): script
-    # a user/assistant conversation in Ruby, get a DETERMINISTIC timeline of
+    # The chat replay DSL: script a user/assistant conversation in
+    # Ruby, get a DETERMINISTIC timeline of
     # streaming frames to replay through the real Turbo Stream pipeline -
     # no model, no network, fixed ids, fixed pacing. The DSL is pure data
     # (transcript + timing); rendering frames into Message rows is the
@@ -24,7 +24,7 @@ module Poetry
     # A tool with `approval: true` PAUSES its segment after the input frame;
     # the frames that follow (its output - or denial - and later parts)
     # belong to the continuation and are produced by
-    # `continuation_frames(approved:)` - the createChat human-in-the-loop
+    # `continuation_frames(approved:)` - the human-in-the-loop
     # model, server-shaped: the pause is a rendered form, the continuation
     # is the stream after the decision.
     module Chat
@@ -62,6 +62,8 @@ module Poetry
         end
       end
 
+      # The DSL root: collects user/assistant segments in scripted order
+      # and assigns each a deterministic id.
       class Script
         DEFAULT_TEXT_DELAY_MS = 30
         TEXT_CHUNK_WORDS = 3
@@ -114,8 +116,8 @@ module Poetry
 
         # Frames AFTER the pause point, resolved by the decision. Versions
         # continue from the paused prefix so the morph guard stays monotonic.
-        # Parts scripted AFTER an approval tool are the APPROVED path (the
-        # createChat model: denial streams tool-output-denied and stops;
+        # Parts scripted AFTER an approval tool are the APPROVED path
+        # (denial streams tool-output-denied and stops;
         # the approved branch carries the follow-through). So a denied
         # continuation is exactly the resolution frame.
         def continuation_frames(approved:)
@@ -185,6 +187,8 @@ module Poetry
         end
       end
 
+      # The builder handed to `assistant do |w| ... end` - each call
+      # appends one part (text / reasoning / tool) to the turn, in order.
       class Writer
         def initialize(parts)
           @parts = parts
@@ -200,7 +204,7 @@ module Poetry
           self
         end
 
-        # rubocop:disable Metrics/ParameterLists -- the writer vocabulary mirrors createChat's tool options
+        # rubocop:disable Metrics/ParameterLists -- the writer vocabulary mirrors the tool part's options
         def tool(name, input:, output: nil, sleep_ms: 0, approval: false, denied: false)
           @parts << { kind: :tool, name: name, input: input, output: output,
                       sleep_ms: sleep_ms, approval: approval,

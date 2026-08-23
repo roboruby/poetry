@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module TagGroup
-      # The TagGroup (the react-aria tag contract): a removable-chip
-      # collection - recipients, filters, labels. Grid semantics (container
+      # The TagGroup - a removable-chip
+      # collection: recipients, filters, labels. Grid semantics (container
       # role=grid, each tag role=row > gridcell), one Tab stop with roving
       # arrows (wrapping, horizontal), Delete/Backspace removes the focused
       # tag, each remove button removes exactly its own, and focus recovers
@@ -14,11 +14,33 @@ module Poetry
       # name[] input per tag; removal is CANCELABLE
       # (poetry:tag-group:remove) for Turbo-owned re-renders.
       #
-      # Documented divergence from react-aria: selection modes are
-      # DEFERRED - poetry tags are removal-first (the toggle-a-choice job
-      # belongs to ToggleGroup; the pick-from-options job to Combobox
+      # Documented divergence from the source tag contract: selection modes
+      # are DEFERRED - poetry tags are removal-first (the toggle-a-choice
+      # job belongs to ToggleGroup; the pick-from-options job to Combobox
       # multiple, whose chips these visually match).
+      #
+      # @example Removable recipients that submit as recipients[]
+      #   render Poetry::Ui::TagGroup::Component.new(label: "Recipients", name: "recipients") do |group|
+      #     group.with_tag(value: "ada", text: "Ada")
+      #     group.with_tag(value: "grace", text: "Grace")
+      #   end
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal " \
+          "keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.",
+          "label: is REQUIRED (the grid's accessible name, rendered as a caption span).",
+          "name: turns the group into a form value - one hidden <name>[] input per tag " \
+          "submits; removing a tag removes its input.",
+          "Removal is cancelable: listen for poetry:tag-group:remove and preventDefault to " \
+          "own the removal server-side (Turbo re-render).",
+          "Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup - " \
+          "a TagGroup holds items that exist until removed."
+        ].freeze
+
+        renders_many :tags, lambda { |value:, text: nil, disabled: false, removable: true, **options, &block|
+          tag_row(value: value, text: text, disabled: disabled, removable: removable, **options, &block)
+        }
+
         # BOTH controllers declare on the grid element - the one-Attributes
         # rule holds by construction; roving-focus owns the arrow keys with
         # the group's own keydown layered on the same event.
@@ -39,18 +61,6 @@ module Poetry
             controller(:tag_group) { action :remove, on: :click }
           end
         end
-
-        AGENT_RULES = [
-          "Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal " \
-          "keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.",
-          "label: is REQUIRED (the grid's accessible name, rendered as a caption span).",
-          "name: turns the group into a form value - one hidden <name>[] input per tag " \
-          "submits; removing a tag removes its input.",
-          "Removal is cancelable: listen for poetry:tag-group:remove and preventDefault to " \
-          "own the removal server-side (Turbo re-render).",
-          "Choosing from options is Combobox multiple; toggling fixed choices is ToggleGroup - " \
-          "a TagGroup holds items that exist until removed."
-        ].freeze
 
         option :name, :string
         option :label, :string, required: true
@@ -73,10 +83,6 @@ module Poetry
              }
         part "tag-group-remove", "The per-tag remove button - tabbable (Tab steps from the " \
                                  "row into it), removes exactly its own tag"
-
-        renders_many :tags, lambda { |value:, text: nil, disabled: false, removable: true, **options, &block|
-          tag_row(value: value, text: text, disabled: disabled, removable: removable, **options, &block)
-        }
 
         def before_render
           raise ArgumentError, "TagGroup requires label: (the grid's accessible name)" if label.blank?

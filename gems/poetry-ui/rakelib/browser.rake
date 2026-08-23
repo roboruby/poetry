@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The real-browser layer (N2 test spine): rake test:accessibility runs axe
+# The real-browser layer: rake test:accessibility runs axe
 # (wcag2a + wcag2aa) against every registry component's preview examples in
 # headless Chrome; rake test:visual screenshots the same corpus against
 # committed baselines. Both boot the dummy host under Capybara/Cuprite and
@@ -20,7 +20,7 @@ POETRY_AXE_SKIPS = {
   # Inherited shadcn destructive-palette contrast (design-token decisions,
   # not preview bugs) - fixing means retuning --destructive/--muted tokens
   # against shadcn new-york-v4 parity, which needs a design review.
-  # (alert/destructive graduated off this list 2026-07-28: the walk reports
+  # (alert/destructive graduated off this list: the walk reports
   # it clean now - the staleness rule caught the entry, as designed.)
   "attachment/error" => "color-contrast 4.11:1 - error-state description tint #ec333c on white at text-xs; " \
                         "shadcn destructive token, review with the token retune",
@@ -56,7 +56,7 @@ def poetry_ui_preview_pages
     component = key.delete_prefix("poetry/ui/").tr("/", "-")
     preview.examples.sort.map { |example| [component, example, "/previews/#{key}/#{example}"] }
   end
-  # The blocks join the same walks (Blocks v1): every shipped block is held
+  # The blocks join the same walks: every shipped block is held
   # to the axe + golden gates through its /blocks/<name> preview page - the
   # registry's blocks section is the roster, exactly like components above.
   pages + (registry["blocks"] || {}).keys.sort.map do |name|
@@ -249,7 +249,7 @@ namespace :test do
     only = ENV["POETRY_VISUAL_ONLY"]&.split(",")&.map(&:strip)
 
     session = poetry_ui_browser_session
-    # Per-theme goldens (N12): the default set stays flat (no churn); each
+    # Per-theme goldens: the default set stays flat (no churn); each
     # non-default theme keeps its own subdirectory, recorded once with
     # POETRY_THEME=<name> VISUAL_REBASELINE=1 (browser:assets compiles the
     # same theme via poetry_ui_compile_tailwind's POETRY_THEME default).
@@ -312,8 +312,8 @@ end
 
 # The cross-repo render surface: everything browser:assets compiles or copies
 # out of poetry-core into the preview pages. A core-side change here moves
-# golden pixels with NO poetry-ui commit to flag it - a poetry-core change
-# (the code_block single-spacing fix in tokens/aliases.css) shipped exactly
+# golden pixels with NO poetry-ui commit to flag it - a poetry-core
+# code_block spacing fix in tokens/aliases.css once shipped exactly
 # that way and left three goldens stale for four days. The manifest below is
 # stamped by a full green rake test:visual; the cheap default-gate check
 # fails as soon as core has moved since.
@@ -393,7 +393,7 @@ POETRY_VISUAL_PIXEL_TOLERANCE = 0.001
 # carries its reason; anything else rides the global tolerance. (The one
 # historical entry - dialog--default.png at 0.005, blamed on animation
 # timing - was really the command/dialog name shadow above: two pages
-# alternating against one baseline. Removed with the naming fix; W2a.)
+# alternating against one baseline. Removed with the naming fix.)
 POETRY_VISUAL_TOLERANCES = {}.freeze
 
 def poetry_ui_visual_diff(baseline_path, candidate_path)

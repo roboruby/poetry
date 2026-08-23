@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Carousel
-      # shadcn Carousel (base-vega) adapted to native scroll-snap (the W4
-      # decision): the content wrapper becomes the REAL scroll container
-      # (overflow + snap + hidden scrollbar) instead of embla's
+      # shadcn Carousel (base-vega) adapted to native scroll-snap: the
+      # content wrapper becomes the REAL scroll container
+      # (overflow + snap + hidden scrollbar) instead of the engine's
       # overflow-hidden + transform track; the gutter idiom (-ml-4 track,
       # pl-4 items) and the control positions stay source-exact (the
       # controls' cn-rtl-flip drops as always).
@@ -25,7 +25,7 @@ module Poetry
         # native snap-start (and scrollIntoView) aligns the item's BORDER
         # box, which includes the pl-4 gutter - without it, every slide
         # after the first snaps 16px short and its trailing edge clips.
-        # Embla never had this seam (it translates by measured offsets).
+        # An engine that translates by measured offsets never has this seam.
         element :item_horizontal, "pl-4 -scroll-ml-4"
         element :item_vertical, "pt-4 -scroll-mt-4"
 

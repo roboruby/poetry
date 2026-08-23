@@ -1,11 +1,10 @@
 # frozen_string_literal: true
 
 #
-# N12 theme-port tooling (banked from the W1 vega run, parameterized for
-# See the theme-port close-out +
-# docs/*-port-ledger.txt). Run per theme for the diff/conflict report,
+# theme-port tooling (banked from the vega run, parameterized for
+# every later theme - see docs/*-port-ledger.txt). Run per theme for the diff/conflict report,
 # then author a fresh PLAN in script/theme_port/plans/<theme>.rb for
-# write_theme.rb. NOTE: writer.rb is the frozen W1 vega artifact - a
+# write_theme.rb. NOTE: writer.rb is the frozen vega artifact - a
 # ONE-SHOT generator; themes/vega.css is canonical and hand-edited; never
 # regenerate over a shipped fragment.
 #

@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
-# design-fire grade: the generation re-run with the surfaces
+# Design-fire grade: the generation re-run with the new surfaces
 # (retriggered poetry-design, three new check tiers, check-LAST) against
-# the pre-registered d1-d4 (vault note "Design Fire Run ", committed
-# before generation). Run from the poetry-ui root:
+# the pre-registered d1-d4 (committed before generation). Run from the poetry-ui root:
 #   bundle exec ruby eval/results/2026-07-10-designfire/results_designfire.rb
 require "json"
 
@@ -60,9 +59,9 @@ predictions = {
             "observed" => "design #{SKILL_ADOPTION["poetry_design_arms"]}/31, " \
                           "usage #{SKILL_ADOPTION["poetry_skill_arms"]}/31",
             "pass" => SKILL_ADOPTION["poetry_design_arms"] >= 20 && SKILL_ADOPTION["poetry_skill_arms"] >= 27 },
-  "d2" => { "statement" => "composition-axis tally >= 10 of 31 (5;: 9)",
+  "d2" => { "statement" => "composition-axis tally >= 10 of 31 (re-baseline: 5; baseline run: 9)",
             "observed" => "#{composition}/31", "pass" => composition >= 10 },
-  "d3" => { "statement" => "poetry overall >= 14 of 31 (12)",
+  "d3" => { "statement" => "poetry overall >= 14 of 31 (re-baseline: 12)",
             "observed" => "#{poetry_wins}/31 (#{overall.inspect})", "pass" => poetry_wins >= 14 },
   "d4" => { "statement" => "31/31 delivery, zero render crashes, zero pairs lost",
             "observed" => "delivery #{delivered}/31; crashes: #{crashes.join(", ")}",
@@ -71,10 +70,10 @@ predictions = {
 
 payload = {
   "assembled_from" => ["results.json", "generated-scorecard.json", "generation-manifest.json",
-                       "#{PRIOR}/results.json (baseline; raw controls frozen from 2026-07-07)"],
+                       "#{PRIOR}/results.json (the re-baseline run; raw controls frozen from 2026-07-07)"],
   "headline" => overall,
-  "prior_baselines" => { "dd75_depth3_and_depth5_confirmed" => prior["summary"]["overall"],
-                         "dd70_full" => { "raw_tailwind" => 18, "poetry" => 13 } },
+  "prior_baselines" => { "rebaseline_depth3_and_depth5_confirmed" => prior["summary"]["overall"],
+                         "baseline_full" => { "raw_tailwind" => 18, "poetry" => 13 } },
   "axes" => axes,
   "verdict_changes_vs_dd75" => flips,
   "skill_adoption" => SKILL_ADOPTION,

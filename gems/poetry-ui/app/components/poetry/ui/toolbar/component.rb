@@ -5,14 +5,21 @@ module Poetry
     module Toolbar
       # The Toolbar - one Tab stop of grouped controls over a data surface
       # (bulk actions above a table, an editor's control strip). Base UI
-      # ships Toolbar (: the most in-family item of the review
-      # wave); poetry composes it from existing vocabulary: the root wears
+      # ships Toolbar; poetry composes it from existing vocabulary: the
+      # root wears
       # role=toolbar + the roving-focus engine, and the typed slots render
       # real Buttons / Inputs / Separators stamped as collection items -
       # arrows move between controls, Tab leaves the whole strip. The
       # roving caret guard is what makes an Input inside a toolbar
       # safe: horizontal arrows stay with the caret until its boundary.
       # Styling is utility-only (the Separator/Spinner rule).
+      #
+      # @example
+      #   render Poetry::Ui::Toolbar::Component.new(label: "Bulk actions") do |toolbar|
+      #     toolbar.with_button(variant: :outline) { "Archive" }
+      #     toolbar.with_separator
+      #     toolbar.with_input(name: "q", placeholder: "Filter…")
+      #   end
       class Component < Poetry::Core::Component
         ROVING = %i[poetry core roving_focus].freeze
 
@@ -28,17 +35,9 @@ module Poetry
           "place it between separators so the seam reads as a group."
         ].freeze
 
-        option :label, :string, required: true
-        option :loop, :boolean, default: true
-
-        style :orientation, default: :horizontal, variants: %i[horizontal vertical]
-
-        part "toolbar", "The role=toolbar root - one Tab stop; arrow keys rove across the " \
-                        "slotted controls (roving-focus, with the caret guard protecting inputs)",
-             states: {
-               "data-orientation" => { condition: "always - which arrows rove",
-                                       values: %w[horizontal vertical] }
-             }
+        # The same fact the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering.
+        REQUIRED_SLOTS = { button: "at least one control (with_button / with_input)" }.freeze
 
         renders_many :items, types: {
           button: {
@@ -60,9 +59,17 @@ module Poetry
           }
         }
 
-        # The same fact the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering.
-        REQUIRED_SLOTS = { button: "at least one control (with_button / with_input)" }.freeze
+        style :orientation, default: :horizontal, variants: %i[horizontal vertical]
+
+        option :label, :string, required: true
+        option :loop, :boolean, default: true
+
+        part "toolbar", "The role=toolbar root - one Tab stop; arrow keys rove across the " \
+                        "slotted controls (roving-focus, with the caret guard protecting inputs)",
+             states: {
+               "data-orientation" => { condition: "always - which arrows rove",
+                                       values: %w[horizontal vertical] }
+             }
 
         def before_render
           raise ArgumentError, "Toolbar requires at least one control slot" unless items?

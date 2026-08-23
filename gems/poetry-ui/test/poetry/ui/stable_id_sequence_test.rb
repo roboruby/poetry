@@ -4,10 +4,10 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The opt-in sequence mode, end to end (StableId plan S3): the
+    # The opt-in StableId sequence mode, end to end: the
     # engine-installed around_action seeds a per-request deterministic id
     # sequence when stable_id_mode == :sequence, and does nothing
-    # otherwise. The proof rides the S1 gate page: /sgate?keyed=0 renders
+    # otherwise. The proof rides the gate page: /sgate?keyed=0 renders
     # UNKEYED dropdowns per row, so its body is byte-stable exactly when
     # the sequence is armed.
     class StableIdSequenceTest < ActionDispatch::IntegrationTest

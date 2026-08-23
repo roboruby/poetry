@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module ButtonGroup
-      # Re-expressed through the cn-* theme layer (N11). One documented
+      # Re-expressed through the cn-* theme layer. One documented
       # deviation from upstream's literal split: upstream ships the
       # orientation corner-chains inline AND under cn names; poetry puts
       # them theme-side only (pure radius/border design - the theme owns

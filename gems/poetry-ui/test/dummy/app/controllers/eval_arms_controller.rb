@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The eval-arm endpoint (N15): GET /eval/<task>/<arm> renders one eval arm
+# The eval-arm endpoint: GET /eval/<task>/<arm> renders one eval arm
 # (<arms root>/<task>/<arm>.html.erb) inside the component_preview layout -
 # the same compiled-Tailwind + live-Stimulus page the preview rig drives.
 # rake eval:capture screenshots these URLs as the judge's evidence. The

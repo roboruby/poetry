@@ -3,14 +3,14 @@
 module Poetry
   module Ui
     module Accordion
-      # Re-expressed through the cn-* theme layer (N11). The panel
+      # Re-expressed through the cn-* theme layer. The panel
       # animation classes ride the theme (the vendored accordion-down/up
       # keyframes still fed by --accordion-panel-height); the chevron's
       # aria-expanded rotation + motion stay inline (state mechanism).
       class Style < Poetry::Core::Style
-        # Root hook reintroduced at N12 W2: mira/rhea (later luma/maia)
-        # style the root as a box - the name must compile in EVERY theme,
-        # so each fragment carries a rule (default: w-full).
+        # Root hook: several themes (mira, rhea, luma, maia) style the
+        # root as a box - the name must compile in EVERY theme, so each
+        # fragment carries a rule (default: w-full).
         base "cn-accordion"
 
         element :item, "cn-accordion-item"

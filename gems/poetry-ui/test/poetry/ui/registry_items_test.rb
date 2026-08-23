@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The gem's own item projection (Ecosystem v1): real facts
+    # The gem's own item projection: real facts
     # against the committed registry + source tree, so the docs site's
     # /r/*.json surface can never drift from what the gem ships.
     class RegistryItemsTest < Minitest::Test

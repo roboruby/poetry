@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module DropdownMenu
-      # Re-expressed through the cn-* theme layer (N11): panel/item chrome,
+      # Re-expressed through the cn-* theme layer: panel/item chrome,
       # focus treatments, and the animate chains ride themes/default.css;
       # popper vars, overflow, and the poetry indicator-visibility switch
       # stay inline. Icon glyph classes stay inline per upstream (TSX
@@ -14,7 +14,7 @@ module Poetry
                           "origin-(--transform-origin) " \
                           "overflow-x-hidden overflow-y-auto"
 
-        # group/dropdown-menu-item (N12): bare marker, no CSS - the vega
+        # group/dropdown-menu-item: bare marker, no CSS - the vega
         # shortcut re-color (group-focus/dropdown-menu-item) keys on it.
         element :item, "cn-dropdown-menu-item group/dropdown-menu-item relative flex cursor-default " \
                        "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \

@@ -106,8 +106,7 @@ module Poetry
           trigger = doc(html).css('[data-slot="select-trigger"]').first
 
           # role=listbox lives on the VIEWPORT (options' parent) - the popup
-          # shell holds scroll buttons too (axe aria-required-children,
-          # 2026-07-03).
+          # shell holds scroll buttons too (axe aria-required-children).
           viewport = doc(html).css('[data-slot="select-viewport"]').first
 
           assert_nil content["role"]
@@ -214,7 +213,7 @@ module Poetry
           assert_equal "Fruits", label.text
           assert_nil label["role"], "label is a styled heading, no ARIA role (Radix-exact)"
           # Decorative inside a listbox: aria-hidden, no separator role
-          # (only option/group children are valid; axe 2026-07-03).
+          # (only option/group children are valid; axe rule).
           assert_equal "true", separator["aria-hidden"]
           assert_nil separator["role"]
           # Grouped options still land in the shared native select.

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Command
-      # The CommandDialog variant (Command): the ⌘K
+      # The CommandDialog variant: the ⌘K
       # palette - a Command inside the platform Dialog chrome. Like
       # AlertDialog, it reuses the poetry--core--dialog controller and the
       # native <dialog> + showModal() trap UNCHANGED with its own template
@@ -18,7 +18,17 @@ module Poetry
       # ten lines. The embedded Command's input rides the
       # t('poetry.command.input_label') aria-label (the dialog's sr-only
       # title names the DIALOG, not the input).
+      #
+      # @example
+      #   render Poetry::Ui::Command::DialogComponent.new(hotkey: "meta+k") do |dialog|
+      #     dialog.with_trigger(variant: :outline) { "Open palette" }
+      #     dialog.with_item(value: "settings") { "Settings" }
+      #   end
       class DialogComponent < Poetry::Core::Component
+        # The palette surface delegates to the embedded Command - callers
+        # use the same slot API as bare poetry_command.
+        delegate :with_item, :with_group, :with_separator, :with_empty, :with_loading, to: :command
+
         AGENT_RULES = [
           "App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired " \
           "window keydown listener around poetry_dialog.",
@@ -28,6 +38,13 @@ module Poetry
           "Item wiring is Command's: act on poetry:command:select; close the dialog in the listener if " \
           "the action should dismiss the palette."
         ].freeze
+
+        # The trigger is a poetry Button wired to open - the Dialog
+        # pattern: with_trigger(variant: :outline) { "Open palette" }.
+        renders_one :trigger, lambda { |**options, &block|
+          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
+          Button::Component.new(**options, &block)
+        }
 
         # The SHARED dialog controller (zero new JS) - hotkey included.
         use_stimulus do
@@ -89,17 +106,6 @@ module Poetry
         def self.component_title
           "command-dialog"
         end
-
-        # The trigger is a poetry Button wired to open - the Dialog
-        # pattern: with_trigger(variant: :outline) { "Open palette" }.
-        renders_one :trigger, lambda { |**options, &block|
-          options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
-        }
-
-        # The palette surface delegates to the embedded Command - callers
-        # use the same slot API as bare poetry_command.
-        delegate :with_item, :with_group, :with_separator, :with_empty, :with_loading, to: :command
 
         # The embedded Command, carrying the h-12 dialog override chain
         # (the source CommandDialog className, rewritten onto data-slots).

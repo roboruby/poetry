@@ -7,10 +7,10 @@ require "pathname"
 module Poetry
   module Eval
     # The eval harness: frozen task pairs accrued one per
-    # component family (31 at N15), each rendered per arm and scored by
+    # component family (31 of them), each rendered per arm and scored by
     # deterministic gates. Arms are FROZEN representative generations
     # (realistic, never strawmen) so the eval runs without burning tokens
-    # (the recorded lesson); the judged half lives in judge.rb.
+    # ; the judged half lives in judge.rb.
     #
     # The scorer-portability rule (the A/B honesty split): CROSS_ARM gates
     # run identically on every arm and are the only comparable numbers;
@@ -25,12 +25,12 @@ module Poetry
         end
       end
 
-      # The cn-* theme layer (N11) moved visual treatments off the class
+      # The cn-* theme layer moved visual treatments off the class
       # string: a poetry arm satisfies focus_visible_treatment through a cn
       # class whose THEME rule carries it; a raw arm still passes with
       # inline focus-visible: utilities. Resolved relative to this file so
       # the runner stays loadable without the engine booted; POETRY_THEME
-      # (N12) picks the active fragment so the gate follows the theme.
+      # picks the active fragment so the gate follows the theme.
       FOCUS_VISIBLE_THEME_CLASSES =
         File.read(File.expand_path("../themes/#{ENV.fetch("POETRY_THEME", "default")}.css", __dir__))
             .scan(/^\.(cn-[a-z0-9-]+)\s*\{([^}]*)\}/)
@@ -50,7 +50,7 @@ module Poetry
           !html.match?(/\b(?:bg|text|border|ring|stroke|fill)-\[(?:#|rgb|hsl|oklch)/)
         }),
         Gate.new(:design_slop, :cross_arm, lambda { |_doc, html|
-          # The DesignLint AST tier (N14 W3) reads plain HTML exactly as it
+          # The DesignLint AST tier reads plain HTML exactly as it
           # reads ERB, so the same twelve-rule vocabulary scores every arm.
           # The frozen raw arms carry genuine slop (cards-in-cards, stacked
           # shadows, centered body copy) - the A/B tell, not a strawman.
@@ -779,7 +779,7 @@ module Poetry
               doc.css("a").any? && doc.css("a").all? { |a| a["href"].to_s.strip.length.positive? }
             }),
             Gate.new(:links_have_accessible_names, :cross_arm, lambda { |doc, _html|
-              # The calibration catch (N15): a block bound to Component.new
+              # The calibration catch: a block bound to Component.new
               # instead of render left the anchor EMPTY - present in the DOM
               # (real_link passed) but invisible and nameless on screen. The
               # judge's unanimous dissent found it; this gate keeps it found.
@@ -790,7 +790,7 @@ module Poetry
             Gate.new(:badge_not_interactive, :cross_arm, lambda { |doc, _html|
               # The text is only the LOCATOR (the gate tests interactivity);
               # case-insensitive so a generated arm's "Beta" is found too
-              # (N15 W2 smoke: both generated arms wrote "Beta" and failed
+              # (benchmark smoke: both generated arms wrote "Beta" and failed
               # here on casing luck, not quality).
               badge = doc.xpath(".//*[translate(normalize-space(text()), 'BETA', 'beta')='beta']").first
               !badge.nil? && !INTERACTIVE_TAGS.include?(badge.name) &&
@@ -815,9 +815,9 @@ module Poetry
       ].freeze
 
       # arms_root swaps the corpus under the same tasks/gates/scoring: the
-      # frozen arms by default, a benchmark run's generated arms (N15 W2)
+      # frozen arms by default, a benchmark run's generated arms
       # when pointed at eval/results/<date>/generated. tasks swaps the
-      # task-spec source (: the page-scale companion gate runs its
+      # task-spec source (the page-scale companion gate runs its
       # own briefs through the identical machinery).
       def initialize(arms_root: Poetry::Ui.root.join("eval/arms"), tasks: TASKS)
         @arms_root = Pathname(arms_root)
@@ -853,7 +853,7 @@ module Poetry
         card
       end
 
-      # The judged half (N15): fold the LATEST committed judge verdicts into
+      # The judged half: fold the LATEST committed judge verdicts into
       # the scorecard - read from eval/results/, never computed here, so the
       # scorecard stays deterministic (the judge runs on demand via rake
       # eval:judge; cost + nondeterminism stay out of CI).

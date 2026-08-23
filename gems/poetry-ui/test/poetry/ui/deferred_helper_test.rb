@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # N13 W5: the deferred-region helper + its two slot adoptions. The
+    # The deferred-region helper + its two slot adoptions. The
     # frame's runtime behavior (error stamp, retry) lives in poetry-core's
     # deferred.test.js; here we prove the server-rendered contract.
     class DeferredHelperTest < ActionDispatch::IntegrationTest

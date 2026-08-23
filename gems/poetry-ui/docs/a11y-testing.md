@@ -19,7 +19,7 @@ POETRY_THEME=rhea bundle exec rake test:accessibility   # per-theme re-run
 
 Axe (wcag2a + wcag2aa) walks every registry component's preview examples —
 the same corpus the goldens screenshot, so a state with no preview has no axe
-coverage either (the coverage gate keeps that honest). Contrast differs
+coverage either (the declared-axis coverage gate keeps that honest). Contrast differs
 per theme; run at least the default and one tinted-surface port (rhea) before
 a release. `POETRY_AXE_SKIPS` in `rakelib/browser.rake` is the ONLY skip
 mechanism — every entry carries the measured value and the review reason, and
@@ -104,7 +104,7 @@ switch, tag_group, textarea, time_field, toggle, toggle_group`
 tooltip`
 
 - [ ] Opening moves focus in; closing returns focus to the trigger — also
-      after a Turbo visit and after a bfcache restore (the class).
+      after a Turbo visit and after a bfcache restore (the cache-restore bug class).
 - [ ] Focus is trapped while modal; **Escape closes**; backdrop behavior
       matches the component contract (alert_dialog: no click-outside
       dismiss, initial focus on the safe action).

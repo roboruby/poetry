@@ -6,7 +6,7 @@ require_relative "../block/block_generator"
 
 module Poetry
   # `rails g poetry:add Button [@acme/fancy-chart ...]` - the copy-in tier
-  # plus the ecosystem address scheme (Ecosystem v1).
+  # plus the ecosystem address scheme.
   #
   # Bare names and @poetry/* are the installed gems' own items: component
   # source copies into app/components where Rails autoload precedence
@@ -24,7 +24,7 @@ module Poetry
     argument :addresses, type: :array,
                          banner: "Component|@registry/item|https://…/item.json|./item.json ..."
 
-    # Composition edges - single-sourced on the gem module since (the
+    # Composition edges - single-sourced on the gem module (the
     # registry items emit the same map as registryDependencies).
     DEPENDENCIES = Poetry::Ui::COMPONENT_DEPENDENCIES
 
@@ -67,7 +67,7 @@ module Poetry
       resolved.each { |name| copy_component(name) }
       record_in_manifest(resolved.to_h { |name| [name, { "version" => Poetry::Ui::VERSION }] })
       # A newly-shadowing file is not hot-reloaded over the already-loaded
-      # gem constant (fresh-app proof, 2026-07-01).
+      # gem constant.
       say_status :note, "restart your server so the local copies take precedence over the gem", :yellow
     end
 
@@ -96,7 +96,7 @@ module Poetry
       end
     end
 
-    # -- the remote path (Ecosystem v1) ------------------------------
+    # -- the remote path ----------------------------------------------------
 
     def install_remote(remote)
       plan = build_plan(remote)
@@ -144,7 +144,7 @@ module Poetry
       BlockGenerator.new([name], [], destination_root: destination_root).invoke_all
     end
 
-    # -- recipes (Recipes Channel v1) ---------------------------------------
+    # -- recipes ------------------------------------------------------------
 
     # A recipe's files write to their declared targets (skip-if-exists:
     # local edits win, always); its registryDependencies are block names,
@@ -198,8 +198,8 @@ module Poetry
       create_file MANIFEST, YAML.dump(manifest), force: true
     end
 
-    # The idempotency lives in the file-mutation primitive (the vite_ruby
-    # review lesson) - same as poetry:install's.
+    # The idempotency lives in the file-mutation primitive - same as
+    # poetry:install's.
     def inject_unless_present(relative, line)
       path = File.join(destination_root, relative)
       return if File.exist?(path) && File.read(path).include?(line)

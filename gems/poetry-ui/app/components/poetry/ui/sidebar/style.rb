@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Sidebar
-      # Re-expressed through the cn-* theme layer (N11). The collapse /
+      # Re-expressed through the cn-* theme layer. The collapse /
       # rail / inset geometry chains (width vars, offcanvas math, icon-mode
       # size! pads, peer-size action tops) stay ENTIRELY inline - the
       # machinery a swapped theme must never break; surfaces, tints, and
@@ -15,10 +15,10 @@ module Poetry
         base ""
 
         # The provider wrapper carries the width custom properties.
-        # group/sidebar-wrapper ('s parked marker) returns with its
-        # first in-repo consumer: the app-shell block's topbar answers the
-        # collapsed state (group-has-data-[collapsible=icon]/sidebar-wrapper)
-        # - the upstream site-header pattern. The other two drops stay
+        # group/sidebar-wrapper has an in-repo consumer: the app-shell
+        # block's topbar answers the collapsed state
+        # (group-has-data-[collapsible=icon]/sidebar-wrapper)
+        # - the upstream site-header pattern. Two upstream markers stay
         # dropped: group/menu-button's upstream consumer is a collapsible
         # menu-button composition poetry does not ship yet, and
         # group/menu-sub-item has no consumer anywhere in the current
@@ -26,10 +26,10 @@ module Poetry
         element :wrapper, "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar"
 
         # The peer group (the desktop shell; below md the mobile <dialog>
-        # takes over - W5b).
+        # takes over).
         element :peer, "group peer hidden text-sidebar-foreground md:block"
 
-        # The mobile sheet (W5b), open:flex not flex (the Dialog lesson).
+        # The mobile sheet: open:flex not flex (the Dialog lesson).
         element :mobile, "cn-sidebar-mobile relative m-0 open:flex h-full max-h-none " \
                          "w-(--sidebar-width) max-w-none flex-col md:hidden"
         element :mobile_left, "cn-sidebar-mobile-left mr-auto"
@@ -93,7 +93,7 @@ module Poetry
                 "aria-disabled:opacity-50 [&_svg]:shrink-0 [&>span:last-child]:truncate"
         element :menu_button_default, "cn-sidebar-menu-button-size-default"
 
-        # The item-corner action + badge (W5b commit 3) - positions and
+        # The item-corner action + badge - positions and
         # reveal machinery inline, tints/type themed.
         element :menu_action,
                 "cn-sidebar-menu-action absolute top-1.5 right-1 flex aspect-square items-center " \
@@ -106,8 +106,8 @@ module Poetry
                 "group-focus-within/menu-item:opacity-100 group-hover/menu-item:opacity-100 " \
                 "peer-data-active/menu-button:text-sidebar-accent-foreground aria-expanded:opacity-100 " \
                 "md:opacity-0"
-        # The 8c surface family - dictionary-held so the safelist harvests
-        # the classes (helper strings are invisible to it).
+        # Dictionary-held surfaces so the safelist harvests the classes
+        # (helper strings are invisible to it).
         element :group_action_button, "cn-sidebar-group-action"
         element :input_control, "cn-sidebar-input"
         element :menu_skeleton, "cn-sidebar-menu-skeleton flex items-center"

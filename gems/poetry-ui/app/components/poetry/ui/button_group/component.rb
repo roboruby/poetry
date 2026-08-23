@@ -8,7 +8,17 @@ module Poetry
       # inner corners and doubled borders collapse. Compose the members in
       # the content block; poetry_button_group_text and
       # poetry_button_group_separator are the non-button parts.
+      #
+      # @example A segmented pair
+      #   render Poetry::Ui::ButtonGroup::Component.new("aria-label": "Alignment") do
+      #     safe_join([
+      #       render(Poetry::Ui::Button::Component.new(variant: :outline).with_content("Left")),
+      #       render(Poetry::Ui::Button::Component.new(variant: :outline).with_content("Right"))
+      #     ])
+      #   end
       class Component < Poetry::Core::Component
+        requires_content "its member controls"
+
         ORIENTATIONS = %i[horizontal vertical].freeze
 
         AGENT_RULES = [
@@ -19,8 +29,6 @@ module Poetry
         ].freeze
 
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
-
-        requires_content "its member controls"
 
         part "button-group", "The role=group root - its selectors join ANY data-slot children into " \
                              "the segmented unit",

@@ -5,13 +5,16 @@ module Poetry
     module Kbd
       # The Kbd - a real <kbd> element for a keyboard key or shortcut. The
       # content is the key text (⌘, Ctrl, K); compose several for a chord.
+      #
+      # @example
+      #   render Poetry::Ui::Kbd::Component.new { "Esc" }
       class Component < Poetry::Core::Component
+        requires_content "the key text"
+
         AGENT_RULES = [
           "Kbd renders a real <kbd> - the key text is the content block (⌘, Esc, Ctrl).",
           "For a chord (⌘+K) render one Kbd per key inside an inline-flex row."
         ].freeze
-
-        requires_content "the key text"
 
         part "kbd", "The <kbd> element itself - the key text renders here"
 

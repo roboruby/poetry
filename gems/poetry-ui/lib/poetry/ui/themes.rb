@@ -2,13 +2,13 @@
 
 module Poetry
   module Ui
-    # The theme roster + per-theme DESIGN.md metadata (N14 W1).
+    # The theme roster + per-theme DESIGN.md metadata.
     #
     # Every poetry theme shares ONE token source (poetry-core's DTCG file) -
     # a theme is a component-treatment layer (themes/<name>.css), never a
     # palette. What varies per theme, and therefore what this module knows:
     # the treatment provenance line and the typography PAIRING - which is
-    # app-level metadata, not CSS (: no poetry theme moves a font
+    # app-level metadata, not CSS (no poetry theme moves a font
     # token; upstream's create flow biases lyra to JetBrains Mono with
     # radius none and pairs sera with Noto Serif / Instrument Serif; the
     # poetry docs render system stacks keyed off the same story).

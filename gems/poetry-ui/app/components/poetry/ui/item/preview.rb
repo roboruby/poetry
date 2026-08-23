@@ -23,8 +23,7 @@ module Poetry
           end
         end
 
-        # The tightest row ( axis coverage; sm lives in the group
-        # template below).
+        # The tightest row (sm lives in the group template below).
         def size_xs
           render_component(size: :xs) do |item|
             item.with_title { "Cache cleared" }

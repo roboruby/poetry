@@ -1,5 +1,5 @@
 {
-  "generated_note": "GENERATED arms (N15 W2 benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
+  "generated_note": "GENERATED arms (benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
   "tasks": {
     "analytics_overview": {
       "description": "The analytics overview for a project-management workspace: headline numbers for active projects, tasks completed this week, overdue items and team velocity, a recent-activity list, and a per-project progress summary - a working product screen, not a demo",

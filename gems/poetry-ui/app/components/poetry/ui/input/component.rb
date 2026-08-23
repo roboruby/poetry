@@ -7,9 +7,13 @@ module Poetry
       # state is carried by aria-invalid (set by the Field/FormBuilder from
       # model errors), which the classes style directly - state IS the
       # accessibility attribute, never a parallel class.
+      #
+      # @example An email field
+      #   render Poetry::Ui::Input::Component.new(type: "email", name: "email",
+      #                                           placeholder: "you@example.com")
       class Component < Poetry::Core::Component
-        # The mask controller identifier (, the use-mask
-        # port): MaskInput is an Input OPTION, not a component.
+        # The mask controller identifier: masking is an Input OPTION,
+        # not a separate component.
         MASK = %i[poetry core mask].freeze
 
         AGENT_RULES = [
@@ -26,7 +30,7 @@ module Poetry
         option :placeholder, :string
         option :disabled, :boolean, default: false
         option :invalid, :boolean, default: false
-        # Mask descriptor (use-mask grammar). Extra knobs
+        # Mask descriptor grammar. Extra knobs
         # (slot char, always-show, auto-clear) ride Stimulus values via
         # data: - one declarative option covers the common case.
         option :mask, :string

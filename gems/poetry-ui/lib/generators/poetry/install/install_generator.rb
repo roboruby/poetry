@@ -5,7 +5,7 @@ require_relative "../agents_section"
 require_relative "../skills_section"
 
 module Poetry
-  # `rails g poetry:install` - wires poetry into a host app (M8):
+  # `rails g poetry:install` - wires poetry into a host app:
   #
   #   app/assets/tailwind/poetry/tokens.css   the design tokens (:root + .dark)
   #   app/assets/tailwind/poetry/theme.css    the Tailwind v4 @theme mapping
@@ -39,14 +39,14 @@ module Poetry
     class_option :charts, type: :boolean, default: false,
                           desc: %(Also wire poetry-charts (requires gem "poetry-charts" in the bundle))
 
-    # N12: install-time theme selection. Every themes/<name>.css fragment is
+    # Install-time theme selection. Every themes/<name>.css fragment is
     # a complete visual theme; the chosen one fills the style-default.css
     # slot (the SLOT filename never changes - that keeps ENTRY_LINES
     # idempotent and makes switching themes a re-run with a different
     # --theme, overwriting in place). One theme per build; the multi-theme
     # .style-<name> wrapper arrives with the docs switcher, not here.
     #
-    # (the upgrade-path contract): the default is nil, not "default" -
+    # The upgrade-path contract: the default is nil, not "default" -
     # a plain re-run sniffs the theme already in the slot and keeps it, so
     # upgrading (bundle update + re-run) never swaps an app's design. An
     # explicit --theme always wins; only a first install falls to "default".
@@ -70,7 +70,7 @@ module Poetry
 
     # The shadcn base layer (its init writes the same into globals.css):
     # without it body/border/outline don't ride the tokens and dark mode
-    # only flips the components (2026-07-01 browser pass). Seeded once,
+    # only flips the components. Seeded once,
     # user-owned - re-install never overwrites.
     BASE_CSS = <<~CSS
       /* poetry base layer (shadcn-parity defaults) - yours to edit. */
@@ -119,18 +119,18 @@ module Poetry
       create_file "app/assets/tailwind/poetry/animate.css",
                   Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css").read, force: true
       # shadcn's first-party utility layer (shimmer / scroll-fade families +
-      # the chat-set keyframes), vendored verbatim at a pinned SHA (N1).
-      # N6: vendored source moved to shadcn/tailwind.css @ d0fae528 (host filename stays utilities.css).
+      # the chat-set keyframes), vendored verbatim at a pinned SHA.
+      # Vendored source: shadcn/tailwind.css @ d0fae528 (host filename stays utilities.css).
       create_file "app/assets/tailwind/poetry/utilities.css",
                   Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css").read, force: true
       create_file "app/assets/tailwind/poetry/aliases.css",
                   Poetry::Core.root.join("tokens/aliases.css").read, force: true
-      # The cn-* theme layer (N11): the named-class design source, imported
+      # The cn-* theme layer: the named-class design source, imported
       # layer(base) so host utilities always win. Vendored like tokens
       # (force) - a host restyles by overriding .cn-* rules in its OWN css
       # (any utilities-layer or unlayered rule beats layer(base)), never by
       # editing this file, so theme updates keep flowing on re-install.
-      # --theme (N12) swaps the CONTENT; the slot filename stays put.
+      # --theme swaps the CONTENT; the slot filename stays put.
       create_file "app/assets/tailwind/poetry/style-default.css",
                   ui_theme_path.read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
@@ -207,8 +207,8 @@ module Poetry
                   Poetry::Charts.root.join("app/assets/stylesheets/poetry-charts.css").read,
                   force: true
       inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/charts.css";))
-      # The charts cn-* theme fragment (N11) - vendored like style-default,
-      # same --theme selection (N12).
+      # The charts cn-* theme fragment - vendored like style-default,
+      # same --theme selection.
       create_file "app/assets/tailwind/poetry/style-charts.css",
                   charts_theme_path.read, force: true
       inject_unless_present(TAILWIND_ENTRY, %(@import "./poetry/style-charts.css" layer(base);))
@@ -236,13 +236,13 @@ module Poetry
       route %(mount Poetry::Ui::Engine => "/poetry" # llms.txt + llms-full.txt (agent-facing docs))
     end
 
-    # The AGENTS.md pointer section (N13 W1) - marker-bounded so a re-run
+    # The AGENTS.md pointer section - marker-bounded so a re-run
     # refreshes it in place. Standalone refresh: `rails g poetry:agents`.
     def write_agents_md
       apply_agents_section
     end
 
-    # The Claude Code skills (Skills v1) - part of the standard
+    # The Claude Code skills - part of the standard
     # install surface, like AGENTS.md. Standalone refresh:
     # `rails g poetry:skill` (re-run after updating poetry gems).
     def write_skills
@@ -259,7 +259,7 @@ module Poetry
 
     # poetry_optimistic_form reconciles failures via a Turbo refresh, which
     # must MORPH to be seamless - two layout metas the install cannot add
-    # for the host (; the redirect trap and server contract live in
+    # for the host (the redirect trap and server contract live in
     # the doc).
     def announce_optimistic_form
       say_status :note, "optimistic forms: add <meta name=\"turbo-refresh-method\" content=\"morph\"> " \
@@ -273,9 +273,9 @@ module Poetry
       @resolved_theme ||= options[:theme] || installed_theme || "default"
     end
 
-    #: which theme fills the slot right now. Unreadable header (a
-    # hand-edited file, or a pre-N12 install) falls back to "default" WITH a
-    # warning - never silently.
+    # Which theme fills the slot right now. Unreadable header (a
+    # hand-edited file, or an install predating theme selection) falls back
+    # to "default" WITH a warning - never silently.
     def installed_theme
       path = File.join(destination_root, STYLE_SLOT)
       return nil unless File.exist?(path)
@@ -303,7 +303,7 @@ module Poetry
     end
 
     # The idempotency lives in the file-mutation primitive, not the
-    # generator (the vite_ruby review lesson): appending is a no-op when
+    # generator: appending is a no-op when
     # the line is already present.
     def inject_unless_present(relative, line)
       path = File.join(destination_root, relative)

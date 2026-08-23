@@ -13,12 +13,27 @@ module Poetry
       # dismissible:, show_close_button:), and the required title. The
       # deltas: the side style (edge-anchored margins replace the parent's
       # m-auto centering) and the source's slide-in animation.
+      #
+      # @example
+      #   render Poetry::Ui::Sheet::Component.new(side: :right) do |sheet|
+      #     sheet.with_trigger { "Edit profile" }
+      #     sheet.with_title { "Edit profile" }
+      #     "Sheet body"
+      #   end
       class Component < Dialog::Component
         SIDES = %i[top right bottom left].freeze
 
-        # W5b commit 1: the Sheet gets its OWN controller - the dialog
-        # machinery + the presence-hold close its dictionary was waiting on
-        # (the Drawer subclass pattern, minus the swipe).
+        AGENT_RULES = [
+          "Open sheets with with_trigger(...) - never a hand-wired button.",
+          "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
+          "Pick side by content: navigation left, detail/edit right, pickers bottom.",
+          "Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.",
+          "Do not rebuild a centered Dialog with a Sheet; use Dialog."
+        ].freeze
+
+        # The Sheet gets its OWN controller - the dialog machinery + the
+        # presence-hold close its dictionary was waiting on (the Drawer
+        # subclass pattern, minus the swipe).
         # Redeclaring both elements REPLACES Dialog's :dialog controller
         # wholesale (replace-on-redeclare); the inherited trigger lambda and
         # close_action late-bind here through stimulus_action.
@@ -43,14 +58,6 @@ module Poetry
             controller(:sheet) { action :close }
           end
         end
-
-        AGENT_RULES = [
-          "Open sheets with with_trigger(...) - never a hand-wired button.",
-          "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
-          "Pick side by content: navigation left, detail/edit right, pickers bottom.",
-          "Do not put must-not-lose confirmations in a Sheet - that is AlertDialog.",
-          "Do not rebuild a centered Dialog with a Sheet; use Dialog."
-        ].freeze
 
         # THE Sheet delta - a physical direction (source parity: right
         # stays right in RTL).

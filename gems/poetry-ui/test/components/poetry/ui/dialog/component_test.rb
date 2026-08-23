@@ -30,7 +30,7 @@ module Poetry
 
           # open:grid, never bare grid: a bare display class defeats the
           # UA's dialog:not([open]) display:none and shows the dialog
-          # inline while closed (2026-07-01 browser pass).
+          # inline while closed.
           assert_includes html, "open:grid"
           refute_match(/class="[^"]*(?<![:\w-])grid[ "]/, html, "no unconditional display class on the <dialog>")
         end

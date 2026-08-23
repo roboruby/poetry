@@ -14,8 +14,8 @@
 # install wins) and version-manager shims add another layer. The doctrine
 # is therefore PARITY - both exes must project the same agent surface;
 # core's exe soft-requires poetry/ui and serves the same skills/helpers.
-# The blocks-gate run (2026-07-09) learned the shadow lesson the hard way:
-# this exe lacked the icon-name injection, so every MCP check ran
+# The shadow lesson, learned the hard way:
+# this exe once lacked the icon-name injection, so every MCP check ran
 # shape-only and a `:filter` guess (lucide renamed it to funnel) sailed
 # through to a render crash the icon-membership tier existed to prevent.
 #

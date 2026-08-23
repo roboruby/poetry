@@ -7,9 +7,9 @@ below are frozen once the first generation spends a token.
 
 ## The graded question
 
- fired the design skill in 24/31 arms and composition did not move.
- hit 31/31 `compose` tool-entry adoption and composition still missed.
-The thesis is that the missing lever was **directed retrieval at plan
+The design-skill run fired the skill in 24/31 arms and composition did not move.
+The compose-entry run hit 31/31 `compose` tool adoption and composition still missed.
+This eval's thesis is that the missing lever was **directed retrieval at plan
 time** — the `build_page` `plan` step (page architecture: section order, the
 states a real screen handles, edge cases) — not more prose or more entry.
 
@@ -42,7 +42,7 @@ score, and does it do so without regressing the other axes?**
   brief_fit, forced choice, blind (README honesty rules). The mechanical gates
   run as usual (cross-arm, portable) but composition is a judged axis.
 
-## Method upgrades (from the Braintrust Paper-MCP-vs-Figma-MCP run)
+## Method upgrades (from the Paper-MCP-vs-Figma-MCP run)
 
 1. **Publish the ceiling first.** Author one hand-perfect poetry page per brief
    (`eval/results/<date>-ceiling/generated/<task>/poetry.html.erb`), score and
@@ -61,15 +61,15 @@ score, and does it do so without regressing the other axes?**
 
 - **P1 — composition moves.** The treatment arm's composition win-rate over raw
   exceeds the control arm's by a margin that survives the 3-trial spread. (The
-  /79 result was composition *unmoved*; P1 is the directional claim.)
+  earlier runs' result was composition *unmoved*; P1 is the directional claim.)
 - **P2 — the tool is actually used.** The treatment arm invokes `build_page` on
-  ≥ 9 / 12 briefs (the tool-entry-adoption bar, 31/31, sets the
+  ≥ 9 / 12 briefs (the earlier tool-entry-adoption bar, 31/31, sets the
   expectation that a well-described page tool gets called).
 - **P3 — no axis regresses.** Treatment does not lose to control on hierarchy,
   clarity, brief_fit, or any mechanical gate (guided planning must not cost the
   wins poetry already has).
 - **The honest null is a result.** If composition is unmoved (P1 fails) with
-  full adoption (P2 holds), that is the finding — the same shape as/79,
+  full adoption (P2 holds), that is the finding — the same shape as the earlier runs,
   and it says the lever is elsewhere. It gets reported, not buried.
 
 ## Running it (on-demand, real token cost, NEVER CI)

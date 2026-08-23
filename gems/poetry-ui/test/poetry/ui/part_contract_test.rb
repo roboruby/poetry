@@ -9,7 +9,7 @@ module Poetry
     # every preview example, both directions - rendered-but-undeclared and
     # declared-but-never-rendered - so the registry-published styling
     # surface (parts, state attributes, var seams) can never lie about the
-    # anatomy. an upstream library type-checks its styles-api keys; this renders.
+    # anatomy. The contract is proven by rendering, not by key type-checks.
     #
     # Registry-driven like ActionContractTest: new components are covered
     # automatically. PART_CONTRACT_ONLY=button,card filters for iteration;

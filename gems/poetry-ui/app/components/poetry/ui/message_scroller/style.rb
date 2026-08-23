@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module MessageScroller
-      # Re-expressed through the cn-* theme layer (N11) - minimally: the
+      # Re-expressed through the cn-* theme layer - minimally: the
       # 4-state scroll machine's whole surface is machinery (viewport
       # containment/scrollbar choreography, row content-visibility, the
       # jump button's show/hide translate dance - upstream keeps every one

@@ -9,7 +9,22 @@ module Poetry
       # links: outline for the current page (aria-current=page), ghost for
       # the rest; first/last always shown, current +/- siblings around it,
       # ellipses for the gaps. path: is a callable page -> url.
+      #
+      # @example Paginating a product list
+      #   render Poetry::Ui::Pagination::Component.new(current: 3, total: 12,
+      #                                                path: ->(page) { products_path(page: page) })
       class Component < Poetry::Core::Component
+        # :outline is upstream parity and stays the default; :filled renders
+        # the current page as the primary Button (the outline marker is easy
+        # to mistake for a hover/focus ring; the data-index block and docs
+        # adopt :filled).
+        CURRENT_VARIANTS = %i[outline filled].freeze
+
+        # The edge treatment: :labeled (chevron + responsive text, upstream
+        # parity, default), :icons (chevron-only - table footers/toolbars),
+        # :none (no Previous/Next at all).
+        EDGES = %i[labeled icons none].freeze
+
         AGENT_RULES = [
           "poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.",
           "path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).",
@@ -26,17 +41,6 @@ module Poetry
           "around a paginator gem."
         ].freeze
 
-        # :outline is upstream parity and stays the default; :filled renders
-        # the current page as the primary Button (Blocks v1.1 - the
-        # judged runs read the outline marker as "easy to mistake for a
-        # hover/focus ring"; the data-index block and docs adopt :filled).
-        CURRENT_VARIANTS = %i[outline filled].freeze
-
-        # The edge treatment: :labeled (chevron + responsive text, upstream
-        # parity, default), :icons (chevron-only - table footers/toolbars),
-        # :none (no Previous/Next at all).
-        EDGES = %i[labeled icons none].freeze
-
         option :current, :integer, required: true
         option :total, :integer, required: true
         option :siblings, :integer, default: 1
@@ -52,6 +56,14 @@ module Poetry
         validates :current_variant, inclusion: { in: CURRENT_VARIANTS }
         validates :edges, inclusion: { in: EDGES }
 
+        # (pagination-link rides the composed Buttons, so those elements
+        # belong to Button's anatomy, not this contract.)
+        part "pagination", "The <nav> landmark (role=navigation, aria-label) around the page list"
+        part "pagination-content", "The <ul> holding every entry as one horizontal row"
+        part "pagination-item", "One <li> per entry - previous/next, a page link, or a gap"
+        part "pagination-ellipsis", "The elided-pages marker between windows - aria-hidden with an " \
+                                    "sr-only 'More pages'"
+
         def before_render
           return if pages || edges != :none
 
@@ -61,14 +73,6 @@ module Poetry
 
         def show_edges? = edges != :none
         def icon_edges? = edges == :icons
-
-        # (pagination-link rides the composed Buttons, so those elements
-        # belong to Button's anatomy, not this contract.)
-        part "pagination", "The <nav> landmark (role=navigation, aria-label) around the page list"
-        part "pagination-content", "The <ul> holding every entry as one horizontal row"
-        part "pagination-item", "One <li> per entry - previous/next, a page link, or a gap"
-        part "pagination-ellipsis", "The elided-pages marker between windows - aria-hidden with an " \
-                                    "sr-only 'More pages'"
 
         # The page sequence with :gap markers where pages are elided. Small
         # ranges show every page; larger ones show first, last, and a window

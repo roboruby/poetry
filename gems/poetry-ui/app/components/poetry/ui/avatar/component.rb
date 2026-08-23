@@ -9,7 +9,12 @@ module Poetry
       # nothing, so the initials show through. Zero JS, no layout shift (vs
       # Base UI's client-side load-state swap). The accessible name lives on
       # the root (role=img + aria-label), never on the layered img.
+      #
+      # @example Image with initials fallback
+      #   render Poetry::Ui::Avatar::Component.new(src: user.avatar_url, label: "Ada Lovelace") { "AL" }
       class Component < Poetry::Core::Component
+        requires_content "the initials fallback"
+
         SIZES = %i[default sm lg].freeze
 
         AGENT_RULES = [
@@ -21,10 +26,12 @@ module Poetry
           "Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count."
         ].freeze
 
+        renders_one :badge
+
         option :src, :string
         # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
+        # the flag carries the fact to the registry (the floating-crash
+        # class: a required option the static tier could not see).
         option :label, :string, required: true
         option :size, :symbol, default: :default
 
@@ -40,10 +47,6 @@ module Poetry
         part "avatar-image", "The <img> layered absolutely over the fallback - only when src: " \
                              "is given; a failed load paints nothing"
         part "avatar-badge", "The decorative presence dot (the badge slot), bottom-right"
-
-        renders_one :badge
-
-        requires_content "the initials fallback"
 
         def before_render
           raise ArgumentError, "Avatar requires label: (the person's name - its accessible name)" if label.blank?

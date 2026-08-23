@@ -10,7 +10,18 @@ module Poetry
       # aria-describedby pointing at the hint and error ids. The
       # FormBuilder composes this from model truth; Field itself is
       # model-agnostic.
+      #
+      # @example
+      #   render Poetry::Ui::Field::Component.new(
+      #     id: "email", label_text: "Email", hint: "We never share it."
+      #   ) do |field|
+      #     tag.input(type: "email", name: "email", **field.control_attributes)
+      #   end
       class Component < Poetry::Core::Component
+        ORIENTATIONS = %i[vertical horizontal setting responsive].freeze
+
+        HINT_POSITIONS = %i[below above].freeze
+
         AGENT_RULES = [
           "Wire the control with field.control_attributes - never hand-write aria-describedby.",
           "Error text arrives via error: (from model errors upstream) - never a bare red <p>.",
@@ -22,8 +33,6 @@ module Poetry
           "once its poetry_field_group container passes the md mark - the settings-page " \
           "recipe (it needs that FieldGroup ancestor to measure against)."
         ].freeze
-
-        ORIENTATIONS = %i[vertical horizontal setting responsive].freeze
 
         # Upstream fieldVariants' orientation axis. Horizontal is the
         # boolean-control pattern: the control lands in the first grid
@@ -72,12 +81,6 @@ module Poetry
         part "switch-input", "A nested Switch's hidden native input - the same wrapper-free " \
                              "fragment escape as checkbox-input (the setting-row layout)"
 
-        def hint_id = "#{id}-hint"
-        def error_id = "#{id}-error"
-        def label_id = "#{id}-label"
-
-        HINT_POSITIONS = %i[below above].freeze
-
         def before_render
           # Force the content block first: with_hint registers during the
           # capture, and the template's hint tag must see it.
@@ -88,6 +91,10 @@ module Poetry
           raise ArgumentError, "Field hint_position: #{hint_position.inspect} must be one of " \
                                "#{HINT_POSITIONS.inspect}"
         end
+
+        def hint_id = "#{id}-hint"
+        def error_id = "#{id}-error"
+        def label_id = "#{id}-label"
 
         # Block-form hint for AUTHORED MARKUP (a link in the guidance -
         # upstream styles [&>a] in cn-field-description). The captured
@@ -125,8 +132,8 @@ module Poetry
           describedby << hint_id if hint_present?
           attrs["aria-describedby"] = describedby.join(" ") if describedby.any?
           attrs["aria-invalid"] = true if invalid?
-          # The aria-required-only rule (an external generator): never the native
-          # required attribute - no native bubbles, no double announcement.
+          # The aria-required-only rule: never the native required
+          # attribute - no native bubbles, no double announcement.
           attrs["aria-required"] = true if required
           attrs
         end

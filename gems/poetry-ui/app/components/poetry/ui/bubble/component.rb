@@ -3,10 +3,13 @@
 module Poetry
   module Ui
     module Bubble
-      # The message surface of the AI-chat set (Bubble):
-      # one bubble per message, 7 variants on semantic tokens, content
-      # polymorphic via tag: (:button / :a quick replies), an optional
-      # reactions pill overlay. Purely presentational - no controller.
+      # The message surface of the AI-chat set: one bubble per message, 7
+      # variants on semantic tokens, content polymorphic via tag: (:button /
+      # :a quick replies), an optional reactions pill overlay. Purely
+      # presentational - no controller.
+      #
+      # @example An assistant reply
+      #   render Poetry::Ui::Bubble::Component.new(variant: :secondary) { "Here's the summary." }
       class Component < Poetry::Core::Component
         VARIANTS = %i[default secondary muted tinted outline ghost destructive].freeze
         ALIGNS = %i[start end].freeze
@@ -20,6 +23,13 @@ module Poetry
           "Reactions REQUIRE label: (the accessible name for the cluster).",
           "Inside a Message, alignment follows the Message's align - do not set both."
         ].freeze
+
+        renders_one :reactions, lambda { |label:, side: :bottom, align: :end, &block|
+          content_tag(:div,
+                      class: css(:reactions), "data-slot" => "bubble-reactions",
+                      "data-side" => side, "data-align" => align,
+                      role: "group", "aria-label" => label, &block)
+        }
 
         style :variant, default: :default, required: true, variants: VARIANTS
 
@@ -44,13 +54,6 @@ module Poetry
                "data-side" => "always - which edge the pill overlays (default bottom)",
                "data-align" => "always - placement along that edge (default end)"
              }
-
-        renders_one :reactions, lambda { |label:, side: :bottom, align: :end, &block|
-          content_tag(:div,
-                      class: css(:reactions), "data-slot" => "bubble-reactions",
-                      "data-side" => side, "data-align" => align,
-                      role: "group", "aria-label" => label, &block)
-        }
 
         def root_attributes
           html_attributes.merge_if_not_set(

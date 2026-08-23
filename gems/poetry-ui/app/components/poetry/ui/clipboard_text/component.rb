@@ -11,7 +11,20 @@ module Poetry
       # glyphs swap off it in CSS. The announcement goes through the
       # live-region singleton; the execCommand fallback restores the user's
       # own selection and focus (poetry--core--clipboard-text).
+      #
+      # @example An install command with a copy button
+      #   render Poetry::Ui::ClipboardText::Component.new(value: "gem install poetry-ui",
+      #                                                   label: "Install command")
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install " \
+          "commands, IDs. Editable text is an Input; a secret that needs masking is a SensitiveInput.",
+          "value: is what SHOWS; text_to_copy: overrides what lands on the clipboard when the " \
+          "display truncates - never truncate the copied text itself.",
+          "Give it label: (or compose under a Field/Label) - the readonly input still needs its " \
+          "accessible name."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :clipboard_text do
@@ -27,15 +40,6 @@ module Poetry
             controller(:clipboard_text) { action :copy, on: :click }
           end
         end
-
-        AGENT_RULES = [
-          "A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install " \
-          "commands, IDs. Editable text is an Input; a secret that needs masking is a SensitiveInput.",
-          "value: is what SHOWS; text_to_copy: overrides what lands on the clipboard when the " \
-          "display truncates - never truncate the copied text itself.",
-          "Give it label: (or compose under a Field/Label) - the readonly input still needs its " \
-          "accessible name."
-        ].freeze
 
         option :value, :string, required: true
         # Copy override when the displayed value truncates (kumo's

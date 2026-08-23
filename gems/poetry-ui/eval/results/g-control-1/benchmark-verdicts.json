@@ -1,6 +1,6 @@
 {
   "schema": "judge-v1",
-  "context": "generated-arm benchmark (N15 W2) - agent output, unknown intended winner; no calibration key by design (the frozen-arm judge-verdicts.json carries it)",
+  "context": "generated-arm benchmark - agent output, unknown intended winner; no calibration key by design (the frozen-arm judge-verdicts.json carries it)",
   "generated_on": "g-control-1",
   "model": "claude-sonnet-5",
   "votes_per_order": 3,

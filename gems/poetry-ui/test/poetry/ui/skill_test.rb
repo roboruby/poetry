@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # Skills v1 money tests: the usage skill's family partition
+    # The skills money tests: the usage skill's family partition
     # covers the roster exactly, the generated files carry the load-bearing
     # content, and the curated design skill cannot drift from the surfaces
     # it teaches (theme roster, design-lint rule set).
@@ -50,6 +50,7 @@ module Poetry
         canonical = "includes & class config → constants → slots → stimulus → " \
                     "styles & options → validations → parts → lifecycle → " \
                     "public methods → private methods → nested classes"
+
         assert_includes checklist.squish, canonical,
                         "the checklist restates the anatomy's canonical order verbatim"
         assert_includes anatomy, "Never reorder declarations within a section"
@@ -138,7 +139,7 @@ module Poetry
         [usage, design].each { |manifest| assert_match(/^description: >-\n/, manifest) }
       end
 
-      # The triggering + finishing doctrine (the leads): the
+      # The triggering + finishing doctrine: the
       # design skill's description must relevance-match BUILD tasks (it fired
       # zero times in 31 brief-shaped arms when scoped to "design" asks), the
       # usage skill must hand off to it before page composition, and both
@@ -165,8 +166,8 @@ module Poetry
         assert_includes audit_reference, "AFTER the final edit"
       end
 
-      # The default-path doctrine (the lead): compose is the
-      # UNCONDITIONAL first move on every surface - measured the
+      # The default-path doctrine: compose is the
+      # UNCONDITIONAL first move on every surface - an earlier run measured the
       # conditional form ("starting a new SCREEN?") at 3/31 blocks-surface
       # adoption while the unconditional check-LAST doctrine hit 26/31.
       test "compose is the unconditional first move on every text surface" do

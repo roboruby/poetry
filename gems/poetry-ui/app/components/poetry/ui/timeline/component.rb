@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module Timeline
-      # The Timeline - a sequence of dated events as a real ordered list
-      # (the ReUI-review add): activity feeds, order status,
+      # The Timeline - a sequence of dated events as a real ordered
+      # list: activity feeds, order status,
       # deploy history. Each item wears a decorative indicator (a dot, or
       # icon:'s glyph) on a connector rail; completed: marks progress and
       # recolors the item's indicator and rail segment. No upstream
@@ -12,6 +12,12 @@ module Poetry
       # <ol>/<li> semantics (the MetadataList precedent: the platform
       # element the pattern owes its readers). Styling is utility-only
       # (the Separator/Spinner rule): data-slot names are the restyle seam.
+      #
+      # @example
+      #   render Poetry::Ui::Timeline::Component.new do |timeline|
+      #     timeline.with_item(title: "Order placed", time: "Mar 15", completed: true)
+      #     timeline.with_item(title: "In transit") { "Estimated delivery Thursday." }
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "A sequence of dated events (activity feed, order status, deploy history) is a " \
@@ -25,6 +31,24 @@ module Poetry
           "vertical default reads as a feed. For steps the USER advances through, use " \
           "Stepper - a Timeline records, it never navigates."
         ].freeze
+
+        # The same fact the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering.
+        REQUIRED_SLOTS = { item: "at least one item (title:, with the description as its block)" }.freeze
+
+        renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
+                                       **options, &block|
+          attrs = { "data-slot" => "timeline-item", class: css(:item) }
+          attrs["data-completed"] = "" if completed
+          content_tag(:li, attrs.merge(options)) do
+            body = [item_indicator(icon), item_separator, item_header(title, time)]
+            if block
+              body << content_tag(:div, { "data-slot" => "timeline-content",
+                                          class: css(:content) }, &block)
+            end
+            safe_join(body)
+          end
+        }
 
         style :orientation, default: :vertical, variants: %i[vertical horizontal]
 
@@ -45,24 +69,6 @@ module Poetry
         part "timeline-title", "The event's name"
         part "timeline-time", "The event's <time> - muted, small"
         part "timeline-content", "Muted description under the header (the item's block)"
-
-        renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
-                                       **options, &block|
-          attrs = { "data-slot" => "timeline-item", class: css(:item) }
-          attrs["data-completed"] = "" if completed
-          content_tag(:li, attrs.merge(options)) do
-            body = [item_indicator(icon), item_separator, item_header(title, time)]
-            if block
-              body << content_tag(:div, { "data-slot" => "timeline-content",
-                                          class: css(:content) }, &block)
-            end
-            safe_join(body)
-          end
-        }
-
-        # The same fact the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering.
-        REQUIRED_SLOTS = { item: "at least one item (title:, with the description as its block)" }.freeze
 
         def before_render
           raise ArgumentError, "Timeline requires at least one with_item" unless items?

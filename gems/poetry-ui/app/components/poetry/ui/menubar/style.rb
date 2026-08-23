@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Menubar
-      # Re-expressed through the cn-* theme layer (N11), the source quirks
+      # Re-expressed through the cn-* theme layer, the source quirks
       # preserved in the theme rules verbatim (content omits
       # data-closed:animate-out, checkbox/radio round with rounded-xs, the
       # sub-trigger has no [&_svg] block). :menu keeps display:contents
@@ -22,8 +22,8 @@ module Poetry
         element :content, "cn-menubar-content cn-menu-translucent z-50 " \
                           "origin-(--transform-origin) overflow-hidden"
 
-        # group/menubar-item (N12): bare marker, no CSS - the vega shortcut
-        # re-color (group-focus/menubar-item) keys on it.
+        # group/menubar-item: bare marker, no CSS - the vega theme's
+        # shortcut re-color (group-focus/menubar-item) keys on it.
         element :item, "cn-menubar-item group/menubar-item relative flex cursor-default " \
                        "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \
                        "data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0"

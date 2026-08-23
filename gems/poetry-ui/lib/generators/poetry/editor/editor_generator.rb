@@ -6,7 +6,7 @@ require "yaml"
 
 module Poetry
   # `rails g poetry:editor` - wire the poetry agent surface into the editors a
-  # Rails team actually uses. poetry has no bespoke extension (that's a banked
+  # Rails team actually uses. poetry has no bespoke extension (a possible
   # future direction); what it DOES have is a standard MCP stdio server and a
   # source-generated component registry, so this generator emits:
   #

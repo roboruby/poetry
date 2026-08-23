@@ -3,12 +3,15 @@
 module Poetry
   module Ui
     module Marker
-      # Transcript dividers / inline status for the AI-chat set
-      # (Marker): date breaks, "3 new messages",
-      # in-flight status lines. The label IS the information - announced
-      # content by default, NEVER role="separator" (the divider lines are
-      # pseudo-elements AT cannot see). announce: :status formalizes the
-      # live in-flight marker (one per transcript - the anti-spam rule).
+      # Transcript dividers / inline status for the AI-chat set: date
+      # breaks, "3 new messages", in-flight status lines. The label IS
+      # the information - announced content by default, NEVER
+      # role="separator" (the divider lines are pseudo-elements AT cannot
+      # see). announce: :status formalizes the live in-flight marker (one
+      # per transcript - the anti-spam rule).
+      #
+      # @example
+      #   render Poetry::Ui::Marker::Component.new(variant: :separator) { "Yesterday" }
       class Component < Poetry::Core::Component
         VARIANTS = %i[default separator border].freeze
         ANNOUNCE = %i[none status].freeze
@@ -20,6 +23,17 @@ module Poetry
           "with_icon { } for other media (a Spinner mid-run).",
           "Use variant: :separator for date/section breaks; :border under pinned headers."
         ].freeze
+
+        # name: renders the lucide icon; a block carries other media (a
+        # Spinner mid-run - upstream's MarkerIcon is a generic wrapper).
+        # Either way the template's aria-hidden icon cell keeps it
+        # decorative: a block Spinner's own status role is hidden, and
+        # the marker root does the announcing.
+        renders_one :icon, lambda { |name: nil, **options, &block|
+          next Poetry::Ui::Icon::Component.new(name: name, **options) if name
+
+          content_tag(:span, &block)
+        }
 
         style :variant, default: :default, required: true, variants: VARIANTS
 
@@ -36,17 +50,6 @@ module Poetry
              }
         part "marker-icon", "Decorative icon wrapper (aria-hidden always)"
         part "marker-content", "The label span - the marker text itself"
-
-        # name: renders the lucide icon; a block carries other media (a
-        # Spinner mid-run - upstream's MarkerIcon is a generic wrapper).
-        # Either way the template's aria-hidden icon cell keeps it
-        # decorative: a block Spinner's own status role is hidden, and
-        # the marker root does the announcing.
-        renders_one :icon, lambda { |name: nil, **options, &block|
-          next Poetry::Ui::Icon::Component.new(name: name, **options) if name
-
-          content_tag(:span, &block)
-        }
 
         def root_attributes
           attrs = { "data-slot" => "marker", "data-variant" => variant }.merge(component_data_attributes)

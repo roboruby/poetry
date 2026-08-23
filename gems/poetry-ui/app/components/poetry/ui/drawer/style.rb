@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Drawer
-      # Re-expressed through the cn-* theme layer (N11), still the
+      # Re-expressed through the cn-* theme layer, still the
       # native-dialog swipe spine. The ENTIRE swipe mechanism stays inline
       # (transform vars, swipe-progress backdrop math, starting/ending
       # transforms, the direction margin geometry + closed-transform vars)
@@ -17,7 +17,7 @@ module Poetry
       class Style < Poetry::Core::Style
         # open:flex, not flex: never defeat the UA's dialog:not([open])
         # display:none (the Dialog browser-pass lesson).
-        # Scrim color + blur are theme-owned (W5 roster pass): each
+        # Scrim color + blur are theme-owned: each
         # themes/<name>.css carries backdrop:bg-* / backdrop-blur-* on
         # .cn-drawer-content. Only the swipe machinery (transition +
         # opacity calc) stays structural here.

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module NativeSelect
-      # Re-expressed through the cn-* theme layer (N11). appearance-none
+      # Re-expressed through the cn-* theme layer. appearance-none
       # stays inline as a mechanism guard (a swapped theme must never
       # resurrect the double native arrow); the wrapper and the
       # option/optgroup Canvas system-color guards are structural, no cn

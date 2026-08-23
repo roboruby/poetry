@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-# N12 W3 luma plan ("fluid, luminous, soft") for write_theme.rb. The
+# luma plan ("fluid, luminous, soft") for write_theme.rb. The
 # soft-round luminous: rounded-4xl dialogs + rounded-3xl popovers with
 # shadow-xl/lg over split ring temperature (ring-foreground/5 light, /10
-# dark), rounded-2xl boxed accordion (the W2 carrier), rounded-full pill
+# dark), rounded-2xl boxed accordion (the boxed-root carrier), rounded-full pill
 # tabs, bg-input/50 borderless form surfaces (rhea's exact AA geometry -
 # her full relative-oklch kit ships up front: placeholders 0.85, addon
 # text 0.85, kbd/input-group-text 0.8, invalid-state counter-rules on
 # the controls), /90 tinted checks/radios/switch/slider, pill switch
 # thumb (w-6), black/30 blur-sm scrims (the luminous scrim), soft
-# destructive (AA-held). NEW vs W2: the floating drawer before:-frame
+# destructive (AA-held). NEW vs the earlier ports: the floating drawer before:-frame
 # ships (deferred on mira/rhea as a taste-gap; it is luma's signature -
 # pure-visual inset frame, upstream's bare `flex` dropped so the native
 # <dialog> closed state survives, poetry's own sizing kept). Judged
@@ -48,7 +48,7 @@ PLAN = {
   "cn-alert-dialog-title" => "text-lg font-medium",
   # (cn-alert-dialog-footer: luma does not band it - inherits default's gap-2)
 
-  # --- accordion: the boxed root (the W2 carrier); poetry focus cluster
+  # --- accordion: the boxed root (the boxed-root carrier); poetry focus cluster
   #     added at luma's /30 ring temperature ------------------------------
   "cn-accordion" => "w-full overflow-hidden rounded-2xl border",
   "cn-accordion-trigger" =>
@@ -85,7 +85,7 @@ PLAN = {
     "h-10 gap-1.5 px-4 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3 " \
     "has-[>svg:first-child]:pl-3 has-[>svg:last-child]:pr-3",
 
-  # --- soft destructive, AA-held (posture) --------------------------
+  # --- soft destructive, AA-held (AA-contrast posture) --------------------------
   "cn-button-variant-destructive" =>
     "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 " \
     "dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 " \
@@ -126,7 +126,7 @@ PLAN = {
     "data-open:animate-in data-closed:animate-out #{BACKDROP}",
 
   # --- drawer: the floating before:-frame ships (luma's signature; the
-  #     W2 mira/rhea deferral was a taste-gap call, not a blocker).
+  #     mira/rhea deferral was a taste-gap call, not a blocker).
   #     Upstream's bare `flex` and `h-auto` dropped: an unconditional
   #     display token would defeat the native <dialog> closed state
   #     (poetry inlines open:flex), and poetry keeps its own sizing. -----
@@ -135,7 +135,7 @@ PLAN = {
     "before:border before:border-border before:bg-popover before:shadow-xl " \
     "backdrop:bg-black/30 supports-backdrop-filter:backdrop:backdrop-blur-sm",
 
-  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # Roster pass: viewport padding is theme-owned now (poetry-only name -
   # explicit String; default geometry unchanged).
   "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-0.5 p-4 md:gap-1.5 md:text-left",
@@ -188,7 +188,7 @@ PLAN = {
   # --- tabs: poetry's full active/line machinery, luma pill geometry;
   #     dark:data-active:border-input dropped (luma keeps borders
   #     transparent everywhere - upstream bangs it, we drop honestly) -----
-  # W5 roster pass: default-variant active shadow-sm dropped (only vega
+  # Roster pass: default-variant active shadow-sm dropped (only vega
   # ships it upstream at d0fae528; settled-read receipt).
   "cn-tabs-trigger" =>
     "gap-2 rounded-full border border-transparent px-3 py-1 text-sm font-medium text-foreground/60 " \
@@ -208,7 +208,7 @@ PLAN = {
     "group-data-vertical/tabs:rounded-2xl group-data-vertical/tabs:px-3 group-data-vertical/tabs:py-1.5",
 
   # --- toggle group: per-item translation (data-[state=on] -> pressed);
-  #     whole radius cluster theme-side (the W2 lesson) --------------------
+  #     whole radius cluster theme-side (the whole-cluster lesson) --------------------
   "cn-toggle-group-item" =>
     "data-pressed:bg-muted data-[spacing=0]:px-3 data-[spacing=0]:shadow-none " \
     "data-[spacing=0]:has-data-[icon=inline-end]:pr-2.5 data-[spacing=0]:has-data-[icon=inline-start]:pl-2.5 " \
@@ -281,14 +281,14 @@ PLAN = {
 }.freeze
 
 HEADER = <<~CSS
-  /* poetry luma theme (N12 W3) - upstream style-luma.css ported onto the
+  /* poetry luma theme - upstream style-luma.css ported onto the
    * cn-* layer (pinned clone d0fae528). Same contract as default.css:
    * imported layer(base); bare selectors while installs carry ONE theme;
    * rule order per component = base < elements < variants < compounds;
    * split-side, no-empty-rules and cross-component-last rules apply.
    *
-   * Port disciplines identical to vega/rhea (see the N12 plan note
-   * close-outs + docs/luma-port-ledger.txt): verbatim where poetry
+   * Port disciplines identical to vega/rhea (see
+   * docs/luma-port-ledger.txt): verbatim where poetry
    * speaks the vocabulary; data-vertical -> data-[orientation=*];
    * data-[state=on] -> data-pressed; overlays -> native-dialog
    * backdrop:* (black/30 blur-sm - the luminous scrim); upstream !
@@ -299,10 +299,10 @@ HEADER = <<~CSS
    * Luma-specific: bg-input/50 borderless form surfaces carry rhea's
    * full AA kit (relative-oklch: placeholders/addons 0.85, kbd and
    * input-group-text 0.8 via scoped **: twins and own-rules,
-   * aria-invalid counter-rules on the controls - posture); the
+   * aria-invalid counter-rules on the controls - AA-contrast posture); the
    * floating drawer before:-frame ships (upstream's bare `flex` dropped
    * so the native <dialog> closed state survives); pill switch thumb
    * travels 8px with poetry's rtl twin; boxed 2xl accordion root (the
-   * W2 carrier) with poetry's focus cluster at /30 ring temperature.
+   * boxed-root carrier) with poetry's focus cluster at /30 ring temperature.
    */
 CSS

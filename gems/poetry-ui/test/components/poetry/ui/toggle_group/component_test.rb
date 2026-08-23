@@ -104,7 +104,7 @@ module Poetry
           # themed min-w-9 by layer order; px-3 rides cn-toggle-group-item,
           # later in the theme than Toggle's sizes, so it wins in-layer).
           # The whole segment-radius cluster (rounded-none + edge radii)
-          # rides the theme since N12 W2 - split-side rule.
+          # rides the theme - split-side rule.
           %w[w-auto min-w-0 cn-toggle-group-item focus:z-10
              data-[spacing=0]:data-[variant=outline]:border-l-0].each do |token|
             assert_includes item["class"], token

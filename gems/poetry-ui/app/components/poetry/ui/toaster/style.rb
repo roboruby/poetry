@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Toaster
-      # Re-expressed through the cn-* theme layer (N11). The position
+      # Re-expressed through the cn-* theme layer. The position
       # variants stay INLINE, unnamed: corner placement is pure positioning
       # mechanism (fixed-corner geometry the slide selectors key on), with
       # zero conflicts against the themed spacing/width.

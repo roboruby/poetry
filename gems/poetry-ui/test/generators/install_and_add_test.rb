@@ -23,7 +23,7 @@ module Poetry
       # can't be reproduced here - this suite has already loaded every
       # component. The fresh-app install proof covers it.
       assert_file "app/assets/tailwind/poetry/safelist.txt" do |safelist|
-        # Post-N11 the visual utilities live in style-default.css (@apply
+        # The visual utilities live in style-default.css (@apply
         # needs no safelisting); the safelist carries cn names + the
         # structural inline set.
         assert_match(/^cn-button$/, safelist)
@@ -219,7 +219,7 @@ module Poetry
       refute_includes entry, "charts.css", "charts wiring is opt-in even with the gem present"
     end
 
-    # -- the --theme flag (N12: install-time theme selection) ---------------
+    # -- the --theme flag (install-time theme selection) --------------------
 
     def test_unknown_theme_fails_fast_before_any_file_lands
       stderr = capture(:stderr) { run_generator %w[--theme nope] }

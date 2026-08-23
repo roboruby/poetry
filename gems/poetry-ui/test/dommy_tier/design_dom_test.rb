@@ -4,7 +4,7 @@ require_relative "dommy_helper"
 require "nokogiri"
 
 module DommyTier
-  # The DesignLint DOM tier (N14 W3) over the rendered catalog: computed
+  # The DesignLint DOM tier over the rendered catalog: computed
   # styles from dommy (real cascade, no browser) feed the painted-axis
   # rules - type-scale monotony, invisible surface boundaries,
   # near-identical adjacent surfaces. One page per registry component (the

@@ -5,13 +5,19 @@ module Poetry
     module Stat
       # The Stat - one KPI: a muted label over a large tabular-nums value,
       # with an optional sentiment-aware delta, supporting description, and
-      # a media slot for a trend visual (, the review add: the
-      # dashboard vocabulary the data-index block had no word for). No
-      # upstream shadcn/Base UI analogue; the anatomy follows an external review's Stat
-      # with poetry's slot idiom. Styling is utility-only (the Separator/
-      # Spinner rule): data-slot names are the restyle seam until a theme
-      # wants cn hooks.
+      # a media slot for a trend visual - the dashboard vocabulary a
+      # data-heavy page otherwise lacks. No upstream shadcn/Base UI
+      # analogue; the anatomy is poetry's slot idiom. Styling is
+      # utility-only (the Separator/Spinner rule): data-slot names are the
+      # restyle seam until a theme wants cn hooks.
+      #
+      # @example Revenue KPI with a delta
+      #   render Poetry::Ui::Stat::Component.new(label: "Revenue", delta: "+12.5%", trend: :up) do
+      #     "$45,231"
+      #   end
       class Component < Poetry::Core::Component
+        requires_content "the metric value"
+
         TRENDS = %i[up down flat].freeze
         SENTIMENTS = %i[positive negative neutral].freeze
 
@@ -31,6 +37,9 @@ module Poetry
           "A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts)."
         ].freeze
 
+        renders_one :description
+        renders_one :media
+
         option :label, :string, required: true
         option :delta, :string
         option :trend, :symbol, default: :up
@@ -38,8 +47,6 @@ module Poetry
 
         validates :trend, inclusion: { in: TRENDS }
         validates :sentiment, inclusion: { in: SENTIMENTS }, allow_nil: true
-
-        requires_content "the metric value"
 
         part "stat", "The stat root - a label/value/delta/description column"
         part "stat-label", "The muted metric name above the value"
@@ -55,9 +62,6 @@ module Poetry
              }
         part "stat-description", "Muted supporting copy under the value"
         part "stat-media", "The trend-visual slot (sparkline, chart, glyph) below the text stack"
-
-        renders_one :description
-        renders_one :media
 
         def before_render
           ensure_content!

@@ -3,8 +3,8 @@
 module Poetry
   module Ui
     module TimeField
-      # The segmented time editor: DateField at hour granularity (the
-      # react-aria identity - one segment engine, two components). The
+      # The segmented time editor: DateField at hour granularity - one
+      # segment engine, two components. The
       # native input is <input type=time>, the wire format HH:MM[:SS],
       # and the locale decides 12- vs 24-hour editing (a dayPeriod
       # segment appears exactly when the locale is twelve-hour;
@@ -12,6 +12,11 @@ module Poetry
       # vocabulary - the controller builds them, and TimeField IS a
       # DateField underneath (the NumberField/InputGroup precedent for
       # cross-component slot reuse).
+      #
+      # @example
+      #   render Poetry::Ui::TimeField::Component.new(
+      #     name: "starts_at", label: "Start time", value: "09:30"
+      #   )
       class Component < DateField::Component
         AGENT_RULES = [
           "Time entry is a TimeField (poetry_time_field / form.time_field) - never a masked " \
@@ -21,11 +26,6 @@ module Poetry
           "For a date AND a time, compose a DateField and a TimeField side by side - there " \
           "is no datetime component by design."
         ].freeze
-
-        # HH:MM[:SS] editing; seconds: adds the third segment.
-        option :seconds, :boolean, default: false
-        # Pin the hour cycle (h12/h23/h11/h24) instead of the locale's.
-        option :hour_cycle, :string
 
         # EXTENDS DateField's root declaration (extend: true merges into
         # the inherited element) - same date-field controller, two more
@@ -38,6 +38,11 @@ module Poetry
             end
           end
         end
+
+        # HH:MM[:SS] editing; seconds: adds the third segment.
+        option :seconds, :boolean, default: false
+        # Pin the hour cycle (h12/h23/h11/h24) instead of the locale's.
+        option :hour_cycle, :string
 
         part "time-field", "Root - the controller and the enhanced/disabled surface ride " \
                            "here (segments inside share the date-field-* vocabulary)",

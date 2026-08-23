@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # M7 DoD: a model-bound form renders with errors + a11y + i18n.
+    # The forms contract: a model-bound form renders with errors + a11y + i18n.
     class FormsTest < ActionDispatch::IntegrationTest
       class Contact
         include ActiveModel::Model
@@ -126,7 +126,7 @@ module Poetry
         refute control["aria-required"]
       end
 
-      # -- The radio_group builder method (N5 exclusive choice) --------------
+      # -- The radio_group builder method (exclusive choice) -----------------
 
       class Subscription
         include ActiveModel::Model
@@ -192,7 +192,7 @@ module Poetry
         assert_empty root.css('input[type="hidden"]')
       end
 
-      # -- The slider builder method (N5 bounded numeric) ---------------------
+      # -- The slider builder method (bounded numeric) ------------------------
 
       class Mixer
         include ActiveModel::Model
@@ -246,7 +246,7 @@ module Poetry
                      range.css('[data-slot="slider-thumb"]').map { |thumb| thumb["aria-valuenow"] })
       end
 
-      # -- The as: :textarea switch on #field (N5 field-shaped controls) ------
+      # -- The as: :textarea switch on #field (field-shaped controls) ---------
 
       class Profile
         include ActiveModel::Model
@@ -291,7 +291,7 @@ module Poetry
         assert_equal "#{textarea["id"]}-error #{textarea["id"]}-hint", textarea["aria-describedby"]
       end
 
-      # -- The otp_field builder method (N5 verification codes) ---------------
+      # -- The otp_field builder method (verification codes) ------------------
 
       class Verification
         include ActiveModel::Model
@@ -339,7 +339,7 @@ module Poetry
         assert(fragment.css('[data-slot="input-otp-slot"]').all? { |slot| slot["aria-invalid"] == "true" })
       end
 
-      # -- The poetry_select builder method (N5 listbox capstone) --------------
+      # -- The poetry_select builder method (listbox capstone) -----------------
 
       class Ticket
         include ActiveModel::Model
@@ -567,7 +567,7 @@ module Poetry
       ensure
         I18n.reload!
       end
-      # -- Wave 1: Rails-parity + roster coverage ---------------------------
+      # -- Rails-parity + roster coverage -----------------------------------
 
       class RosterProfile
         include ActiveModel::Model
@@ -742,7 +742,7 @@ module Poetry
         end
       end
 
-      def render_w2(erb, model:, locals: {})
+      def render_form_case(erb, model:, locals: {})
         ApplicationController.renderer.render(
           inline: "<%= form_with(model: model, url: \"/a\", " \
                   "builder: Poetry::Ui::FormBuilder) do |form| %>#{erb}<% end %>",
@@ -751,9 +751,9 @@ module Poetry
       end
 
       def test_input_infers_from_name_heuristics_column_types_and_validators
-        html = render_w2("<%= form.input(:email) %><%= form.input(:body) %>" \
-                         "<%= form.input(:title) %><%= form.input(:quantity) %>",
-                         model: Article.new)
+        html = render_form_case("<%= form.input(:email) %><%= form.input(:body) %>" \
+                                "<%= form.input(:title) %><%= form.input(:quantity) %>",
+                                model: Article.new)
 
         assert_includes html[/<input[^>]*\[email\][^>]*>/], 'type="email"', "name heuristic"
         assert_includes html, "<textarea", "text column type"
@@ -766,20 +766,20 @@ module Poetry
       end
 
       def test_input_boolean_renders_the_horizontal_field_and_switch_the_setting_row
-        html = render_w2("<%= form.input(:published) %>", model: Article.new(published: true))
+        html = render_form_case("<%= form.input(:published) %>", model: Article.new(published: true))
 
         assert_includes html, 'data-orientation="horizontal"'
         assert_includes html, 'role="checkbox"'
 
-        switched = render_w2("<%= form.input(:published, switch: true) %>", model: Article.new)
+        switched = render_form_case("<%= form.input(:published, switch: true) %>", model: Article.new)
 
         assert_includes switched, 'data-orientation="setting"'
         assert_includes switched, 'role="switch"'
       end
 
       def test_input_collection_and_as_overrides
-        html = render_w2("<%= form.input(:title, collection: [[\"Draft\", \"draft\"]]) %>" \
-                         "<%= form.input(:body, as: :string) %>", model: Article.new)
+        html = render_form_case("<%= form.input(:title, collection: [[\"Draft\", \"draft\"]]) %>" \
+                                "<%= form.input(:body, as: :string) %>", model: Article.new)
 
         assert_includes html, 'data-slot="select"'
         assert_includes html[/<input[^>]*\[body\][^>]*>/].to_s, 'type="text"', "as: beats the column type"
@@ -787,7 +787,7 @@ module Poetry
 
       def test_input_datetime_raises_with_guidance
         error = assert_raises(ActionView::Template::Error) do
-          render_w2("<%= form.input(:created_at) %>", model: Timestamped.new)
+          render_form_case("<%= form.input(:created_at) %>", model: Timestamped.new)
         end
 
         assert_match(/as: :date or as: :time/, error.message)
@@ -810,7 +810,7 @@ module Poetry
                                           "poetry/ui/forms_test/article": { title: "From simple_form." }
                                         } })
 
-        html = render_w2("<%= form.input(:email) %><%= form.input(:title) %>", model: Article.new)
+        html = render_form_case("<%= form.input(:email) %><%= form.input(:title) %>", model: Article.new)
 
         assert_includes html, "From poetry_form."
         assert_includes html, "From simple_form.", "simple_form locale keys keep working"
@@ -840,7 +840,7 @@ module Poetry
       end
 
       def test_association_belongs_to_renders_a_combobox_on_the_foreign_key
-        html = render_w2("<%= form.association(:company) %>", model: Employment.new(company_id: 2))
+        html = render_form_case("<%= form.association(:company) %>", model: Employment.new(company_id: 2))
 
         assert_includes html, 'data-slot="combobox"'
         assert_includes html, %(name="poetry_ui_forms_test_employment[company_id]")
@@ -849,7 +849,7 @@ module Poetry
       end
 
       def test_association_collection_macro_renders_the_checkbox_group_on_ids
-        html = render_w2("<%= form.association(:teams) %>", model: Employment.new(team_ids: [1]))
+        html = render_form_case("<%= form.association(:teams) %>", model: Employment.new(team_ids: [1]))
 
         assert_includes html, %(name="poetry_ui_forms_test_employment[team_ids][]")
         assert_includes html, 'data-controller="poetry--core--checkbox-group"'
@@ -857,7 +857,7 @@ module Poetry
       end
 
       def test_association_as_radio_group_flips_the_pair_order
-        html = render_w2("<%= form.association(:company, as: :radio_group) %>", model: Employment.new)
+        html = render_form_case("<%= form.association(:company, as: :radio_group) %>", model: Employment.new)
 
         assert_includes html, 'role="radiogroup"'
         assert_match(/value="1"/, html)
@@ -867,7 +867,7 @@ module Poetry
       def test_association_errors_flow_through_the_dual_key_lookup
         model = Employment.new
         model.errors.add(:company, "must exist")
-        html = render_w2("<%= form.association(:company) %>", model: model)
+        html = render_form_case("<%= form.association(:company) %>", model: model)
 
         assert_includes html, "Company must exist"
         assert_includes html, 'data-invalid="true"'

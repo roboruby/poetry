@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Input
-      # Re-expressed through the cn-* theme layer (N11): the field chrome
+      # Re-expressed through the cn-* theme layer: the field chrome
       # (border, ring, invalid, dark treatments) rides themes/default.css.
-      # Placeholder color moved theme-side at N12 W2: rhea's tinted field
+      # Placeholder color is theme-side: rhea's tinted field
       # surface (bg-input/50) needs a darkened placeholder to hold AA, and
       # an inline color would beat any theme's (layer order).
       class Style < Poetry::Core::Style

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Badge
-      # Re-expressed through the cn-* theme layer (N11). The focus/invalid
+      # Re-expressed through the cn-* theme layer. The focus/invalid
       # ring chain deviates from upstream's inline split DELIBERATELY: the
       # destructive variant re-colors focus-visible:ring-* in the theme and
       # can only beat the base treatment from the same layer (the
@@ -12,8 +12,7 @@ module Poetry
         base "cn-badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden " \
              "whitespace-nowrap [&>svg]:pointer-events-none"
 
-        # success/warning/info (Blocks v1.1): the soft status
-        # vocabulary the benchmark measured as missing - poetry-original
+        # success/warning/info: the poetry-original soft status vocabulary
         # (upstream Badge has no status variants); every theme carries the
         # soft treatment on the new status tokens.
         variant :variant, {

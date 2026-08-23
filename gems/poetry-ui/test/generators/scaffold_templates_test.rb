@@ -6,9 +6,9 @@ require "rails/generators/generated_attribute"
 require "generators/poetry/scaffold_templates/scaffold_templates_generator"
 
 module Poetry
-  # The scaffold-templates seam (, the external component set move done
-  # the poetry way): `rails g scaffold` output that is poetry-composed AND
-  # check-clean by construction - the expansion test below runs the same
+  # The scaffold-templates seam: `rails g scaffold` output that is
+  # poetry-composed AND check-clean by construction - the expansion test
+  # below runs the same
   # linter CI runs over the docs corpus against the templates' expanded
   # output, so a template that drifts from the component contracts fails
   # here before any host app generates a broken view.
@@ -104,7 +104,7 @@ module Poetry
       expanded = self.class.expanded("_form")
 
       assert_includes expanded, 'poetry_input(type: "email", name: form.field_name(:email)',
-                      "an email column renders a type=email input (the a classes-only port heuristics)"
+                      "an email column renders a type=email input (the column-name heuristics)"
       assert_includes expanded, 'poetry_input(type: "url", name: form.field_name(:website)'
       assert_includes expanded, 'poetry_input(type: "text", name: form.field_name(:title)',
                       "names outside the heuristic lists stay text"

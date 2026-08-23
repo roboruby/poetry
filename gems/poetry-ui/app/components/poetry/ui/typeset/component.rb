@@ -9,7 +9,14 @@ module Poetry
       # variables - size / leading / flow - everything else derives);
       # this component is the wrapper contract: the .typeset switch, an
       # optional preset class, and the opt-out vocabulary.
+      #
+      # @example
+      #   render Poetry::Ui::Typeset::Component.new(preset: "docs") do
+      #     @article_html
+      #   end
       class Component < Poetry::Core::Component
+        requires_content "the rendered prose HTML"
+
         AGENT_RULES = [
           "Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) - never app " \
           "chrome; poetry components style themselves.",
@@ -26,8 +33,6 @@ module Poetry
         part "typeset", "The prose container - every bare element inside is styled by the " \
                         "app-owned typeset.css; not-typeset (class or data attribute) opts a " \
                         "subtree out"
-
-        requires_content "the rendered prose HTML"
 
         def before_render
           ensure_content!

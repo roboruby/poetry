@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# N12 W4 lyra plan ("boxy and sharp, for mono fonts") for write_theme.rb.
+# lyra plan ("boxy and sharp, for mono fonts") for write_theme.rb.
 # The dense console theme: rounded-none EVERYWHERE, whole type scale one
 # step down (text-xs bodies, text-sm titles), ring-1 focus temperature,
 # muted-based hovers (hover:bg-muted, never accent), right-side menu
@@ -12,13 +12,13 @@
 # pairs lyra with mono FAMILIES via create-flow metadata only - the
 # fragment moves typography through size/weight/tracking utilities, so
 # the port carries them verbatim and the mono pairing story belongs to
-# the docs site (W5), not the CSS.
+# the docs site, not the CSS.
 #
 # AA posture: lyra's tints are disabled-state fills (bg-input/50 light,
 # /80 dark - WCAG-exempt) and /30 embedded dropdown search boxes (the
 # maia class - placeholders ship standard, axe arbitrates); the addon
 # kbd keeps default bg-muted colors, so NO relative-oklch kit is needed
-# beyond the soft-destructive pair (posture, maia's exact body).
+# beyond the soft-destructive pair (AA-contrast posture, maia's exact body).
 #
 # Parse note (upstream quirk, ledgered): style-lyra.css line 1358
 # (cn-menu-translucent, a dropped upstream-only box) ends its @apply
@@ -28,7 +28,7 @@
 #
 # Judged notes: calendar keeps :default and the [--cell-size:--spacing(7)]
 # split-side hit joins the nova-7/mira-6 deferral (poetry consumes
-# --cell-size inline only); cn-input-group-button-size-sm fired its W1
+# --cell-size inline only); cn-input-group-button-size-sm fired its ledgered
 # return-condition but the condition is about POETRY shipping the size
 # (mira ledger) - poetry's input-group anatomy is unchanged, so it drops
 # again; upstream lyra ships NO button-group orientation rules (its
@@ -61,14 +61,14 @@ PLAN = {
     "data-[size=default]:sm:max-w-sm #{BACKDROP} data-open:animate-in data-open:fade-in-0 " \
     "data-open:zoom-in-95",
   "cn-alert-dialog-header" => "gap-1.5",
-  # media chip: poetry's size anatomy (size-16/svg-8, the W1 call - upstream
+  # media chip: poetry's size anatomy (size-16/svg-8, the vega-port call - upstream
   # says size-10/svg-6), radius THEMED - a rounded-md chip inside a radius-0
-  # theme is an identity break (W4 judge flag; same rule as drawer directions:
+  # theme is an identity break (judge flag; same rule as drawer directions:
   # poetry-own surface, theme radius)
   "cn-alert-dialog-media" => "mb-2 size-16 rounded-none bg-muted *:[svg:not([class*='size-'])]:size-8",
   "cn-alert-dialog-title" => "text-sm font-medium",
 
-  # --- accordion: NO box (lyra ships none - the W2 carrier stays default);
+  # --- accordion: NO box (lyra ships none - the boxed-root carrier stays default);
   #     upstream's focus story is complete (ring-1 + after:border-ring), so
   #     only the icon trio moves to poetry's own icon rule ----------------
   "cn-accordion-trigger" =>
@@ -118,7 +118,7 @@ PLAN = {
     "h-9 gap-1.5 px-2.5 has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 " \
     "has-[>svg:first-child]:pl-2 has-[>svg:last-child]:pr-2",
 
-  # --- soft destructive, AA-held (posture; maia's exact body) ------
+  # --- soft destructive, AA-held (AA-contrast posture; maia's exact body) ------
   "cn-button-variant-destructive" =>
     "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 " \
     "dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 " \
@@ -138,7 +138,7 @@ PLAN = {
 
   # --- command: poetry keeps structural gap + placeholder color; lyra's
   #     command-input-group box (h-8 bg-input/30 border-input/30) is
-  #     ABSORBED onto poetry's wrapper - the vega W1 precedent, W4 judge
+  #     ABSORBED onto poetry's wrapper - the vega precedent, judge
   #     catch (the first cut dropped the box's height AND tint, leaving a
   #     17px flat row). Also covers the combobox search row: poetry's
   #     combobox mounts the command wrapper, not an input-group, so the
@@ -152,10 +152,10 @@ PLAN = {
 
   # --- dialog / sheet / sidebar-mobile: DIALOGS are flat (upstream drops
   #     shadow-lg from dialog + alert-dialog; ring only) but SHEETS keep
-  #     shadow-lg (shared token upstream ships - W4 judge catch: the plan
+  #     shadow-lg (shared token upstream ships - judge catch: the plan
   #     first over-generalized dialog flatness to sheets); sidebar-mobile
   #     rides the sheet posture. The bare `grid` display token is dropped
-  #     so the native <dialog> closed state survives (the W3 rule) --------
+  #     so the native <dialog> closed state survives (the native-dialog rule) --------
   "cn-dialog-content" =>
     "w-full max-w-[calc(100%-2rem)] bg-popover text-popover-foreground ring-foreground/10 " \
     "gap-4 rounded-none p-4 text-xs/relaxed ring-1 duration-100 sm:max-w-sm #{BACKDROP} " \
@@ -169,13 +169,13 @@ PLAN = {
 
   # --- drawer: no floating frame (that is luma's); square panel, borders
   #     per side via poetry's own direction rules --------------------------
-  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # Roster pass: drawer scrim (native ::backdrop) is theme-owned now;
   # values = upstream lyra drawer-overlay at d0fae528.
   "cn-drawer-content" =>
     "bg-popover text-popover-foreground text-xs/relaxed " \
     "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs",
 
-  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # Roster pass: viewport padding is theme-owned now (poetry-only name -
   # explicit String; default geometry unchanged).
   "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-direction-down" => "rounded-none border-t",
@@ -227,8 +227,8 @@ PLAN = {
   #     whole-cluster discipline; upstream's active state lives inline in
   #     its base component, theme-side in poetry). The default-variant
   #     active shadow-sm is DROPPED: at d0fae528 only vega's upstream rule
-  #     ships it - every other style renders box-shadow none (W4 judge
-  #     catch, settled-read receipt; the five shipped W1-W3 fragments
+  #     ships it - every other style renders box-shadow none (judge
+  #     catch, settled-read receipt; the five earlier-shipped fragments
   #     still carry it - roster follow-on, not this wave's scope) ---------
   "cn-tabs-trigger" =>
     "gap-1.5 rounded-none border border-transparent px-1.5 py-0.5 text-xs font-medium text-foreground/60 " \
@@ -248,7 +248,7 @@ PLAN = {
     "group-data-vertical/tabs:py-[calc(--spacing(1.25))]",
 
   # --- toggle group: item-scoped translation of upstream's group-scoped
-  #     spacing cluster; whole radius cluster theme-side (the W2 lesson) --
+  #     spacing cluster; whole radius cluster theme-side (the whole-cluster lesson) --
   "cn-toggle-group-item" =>
     "data-[spacing=0]:rounded-none data-[spacing=0]:px-2 " \
     "data-[spacing=0]:has-data-[icon=inline-end]:pr-1.5 data-[spacing=0]:has-data-[icon=inline-start]:pl-1.5 " \
@@ -273,7 +273,7 @@ PLAN = {
   "cn-toast" => { base: :default, sub: { "rounded-md" => "rounded-none" } },
 
   # --- form controls: untinted square fields; the placeholder token
-  #     returns with the W2 side-move (upstream omits it) ------------------
+  #     returns with the side-move (upstream omits it) ------------------
   "cn-input" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
   "cn-textarea" => { base: :upstream, add: %w[placeholder:text-muted-foreground] },
 
@@ -285,14 +285,14 @@ PLAN = {
 }.freeze
 
 HEADER = <<~CSS
-  /* poetry lyra theme (N12 W4) - upstream style-lyra.css ported onto the
+  /* poetry lyra theme - upstream style-lyra.css ported onto the
    * cn-* layer (pinned clone d0fae528). Same contract as default.css:
    * imported layer(base); bare selectors while installs carry ONE theme;
    * rule order per component = base < elements < variants < compounds;
    * split-side, no-empty-rules and cross-component-last rules apply.
    *
-   * Port disciplines identical to vega/rhea (see the N12 plan note
-   * close-outs + docs/lyra-port-ledger.txt): verbatim where poetry
+   * Port disciplines identical to vega/rhea (see
+   * docs/lyra-port-ledger.txt): verbatim where poetry
    * speaks the vocabulary; data-vertical -> data-[orientation=*];
    * data-[state=on] -> data-pressed; overlays -> native-dialog
    * backdrop:* (black/10 blur-xs - the faintest scrim of the series);
@@ -300,7 +300,7 @@ HEADER = <<~CSS
    * default-inherited precedents; icon paddings ship upstream's
    * has-data-[icon=*] (inert) plus working >svg:first/last-child twins;
    * soft destructive holds AA via relative-oklch light-mode darkening
-   * (posture). Lyra-specific: rounded-none universal with the
+   * (AA-contrast posture). Lyra-specific: rounded-none universal with the
    * whole type scale one step down (text-xs bodies), ring-1 focus
    * temperature, muted-based hovers, right-side menu indicators, filled
    * radios (dot flips to fill-primary-foreground), press-nudge buttons,

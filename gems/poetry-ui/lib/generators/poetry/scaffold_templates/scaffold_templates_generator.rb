@@ -3,8 +3,8 @@
 require "rails/generators"
 
 module Poetry
-  # `rails g poetry:scaffold_templates` (, the external component set
-  # seam): Rails has always let an app override its generator templates
+  # `rails g poetry:scaffold_templates`:
+  # Rails has always let an app override its generator templates
   # from lib/templates/; what was missing was a set that renders with
   # poetry. This copies scaffold view templates - and a matching scaffold
   # controller template - so the STANDARD `rails g scaffold` produces

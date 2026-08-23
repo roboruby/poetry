@@ -8,8 +8,8 @@ require_relative "testing/dialog"
 
 module Poetry
   module Ui
-    # Consumer-facing interaction testers (, the @react-aria/test-utils
-    # idea): drive poetry components through their REAL keyboard/pointer
+    # Consumer-facing interaction testers: drive poetry components
+    # through their REAL keyboard/pointer
     # sequences in a Capybara system test and assert against the Base UI
     # attribute contract (data-open, aria-expanded, data-highlighted) -
     # never against markup internals. Each tester is an executable spec of
@@ -34,7 +34,7 @@ module Poetry
     # wait with Capybara's own retry discipline - no sleeps. `via:` swaps
     # the ENTIRE event sequence (:mouse clicks, :keyboard focuses the
     # trigger and drives keys), because the two paths exercise different
-    # controller seams (the press-sequence lesson).
+    # controller seams.
     module Testing
       # Each entry point takes the component ROOT: a CSS selector string
       # or a Capybara node, and an optional session (defaults to

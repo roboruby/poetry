@@ -3,7 +3,7 @@
     "results.json",
     "generated-scorecard.json",
     "generation-manifest.json",
-    "poetry-ui/eval/results/2026-07-09-rebaseline/results.json (baseline; raw controls frozen from 2026-07-07)"
+    "eval/results/2026-07-09-rebaseline/results.json (the re-baseline run; raw controls frozen from 2026-07-07)"
   ],
   "headline": {
     "raw_tailwind": 19,
@@ -11,12 +11,12 @@
     "poetry": 11
   },
   "prior_baselines": {
-    "dd75_depth3_and_depth5_confirmed": {
+    "rebaseline_depth3_and_depth5_confirmed": {
       "raw_tailwind": 16,
       "poetry": 12,
       "inconclusive": 3
     },
-    "dd70_full": {
+    "baseline_full": {
       "raw_tailwind": 18,
       "poetry": 13
     }
@@ -100,12 +100,12 @@
       "pass": true
     },
     "d2": {
-      "statement": "composition-axis tally >= 10 of 31 (5;: 9)",
+      "statement": "composition-axis tally >= 10 of 31 (re-baseline: 5; baseline run: 9)",
       "observed": "6/31",
       "pass": false
     },
     "d3": {
-      "statement": "poetry overall >= 14 of 31 (12)",
+      "statement": "poetry overall >= 14 of 31 (re-baseline: 12)",
       "observed": "11/31 ({\"raw_tailwind\" => 19, \"inconclusive\" => 1, \"poetry\" => 11})",
       "pass": false
     },

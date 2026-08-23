@@ -3,9 +3,8 @@
 module Poetry
   module Ui
     module Combobox
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # The placement vocabularies, declared ONCE at module level - shared
+      # by the validations and the part-state declarations.
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
       DIRS = %i[ltr rtl].freeze
@@ -16,7 +15,7 @@ module Poetry
       # "#{id}-item-<n>" - the aria-activedescendant contract - and the
       # initial highlight seat: the selected option, else the first
       # enabled item). Duplicate or blank values raise at render (the
-      # base contract).
+      # base-contract rule).
       class OptionSet
         Entry = Struct.new(:value, :label, :disabled)
 
@@ -74,7 +73,7 @@ module Poetry
         end
 
         # The engine's separator part (Command::Style verbatim) - hidden by
-        # the controller whenever the query is non-empty (cmdk parity).
+        # the controller whenever the query is non-empty (upstream parity).
         def separator_part(**options)
           attrs = {
             "data-slot" => "command-separator", "role" => "separator",
@@ -96,8 +95,8 @@ module Poetry
         end
       end
 
-      # One role=option div carrying BOTH meanings ([[CL Component -
-      # Combobox]]'s two-meanings rule): it stays a valid COMMAND item
+      # One role=option div carrying BOTH meanings (the two-meanings
+      # rule): it stays a valid COMMAND item
       # (data-value + data-poetry-collection-item + the engine's
       # activate/pointerHighlight actions + keywords/filter_value/
       # always_render, NO tabindex - activedescendant, never DOM focus)
@@ -107,6 +106,8 @@ module Poetry
       # happens in DOM order, so the shared OptionSet assigns server-
       # stable ids and registers native <option>s in exactly the order
       # the listbox renders - top level or grouped.
+      #
+      # @api private
       class Item < Poetry::Core::Component
         internal_component!
         include Helpers
@@ -172,6 +173,8 @@ module Poetry
       # and the value display see every option in DOM order. Plain
       # ViewComponent::Base ON PURPOSE: nested parts are anatomy, not
       # registered components.
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include Helpers
@@ -224,7 +227,7 @@ module Poetry
         end
       end
 
-      # The Combobox (Combobox): Select's shell x
+      # The Combobox: Select's shell x
       # Command's engine - the shadcn DOCS composition (Button
       # role=combobox + Popover + Command) made server-native. The
       # root/trigger/native-select/value-display are Select's contract
@@ -257,8 +260,19 @@ module Poetry
       # posts name[], the listbox turns aria-multiselectable, and
       # selection TOGGLES with the popup staying open. Single mode's DOM
       # is byte-identical to the pre-multiple component.
+      #
+      # @example
+      #   render Poetry::Ui::Combobox::Component.new(name: "framework", "aria-label" => "Framework") do |combobox|
+      #     combobox.with_item(value: "rails") { "Ruby on Rails" }
+      #     combobox.with_item(value: "hanami") { "Hanami" }
+      #   end
       class Component < Poetry::Core::Component
         include Helpers
+
+        # The trigger-bound ARIA surface: Field's control_attributes (and
+        # bare aria-label usage) land on the TRIGGER - the combobox is the
+        # interactive control the label must reach - never on the root div.
+        TRIGGER_ARIA_KEYS = %w[label labelledby describedby invalid required].freeze
 
         AGENT_RULES = [
           "Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; " \
@@ -282,42 +296,33 @@ module Poetry
           "IS the deselect gesture (chip-remove is its pointer twin)."
         ].freeze
 
-        # The trigger-bound ARIA surface: Field's control_attributes (and
-        # bare aria-label usage) land on the TRIGGER - the combobox is the
-        # interactive control the label must reach - never on the root div.
-        TRIGGER_ARIA_KEYS = %w[label labelledby describedby invalid required].freeze
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        option :value, :string
-        option :name, :string
-        option :placeholder, :string
-        option :search_placeholder, :string
-        option :id, :string
-        option :open, :boolean, default: false
-        option :required, :boolean, default: false
-        option :disabled, :boolean, default: false
-        # Base UI's multiple: value: becomes LIST-capable (single stays the
-        # scalar), the trigger is replaced by the chips field, the native
-        # <select multiple> posts name[], selection toggles without closing.
-        option :multiple, :boolean, default: false
-        # DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); the
-        # delta vs Select's modal: true. true restores the focus-scope trap
-        # for dialog-critical pickers.
-        option :modal, :boolean, default: false
-        # Base UI's showClear (single mode only): the trigger-side
-        # deselection X - swaps in over the chevrons while a value is
-        # committed, commits the blank value through the pipeline. Forces
-        # the blank native option so the cleared state serializes as ""
-        # (the include_blank contract).
-        option :show_clear, :boolean, default: false
-        # Forwarded to the embedded engine: false = server-driven options
-        # (the async Turbo-frame recipe).
-        option :filter, :boolean, default: true
-        option :loop, :boolean, default: false
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :start
-        option :side_offset, :integer, default: 4
-        option :avoid_collisions, :boolean, default: true
-        option :dir, :symbol
+        # Optional custom trigger content rendered BEFORE the value span
+        # (rare); the component owns role=combobox + the aria wiring + the
+        # chevrons regardless, so composition cannot drop the contract.
+        renders_one :trigger
+
+        # Custom zero-results content (defaults to t('poetry.combobox.empty')).
+        renders_one :empty
+
+        # The option UNION forwarded to the embedded command list: item |
+        # group (heading + items) | separator - one ordered collection
+        # (interleaving preserved; items and groups are part COMPONENTS so
+        # option registration follows render/DOM order).
+        renders_many :items, types: {
+          item: { renders: ->(**options) { item_component(**options) }, as: :item },
+          group: {
+            renders: lambda { |**options|
+              Group.new(option_set: option_set, selected_value: selected_value, **options)
+            },
+            as: :group
+          },
+          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
+        }
 
         use_stimulus do
           on :root do
@@ -400,6 +405,38 @@ module Poetry
             controller(:combobox) { action :remove_chip, on: :click }
           end
         end
+
+        option :value, :string
+        option :name, :string
+        option :placeholder, :string
+        option :search_placeholder, :string
+        option :id, :string
+        option :open, :boolean, default: false
+        option :required, :boolean, default: false
+        option :disabled, :boolean, default: false
+        # Base UI's multiple: value: becomes LIST-capable (single stays the
+        # scalar), the trigger is replaced by the chips field, the native
+        # <select multiple> posts name[], selection toggles without closing.
+        option :multiple, :boolean, default: false
+        # DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); the
+        # delta vs Select's modal: true. true restores the focus-scope trap
+        # for dialog-critical pickers.
+        option :modal, :boolean, default: false
+        # Base UI's showClear (single mode only): the trigger-side
+        # deselection X - swaps in over the chevrons while a value is
+        # committed, commits the blank value through the pipeline. Forces
+        # the blank native option so the cleared state serializes as ""
+        # (the include_blank contract).
+        option :show_clear, :boolean, default: false
+        # Forwarded to the embedded engine: false = server-driven options
+        # (the async Turbo-frame recipe).
+        option :filter, :boolean, default: true
+        option :loop, :boolean, default: false
+        option :side, :symbol, default: :bottom
+        option :align, :symbol, default: :start
+        option :side_offset, :integer, default: 4
+        option :avoid_collisions, :boolean, default: true
+        option :dir, :symbol
         # The trigger width utility (the demo 200px as its scale spelling,
         # w-50 - DesignLint off-scale-arbitrary; the popup ALWAYS
         # tracks it via the anchor-width binding - one knob, two surfaces).
@@ -518,29 +555,6 @@ module Poetry
                                      "'Remove <label>') - a press removes the value and is never " \
                                      "a chips-area press"
 
-        # Optional custom trigger content rendered BEFORE the value span
-        # (rare); the component owns role=combobox + the aria wiring + the
-        # chevrons regardless, so composition cannot drop the contract.
-        renders_one :trigger
-
-        # Custom zero-results content (defaults to t('poetry.combobox.empty')).
-        renders_one :empty
-
-        # The option UNION forwarded to the embedded command list: item |
-        # group (heading + items) | separator - one ordered collection
-        # (interleaving preserved; items and groups are part COMPONENTS so
-        # option registration follows render/DOM order).
-        renders_many :items, types: {
-          item: { renders: ->(**options) { item_component(**options) }, as: :item },
-          group: {
-            renders: lambda { |**options|
-              Group.new(option_set: option_set, selected_value: selected_value, **options)
-            },
-            as: :group
-          },
-          separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
-        }
-
         def initialize(attributes = {})
           # multiple: value: is LIST-capable (single keeps the scalar
           # :string cast) - the array is normalized ahead of the typed
@@ -554,11 +568,6 @@ module Poetry
           super
           @trigger_aria = extract_trigger_aria!
         end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         def before_render
           raise ArgumentError, "Combobox requires at least one item (with_item / with_group)" unless items?

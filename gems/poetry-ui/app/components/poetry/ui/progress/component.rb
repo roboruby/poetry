@@ -7,6 +7,9 @@ module Poetry
       # role=progressbar + aria-value* on the root, the indicator sized by
       # width%. label: is required (the progressbar's accessible name) and
       # renders alongside the tabular value readout.
+      #
+      # @example
+      #   render Poetry::Ui::Progress::Component.new(value: 60, label: "Uploading")
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "label: is REQUIRED - it is the progressbar's accessible name and the visible caption.",
@@ -17,8 +20,8 @@ module Poetry
         option :value, :integer, required: true
         option :max, :integer, default: 100
         # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
+        # the flag carries the fact to the registry (the floating-crash
+        # class - a required option the static tier could not see).
         option :label, :string, required: true
         option :show_value, :boolean, default: true
 
@@ -33,6 +36,12 @@ module Poetry
         def before_render
           raise ArgumentError, "Progress requires label: (the progressbar's accessible name)" if label.blank?
           raise ArgumentError, "Progress max: must be positive" unless max.positive?
+        end
+
+        def call
+          content_tag(:div, root_attributes.to_attributes) do
+            safe_join([label_part, value_part, track].compact)
+          end
         end
 
         def percent
@@ -51,12 +60,6 @@ module Poetry
               "aria-label" => label
             }.merge(component_data_attributes)
           )
-        end
-
-        def call
-          content_tag(:div, root_attributes.to_attributes) do
-            safe_join([label_part, value_part, track].compact)
-          end
         end
 
         private

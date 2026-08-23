@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Bubble
-      # Re-expressed through the cn-* theme layer (N11). The variant rules
+      # Re-expressed through the cn-* theme layer. The variant rules
       # (root classes styling the content child via *:data-[slot] selectors,
       # incl. the tinted relative-color math flagged to the contrast gate)
       # ride the theme; the align choreography and the reactions' side/align

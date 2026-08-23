@@ -2,7 +2,7 @@
 
 module Poetry
   module Ui
-    # The recipes channel (Recipes Channel v1): multi-file payloads served
+    # The recipes channel: multi-file payloads served
     # through the registry beside components and blocks. Every definition's
     # files are LAZY callables over gem-shipped sources - the same files
     # the generators install - so the projection cannot drift from the
@@ -106,11 +106,10 @@ module Poetry
           }
         end
 
-        # The in-page GUI agent loader (operator-register findings pass,
-        # 2026-08-22): the Turbo-hardened page-agent embed as a copy-in
-        # Stimulus controller - CDN-pinned script, opt-in, BYO key, and
-        # the poetry operator ground rules embedded as fallback
-        # instructions.
+        # The in-page GUI agent loader: the Turbo-hardened page-agent
+        # embed as a copy-in Stimulus controller - CDN-pinned script,
+        # opt-in, BYO key, and the poetry operator ground rules embedded
+        # as fallback instructions.
         def agent_embed
           {
             "name" => "agent-embed",

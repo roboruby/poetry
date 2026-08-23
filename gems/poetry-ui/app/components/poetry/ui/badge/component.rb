@@ -6,10 +6,16 @@ module Poetry
       # The Badge - shadcn new-york-v4 parity: four upstream variants on
       # semantic tokens, dark destructive at /60 (the composited treatment
       # the contrast gate models) - PLUS the poetry-original soft status
-      # trio (Blocks v1.1: success/warning/info on the status
-      # tokens, the muted color-coded pills the judged benchmark measured
-      # as missing). Template-less.
+      # trio (success/warning/info on the status tokens, the muted
+      # color-coded pills record-status columns need). Template-less.
+      #
+      # @example A soft status pill
+      #   render Poetry::Ui::Badge::Component.new(variant: :success) { "Fulfilled" }
       class Component < Poetry::Core::Component
+        # A status label with no text is an invisible sliver (a stray
+        # label: attribute once rendered an empty pill).
+        requires_content "the visible status text"
+
         VARIANTS = %i[default secondary destructive outline ghost link success warning info].freeze
 
         AGENT_RULES = [
@@ -30,10 +36,6 @@ module Poetry
         # as a real <a> - the theme layer already ships the [a&]:hover
         # treatments for exactly this element.
         option :href, :string
-
-        # A status label with no text is an invisible sliver (browser pass,
-        # 2026-07-01 - a stray label: attribute rendered an empty pill).
-        requires_content "the visible status text"
 
         part "badge", "The status pill itself (a <span>; a real <a> when href: is given) - " \
                       "the whole component is this one element",

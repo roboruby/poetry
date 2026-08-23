@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Card
-      # Re-expressed through the cn-* theme layer (N11): grid machinery
+      # Re-expressed through the cn-* theme layer: grid machinery
       # stays inline (upstream's split), the surface treatment + spacing
       # ride themes/default.css.
       class Style < Poetry::Core::Style

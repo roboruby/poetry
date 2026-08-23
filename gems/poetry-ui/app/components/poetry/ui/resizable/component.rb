@@ -3,15 +3,21 @@
 module Poetry
   module Ui
     module Resizable
-      # The Resizable panel group - the APG window splitter on flex (the W4
-      # decision: no react-resizable-panels): panels are flex children whose
+      # The Resizable panel group - the APG window splitter on flex, with
+      # no JS panel library: panels are flex children whose
       # flex-grow IS the percentage, handles are role=separator splitters,
       # and poetry--core--resizable owns the drag + keyboard redistribution.
       # Declare panels with with_panel; the component interleaves the
       # handles and wires the ARIA.
       #
-      # Deferred with the library's machinery: persistence, collapsible
-      # panels, the imperative API.
+      # Deferred upstream machinery: persistence, collapsible panels, the
+      # imperative API.
+      #
+      # @example
+      #   render Poetry::Ui::Resizable::Component.new(class: "h-48 rounded-lg border") do |group|
+      #     group.with_panel(default_size: 25) { tag.div("Sidebar") }
+      #     group.with_panel { tag.div("Content") }
+      #   end
       class Component < Poetry::Core::Component
         DIRECTIONS = %i[horizontal vertical].freeze
 
@@ -23,6 +29,23 @@ module Poetry
           "with styled divs.",
           "Nest a group inside a panel for two-axis layouts - groups self-scope."
         ].freeze
+
+        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
+        # check states the same requirement statically.
+        SLOT_REQUIRED_CONTENT = { panel: "the panel content" }.freeze
+
+        # The same facts the before_render raise enforces, stated
+        # statically: poetry check flags the omission without rendering
+        # (the menu crash class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { panel: "at least two panels" }.freeze
+
+        renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
+          raise ArgumentError, "Resizable with_panel requires a content block (the panel content)" unless block
+
+          panel_defs << Panel.new(default_size: default_size, min_size: min_size,
+                                  max_size: max_size, classes: classes, block: block)
+          nil
+        }
 
         use_stimulus do
           on :root do
@@ -63,34 +86,15 @@ module Poetry
         part "resizable-handle", "The role=separator splitter between panels - drag and keyboard " \
                                  "resizing live here; its aria-valuenow tracks the preceding panel"
 
-        Panel = Data.define(:default_size, :min_size, :max_size, :classes, :block)
-
-        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
-        # check states the same requirement statically.
-        SLOT_REQUIRED_CONTENT = { panel: "the panel content" }.freeze
-
-        renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
-          raise ArgumentError, "Resizable with_panel requires a content block (the panel content)" unless block
-
-          panel_defs << Panel.new(default_size: default_size, min_size: min_size,
-                                  max_size: max_size, classes: classes, block: block)
-          nil
-        }
-
-        def panel_defs
-          @panel_defs ||= []
-        end
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { panel: "at least two panels" }.freeze
-
         def before_render
           # panels? forces the render block (the slot-predicate rule -
           # panel_defs is empty until it runs).
           raise ArgumentError, "Resizable requires at least two with_panel declarations" unless
             panels? && panel_defs.size >= 2
+        end
+
+        def panel_defs
+          @panel_defs ||= []
         end
 
         # Even shares when default_size: is omitted.
@@ -141,6 +145,8 @@ module Poetry
         def panel_id(index)
           "#{instance_id}-panel-#{index}"
         end
+
+        Panel = Data.define(:default_size, :min_size, :max_size, :classes, :block)
 
         private
 

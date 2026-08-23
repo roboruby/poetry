@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# page-scale companion gate grade, against the pre-registered e1-e4
-# (vault note "Page-Scale Gate ", committed before generation).
+# Page-scale companion gate grade, against the pre-registered e1-e4
+# (committed before generation).
 # The standing 31-brief headline is UNTOUCHED by this gate (permanent
 # pre-registered rule). Run from the poetry-ui root:
 #   bundle exec ruby eval/results/2026-07-11-pagescale/results_pagescale.rb

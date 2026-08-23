@@ -9,6 +9,12 @@ module Poetry
       # Rows stack inside poetry_item_group (role=list) separated by
       # poetry_item_separator. Renders as a div by default; pass tag: :a
       # (+ href via passthrough) for a fully-clickable row.
+      #
+      # @example
+      #   render Poetry::Ui::Item::Component.new(variant: :outline) do |item|
+      #     item.with_title { "Backups" }
+      #     item.with_description { "Nightly, retained 30 days" }
+      #   end
       class Component < Poetry::Core::Component
         VARIANTS = %i[default outline muted].freeze
         SIZES = %i[default sm xs].freeze
@@ -24,13 +30,20 @@ module Poetry
           "A clickable row is tag: :a with href: - never wrap an Item in a bare <a>."
         ].freeze
 
-        option :tag, :symbol, default: :div
-        option :media_variant, :symbol, default: :default
+        renders_one :media
+        renders_one :title
+        renders_one :description
+        renders_one :actions
+        renders_one :header
+        renders_one :footer
 
         # The variant/size axes are STYLE attributes (the Badge/Button DSL) -
         # they compose the dictionary's variant classes into the root class.
         style :variant, default: :default, required: true, variants: VARIANTS
         style :size, default: :default, required: true, variants: SIZES
+
+        option :tag, :symbol, default: :div
+        option :media_variant, :symbol, default: :default
 
         validates :media_variant, inclusion: { in: MEDIA_VARIANTS }
 
@@ -48,13 +61,6 @@ module Poetry
         part "item-title", "The title row"
         part "item-description", "The muted description line"
         part "item-actions", "The trailing actions cell"
-
-        renders_one :media
-        renders_one :title
-        renders_one :description
-        renders_one :actions
-        renders_one :header
-        renders_one :footer
 
         def content_column?
           title? || description? || content.present?

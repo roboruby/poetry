@@ -4,7 +4,7 @@ require "yaml"
 
 module Poetry
   module Generators
-    # The host-facing AGENTS.md section (N13 W1): a short, registry-derived
+    # The host-facing AGENTS.md section: a short, registry-derived
     # pointer layer for coding agents working in the host app - llms.txt
     # stays the catalog, this is the front door to it. Marker-bounded so a
     # re-run refreshes poetry's section without touching anything the host

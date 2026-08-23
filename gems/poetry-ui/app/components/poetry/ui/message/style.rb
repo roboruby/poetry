@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Message
-      # Re-expressed through the cn-* theme layer (N11). The :has()/group
+      # Re-expressed through the cn-* theme layer. The :has()/group
       # context choreography stays inline (footer presence lifts the
       # avatar; the align axis flips rows and self-alignment); type,
       # spacing, and the ghost-Bubble padding collapse ride the theme.

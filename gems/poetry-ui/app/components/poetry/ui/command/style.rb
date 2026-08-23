@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Command
-      # Re-expressed through the cn-* theme layer (N11). The two deliberate
+      # Re-expressed through the cn-* theme layer. The two deliberate
       # source deltas (data-[highlighted] over data-[selected=true]; the
       # ms-auto RTL shortcut) now live in the theme rules. The
       # CommandDialog p-0/h-12 retunes stay INLINE deliberately: they are
@@ -33,7 +33,7 @@ module Poetry
         # The source's [&_[cmdk-group-heading]] chain, landed on the part.
         element :heading, "cn-command-group-heading"
 
-        # group/command-item (N12): bare marker, no CSS - the vega shortcut
+        # group/command-item: bare marker, no CSS - the vega shortcut
         # re-color (group-data-selected/command-item) keys on it.
         element :item, "cn-command-item group/command-item relative flex cursor-default " \
                        "items-center outline-hidden select-none data-[disabled]:pointer-events-none " \

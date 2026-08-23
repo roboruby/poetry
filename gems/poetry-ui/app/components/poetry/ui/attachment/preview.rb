@@ -37,7 +37,7 @@ module Poetry
           end
         end
 
-        # The compact rows (axis coverage): sm for dense lists,
+        # The compact rows cover the size axis: sm for dense lists,
         # xs for inline chips.
         def size_sm
           render_component(size: :sm) do |attachment|

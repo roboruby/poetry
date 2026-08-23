@@ -7,15 +7,24 @@ module Poetry
       # SWIPE away. Everything hard is inherited (the native <dialog> +
       # showModal() platform trap, required title, dismissible:); the deltas
       # are the poetry--core--drawer controller (the swipe CSS-var contract
-      # + the presence-hold animated close - the first consumer of the N6
+      # + the presence-hold animated close - the first consumer of the
       # presence machinery) and the drawer chrome (edge-rounded popup,
       # transition-driven enter/exit, the optional swipe handle).
       #
-      # Snap points shipped 2026-08-01 (snap_points:, the first W3b
-      # deferral to land); still deferred with their machinery: nested
-      # drawer stacking visuals, bleed.
+      # Snap points shipped 2026-08-01 (snap_points:); still deferred with
+      # their machinery: nested drawer stacking visuals, bleed.
+      #
+      # @example
+      #   render Poetry::Ui::Drawer::Component.new(show_swipe_handle: true) do |drawer|
+      #     drawer.with_trigger { "Open drawer" }
+      #     drawer.with_title { "Move goal" }
+      #     drawer.with_description { "Set your daily activity goal." }
+      #     "Drawer body"
+      #   end
       class Component < Dialog::Component
         DIRECTIONS = %i[down up left right].freeze
+
+        SNAP_POINT_LENGTH = /\A\d+(\.\d+)?(px|rem)\z/
 
         AGENT_RULES = [
           "Open drawers with with_trigger(...) - never a hand-wired button.",
@@ -88,17 +97,6 @@ module Poetry
         # points, below the first dismisses. direction: :down only.
         option :snap_points, ActiveModel::Type::Value.new
 
-        SNAP_POINT_LENGTH = /\A\d+(\.\d+)?(px|rem)\z/
-
-        # The parent's show_close_button does not apply: a Drawer has no
-        # corner X (source parity - vaul closes by swipe, backdrop, or
-        # footer actions), so the inherited option is hidden from
-        # introspection. A projected option the template ignores would be
-        # a contract lie.
-        def self.option_attributes
-          super - %i[show_close_button]
-        end
-
         part "drawer", "Root wrapper around the trigger and the <dialog> element"
         part "drawer-content", "The <dialog> popup - the edge chrome, presence animation, and " \
                                "the swipe contract all ride here (::backdrop inherits the " \
@@ -140,6 +138,15 @@ module Poetry
           raise ArgumentError, "Drawer requires with_title (the accessible name)" unless title?
 
           validate_snap_points! if snap_points.present?
+        end
+
+        # The parent's show_close_button does not apply: a Drawer has no
+        # corner X (source parity - the source closes by swipe, backdrop,
+        # or footer actions), so the inherited option is hidden from
+        # introspection. A projected option the template ignores would be
+        # a contract lie.
+        def self.option_attributes
+          super - %i[show_close_button]
         end
 
         def root_attributes

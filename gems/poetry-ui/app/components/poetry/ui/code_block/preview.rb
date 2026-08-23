@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module CodeBlock
+      # The CodeBlock preview: highlighted Ruby, line numbers with .hll
+      # tints, and the copy-less variant.
       class Preview < Poetry::Core::Preview::Base
         RUBY_SAMPLE = <<~RUBY
           class Invoice < ApplicationRecord

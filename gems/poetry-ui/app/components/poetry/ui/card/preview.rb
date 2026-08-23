@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module Card
+      # The Card preview: the title/description default and the full
+      # header-action + footer composition.
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component do |card|

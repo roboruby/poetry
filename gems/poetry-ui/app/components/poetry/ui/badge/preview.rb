@@ -35,7 +35,7 @@ module Poetry
           render_component(href: "#changelog") { "v2.0 release notes" }
         end
 
-        # The status vocabulary (Blocks v1.1): soft tints on the status
+        # The status vocabulary: soft tints on the status
         # tokens - the axe walk holds every theme's treatment to AA here.
         def success
           render_component(variant: :success) { "Fulfilled" }

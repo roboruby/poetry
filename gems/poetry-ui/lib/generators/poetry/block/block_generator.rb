@@ -4,7 +4,7 @@ require "rails/generators"
 require "yaml"
 
 module Poetry
-  # `rails g poetry:block <name>` (Blocks v1) - copies a vetted composed
+  # `rails g poetry:block <name>` - copies a vetted composed
   # screen into the app as source the app OWNS. Blocks are starting points
   # an agent (or a person) edits, not components it configures: the file
   # lands under app/views/blocks/ as a partial, the sample content is meant

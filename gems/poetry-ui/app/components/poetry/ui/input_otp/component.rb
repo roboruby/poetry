@@ -3,10 +3,10 @@
 module Poetry
   module Ui
     module InputOtp
-      # Fixed-length one-time-code entry (InputOTP) -
-      # poetry's OWN single-input build (shadcn wraps the input-otp npm
-      # lib; poetry keeps the lib's one architecturally right idea and
-      # ships no dependency). There are NO per-cell inputs: one real
+      # Fixed-length one-time-code entry - poetry's OWN single-input
+      # build (shadcn wraps an npm OTP library; poetry keeps that lib's
+      # one architecturally right idea and ships no dependency). There
+      # are NO per-cell inputs: one real
       # native <input> (autocomplete one-time-code) holds the whole value,
       # stretched invisibly over the row, so paste, SMS autofill, IME,
       # constraint validation and serialization are all native and AT
@@ -20,7 +20,31 @@ module Poetry
       # cell paint needs the controller). The cell row forces dir=ltr -
       # codes are LTR strings, slot order == string index order even on
       # RTL pages.
+      #
+      # @example
+      #   render Poetry::Ui::InputOtp::Component.new(name: "code", length: 6, groups: [3, 3])
       class Component < Poetry::Core::Component
+        LENGTH_RANGE = (1..12)
+        PATTERNS = {
+          digits: { js: "\\d", char: "[0-9]", inputmode: "numeric" },
+          alphanumeric: { js: "[a-zA-Z0-9]", char: "[a-zA-Z0-9]", inputmode: "text" }
+        }.freeze
+        # Field control_attributes land on the INPUT (the real control);
+        # everything else the caller passes styles the container.
+        INPUT_FACING = %w[id aria-label aria-describedby aria-invalid aria-required].freeze
+
+        AGENT_RULES = [
+          "Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops, broken " \
+          "paste, broken SMS autofill, unnameable cells).",
+          "Label via Field always ('Verification code'); put the length in the hint.",
+          "groups must sum to length (ArgumentError).",
+          "Do NOT auto-submit on poetry:otp:complete without a visible confirm affordance - silent " \
+          "submit on the 6th keystroke strands users who mistyped char 3.",
+          "Never pre-fill value: with a real code in previews/test fixtures beyond dummies; never log " \
+          "the value (it is a live credential).",
+          "InputOTP is for CODES - passwords use Input type=password, longer identifiers use Input."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :otp do
@@ -45,26 +69,6 @@ module Poetry
             controller(:otp) { target :slot }
           end
         end
-        LENGTH_RANGE = (1..12)
-        PATTERNS = {
-          digits: { js: "\\d", char: "[0-9]", inputmode: "numeric" },
-          alphanumeric: { js: "[a-zA-Z0-9]", char: "[a-zA-Z0-9]", inputmode: "text" }
-        }.freeze
-        # Field control_attributes land on the INPUT (the real control);
-        # everything else the caller passes styles the container.
-        INPUT_FACING = %w[id aria-label aria-describedby aria-invalid aria-required].freeze
-
-        AGENT_RULES = [
-          "Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops, broken " \
-          "paste, broken SMS autofill, unnameable cells).",
-          "Label via Field always ('Verification code'); put the length in the hint.",
-          "groups must sum to length (ArgumentError).",
-          "Do NOT auto-submit on poetry:otp:complete without a visible confirm affordance - silent " \
-          "submit on the 6th keystroke strands users who mistyped char 3.",
-          "Never pre-fill value: with a real code in previews/test fixtures beyond dummies; never log " \
-          "the value (it is a live credential).",
-          "InputOTP is for CODES - passwords use Input type=password, longer identifiers use Input."
-        ].freeze
 
         # The ONE input serializes params[name] = the code string.
         option :name, :string, required: true
@@ -80,8 +84,8 @@ module Poetry
         # the per-char filter + the native pattern attribute + inputmode.
         option :pattern, ActiveModel::Type::Value.new, default: :digits
         option :disabled, :boolean, default: false
-        # aria-required on the input - never native required (the
-        #/Field rule: required rides server-side validation + aria).
+        # aria-required on the input - never native required (the Field
+        # rule: required rides server-side validation + aria).
         option :required, :boolean, default: false
         # aria-invalid on the input; the cells mirror the destructive
         # treatment (set by Field/FormBuilder from the failed verify).
@@ -157,7 +161,7 @@ module Poetry
             "data-slot" => "input-otp", "class" => css(:input)
           }
           # The invisible input is the ONLY AT surface - it must always
-          # carry a name (axe label, 2026-07-03); callers override via
+          # carry a name (the axe label rule); callers override via
           # aria-label / Field labelling.
           attrs["aria-label"] = t("poetry.input_otp.label")
           attrs["value"] = display_value if display_value.present?

@@ -4,11 +4,21 @@ module Poetry
   module Ui
     module ToastTrigger
       # The client-side toast delivery trigger (the no-round-trip path -
-      # what sonner does with a toast() JS factory, done with
+      # a client-side toast() factory's job, done with
       # server-rendered markup): press -> the toaster clones the addressed
       # <template>'s toast into its region. The toast inside the template
       # is byte-for-byte what a Turbo Stream would append; the toaster's
       # childList observer reconciles limit + reflow like any other path.
+      #
+      # @example
+      #   <%= render Poetry::Ui::ToastTrigger::Component.new(template: "copied-toast") do %>
+      #     Copy link
+      #   <% end %>
+      #   <template id="copied-toast">
+      #     <%= poetry_toast(duration: 4000) do |toast| %>
+      #       <% toast.with_title { "Copied" } %>
+      #     <% end %>
+      #   </template>
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "template: names a <template> element id holding ONE rendered poetry_toast - " \

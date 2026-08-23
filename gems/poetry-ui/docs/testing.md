@@ -27,7 +27,7 @@ assert control.css('input[type="checkbox"]').any?, "a native input participates 
 
 Assert against **`data-slot`**, never against Tailwind classes — classes are
 an implementation detail that a token retune or a Base UI vocabulary change
- will move; the slot vocabulary is the stable contract.
+will move; the slot vocabulary is the stable contract.
 
 The Ruby↔JS seam is guarded for free: every Stimulus token a component
 renders is checked against the introspected controllers manifest (a rename
@@ -99,9 +99,9 @@ retunes and primitive-vocabulary shifts; the classes are free to move under it.
 
 ## The design tier — slop is a tested property
 
-Above the mechanical gate sits the taste tier (N14): `DesignLint`, twelve
-deterministic design-slop rules, each citing its the design-rule analogue/the slop-gate analogue analogue
-and naming the fix. Warnings, not errors — but the dogfood surfaces gate on
+Above the mechanical gate sits the taste tier: `DesignLint`, twelve
+deterministic design-slop rules, each stating the design principle it
+enforces and naming the fix. Warnings, not errors — but the dogfood surfaces gate on
 them staying at zero.
 
 - **AST tier** (rides the same herb walk as `poetry check`, reads ERB and
@@ -126,7 +126,7 @@ on genuine slop; the poetry arms pass.
 ## The eval tier — the thesis is a tested property
 
 Above everything sits the harness that measures whether the system works at
-all (completed): 31 frozen task pairs — a poetry arm and a
+all: 31 frozen task pairs — a poetry arm and a
 realistic raw-Tailwind arm per component family — scored two ways.
 
 - **Mechanical** (deterministic, in the default gate): `rake eval:verify`

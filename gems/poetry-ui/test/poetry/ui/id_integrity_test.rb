@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # StableId S2 guards. Two invariants over the whole library:
+    # The StableId guards. Two invariants over the whole library:
     #
     # 1. Every rendered preview document carries unique [id] values - the
     #    composed-DOM half of the contract (IDREF wiring resolves to

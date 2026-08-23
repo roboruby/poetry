@@ -8,6 +8,13 @@ module Poetry
       # decorative chevron. The fast path is options: pairs; compose
       # <option>/<optgroup> in the content block for anything richer
       # (poetry_native_select_option / _optgroup stamp the classes).
+      #
+      # @example The options: fast path
+      #   render Poetry::Ui::NativeSelect::Component.new(
+      #     name: "sort", label: "Sort by",
+      #     options: [["Newest first", "newest"], ["Oldest first", "oldest"]],
+      #     selected: "newest"
+      #   )
       class Component < Poetry::Core::Component
         SIZES = %i[default sm].freeze
 

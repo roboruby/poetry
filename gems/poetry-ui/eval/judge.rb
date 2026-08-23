@@ -7,8 +7,8 @@ require "tmpdir"
 
 module Poetry
   module Eval
-    # The paired LLM judge (the second half of 's harness). The
-    # Design Crit finding is load-bearing: off-the-shelf judges score near
+    # The paired LLM judge (the second half of the harness). The
+    # calibration finding is load-bearing: off-the-shelf judges score near
     # chance on ABSOLUTE design quality but are usable on PAIRED comparison
     # with concrete axes - so the judge only ever ranks two candidates for
     # the same brief, per axis, forced-choice.

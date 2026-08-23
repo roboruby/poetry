@@ -9,6 +9,12 @@ module Poetry
       # Combobox - there the value is a SELECTED ITEM behind a native
       # <select>; here the text itself submits as an ordinary param.
       # Selecting a suggestion writes the input and closes.
+      #
+      # @example Free text with suggestions
+      #   render Poetry::Ui::Autocomplete::Component.new(name: "tag", label: "Search tags") do |auto|
+      #     auto.with_item(label: "feature")
+      #     auto.with_item(label: "fix")
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "The input IS the value: name: is the param key and free text submits as-is - " \
@@ -87,11 +93,13 @@ module Poetry
              }
         part "autocomplete-empty", "The no-matches message (hidden while anything matches)"
 
-        Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
+        def before_render
+          content
+        end
 
-        # Hand-rolled (the questionnaire lesson): ViewComponent lambda
-        # slots nil-wrap non-component returns, so the builder collects
-        # plain models and before_render forces the composition block.
+        # Hand-rolled builder: ViewComponent lambda slots nil-wrap
+        # non-component returns, so the builder collects plain models and
+        # before_render forces the composition block.
         def with_item(label:, value: nil, disabled: false, highlighted: false)
           item_models << Item.new(label: label, value: value, disabled: disabled,
                                   highlighted: highlighted)
@@ -99,10 +107,6 @@ module Poetry
         end
 
         def item_models = (@item_models ||= [])
-
-        def before_render
-          content
-        end
 
         def autocomplete_id
           @autocomplete_id ||= if (token = dom_id_token(id))
@@ -158,6 +162,8 @@ module Poetry
           attrs["aria-disabled"] = "true" if item.disabled
           attrs.merge(stimulus_attributes_for(:item))
         end
+
+        Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
       end
     end
   end

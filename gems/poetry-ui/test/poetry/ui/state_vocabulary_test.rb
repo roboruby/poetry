@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The vocabulary-drift gate (N6 W2 regression class): every data-*
+    # The vocabulary-drift gate: every data-*
     # attribute a Style dictionary STYLES must be an attribute something
     # actually EMITS - the JS state layer (config/state_vocabulary.json,
     # introspected from helpers/state.js), or a documented non-state
@@ -39,30 +39,30 @@ module Poetry
                       "toggleAttribute; aria-selected is the canonical twin)",
         "expanded" => "tree row open marker (server-rendered + poetry--core--tree via " \
                       "toggleAttribute; aria-expanded is the canonical twin)",
-        "invalid" => "server-rendered invalid marker on segment-field groups ",
-        "today" => "calendar today-cell marker (server + poetry--core--calendar via setAttribute, N9 W6)",
-        "outside" => "calendar outside-month day marker (server + poetry--core--calendar, N9 W6)",
-        "range-start" => "calendar range-start day (v2 range mode; server/controller, N9 W6)",
-        "range-middle" => "calendar range-middle day (v2 range mode, N9 W6)",
-        "range-end" => "calendar range-end day (v2 range mode, N9 W6)",
+        "invalid" => "server-rendered invalid marker on segment-field groups",
+        "today" => "calendar today-cell marker (server + poetry--core--calendar via setAttribute)",
+        "outside" => "calendar outside-month day marker (server + poetry--core--calendar)",
+        "range-start" => "calendar range-start day (v2 range mode; server/controller)",
+        "range-middle" => "calendar range-middle day (v2 range mode)",
+        "range-end" => "calendar range-end day (v2 range mode)",
         "state" => "sidebar expanded/collapsed marker (poetry--core--sidebar reflects it via " \
-                   "setAttribute; the CSS collapse hook, N9 W5)",
+                   "setAttribute; the CSS collapse hook)",
         "collapsible" => "sidebar collapse-mode marker (server + poetry--core--sidebar; " \
-                         "the mode while collapsed, N9 W5)",
-        "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups, N9 W4c)",
+                         "the mode while collapsed)",
+        "viewport" => "navigation-menu mode marker (server-rendered; false = per-item popups)",
         "sidebar" => "sidebar part marker (server-rendered; menu-action reserves menu-button room " \
-                     "via group-has, W5b c3)",
+                     "via group-has)",
         "activation-direction" => "navigation-menu travel direction (poetry--core--navigation-menu " \
-                                  "stamps it on both panels during viewport switches, D3)",
-        "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup, N9 W2)",
+                                  "stamps it on both panels during viewport switches)",
+        "icon" => "trigger icon-position marker (consumer-stamped on tab icons; static markup)",
         "size" => "server-rendered size marker",
         "spacing" => "server-rendered spacing marker",
         "position" => "toaster stack position (server-rendered)",
         "direction" => "message/scroller direction marker (server-rendered)",
         "autoscrolling" => "message-scroller follow state (JS)",
-        "upload-state" => "attachment lifecycle (server-owned, W2 resolution)",
-        "mode" => "message-scroller scroll mode (JS, W1 resolution)",
-        "instant" => "tooltip instant-open reason (JS, W1 resolution)",
+        "upload-state" => "attachment lifecycle (server-owned)",
+        "mode" => "message-scroller scroll mode (JS)",
+        "instant" => "tooltip instant-open reason (JS)",
         "queued" => "toast overflow queue marker (JS)",
         "dragging" => "slider drag marker (JS)",
         "complete" => "OTP complete marker (JS)",

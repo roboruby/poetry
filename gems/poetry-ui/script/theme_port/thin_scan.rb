@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 #
-# N12 theme-port tooling: the thin-body scan (added W2 after it caught a
-# real W1 miss - vega's menubar separator shipped color-only, losing
+# theme-port tooling: the thin-body scan (added after it caught a
+# real miss - vega's menubar separator shipped color-only, losing
 # poetry's theme-side h-px structure). Flags any rule whose body is much
 # thinner than default's for the same name: usually an upstream
 # delta-rule (their structure lives in markup) mechanically replacing a

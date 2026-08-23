@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-# Host-side poetry check (, exposed to apps in N14 W1 - AGENTS.md had
-# promised `bin/rails poetry:check` since N13; this makes it true): lint
-# the app's ERB against the committed registry + controllers manifest.
+# Host-side poetry check: lint the app's ERB against the committed
+# registry + controllers manifest.
 # Loaded automatically by the engine (lib/tasks).
 namespace :poetry do
   desc "Lint app ERB + icon declarations in app Ruby against the poetry registry " \
@@ -17,7 +16,7 @@ namespace :poetry do
     end
 
     # Default sweep: ERB through the template tier, app Ruby through the
-    # icon-declaration tier (the FLASH_ICONS pattern lives in.rb).
+    # icon-declaration tier (the FLASH_ICONS pattern lives in .rb).
     patterns = args[:glob] ? [args[:glob]] : ["app/{views,components}/**/*.html.erb", "app/**/*.rb"]
     paths = patterns.flat_map { |pattern| Dir.glob(Rails.root.join(pattern).to_s) }.uniq
     if paths.empty?
@@ -32,7 +31,7 @@ namespace :poetry do
                                                  .grep(/\Apoetry_/).map(&:to_s)
       # The charts registry must join the catalog, not just the helper
       # names - a name-valid pathless helper reads as a yielding wrapper
-      # (the chart yieldless-block false positives).
+      # (the chart yieldless-block false-positive class).
       roots << Poetry::Charts.root
     end
     # The active set's names light up membership validation (the value
@@ -46,7 +45,7 @@ namespace :poetry do
     catalog = Poetry::Core::Check::Catalog.from_registries(roots, helpers: helpers, icon_names: icon_names)
     findings = Poetry::Core::Check::Runner.new(catalog).run(paths)
 
-    # The taste tier (N14 W3): design-slop warnings join the mechanical
+    # The taste tier: design-slop warnings join the mechanical
     # findings on request - same vocabulary, same JSON/text output. The
     # stock-theme nudge fires only for a FOREIGN DESIGN.md (a brand waiting
     # to be applied) - poetry's own export IS the current state.

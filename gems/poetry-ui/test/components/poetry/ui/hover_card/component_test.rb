@@ -141,7 +141,7 @@ module Poetry
 
           assert_includes classes, "origin-(--transform-origin)"
           # Panel chrome + width + the animate/slide chains ride the theme
-          # rule (width moved theme-side at N12 W2 - mira/rhea widen it).
+          # rule (width is theme-side - mira/rhea widen it).
           assert_includes classes, "cn-hover-card-content"
           assert_includes classes, "outline-hidden"
           refute_includes classes, "w-64"

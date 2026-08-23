@@ -1,5 +1,5 @@
 {
-  "generated_note": "GENERATED arms (N15 W2 benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
+  "generated_note": "GENERATED arms (benchmark run), deterministic gates. cross_arm gates are the only comparable numbers; poetry_only gates are diagnostics.",
   "tasks": {
     "button": {
       "description": "A destructive 'Delete account' button with a leading trash icon",

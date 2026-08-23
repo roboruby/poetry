@@ -6,7 +6,14 @@ module Poetry
       # The AspectRatio - a container that locks its width:height ratio
       # (CSS aspect-ratio via the --ratio custom property). The content is
       # whatever should keep the shape: an image, an embed, a placeholder.
+      #
+      # @example A 16:9 media box
+      #   render Poetry::Ui::AspectRatio::Component.new(ratio: "16/9") do
+      #     image_tag "cover.jpg", class: "size-full object-cover"
+      #   end
       class Component < Poetry::Core::Component
+        RATIO = %r{\A\d+(\.\d+)?(\s*/\s*\d+(\.\d+)?)?\z}
+
         AGENT_RULES = [
           "Pass ratio: as a string fraction ('16/9', '1/1') - Ruby's 16/9 is integer division (1).",
           "The child fills the box itself (size-full object-cover on an image)."
@@ -15,8 +22,6 @@ module Poetry
         # A CSS <ratio>: "16/9", "1", "1.5" - kept a string so the fraction
         # survives verbatim into the --ratio custom property.
         option :ratio, :string, required: true
-
-        RATIO = %r{\A\d+(\.\d+)?(\s*/\s*\d+(\.\d+)?)?\z}
 
         part "aspect-ratio", "The ratio-locked box - the content block fills it",
              vars: {

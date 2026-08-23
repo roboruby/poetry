@@ -3,13 +3,48 @@
 module Poetry
   module Ui
     module Accordion
-      # The second first-port (Accordion): presence +
+      # An expand/collapse list of value-keyed sections - presence +
       # roving-focus together. Triggers are real buttons inside headings
       # (APG: Arrow keys move between headers as convenience - every
       # trigger stays tabbable, manageTabindex: false); panels are
       # role=region wired aria-labelledby; single non-collapsible marks
       # the locked-open trigger aria-disabled.
+      #
+      # @example Single-open accordion with the first item expanded
+      #   render Poetry::Ui::Accordion::Component.new(open: %w[a]) do |accordion|
+      #     accordion.with_item(value: "a", title: "First") { "First panel" }
+      #     accordion.with_item(value: "b", title: "Second") { "Second panel" }
+      #   end
       class Component < Poetry::Core::Component
+        TYPES = %i[single multiple].freeze
+        HEADINGS = %i[h2 h3 h4 h5 h6].freeze
+
+        AGENT_RULES = [
+          "Items via with_item(value:, title:) { panel content } - value is the open-state key.",
+          "type: :single (default) opens one at a time; pass collapsible: true to allow closing it.",
+          "Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.",
+          "heading_level: fits the page outline (h3 default) - the trigger button lives inside it.",
+          "The chevron is built in - never add another indicator icon to the trigger.",
+          "disabled: true on with_item locks that item (native disabled on the trigger; roving focus skips it)."
+        ].freeze
+
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+
+        renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
+          open_item = open_values.include?(value.to_s)
+          item_id = "#{instance_id}-#{value}"
+          item_attrs = { class: css(:item, class: options.delete(:class)), "data-slot" => "accordion-item",
+                         "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options }
+          item_attrs["data-disabled"] = "" if disabled
+          content_tag(:div, **item_attrs) do
+            safe_join([accordion_header(item_id, title, open_item, disabled: disabled),
+                       accordion_panel(item_id, open_item, &block)])
+          end
+        }
+
         use_stimulus do
           on :root do
             controller :accordion do
@@ -28,17 +63,6 @@ module Poetry
             controller(:accordion) { action :toggle, on: :click }
           end
         end
-        TYPES = %i[single multiple].freeze
-        HEADINGS = %i[h2 h3 h4 h5 h6].freeze
-
-        AGENT_RULES = [
-          "Items via with_item(value:, title:) { panel content } - value is the open-state key.",
-          "type: :single (default) opens one at a time; pass collapsible: true to allow closing it.",
-          "Server-render the open item(s) via open: %w[value] - never toggle data-open/data-closed by hand.",
-          "heading_level: fits the page outline (h3 default) - the trigger button lives inside it.",
-          "The chevron is built in - never add another indicator icon to the trigger.",
-          "disabled: true on with_item locks that item (native disabled on the trigger; roving focus skips it)."
-        ].freeze
 
         option :type, :symbol, default: :single
         option :collapsible, :boolean, default: false
@@ -82,23 +106,6 @@ module Poetry
                "--accordion-panel-height" => "the measured content height (controller-written) that " \
                                              "feeds the accordion-down/up keyframes"
              }
-
-        renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
-          open_item = open_values.include?(value.to_s)
-          item_id = "#{instance_id}-#{value}"
-          item_attrs = { class: css(:item, class: options.delete(:class)), "data-slot" => "accordion-item",
-                         "data-value" => value, (open_item ? "data-open" : "data-closed") => "", **options }
-          item_attrs["data-disabled"] = "" if disabled
-          content_tag(:div, **item_attrs) do
-            safe_join([accordion_header(item_id, title, open_item, disabled: disabled),
-                       accordion_panel(item_id, open_item, &block)])
-          end
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         def before_render
           raise ArgumentError, "Accordion requires at least one with_item" unless items?

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Alert
-      # Re-expressed through the cn-* theme layer (N11): entries carry the
+      # Re-expressed through the cn-* theme layer: entries carry the
       # stable names + the structural inline set; themes/default.css holds
       # the design (the ny-v4 grid treatment, variants).
       class Style < Poetry::Core::Style

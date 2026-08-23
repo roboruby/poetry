@@ -4,10 +4,10 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The value-contract regression corpus: the 31 committed W2
-    # benchmark generated poetry arms plus the 31 frozen handwritten arms,
+    # The value-contract regression corpus: the 31 committed benchmark-
+    # generated poetry arms plus the 31 frozen handwritten arms,
     # linted with the full production catalog (live registry + helper
-    # introspection + the real lucide names). The three W2 render-crashers
+    # introspection + the real lucide names). The three original render-crashers
     # must now fail poetry check statically; every template that rendered
     # must stay error-free - recall on real crashes bought with zero false
     # positives.
@@ -42,7 +42,7 @@ module Poetry
         failures = error_templates(GENERATED)
 
         assert_equal CRASHERS, failures.keys.sort,
-                     "check must flag the three W2 render-crashers and nothing else, got: " \
+                     "check must flag the three original render-crashers and nothing else, got: " \
                      "#{failures.transform_values { |findings| findings.map(&:rule) }}"
         assert(failures["alert"].any? { |finding| finding.rule == "missing-option" },
                "the typed-slot block form (with_icon do) must read as a missing required prop")
@@ -79,7 +79,7 @@ module Poetry
       # run check), and site_nav passed positional text to kwargs-only
       # helpers, the class the helper-arity rule was built from. All FIVE
       # of site_nav's arity misuses surface, not just the first crash.
-      # The re-baseline corpus, closed by: ALL FIVE render-
+      # The re-baseline corpus: ALL FIVE render-
       # crashers now fail statically. The two sequencing failures were
       # already caught (chat_transcript's parse errors, filter_toolbar's
       # enum); the three TIER GAPS are the new rules - menu's block param on
@@ -101,13 +101,13 @@ module Poetry
         refute_nil keyword, "class: against a closed setter signature must read as the carousel crash"
         assert_equal "classes", keyword.suggestion, "the near-miss keyword must suggest the real one"
         assert(failures["menu"].any? { |finding| finding.rule == "missing-slot" },
-               " exposes the arm's SECOND defect: both menubar menus also omit with_trigger " \
+               "the missing-slot tier exposes the arm's SECOND defect: both menubar menus also omit with_trigger " \
                "(the yieldless crash got there first at render)")
       end
 
-      # The design-fire corpus, closed across +: menu's
-      # required-SLOT omission (tier), command_palette's accessible
-      # name and toast's invisible Button (any-of tier) all fail
+      # The design-fire corpus: menu's required-SLOT omission (the
+      # missing-slot tier), command_palette's accessible name and toast's
+      # invisible Button (the any-of tier) all fail
       # statically now - four of the run's five crashers; pagination's
       # invented host route helper stays outside any static surface, by
       # nature. app_shell is the never-checked sequencing crash
@@ -130,8 +130,8 @@ module Poetry
         assert(failures["toast"].any? { |finding| finding.rule == "requires-any" })
       end
 
-      # The block-path corpus, closed by: the run's two render
-      # crashers - both EXACT recurrences of the classes pre-named as
+      # The block-path corpus: the run's two render
+      # crashers - both EXACT recurrences of classes pre-named as still
       # open - now fail statically, and nothing else does (the 29-arm FP
       # guard). command_palette omitted every accessible-name path; toast
       # built a Button from label: alone (nothing visible renders).

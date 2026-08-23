@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module NavigationMenu
-      # Re-expressed through the cn-* theme layer (N11). The D3 morph
+      # Re-expressed through the cn-* theme layer. The morph
       # machinery stays ENTIRELY inline (positioner insets + size-var
       # transitions, panel adoption pins, activation-direction slides,
       # data-instant suppressors) - a swapped theme restyles the popup
@@ -24,7 +24,7 @@ module Poetry
 
         # The activation-direction slides stay inline (authored as VALID
         # Tailwind variants - upstream's own strings are malformed and
-        # compile to nothing, the W4c compiled-CSS catch): content slides
+        # compile to nothing): content slides
         # in FROM the travel direction and out the other way.
         # h-full is the VIEWPORT-mode contract (the panel fills the
         # morphing popup box); inline panels size to their content - an
@@ -45,7 +45,7 @@ module Poetry
                 "**:data-[slot=navigation-menu-link]:focus:outline-none"
         element :content_position, "absolute top-full left-0 isolate z-50 mt-1.5 w-max min-w-48"
 
-        # The morphing shared viewport (D3): the popper writes the positioner's
+        # The morphing shared viewport: the popper writes the positioner's
         # insets (CSS transitions them - the position morph); the popup pins
         # --popup-width/height old -> new so size transitions; panels stack
         # absolutely inside the viewport and size intrinsically. data-instant

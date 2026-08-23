@@ -3,13 +3,15 @@
 module Poetry
   module Ui
     module Button
-      # The golden Button (Button, the v2-contract
-      # reference every other component plan diffs against). What it
+      # The reference contract every other component follows. What it
       # establishes suite-wide: data-slot = role / data-component +
       # data-variant + data-size self-identification; semantic-role tokens
       # only; the 3px no-offset focus ring; `tag: :a` polymorphic root;
       # icon-only REQUIRES label: (ArgumentError); loading = aria-busy +
       # sr-only text + a static spinner, fully working with zero JS.
+      #
+      # @example
+      #   render Poetry::Ui::Button::Component.new(variant: :default) { "Save" }
       class Component < Poetry::Core::Component
         VARIANTS = %i[default destructive outline secondary ghost link].freeze
         SIZES = %i[default xs sm lg icon icon-xs icon-sm icon-lg].freeze
@@ -28,6 +30,20 @@ module Poetry
           "Never nest an interactive element inside a Button.",
           "Pick the variant by intent; one primary (default) action per view."
         ].freeze
+
+        # An empty button ships nothing a user can see - the browser pass
+        # showed label:-only usage silently rendering blank squares (label:
+        # is the accessible name, not visible text).
+        # The before_render disjunction, stated statically: poetry check
+        # flags a call satisfying no alternative without rendering (the
+        # toast crash class).
+        REQUIRES_ANY = [
+          { hint: "nothing visible renders without one - label: is only the accessible name",
+            content: true, slots: %w[leading trailing], options: %w[loading] }
+        ].freeze
+
+        renders_one :leading
+        renders_one :trailing
 
         style :variant, default: :default, required: true, variants: VARIANTS
         style :size, default: :default, required: true, variants: SIZES
@@ -56,28 +72,14 @@ module Poetry
                       "flex row directly)"
         part "spinner", "The loading indicator, swapped in for the leading icon while loading:"
 
-        renders_one :leading
-        renders_one :trailing
-
         def initialize(...)
           super
           return unless icon_only? && label.blank?
 
-          # The accessible-icon rule (the base contract base-contract borrow): an
-          # icon-only control without an accessible name never ships.
+          # The accessible-icon rule: an icon-only control without an
+          # accessible name never ships.
           raise ArgumentError, "icon-only Button requires label: (the accessible name)"
         end
-
-        # An empty button ships nothing a user can see - the browser pass
-        # showed label:-only usage silently rendering blank squares (label:
-        # is the accessible name, not visible text).
-        # The before_render disjunction, stated statically: poetry
-        # check flags a call satisfying no alternative without rendering
-        # (the toast crash class).
-        REQUIRES_ANY = [
-          { hint: "nothing visible renders without one - label: is only the accessible name",
-            content: true, slots: %w[leading trailing], options: %w[loading] }
-        ].freeze
 
         def before_render
           return if content? || leading? || trailing? || loading

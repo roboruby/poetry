@@ -25,7 +25,8 @@ itself the finding.
       the public methods, in that order.
 - [ ] Exactly one `private` keyword; nothing public below it.
 - [ ] Inner machinery classes declare `internal_component!`.
-- [ ] Nested classes sit last in the class body.
+- [ ] Nested classes sit last in the class body, above the `private`
+      divider (constants are never private-scoped).
 
 ## Pass 2 - documentation
 

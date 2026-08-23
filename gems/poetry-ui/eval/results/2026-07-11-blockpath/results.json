@@ -3399,7 +3399,7 @@
       "held": false
     },
     "p3_blocks_signal": {
-      "registered": "raw_tailwind winning any composition axis is the Blocks signal ",
+      "registered": "raw_tailwind winning any composition axis is the Blocks signal",
       "tasks_where_raw_won_composition": [
         "alert",
         "artwork_carousel",

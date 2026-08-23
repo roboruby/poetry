@@ -5,7 +5,7 @@ require "digest"
 module Poetry
   module Ui
     module Deferred
-      # N13 W5: a deferred region. Turbo owns the loading physics
+      # A deferred region. Turbo owns the loading physics
       # (loading: :lazy fetches when the frame becomes VISIBLE - so a
       # deferred Tabs panel or HoverCard body loads on first reveal with
       # no extra wiring; :eager fetches right after paint). poetry owns
@@ -17,7 +17,18 @@ module Poetry
       # wrappers; Skeleton and Button bring the themed surfaces, and the
       # error card rides static template utilities (scanned into the
       # safelist like every committed template class).
+      #
+      # @example
+      #   render Poetry::Ui::Deferred::Component.new(src: "/dashboard/activity")
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled fetch.",
+          "loading: :lazy (the default) fetches on visibility: a deferred region inside a hidden " \
+          "Tabs panel (with_tab defer:) or HoverCard (defer:) loads on first reveal for free.",
+          "The block is the placeholder (a Skeleton renders when absent); failure shows a retryable " \
+          "error card automatically - never hand-wire loading or error states around it."
+        ].freeze
+
         use_stimulus do
           # src rides the controller value, NOT the frame markup: connect()
           # arms it, so a fast response can never beat the controllers
@@ -40,17 +51,9 @@ module Poetry
           end
         end
 
-        AGENT_RULES = [
-          "Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled fetch.",
-          "loading: :lazy (the default) fetches on visibility: a deferred region inside a hidden " \
-          "Tabs panel (with_tab defer:) or HoverCard (defer:) loads on first reveal for free.",
-          "The block is the placeholder (a Skeleton renders when absent); failure shows a retryable " \
-          "error card automatically - never hand-wire loading or error states around it."
-        ].freeze
-
         # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
+        # the flag carries the fact to the registry (the floating-crash
+        # class - a required option the static tier could not see).
         option :src, :string, required: true
         option :loading, :symbol, default: :lazy
 

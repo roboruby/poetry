@@ -65,13 +65,13 @@ module Poetry
           assert_equal "report-error report-hint", textarea["aria-describedby"]
           assert_equal "true", textarea["aria-invalid"]
           assert_equal "true", textarea["aria-required"]
-          refute textarea.key?("required"), "never native required (the Field rule)"
+          refute textarea.key?("required"), "never native required (the Field family rule)"
         end
 
         def test_the_source_exact_class_string_lands
           textarea = render_textarea(name: "bio").css("textarea").first
 
-          # Placeholder color rides the theme since N12 W2 (rhea darkens it
+          # Placeholder color rides the theme (rhea darkens it
           # on tinted surfaces to hold AA - inline would beat every theme).
           %w[cn-textarea field-sizing-content min-h-16 w-full].each do |token|
             assert_includes textarea["class"], token

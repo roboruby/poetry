@@ -5,7 +5,7 @@ require "test_helper"
 module Poetry
   module Ui
     module Pagination
-      # The Pagination (N8): data-driven, so the contract is the truncation
+      # The Pagination is data-driven, so the contract is the truncation
       # math + the accessible nav (aria-current, aria-label, disabled edges).
       class ComponentTest < ViewComponent::TestCase
         PATH = ->(page) { "?page=#{page}" }
@@ -52,7 +52,7 @@ module Poetry
           assert_equal "outline", current["data-variant"], "current = outline; the rest are ghost"
         end
 
-        # Blocks v1.1: the opt-in filled treatment - primary Button
+        # The opt-in filled treatment - primary Button
         # as the unambiguous active state; parity default untouched above.
         def test_the_filled_current_variant_renders_the_primary_button
           fragment = render_pagination(current: 4, total: 10, current_variant: :filled)
@@ -65,8 +65,8 @@ module Poetry
         end
 
         def test_the_current_variant_enum_is_registry_visible
-          # The inclusion validator projects into the registry (Blocks
-          # v1.1), so poetry check rejects current_variant: :solid
+          # The inclusion validator projects into the registry, so poetry
+          # check rejects current_variant: :solid
           # statically - the roster's enum options are contracts, not
           # documentation.
           entry = Component.prop_definitions[:options].find { |option| option[:name] == :current_variant }

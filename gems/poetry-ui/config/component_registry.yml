@@ -3231,7 +3231,7 @@ components:
       description: The GET filter form (role=search) - hidden fields carry the current
         sort; a new filter resets the page
     - name: table-container
-      description: The composed W1 Table's scroll container - Table renders it, this
+      description: The composed Table's scroll container - Table renders it, this
         surface owns where it sits
     - name: data-table-footer
       description: 'The Pagination row - renders when total: is more than one page'

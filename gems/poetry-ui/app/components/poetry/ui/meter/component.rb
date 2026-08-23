@@ -3,17 +3,20 @@
 module Poetry
   module Ui
     module Meter
-      # The Meter (the react-aria wave): a QUANTITY within a
+      # The Meter: a QUANTITY within a
       # known range - battery, disk usage, seats taken, password strength -
       # never the progress of an operation over time (that is Progress;
       # concretely, a meter has no indeterminate state, by construction).
       # Wears Progress's visual chrome verbatim (the NumberField
       # composition precedent - zero new theme CSS); the semantic delta is
-      # the ROLE: role=meter. (react-aria ships the 2019-era two-token
+      # the ROLE: role=meter. (Older ports ship the 2019-era two-token
       # fallback "meter progressbar" for browsers without the meter role;
       # by 2026 support is universal, and axe 4.12 cannot resolve the
       # multi-token string - it falls back to generic and flags every
       # aria-value* attribute - so poetry ships the single honest token.)
+      #
+      # @example
+      #   render Poetry::Ui::Meter::Component.new(value: 62, label: "Storage used")
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "A quantity within a range is a Meter (disk, seats, strength); an operation's " \
@@ -48,8 +51,14 @@ module Poetry
           raise ArgumentError, "Meter max: must exceed min:" unless max > min
         end
 
-        # The fraction of the RANGE (react-aria's percent trap: valuetext
-        # formats (value-min)/(max-min), not the raw value).
+        def call
+          content_tag(:div, root_attributes.to_attributes) do
+            safe_join([label_part, value_part, track].compact)
+          end
+        end
+
+        # The fraction of the RANGE - (value - min)/(max - min), never the
+        # raw value.
         def percent
           ((clamped - min).to_f / (max - min) * 100).clamp(0, 100)
         end
@@ -64,18 +73,11 @@ module Poetry
               "data-slot" => "meter", "role" => "meter",
               # No aria-valuetext: ARIA 1.2 DEPRECATED it on role=meter
               # (axe 4.12 flags it) - the visible readout carries the
-              # human string, aria-valuenow the value. A divergence from
-              # react-aria, which predates the deprecation.
+              # human string, aria-valuenow the value.
               "aria-valuemin" => min, "aria-valuemax" => max, "aria-valuenow" => clamped,
               "aria-label" => label
             }.merge(component_data_attributes)
           )
-        end
-
-        def call
-          content_tag(:div, root_attributes.to_attributes) do
-            safe_join([label_part, value_part, track].compact)
-          end
         end
 
         private

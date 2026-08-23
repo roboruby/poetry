@@ -3,10 +3,17 @@
 module Poetry
   module Ui
     module Message
-      # The chat-row layout of the AI-chat set (Message):
-      # avatar + a content column (header / bubbles / footer), mirrored by
-      # align: :end. Purely presentational - no controller; alignment and
-      # the ghost-Bubble padding collapse are CSS context selectors.
+      # The chat-row layout of the AI-chat set: avatar + a content column
+      # (header / bubbles / footer), mirrored by align: :end. Purely
+      # presentational - no controller; alignment and the ghost-Bubble
+      # padding collapse are CSS context selectors.
+      #
+      # @example
+      #   render Poetry::Ui::Message::Component.new do |message|
+      #     message.with_avatar { "AI" }
+      #     message.with_header { "Assistant" }
+      #     tag.div("Here's the plan for today.")
+      #   end
       class Component < Poetry::Core::Component
         ALIGNS = %i[start end].freeze
 
@@ -16,6 +23,10 @@ module Poetry
           "The avatar slot is decorative context by default - pass meaningful sender identity in the header.",
           "Timestamps and delivery state belong in the footer slot (it lifts the avatar automatically)."
         ].freeze
+
+        renders_one :avatar
+        renders_one :header
+        renders_one :footer
 
         option :align, :symbol, default: :start
 
@@ -33,10 +44,6 @@ module Poetry
         part "message-header", "Sender identity line above the bubbles (header slot)"
         part "message-footer", "Timestamps / delivery state below the bubbles (footer slot - " \
                                "it lifts the avatar)"
-
-        renders_one :avatar
-        renders_one :header
-        renders_one :footer
 
         def root_attributes
           html_attributes.merge_if_not_set(

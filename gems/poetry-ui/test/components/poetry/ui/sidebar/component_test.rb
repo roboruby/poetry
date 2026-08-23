@@ -66,7 +66,7 @@ module Poetry
           assert_includes dialog["data-action"], "click->poetry--core--sidebar#mobileBackdropClose"
           assert_includes dialog["class"], "md:hidden"
 
-          # Rendered EMPTY - the controller adopts the nav on open (
+          # Rendered EMPTY - the controller adopts the nav on open (the
           # DOM-move: one render, no duplicate ids).
           inner = dialog.css('[data-slot="sidebar-mobile-inner"]').first
 

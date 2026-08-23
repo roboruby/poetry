@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Slider
-      # The control with real math (Slider): a
+      # The Slider: a
       # numeric value (or a [low, high] range - two thumbs) on a
       # continuous track. ONE new controller (poetry--core--slider), not
       # composition - no shared primitive covers value-math keyboard
@@ -18,7 +18,26 @@ module Poetry
       # name[] range, which is precisely Rails' array-param convention
       # (params: "50" / ["200", "800"]). Change fires per mutation,
       # commit once per gesture; native input/change fire on COMMIT only.
+      #
+      # @example
+      #   render Poetry::Ui::Slider::Component.new(name: "volume", value: 50, label: "Volume")
       class Component < Poetry::Core::Component
+        ORIENTATIONS = %i[horizontal vertical].freeze
+
+        AGENT_RULES = [
+          "Use poetry_slider / form.slider - never hand-roll a draggable div.",
+          "Every thumb MUST have a distinct accessible name (label: - array of two for ranges). " \
+          "ArgumentError otherwise.",
+          "Give value_text: whenever the number alone is meaningless ('$200', '80%') - SR users hear " \
+          "aria-valuetext.",
+          "Range mode: values must be sorted [low, high]; use min_steps_between_thumbs to keep a " \
+          "meaningful gap.",
+          "Do not use Slider for precise known-number entry (use Input type=number) or in " \
+          "no-JS-required forms (native input type=range).",
+          "Debounce on poetry:slider:commit, never on :change (change fires every drag frame).",
+          "Never transition the thumb/range position with CSS - geometry must track the pointer."
+        ].freeze
+
         use_stimulus do
           on :root do
             controller :slider do
@@ -51,21 +70,6 @@ module Poetry
             controller(:slider) { target :input }
           end
         end
-        ORIENTATIONS = %i[horizontal vertical].freeze
-
-        AGENT_RULES = [
-          "Use poetry_slider / form.slider - never hand-roll a draggable div.",
-          "Every thumb MUST have a distinct accessible name (label: - array of two for ranges). " \
-          "ArgumentError otherwise.",
-          "Give value_text: whenever the number alone is meaningless ('$200', '80%') - SR users hear " \
-          "aria-valuetext.",
-          "Range mode: values must be sorted [low, high]; use min_steps_between_thumbs to keep a " \
-          "meaningful gap.",
-          "Do not use Slider for precise known-number entry (use Input type=number) or in " \
-          "no-JS-required forms (native input type=range).",
-          "Debounce on poetry:slider:commit, never on :change (change fires every drag frame).",
-          "Never transition the thumb/range position with CSS - geometry must track the pointer."
-        ].freeze
 
         # Form name; single thumb -> name; range -> name + "[]" per input
         # (Rails array param - Radix-exact).

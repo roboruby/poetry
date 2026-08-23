@@ -4,7 +4,7 @@ module Poetry
   module Ui
     module ScrollArea
       # The ScrollArea - a bounded, keyboard-reachable scroll region with
-      # themed scrollbars. Deliberately NATIVE (the W3 decision): Base UI
+      # themed scrollbars. Deliberately NATIVE: Base UI
       # rebuilds scrollbars in JS; scrollbar-width/scrollbar-color are
       # Baseline CSS now, so poetry styles the platform's own scrollbars and
       # ships zero JS - scrolling, momentum, and keyboard support come from
@@ -14,7 +14,14 @@ module Poetry
       # The viewport is focusable (tabindex=0) - a scrollable region a
       # keyboard can't reach fails WCAG (the axe scrollable-region-focusable
       # rule); label: names it (role=region + aria-label).
+      #
+      # @example A bounded list that scrolls
+      #   render Poetry::Ui::ScrollArea::Component.new(label: "Tags", class: "h-72 w-48") do
+      #     safe_join(tags.map { |tag| tag.name })
+      #   end
       class Component < Poetry::Core::Component
+        requires_content "what scrolls"
+
         AGENT_RULES = [
           "Size the scroll area with classes (h-72 w-48, max-h-96) - content decides the overflow.",
           "label: is REQUIRED - the viewport is focusable, and a focusable region needs a name " \
@@ -24,11 +31,9 @@ module Poetry
         ].freeze
 
         # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
+        # the flag carries the fact to the registry (the floating-crash
+        # class: a required option the static tier could not see).
         option :label, :string, required: true
-
-        requires_content "what scrolls"
 
         part "scroll-area", "The bounding wrapper - size it with classes; content decides the overflow"
         part "scroll-area-viewport", "The focusable native scroll region (role=region + tabindex=0) " \

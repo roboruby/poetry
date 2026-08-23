@@ -8,7 +8,7 @@ import { Controller } from "@hotwired/stimulus"
 // agent-demo#deactivate) - see the reference demo at the poetry docs
 // /agent page, whose loader this file mirrors.
 //
-// The three Turbo rules this encodes (learned the hard way, 2026-08-22):
+// The three Turbo rules this encodes (learned the hard way):
 // 1. Turbo replaces <body> on navigation and the agent panel lives there -
 //    remount on turbo:load.
 // 2. Remount ONLY when idle: a running task survives the body swap

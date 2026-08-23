@@ -3,9 +3,8 @@
 module Poetry
   module Ui
     module Checkbox
-      # First of the toggle family (Checkbox) - the one
-      # that carries tri-state and the family's form-integration
-      # architecture. Poetry INVERTS Radix's hidden-input model: the hidden
+      # First of the toggle family - the one that carries tri-state and
+      # the family's form-integration architecture. Poetry INVERTS Radix's hidden-input model: the hidden
       # native <input type=checkbox> IS the form participant and the store
       # (server-rendered name/value/checked, Rails "1"/"0" plus the
       # unchecked-hidden pair), while the visual button[role=checkbox] only
@@ -18,20 +17,11 @@ module Poetry
       # No wrapper element: button + inputs render as SIBLINGS (fragment) -
       # the source's `peer` class contract for peer-* label styling breaks
       # if poetry wraps.
+      #
+      # @example A form checkbox
+      #   render Poetry::Ui::Checkbox::Component.new(name: "terms", label: "Accept terms")
       class Component < Poetry::Core::Component
         STATES = [true, false, :indeterminate].freeze
-
-        use_stimulus do
-          on :root do
-            controller :checked do
-              register
-              # No input-id value -> pure visual mode: state lives on the
-              # button's checked attributes alone (discouraged; see AGENT_RULES).
-              value :input_id, if: :form_participant?
-              action :toggle, on: :click
-            end
-          end
-        end
 
         AGENT_RULES = [
           "A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all " \
@@ -56,6 +46,18 @@ module Poetry
           "Don't suppress unchecked_value unless using the array idiom - an unchecked box that submits " \
           "nothing silently keeps the old server value."
         ].freeze
+
+        use_stimulus do
+          on :root do
+            controller :checked do
+              register
+              # No input-id value -> pure visual mode: state lives on the
+              # button's checked attributes alone (discouraged; see AGENT_RULES).
+              value :input_id, if: :form_participant?
+              action :toggle, on: :click
+            end
+          end
+        end
 
         # The tri-valued checked: type (mirrors Radix CheckedState): casts to
         # exactly true | false | :indeterminate - one option, one source of
@@ -84,7 +86,8 @@ module Poetry
         # parity); nil suppresses the pair (the array idiom).
         option :unchecked_value, :string, default: "0"
         option :disabled, :boolean, default: false
-        # aria-required ONLY, never native required (the Field lock).
+        # aria-required ONLY, never native required - native required on the
+        # hidden input would make an unfocusable control invalid.
         option :required, :boolean, default: false
         # aria-label fallback when no <label for>/Field association exists.
         option :label, :string

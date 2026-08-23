@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The gem's own AST-tier dogfood (N14 W3): every component template
+    # The gem's own AST-tier dogfood: every component template
     # lints clean against the design-slop rules. The DOM tier runs in
     # test/dommy_tier/design_dom_test.rb; the docs app lints its corpus in
     # its own suite. rake design:lint bundles both tiers on demand.

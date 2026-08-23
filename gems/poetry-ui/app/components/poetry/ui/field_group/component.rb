@@ -9,7 +9,18 @@ module Poetry
       # @container scope responsive fields key on - Field's
       # orientation: :responsive flips to a row only once ITS field-group
       # container passes the md mark.
+      #
+      # @example Stacking fields with the theme's rhythm
+      #   render Poetry::Ui::FieldGroup::Component.new do
+      #     safe_join([
+      #       render(Poetry::Ui::Field::Component.new) { ... },
+      #       render(Poetry::Ui::FieldSeparator::Component.new),
+      #       render(Poetry::Ui::Field::Component.new) { ... }
+      #     ])
+      #   end
       class Component < Poetry::Core::Component
+        VARIANTS = %i[default choices].freeze
+
         AGENT_RULES = [
           "Stack Fields (and Fieldsets) with poetry_field_group - the theme owns the rhythm; " \
           "never hand-space a form column with gap utilities.",
@@ -18,8 +29,6 @@ module Poetry
           "Field's orientation: :responsive is container-driven: it needs a FieldGroup " \
           "ancestor to measure against - without one it stays stacked."
         ].freeze
-
-        VARIANTS = %i[default choices].freeze
 
         style :variant, default: :default, required: true, variants: VARIANTS
 

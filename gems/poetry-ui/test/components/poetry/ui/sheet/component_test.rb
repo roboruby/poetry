@@ -33,7 +33,7 @@ module Poetry
           root = doc(html).css('[data-slot="sheet"]').first
           dialog = sheet_dialog(html)
 
-          # W5b commit 1: the Sheet's OWN controller (the dialog machinery
+          # The Sheet's OWN controller (the dialog machinery
           # SUBCLASSED for the presence-hold close) - the
           # platform trap (showModal focus trap / Esc / top layer / focus
           # return) plus the controller's backdrop + scroll-lock wiring.

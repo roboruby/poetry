@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Switch
-      # Re-expressed through the cn-* theme layer (N11). The thumb's travel
+      # Re-expressed through the cn-* theme layer. The thumb's travel
       # (data-checked translate + poetry's rtl: fix) moves to the theme
       # rule - upstream's own base-registry split does exactly this ("thumb
       # translate moved to theme"). The size axis still travels by data

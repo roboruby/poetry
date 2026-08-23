@@ -89,7 +89,7 @@ poetry:
   theme: sera
   source: tokens/tokens.dtcg.json
   generator: bin/rake design:export_all
-  dark_mode: class.dark
+  dark_mode: class .dark
   radius: 0.625rem
   radius_scale:
     sm: calc(var(--radius) * 0.6)
@@ -175,7 +175,7 @@ Semantic roles only - components never reference raw palette values
 ## Typography
 
 - pairing: system serif (upstream: Noto Serif / Instrument Serif) (app-level metadata - no poetry theme
-  moves a font token;)
+  moves a font token)
 - family: ui-serif, Georgia, Cambria, "Times New Roman", serif
 
 ## Layout

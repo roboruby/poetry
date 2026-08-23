@@ -3,7 +3,7 @@
     "benchmark-verdicts.json (depth 3, canonical)",
     "benchmark-verdicts-depth5.json (this re-judge)"
   ],
-  "usage_note": "the first 27 pairs' spend is ESTIMATED (270 calls at the $0.1333/call rate): the run was externally killed and its in-memory receipts were lost; only the 4-pair resume is receipted exactly",
+  "usage_note": "the first 27 pairs' spend is ESTIMATED (270 calls at the re-baseline $0.1333/call rate): the run was externally killed and its in-memory receipts were lost; only the 4-pair resume is receipted exactly",
   "depth5_tally": {
     "inconclusive": 3,
     "poetry": 12,

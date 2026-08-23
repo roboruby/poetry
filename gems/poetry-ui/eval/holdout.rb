@@ -4,7 +4,7 @@ require_relative "runner"
 
 module Poetry
   module Eval
-    # The holdout stratum (a review borrow): eight briefs
+    # The holdout stratum: eight briefs
     # RESERVED for grading changes to the agent surfaces (skills, AGENTS.md,
     # llms text, MCP descriptions). The standing 31 briefs are the corpus
     # those surfaces get tuned against over time; a doc edit graded on them

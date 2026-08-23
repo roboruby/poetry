@@ -20,7 +20,7 @@ module Poetry
           html = render_inline(Component.new(name: :rocket)).to_html
 
           # Without width/height a standalone icon fills its container
-          # (the 352px rocket, 2026-07-01 browser pass); [&_svg]:size-4
+          # (a rocket once rendered 352px wide); [&_svg]:size-4
           # rules still win inside components.
           assert_includes html, 'width="24"'
           assert_includes html, 'height="24"'

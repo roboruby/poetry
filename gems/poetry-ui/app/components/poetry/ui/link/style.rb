@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Link
-      # Re-expressed through the cn-* theme layer (N11). No upstream
+      # Re-expressed through the cn-* theme layer. No upstream
       # counterpart (shadcn has no Link) - the split follows the category
       # rule: layout/behavior inline, color/decoration/focus ring themed.
       class Style < Poetry::Core::Style

@@ -3,9 +3,8 @@
 module Poetry
   module Ui
     module Menubar
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # Shared vocabularies, declared once at module level so the root
+      # Component and the nested menu-level classes read the same lists.
       ITEM_VARIANTS = %i[default destructive].freeze
       DIRS = %i[ltr rtl].freeze
 
@@ -56,7 +55,7 @@ module Poetry
       end
 
       # The item UNION every menu level accepts (family-identical to
-      # DropdownMenu): item | checkbox_item |
+      # DropdownMenu's): item | checkbox_item |
       # radio_group | label | separator | group | sub - one ordered
       # collection, polymorphic setters named per part. Included by Menu,
       # Sub (recursive submenus), and Group.
@@ -162,13 +161,23 @@ module Poetry
         end
       end
 
-      # The menus-family sibling (Menubar): a desktop-app
+      # The menus-family sibling of DropdownMenu: a desktop-app
       # command bar - role=menubar, ONE tab stop (horizontal roving focus
       # across role=menuitem triggers), each menu a full family popup on its
       # own poetry--core--menu instance (modal: false - hover-slide needs
       # the sibling triggers pressable while a menu is open). The thin
       # poetry--core--menubar coordinator owns value + toggle/hover-slide/
       # edge-navigate; everything heavier stays in the shared primitives.
+      #
+      # @example An application command bar
+      #   render Poetry::Ui::Menubar::Component.new(label: "Application") do |bar|
+      #     bar.with_menu do |menu|
+      #       menu.with_trigger { "File" }
+      #       menu.with_item(shortcut: "⌘N") { "New" }
+      #       menu.with_separator
+      #       menu.with_item { "Print..." }
+      #     end
+      #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu " \
@@ -184,13 +193,7 @@ module Poetry
           "family contract."
         ].freeze
 
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (: the floating
-        # crash - a required option the static tier could not see).
-        option :label, :string, required: true
-        option :loop, :boolean, default: false
-        option :value, :string
-        option :dir, :symbol
+        renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         use_stimulus do
           on :root do
@@ -254,6 +257,14 @@ module Poetry
             controller(:popper) { target :anchor }
           end
         end
+
+        # required: the hand raise in before_render carries the message;
+        # the flag carries the fact to the registry (the floating-crash
+        # class: a required option the static tier could not see).
+        option :label, :string, required: true
+        option :loop, :boolean, default: false
+        option :value, :string
+        option :dir, :symbol
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
@@ -344,10 +355,8 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
-        renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
-
         def before_render
-          # The the base contract base-contract borrow: the bar's accessible name is
+          # The base-contract rule: the bar's accessible name is
           # not optional (APG - a page may hold more than one menubar).
           raise ArgumentError, "Menubar requires label: (the bar's accessible name)" if label.blank?
           raise ArgumentError, "Menubar requires at least one with_menu" unless menus?
@@ -358,8 +367,8 @@ module Poetry
         def root_attributes
           root = {
             "data-slot" => "menubar", "role" => "menubar", "aria-label" => label,
-            # The bar ROOT keeps the open/closed pair (W1 resolution: Base UI
-            # has no bar-root state attr - poetry keeps the mounted pair).
+            # The bar ROOT keeps the open/closed pair (Base UI has no
+            # bar-root state attr - poetry keeps the mounted pair).
             (value.present? ? "data-open" : "data-closed") => ""
           }
           root["dir"] = dir.to_s if dir
@@ -404,20 +413,13 @@ module Poetry
       # (out of the bar's flex layout AND the accessibility tree), keeping
       # the rendered semantics Radix-parity. Plain ViewComponent::Base ON
       # PURPOSE - the nested parts are anatomy, not registry components.
+      #
+      # @api private
       class Menu < Poetry::Core::Component
         internal_component!
         include ItemSlots
 
         attr_reader :value, :disabled
-
-        def initialize(bar:, value: nil, disabled: false, dir: nil, **extra_attributes)
-          super(extra_attributes)
-          @bar = bar
-          @disabled = disabled
-          @dir = dir
-          position = @bar.register_menu(self)
-          @value = (value || "menu-#{position}").to_s
-        end
 
         # The top-level trigger DELTA: a real button that is role=menuitem
         # INSIDE role=menubar (vs DropdownMenu's plain menu button), wired
@@ -440,6 +442,15 @@ module Poetry
           end
           content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
         }
+
+        def initialize(bar:, value: nil, disabled: false, dir: nil, **extra_attributes)
+          super(extra_attributes)
+          @bar = bar
+          @disabled = disabled
+          @dir = dir
+          position = @bar.register_menu(self)
+          @value = (value || "menu-#{position}").to_s
+        end
 
         def before_render
           raise ArgumentError, "Menubar menu requires with_trigger (the top-level menu button)" unless trigger?
@@ -520,6 +531,8 @@ module Poetry
 
       # role=group semantic grouping between separators - the same item
       # union, one level down.
+      #
+      # @api private
       class Group < Poetry::Core::Component
         internal_component!
         include ItemSlots
@@ -546,19 +559,15 @@ module Poetry
       end
 
       # role=group scoping the single-select value for its radio items.
-      # Duplicate radio values raise ArgumentError at render (the base-contract
-      # base contract); radio items exist ONLY through this group.
+      # Duplicate radio values raise ArgumentError at render (the
+      # base-contract rule); radio items exist ONLY through this group.
+      #
+      # @api private
       class RadioGroup < Poetry::Core::Component
         internal_component!
         include Helpers
 
         attr_reader :group_value
-
-        def initialize(value: nil, **extra_attributes)
-          super(extra_attributes)
-          @group_value = value&.to_s
-          @seen_values = Set.new
-        end
 
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
@@ -582,6 +591,12 @@ module Poetry
           end
         }
 
+        def initialize(value: nil, **extra_attributes)
+          super(extra_attributes)
+          @group_value = value&.to_s
+          @seen_values = Set.new
+        end
+
         def before_render
           raise ArgumentError, "Menubar radio group requires at least one with_radio_item" unless radio_items?
         end
@@ -596,14 +611,11 @@ module Poetry
       # A submenu scope: its own popper instance (sub_trigger = anchor,
       # sub_content = content; side flips under RTL) around the same item
       # union, recursively - family-identical to DropdownMenu's.
+      #
+      # @api private
       class Sub < Poetry::Core::Component
         internal_component!
         include ItemSlots
-
-        def initialize(dir: nil, **extra_attributes)
-          super(extra_attributes)
-          @dir = dir
-        end
 
         renders_one :trigger, lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
           attrs = {
@@ -617,6 +629,11 @@ module Poetry
             safe_join([capture(&block), chevron])
           end
         }
+
+        def initialize(dir: nil, **extra_attributes)
+          super(extra_attributes)
+          @dir = dir
+        end
 
         def before_render
           raise ArgumentError, "Menubar sub requires with_trigger (the sub-menu item)" unless trigger?
@@ -690,7 +707,7 @@ module Poetry
       # surface (with_menu yields a Menu; with_sub a Sub). REQUIRED_SLOTS
       # states the same facts the before_render raises enforce, so
       # poetry check flags the omission without rendering (the menu
-      # crash: with_trigger left out, four truthful checks silent).
+      # crash class: with_trigger left out, four truthful checks silent).
       class Component
         SLOT_BUILDERS = { menu: Menu }.freeze
         REQUIRED_SLOTS = { menu: "at least one menu" }.freeze

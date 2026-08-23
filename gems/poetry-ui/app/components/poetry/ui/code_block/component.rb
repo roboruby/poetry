@@ -13,7 +13,21 @@ module Poetry
       # theme's .hll hook; the syntax palette is seven --syntax-* vars each
       # theme owns (GitHub light/dark is the shared v1 baseline). copy:
       # rides the clipboard-text engine reading the rendered code itself.
+      #
+      # @example
+      #   render Poetry::Ui::CodeBlock::Component.new(
+      #     code: "puts \"hello\"", language: "ruby"
+      #   )
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code " \
+          "with utility classes; the syntax palette, line counters, and copy affordance ride it.",
+          "Highlighting needs `gem \"rouge\"` in the host Gemfile - without it the block renders " \
+          "plain (same markup, no colors). Inline code stays plain <code> typography.",
+          "highlight_lines: takes 1-based line numbers; line numbers are CSS counters and never " \
+          "pollute copied text."
+        ].freeze
+
         # The whole copy surface is copy:-gated - element conditions keep
         # the wiring out of copy: false renders entirely.
         use_stimulus do
@@ -30,15 +44,6 @@ module Poetry
             controller(:clipboard_text) { action :copy, on: :click }
           end
         end
-
-        AGENT_RULES = [
-          "Blocks of code are a CodeBlock (poetry_code_block) - never a hand-rolled pre/code " \
-          "with utility classes; the syntax palette, line counters, and copy affordance ride it.",
-          "Highlighting needs `gem \"rouge\"` in the host Gemfile - without it the block renders " \
-          "plain (same markup, no colors). Inline code stays plain <code> typography.",
-          "highlight_lines: takes 1-based line numbers; line numbers are CSS counters and never " \
-          "pollute copied text."
-        ].freeze
 
         option :code, :string, required: true
         option :language, :string, default: "text"

@@ -69,14 +69,14 @@ module Poetry
       def test_wrapper_helpers_never_yield_anything_to_their_blocks
         # The yieldless-block check rule rests on this roster
         # invariant: no poetry_* wrapper helper passes an argument to its
-        # block (a declared block param is always nil at render - the W2r
-        # app_shell crash). A future yielding wrapper must put the yield
+        # block (a declared block param is always nil at render - the
+        # app_shell crash class). A future yielding wrapper must put the yield
         # behind a component, or extend the rule - this tripwire forces
         # that decision consciously.
         source = Poetry::Ui.root.join("app/helpers/poetry/ui/components_helper.rb").read
 
         refute_match(/\byield\b/, source, "wrapper helpers must not yield")
-        # extends the rule consciously: a wrapper MAY yield when its
+        # The optimistic form extends the rule consciously: a wrapper MAY yield when its
         # HELPER_CONTRACTS entry declares "yields" (the check tool's
         # yieldless tier reads the same declaration, so source and rule
         # cannot drift). Every capture-with-args must be the form-builder
@@ -102,7 +102,7 @@ module Poetry
         assert_includes html, %(poetry:color-scheme), "announces changes for redraw listeners"
       end
 
-      # -- poetry_optimistic_form --------------------------------------
+      # -- poetry_optimistic_form -----------------------------------------------
 
       def test_optimistic_form_wires_the_controller_and_wraps_the_prediction
         html = render_erb(<<~ERB)

@@ -14,7 +14,21 @@ module Poetry
       # leaving the component, or the eye. copy: mounts the clipboard-text
       # engine alongside - copy WITHOUT revealing is the point. The no-JS
       # story is a plain password input that still submits.
+      #
+      # @example An API key with copy-without-reveal
+      #   render Poetry::Ui::SensitiveInput::Component.new(name: "api_key", label: "API key",
+      #                                                    value: token, copy: true)
       class Component < Poetry::Core::Component
+        AGENT_RULES = [
+          "Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare " \
+          "password Input with a hand-rolled eye; the masked-container contract (role=button, " \
+          "focus discipline, blur re-mask) rides the controller.",
+          "label: feeds the masked announcement (\"{label}, masked.\") - pair with a Label/Field " \
+          "for the visible caption.",
+          "copy: true adds copy-without-revealing; leave it off for password-change forms.",
+          "Values re-mask on blur BY DESIGN - do not fight it with reveal-state persistence."
+        ].freeze
+
         # Both engines declare on the root (the one-Attributes rule holds
         # by construction); the borrowed clipboard-text controller rides
         # along copy-gated.
@@ -65,16 +79,6 @@ module Poetry
             controller(:sensitive_input) { target :hint }
           end
         end
-
-        AGENT_RULES = [
-          "Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare " \
-          "password Input with a hand-rolled eye; the masked-container contract (role=button, " \
-          "focus discipline, blur re-mask) rides the controller.",
-          "label: feeds the masked announcement (\"{label}, masked.\") - pair with a Label/Field " \
-          "for the visible caption.",
-          "copy: true adds copy-without-revealing; leave it off for password-change forms.",
-          "Values re-mask on blur BY DESIGN - do not fight it with reveal-state persistence."
-        ].freeze
 
         option :name, :string, required: true
         option :value, :string

@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module AlertDialog
-      # The AlertDialog - Dialog's `dismissible: false` posture, promoted to
-      # a component (AlertDialog): a must-be-answered
-      # confirmation. It reuses the poetry--core--dialog controller and the
+      # The AlertDialog - Dialog's `dismissible: false` posture, promoted
+      # to a component: a must-be-answered confirmation. It reuses the
+      # poetry--core--dialog controller and the
       # native <dialog> + showModal() platform trap UNCHANGED, hard-coding
       # the posture: backdrop clicks never dismiss (dismissible is not an
       # option here), while Esc still closes - the controller's
@@ -16,6 +16,15 @@ module Poetry
       # dismiss the dialog through the shared controller; cancel takes
       # initial focus per APG), no X close button, and the source's size
       # variant + media well.
+      #
+      # @example Destructive confirmation
+      #   render Poetry::Ui::AlertDialog::Component.new do |dialog|
+      #     dialog.with_trigger(variant: :destructive) { "Delete project" }
+      #     dialog.with_title { "Delete this project?" }
+      #     dialog.with_description { "This cannot be undone." }
+      #     dialog.with_cancel { "Cancel" }
+      #     dialog.with_action(variant: :destructive) { "Delete" }
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -34,6 +43,53 @@ module Poetry
           "No extra form fields inside an AlertDialog - if input is needed, use a Dialog.",
           "Cancel keeps variant: :outline; do not make cancel visually primary."
         ].freeze
+
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = {
+          title: "the accessible name", description: "the alertdialog must explain itself",
+          action: "the confirming choice", cancel: "the safe way out"
+        }.freeze
+
+        # The forwarding-lambda fact: with_trigger renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
+
+        # The trigger is a poetry Button wired to open - the inherited
+        # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
+        renders_one :trigger, lambda { |**options, &block|
+          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
+            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
+              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+            end
+            Button::Component.new(**options, &block)
+          end
+        }
+        renders_one :title
+        renders_one :description
+        # Optional icon/illustration well (the v4 source addition).
+        renders_one :media
+        # The confirming choice - a typed Button slot with the source
+        # default (callers override to :destructive for deletes). Closes the
+        # shared dialog on activation, exactly like Radix AlertDialogAction
+        # (a caller passing their own data-action opts out of the auto-close).
+        renders_one :action, lambda { |**options, &block|
+          options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
+          Button::Component.new(**options, &block)
+        }
+        # The safe way out - outline (source default) and the INITIAL focus:
+        # the native <dialog> focus heuristic honors autofocus (APG: focus
+        # the least-destructive action). Like Radix AlertDialogCancel it
+        # dismisses the dialog through the shared controller - without this
+        # wiring the modal is unclosable except by Esc.
+        renders_one :cancel, lambda { |**options, &block|
+          wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
+          options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
+            key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
+          end
+          Button::Component.new(variant: :outline, autofocus: true, **options, &block)
+        }
 
         # The SHARED dialog controller (zero new JS) under AlertDialog's
         # own declarations - dismissible is the hard-coded false posture.
@@ -82,53 +138,6 @@ module Poetry
         part "alert-dialog-description", "The explanation, wired to aria-describedby " \
                                          "(required slot)"
         part "alert-dialog-footer", "The choice row - cancel then action"
-
-        # The trigger is a poetry Button wired to open - the inherited
-        # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
-        renders_one :trigger, lambda { |**options, &block|
-          composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
-            options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
-              key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-            end
-            Button::Component.new(**options, &block)
-          end
-        }
-        renders_one :title
-        renders_one :description
-        # Optional icon/illustration well (the v4 source addition).
-        renders_one :media
-        # The confirming choice - a typed Button slot with the source
-        # default (callers override to :destructive for deletes). Closes the
-        # shared dialog on activation, exactly like Radix AlertDialogAction
-        # (a caller passing their own data-action opts out of the auto-close).
-        renders_one :action, lambda { |**options, &block|
-          options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
-          Button::Component.new(**options, &block)
-        }
-        # The safe way out - outline (source default) and the INITIAL focus:
-        # the native <dialog> focus heuristic honors autofocus (APG: focus
-        # the least-destructive action). Like Radix AlertDialogCancel it
-        # dismisses the dialog through the shared controller - without this
-        # wiring the modal is unclosable except by Esc.
-        renders_one :cancel, lambda { |**options, &block|
-          wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
-          options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
-            key == :action ? Poetry::Core::Config.current.stimulus_merger.merge_actions(wired, caller) : caller
-          end
-          Button::Component.new(variant: :outline, autofocus: true, **options, &block)
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = {
-          title: "the accessible name", description: "the alertdialog must explain itself",
-          action: "the confirming choice", cancel: "the safe way out"
-        }.freeze
-
-        # The forwarding-lambda component fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
 
         def before_render
           raise ArgumentError, "AlertDialog requires with_title (the accessible name)" unless title?

@@ -50,7 +50,12 @@ arguments, structure, then implementation.
 3. **Inner classes declare `internal_component!`** when they inherit
    the component machinery but are not published components in their
    own right.
-4. **`frozen_string_literal: true`** heads every file.
+4. **Nested classes sit at the end of the class but above the
+   `private` divider.** A constant is never private-scoped, so placing
+   one below `private` is misleading (and linters flag it). A nested
+   class a class-body DSL call evaluates must stay above that call
+   instead.
+5. **`frozen_string_literal: true`** heads every file.
 
 ## Skeleton
 

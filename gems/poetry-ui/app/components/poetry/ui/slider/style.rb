@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Slider
-      # Re-expressed through the cn-* theme layer (N11). Poetry's geometry
+      # Re-expressed through the cn-* theme layer. Poetry's geometry
       # spine stays ENTIRELY inline: the --slider-start/--slider-end custom
       # properties (server-rendered, controller-rewritten via CSSOM) and
       # every calc() consumer on :range and the :anchor trio - a swapped

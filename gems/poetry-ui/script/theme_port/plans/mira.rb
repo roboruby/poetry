@@ -1,18 +1,18 @@
 # frozen_string_literal: true
 
-# N12 W2 mira plan ("compact interfaces") for write_theme.rb. The deepest
+# mira plan ("compact interfaces") for write_theme.rb. The deepest
 # density cut of the trio: h-7 buttons, text-xs/relaxed body type,
 # 0.625rem badge/xs type, boxed accordion root (the cn-accordion hook),
 # min-h-7 menu items. Judged notes: the floating before:-frame drawer is
 # DEFERRED (poetry-own drawer geometry keeps the edge-attached idiom -
 # direction rules cannot go empty; ledgered like the calendar cell
 # density); accordion trigger gains poetry's focus-visible cluster
-# (upstream mira ships none - keyboard focus must stay visible
+# (upstream mira ships none - keyboard focus must stay visible, the AA-contrast
 # posture); input-group-button-size-sm targets a size poetry's API does
 # not ship - dropped, ledgered.
 
 # NOTE: the shipped themes/mira.css has been hand-edited since generation
-# (bang audit, thin-body fixes, axe AA holds, W2 side-move consumers) - the
+# (bang audit, thin-body fixes, axe AA holds, side-move consumers) - the
 # fragment is canon; write_theme.rb refuses to regenerate over it.
 
 BACKDROP = "backdrop:bg-black/10 supports-backdrop-filter:backdrop:backdrop-blur-xs"
@@ -39,7 +39,7 @@ PLAN = {
   "cn-alert-dialog-title" => "text-sm font-medium",
   # (cn-alert-dialog-footer: mira does not band it - inherits default's gap-2)
 
-  # --- accordion: the boxed root (the W2 hook mira/rhea exist for);
+  # --- accordion: the boxed root (the root hook mira/rhea exist for);
   #     poetry focus cluster added (upstream ships no focus-visible) ------
   "cn-accordion" => "w-full overflow-hidden rounded-md border",
   "cn-accordion-trigger" =>
@@ -58,7 +58,7 @@ PLAN = {
   "cn-combobox-trigger" => :default,
   "cn-drawer-swipe-handle" => :default,
   "cn-switch-thumb" => :default,
-  # W5 roster pass: only vega ships the default-variant active shadow-sm
+  # Roster pass: only vega ships the default-variant active shadow-sm
   # upstream at d0fae528 (settled-read receipt) - default keeps its ny-v4
   # trait, the ported themes drop it.
   "cn-tabs-trigger" => {
@@ -81,7 +81,7 @@ PLAN = {
     "h-8 gap-1 px-2.5 text-xs/relaxed has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 " \
     "has-[>svg:first-child]:pl-2 has-[>svg:last-child]:pr-2 [&_svg:not([class*='size-'])]:size-4",
 
-  # --- soft destructive, AA-held (posture) --------------------------
+  # --- soft destructive, AA-held (AA-contrast posture) --------------------------
   "cn-button-variant-destructive" =>
     "bg-destructive/10 hover:bg-destructive/20 focus-visible:ring-destructive/20 " \
     "dark:focus-visible:ring-destructive/40 dark:bg-destructive/20 " \
@@ -123,13 +123,13 @@ PLAN = {
     "data-open:animate-in data-closed:animate-out #{BACKDROP}",
 
   # --- drawer: edge-attached idiom kept; the before:-frame is deferred ---
-  # W5 roster pass: drawer scrim (native ::backdrop) is theme-owned now;
+  # Roster pass: drawer scrim (native ::backdrop) is theme-owned now;
   # values = upstream mira drawer-overlay at d0fae528.
   "cn-drawer-content" =>
     "bg-popover text-xs/relaxed text-popover-foreground " \
     "backdrop:bg-black/80 supports-backdrop-filter:backdrop:backdrop-blur-xs",
 
-  # W5 roster pass: viewport padding is theme-owned now (poetry-only name -
+  # Roster pass: viewport padding is theme-owned now (poetry-only name -
   # explicit String; default geometry unchanged).
   "cn-select-viewport" => "p-1 scroll-my-1",
   "cn-drawer-header" => "gap-1 p-4 md:text-left",
@@ -196,20 +196,20 @@ PLAN = {
 }.freeze
 
 HEADER = <<~CSS
-  /* poetry mira theme (N12 W2) - upstream style-mira.css ported onto the
+  /* poetry mira theme - upstream style-mira.css ported onto the
    * cn-* layer (pinned clone d0fae528). Same contract as default.css:
    * imported layer(base); bare selectors while installs carry ONE theme;
    * rule order per component = base < elements < variants < compounds;
    * split-side, no-empty-rules and cross-component-last rules apply.
    *
-   * Port disciplines identical to vega (see the N12 plan note close-out +
+   * Port disciplines identical to vega (see
    * docs/mira-port-ledger.txt): verbatim where poetry speaks the
    * vocabulary; data-vertical -> data-[orientation=*]; overlays ->
    * native-dialog backdrop:*; upstream ! stripped except the sidebar
    * collapse geometry; icon paddings ship upstream's has-data-[icon=*]
    * (inert) plus working >svg:first/last-child twins; soft destructive
-   * holds AA via relative-oklch light-mode darkening (posture).
-   * Mira-judged: boxed accordion root (the W2 hook); accordion trigger
+   * holds AA via relative-oklch light-mode darkening (AA-contrast posture).
+   * Mira-judged: boxed accordion root (the root hook); accordion trigger
    * carries poetry's focus-visible cluster (upstream ships none); the
    * floating before:-frame drawer is deferred (edge-attached idiom kept,
    * ledgered); input-group-button-size-sm dropped (no poetry sm size);

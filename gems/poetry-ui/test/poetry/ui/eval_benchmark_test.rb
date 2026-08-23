@@ -8,7 +8,7 @@ require_relative "../../../eval/benchmark"
 
 module Poetry
   module Ui
-    # The generated-arm benchmark's pure surfaces (N15 W2): the hermeticity
+    # The generated-arm benchmark's pure surfaces: the hermeticity
     # invariant, the one-prompt rule, the aggregate math behind the
     # pre-registered predictions, and the runner's swappable-corpus seam.
     # The claude CLI seam (claude_generate) is exercised by the run itself,
@@ -53,7 +53,7 @@ module Poetry
         end
       end
 
-      # --- the guided treatment (the toolbelt asymmetry) ------------
+      # --- the guided treatment (the toolbelt asymmetry) -------------------
 
       def with_env(vars)
         prior = vars.to_h { |key, _| [key, ENV.fetch(key, nil)] }
@@ -128,7 +128,7 @@ module Poetry
         # Truthful toolbelt disclosure (denied Bash flailing burned turns
         # in the wild); "any checking tools AGENTS.md documents" stays
         # arm-neutral - only host A's AGENTS.md documents any (bin/check +
-        # the MCP server since).
+        # the MCP server).
         assert_includes prompt, "Your tools are Read, Glob, Grep, and Write, " \
                                 "plus any checking tools AGENTS.md documents."
         # No arm keyword exists, so no arm conditional can creep in.

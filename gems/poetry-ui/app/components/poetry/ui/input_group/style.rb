@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module InputGroup
-      # Re-expressed through the cn-* theme layer (N11). The structural
+      # Re-expressed through the cn-* theme layer. The structural
       # reflow chain (block addons force h-auto/flex-col) stays inline -
       # it is layout mechanism; the chrome (border, focus-within ring,
       # invalid ring, paddings) rides themes/default.css. Upstream's addon

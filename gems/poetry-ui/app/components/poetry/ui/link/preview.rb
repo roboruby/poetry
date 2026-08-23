@@ -3,6 +3,8 @@
 module Poetry
   module Ui
     module Link
+      # The Link preview: the default hover underline, the aria-current
+      # nav item, an external link, and both underline extremes.
       class Preview < Poetry::Core::Preview::Base
         def default
           render_component(href: "#") { "Documentation" }

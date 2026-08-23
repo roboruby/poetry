@@ -26,7 +26,7 @@ visual fragments under `themes/`.
 - `bundle exec rake eval:verify` — the eval regression net (poetry arms fully
   green, every raw arm keeps its planted tell); `eval:scorecard` prints the
   card. The judged half (`eval:capture` + `eval:judge`) and the generated-arm
-  benchmark (`eval:benchmark:*`, N15 W2) are on-demand, never CI — doctrine
+  benchmark (`eval:benchmark:*`) are on-demand, never CI — doctrine
   in `eval/README.md`.
 
 ## Layout
@@ -43,8 +43,8 @@ visual fragments under `themes/`.
   generators, the AGENTS/skills sections) and `block/templates/*.html.erb`,
   the canonical source of the eight blocks (docs previews render these
   files per request)
-- `lib/poetry/ui/recipes.rb` — the recipes channel roster (Recipes
-  Channel v1): registry items projected LIVE from gem-shipped sources
+- `lib/poetry/ui/recipes.rb` — the recipes channel roster: registry
+  items projected LIVE from gem-shipped sources
   (skills via the boot-free seams, scaffold .tt set, screen slices under
   `lib/generators/poetry/recipes/`). A recipe's files must be the same
   bytes a generator installs — never author recipe-only content except
@@ -76,9 +76,6 @@ visual fragments under `themes/`.
 
 ## Known traps
 
-- Stimulus controller traps live in the vault note "Components Library -
-  Stimulus Controller Gotchas" — read it before touching a controller, add
-  what you learn.
 - Kill CSS transitions/animations before cross-style computed reads;
   double-rAF is NOT settled.
 - Tailwind box-shadow never computes "none" while ring/shadow var plumbing is

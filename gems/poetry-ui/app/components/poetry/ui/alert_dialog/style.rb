@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module AlertDialog
-      # Re-expressed through the cn-* theme layer (N11), ported like the
+      # Re-expressed through the cn-* theme layer, ported like the
       # parent Dialog: panel chrome + size branches + backdrop + enter
       # animation ride themes/default.css; native-dialog mechanisms and
       # the explicit server-side media/size layout branches stay inline
@@ -31,7 +31,7 @@ module Poetry
 
         element :description, "cn-alert-dialog-description"
 
-        # Footer hook reintroduced at N12 W2 (nova bands it); gap-2 moved
+        # Footer hook is themable (nova bands it); gap-2 moved
         # theme-side with the name - direction/justify stay inline (the
         # sm-size grid branch below replaces them via the class: merge).
         element :footer, "cn-alert-dialog-footer flex flex-col-reverse sm:flex-row sm:justify-end"

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The StableId architectural gate (plan S1): proves in a real browser that
+# The StableId architectural gate: proves in a real browser that
 # key: gives Turbo morph the identity it needs - and that the unkeyed
 # fallback keeps today's over-replace behavior (never false retention).
 # Browser-gated like visual/axe (needs Chrome; not in the default gate).

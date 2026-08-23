@@ -1,7 +1,7 @@
 # DataTable — the server-driven recipe
 
 poetry's DataTable is **not** a client table engine (shadcn's is a TanStack
-recipe). It is the W1 Table + sortable headers + a filter box + Pagination,
+recipe). It is poetry's Table + sortable headers + a filter box + Pagination,
 with sorting/filtering/pagination as **URL state** — shareable,
 crawlable, and back-button-correct, because GET is the only transport the
 back button can replay. The data stays with the host: your controller owns

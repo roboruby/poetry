@@ -6,12 +6,20 @@ module Poetry
   module Ui
     module Calendar
       # The Calendar - a server-rendered month grid (Ruby Date math) driven
-      # by poetry--core--calendar. The W6 own-the-engine decision: no
-      # react-day-picker; the initial month renders correctly with no JS,
-      # and the controller handles navigation + selection on top. Selection
-      # is a real form value (name: -> a hidden input); a bare Calendar
-      # picks a date, the DatePicker wraps it in a Popover.
+      # by poetry--core--calendar. poetry owns the engine rather than
+      # wrapping a JS date library: the initial month renders correctly
+      # with no JS, and the controller handles navigation + selection on
+      # top. Selection is a real form value (name: -> a hidden input); a
+      # bare Calendar picks a date, the DatePicker wraps it in a Popover.
+      #
+      # @example A form-posting date pick
+      #   render Poetry::Ui::Calendar::Component.new(name: "event[date]", selected: "2026-07-04")
       class Component < Poetry::Core::Component
+        attr_reader :selected, :today, :min, :max, :range_start, :range_end
+
+        MODES = %i[single range].freeze
+        CAPTION_LAYOUTS = %i[label dropdown].freeze
+
         AGENT_RULES = [
           "name: makes it a form control (the chosen date posts as an ISO string in a hidden input; " \
           "range mode posts name[start] + name[end]).",
@@ -78,8 +86,6 @@ module Poetry
             controller(:calendar) { target :input }
           end
         end
-        MODES = %i[single range].freeze
-        CAPTION_LAYOUTS = %i[label dropdown].freeze
 
         option :name, :string
         option :mode, :symbol, default: :single
@@ -146,8 +152,6 @@ module Poetry
           @max = to_date(max)
           @month = to_date(month) || @selected || @range_start || @today
         end
-
-        attr_reader :selected, :today, :min, :max, :range_start, :range_end
 
         def range? = mode == :range
         def range_complete? = !!(@range_start && @range_end)
@@ -284,9 +288,9 @@ module Poetry
           end
         end
 
-        # The selection vocabulary per day (rdp semantics): a COMPLETE
-        # range wears range-start/middle/end; a start-only pick is a plain
-        # selected single day; single mode keeps data-selected.
+        # The selection vocabulary per day: a COMPLETE range wears
+        # range-start/middle/end; a start-only pick is a plain selected
+        # single day; single mode keeps data-selected.
         def merge_selection_attributes(attrs, date)
           if range?
             if range_complete?

@@ -5,7 +5,7 @@ module Poetry
     module Toaster
       POSITIONS = %i[top-left top-center top-right bottom-left bottom-center bottom-right].freeze
 
-      # The toast viewport (Toast): a labeled
+      # The toast viewport: a labeled
       # role=region <ol> rendered ONCE in the layout - the Turbo Stream
       # append target (id=poetry-toaster, data-turbo-permanent: toasts
       # survive Drive visits, so flash-after-redirect stays visible). The
@@ -24,6 +24,7 @@ module Poetry
       # flash semantics): render the mapping next to the toaster in the
       # application layout; stream responses skip flash and append.
       #
+      # @example The flash -> toast mapping in the layout
       #   <%= poetry_toaster do %>
       #     <% flash.each do |kind, message| %>
       #       <%= poetry_toast(variant: kind.to_s == "alert" ? :destructive : :default) do |toast| %>
@@ -45,6 +46,19 @@ module Poetry
           "double-announcing is a regression."
         ].freeze
 
+        # Values only, zero actions: the controller wires its own
+        # window-keydown (hotkey) and dismiss listeners in connect.
+        use_stimulus do
+          on :root do
+            controller :toaster do
+              register
+              value :hotkey
+              value :limit
+              value :position
+            end
+          end
+        end
+
         # On the TOASTER, not the toast (the region owns the corner).
         style :position, default: :"bottom-right", required: true, variants: POSITIONS
 
@@ -61,19 +75,6 @@ module Poetry
                                                        "presses here, so clicking a toast never " \
                                                        "dismisses the overlay under it" }
              }
-
-        # Values only, zero actions: the controller wires its own
-        # window-keydown (hotkey) and dismiss listeners in connect.
-        use_stimulus do
-          on :root do
-            controller :toaster do
-              register
-              value :hotkey
-              value :limit
-              value :position
-            end
-          end
-        end
 
         def root_attributes
           html_attributes.merge_if_not_set(

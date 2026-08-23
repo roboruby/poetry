@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The DESIGN.md export surface (N14 W1): the committed docs/design/
+    # The DESIGN.md export surface: the committed docs/design/
     # interop files must byte-match a fresh generation (the same drift
     # discipline as the registry and template-class artifacts), and the
     # roster metadata must cover exactly the shipped theme fragments.

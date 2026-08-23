@@ -16,6 +16,14 @@ module Poetry
       # Rails divergence, on purpose: multiple-selection items name their
       # checkboxes "<name>[]" so params arrive as arrays - upstream's
       # FormData reads repeated bare names.
+      #
+      # @example
+      #   render Poetry::Ui::Questionnaire::Component.new(url: "/surveys") do |survey|
+      #     survey.with_item(name: "mood", title: "How was your week?") do |item|
+      #       item.with_choice(value: "good", label: "Good")
+      #       item.with_choice(value: "bad", label: "Bad")
+      #     end
+      #   end
       class Component < Poetry::Core::Component
         SHORTCUT_MODES = %i[letters numbers].freeze
         SHORTCUT_KEYS = {
@@ -38,6 +46,21 @@ module Poetry
           "progress element and a [data-progress-count] child stay live for segment bars " \
           "and counters."
         ].freeze
+
+        # with_progress (bare) renders the auto "Question X of Y" text;
+        # with_progress { custom } replaces it (marked data-custom so the
+        # controller leaves it alone). class: merges onto the progress
+        # element (upstream's className seam - e.g. w-full for a
+        # full-width segment bar over the base w-fit).
+        renders_one :progress
+        alias __vc_with_progress with_progress
+
+        def with_progress(**options, &)
+          @progress_class = options[:class]
+          __vc_with_progress(&)
+        end
+
+        attr_reader :progress_class
 
         use_stimulus do
           on :root do
@@ -160,70 +183,12 @@ module Poetry
                                       "belong to Button's anatomy, not this contract; each " \
                                       "carries data-visible/data-hidden + hidden/inert)"
 
-        Choice = Struct.new(:value, :label, :description, :checked, :disabled, keyword_init: true)
-        TextInput = Struct.new(:label, :placeholder, :value, keyword_init: true)
-
-        # One question: title/description as args, choices and the
-        # optional free-text input via the yielded builder.
-        class Item
-          attr_reader :name, :title, :description, :required, :multiple, :disabled,
-                      :error, :choices, :input, :class_name
-
-          def initialize(name:, title:, **options)
-            @name = name
-            @title = title
-            @class_name = options[:class]
-            @description = options[:description]
-            @required = options.fetch(:required, false)
-            @multiple = options.fetch(:multiple, false)
-            @disabled = options.fetch(:disabled, false)
-            @error = options[:error]
-            @choices = []
-            @input = nil
-          end
-
-          def with_choice(value:, label:, description: nil, checked: false, disabled: false)
-            @choices << Choice.new(value: value, label: label, description: description,
-                                   checked: checked, disabled: disabled)
-            self
-          end
-
-          def with_input(label:, placeholder: nil, value: nil)
-            @input = TextInput.new(label: label, placeholder: placeholder, value: value)
-            self
-          end
-
-          def default_error
-            if required
-              "Choose an answer to continue."
-            else
-              "Choose an answer or skip this question."
-            end
-          end
-
-          def error_message = error || default_error
-
-          def answered?
-            choices.any?(&:checked) || input&.value.to_s.strip != ""
-          end
-
-          def status = answered? ? "answered" : "unanswered"
+        def before_render
+          # Evaluate the composition block first - with_item is hand-rolled
+          # (not a VC slot), so nothing else forces the block this early.
+          content
+          raise ArgumentError, "Questionnaire needs at least one with_item" if item_models.empty?
         end
-
-        # with_progress (bare) renders the auto "Question X of Y" text;
-        # with_progress { custom } replaces it (marked data-custom so the
-        # controller leaves it alone). class: merges onto the progress
-        # element (upstream's className seam - e.g. w-full for a
-        # full-width segment bar over the base w-fit).
-        renders_one :progress
-        alias __vc_with_progress with_progress
-
-        def with_progress(**options, &)
-          @progress_class = options[:class]
-          __vc_with_progress(&)
-        end
-
-        attr_reader :progress_class
 
         # Hand-rolled (not a VC slot): the yielded builder is a plain
         # object, and ViewComponent lambda slots only forward to component
@@ -236,13 +201,6 @@ module Poetry
         end
 
         def item_models = (@item_models ||= [])
-
-        def before_render
-          # Evaluate the composition block first - with_item is hand-rolled
-          # (not a VC slot), so nothing else forces the block this early.
-          content
-          raise ArgumentError, "Questionnaire needs at least one with_item" if item_models.empty?
-        end
 
         def questionnaire_id
           @questionnaire_id ||= if (token = dom_id_token(id))
@@ -336,6 +294,56 @@ module Poetry
             attrs["data-shortcut"] = key
           end
           attrs
+        end
+
+        Choice = Struct.new(:value, :label, :description, :checked, :disabled, keyword_init: true)
+        TextInput = Struct.new(:label, :placeholder, :value, keyword_init: true)
+
+        # One question: title/description as args, choices and the
+        # optional free-text input via the yielded builder.
+        class Item
+          attr_reader :name, :title, :description, :required, :multiple, :disabled,
+                      :error, :choices, :input, :class_name
+
+          def initialize(name:, title:, **options)
+            @name = name
+            @title = title
+            @class_name = options[:class]
+            @description = options[:description]
+            @required = options.fetch(:required, false)
+            @multiple = options.fetch(:multiple, false)
+            @disabled = options.fetch(:disabled, false)
+            @error = options[:error]
+            @choices = []
+            @input = nil
+          end
+
+          def with_choice(value:, label:, description: nil, checked: false, disabled: false)
+            @choices << Choice.new(value: value, label: label, description: description,
+                                   checked: checked, disabled: disabled)
+            self
+          end
+
+          def with_input(label:, placeholder: nil, value: nil)
+            @input = TextInput.new(label: label, placeholder: placeholder, value: value)
+            self
+          end
+
+          def default_error
+            if required
+              "Choose an answer to continue."
+            else
+              "Choose an answer or skip this question."
+            end
+          end
+
+          def error_message = error || default_error
+
+          def answered?
+            choices.any?(&:checked) || input&.value.to_s.strip != ""
+          end
+
+          def status = answered? ? "answered" : "unanswered"
         end
       end
     end

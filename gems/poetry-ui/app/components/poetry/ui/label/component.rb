@@ -7,6 +7,9 @@ module Poetry
       # for_id: nil is the GROUP-label escape hatch (Field group mode): a
       # for= pointing at a role-bearing <div> is inert and Chrome flags it
       # - the group is named via aria-labelledby at this label's id instead.
+      #
+      # @example A label wired to its control
+      #   render Poetry::Ui::Label::Component.new(for_id: "email").with_content("Email")
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Every control gets a Label wired via for_id - placeholder text is never the label."

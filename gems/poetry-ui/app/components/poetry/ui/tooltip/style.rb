@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Tooltip
-      # Re-expressed through the cn-* theme layer (N11). The inverse scheme
+      # Re-expressed through the cn-* theme layer. The inverse scheme
       # (bg-foreground/text-background) stays INLINE per upstream's own
       # split - it IS the treatment and upstream keeps it in markup; the
       # box, type, and animation chain ride the theme (animate-in remains

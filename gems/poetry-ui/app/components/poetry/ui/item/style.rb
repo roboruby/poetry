@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Item
-      # Re-expressed through the cn-* theme layer (N11). The media variants
+      # Re-expressed through the cn-* theme layer. The media variants
       # use upstream's cn-item-media-variant-* names. Upstream's unused
-      # group/item-group marker stays dropped (compiled-CSS gate, N9 W1a).
+      # group/item-group marker stays dropped (the compiled-CSS gate).
       class Style < Poetry::Core::Style
         base "cn-item group/item flex w-full flex-wrap items-center transition-colors " \
              "duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] " \

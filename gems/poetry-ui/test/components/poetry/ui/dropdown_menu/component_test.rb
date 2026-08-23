@@ -416,7 +416,7 @@ module Poetry
         end
       end
 
-      # StableId S1: the replay proofs (the cache-composability foundation).
+      # Stable-id replay proofs (the cache-composability foundation).
       class StableIdReplayTest < ViewComponent::TestCase
         def render_keyed(key)
           render_inline(Component.new(key: key)) do |menu|

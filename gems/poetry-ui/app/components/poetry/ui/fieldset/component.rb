@@ -10,7 +10,14 @@ module Poetry
       # hand-write, which is why legend: is required rather than optional
       # chrome. Poetry folds upstream's FieldLabel-in-FieldSet form into
       # legend_variant: :label (same look, and the group keeps its name).
+      #
+      # @example A named group of address fields
+      #   render Poetry::Ui::Fieldset::Component.new(legend: "Shipping address") do
+      #     # poetry_field_group with the fields
+      #   end
       class Component < Poetry::Core::Component
+        LEGEND_VARIANTS = %i[legend label].freeze
+
         AGENT_RULES = [
           "A run of related fields gets poetry_fieldset with legend: - the group's accessible " \
           "name (a bare <div> around fields tells AT nothing).",
@@ -19,8 +26,6 @@ module Poetry
           "hint: is the muted description under the legend; per-field hints stay on the fields.",
           "Stack the fields inside with poetry_field_group - never hand-spaced flex columns."
         ].freeze
-
-        LEGEND_VARIANTS = %i[legend label].freeze
 
         option :legend, :string, required: true
         option :legend_variant, :symbol, default: :legend

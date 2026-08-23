@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module ToggleGroup
-      # Last of the toggle family (ToggleGroup): a set
+      # Last of the toggle family: a set
       # of Toggle-styled items under one value machine and one roving tab
       # stop - the Accordion composition, second consumer. Two machines on
       # one root: poetry--core--toggle-group owns the pressed-values set
@@ -22,26 +22,13 @@ module Poetry
       # NO form participation (Toggle's rule at group scale): a
       # single-select that must submit is a RadioGroup; a multi-select that
       # must submit is a checkbox group.
+      #
+      # @example A text-alignment switcher
+      #   render Poetry::Ui::ToggleGroup::Component.new(value: "left", label: "Text alignment") do |group|
+      #     group.with_item(value: "left", label: "Align left") { icon(:"align-left") }
+      #     group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
+      #   end
       class Component < Poetry::Core::Component
-        use_stimulus do
-          on :root do
-            controller :toggle_group do
-              register
-              value :type
-            end
-            controller :roving_focus do
-              register
-              # DEFAULT tabindex-managing mode (contrast Accordion's
-              # manage_tabindex: false).
-              value :orientation
-              value :loop, true
-              action :keydown, on: :keydown
-            end
-          end
-          on :item do
-            controller(:toggle_group) { action :toggle, on: :click }
-          end
-        end
         TYPES = %i[single multiple].freeze
         ORIENTATIONS = %i[horizontal vertical].freeze
 
@@ -60,77 +47,10 @@ module Poetry
           "handle the empty change in the host."
         ].freeze
 
-        # The axes are Toggle's, consumed through the shared dictionary;
-        # the root cascades them to items as data attributes (ROOT WINS -
-        # the source's context.variant || item rule).
-        style :variant, default: :default, required: true, variants: Toggle::Component::VARIANTS
-        style :size, default: :default, required: true, variants: Toggle::Component::SIZES
-
-        option :type, :symbol, default: :single
-        # single: the pressed item's value. ArgumentError with :multiple.
-        option :value, :string
-        # multiple: the pressed items' values. ArgumentError with :single.
-        option :values, :list, default: -> { [] }
-        # 0 = SEGMENTED: joined corners + collapsed outline borders (the
-        # source's data-[spacing=0] chain); >0 = free-standing with a gap.
-        # Default 2 = upstream's default (free-standing); pass spacing: 0
-        # explicitly for the classic segmented control.
-        option :spacing, :integer, default: 2
-        # Roving axis + data-orientation + layout (data-vertical flips the
-        # root to a column; the segment chain is orientation-guarded).
-        option :orientation, :symbol, default: :horizontal
-        # Disables every item (Radix root disabled).
-        option :disabled, :boolean, default: false
-        # The group accessible name -> aria-label (poetry addition: shadcn
-        # ships nameless radiogroups/toolbars).
-        option :label, :string
-
-        # The Accordion value/values API precedent verbatim: the wrong pair
-        # for the type is unrepresentable, not ignored.
-        def initialize(attributes = {})
-          type = (attributes[:type] || attributes["type"] || :single).to_sym
-          raise ArgumentError, "ToggleGroup type must be :single or :multiple" unless TYPES.include?(type)
-
-          if type == :single && attributes.values_at(:values, "values").any?
-            raise ArgumentError, "values: is the :multiple API - single takes value: (one pressed item)"
-          end
-          if type == :multiple && attributes.values_at(:value, "value").any?
-            raise ArgumentError, "value: is the :single API - multiple takes values: (an array)"
-          end
-
-          super
-        end
-
-        validates :orientation, inclusion: { in: ORIENTATIONS }
-
-        part "toggle-group", "The role=radiogroup (single) / role=toolbar (multiple) root - the " \
-                             "value-set machine and roving focus ride here; the axes cascade to items",
-             states: {
-               "data-variant" => { condition: "the shared Toggle variant (root wins)",
-                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
-               "data-size" => { condition: "the shared Toggle size (root wins)",
-                                values: Toggle::Component::SIZES.map(&:to_s) },
-               "data-spacing" => "the gap step - 0 is the segmented chain (joined corners), >0 free-standing",
-               "data-orientation" => { condition: "the roving axis", values: ORIENTATIONS.map(&:to_s) },
-               "data-disabled" => "the whole group is disabled (disables every item)"
-             },
-             vars: {
-               "--gap" => "the item gap, set inline from spacing: - the root's gap utility consumes it"
-             }
-        part "toggle-group-item", "One dumb <button> under the group machine - Toggle-styled, no " \
-                                  "per-item controller",
-             states: {
-               "data-pressed" => "pressed (bare presence boolean - absent when off; the controller " \
-                                 "rederives the type-correct aria attribute from it)",
-               "data-disabled" => "the item (or the whole group) is disabled - the roving-focus " \
-                                  "collection filter",
-               "data-value" => "the item's key in the value set (always present, unique)",
-               "data-variant" => { condition: "cascaded from the root",
-                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
-               "data-size" => { condition: "cascaded from the root",
-                                values: Toggle::Component::SIZES.map(&:to_s) },
-               "data-spacing" => "cascaded from the root - keys the segmented corner/border chain"
-             }
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         # One item per toggle: DUMB buttons under the group machine - no
         # per-item controller, data-action -> group#toggle, styled by the
@@ -169,10 +89,97 @@ module Poetry
           content_tag(:button, content, Poetry::Core::HTML::Attributes.merged(attrs, options))
         }
 
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { item: "at least one item" }.freeze
+        use_stimulus do
+          on :root do
+            controller :toggle_group do
+              register
+              value :type
+            end
+            controller :roving_focus do
+              register
+              # DEFAULT tabindex-managing mode (contrast Accordion's
+              # manage_tabindex: false).
+              value :orientation
+              value :loop, true
+              action :keydown, on: :keydown
+            end
+          end
+          on :item do
+            controller(:toggle_group) { action :toggle, on: :click }
+          end
+        end
+
+        # The axes are Toggle's, consumed through the shared dictionary;
+        # the root cascades them to items as data attributes (ROOT WINS -
+        # the source's context.variant || item rule).
+        style :variant, default: :default, required: true, variants: Toggle::Component::VARIANTS
+        style :size, default: :default, required: true, variants: Toggle::Component::SIZES
+
+        option :type, :symbol, default: :single
+        # single: the pressed item's value. ArgumentError with :multiple.
+        option :value, :string
+        # multiple: the pressed items' values. ArgumentError with :single.
+        option :values, :list, default: -> { [] }
+        # 0 = SEGMENTED: joined corners + collapsed outline borders (the
+        # source's data-[spacing=0] chain); >0 = free-standing with a gap.
+        # Default 2 = upstream's default (free-standing); pass spacing: 0
+        # explicitly for the classic segmented control.
+        option :spacing, :integer, default: 2
+        # Roving axis + data-orientation + layout (data-vertical flips the
+        # root to a column; the segment chain is orientation-guarded).
+        option :orientation, :symbol, default: :horizontal
+        # Disables every item (Radix root disabled).
+        option :disabled, :boolean, default: false
+        # The group accessible name -> aria-label (poetry addition: shadcn
+        # ships nameless radiogroups/toolbars).
+        option :label, :string
+
+        validates :orientation, inclusion: { in: ORIENTATIONS }
+
+        part "toggle-group", "The role=radiogroup (single) / role=toolbar (multiple) root - the " \
+                             "value-set machine and roving focus ride here; the axes cascade to items",
+             states: {
+               "data-variant" => { condition: "the shared Toggle variant (root wins)",
+                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "the shared Toggle size (root wins)",
+                                values: Toggle::Component::SIZES.map(&:to_s) },
+               "data-spacing" => "the gap step - 0 is the segmented chain (joined corners), >0 free-standing",
+               "data-orientation" => { condition: "the roving axis", values: ORIENTATIONS.map(&:to_s) },
+               "data-disabled" => "the whole group is disabled (disables every item)"
+             },
+             vars: {
+               "--gap" => "the item gap, set inline from spacing: - the root's gap utility consumes it"
+             }
+        part "toggle-group-item", "One dumb <button> under the group machine - Toggle-styled, no " \
+                                  "per-item controller",
+             states: {
+               "data-pressed" => "pressed (bare presence boolean - absent when off; the controller " \
+                                 "rederives the type-correct aria attribute from it)",
+               "data-disabled" => "the item (or the whole group) is disabled - the roving-focus " \
+                                  "collection filter",
+               "data-value" => "the item's key in the value set (always present, unique)",
+               "data-variant" => { condition: "cascaded from the root",
+                                   values: Toggle::Component::VARIANTS.map(&:to_s) },
+               "data-size" => { condition: "cascaded from the root",
+                                values: Toggle::Component::SIZES.map(&:to_s) },
+               "data-spacing" => "cascaded from the root - keys the segmented corner/border chain"
+             }
+
+        # The Accordion value/values API precedent verbatim: the wrong pair
+        # for the type is unrepresentable, not ignored.
+        def initialize(attributes = {})
+          type = (attributes[:type] || attributes["type"] || :single).to_sym
+          raise ArgumentError, "ToggleGroup type must be :single or :multiple" unless TYPES.include?(type)
+
+          if type == :single && attributes.values_at(:values, "values").any?
+            raise ArgumentError, "values: is the :multiple API - single takes value: (one pressed item)"
+          end
+          if type == :multiple && attributes.values_at(:value, "value").any?
+            raise ArgumentError, "value: is the :single API - multiple takes values: (an array)"
+          end
+
+          super
+        end
 
         def before_render
           raise ArgumentError, "ToggleGroup requires at least one with_item" unless items?

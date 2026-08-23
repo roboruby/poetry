@@ -56,7 +56,7 @@ module Poetry
         end
       end
 
-      # The registry's per-component controllers list (N7 W1) is derived
+      # The registry's per-component controllers list is derived
       # from constants; this asserts it equals what the previews ACTUALLY
       # render as data-controller - so the JS surface poetry check / llms.txt
       # / the MCP server read can never drift from what ships.

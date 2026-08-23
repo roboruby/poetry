@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# re-baseline assembly: grade the pre-registered d1-d4 (vault plan
-# note, committed before generation) against the full 31-brief run with a
+# Re-baseline assembly: grade the pre-registered d1-d4 (committed
+# before generation) against the full 31-brief run with a
 # skill-equipped poetry arm vs the FROZEN 2026-07-07 raw controls.
 # Run from the poetry-ui root:
 #   bundle exec ruby eval/results/2026-07-09-rebaseline/results_rebaseline.rb
@@ -9,12 +9,12 @@ require "json"
 
 ROOT = Dir.pwd
 RUN = File.join(ROOT, "eval/results/2026-07-09-rebaseline")
-DD70 = File.join(ROOT, "eval/results/2026-07-07")
+BASELINE = File.join(ROOT, "eval/results/2026-07-07")
 
 def load_json(path) = JSON.parse(File.read(path))
 
 results = load_json(File.join(RUN, "results.json"))
-dd70 = load_json(File.join(DD70, "results.json"))
+baseline = load_json(File.join(BASELINE, "results.json"))
 manifest = load_json(File.join(RUN, "generation-manifest.json"))
 scorecard = load_json(File.join(RUN, "generated-scorecard.json"))
 
@@ -43,8 +43,8 @@ CRASH_ADJUDICATION = {
   "artwork_carousel" => { "check" => "silent", "class" => "tier gap: unknown kwarg :class on a setter" }
 }.freeze
 
-flips = tasks.keys.select { |t| dd70["tasks"][t] && dd70["tasks"][t]["verdict"] != tasks[t]["verdict"] }
-                  .to_h { |t| [t, "#{dd70["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
+flips = tasks.keys.select { |t| baseline["tasks"][t] && baseline["tasks"][t]["verdict"] != tasks[t]["verdict"] }
+                  .to_h { |t| [t, "#{baseline["tasks"][t]["verdict"]} -> #{tasks[t]["verdict"]}"] }
 
 axes = %w[hierarchy composition clarity brief_fit].to_h do |axis|
   [axis, { "poetry" => tasks.count { |_t, s| s.dig("axes", axis) == "poetry" },
@@ -52,9 +52,9 @@ axes = %w[hierarchy composition clarity brief_fit].to_h do |axis|
 end
 
 predictions = {
-  "d1" => { "statement" => "poetry overall wins >= 16 of 31 (13; remediated fold: 15)",
+  "d1" => { "statement" => "poetry overall wins >= 16 of 31 (baseline run: 13; remediated fold: 15)",
             "observed" => "#{poetry_wins}/31 (#{overall.inspect})", "pass" => poetry_wins >= 16 },
-  "d2" => { "statement" => "poetry composition-axis tally >= 14 of 31 (9)",
+  "d2" => { "statement" => "poetry composition-axis tally >= 14 of 31 (baseline run: 9)",
             "observed" => "#{composition}/31", "pass" => composition >= 14 },
   "d3" => { "statement" => ">= 20 of 31 poetry arms invoke a poetry skill unprompted",
             "observed" => "#{SKILL_ADOPTION["poetry_skill_arms"]}/31 (poetry-design: " \
@@ -67,9 +67,9 @@ predictions = {
 
 payload = {
   "assembled_from" => ["results.json", "generated-scorecard.json", "generation-manifest.json",
-                       "#{DD70}/results.json (frozen baseline + controls)"],
+                       "#{BASELINE}/results.json (frozen baseline + controls)"],
   "headline" => overall,
-  "prior_baselines" => { "dd70_full" => dd70["summary"]["overall"],
+  "prior_baselines" => { "baseline_full" => baseline["summary"]["overall"],
                          "dd71_remediated_fold" => { "raw_tailwind" => 16, "poetry" => 15 } },
   "axes" => axes,
   "verdict_changes_vs_dd70" => flips,

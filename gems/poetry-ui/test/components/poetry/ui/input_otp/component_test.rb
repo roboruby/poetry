@@ -133,7 +133,7 @@ module Poetry
           input = fragment.css("input").first
 
           assert_equal "true", input["aria-required"]
-          refute input.key?("required"), "never native required (the /Field rule)"
+          refute input.key?("required"), "never native required (the Field rule)"
           assert_equal "true", input["aria-invalid"]
           assert(fragment.css('[data-slot="input-otp-slot"]').all? { |slot| slot["aria-invalid"] == "true" },
                  "cells carry the styling hook (aria-hidden - AT never hears it)")

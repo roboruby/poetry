@@ -4,13 +4,16 @@ module Poetry
   module Ui
     module Icon
       # The Icon component: template-less, rendering an icon's vendored,
-      # pre-sanitized inner markup from the configured icon set ( -
-      # `config.icon_library`, Lucide by default via poetry-lucide;
+      # pre-sanitized inner markup from the configured icon set
+      # (`config.icon_library`, Lucide by default via poetry-lucide;
       # override per render with `library:`).
       #
-      # The ARIA contract (locked at M5 spec time):
+      # The ARIA contract:
       # - `label:` given  -> standalone/informative: role="img" + aria-label
       # - no `label:`     -> decorative: aria-hidden="true" + focusable="false"
+      #
+      # @example A decorative icon inside a labeled control
+      #   render Poetry::Ui::Icon::Component.new(name: :plus)
       class Component < Poetry::Core::Component
         AGENT_RULES = [
           "Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.",
@@ -19,7 +22,7 @@ module Poetry
 
         # format: :"icon-name" is the machine-readable value contract:
         # the registry carries it, poetry check validates literals against the
-        # icon set statically - the W2 :folder_plus render crash, moved left.
+        # icon set statically - the :folder_plus render-crash class, moved left.
         option :name, :symbol, required: true, format: :"icon-name"
         option :label, :string
         option :library, :symbol
@@ -89,8 +92,8 @@ module Poetry
           {
             "xmlns" => "http://www.w3.org/2000/svg",
             # Lucide's intrinsic box. Without it a standalone icon fills its
-            # container (the 2026-07-01 browser pass rendered a 352px
-            # rocket); inside components the [&_svg]:size-4 rules still win
+            # container (a standalone icon once rendered 352px wide);
+            # inside components the [&_svg]:size-4 rules still win
             # (CSS beats presentation attributes).
             "width" => "24",
             "height" => "24",

@@ -14,7 +14,7 @@
 #     css:verify_compiled: tokens + theme + vendored animate + shadcn
 #     utilities + safelist), keyed on the safelist + input contents
 #   - a flattened controllers bundle (Stimulus UMD + poetry's ES modules
-# with imports/exports rewritten - the spike's approach), keyed
+#     with imports/exports rewritten - the original spike's approach), keyed
 #     on source mtimes
 #
 # Known degradation (spike finding, unchanged here): Dommy.parse drops the
@@ -83,13 +83,13 @@ module DommyTier
       .map { |path| Poetry::Core.root.join(path) }
   end
 
-  # The cn-* theme layer (N11). The real recipe imports it layer(base);
+  # The cn-* theme layer. The real recipe imports it layer(base);
   # dommy imports it UNLAYERED (limit 3): lexbor's @layer handling is
   # unproven, and this tier asserts computed component styles - never
   # utilities-vs-theme precedence - so the layer distinction cannot change
   # a verdict here.
   def theme_css
-    # POETRY_THEME (N12): the dommy tier follows the active theme like every
+    # POETRY_THEME: the dommy tier follows the active theme like every
     # other gate; css_digest includes the file so each theme caches apart.
     Poetry::Ui.root.join("themes/#{ENV.fetch("POETRY_THEME", "default")}.css")
   end
@@ -144,7 +144,7 @@ module DommyTier
     end
   end
 
-  # --- flattened controllers bundle (the spike's approach) -----------
+  # --- flattened controllers bundle (the original spike's approach) --------
   #
   # Dommy 0.9 has no ES-module loader wired into the harness, so the
   # @poetry/controllers module graph is flattened into one classic script:
@@ -202,8 +202,8 @@ module DommyTier
   def flattened_controller(path)
     source = strip_imports(path.read)
              .sub("export default class", %(globalThis.__poetryControllers["#{stimulus_identifier(path)}"] = class))
-             # A controller may EXTEND another (Drawer extends Dialog, N9
-             # W3b): its import was stripped, so point the superclass at the
+             # A controller may EXTEND another (Drawer extends Dialog):
+             # its import was stripped, so point the superclass at the
              # already-registered flattened class. `extends Controller` (the
              # Stimulus base) never matches - the capture needs a name.
              # Parents sort before their children alphabetically today;

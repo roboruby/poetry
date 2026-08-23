@@ -6,9 +6,9 @@ module Poetry
       VARIANTS = %i[default success info warning destructive loading].freeze
       POLITENESS = %i[polite assertive].freeze
 
-      # One notification (Toast): poetry's OWN build -
-      # the source ships the sonner library (a React dependency poetry
-      # cannot take), so poetry keeps sonner's visual language (popover
+      # One notification - poetry's OWN build: the upstream source
+      # delegates to a React-only toast library poetry cannot take, so
+      # poetry keeps its visual language (popover
       # token surface, the variant icon set) on Radix-Toast a11y
       # semantics. The item is role=status aria-live=OFF: it never
       # announces itself - on connect the poetry--core--toast controller
@@ -22,7 +22,20 @@ module Poetry
       # (a missable undo is a bug). Toasts never steal focus on show; the
       # toaster's F8 hotkey reaches them. Swipe-to-dismiss is gated on
       # browser verification and does not ship in this pass (contract).
+      #
+      # @example An undo toast (persistent because it carries an action)
+      #   render Poetry::Ui::Toast::Component.new(variant: :success) do |toast|
+      #     toast.with_title { "Message archived" }
+      #     toast.with_action { "Undo" }
+      #   end
       class Component < Poetry::Core::Component
+        # The variant icon set (default ships no icon; loading spins -
+        # the promise-lifecycle opener).
+        VARIANT_ICONS = {
+          success: :"circle-check", info: :info, warning: :"triangle-alert",
+          destructive: :"octagon-x", loading: :"loader-circle"
+        }.freeze
+
         AGENT_RULES = [
           "Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never " \
           "hand-append into #poetry-toaster.",
@@ -34,12 +47,58 @@ module Poetry
           "Toasts are supplementary: never the only place an outcome is recorded."
         ].freeze
 
-        # The sonner-slot icon set rides the variant (default ships no
-        # icon; loading spins - the promise-lifecycle opener).
-        VARIANT_ICONS = {
-          success: :"circle-check", info: :info, warning: :"triangle-alert",
-          destructive: :"octagon-x", loading: :"loader-circle"
-        }.freeze
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { title: "the message" }.freeze
+
+        # The forwarding-lambda fact: with_action renders a
+        # Button - callers get Button's full typed-slot contract statically.
+        SLOT_RENDERS = { action: Button::Component }.freeze
+
+        # The message (REQUIRED - the announced payload's first line).
+        renders_one :title
+
+        renders_one :description
+
+        # Typed Button slot (undo / view / retry): clicking it dismisses
+        # with reason "action" (the controller reads the origin slot).
+        renders_one :action, lambda { |**options, &block|
+          wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
+          # Caller attribute keys merge WITH the wiring (stimulus concat)
+          # instead of replacing it at the kwargs splat; component options
+          # (variant: etc.) stay plain kwargs.
+          attr_keys = options.keys.select { |k| k == :data || k.to_s.start_with?("data-", "aria-") }
+          caller_attrs = attr_keys.to_h { |k| [k, options.delete(k)] }
+          merged = Poetry::Core::HTML::Attributes.merged(wiring, caller_attrs)
+          Button::Component.new(variant: :outline, size: :sm, **merged.symbolize_keys, **options, &block)
+        }
+
+        # APG timing wiring: hover and focus-within hold the timer (the
+        # window-blur / tab-hidden holds are wired by the controller).
+        use_stimulus do
+          on :root do
+            controller :toast do
+              register
+              value :duration, from: :effective_duration
+              value :politeness
+              action :pause, on: %i[mouseenter focusin]
+              action :resume, on: %i[mouseleave focusout]
+            end
+          end
+          on :action do
+            controller :toast do
+              target :action
+              action :dismiss, on: :click
+            end
+          end
+          on :close do
+            controller :toast do
+              target :close
+              action :dismiss, on: :click
+            end
+          end
+        end
 
         style :variant, default: :default, required: true, variants: VARIANTS
 
@@ -71,59 +130,6 @@ module Poetry
                            "renders none)"
         part "toast-title", "The message - the announced payload's first line (required slot)"
         part "toast-description", "Supporting copy under the title"
-
-        # APG timing wiring: hover and focus-within hold the timer (the
-        # window-blur / tab-hidden holds are wired by the controller).
-        use_stimulus do
-          on :root do
-            controller :toast do
-              register
-              value :duration, from: :effective_duration
-              value :politeness
-              action :pause, on: %i[mouseenter focusin]
-              action :resume, on: %i[mouseleave focusout]
-            end
-          end
-          on :action do
-            controller :toast do
-              target :action
-              action :dismiss, on: :click
-            end
-          end
-          on :close do
-            controller :toast do
-              target :close
-              action :dismiss, on: :click
-            end
-          end
-        end
-
-        # The message (REQUIRED - the announced payload's first line).
-        renders_one :title
-
-        renders_one :description
-
-        # Typed Button slot (undo / view / retry): clicking it dismisses
-        # with reason "action" (the controller reads the origin slot).
-        renders_one :action, lambda { |**options, &block|
-          wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
-          # Caller attribute keys merge WITH the wiring (stimulus concat)
-          # instead of replacing it at the kwargs splat; component options
-          # (variant: etc.) stay plain kwargs.
-          attr_keys = options.keys.select { |k| k == :data || k.to_s.start_with?("data-", "aria-") }
-          caller_attrs = attr_keys.to_h { |k| [k, options.delete(k)] }
-          merged = Poetry::Core::HTML::Attributes.merged(wiring, caller_attrs)
-          Button::Component.new(variant: :outline, size: :sm, **merged.symbolize_keys, **options, &block)
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { title: "the message" }.freeze
-
-        # The forwarding-lambda component fact: with_action renders a
-        # Button - callers get Button's full typed-slot contract statically.
-        SLOT_RENDERS = { action: Button::Component }.freeze
 
         def before_render
           raise ArgumentError, "Toast requires with_title (the message)" unless title?

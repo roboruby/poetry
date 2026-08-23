@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# remediation assembly: fold the subset re-run and the theme-variant
+# Remediation assembly: fold the subset re-run and the theme-variant
 # re-judges into eval/results/2026-07-08/results-remediation.json.
 # Run from the poetry-ui root: bundle exec ruby <this file>
 require "json"
@@ -48,7 +48,10 @@ subset = AFFECTED.to_h do |task|
   [task, {
     "before" => {
       "verdict" => base_verdicts.dig(task, "verdict"),
-      "failure" => base_results.dig("tasks", task, "gates", "poetry") ? "render/turn failure ": nil
+      "failure" => if base_results.dig("tasks", task, "gates",
+                                       "poetry")
+                     "render/turn failure (see the pre-registered run)"
+                   end
     },
     "after" => {
       "delivered" => unit["artifact"] == true,
@@ -71,7 +74,7 @@ combined = themed.merge(rem_themed.slice(*AFFECTED))
 
 payload = {
   "schema" => "results-remediation-v1",
-  "headline_stands" => "'s pre-registered result (raw 18 - poetry 13) is untouched; " \
+  "headline_stands" => "The pre-registered result (raw 18 - poetry 13) is untouched; " \
                        "everything here is a post-hoc remediation demonstration.",
   "remediation" => {
     "legs" => [

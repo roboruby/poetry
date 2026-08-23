@@ -90,7 +90,7 @@ poetry:
   theme: lyra
   source: tokens/tokens.dtcg.json
   generator: bin/rake design:export_all
-  dark_mode: class.dark
+  dark_mode: class .dark
   radius: 0.625rem
   radius_scale:
     sm: calc(var(--radius) * 0.6)
@@ -176,7 +176,7 @@ Semantic roles only - components never reference raw palette values
 ## Typography
 
 - pairing: system mono (upstream: JetBrains Mono, radius none) (app-level metadata - no poetry theme
-  moves a font token;)
+  moves a font token)
 - family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace
 
 ## Layout

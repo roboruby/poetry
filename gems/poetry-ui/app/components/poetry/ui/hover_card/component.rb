@@ -9,9 +9,9 @@ module Poetry
       SIDES = %i[top right bottom left].freeze
       ALIGNS = %i[start center end].freeze
 
-      # The popper-consumer trio's pointer-only member ([[CL Component -
-      # HoverCard]]): a rich preview behind a LINK, for sighted pointer
-      # users, BY DESIGN not an interaction path. The root carries
+      # The popper-consumer trio's pointer-only member: a rich preview
+      # behind a LINK, for sighted pointer users, BY DESIGN not an
+      # interaction path. The root carries
       # poetry--core--hover-card (open/close pair timers, the touch
       # double-guard, the focus mirror, the per-open tabindex strip, the
       # selection hold) + poetry--core--popper; the content's dismissable
@@ -25,6 +25,12 @@ module Poetry
       # hover card must exist at the trigger link's destination - the
       # trigger stays an <a href> because it is simultaneously the no-JS
       # fallback, the touch path, and the keyboard path.
+      #
+      # @example A profile preview behind a real link
+      #   render Poetry::Ui::HoverCard::Component.new do |card|
+      #     card.with_trigger(href: "/users/nextjs") { "@nextjs" }
+      #     "Joined December 2021."
+      #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
@@ -49,21 +55,38 @@ module Poetry
           "Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first open."
         ].freeze
 
-        option :open, :boolean, default: false
-        # N13 W5: defer the card body to a lazy turbo-frame. The panel is
-        # hidden until hover, so the fetch fires on first open for free;
-        # the component block (if any) becomes the frame's placeholder.
-        option :defer, :string
-        option :open_delay, :integer, default: 600 # Base UI PreviewCard OPEN_DELAY
-        option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :center # shadcn Content default
-        option :side_offset, :integer, default: 4 # shadcn Content default
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
-        # The panel's class merge seam (demo parity: content_class: "w-80"
-        # overrides the source w-64).
-        option :content_class, :string
+        # The same facts the before_render raise enforces, stated statically:
+        # poetry check flags the omission without rendering (the menu crash
+        # class - required slots the contract kept silent).
+        REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
+
+        # The enriched LINK (Radix Primitive.a): a real navigable <a> -
+        # THE no-JS fallback. tag: passthrough exists but change it
+        # knowingly (an <a> is the contract's fallback story). NO
+        # aria-haspopup/expanded/describedby - the card is invisible to
+        # the accessibility tree on purpose. Built as a lazy anatomy part
+        # (rendered at render time, not at with_trigger time).
+        #
+        # variant:/size: route through Button::Component (the tooltip
+        # convention) - Button's href-implies-anchor keeps the trigger a
+        # REAL <a> wearing button styling, so the reachable-elsewhere
+        # contract holds (the upstream sides demo look, contract intact).
+        renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
+          @trigger_href = href
+          attrs = {
+            "id" => trigger_id, "data-slot" => "hover-card-trigger"
+          }.merge(stimulus_attributes_for(:trigger))
+          # Base UI trigger state: bare data-popup-open while open, NO
+          # attribute while closed (absence IS the state).
+          attrs["data-popup-open"] = "" if open
+          next composed_trigger(attrs, options, &block) if options[:compose]
+          if options.key?(:variant) || options.key?(:size)
+            next Button::Component.new(href: href, **attrs, **options, &block)
+          end
+
+          attrs["href"] = href if href.present?
+          Trigger.new(tag_name: tag, attributes: Poetry::Core::HTML::Attributes.merged(attrs, options))
+        }
 
         use_stimulus do
           on :root do
@@ -100,6 +123,22 @@ module Poetry
           end
         end
 
+        option :open, :boolean, default: false
+        # Defer the card body to a lazy turbo-frame. The panel is
+        # hidden until hover, so the fetch fires on first open for free;
+        # the component block (if any) becomes the frame's placeholder.
+        option :defer, :string
+        option :open_delay, :integer, default: 600 # Base UI PreviewCard OPEN_DELAY
+        option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
+        option :side, :symbol, default: :bottom
+        option :align, :symbol, default: :center # shadcn Content default
+        option :side_offset, :integer, default: 4 # shadcn Content default
+        option :align_offset, :integer, default: 0
+        option :avoid_collisions, :boolean, default: true
+        # The panel's class merge seam (demo parity: content_class: "w-80"
+        # overrides the source w-64).
+        option :content_class, :string
+
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
 
@@ -129,39 +168,6 @@ module Poetry
                "--anchor-width" => "the anchor's measured width (popper)",
                "--anchor-height" => "the anchor's measured height (popper)"
              }
-
-        # The enriched LINK (Radix Primitive.a): a real navigable <a> -
-        # THE no-JS fallback. tag: passthrough exists but change it
-        # knowingly (an <a> is the contract's fallback story). NO
-        # aria-haspopup/expanded/describedby - the card is invisible to
-        # the accessibility tree on purpose. Built as a lazy anatomy part
-        # (rendered at render time, not at with_trigger time).
-        #
-        # variant:/size: route through Button::Component (the tooltip
-        # convention) - Button's href-implies-anchor keeps the trigger a
-        # REAL <a> wearing button styling, so the reachable-elsewhere
-        # contract holds (the upstream sides demo look, contract intact).
-        renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
-          @trigger_href = href
-          attrs = {
-            "id" => trigger_id, "data-slot" => "hover-card-trigger"
-          }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
-          attrs["data-popup-open"] = "" if open
-          next composed_trigger(attrs, options, &block) if options[:compose]
-          if options.key?(:variant) || options.key?(:size)
-            next Button::Component.new(href: href, **attrs, **options, &block)
-          end
-
-          attrs["href"] = href if href.present?
-          Trigger.new(tag_name: tag, attributes: Poetry::Core::HTML::Attributes.merged(attrs, options))
-        }
-
-        # The same facts the before_render raise enforces, stated statically
-        #: poetry check flags the omission without rendering (the
-        # menu crash class - required slots the contract kept silent).
-        REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
 
         def before_render
           raise ArgumentError, "HoverCard requires with_trigger (the enriched link)" unless trigger?
@@ -219,6 +225,8 @@ module Poetry
       # Poetry::Core::Component descendants register in the component
       # registry, and the trigger is anatomy, not a component (the
       # DropdownMenu precedent).
+      #
+      # @api private
       class Trigger < Poetry::Core::Component
         internal_component!
 
