@@ -14,6 +14,10 @@ module Poetry
       # shadcn actually paints it (bg-destructive/60 composited over the page
       # background - 6.5:1); solid dark destructive under white text is 2.9:1
       # and therefore a forbidden pattern, documented here.
+      #
+      # @example
+      #   gate = Poetry::Core::Tokens::ContrastGate.new(Poetry::Core::Tokens.load)
+      #   gate.violations # => [] when every locked pair still holds
       class ContrastGate
         THRESHOLDS = { aaa: 7.0, aa: 4.5 }.freeze
 

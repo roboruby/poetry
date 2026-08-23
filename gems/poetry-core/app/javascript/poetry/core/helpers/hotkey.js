@@ -3,7 +3,7 @@
 // data-hotkey affordances). "meta+k" / "ctrl+shift+p": '+'-separated
 // modifiers plus one final key token, matched exactly - unlisted modifiers
 // must be UP, so plain typing never triggers. "meta" matches metaKey OR
-// ctrlKey (⌘K on mac, ^K elsewhere - the cmdk convention).
+// ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention).
 export function matchesHotkey(event, descriptor) {
   const tokens = descriptor.toLowerCase().split("+").map((token) => token.trim())
   const key = tokens.pop()
@@ -22,7 +22,7 @@ export function matchesHotkey(event, descriptor) {
 
 // True when the event originates in a text-editing context - unmodified
 // single-key shortcuts ("/", "?") must stay inert while the user types
-// (the upstream library use-hotkeys tagsToIgnore convention).
+// (the standard hotkey ignore list: form fields and contenteditable).
 export function isEditingTarget(event) {
   const target = event.composedPath?.()[0] ?? event.target
   if (!target || !(target instanceof Element)) return false

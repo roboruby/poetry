@@ -12,8 +12,7 @@ module Poetry
       #
       # The Builder validates every name it emits against this, so a
       # renamed controller method can never silently strand gem-rendered
-      # wiring - the Ruby<->JS seam is guarded at render time (adopted from
-      # the 2026-07-01 stimulus-plumbers / stimeo-ui review sweep).
+      # wiring - the Ruby<->JS seam is guarded at render time.
       #
       # Policy: poetry-namespaced identifiers ("poetry--*") are validated
       # strictly (unknown one raises); host-app controllers are unknown to

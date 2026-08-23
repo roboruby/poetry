@@ -4,7 +4,7 @@ import { controllers, registerPoetryControllers } from "@poetry/controllers"
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 
-// The M3 DoD: a sidecar Stimulus controller auto-registers under a JS
+// The registration contract: a sidecar Stimulus controller auto-registers under a JS
 // bundler via the npm channel's one-liner (the importmap channel serves the
 // identical source through the engine's pins).
 describe("registerPoetryControllers", () => {

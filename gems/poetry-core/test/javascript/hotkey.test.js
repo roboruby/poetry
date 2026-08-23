@@ -10,7 +10,7 @@ function key(props) {
 }
 
 describe("hotkey helper", () => {
-  it("meta descriptor matches metaKey OR ctrlKey (the cmdk convention)", () => {
+  it("meta descriptor matches metaKey OR ctrlKey (the command-palette convention)", () => {
     expect(matchesHotkey(key({ key: "k", metaKey: true }), "meta+k")).toBe(true)
     expect(matchesHotkey(key({ key: "k", ctrlKey: true }), "meta+k")).toBe(true)
     expect(matchesHotkey(key({ key: "k" }), "meta+k")).toBe(false)

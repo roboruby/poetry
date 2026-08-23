@@ -23,7 +23,7 @@ import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 // Restore is guarded: if a Turbo morph replaced the origin while the
 // popup was out, the content is DROPPED, never stranded at body. A lazy
 // turbo:before-cache net force-restores everything still portaled so a
-// snapshot never caches body-level popups (the zombie class).
+// snapshot never caches body-level popups (the zombie-popup class).
 const portaled = new Map()
 const bridgeEvents = new Set(["poetry:state-change"])
 let cacheNetInstalled = false

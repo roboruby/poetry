@@ -166,7 +166,7 @@ module Poetry
                         "a blockless registry adds no back-reference"
       end
 
-      # --- the blocks surface (Blocks v1) ---
+      # --- the blocks surface ---
 
       def test_list_blocks_teaches_the_catalog_and_empty_registries_say_so
         with_blocks_server do |blocks_server|

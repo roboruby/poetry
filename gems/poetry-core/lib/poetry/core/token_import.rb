@@ -20,13 +20,17 @@ module Poetry
     # tasks poetry:design:import / poetry:figma:import / poetry:paper:import all
     # funnel through `load`):
     #
-    #   .json -> figma    : a DTCG / Figma-variables / Tokens-Studio export
+    #   .json -> figma    : a DTCG / Figma-variables export (plugin shapes vary)
     #   .css  -> css_vars : a Paper "Copy theme" or shadcn CSS custom-property block
     #   .md   -> DesignMd.parse : the existing DESIGN.md path
     #
     # Tolerant like DesignMd.parse: whatever cannot be resolved to a poetry role
     # or parsed as a color lands in doc["unknown"]["colors"], and the planner
-    # REPORTS it rather than guessing (the poetry-reactive ethos).
+    # REPORTS it rather than guessing.
+    #
+    # @example
+    #   doc = Poetry::Core::TokenImport.load("figma-variables.json")
+    #   Poetry::Core::DesignMd::Import.new.plan(doc) # the same gated pipeline
     module TokenImport
       # Path segments (from Figma collections/modes or CSS selectors) that name
       # a color mode. Anything else defaults to light; poetry then PINS dark
@@ -62,7 +66,7 @@ module Poetry
           end
         end
 
-        # A DTCG / Figma-variables / Tokens-Studio export -> doc. The export
+        # A DTCG / Figma-variables export -> doc. The export
         # shape varies by plugin (nested groups, collection/mode dimensions,
         # `{alias}` references, hex strings vs DTCG color objects), so the
         # walker is deliberately tolerant: it finds every color-ish leaf, keys

@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 // The client-side toast delivery trigger (poetry's no-round-trip path -
-// what sonner does with a toast() JS factory, done with server-rendered
+// what a toast() JS factory does elsewhere, done with server-rendered
 // markup): press -> dispatch poetry:toaster:stamp, and the toaster clones
 // the addressed <template>'s toast into its region. The toast inside the
 // template is byte-for-byte what a Turbo Stream would deliver.

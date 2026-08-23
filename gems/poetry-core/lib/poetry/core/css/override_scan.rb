@@ -3,20 +3,26 @@
 module Poetry
   module Core
     module CSS
-      # The.cn-* override contract ( - the intent-vs-accident
-      # model pointed at poetry's one un-contracted styling surface). Hosts
-      # MAY restyle theme-owned cn-* classes from their own CSS (any
-      # unlayered rule beats the theme's layer(base)) - but every such
-      # override must be DECLARED: a dated, reasoned, scoped entry under
-      # `overrides:` in config/poetry_components.yml. Undeclared overrides
-      # are drift; declared ones are design intent that travels into
-      # DESIGN.md's "Intentional deviations" section.
+      # The .cn-* override contract - an intent-vs-accident distinction for
+      # poetry's one un-contracted styling surface. Hosts MAY restyle
+      # theme-owned cn-* classes from their own CSS (any unlayered rule
+      # beats the theme's layer(base)) - but every such override must be
+      # DECLARED: a dated, reasoned, scoped entry under `overrides:` in
+      # config/poetry_components.yml. Undeclared overrides are drift;
+      # declared ones are design intent that travels into DESIGN.md's
+      # "Intentional deviations" section.
       #
       # Pure logic: {relative_path => css} sources + raw declaration hashes
       # in, findings out. The poetry:design:overrides task feeds and prints
-      # it. Declaration rules (the declared-override discipline): `reason` is
-      # required; `cn: "*"` must be file-scoped - a repo-wide blanket
-      # cannot happen by accident.
+      # it. Declaration rules: `reason` is required; `cn: "*"` must be
+      # file-scoped - a repo-wide blanket cannot happen by accident.
+      #
+      # @example
+      #   scan = Poetry::Core::CSS::OverrideScan.new(
+      #     sources: { "app/assets/site.css" => css },
+      #     declarations: YAML.load_file("config/poetry_components.yml")["overrides"]
+      #   )
+      #   scan.ok? || scan.undeclared # => [["app/assets/site.css", ["cn-button"]]]
       class OverrideScan
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/
         COMMENT = %r{/\*.*?\*/}m
@@ -45,7 +51,7 @@ module Poetry
         def ok? = @undeclared.empty? && @invalid.empty?
 
         # The exact YAML to paste for an undeclared override - a finding
-        # ships its own exception command (the exception-command move).
+        # ships its own exception command.
         def snippet_for(path, classes)
           cn = classes.size == 1 ? classes.first.inspect : "\"*\""
           <<~YAML

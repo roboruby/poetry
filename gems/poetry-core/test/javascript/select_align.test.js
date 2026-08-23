@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// poetry--core--select alignItemWithTrigger (N13 W2) - the MODE/FALLBACK
+// poetry--core--select alignItemWithTrigger - the MODE/FALLBACK
 // logic only: jsdom has no layout, so every geometry path resolves to the
 // Base UI fallback (trigger at 0,0 sits inside the 20px collision
 // threshold), which is exactly the branch worth pinning here. The real

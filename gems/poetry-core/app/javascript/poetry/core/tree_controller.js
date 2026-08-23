@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 import { createTypeahead, typeaheadLabel } from "@poetry/controllers/helpers/typeahead"
 
-// The Tree engine (the react-aria flat-treegrid contract): the
+// The Tree engine (the flat-treegrid contract): the
 // server renders a FLAT list of role=row siblings - hierarchy lives
 // entirely in aria-level/posinset/setsize (static per render) - so this
 // controller owns only what HTML cannot: roving focus over VISIBLE rows,
@@ -52,7 +52,7 @@ export default class TreeController extends Controller {
     }
   }
 
-  // click on a row toggles when expandable (the react-aria default press
+  // click on a row toggles when expandable (the default press
   // behavior with no action/link/selection); clicks on inner controls
   // (links, the chevron) stay their own.
   press(event) {

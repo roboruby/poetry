@@ -3,15 +3,19 @@
 module Poetry
   module Core
     module CSS
-      # Herb-AST extraction of the STATIC class attributes in ERB templates
-      # ('s "static-attr portion only" rule): literal chunks of a class
-      # attribute are collected; ERB-dynamic chunks are skipped entirely, so
-      # dynamic class logic can never false-flag. Feeds the Tailwind safelist
-      # (template classes survive the host's purge) and doubles as the herb
-      # parse gate - parse errors are surfaced, not swallowed.
+      # Herb-AST extraction of the STATIC class attributes in ERB templates:
+      # only the literal chunks of a class attribute are collected;
+      # ERB-dynamic chunks are skipped entirely, so dynamic class logic can
+      # never false-flag. Feeds the Tailwind safelist (template classes
+      # survive the host's purge) and doubles as the herb parse gate -
+      # parse errors are surfaced, not swallowed.
       #
       # Herb is loaded lazily: it is a build/CI-time tool, not a runtime
       # dependency of the gem.
+      #
+      # @example
+      #   result = Poetry::Core::CSS::TemplateClasses.extract('<div class="p-4 <%= extra %>">')
+      #   result.classes # => ["p-4"]
       class TemplateClasses
         ParseError = Struct.new(:path, :message) do
           def to_s

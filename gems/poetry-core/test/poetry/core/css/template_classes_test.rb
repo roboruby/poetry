@@ -36,7 +36,7 @@ module Poetry
           refute_empty result.errors
         end
 
-        # The herb parse gate (M2): every component template in the gem must
+        # The herb parse gate: every component template in the gem must
         # parse clean, and its static classes feed the safelist.
         def test_gem_templates_parse_clean
           result = TemplateClasses.scan(root: Poetry::Core.root)

@@ -13,7 +13,7 @@ require "poetry/core"
 module Dummy
   # Minimal Rails host for exercising the engine + components in tests and
   # previews. Intentionally lean: no database, no asset pipeline yet — Propshaft
-  # / importmap get wired when there is real JS/CSS to serve (later milestone).
+  # / importmap get wired when there is real JS/CSS to serve.
   class Application < Rails::Application
     config.root = File.expand_path("..", __dir__)
     config.eager_load = false

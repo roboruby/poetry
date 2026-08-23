@@ -19,6 +19,13 @@ module Poetry
       #
       # Dynamic runtime names (`--drawer-swipe-movement-${axis}`) enter as
       # PREFIXES: a read resolves if it starts with a registered prefix.
+      #
+      # @example
+      #   coverage = Poetry::Core::CSS::VarCoverage.new(
+      #     compiled_css: File.read("app/assets/builds/tailwind.css"),
+      #     extra_definitions: ["--anchor-width"] # assigned from JS at runtime
+      #   )
+      #   coverage.ok? || coverage.dead_reads # => ["--never-defined"]
       class VarCoverage
         # `--x:` declarations; the lookbehind keeps Stimulus event tokens
         # (`poetry--core--calendar:change`) and BEM-ish substrings out.
@@ -45,8 +52,8 @@ module Poetry
 
         # Reads that resolve to nothing: not declared in the build, not
         # @property-registered, not runtime-assigned. Each one is a rule
-        # silently falling back (or to nothing at all) - the class of bug
-        # dug out by hand as the 13 dead --radix-* reads.
+        # silently falling back (or to nothing at all) - a class of bug
+        # once dug out by hand as a dozen dead reads of renamed vars.
         def dead_reads
           reads.reject do |name|
             definitions.include?(name) || @definition_prefixes.any? { |prefix| name.start_with?(prefix) }

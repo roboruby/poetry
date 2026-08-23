@@ -12,7 +12,8 @@ import {
   processInput
 } from "@poetry/controllers/helpers/mask"
 
-// The input-mask machine (use-mask 9.4.1 port) on a bare native
+// The input-mask machine (the mask engine adapted from Mantine's use-mask -
+// see THIRD_PARTY_NOTICES.md) on a bare native
 // <input> - this.element IS the input. Three layers:
 //
 // 1. THE PRIMARY PATH is keydown with preventDefault: a printable char
@@ -39,7 +40,7 @@ import {
 //    is clamped into [first token, end of filled region] on focus (rAF),
 //    mousedown (rAF) and mouseup; selections are never touched.
 //
-// Port caveat: unlike an upstream library, every programmatic value write dispatches a
+// Port caveat: unlike the upstream engine, every programmatic value write dispatches a
 // native bubbling `input` event (#painting guards the controller against
 // its own echo) so Rails/Turbo listeners stay live. The raw value mirrors
 // to data-raw after every change; `pattern` is set on connect from
@@ -458,7 +459,7 @@ export default class MaskController extends Controller {
   }
 
   // Every programmatic value write echoes a native bubbling input event
-  // (the recorded an upstream library port caveat - Rails/Turbo listeners must stay
+  // (the recorded port caveat - Rails/Turbo listeners must stay
   // live); #painting keeps #onInput from re-processing the echo.
   #paint(display, caret) {
     const changed = this.element.value !== display
@@ -485,7 +486,7 @@ export default class MaskController extends Controller {
     return applyMaskToRaw(raw, this.#slots, this.#transform())
   }
 
-  // the upstream library's transform generalizes to any fn; poetry keeps ONE
+  // The upstream transform generalizes to any fn; poetry keeps ONE
   // declarative knob - uppercase before validation.
   #transform() {
     return this.upcaseValue ? (char) => char.toUpperCase() : undefined

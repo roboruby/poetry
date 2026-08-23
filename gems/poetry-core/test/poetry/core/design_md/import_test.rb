@@ -95,8 +95,8 @@ module Poetry
           assert_equal Tokens.load.color("dark", "primary").css, plan.pins["primary"].css
         end
 
-        def test_stitch_fixture_maps_five_roles_and_passes_the_gate
-          plan = fixture_plan("stitch-brand.DESIGN.md")
+        def test_front_matter_fixture_maps_five_roles_and_passes_the_gate
+          plan = fixture_plan("front-matter-brand.DESIGN.md")
 
           assert_equal({ "primary" => "primary", "primary-foreground" => "on-primary",
                          "background" => "background", "card" => "surface", "foreground" => "text" },
@@ -107,8 +107,8 @@ module Poetry
           assert_equal %w[brand-glow negative positive], plan.dropped.map(&:name).sort
         end
 
-        def test_hallmark_fixture_demonstrates_drop_and_the_aa_door
-          plan = fixture_plan("brand-study-study.design.md")
+        def test_prose_study_fixture_demonstrates_drop_and_the_aa_door
+          plan = fixture_plan("prose-study.design.md")
 
           # accent maps (exact role) but fails AA against the default
           # accent-foreground - dropped with the L-walk suggestion.

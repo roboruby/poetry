@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// poetry--core--combobox JS-unit (Combobox): the thin
+// poetry--core--combobox JS-unit: the thin
 // orchestrator - Select's shell (open/close, the native-first 5-step
 // commit pipeline, autofill adoption) over Command's engine, composed via
 // the poetry:command:select event ONLY. The three deliberate deltas vs
@@ -328,7 +328,7 @@ describe("poetry--core--combobox", () => {
 
       expect(el("content").hidden).toBe(true)
       expect(el("native").value).toBe("sveltekit")
-      expect(el("input").value).toBe("") // clean reopen (the React-remount behavior, made explicit)
+      expect(el("input").value).toBe("") // clean reopen (the fresh-mount behavior, made explicit)
       expect(el("item-next.js").hasAttribute("hidden")).toBe(false) // visibility re-derived
       expect(document.activeElement).toBe(el("trigger"))
     })

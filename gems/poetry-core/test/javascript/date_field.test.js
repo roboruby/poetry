@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// The segmented date/time editor (the react-aria segment model):
+// The segmented date/time editor (the segment model):
 // segments build from formatToParts in locale order, digits accumulate
 // with maxValue auto-advance, arrows fill-then-step, the native input
 // stays THE form value (ISO), and blur constrains February 31st. What

@@ -22,9 +22,10 @@
 const QUEUE_GAP = 150
 
 // Safari drops messages announced right after a live region is INSERTED
-// (react-aria waits ~100ms post-creation; a WebKit behavior, not a spec
-// timing) - a fresh region holds its queue until this warmup elapses. The
-// clear-then-set rAF alone (~one frame) is shorter than Safari needs.
+// (reference implementations wait ~100ms post-creation; a WebKit
+// behavior, not a spec timing) - a fresh region holds its queue until
+// this warmup elapses. The clear-then-set rAF alone (~one frame) is
+// shorter than Safari needs.
 const REGION_WARMUP = 100
 
 const POLITENESS = {

@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adpated from https://github.com/jefawks3/fox_tail/blob/main/lib/fox_tail/stimulus_builder.rb
+    # Adapted from https://github.com/jefawks3/fox_tail/blob/main/lib/fox_tail/stimulus_builder.rb
     module Stimulus
       # Builder class for constructing Stimulus controller HTML attributes in a Ruby-friendly way.
       #

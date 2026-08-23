@@ -148,7 +148,7 @@ export default class DismissableController extends Controller {
       // Never save a value this scrim itself writes: a page restored from
       // a cached snapshot arrives with the serialized "none" already on
       // the body, and saving it would make every later restore re-freeze
-      // the page (the poisoned-previous class).
+      // the page (the poisoned-previous restore class).
       const current = document.body.style.pointerEvents
       DismissableController.#previousBodyPointerEvents = current === "none" ? "" : current
       document.body.style.pointerEvents = "none"

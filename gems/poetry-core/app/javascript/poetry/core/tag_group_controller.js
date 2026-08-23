@@ -1,13 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The TagGroup removal engine (the react-aria tag contract):
+// The TagGroup removal engine (the tag-group contract):
 // navigation itself rides the roving-focus controller (the toolbar
 // precedent) - this controller owns what tags add on top:
 //
 // - Delete/Backspace on a focused tag removes it (row-origin keys only;
 //   keys from a tag's inner remove button must not drive the grid).
 // - The remove button removes exactly its own tag.
-// - Focus recovery after removal is the react-aria walk: FORWARD through
+// - Focus recovery after removal is the reference walk: FORWARD through
 //   the pre-removal order to the first surviving enabled tag, then
 //   backward; when the last tag goes, the CONTAINER takes focus, flips
 //   role grid->group, and becomes the tab stop.
@@ -91,7 +91,7 @@ export default class TagGroupController extends Controller {
     }
   }
 
-  // The react-aria walk, in pre-removal DOM order: forward to the first
+  // The reference walk, in pre-removal DOM order: forward to the first
   // surviving enabled tag, then backward.
   #recoveryTarget(row) {
     const rows = this.#rows()

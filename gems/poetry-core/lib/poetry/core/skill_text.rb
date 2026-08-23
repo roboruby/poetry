@@ -2,13 +2,16 @@
 
 module Poetry
   module Core
-    # Generates the component-usage Claude Code skill from the registry
-    # (Skills v1) - the same never-hand-maintained discipline as
-    # LlmsText, one delivery surface over: a lean SKILL.md menu (guardrails
-    # + family index) over references/ files an agent loads selectively,
-    # so a 65-component catalog stays inside the context budget.
+    # Generates the component-usage Claude Code skill from the registry -
+    # the same never-hand-maintained discipline as LlmsText, one delivery
+    # surface over: a lean SKILL.md menu (guardrails + family index) over
+    # references/ files an agent loads selectively, so a 65-component
+    # catalog stays inside the context budget.
     # The family partition itself belongs to the UI gem (it knows its
     # roster); this class only formats.
+    #
+    # @example The installable skill file map
+    #   Poetry::Core::SkillText.new(registry: registry, families: families).files
     class SkillText < LlmsText
       def initialize(registry:, families:, charts_registry: nil)
         super(registry: registry)
@@ -34,8 +37,8 @@ module Poetry
         entries.map { |path, entry| component_section(path, entry) }.join("\n")
       end
 
-      # The component decision tree (, the react-aria skill-genre
-      # port): curated head-to-heads keyed on the INTERACTION MODEL. The
+      # The component decision tree: curated head-to-heads keyed on the
+      # INTERACTION MODEL. The
       # roster facts it names are gate-checked (doc-prose scans installed
       # skill prose), so keep every claim registry-true. A PUBLIC class
       # method: the boot-free MCP agent serves it too (the guidance tool),
@@ -242,8 +245,8 @@ module Poetry
         MD
       end
 
-      # The blocks reference inlines every block's full source (the
-      # lesson: the block WITH source is the load-bearing agent path).
+      # The blocks reference inlines every block's full source - the block
+      # WITH source is the load-bearing agent path.
       def blocks_reference
         <<~MD
           # poetry blocks - vetted composed screens

@@ -1,4 +1,4 @@
-// The mobile breakpoint (N9 W5b): shadcn's use-mobile hook as a helper -
+// The mobile breakpoint: shadcn's use-mobile hook as a helper -
 // matchMedia below Tailwind's md (768px), with a change listener. The
 // first poetry consumer is the Sidebar's mobile-Sheet mode. Environments
 // without matchMedia (the dommy QuickJS engine, bare jsdom) report

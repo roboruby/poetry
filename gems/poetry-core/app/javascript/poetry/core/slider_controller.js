@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 
-// The Slider machine - the only N5 control with real math. Three concerns,
+// The Slider machine - the only form control with real math. Three concerns,
 // nothing else:
 //
 // 1. THE VALUE MATH (the pure core, unit-tested exhaustively): snap to the

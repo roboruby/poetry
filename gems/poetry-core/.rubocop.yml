@@ -32,10 +32,11 @@ Naming/FileName:
   Exclude:
     - "lib/poetry-core.rb"
 
-# --- poetry-core framework port ---------------------------------------------
-# The framework layer is ported intact from view_component_plus (which used
-# `standard`). A few RuboCop defaults flag legitimate, proven patterns in that
-# ported code; relax the advisory cops rather than refactor battle-tested logic.
+# --- poetry-core framework port ----------------------------------------------
+# The framework layer is ported intact from an earlier reference implementation
+# (linted with `standard`). A few RuboCop defaults flag legitimate, proven
+# patterns in that ported code; relax the advisory cops rather than refactor
+# battle-tested logic.
 
 # The ported code is thoroughly YARD-documented, but on the inner modules/classes
 # rather than the compact `module Poetry::Core` namespace wrappers.

@@ -3,7 +3,7 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { setState } from "@poetry/controllers/helpers/state"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The NavigationMenu coordinator (N9 W4c, the viewport=false mode): a
+// The NavigationMenu coordinator (the viewport=false mode): a
 // DISCLOSURE BAR, not a menu - Tab moves through triggers and links
 // normally, arrows are convenience navigation, nothing traps. Each item's
 // panel is its own popup positioned under the item; this controller owns
@@ -168,7 +168,7 @@ export default class NavigationMenuController extends Controller {
     this.#closeViewport()
   }
 
-  // -- the morphing viewport -----------------------------------
+  // -- the morphing viewport -----------------------------------------------
 
   #viewport() {
     return this.element.querySelector(VIEWPORT_SELECTOR)

@@ -236,7 +236,7 @@ module Poetry
           assert(styles.all? { |s| s[:required] })
         end
 
-        # --- REQUIRED_SLOTS (the menu crash class) ---
+        # --- REQUIRED_SLOTS (the menu crash class - required slots the contract kept silent) ---
 
         def test_declared_required_slots_are_validated_and_carried
           assert_equal({ "icon" => "the leading glyph", "row" => "at least one row" },

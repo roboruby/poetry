@@ -2,7 +2,7 @@
 
 The Rails engine, component DSL, and primitives that power **[poetry](https://github.com/roboruby/poetry)** — the AI-native, Rails-first component library. This gem is the *framework* layer (the engine, the `Component` base class plus the Styles/Options DSL, the Stimulus integration, the preview infrastructure). The components themselves live in `poetry-ui`.
 
-> **Status: early release.** Extracted from `view_component_plus` as part of the poetry build (milestone M0). There is no stable public API yet.
+> **Status: early release.** Extracted from `view_component_plus` as part of the poetry build. There is no stable public API yet.
 
 ## Installation
 

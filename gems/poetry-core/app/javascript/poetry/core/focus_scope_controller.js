@@ -108,7 +108,7 @@ export default class FocusScopeController extends Controller {
   #handleKeydown(event) {
     if (event.key !== "Tab") return
     // A Tab mid-IME-composition commits the candidate text, it does not
-    // navigate - intercepting it eats the commit (react-aria's guard).
+    // navigate - intercepting it eats the commit, so let it pass.
     if (event.isComposing) return
     if (!this.trappedValue && !this.loopValue) return
 

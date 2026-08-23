@@ -5,7 +5,7 @@ require "test_helper"
 module Poetry
   module Core
     module Concerns
-      # The BEM token IR + css_mode emission (U2).
+      # The BEM token IR + css_mode emission.
       class BemTest < ViewComponent::TestCase
         # A minimal styled component exercising symbol AND boolean modifiers.
         module Chip
@@ -76,8 +76,8 @@ module Poetry
           assert_raises(Poetry::Core::Error) { Chip::Component.new.css(css_mode: :both) }
         end
 
-        # The M2 DoD: the same component renders under BOTH modes via the
-        # global config switch.
+        # The dual-mode contract: the same component renders under BOTH
+        # modes via the global config switch.
         def test_component_renders_in_both_modes
           Poetry::Core::Config.current.css_mode = :tailwind
           tailwind_html = render_inline(Chip::Component.new(color: :red)).to_html

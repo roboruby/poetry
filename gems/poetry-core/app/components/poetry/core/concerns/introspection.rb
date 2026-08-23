@@ -50,8 +50,8 @@ module Poetry
 
           def option_definition(name)
             definition = { name: name, type: attribute_types[name.to_s].type }
-            # An inclusion validator IS the option's enum contract (Blocks
-            # v1.1): projecting it makes every enum option statically
+            # An inclusion validator IS the option's enum contract:
+            # projecting it makes every enum option statically
             # checkable - select's side:/align:, pagination's
             # current_variant: - through the same value tier style variants
             # already ride. Procs/ranges stay unprojected (unknowable).
@@ -70,7 +70,7 @@ module Poetry
           # -> many (ViewComponent registers the plural name with collection).
           # A typed slot (renders_one :icon, Icon::Component) also carries the
           # slot component's registry path - the machine-readable form of "this
-          # slot takes that component's props, not a render block" (the W2
+          # slot takes that component's props, not a render block" (the
           # alert crash class: an agent can only honor a contract a surface
           # states). Recursion, setter arities, and builder surfaces come from
           # the module-level walker.
@@ -121,14 +121,14 @@ module Poetry
         # - yieldless: a slot lambda that declares &block consumes the
         #   consumer's block itself (poetry convention: capture(&block) with
         #   no arguments), so a block param at the call site is nil at render
-        # (the menu crash: `menu.with_item do |item|`). A lambda that
+        #   (the menu crash: `menu.with_item do |item|`). A lambda that
         #   stores the block and calls it WITH arguments later (DataTable's
         #   per-row cell renderer) is indistinguishable by signature, so such
         #   a class declares SLOT_BLOCK_YIELDS = { setter => what the block
         #   receives } and the walker exempts those setters
         # - setter_kwargs: the accepted keyword names of a closed-signature
         #   slot lambda (`|classes: nil, &block|`) - any other keyword is an
-        # ArgumentError at render (the artwork_carousel crash:
+        #   ArgumentError at render (the artwork_carousel crash:
         #   `with_item(class:)`). Open signatures (**rest), positional-hash
         #   signatures, and class renderables (kwargs ride the attributes
         #   hash) are unknowable-or-open and stay unemitted.
@@ -137,7 +137,7 @@ module Poetry
         #   declares SLOT_REQUIRED_CONTENT = { setter => hint } (the
         #   SLOT_BUILDERS pattern) and the registry states the requirement
         # - required_slots: a before_render raise ("Menubar menu requires
-        # with_trigger" - the menu crash rendered FOUR truthful
+        #   with_trigger" - the menu crash rendered FOUR truthful
         #   checks silent) cannot be introspected, so a slot-owning class
         #   declares REQUIRED_SLOTS = { setter => hint } and the registry
         #   states which setters a call cannot omit. Keys must resolve to a
@@ -148,7 +148,7 @@ module Poetry
         #   hand-rolled alias (NavigationMenu's with_item-or-with_link)
         #   stays undeclared - a false "missing slot" on a legitimate
         #   template is worse than a silent gap.
-        # - requires_any: the conditional any-of contracts ( - the two
+        # - requires_any: the conditional any-of contracts (the two
         #   crash classes that survived every single-fact tier: Button's
         #   "content OR icon slot OR loading:", Command's "id OR
         #   aria-label"). A class declares REQUIRES_ANY = [{ hint:,

@@ -185,7 +185,7 @@ describe("poetry--core--navigation-menu", () => {
   })
 })
 
-// -- the morphing viewport ----------------------------------
+// -- the morphing viewport --------------------------------------------------
 
 const viewportMarkup = () => `
   <nav id="root" aria-label="Main" data-viewport="true"

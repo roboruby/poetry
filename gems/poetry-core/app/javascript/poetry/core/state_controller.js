@@ -8,7 +8,7 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 // attribute - a server re-render, the URL, an Outlet, or this default -
 // the controller code is identical either way.
 //
-// Optional reflection targets (the Collapsible contract, N2): a trigger
+// Optional reflection targets (the Collapsible contract): a trigger
 // target mirrors aria-expanded; a content target rides the presence
 // helper (the pair flip deferred through animationend, hidden applied
 // only after the exit animation finishes).

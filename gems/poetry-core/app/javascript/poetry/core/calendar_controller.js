@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Calendar engine (N9 W6), decided OWN-THE-ENGINE: no react-day-picker
+// The Calendar engine, decided OWN-THE-ENGINE: no date-picker library
 // (a heavy JS dep). The month grid is SERVER-RENDERED (Ruby Date math) so a
 // no-JS page shows a valid calendar; this controller adds month navigation
 // (regenerating the 42-cell grid from plain Date math - reusing the day
@@ -10,13 +10,14 @@ import { Controller } from "@hotwired/stimulus"
 // composes this inside a Popover.
 //
 // Range mode: mode="range" swaps the click path for a
-// transcription of react-day-picker's addToRange and the reflection for
-// the range vocabulary (data-range-start/middle/end - the dictionary
-// classes shipped inert at W6). The form value is TWO hidden inputs
-// (name[start]/name[end] - upstream has no form story; the wire shape is
-// poetry's). rdp semantics kept exactly: an incomplete start-only pick
-// renders as a plain selected single day; the range vocabulary appears
-// only once the range completes.
+// transcription of react-day-picker's addToRange algorithm (MIT; see
+// THIRD_PARTY_NOTICES.md) and the reflection
+// for the range vocabulary (data-range-start/middle/end - dictionary
+// classes that shipped inert until range mode). The form value is TWO
+// hidden inputs (name[start]/name[end] - upstream has no form story; the
+// wire shape is poetry's). Upstream semantics kept exactly: an incomplete
+// start-only pick renders as a plain selected single day; the range
+// vocabulary appears only once the range completes.
 //
 // Dropdown caption (caption_layout: :dropdown), the upstream overlay
 // pattern: each [data-calendar-unit=month|year] wrapper holds a visible
@@ -102,7 +103,7 @@ export default class CalendarController extends Controller {
     this.dispatch("change", { detail: { value: this.selectedValue } })
   }
 
-  // react-day-picker's addToRange, transcribed (ISO strings compare
+  // react-day-picker's addToRange algorithm, transcribed (ISO strings compare
   // lexicographically, so <,> are date order).
   #addToRange(clicked) {
     const start = this.rangeStartValue
@@ -277,7 +278,7 @@ export default class CalendarController extends Controller {
     if (this.hasInputTarget) this.inputTarget.value = this.selectedValue ?? ""
   }
 
-  // The range vocabulary (rdp modifiers): the span wears range-start /
+  // The range vocabulary (the upstream range modifiers): the span wears range-start /
   // range-middle / range-end only once COMPLETE; a start-only pick is a
   // plain selected single day. Survives month nav because it re-derives
   // from every visible button's date (a span may extend offscreen).

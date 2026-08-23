@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The ContextMenu DELTA layer (ContextMenu): trigger
+// The ContextMenu DELTA layer: trigger
 // acquisition + pointer-point capture ONLY. Everything menu-shaped (open
 // state machine, items, typeahead, submenus, dismissal, the layer stack)
 // stays with poetry--core--menu on the same root; positioning stays with

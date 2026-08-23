@@ -55,7 +55,7 @@ component CSS. Subtree-scoped HOST apps are covered by D2 below.
   exit presence completes -> `restoreContent` in the same `onRemove` that
   already strips layer controllers. Safety net: a `turbo:before-cache`
   listener force-restores (and force-closes) any portaled content - the
-   cache-restore bug class, pre-empted. Restore guards
+  The Turbo cache-restore bug class, pre-empted. Restore guards
   `placeholder.isConnected` (a morph may have replaced the origin; then
   drop the node instead of stranding it).
 - **D5 - the event bridge (the React-vs-DOM trap).** React portals keep

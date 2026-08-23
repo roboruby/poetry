@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { installPoetryIdIntegrityCheck, scanForDuplicateIds } from "@poetry/controllers/helpers/id_integrity"
 
-// The composed-DOM duplicate-id tripwire (StableId plan S4): the scan
+// The composed-DOM duplicate-id tripwire: the scan
 // finds duplicates the static lints structurally cannot (composition), the
 // installer reports through the injectable channel, and clean documents
 // stay silent.

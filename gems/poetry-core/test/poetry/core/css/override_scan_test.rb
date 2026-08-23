@@ -5,7 +5,7 @@ require "test_helper"
 module Poetry
   module Core
     module CSS
-      # The.cn-* override contract: undeclared host overrides are
+      # The .cn-* override contract: undeclared host overrides are
       # drift, declared ones are intent, and the declaration rules make the
       # accidental blanket impossible.
       class OverrideScanTest < Minitest::Test

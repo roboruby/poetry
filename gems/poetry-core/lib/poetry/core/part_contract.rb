@@ -6,8 +6,8 @@ module Poetry
   module Core
     # The DOM verifier for the part contract: reconciles a
     # component's declared parts (Concerns::Parts) against its rendered
-    # previews, in both directions. an upstream library type-checks its styles-api
-    # keys against a factory union but never checks the DOM; this module
+    # previews, in both directions. Type-checking declared part keys
+    # alone never proves the anatomy; this module
     # checks the DOM, so the registry-published contract cannot state a
     # part, state attribute, or var seam the component doesn't render -
     # nor omit one it does.

@@ -3,7 +3,7 @@
 module Poetry
   module Core
     module Concerns
-      # The part contract (the upstream library styles-api borrow): a
+      # The part contract: a
       # hand-authored, machine-verified declaration of the component's
       # styling surface - the data-slot parts its DOM exposes, the state
       # attributes each part carries (and when), and the CSS custom
@@ -16,8 +16,8 @@ module Poetry
       #          "data-closed" => "panel is closed or animating out"
       #        }
       #
-      # an upstream library binds its equivalent (selectors/vars/modifiers) with types:
-      # the keys can't drift, but every description and condition is
+      # Binding such a contract with types alone would keep the keys from
+      # drifting while leaving every description and condition as
       # unverified prose. poetry binds the declaration to RENDERED DOM
       # instead - PartContract.verify reconciles it against every preview
       # in both directions (rendered-but-undeclared, declared-but-never-

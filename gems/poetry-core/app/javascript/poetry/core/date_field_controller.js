@@ -3,8 +3,7 @@ import {
   IncompleteDate, PAGE_STEP, resolveHourCycle
 } from "@poetry/controllers/helpers/incomplete_date"
 
-// The segmented date/time editor (, the react-aria segment model -
-// see react-aria §3). The component renders a real native
+// The segmented date/time editor. The component renders a real native
 // <input type=date|time> that IS the form value (no JS = native pickers;
 // its ISO value format is exactly the wire contract), plus an empty group.
 // This controller builds per-segment role=spinbutton spans from
@@ -83,7 +82,7 @@ export default class DateFieldController extends Controller {
   }
 
   // Clicking the group's blank space lands on the earliest unfilled
-  // segment (react-aria's focusLast heuristic, simplified: segments
+  // segment (the focusLast heuristic, simplified: segments
   // themselves stop propagation by matching first).
   focusGap(event) {
     if (event.target !== this.groupTarget) return
@@ -328,7 +327,7 @@ export default class DateFieldController extends Controller {
     }).format(value)
   }
 
-  // Month announces "3 - March" (the react-aria enrichment).
+  // Month announces "3 - March" (the screen-reader enrichment).
   #valueText(type, value) {
     if (type === "month") {
       const name = new Intl.DateTimeFormat(this.#locale(), { month: "long" })
@@ -467,8 +466,8 @@ export default class DateFieldController extends Controller {
     const { min, max } = this.#value.limits(type)
     let candidate = this.#entered + digit
 
-    // Typing past the maximum restarts from the last key (react-aria:
-    // "3" then "5" in a month is 3, then 5 - never 35).
+    // Typing past the maximum restarts from the last key:
+    // "3" then "5" in a month is 3, then 5 - never 35.
     if (Number(candidate) > max) candidate = digit
 
     this.#entered = candidate

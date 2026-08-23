@@ -1,6 +1,6 @@
 // The Tier-0 controllable-state convention (the DOM is the store): runtime
 // state is a set of presence-boolean data attributes (the Base UI
-// vocabulary/N6) - written here, styled by CSS variants
+// vocabulary) - written here, styled by CSS variants
 // (data-open:..., via the vendored bridge variants that also match the
 // legacy Radix data-state values), owned by whichever layer set it (a
 // Stimulus Value default, the DOM, the URL, or a server re-render).

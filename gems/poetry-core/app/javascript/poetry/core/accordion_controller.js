@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { enterPresence, exitPresence, measurePresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// The accordion open-set machine (N2): single (optionally collapsible)
+// The accordion open-set machine: single (optionally collapsible)
 // or multiple. Composes with poetry--core--roving-focus (manageTabindex:
 // false - APG keeps every trigger tabbable) attached separately on the
 // same root. Panels ride the presence helper; the measured

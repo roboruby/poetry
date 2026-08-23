@@ -11,6 +11,11 @@ module Poetry
       #   browser-style alpha compositing (gamma-encoded sRGB blend)
       #
       # Pure Ruby, no dependencies - cheap enough to run on every CI build.
+      #
+      # @example
+      #   color = Poetry::Core::Tokens::Color.parse("#1A1C1E")
+      #   color.css # => "oklch(0.225 0.005 248.047)"
+      #   color.contrast_ratio(Poetry::Core::Tokens::Color::WHITE) # => 17.09...
       class Color
         # WCAG 2.x contrast shared by Color and Blend: relative luminance is
         # computed from gamma-encoded sRGB (the value a browser actually paints).
@@ -59,8 +64,8 @@ module Poetry
         BLACK = new(l: 0.0)
 
         # The CSS color spellings DESIGN.md files carry across the design-skill
-        # ecosystem: poetry emits oklch; the slop-gate analogue/an external design tool-authored files
-        # arrive in hex or rgb().
+        # ecosystem: poetry emits oklch; foreign-authored files arrive in
+        # hex or rgb().
         OKLCH_CSS = %r{\Aoklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:\s*/\s*([\d.]+)(%?))?\s*\)\z}i
         HEX_CSS = /\A#(\h{3}|\h{4}|\h{6}|\h{8})\z/
         RGB_CSS = %r{\Argba?\(\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})(?:\s*[,/]\s*([\d.]+)(%?))?\s*\)\z}i
@@ -118,8 +123,8 @@ module Poetry
           end
         end
 
-        # A copy with any component replaced. The import AA-walk (N14 W2)
-        # moves L in fixed steps while chroma holds - deterministic.
+        # A copy with any component replaced. The import AA-walk moves L in
+        # fixed steps while chroma holds - deterministic.
         def with(l: self.l, c: self.c, h: self.h, alpha: self.alpha)
           self.class.new(l: l, c: c, h: h, alpha: alpha)
         end

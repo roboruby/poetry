@@ -249,7 +249,7 @@ describe("poetry--core--calendar", () => {
   })
 })
 
-// -- range mode (N9 D1): the addToRange transcription + the range wire ------
+// -- range mode: the addToRange transcription + the range wire --------------
 
 const rangeMarkup = ({ start = "", end = "" } = {}) => `
   <div id="cal" data-controller="poetry--core--calendar"

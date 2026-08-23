@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Resizable engine (N9 W4), decided NATIVE: no react-resizable-panels -
+// The Resizable engine, decided NATIVE: no panel library -
 // panels are flex children whose flex-grow IS the percentage, and this
 // controller implements the APG window-splitter on the handles: pointer
 // drag redistributes the two adjacent panels (clamped to each panel's

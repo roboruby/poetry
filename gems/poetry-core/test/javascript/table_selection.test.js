@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// The table row-selection engine (, the SelectionManager contract,
+// The table row-selection engine (the selection-manager contract,
 // checkbox-flavored): select-all with a REAL indeterminate middle state
 // over enabled rows, shift ranges off the anchor model, aria/data-selected
 // mirroring, selection-change events, and the clear-selection listener.

@@ -3,7 +3,7 @@
 module Poetry
   module Core
     module CSS
-      # The N11 theme-layer coverage gate: bidirectional agreement between
+      # The theme-layer coverage gate: bidirectional agreement between
       # the cn-* names Style dictionaries emit and the rules a theme
       # fragment defines.
       #
@@ -18,6 +18,13 @@ module Poetry
       # The parser is deliberately narrow: cn tokens are read from top-level
       # selectors only (lines that open a rule), never from @apply bodies -
       # theme fragments are flat by convention (see themes/default.css).
+      #
+      # @example
+      #   coverage = Poetry::Core::CSS::ThemeCoverage.new(
+      #     theme_css: File.read("themes/default.css"),
+      #     style_classes: [MyApp::Button::Style]
+      #   )
+      #   coverage.ok? || [coverage.missing, coverage.orphans]
       class ThemeCoverage
         SELECTOR_LINE = /^[^@\s{}][^{]*\{/
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/

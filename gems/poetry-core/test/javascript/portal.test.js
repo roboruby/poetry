@@ -1,14 +1,14 @@
 import { beforeEach, describe, expect, it } from "vitest"
 // Side effect: index.js registers the union of every controller's declared
-// events as the bridge list (docs/portal-on-open.md D5).
+// events as the bridge list (docs/portal-on-open.md).
 import "@poetry/controllers"
 import {
   isPortaled, portalContent, resolvePortalContainer, restoreContent
 } from "@poetry/controllers/helpers/portal"
 
-// The portal-on-open mechanism (S0): move/restore round-trip against the
+// The portal-on-open mechanism: move/restore round-trip against the
 // placeholder, the container override attribute, the event bridge
-// (React-portal semantics for poetry CustomEvents: one path above the
+// (home-tree event semantics for poetry CustomEvents: one path above the
 // content - the HOME one - with cancellation transferring back), the
 // native-events-are-never-bridged boundary, the placeholder-gone drop
 // guard, and the turbo:before-cache force-restore net.
@@ -176,7 +176,7 @@ describe("helpers/portal", () => {
     expect(isPortaled(content)).toBe(false)
   })
 
-  it("turbo:before-cache force-restores everything still portaled (the net)",  => {
+  it("turbo:before-cache force-restores everything still portaled (the cache-restore net)", () => {
     const content = el("content")
 
     portalContent(content)

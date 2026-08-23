@@ -123,7 +123,7 @@ describe("poetry--core--sidebar", () => {
   })
 })
 
-// -- the mobile sheet (DOM-move) -------------------------------
+// -- the mobile sheet (DOM-move) ------------------------------------------
 
 const mobileMarkup = () => `
   <div id="wrapper" data-controller="poetry--core--sidebar"

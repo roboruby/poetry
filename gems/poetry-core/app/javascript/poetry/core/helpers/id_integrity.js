@@ -1,4 +1,4 @@
-// The composed-DOM duplicate-id tripwire (StableId plan S4): the ONLY
+// The composed-DOM duplicate-id tripwire: the ONLY
 // check that sees the page as actually composed - static lints can't see
 // across templates, frames, streams, or cached fragments, so this scans
 // the live document for duplicate [id] values after every composition

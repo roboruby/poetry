@@ -33,7 +33,7 @@ const panel = (value) => document.querySelector(`[data-value="${value}"] [data-s
 afterEach(() => { document.body.innerHTML = ""; application?.stop() })
 
 describe("poetry--core--accordion", () => {
-  // The 2026-07-04 W5 browser pass: a server-rendered-open item's trigger
+  // The 2026-07-04 browser pass: a server-rendered-open item's trigger
   // must carry data-panel-open on CONNECT, not only after a toggle (the
   // #open path set it during interaction but connect skipped it - collapsible
   // reflected on connect, accordion did not).

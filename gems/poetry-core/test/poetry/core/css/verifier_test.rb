@@ -35,7 +35,7 @@ module Poetry
           assert_empty @verifier.unknown(%w[p-4 sm:flex stroke-red-600/50])
         end
 
-        # The M2 DoD: the Verifier catches a hallucinated class.
+        # The core promise: the Verifier catches a hallucinated class.
         def test_catches_a_hallucinated_class
           unknown = @verifier.unknown(%w[p-4 strke-red-600/50])
 
@@ -51,7 +51,7 @@ module Poetry
           assert_nil unknown.first.suggestion
         end
 
-        # N12: bare group/peer markers emit no CSS by design - their compiled
+        # Bare group/peer markers emit no CSS by design - their compiled
         # presence depends on which THEME consumes them, so they are valid
         # dictionary classes even when the active theme never references them.
         def test_named_group_and_peer_markers_are_never_unknown

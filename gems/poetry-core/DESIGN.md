@@ -2,7 +2,7 @@
 design_system: poetry
 source: tokens/tokens.dtcg.json
 generator: bin/rake tokens:generate
-dark_mode: class.dark
+dark_mode: class .dark
 radius: 0.625rem
 radius_scale:
   radius-sm: calc(var(--radius) * 0.6)

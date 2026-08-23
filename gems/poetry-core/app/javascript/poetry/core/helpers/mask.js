@@ -1,5 +1,7 @@
-// The mask engine (use-mask 9.4.1 port) - pure functions over a
-// parsed slot list, zero DOM. A mask is a sequence of slots: token slots
+// The mask engine, adapted from Mantine's use-mask hook (MIT, v9.4.1).
+// Adapted from https://github.com/mantinedev/mantine - see THIRD_PARTY_NOTICES.md.
+// Pure functions over a parsed slot list, zero DOM. A mask is a sequence of
+// slots: token slots
 // validate ONE character against a pattern, literal slots are fixed chrome
 // ("/", "-", " ") the engine inserts and the user never types. Every value
 // decision lives here so it stays exhaustively unit-testable; the caret

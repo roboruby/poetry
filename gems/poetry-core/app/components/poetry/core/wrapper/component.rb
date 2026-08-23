@@ -3,10 +3,15 @@
 module Poetry
   module Core
     module Wrapper
-      # WrapperComponent allows to wrap any component with a custom HTML code.
-      # The whole wrapper is only rendered when the child component.render? returns true.
-      # Thus, wrapper could be used to conditionally render the outer html for components without
+      # Wraps any component with custom HTML.
+      # The whole wrapper is only rendered when the child component's #render? returns true,
+      # so it can conditionally render the outer HTML for a component without
       # conditionals in templates.
+      #
+      # @example
+      #   render Poetry::Core::Wrapper::Component.new(badge) do |wrapper|
+      #     tag.div(class: "mt-2") { wrapper.component }
+      #   end
       class Component < ViewComponent::Base
         class DoubleRenderError < StandardError
           def initialize(component)
@@ -31,10 +36,12 @@ module Poetry
           content
         end
 
-        # Returns rendered child component
-        # The name component is chosen for convienent usage in templates,
-        # so we can simply call `= wrapper.component` in the place where we're going
-        # to put the component
+        # Returns the rendered child component.
+        # The name is chosen for convenient usage in templates,
+        # so `= wrapper.component` reads naturally at the spot where the
+        # child belongs.
+        #
+        # @return [ActiveSupport::SafeBuffer] the rendered child HTML
         def component
           raise DoubleRenderError, component_instance if @rendered
 

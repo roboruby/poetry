@@ -4,6 +4,8 @@ require "active_model/type"
 
 module ActiveModel
   module Type
+    # A symbol option type for the option DSL: casts anything responding
+    # to #to_sym and reports :symbol to introspection.
     class Symbol < ActiveModel::Type::String
       # Without this the type reports :string (inherited) - introspection
       # (prop_definitions, the registry) must see :symbol.

@@ -5,8 +5,8 @@ require "json"
 
 module Poetry
   module Core
-    # Turns remote registry addresses into a deterministic install PLAN
-    # (Ecosystem v1): resolve the dependency tree (visited-set walk,
+    # Turns remote registry addresses into a deterministic install PLAN:
+    # resolve the dependency tree (visited-set walk,
     # then Kahn topo-sort so dependencies write before dependents), classify
     # every dependency (poetry gem components satisfy at RUNTIME - no copy;
     # gem blocks copy in through their own generator; everything else

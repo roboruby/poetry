@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// Error isolation for deferred turbo-frames (N13 W5). Turbo owns the
+// Error isolation for deferred turbo-frames. Turbo owns the
 // loading physics (loading="lazy" fetches on visibility, "eager" after
 // paint) but leaves failure INVISIBLE: a missing frame logs "Content
 // missing" or - Turbo 8 - promotes the error response to a full-page

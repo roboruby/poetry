@@ -4,18 +4,23 @@ require "json"
 
 module Poetry
   module Core
-    # The canonical design-token model (M1). Loads tokens/tokens.dtcg.json -
+    # The canonical design-token model. Loads tokens/tokens.dtcg.json -
     # the single source of truth - and exposes the semantic color roles per
     # mode plus the radius dimension. Everything else (tokens.css,
     # tailwind-theme.css, the DESIGN.md front matter) is generated from an
     # instance of this class; the AAA-contrast gate asserts against it.
+    #
+    # @example
+    #   tokens = Poetry::Core::Tokens.load
+    #   tokens.color("light", "primary").css # => "oklch(0.205 0 0)"
+    #   tokens.radius_css                    # => "0.625rem"
     class Tokens
       DEFAULT_RELATIVE_PATH = "tokens/tokens.dtcg.json"
 
       # The exact CSS custom-property set of the shadcn/ui v4 distributed
       # theme (cssVarsV4, plus --radius). This is the drop-in contract: any
       # shadcn v4 theme block defines exactly these names, so it can replace
-      # poetry's tokens.css wholesale (DoD: "a shadcn theme drops in").
+      # poetry's tokens.css wholesale.
       SHADCN_V4_COMPAT_VARS = %w[
         background foreground
         card card-foreground
@@ -33,11 +38,11 @@ module Poetry
         sidebar-border sidebar-ring
       ].freeze
 
-      # Poetry-original extensions BEYOND the shadcn v4 set (Blocks v1.1,
-      #): the soft status vocabulary the benchmark measured as
-      # missing. Kept separate so the drop-in contract stays sharp: a
-      # shadcn theme block replaces the compat set wholesale, and these
-      # keep their poetry defaults unless the theme chooses to override.
+      # Poetry-original extensions BEYOND the shadcn v4 set: the soft
+      # status vocabulary the shadcn set lacks. Kept separate so the
+      # drop-in contract stays sharp: a shadcn theme block replaces the
+      # compat set wholesale, and these keep their poetry defaults unless
+      # the theme chooses to override.
       POETRY_STATUS_VARS = %w[success warning info].freeze
 
       class << self

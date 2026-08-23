@@ -5,7 +5,7 @@ require "tmpdir"
 
 module Poetry
   module Core
-    # LlmsText's blocks surface (Blocks v1): the index teaches the
+    # LlmsText's blocks surface: the index teaches the
     # block-first decision hierarchy, the full text inlines every block's
     # source (metadata header stripped), and registries without blocks emit
     # neither section. Component emission is covered end-to-end by the
@@ -79,7 +79,7 @@ module Poetry
         refute_includes text.full, "## Block:"
       end
 
-      # The crash classes, stated in the contract text: a component
+      # The setter-seam crash classes, stated in the contract text: a component
       # that requires content says so up front; a slot states its yieldless
       # setters, its closed keyword set, and its required content block.
       def test_full_states_the_block_seam_contracts
@@ -130,7 +130,7 @@ module Poetry
                         "data-side=top|bottom (resolved side) | vars: --transform-origin (popper origin)"
       end
 
-      # The crash class, stated in the contract text: a
+      # The menu crash class, stated in the contract text: a
       # required slot speaks at the component level AND at the nested
       # builder seam where the menu crash actually lived.
       def test_full_states_the_required_slot_contracts

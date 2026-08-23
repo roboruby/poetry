@@ -29,8 +29,7 @@ module Poetry
       class Merger
         # Bounded FIFO cache over merge results: components render the same
         # class combinations over and over, so tailwind_merge runs once per
-        # DISTINCT combo instead of once per render (the Phlex-derived
-        # base-level perf steal - see the BEM pipeline plan, M2/M3).
+        # DISTINCT combo instead of once per render.
         CACHE_LIMIT = 512
 
         # Initializes a new CSS merger instance.

@@ -1,5 +1,5 @@
-// The Command filter spec (Command): deterministic
-// substring + a 5-band rank - NOT cmdk's fuzzy command-score. Pure string
+// The Command filter spec: deterministic
+// substring + a 5-band rank - deliberately NOT a fuzzy command-score. Pure string
 // functions so the CI spec table pins the contract: any scoring change is
 // a reviewed table change, never a silent reorder of every palette. The
 // score's ONLY job is picking the auto-highlighted first match - the
@@ -57,8 +57,8 @@ export function filterLabel(item) {
     item.textContent ?? ""
 }
 
-// data-keywords: whitespace-separated extra filter terms (cmdk's keywords
-// prop as a data attribute).
+// data-keywords: whitespace-separated extra filter terms (the upstream
+// keywords prop as a data attribute).
 export function filterKeywords(item) {
   return (item.dataset.keywords ?? "").split(/\s+/).filter(Boolean)
 }

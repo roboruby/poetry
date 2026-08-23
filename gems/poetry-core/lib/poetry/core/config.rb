@@ -72,9 +72,9 @@ module Poetry
                                                      raise_on_asset_not_found: true,
                                                      # :tailwind emits resolved utility classes (default);
                                                      # :bem emits the BEM token IR for bring-your-own-CSS
-                                                     # hosts (no:both, deliberately).
+                                                     # hosts (no :both, deliberately).
                                                      css_mode: :tailwind,
-                                                     # The active icon set (: Lucide default; sets
+                                                     # The active icon set (Lucide default; sets
                                                      # register via Poetry::Core::Icons.register).
                                                      icon_library: :lucide,
                                                      # The missing-icon policy. Static literals

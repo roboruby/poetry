@@ -9,9 +9,13 @@ module Poetry
     # the committed registry + controllers manifest WITHOUT rendering -
     # unknown components/options/variants (did-you-mean), and unknown
     # Stimulus controllers/actions/targets (the Ruby<->JS seam, now at
-    # consumer-markup level), plus raw-color classes ('s off-system path,
-    # extended from CSS to markup). The mechanical gate an agent self-corrects
-    # against before the LLM judge ever runs (eval integration).
+    # consumer-markup level), plus raw-color classes (the off-system color
+    # path, extended from CSS to markup). The mechanical gate an agent
+    # self-corrects against before the LLM judge ever runs (eval integration).
+    #
+    # @example Lint one template string
+    #   findings = Poetry::Core::Check.lint(erb_source, catalog: catalog)
+    #   findings.reject { |finding| finding.severity == :warning }
     module Check
       SEVERITIES = %i[error warning].freeze
 
@@ -50,7 +54,7 @@ module Poetry
         # A host catalog spans every installed poetry gem (ui + charts): a
         # gem whose components stay out of the merge leaves its helpers
         # name-valid but pathless, and every one of their blocks reads as a
-        # yieldless wrapper block (the chart false positives).
+        # yieldless wrapper block (the chart false-positive class).
         def self.from_registries(roots, helpers: nil, icon_names: nil)
           payloads = roots.map do |root|
             YAML.load_file(Pathname.new(root).join(Registry::RELATIVE_PATH), aliases: true)
@@ -83,8 +87,8 @@ module Poetry
           # avoiding the last-segment collision with poetry/ui/dialog). The
           # prefix strip covers every poetry gem, not just poetry/ui/ - a
           # merged catalog carries poetry/charts/* too, and a chart helper
-          # that fails to map here reads as a yielding wrapper (the
-          # chart yieldless-block false positives).
+          # that fails to map here reads as a yielding wrapper (the chart
+          # yieldless-block false positives).
           @path_by_helper = components.keys.to_h do |path|
             ["poetry_#{path.sub(%r{\Apoetry/[^/]+/}, "").tr("/", "_")}", path]
           end
@@ -108,7 +112,7 @@ module Poetry
         # that yields its slot builder.
         def helper_yields?(helper) = !@helper_entries.dig(helper, "yields").nil?
 
-        # The element-level wiring projection (Phase 5): which elements of
+        # The element-level wiring projection: which elements of
         # a component carry which controllers, values, actions, and
         # targets - use_stimulus declarations, serialized. Empty for
         # registries that predate the projection; future check rules and
@@ -142,8 +146,8 @@ module Poetry
         end
 
         # Slot queries take an OWNER: a component path (String) or a nested
-        # builder surface (Hash - the "builders" payload of a slot entry,
-        #), so `menubar.with_menu do |menu|` and `menu.with_item` walk
+        # builder surface (Hash - the "builders" payload of a slot entry),
+        # so `menubar.with_menu do |menu|` and `menu.with_item` walk
         # the same rules at every depth.
         def slots_of(owner)
           owner.is_a?(Hash) ? (owner["slots"] || []) : (@components.dig(owner, "slots") || [])
@@ -276,7 +280,7 @@ module Poetry
         # <%# ... %> parses as an ERBContentNode like any output tag - only
         # the tag opening tells prose from code. Comment text mentioning a
         # helper ("a plain poetry_input chromes it") must never reach Prism
-        # as Ruby (the helper-arity false positives).
+        # as Ruby (the helper-arity false-positive class).
         def erb_comment?(node)
           node.respond_to?(:tag_opening) && node.tag_opening&.value == "<%#"
         end
@@ -329,7 +333,7 @@ module Poetry
           # A valid helper with no component mapping (group / provider / item
           # wrapper): its registry-declared value contracts still check, and
           # NO wrapper yields anything to its block (a roster invariant) - a
-          # declared block param will be nil at render (the W2r app_shell
+          # declared block param will be nil at render (the app_shell
           # crash: `poetry_sidebar_group do |group|`).
           path = @catalog.path_for(helper)
           unless path
@@ -418,7 +422,7 @@ module Poetry
           findings + (entry ? value_findings(entry, helper_of(path), key, value, line) : [])
         end
 
-        # The value-contract tier (the W2 crash classes poetry check was
+        # The value-contract tier (the crash classes poetry check was
         # blind to): enumerated values on any declared attribute, literal nil
         # against required options, and icon-name format/membership.
         def value_findings(entry, owner, key, value, line)
@@ -442,7 +446,7 @@ module Poetry
         end
 
         # Icon names are kebab-case names from the active icon set. Shape is
-        # always checkable (the W2 :folder_plus crash); membership only when
+        # always checkable (the :folder_plus crash); membership only when
         # the catalog carries the set's names.
         def icon_findings(key, value, line)
           unless value.match?(Icons::FileSet::NAME_FORMAT)
@@ -576,7 +580,7 @@ module Poetry
 
           # A typed slot IS a component call: same option/value rules, plus
           # the block-form trap (with_icon do ... end builds the component
-          # with no props - the W2 alert crash).
+          # with no props - the alert crash).
           pairs = keyword_pairs(call)
           findings += pairs.flat_map do |key, value, kw_line|
             option_findings(component, key, value, base_line + kw_line - 1)
@@ -593,8 +597,8 @@ module Poetry
                                     message: "with_#{slot_name} renders #{helper_of(component)}, which " \
                                              "requires a content block (#{hint})", line: line)
           end
-          # The any-of contracts ride the component fact too (: the
-          # toast crash was with_action(label:) - a Button through a
+          # The any-of contracts ride the component fact too (the toast
+          # crash was with_action(label:) - a Button through a
           # forwarding lambda, nothing visible). At a slot site the block
           # IS the content; sub-slot alternatives are unreachable and drop
           # out of the satisfiable set.
@@ -643,7 +647,7 @@ module Poetry
           end
         end
 
-        # The conditional any-of tier (: the two crash classes that
+        # The conditional any-of tier (the two crash classes that
         # survived every single-fact tier). A group passes when ANY listed
         # alternative is satisfied or possibly satisfied: a block counts
         # for content AND for slot alternatives (the setters may be called
@@ -710,8 +714,8 @@ module Poetry
         # The end-of-template accounting: every non-escaped binding must
         # have called each required setter of its owner (satisfied by the
         # slot's own setter, a collection's singular, or any polymorphic
-        # type - the runtime predicate, textually). The menu arm ran
-        # FOUR truthful checks and crashed on exactly this omission.
+        # type - the runtime predicate, textually). The original menu crash
+        # passed FOUR truthful checks and failed on exactly this omission.
         def missing_slot_findings
           @instances.flat_map do |instance|
             next [] if instance[:escaped]
@@ -774,7 +778,7 @@ module Poetry
           end
         end
 
-        # Positional args a setter does not take (the W2r menu crash:
+        # Positional args a setter does not take (the menu-item crash:
         # `with_item(:item, ...)` guessed a type-as-argument dispatch no
         # setter has - the type IS the setter). Arity comes from the
         # registry's introspected lambda signatures; anything unknowable
@@ -1085,12 +1089,20 @@ module Poetry
 
       module_function
 
-      # Lint file paths against a registry root. Returns [Finding].
+      # Lint file paths against a registry root.
+      #
+      # @param paths [Array<String>, String] template/Ruby file paths to lint
+      # @param registry_root [String] the gem root holding the committed registry
+      # @return [Array<Finding>]
       def run(paths:, registry_root:)
         Runner.new(Catalog.from_registry(registry_root)).run(Array(paths))
       end
 
-      # Lint a single source string (no file). Returns [Finding].
+      # Lint a single source string (no file).
+      #
+      # @param source [String] the ERB template source
+      # @param catalog [Catalog] the component catalog to validate against
+      # @return [Array<Finding>]
       def lint(source, catalog:)
         Linter.new(catalog).lint(source)
       end

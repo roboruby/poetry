@@ -29,9 +29,9 @@ re-bless deliberately if pixels moved; poetry-ui's `goldens:verify_inputs`
 default-gate check will catch the drift there regardless, by hashing these
 files against the manifest stamped at last bless.
 
-## Design interop + slop rules (N14)
+## Design interop + slop rules
 
-- `Poetry::Core::DesignMd` — DESIGN.md serialize/parse (google-labs front
+- `Poetry::Core::DesignMd` — DESIGN.md serialize/parse (front
   matter + canonical sections; round-trip byte-stable; foreign files via the
   tolerant section walker). `DesignMd::Import` plans token overrides with
   WCAG AA enforced on the merged set (nearest-AA = a deterministic OKLCH
@@ -65,8 +65,7 @@ files against the manifest stamped at last bless.
 
 ## Known traps
 
-The cross-repo trap ledger is kept outside this repo.
-Highlights that recur: value callbacks fire async
+Traps that recur across controllers: value callbacks fire async
 (reflect synchronously in mutators); programmatic `.focus()` fires no
 `focusin` in dommy; presence exits need per-value bookkeeping.
 

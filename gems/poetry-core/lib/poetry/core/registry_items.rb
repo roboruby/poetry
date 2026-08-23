@@ -4,8 +4,8 @@ require "yaml"
 
 module Poetry
   module Core
-    # The shadcn-interop projection of a gem's registry (Ecosystem v1,
-    #): every component and block as a registry-item hash matching the
+    # The shadcn-interop projection of a gem's registry:
+    # every component and block as a registry-item hash matching the
     # shadcn registry-item.json schema - name / type / title / files[]
     # ({path, content, type, target}) / registryDependencies / meta - plus
     # index summaries for registry.json. Built BOOT-FREE from the committed

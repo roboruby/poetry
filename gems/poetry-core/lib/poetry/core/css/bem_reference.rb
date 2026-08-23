@@ -10,9 +10,13 @@ module Poetry
       # default (Tailwind) theme resolves that token to - so the reference
       # doubles as the class contract's documentation.
       #
-      # The header embeds the dictionary's capsule digest (the upstream scoped-styles library
-      # leak-guard): CSS written against an older dictionary is detectable by
-      # digest mismatch instead of silently drifting on upgrade.
+      # The header embeds the dictionary's capsule digest as a leak-guard:
+      # CSS written against an older dictionary is detectable by digest
+      # mismatch instead of silently drifting on upgrade.
+      #
+      # @example
+      #   Poetry::Core::CSS::BemReference.new(MyApp::Button::Style).css
+      #   # => "/* poetry BEM reference for `.button` - capsule 1a2b3c... */\n.button { ... }"
       class BemReference
         def initialize(style_class, block: style_class.bem_block)
           raise ArgumentError, "#{style_class} has no derivable BEM block" unless block

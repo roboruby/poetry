@@ -2,16 +2,15 @@
 
 module Poetry
   module Core
-    # Design-slop detectors (N14 W3): deterministic rules for the checkable
-    # design axes, poetry's analogue of external rule sets and
-    # 57 slop gates - but catalog-aware (the AST knows what a Card IS), and
-    # scoped to the on-distribution defaults those skills fight: cards in
-    # cards, the icon-tile-over-heading hero, walls of identical cards,
-    # off-scale values, token-less gradients, heading skips,
-    # center-everything, stacked shadows, type-scale monotony, invisible
-    # surface boundaries. No LLM scoring here - the lesson: cold
-    # aesthetic judgment is near chance; deterministic rules + paired judges
-    # (N15) are the defensible modes.
+    # Design-slop detectors: deterministic rules for the checkable design
+    # axes, catalog-aware (the AST knows what a Card IS) and scoped to the
+    # on-distribution defaults generated UIs drift toward: cards in cards,
+    # the icon-tile-over-heading hero, walls of identical cards, off-scale
+    # values, token-less gradients, heading skips, center-everything,
+    # stacked shadows, type-scale monotony, invisible surface boundaries.
+    # No LLM scoring here - measured runs showed cold aesthetic judgment is
+    # near chance; deterministic rules + paired judges are the defensible
+    # modes.
     #
     # Two tiers, one Finding vocabulary (Check::Finding - file:line, message
     # that names the fix, JSON/text via Check.to_json/to_text):
@@ -27,41 +26,41 @@ module Poetry
     # mechanical errors stay the hard gate. rake design:lint (poetry-ui)
     # exits non-zero on any finding - the dogfood surfaces stay clean.
     module DesignLint
-      # id => [tier, provenance] - the analogue each rule descends from.
+      # id => [tier, rationale] - the design discipline each rule enforces.
       RULES = {
-        "card-in-card" => [:ast, "slop gate: cards-in-cards; the design-rule analogue: nesting depth"],
-        "icon-tile-over-heading" => [:ast, "the slop-gate analogue: the stock AI hero tell (icon chip above heading)"],
-        "wall-of-cards" => [:ast, "the slop-gate analogue: macrostructure variety; the design-rule analogue: repetition audit"],
-        "off-scale-arbitrary" => [:ast, "the design-rule analogue: spacing scale discipline (extends)"],
-        "gradient-off-token" => [:ast, "the slop-gate analogue: purple-blue gradient tell; raw-color posture"],
-        "heading-skip" => [:ast, "the design-rule analogue: document outline audit (WCAG 1.3.1 adjacent)"],
-        "mixed-status-weight" => [:ast, "Blocks v1.1 (lead): one status set, one treatment - " \
+        "card-in-card" => [:ast, "nesting discipline: a card never frames another card"],
+        "icon-tile-over-heading" => [:ast, "the stock AI hero tell (icon chip above heading)"],
+        "wall-of-cards" => [:ast, "macrostructure variety: identical cards repeated read as filler"],
+        "off-scale-arbitrary" => [:ast, "spacing scale discipline: arbitrary lengths break the scale"],
+        "gradient-off-token" => [:ast, "the purple-blue gradient tell; raw colors bypass the tokens"],
+        "heading-skip" => [:ast, "document outline audit (WCAG 1.3.1 adjacent)"],
+        "mixed-status-weight" => [:ast, "one status set, one treatment - " \
                                         "solid and soft badge pills must not mix in one table"],
-        "center-everything" => [:ast, "the slop-gate analogue: centered-body-copy tell"],
-        "shadow-stack" => [:ast, "the design-rule analogue: one elevation level per surface"],
-        "type-scale-monotony" => [:dom, "the design-rule analogue: type hierarchy audit; checkable design axis"],
-        "adjacent-same-surface" => [:dom, "the design-rule analogue: surface separation audit"],
+        "center-everything" => [:ast, "centered-body-copy tell"],
+        "shadow-stack" => [:ast, "one elevation level per surface"],
+        "type-scale-monotony" => [:dom, "type hierarchy audit: a page painted in one size has no hierarchy"],
+        "adjacent-same-surface" => [:dom, "surface separation audit"],
         "contrast-adjacent" => [:dom, "boundary legibility as a measurable axis"],
-        "stock-theme-nudge" => [:dom, "the slop-gate analogue: refuses the default look when a brand exists"],
-        # Tranche 2: the the design-rule analogue copy/composition tells that CAN
-        # fire on poetry surfaces (off-token color/border tells cannot).
-        "em-dash-overuse" => [:ast, "the design-rule analogue: >=5 em dashes in page copy - the LLM prose tell"],
-        "marketing-buzzword" => [:ast, "the design-rule analogue: stock SaaS phrases in page copy"],
-        "aphoristic-cadence" => [:ast, "the design-rule analogue: 'Not a X. Y.' manufactured-contrast cadence"],
-        "numbered-section-markers" => [:ast, "the design-rule analogue: sequential 01/02/03 section markers"],
-        "repeated-section-kickers" => [:ast, "the design-rule analogue: tracked-caps kicker above every section heading"],
-        "hero-eyebrow-chip" => [:ast, "the design-rule analogue: tracked-caps/accent text eyebrow above the h1"],
-        "oversized-h1" => [:ast, "the design-rule analogue: 72px+ display h1 carrying long copy"],
-        # Motion floor (a banked lead): perception-physics
-        # rules, theme-independent - they read the utility classes the same
-        # in host ERB (poetry check / design:lint) and in the extracted theme
-        # layer (design:motion self-audit). Only patterns poetry itself never
-        # ships are ENFORCED here, so the floor never false-positives on the
-        # gem's own rendered output. transition-all is pervasive in the
-        # upstream-ported theme layer, so it is a REPORT-ONLY advisory
-        # (transition_all_advisory / design:motion), NOT an enforced rule.
-        # The softer preferences (ease-in-out on enters) and timing TOKENS
-        # are the later tokenize/conformance tiers.
+        "stock-theme-nudge" => [:dom, "refuses the default look when a brand exists"],
+        # Copy/composition tells that CAN fire on poetry surfaces
+        # (off-token color/border tells cannot).
+        "em-dash-overuse" => [:ast, ">=5 em dashes in page copy - the LLM prose tell"],
+        "marketing-buzzword" => [:ast, "stock SaaS phrases in page copy"],
+        "aphoristic-cadence" => [:ast, "'Not a X. Y.' manufactured-contrast cadence"],
+        "numbered-section-markers" => [:ast, "sequential 01/02/03 section markers"],
+        "repeated-section-kickers" => [:ast, "tracked-caps kicker above every section heading"],
+        "hero-eyebrow-chip" => [:ast, "tracked-caps/accent text eyebrow above the h1"],
+        "oversized-h1" => [:ast, "72px+ display h1 carrying long copy"],
+        # Motion floor: perception-physics rules, theme-independent - they
+        # read the utility classes the same in host ERB (poetry check /
+        # design:lint) and in the extracted theme layer (design:motion
+        # self-audit). Only patterns poetry itself never ships are ENFORCED
+        # here, so the floor never false-positives on the gem's own rendered
+        # output. transition-all is pervasive in the upstream-ported theme
+        # layer, so it is a REPORT-ONLY advisory (transition_all_advisory /
+        # design:motion), NOT an enforced rule. The softer preferences
+        # (ease-in-out on enters) and timing TOKENS are the later
+        # tokenize/conformance tiers.
         "motion-ease-in" => [:ast, "motion floor: ease-in decelerates wrong for UI enters"],
         "motion-duration-ceiling" => [:ast, "motion floor: UI transition over ~500ms reads as laggy"],
         "motion-scale-from-zero" => [:ast, "motion floor: scale-from-0 entries erupt from nothing"]
@@ -275,7 +274,7 @@ module Poetry
         end
       end
 
-      # The ENFORCED motion floor (an external skills pack), PUBLIC so the
+      # The ENFORCED motion floor, PUBLIC so the
       # theme-layer self-audit (design:motion) runs the identical rules over
       # the @apply utilities it extracts. Only patterns poetry itself never
       # ships are here, so the floor never false-positives on the gem's own
@@ -380,7 +379,7 @@ module Poetry
         node.children.each { |child| collect_headings(child, levels) }
       end
 
-      # One status set, one treatment (Blocks v1.1, a lead): the v1.1
+      # One status set, one treatment: the
       # table arm mixed a solid destructive "Overdue" pill into a soft
       # success/warning column and the judge called the inconsistency out.
       # Detection rides the rendered badge markup (data-slot/data-variant) -
@@ -417,7 +416,7 @@ module Poetry
         node.children.each { |child| collect_badge_variants(child, variants) }
       end
 
-      # --- tranche 2: the the design-rule analogue copy/composition tells --------
+      # --- tranche 2: the copy/composition tells ----------------------------
 
       # Page copy is the joined static text OUTSIDE code/kbd contexts - em
       # dashes and `01` tokens inside code samples are content, not design.

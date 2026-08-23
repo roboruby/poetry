@@ -2,14 +2,15 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// poetry--core--command JS-unit (Command): the
+// poetry--core--command JS-unit: the
 // activedescendant palette engine. The filter pass is HIDE-ONLY (childNodes
 // order asserted before/after - DOM order is the ranking authority), the
 // highlight is the data-highlighted + aria-activedescendant twin-write with
 // real focus pinned to the input, activation is a cancelable event and
 // nothing more (engine purity - Combobox's build dependency), and the three
-// cmdk deltas are pinned: Home/End move the CARET, Space types, and
-// aria-selected is NEVER written by this controller.
+// deliberate deltas from the usual palette convention are pinned: Home/End
+// move the CARET, Space types, and aria-selected is NEVER written by this
+// controller.
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -29,7 +30,7 @@ const type = (query) => {
 const pointermove = (element) =>
   element.dispatchEvent(new Event("pointermove", { bubbles: true }))
 
-// The cmdk-demo item set: two groups + a separator; Calendar carries
+// The demo item set: two groups + a separator; Calendar carries
 // keywords, Calculator can be disabled per test.
 const GROUPS = [
   ["suggestions", "Suggestions", [
@@ -340,7 +341,7 @@ describe("poetry--core--command", () => {
       expect(highlightedId()).toBe("item-calendar") // and back
     })
 
-    it("Meta/Ctrl+Arrows jump to the last / first visible enabled item (cmdk parity)", () => {
+    it("Meta/Ctrl+Arrows jump to the last / first visible enabled item (upstream-palette parity)", () => {
       press(el("input"), "ArrowDown", { metaKey: true })
       expect(highlightedId()).toBe("item-settings")
 
@@ -367,7 +368,7 @@ describe("poetry--core--command", () => {
       expect(el(activedescendant()).closest("[hidden]")).toBeNull()
     })
 
-    it("Home / End / ArrowLeft / ArrowRight fall through to the input (caret, not list - the cmdk delta)", () => {
+    it("Home / End / ArrowLeft / ArrowRight fall through to the input (caret, not list - the documented palette delta)", () => {
       type("cal")
       const seatBefore = highlightedId()
 
@@ -447,7 +448,7 @@ describe("poetry--core--command", () => {
   })
 
   describe("pointer highlight", () => {
-    it("pointermove highlights (twin-write); leaving the list does NOT clear (cmdk-exact)", () => {
+    it("pointermove highlights (twin-write); leaving the list does NOT clear (upstream-palette-exact)", () => {
       pointermove(el("item-billing"))
 
       expect(highlightedId()).toBe("item-billing")

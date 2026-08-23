@@ -27,7 +27,7 @@ const serializeValues = (values = {}) =>
     }]
   }))
 
-// A controller may EXTEND another (Drawer extends Dialog, N9 W3b) -
+// A controller may EXTEND another (Drawer extends Dialog) -
 // Stimulus merges statics up the chain at registration, so the manifest
 // must too, or the subclass's inherited surface (values, targets, action
 // methods) validates as unknown on the Ruby side. Child-first; stops at

@@ -1,14 +1,14 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The Carousel engine (N9 W4), decided NATIVE: no embla - the platform's
+// The Carousel engine, decided NATIVE: no carousel library - the platform's
 // scroll-snap owns the physics (touch, momentum, snapping, overscroll),
 // and this controller adds only what CSS can't: prev/next paging, button
 // state, and arrow keys. Navigation scrolls the VIEWPORT by a bounding-
 // rect delta (RTL- and transform-safe: never scrollLeft sign
 // conventions) - not scrollIntoView, whose alignment bubbles to
 // scrollable ancestors and whose "nearest" no-ops when several slides
-// fit the viewport at once (the vertical stack). Deferred with embla's
-// machinery: loop (it clones slides), autoplay, and the plugin API.
+// fit the viewport at once (the vertical stack). Deferred with the
+// library-grade machinery: loop (it clones slides), autoplay, and a plugin API.
 const SLIDE_SELECTOR = '[data-slot="carousel-item"]'
 
 export default class CarouselController extends Controller {

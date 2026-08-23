@@ -5,16 +5,20 @@ require "did_you_mean/levenshtein"
 module Poetry
   module Core
     module CSS
-      # The class Verifier: validates that every class a Style
-      # dictionary emits actually exists in the COMPILED Tailwind stylesheet -
+      # The class Verifier: validates that every class a Style dictionary
+      # emits actually exists in the COMPILED Tailwind stylesheet -
       # catching typos and LLM-hallucinated classes before they ship as
       # silently-unstyled markup.
       #
       # A pure function over (classes, compiled CSS): no Tailwind toolchain
       # required at verify time, just the build output. Built as a reusable
       # library on purpose - CI, the agent checks, the editor LSP, and the
-      # host-app `poetry:verify` task all consume this one
-      # implementation.
+      # host-app `poetry:verify` task all consume this one implementation.
+      #
+      # @example
+      #   verifier = Poetry::Core::CSS::Verifier.new(compiled_css: File.read("builds/tailwind.css"))
+      #   verifier.unknown(["inline-flex", "text-red-510"]).map(&:to_s)
+      #   # => ["text-red-510 (did you mean \"text-red-500\"?)"]
       class Verifier
         Unknown = Struct.new(:class_name, :suggestion) do
           def to_s
@@ -29,10 +33,10 @@ module Poetry
         # Tailwind emits no CSS for the bare marker by design - it only ever
         # appears inside the selectors of utilities that CONSUME it
         # (`group-focus/menu-item:*`), so its presence in compiled CSS depends
-        # on which theme is active. A marker is valid markup regardless (N12:
-        # the vega port stamps markers whose consumers live in the vega
-        # fragment only), so verification skips them instead of rewarding the
-        # coincidence of a same-theme consumer.
+        # on which theme is active. A marker is valid markup regardless - a
+        # theme fragment may be the only place its consumers live - so
+        # verification skips them instead of rewarding the coincidence of a
+        # same-theme consumer.
         MARKER_CLASS = %r{\A(?:group|peer)/[a-z0-9-]+\z}
 
         # Extracts the set of class names defined by a compiled CSS text.

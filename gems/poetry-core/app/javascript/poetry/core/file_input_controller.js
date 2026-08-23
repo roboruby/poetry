@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The FileInput dropzone engine (the review wave): the
+// The FileInput dropzone engine: the
 // component renders a <label> wrapping a visually-hidden native
 // <input type=file>, so click-to-browse and keyboard access are the
 // PLATFORM's - this controller adds only what HTML cannot: drag-and-drop

@@ -4,10 +4,11 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 
-// One toast item (poetry's own Toast - the sonner SLOT on Radix-Toast a11y
-// semantics). The item is role=status aria-live=off: it never announces
-// itself - on connect it speaks ONCE through the announce singleton at its
-// politeness (destructive -> assertive, wired server-side via the
+// One toast item (poetry's own Toast - the stacked-toaster genre on
+// Radix-Toast a11y semantics). The item is role=status aria-live=off: it
+// never announces itself - on connect it speaks ONCE through the
+// announce singleton at its politeness (destructive -> assertive,
+// wired server-side via the
 // politeness value). The auto-dismiss timer follows APG/WCAG 2.2.1 timing:
 // it PAUSES on hover, focus-within, window blur and tab-hidden (reasons are
 // refcounted so overlapping pauses cannot resume early), and duration <= 0

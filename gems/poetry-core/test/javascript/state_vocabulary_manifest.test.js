@@ -2,9 +2,9 @@
 // can emit, introspected from the REAL helpers/state.js VOCABULARY and
 // committed at config/state_vocabulary.json. Ruby consumes it - poetry-ui's
 // vocabulary-drift gate asserts every data-* attribute a Style dictionary
-// STYLES is an attribute something actually EMITS (the N6 W2 accordion
-// chevron was a dictionary selector whose attribute had lost its writer -
-// this manifest makes that bug class mechanically impossible).
+// STYLES is an attribute something actually EMITS (the accordion
+// chevron was once a dictionary selector whose attribute had lost its
+// writer - this manifest makes that bug class mechanically impossible).
 //
 // This test IS the drift gate. Regenerate with: npm run manifest
 import { describe, it, expect } from "vitest"

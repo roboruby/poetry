@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { announce } from "@poetry/controllers/helpers/announce"
 
-// The table row-selection engine (, the react-aria SelectionManager
+// The table row-selection engine (the SelectionManager
 // contract, checkbox-flavored): per-row checkboxes are the form value
 // (selected_ids[] - no JS means plain checkboxes in a form, the honest
 // fallback), this controller adds what HTML cannot:
@@ -9,7 +9,7 @@ import { announce } from "@poetry/controllers/helpers/announce"
 // - select-all with a real INDETERMINATE middle state (a JS property,
 //   never an attribute), computed over ENABLED rows only (disabled rows
 //   are skipped by select-all and ranges - disabledBehavior 'selection').
-// - Shift-click range selection off the react-aria ANCHOR model: the
+// - Shift-click range selection off the ANCHOR model: the
 //   anchor is the last plainly-toggled row; Shift sets every row in
 //   anchor..target to the ANCHOR row's state (the checkbox idiom).
 // - aria-selected + data-selected mirrored onto rows, count announcements

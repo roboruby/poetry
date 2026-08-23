@@ -107,8 +107,9 @@ module Poetry
 
       # A merged multi-gem catalog (the docs host shape): poetry/charts/*
       # components must map to their poetry_* helpers exactly like
-      # poetry/ui/* ones ( - pathless chart helpers read as yielding
-      # wrappers and every `do |chart|` block was a yieldless-block error).
+      # poetry/ui/* ones (before this, pathless chart helpers read as
+      # yielding wrappers and every `do |chart|` block was a
+      # yieldless-block error).
       MERGED_CATALOG = Check::Catalog.new(
         {
           "poetry/ui/badge" => { "options" => [{ "name" => "variant" }] },
@@ -253,7 +254,7 @@ module Poetry
         refute_includes rules(%(<%= poetry_button(variant: some_variant) { "x" } %>)), "unknown-variant"
       end
 
-      # --- value contracts (the crash classes) ---
+      # --- value contracts (the argument-shape crash classes) ---
 
       def test_a_typed_slot_called_as_a_block_errors_with_the_prop_form
         source = <<~ERB
@@ -458,7 +459,7 @@ module Poetry
         end
       end
 
-      # --- composition contracts (the crash classes) ---
+      # --- composition contracts (the block-seam crash classes) ---
 
       def test_a_declared_yielding_dispatcher_block_param_is_not_yieldless
         refute_includes rules(%(<%= poetry_chart :line, data: rows do |chart| %>x<% end %>)),
@@ -574,7 +575,7 @@ module Poetry
                         "missing-content-block"
       end
 
-      # --- the any-of contract tier (the crash classes) ---
+      # --- the any-of contract tier (the empty-render crash classes) ---
 
       def test_a_button_satisfying_no_alternative_errors
         finding = first(%(<%= poetry_button(variant: :destructive, label: "Delete account") %>),
@@ -628,7 +629,7 @@ module Poetry
                         "requires-any"
       end
 
-      # --- the required-slot tier (the menu crash class) ---
+      # --- the required-slot tier (the menu crash class - required slots the contract kept silent) ---
 
       def test_a_bound_block_that_never_sets_a_required_slot_errors
         source = <<~ERB
@@ -847,7 +848,7 @@ module Poetry
         assert_empty rules(%(<div data-controller="my-app--widget" data-action="my-app--widget#go"></div>))
       end
 
-      # --- raw color (extension) ---
+      # --- raw color ---
 
       def test_raw_color_classes_warn
         finding = first(%(<div class="bg-red-500 p-4 text-primary"></div>), "raw-color")
@@ -861,7 +862,7 @@ module Poetry
       end
 
       def test_cn_theme_classes_are_sanctioned
-        # The N11 theme layer: cn-* names are the sanctioned restyle
+        # The theme layer: cn-* names are the sanctioned restyle
         # surface and must never read as off-system classes.
         refute_includes rules(%(<div class="cn-button cn-button-variant-destructive cn-rtl-flip"></div>)),
                         "raw-color"
@@ -886,7 +887,7 @@ module Poetry
         assert_equal "poetry check: no issues found", Check.to_text([])
       end
 
-      # --- StableId heuristics (plan S4): warnings only, never exit-flipping ---
+      # --- StableId heuristics: warnings only, never exit-flipping ---
 
       def stable_identity_findings(erb)
         Check::StableIdentity.new(CATALOG).lint(erb)
@@ -954,7 +955,7 @@ module Poetry
 
       def test_key_is_passthrough_not_an_unknown_option
         # The linter must never flag the identity API its own
-        # stable-identity rules recommend (StableId S5 coherence).
+        # stable-identity rules recommend.
         findings = Check::Linter.new(CATALOG).lint(<<~ERB)
           <%= poetry_button(key: "save-action", label: "Save") %>
         ERB

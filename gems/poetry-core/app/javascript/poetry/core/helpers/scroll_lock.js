@@ -1,13 +1,13 @@
-// Body scroll-lock with scrollbar-width compensation (an upstream review
-// finding, 2026-07-12): bare `overflow: hidden` shifts the whole layout by
-// the scrollbar width the moment an overlay opens on a scrollable page.
+// Body scroll-lock with scrollbar-width compensation: bare
+// `overflow: hidden` shifts the whole layout by the scrollbar width the
+// moment an overlay opens on a scrollable page.
 // The gap is measured BEFORE locking and paid back as body padding-right.
 // Refcounted so stacked overlays (a dialog opened from a sheet) lock once
 // and restore only when the LAST one closes - per-instance saved values
 // break on out-of-order closes.
 //
-// Why not scrollbar-gutter: stable (react-aria's preference, this
-// helper's original primary)? Measured 2026-08-01 with classic
+// Why not scrollbar-gutter: stable (this helper's original primary)?
+// Measured 2026-08-01 with classic
 // scrollbars: Chrome drops the viewport's rail AND its reserved gutter
 // the moment the viewport's used overflow computes to hidden - whether
 // the pair sits on the root, propagates from body, or the gutter was set
@@ -27,7 +27,7 @@ export function lockScroll() {
   // Never save a value the lock itself writes: a Turbo-restored snapshot
   // arrives with the serialized "hidden" already inline (no refcount
   // behind it), and saving it would re-freeze scrolling on every later
-  // unlock (the poisoned-previous class).
+  // unlock (the poisoned-previous restore class).
   const overflow = document.body.style.overflow
   previous = {
     overflow: overflow === "hidden" ? "" : overflow,

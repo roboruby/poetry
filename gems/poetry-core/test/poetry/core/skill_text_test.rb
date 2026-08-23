@@ -5,7 +5,7 @@ require "tmpdir"
 
 module Poetry
   module Core
-    # SkillText (Skills v1): the component-usage skill is generated
+    # SkillText: the component-usage skill is generated
     # from the registry as a lean SKILL.md menu over per-family reference
     # files. These tests pin the file map and each file's load-bearing
     # content with a minimal registry double; the real-roster coverage
@@ -69,7 +69,7 @@ module Poetry
       end
 
       # The first-move doctrine: compose is unconditional and leads
-      # the guardrails - the lesson that a conditional trigger
+      # the guardrails - the lesson being that a conditional trigger
       # ("starting a new SCREEN?") never fires because agents see
       # components in the brief, not screens.
       def test_skill_md_leads_with_the_unconditional_compose_first_move

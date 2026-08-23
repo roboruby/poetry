@@ -5,8 +5,8 @@ require "digest"
 module Poetry
   module Core
     module CSS
-      # poetry's in-tree server-side CVA engine ( - class_variants
-      # absorbed, the external runtime dep dropped).
+      # poetry's in-tree server-side class-variants engine - no external
+      # runtime dependency.
       #
       # The resolver is a dictionary from a component's style surface to CSS
       # utility classes:
@@ -16,14 +16,20 @@ module Poetry
       #   variant   :color, red: "text-red-600", ...     # BEM modifiers (block--color-red)
       #   compound  ({ color: :red, mode: :dark }, "...") # multi-key combinations
       #
-      # Deliberately UNLIKE class_variants, the resolver stores **no
-      # defaults**: default values live in exactly one place - the
-      # component's `style :attr, default:` declaration (ActiveModel fills
-      # them before render) - which structurally kills the vcplus
-      # duplicated-defaults bug. Render criteria always arrive resolved.
+      # The resolver deliberately stores **no defaults**: default values
+      # live in exactly one place - the component's `style :attr, default:`
+      # declaration (ActiveModel fills them before render) - which
+      # structurally rules out the duplicated-defaults class of bug. Render
+      # criteria always arrive resolved.
       #
       # Merging goes through the shared, FIFO-cached Config merger
       # (configured once - never a fresh TailwindMerge instance per render).
+      #
+      # @example
+      #   resolver = Poetry::Core::CSS::Resolver.new
+      #   resolver.base("inline-flex items-center")
+      #           .variant(:color, red: "text-red-600", blue: "text-blue-600")
+      #   resolver.render(color: :red) # => "inline-flex items-center text-red-600"
       class Resolver
         Compound = Struct.new(:criteria, :classes)
 
@@ -37,7 +43,7 @@ module Poetry
         end
 
         # Subclass inheritance: a child Style extends a copy of its parent's
-        # dictionary (same model as class_variants' dup-on-inherit).
+        # dictionary (dup-on-inherit).
         def dup
           self.class.new.tap do |copy|
             copy.instance_variable_set(:@bases, @bases.dup)
@@ -78,6 +84,11 @@ module Poetry
         # named element. `criteria` are the component's resolved style values;
         # `extra` is a caller-supplied class string appended last (wins on
         # Tailwind conflicts via the merger).
+        #
+        # @param element [Symbol, nil] a declared element name, or nil for the root
+        # @param extra [String, nil] caller classes appended after the dictionary's
+        # @param criteria [Hash{Symbol => Object}] resolved style values keyed by variant attr
+        # @return [String, nil] the merged class string, or nil when nothing resolves
         def render(element = nil, extra: nil, **criteria)
           classes = element ? @elements.fetch(element.to_sym, []).dup : root_classes(criteria)
           classes << extra if extra
@@ -90,10 +101,12 @@ module Poetry
           @variants.transform_values(&:keys)
         end
 
-        # The capsule digest (the capsule-digest leak guard): a
-        # deterministic content hash of the whole dictionary. Embedded in the
-        # generated :bem reference stylesheet, so CSS written against an older
-        # dictionary is detectable instead of silently drifting.
+        # The capsule digest: a deterministic content hash of the whole
+        # dictionary. Embedded in the generated :bem reference stylesheet,
+        # so CSS written against an older dictionary is detectable instead
+        # of silently drifting.
+        #
+        # @return [String] a 12-character hex digest
         def digest
           Digest::SHA256.hexdigest(canonical_dictionary.inspect)[0, 12]
         end

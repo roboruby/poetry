@@ -6,8 +6,8 @@ require "uri"
 
 module Poetry
   module Core
-    # Fetches and validates registry items for the add generator (Ecosystem
-    # v1). Security posture - the shadcn CLI's defenses plus poetry's
+    # Fetches and validates registry items for the add generator.
+    # Security posture - the shadcn CLI's defenses plus poetry's
     # tightenings: https only (plain http allowed for localhost work), a
     # response size cap, a redirect limit, env-only auth (${VAR}
     # placeholders expanded from ENV at fetch time, so secrets never live in

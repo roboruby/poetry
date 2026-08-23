@@ -15,10 +15,10 @@ export default class extends Controller {
     // Set false for AlertDialog-style confirmations: backdrop clicks stop dismissing.
     dismissible: { type: Boolean, default: true },
     // OPT-IN global shortcut ("meta+k") toggling the dialog - the
-    // CommandDialog ⌘K affordance (Command); shadcn
+    // CommandDialog ⌘K affordance; shadcn
     // leaves it to a caller useEffect, poetry ships it because every
     // consumer writes the same ten lines. "meta" matches metaKey OR
-    // ctrlKey (⌘K on mac, ^K elsewhere - the cmdk convention).
+    // ctrlKey (⌘K on mac, ^K elsewhere - the command-palette convention).
     hotkey: { type: String, default: "" }
   }
 
@@ -121,7 +121,7 @@ export default class extends Controller {
   }
 
   // The descriptor grammar lives in helpers/hotkey.js (shared with the
-  // generic hotkey controller since an upstream review).
+  // generic hotkey controller).
   #matchesHotkey(event) {
     return matchesHotkey(event, this.hotkeyValue)
   }

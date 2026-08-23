@@ -3,7 +3,7 @@ import { announce } from "@poetry/controllers/helpers/announce"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
 // The floating bulk-actions bar (the ActionBar contract): shows
-// while its table's selection is non-empty, and holds the S2 rules -
+// while its table's selection is non-empty, and holds the contract rules -
 // focus NEVER moves in on show; if focus was inside when the bar hides,
 // it returns to where it was before entering (the FocusScope restoreFocus
 // equivalent, scoped small); "Actions available." is announced ONCE per

@@ -4,8 +4,10 @@ module Poetry
   module Core
     # Generates llms.txt (the index) and llms-full.txt (full contracts) from
     # the component registry - never hand-maintained, so the LLM-facing docs
-    # can't drift from the code (the shadcn convergence; layer 2
-    # of the discoverability scorecard).
+    # can't drift from the code.
+    #
+    # @example
+    #   Poetry::Core::LlmsText.new(registry: registry).index
     class LlmsText
       PREAMBLE = <<~TEXT
         # Poetry for Rails
@@ -160,9 +162,9 @@ module Poetry
         @blocks_composing[component_title]
       end
 
-      # The Stimulus wiring surface (N7 W3): the controllers a component
+      # The Stimulus wiring surface: the controllers a component
       # renders, each with the targets / values / actions an agent may wire
-      # by hand and the events it may listen for (N13 W1). Base UI
+      # by hand and the events it may listen for. Base UI
       # vocabulary. Absent for static components.
       # Element-level when the entry carries the projection (use_stimulus
       # declarations); the controller-level capability view otherwise
@@ -231,11 +233,11 @@ module Poetry
 
       # A typed slot renders another component: the call takes THAT
       # component's props, never a render block (with_icon(name: ...) - the
-      # W2 alert crash was an agent block-form guess this line now
+      # alert crash was an agent block-form guess this line now
       # forecloses). Untyped slots take blocks; many-slots say so; a
       # polymorphic slot lists its with_<type> setters - and when they are
-      # all kwargs-only, says so (the W2r menu crash guessed a
-      # type-as-argument dispatch no setter has). The crash classes
+      # all kwargs-only, says so (the menu crash guessed a
+      # type-as-argument dispatch no setter has). The render-crash classes
       # each get their sentence: yieldless setters (no |param| - it would be
       # nil), closed keyword signatures (the exact accepted set), and
       # setters that cannot omit their content block.
@@ -275,7 +277,7 @@ module Poetry
         args && slot["types"].all? { |type| args[type]&.zero? }
       end
 
-      # The blocks catalog (Blocks v1): vetted composed screens, one
+      # The blocks catalog: vetted composed screens, one
       # altitude above components. The index teaches the decision
       # hierarchy - start a SCREEN from a block, compose atoms for what no
       # block covers.

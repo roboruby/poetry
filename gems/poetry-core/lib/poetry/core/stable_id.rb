@@ -6,10 +6,13 @@ require "random/formatter"
 
 module Poetry
   module Core
-    # Semantic identity for component DOM ids (the StableId plan): a
+    # Semantic identity for component DOM ids: a
     # caller-supplied key: becomes a component-namespaced, render-stable
     # token, so Turbo morph pairs the same logical component across
     # renders and cached fragments stay composable.
+    #
+    # @example A render-stable id derived from a record
+    #   Poetry::Core::StableId.key_token(article) # => "article_42"
     #
     # Derivation is deliberately dom_id-first, never slug-sniffing:
     # records go through ActionView::RecordIdentifier.dom_id, which
@@ -53,7 +56,7 @@ module Poetry
         Thread.current[SEQUENCE_KEY]&.hex(8)
       end
 
-      # Random::Formatter over a digest-seeded PRNG (the a sibling gem recipe):
+      # Random::Formatter over a digest-seeded PRNG:
       # hex(8) matches the random fallback's shape exactly, so the mode
       # is invisible in the DOM.
       def sequence_for(seed)
@@ -88,6 +91,9 @@ module Poetry
       # -> to_s.parameterize. New records derive "new_<model>" - two of
       # those on one page collide, so repeated new-record forms need
       # explicit keys (documented).
+      #
+      # @param key [Object, nil] a record, a plain value, or nil
+      # @return [String, nil] the render-stable token, or nil
       def key_token(key)
         return nil if key.nil?
 

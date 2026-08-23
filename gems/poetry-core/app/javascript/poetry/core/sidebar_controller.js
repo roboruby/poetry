@@ -3,7 +3,7 @@ import { watchMobile } from "@poetry/controllers/helpers/breakpoint"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The Sidebar state machine (N9 W5 + the W5b mobile mode): expand/collapse
+// The Sidebar state machine (desktop plus the mobile mode): expand/collapse
 // coordination for the app shell. The COLLAPSE itself is pure CSS - the
 // peer sidebar carries data-state=expanded|collapsed and the dictionary's
 // group-data-[state=collapsed] classes do all the width/transform work;
@@ -82,7 +82,7 @@ export default class SidebarController extends Controller {
     this.#set(!this.openValue)
   }
 
-  // -- the mobile sheet (W5b) -------------------------------------------
+  // -- the mobile sheet -------------------------------------------------
 
   // Action: cancel->poetry--core--sidebar#closeMobile on the mobile dialog.
   closeMobile(event) {

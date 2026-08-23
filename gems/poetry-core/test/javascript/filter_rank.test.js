@@ -13,7 +13,7 @@ import {
   scoreText
 } from "@poetry/controllers/helpers/filter_rank"
 
-// THE SPEC TABLE (Command) - the deterministic filter
+// THE SPEC TABLE - the deterministic filter
 // contract, verbatim. THE DETERMINISM PROMISE is the component: any "small
 // improvement" to scoring silently reorders every palette in every app, so
 // scoring changes REQUIRE a table change here (a reviewed, versioned
@@ -40,7 +40,7 @@ const SPEC_TABLE = [
   ["Calendar", "ates", ["dates"], SCORE_HIDDEN, "keywords match by PREFIX only"],
   ["Calendar", "cal", ["calendar"], SCORE_PREFIX, "label bands outrank a keyword hit"],
   ["Calendar", "xyz", ["schedule"], SCORE_HIDDEN, "no match -> 0 (hidden)"],
-  ["Calendar", "clndr", [], SCORE_HIDDEN, "NOT fuzzy: cmdk's char-gap matching is the documented delta"],
+  ["Calendar", "clndr", [], SCORE_HIDDEN, "NOT fuzzy: char-gap fuzzy matching is the documented upstream delta"],
   ["Crème Brûlée", "creme", [], SCORE_PREFIX, "diacritic-folded prefix ('creme' -> Crème)"],
   ["Crème Brûlée", "brulee", [], SCORE_WORD, "diacritic-folded word start"],
   ["Jalapeño", "apeno", [], SCORE_SUBSTRING, "diacritic-folded substring"],

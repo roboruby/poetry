@@ -168,7 +168,7 @@ export default class PopperController extends Controller {
     const content = this.#content()
 
     if (!anchor || !content) return
-    // Select's alignItemWithTrigger mode (N13 W2) fixed-positions the
+    // Select's alignItemWithTrigger mode fixed-positions the
     // content itself; while the attribute is on, popper must not fight it.
     if (content.hasAttribute("data-align-item-with-trigger")) return
 
@@ -210,7 +210,7 @@ export default class PopperController extends Controller {
       // pass measures a display:none box (garbage geometry), and its
       // stale visibility:hidden lingers into the open MICROTASK, where
       // Chrome silently refuses focus-scope's mount focus (the popover
-      // first-open race - pre-existing, surfaced by the S2 portal
+      // first-open race - pre-existing, surfaced by the portal
       // proofs). While content is hidden the verdict resolves to
       // visible, which routes through the clear/restore branch below so
       // every open starts clean.
@@ -221,7 +221,7 @@ export default class PopperController extends Controller {
       // Save/restore, never clear: the dismissable scrim opts this SAME
       // element back in (pointer-events: auto) while body is none -
       // blanking it on every position pass left modal popovers click-dead.
-      // Found by the tester proofs (the first real-pointer gate;
+      // Found by the real-pointer tester proofs (the first real-pointer gate;
       // dommy dispatches synthetically, so pointer-events was invisible
       // to it).
       if (hidden && !this.#hidPointerEvents) {

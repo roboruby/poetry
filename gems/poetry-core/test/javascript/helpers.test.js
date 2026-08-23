@@ -296,7 +296,7 @@ describe("presence", () => {
   })
 
   // The Base UI transition hooks. No poetry class consumes
-  // them yet - these pin the choreography for the theme-layer milestone.
+  // them yet - these pin the choreography for the theme layer.
   describe("starting/ending style hooks", () => {
     const twoFrames = () => new Promise((resolve) => {
       requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(resolve, 0)))

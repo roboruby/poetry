@@ -252,7 +252,7 @@ export default class TooltipController extends Controller {
     }
     // The Radix triple becomes the pair + a reason: data-open via setState,
     // plus data-instant="delay|focus" on the content when the open skipped
-    // the delay (absent on a delayed open) - Base UI vocabulary/N6.
+    // the delay (absent on a delayed open) - Base UI vocabulary.
     setState(content, "open")
     if (instant) content.setAttribute("data-instant", instant)
     else content.removeAttribute("data-instant")

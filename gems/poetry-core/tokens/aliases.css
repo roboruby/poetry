@@ -1,8 +1,7 @@
 /* poetry-owned component var aliases (hand-authored, NOT generated).
-   The menus-family popper aliases (DropdownMenu
-   install_actions): shadcn's source-exact class strings reference
+   The menus-family popper aliases: shadcn's source-exact class strings reference
    Radix-namespaced content vars; poetry--core--popper ships the Base UI
-   names (anchor-width / --available-height / --transform-origin)
+   names (--anchor-width / --available-height / --transform-origin)
    - these aliases bind the Radix family names so ny-v4 source-exact class
    strings keep reading them. */
 [data-slot="dropdown-menu-content"],
@@ -23,9 +22,9 @@
   --radix-menubar-content-transform-origin: var(--transform-origin);
 }
 
-/* The listbox (Select install_actions): the menus
+/* The Select listbox: the menus
    alias pair PLUS the anchor-size pair - popper measures the anchor
-   (anchor-width/-height) so the source-exact
+   (--anchor-width/-height) so the source-exact
    trigger-width/-height viewport classes bind in popper mode. */
 [data-slot="select-content"] {
   --radix-select-content-available-height: var(--available-height);
@@ -34,8 +33,8 @@
   --radix-select-trigger-height: var(--anchor-height);
 }
 
-/* The popper-consumer trio (Popover / Tooltip /
-   HoverCard install_actions) - the same alias pattern, one per consumer,
+/* The popper-consumer trio (Popover / Tooltip / HoverCard) - the same
+   alias pattern, one per consumer,
    so the source-exact origin-(--radix-*-content-transform-origin) classes
    bind to popper's generic var. */
 [data-slot="popover-content"] {
@@ -50,7 +49,7 @@
   --radix-hover-card-content-transform-origin: var(--transform-origin);
 }
 
-/* Accordion resting-keyframe gate (Accordion): the panel
+/* Accordion resting-keyframe gate: the panel
    keeps data-open the whole time it's open, so the theme's
    data-open:animate-accordion-down keyframe (poetry-ui themes) re-runs
    whenever a display:none -> visible toggle restarts CSS animations - an
@@ -63,7 +62,7 @@
   animation-name: none;
 }
 
-/* CodeBlock single-spacing (CodeBlock): rouge emits a
+/* CodeBlock single-spacing: rouge emits a
    newline after every line so the copy affordance's textContent keeps real
    line breaks, but .line is display:block (for the full-row .hll tint and the
    line-number counter), so each newline ALSO renders as a blank line in the
@@ -82,7 +81,7 @@
   line-height: 1.5rem;
 }
 
-/* CodeBlock copy affordance (CodeBlock): the button is a
+/* CodeBlock copy affordance: the button is a
    ghost (transparent), so a long code line scrolling under it shows through
    and the icon blends into the code. Paint it the code panel's OWN surface
    color so it masks the code beneath while blending into the panel: the panel
@@ -98,7 +97,7 @@
   background-color: transparent;
 }
 
-/* NativeSelect chevron geometry (NativeSelect): the chevron
+/* NativeSelect chevron geometry: the chevron
    position is STRUCTURAL, not theme-owned. Letting each theme place/size the
    icon (cn-native-select-icon) drifted it on every theme switch (mira
    right-1.5/size-3.5 vs the others right-2.5/size-4), so it moved and resized.
@@ -130,7 +129,7 @@
   height: 1rem;
 }
 
-/* data-selected bridge extension (Base UI Vocabulary §3):
+/* data-selected bridge extension (the Base UI vocabulary contract):
    the vendored shadcn/tailwind.css @custom-variant data-selected matches
    [data-selected="true"] ONLY (upstream quirk), but poetry emits the bare
    Base UI presence attribute (data-selected="") on committed select/combobox

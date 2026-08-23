@@ -3,7 +3,7 @@
 module Poetry
   module Core
     class DesignMd
-      # The import half of the DESIGN.md interop (N14 W2): a parsed document
+      # The import half of the DESIGN.md interop: a parsed document
       # (DesignMd.parse - ours or foreign) becomes a token-override PLAN the
       # host task renders into app/assets/tailwind/poetry/design-overrides.css.
       #
@@ -16,15 +16,20 @@ module Poetry
       #      suggestion (a deterministic OKLCH L-walk, chroma held). Only
       #      force: ships a failing pair.
       #   2. Fonts never enter CSS. A typography family becomes a report note
-      # plus a snippet the host opts into by hand.
+      #      plus a snippet the host opts into by hand.
       #   3. DROP-not-fabricate. Unmapped or unparseable values are listed in
       #      the report, never guessed into tokens.
+      #
+      # @example
+      #   doc = Poetry::Core::DesignMd.parse(File.read("brand.DESIGN.md"))
+      #   plan = Poetry::Core::DesignMd::Import.new.plan(doc)
+      #   plan.overrides["light"] # => { "primary" => a Tokens::Color, ... }
       class Import
         AA = 4.5
 
         # Conservative cross-ecosystem role aliases - every application is
         # itself reported, so nothing maps silently. Names already matching
-        # poetry roles pass through; Material-style `on-<x>` resolves to the
+        # poetry roles pass through; an `on-<x>` name resolves to the
         # mapped `<x>-foreground` token when poetry ships one.
         ALIASES = {
           "text" => "foreground",
@@ -68,7 +73,9 @@ module Poetry
           @roles = tokens.color_names("light")
         end
 
-        # doc: DesignMd.parse output. Returns a Plan.
+        # @param doc [Hash] DesignMd.parse output
+        # @param force [Boolean] ship overrides even when a touched pair fails AA
+        # @return [Plan]
         def plan(doc, force: false)
           applied = []
           dropped = []
@@ -94,6 +101,10 @@ module Poetry
         # lightness away from the other member in 0.01 steps, chroma held,
         # until the pair passes or L leaves [0, 1] (then there is no passing
         # lightness on this hue/chroma axis).
+        #
+        # @param candidate [Tokens::Color] the color to walk
+        # @param against [Tokens::Color] the fixed other member of the pair
+        # @return [Tokens::Color, nil] the nearest passing color, or nil
         def nearest_aa(candidate, against)
           step = candidate.l > against.l ? 0.01 : -0.01
           color = candidate

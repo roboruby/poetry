@@ -178,6 +178,9 @@ module Poetry
       # icon_names: the active icon set's names, so the check tool validates
       # icon values by membership, not just shape. Everything read is the
       # live committed registry.
+      #
+      # @example Serve the committed registry over stdio
+      #   Poetry::Core::Agent::Server.from_registry("registry").serve
       class Server
         # skills: skill name => a zero-arg callable returning the skill's
         # {relative path => content} file map (the get_skill tool).
@@ -233,6 +236,9 @@ module Poetry
 
         # A JSON-RPC 2.0 request hash -> a response hash (or nil for a
         # notification, which gets no reply).
+        #
+        # @param request [Hash] one parsed JSON-RPC 2.0 request
+        # @return [Hash, nil] the response hash, or nil for a notification
         def handle(request)
           id = request["id"]
           case request["method"]
@@ -335,7 +341,7 @@ module Poetry
           (["#{verdict} - #{errors} error(s), #{findings.length - errors} warning(s)"] + report).join("\n")
         end
 
-        # The compose router: the unconditional first move.
+        # The compose router: the unconditional first move. Measured runs
         # proved advisory prose does not move behavior - the design skill
         # fired in 24/31 arms and composition did not move, while the
         # blocks surface (the one measured composition win, 21-9) sat
@@ -441,11 +447,10 @@ module Poetry
 
         # --- build_page: the guided page workflow ---
         #
-        # A stateless state machine: the STEP is carried in the arguments
-        # (the Blueprint nextStep pattern), so #handle stays a pure function
-        # and the server stays boot-free - no session storage. Each step
-        # response ends with the exact next call. With no step, the entry
-        # routes on the intent's VERB (the Vercel request-mode router):
+        # A stateless state machine: the STEP is carried in the arguments,
+        # so #handle stays a pure function and the server stays boot-free -
+        # no session storage. Each step response ends with the exact next
+        # call. With no step, the entry routes on the intent's VERB:
         # review/harden stay read-only so an audit never becomes an edit;
         # shape plans without probing; implement runs the full sequence.
         def build_page(arguments)
@@ -458,8 +463,8 @@ module Poetry
           run_step(step, intent, arguments)
         end
 
-        # The request-mode router (Vercel product-design piece): resolve the
-        # mode from the verb BEFORE acting. Only a clear review/harden/shape
+        # The request-mode router: resolve the mode from the verb BEFORE
+        # acting. Only a clear review/harden/shape
         # verb diverts; a page description with no verb is an implement.
         def request_mode(intent)
           text = intent.downcase
@@ -536,8 +541,8 @@ module Poetry
         end
 
         # Step 1: host doctor. Reads what it can from @app_root and degrades
-        # gracefully (the plan step never depends on it). Also the
-        # vite fail-fast: a bundler present without the controllers channel
+        # gracefully (the plan step never depends on it). Also the JS-channel
+        # fail-fast: a bundler present without the controllers channel
         # leaves interactive components inert.
         def probe_body
           root = @app_root
@@ -755,7 +760,7 @@ module Poetry
           end.join("\n")
         end
 
-        # Runtime skill delivery (the ReUI-review add): the SAME
+        # Runtime skill delivery: the SAME
         # files `rails g poetry:skill` installs, served over MCP for hosts
         # that cannot write files. SKILL.md alone first - the skill's own
         # progressive-disclosure design; references load one at a time.
@@ -844,7 +849,7 @@ module Poetry
               facets << "types #{slot["types"].join("|")}#{convention}"
             end
             facets << "takes #{helper(slot["component"])} props, not a block" if slot["component"]
-            # The crash seams, stated where agents read them.
+            # The render-crash seams, stated where agents read them.
             if (yieldless = slot["yieldless"])
               setters = yieldless.map { |name| "with_#{name}" }.join("/")
               facets << "#{setters} #{yieldless.size == 1 ? "yields" : "yield"} NOTHING to the block - no |param|"

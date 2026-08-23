@@ -686,7 +686,7 @@ export default class MenuController extends Controller {
 
   // The portaled sub is self-sufficient: while at the container it no
   // longer bubbles through the root content, and item data-actions are out
-  // of scope (the S4 lesson) - so the native delegation AND the sub's own
+  // of scope - so the native delegation AND the sub's own
   // dismissable events ride the portaled node. The bridge still re-emits
   // the dismissable pair from home (the wrapper), where level resolution
   // finds no sub content and the duplicate no-ops.

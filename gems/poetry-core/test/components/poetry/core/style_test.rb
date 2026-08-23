@@ -6,7 +6,7 @@ module Poetry
   module Core
     class StyleTest < Minitest::Test
       def test_declaring_defaults_in_the_dictionary_raises
-        # Single source of truth (M2): defaults live on the component
+        # Single source of truth: defaults live on the component
         # (`style :attr, default:`), never in the style dictionary.
         error = assert_raises(Poetry::Core::Error) do
           Class.new(Poetry::Core::Style) { defaults(color: :red) }

@@ -7,7 +7,7 @@ module Poetry
     # page SHAPE - purpose, section order, the states a real screen must
     # handle, the edge cases that bite, the components it draws on, and the
     # vetted block to START from when one covers it. This is the plan step's
-    # answer to the measured failure:/79 proved that naming the design
+    # answer to a measured failure: naming the design
     # skill and the block catalog does not move composition on its own; the
     # missing piece is directed retrieval at PLAN time, before any ERB.
     #
@@ -18,7 +18,7 @@ module Poetry
     #
     # SEED: this ships the archetypes anchored to poetry's eight blocks plus
     # the universal page types every app needs. It is deliberately a seed
-    # (the plan note's target is ~50); it grows as blocks and evidence
+    # (the target is ~50); it grows as blocks and evidence
     # accrue. A brief that matches nothing is told so and routed to compose
     # + the five mechanics, never silently dropped.
     module PageArchitectures

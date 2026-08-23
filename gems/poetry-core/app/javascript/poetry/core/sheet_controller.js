@@ -1,8 +1,8 @@
 import DialogController from "@poetry/controllers/dialog_controller"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The Sheet (N9 W5b commit 1): the dialog machinery + the presence-hold
-// close its dictionary was waiting on since W3b - the Drawer's animated
+// The Sheet: the dialog machinery + the presence-hold
+// close its dictionary was waiting on - the Drawer's animated
 // path minus the swipe. Everything hard about the overlay is inherited
 // (native <dialog> platform trap, backdrop-click discrimination, scroll
 // lock, hotkey); this subclass makes the close ANIMATED: exit flips the

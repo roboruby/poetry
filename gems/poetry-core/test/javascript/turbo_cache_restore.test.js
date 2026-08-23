@@ -3,7 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 import { lockScroll, unlockScroll, resetScrollLock } from "@poetry/controllers/helpers/scroll_lock"
 
-// The Turbo cache-restore class (, both legs reproduced live against
+// The Turbo cache-restore class (both legs reproduced live against
 // the docs app): an overlay open at turbo:before-cache serializes into the
 // snapshot - the open attribute and the body's inline scroll-lock / scrim
 // styles survive, top-layer state does not. Restored pages showed a
@@ -28,7 +28,7 @@ const dialogMarkup = (openAttr = "") => `
     </dialog>
   </div>`
 
-describe("turbo cache restore ",  => {
+describe("turbo cache restore", () => {
   let application
 
   beforeEach(() => {

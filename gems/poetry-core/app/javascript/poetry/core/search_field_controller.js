@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 
-// The SearchField seams (the react-aria contract): Escape CLEARS a
+// The SearchField seams: Escape CLEARS a
 // non-empty field and is consumed - the NEXT press reaches the dismissal
 // layer and closes a parent overlay; an already-empty field lets Escape
 // propagate untouched. Emptiness is checked against the RAW input value

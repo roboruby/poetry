@@ -20,7 +20,7 @@ const EXIT_TIMEOUT_FALLBACK = 1000
 // Exits waiting on their CSS animation. A Turbo snapshot must never
 // capture one mid-flight: the owner's onRemove (hidden + layer-controller
 // removal) would land AFTER the cache is taken, so the restored page
-// resurrects a live layer - the click-dead restore. Every pending
+// resurrects a live layer - the click-dead restore class. Every pending
 // exit is flushed synchronously at turbo:before-cache; the dismissable
 // layer also flushes explicitly after dispatching its before-cache
 // dismiss, so exits STARTED by that dismiss complete in the same tick
@@ -63,7 +63,7 @@ export function measurePresence(element, { property = "--poetry-presence-height"
 // data-starting-style for exactly one painted frame after the pair flips
 // (the Base UI two-frame trick), so CSS transitions can animate FROM the
 // starting declarations. No poetry class consumes it yet - the attribute
-// ships so the theme-layer milestone can adopt the transition idiom
+// ships so a future theme layer can adopt the transition idiom
 // without touching JS.
 export function enterPresence(element, { measure = false, property } = {}) {
   if (measure) measurePresence(element, { property })

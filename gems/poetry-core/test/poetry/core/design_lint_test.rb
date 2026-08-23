@@ -67,7 +67,7 @@ module Poetry
         assert_match(/p-3\.5 = 14px/, finding.message)
       end
 
-      # --- motion floor -----------------------------------------
+      # --- motion floor --------------------------------------------------
 
       def test_motion_ease_in_but_not_ease_in_out
         assert_red_green("motion-ease-in",
@@ -204,7 +204,7 @@ module Poetry
       end
 
       def test_typeset_prose_is_exempt_from_type_scale_monotony
-        # Typeset sizes prose via em-derived nested:where rules
+        # Typeset sizes prose via em-derived nested :where() rules
         # the static renderer cannot compute - bare elements at one computed
         # size are the pattern there, not the slop.
         prose = "#{"<p>copy</p>" * 5}<h1>title</h1>"
@@ -275,7 +275,7 @@ module Poetry
                         "solid and soft in DIFFERENT tables are two consistent sets"
       end
 
-      # --- tranche 2: copy/composition tells --------------------
+      # --- tranche 2: copy/composition tells -----------------------------
 
       def test_em_dash_overuse
         prose = "We build tools — fast ones — for teams — everywhere — always — now. " * 2
@@ -346,12 +346,12 @@ module Poetry
                          green: %(<h1 class="text-8xl font-semibold">Ship faster</h1>))
       end
 
-      def test_rules_registry_documents_every_rule_with_provenance
+      def test_rules_registry_documents_every_rule_with_a_rationale
         assert_equal 23, DesignLint::RULES.size
-        DesignLint::RULES.each do |id, (tier, provenance)|
+        DesignLint::RULES.each do |id, (tier, rationale)|
           assert_includes %i[ast dom], tier, id
-          assert_match(/the design-rule analogue|the slop-gate analogue|the judged-run calibration||an external skills pack/, provenance,
-                       "#{id} must cite its analogue or the measured run that earned it")
+          assert_operator rationale.to_s.length, :>=, 15,
+                          "#{id} must state the design discipline it enforces"
         end
       end
     end

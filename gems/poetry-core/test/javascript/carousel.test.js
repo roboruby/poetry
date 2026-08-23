@@ -7,7 +7,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // scroll-margin-adjusted - never scrollIntoView, whose alignment bubbles
 // to ancestors and whose "nearest" no-ops on multi-visible stacks),
 // button state follows the nearest-slide index (rect-based - RTL-safe by
-// construction) plus the end-of-scroller (embla containScroll parity),
+// construction) plus the end-of-scroller (contain-scroll parity),
 // arrows page per orientation, and the select event carries the index.
 // The real snap physics are the platform's (browser rig).
 
@@ -113,7 +113,7 @@ describe("poetry--core--carousel", () => {
     expect(el("next").disabled).toBe(true)
   })
 
-  it("next disables at max scroll even mid-roster (embla containScroll parity)", async () => {
+  it("next disables at max scroll even mid-roster (contain-scroll parity)", async () => {
     layout(1)
     scroller(el("viewport"), { size: 300, extent: 900, position: 600 })
     el("viewport").dispatchEvent(new Event("scroll"))

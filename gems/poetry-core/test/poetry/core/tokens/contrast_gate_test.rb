@@ -11,7 +11,7 @@ module Poetry
           @gate = ContrastGate.new(@tokens)
         end
 
-        #, the gate itself: the shipped theme clears every locked pair
+        # The gate itself: the shipped theme clears every locked pair
         # in both modes. This is the CI contrast gate - a token edit that
         # regresses any pair below its locked class fails the build here.
         def test_shipped_theme_has_no_contrast_violations
@@ -31,8 +31,8 @@ module Poetry
         end
 
         def test_aa_exceptions_are_the_locked_explicit_list
-          # The reviewed exception ledger (: "exceptions surfaced
-          # explicitly") - if this list changes, the change must be deliberate.
+          # The reviewed exception ledger - exceptions surface explicitly;
+          # if this list changes, the change must be deliberate.
           expected = [
             %w[light muted-foreground_on_muted],
             %w[light muted-foreground_on_background],
@@ -60,7 +60,7 @@ module Poetry
           assert_operator solid, :<, 4.5
         end
 
-        # M1 DoD: the gate fails on a seeded regression.
+        # The gate fails on a seeded regression.
         def test_gate_fails_on_a_seeded_regression
           data = JSON.parse(File.read(Tokens.default_path))
           # Regression: light primary-foreground repainted almost equal to primary.

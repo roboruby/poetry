@@ -3,6 +3,13 @@
 module Poetry
   module Core
     module X
+      # Renders one X-shaped SVG glyph, styled through the sidecar Style
+      # dictionary (color x mode x size x shape). Retained as legacy
+      # reference code exercising the style machinery - not a pattern for
+      # new components.
+      #
+      # @example
+      #   render Poetry::Core::X::Component.new(color: :red, size: :large)
       class Component < Poetry::Core::Component
         style :mode, default: :light, required: true, variants: %i[
           light

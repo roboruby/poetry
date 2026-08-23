@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# The M2 CSS toolchain tasks. These boot the on-disk dummy host so the
+# The CSS toolchain tasks. These boot the on-disk dummy host so the
 # engine's Style classes are loadable, then operate on every Style
 # dictionary + the component templates.
 #

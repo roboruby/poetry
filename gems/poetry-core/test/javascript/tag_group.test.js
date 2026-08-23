@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// The TagGroup removal engine (the react-aria contract): Delete/
+// The TagGroup removal engine: Delete/
 // Backspace removes the focused tag (row-origin keys only), the remove
 // button removes exactly its own tag, focus recovers forward-then-backward
 // skipping disabled tags, the last removal hands focus to the container

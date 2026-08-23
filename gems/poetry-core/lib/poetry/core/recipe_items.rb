@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # The recipes projection (Recipes Channel): multi-file, non-UI payloads
+    # The recipes projection: multi-file, non-UI payloads
     # - skill bundles, scaffold template sets, screen slices - served
     # through the same shadcn registry-item schema as components and
     # blocks. Like RegistryItems, this is a LIVE projection: a recipe

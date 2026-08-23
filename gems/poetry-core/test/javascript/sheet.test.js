@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
 import { registerPoetryControllers } from "@poetry/controllers"
 
-// poetry--core--sheet JS-unit (N9 W5b commit 1): the dialog machinery +
+// poetry--core--sheet JS-unit: the dialog machinery +
 // the presence-hold close - the Drawer's animated path minus the swipe.
 // What this file proves: open flips the pair through enterPresence, close
 // routes through exitPresence (flipping to data-closed BEFORE the native

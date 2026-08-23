@@ -3,6 +3,12 @@
 module Poetry
   module Core
     module Generic
+      # Renders an arbitrary HTML element chosen at render time via
+      # `html_tag:` - a void element emits a self-closing tag, anything
+      # else wraps the content block.
+      #
+      # @example
+      #   render Poetry::Core::Generic::Component.new(html_tag: "span") { "text" }
       class Component < Poetry::Core::Component
         SELF_CLOSING_TAGS = %w[
           area

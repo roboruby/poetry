@@ -3,7 +3,7 @@
 module Poetry
   module Core
     module Check
-      # The StableId heuristics (plan S4): two WARNING-severity rules over
+      # The StableId heuristics: two WARNING-severity rules over
       # raw ERB text, each catching a render that escapes the per-request
       # id story and therefore needs explicit identity (key: or id:).
       #

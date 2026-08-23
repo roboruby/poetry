@@ -47,7 +47,7 @@ module Poetry
         # Dark-mode stroke colors (compound: color x mode). NOTE: this
         # hand-written color x mode fan-out is exactly what the semantic-role
         # token contract eliminates for real poetry-ui components -
-        # X is legacy vcplus reference code, replaced at M3.5.
+        # X is retained legacy reference code, not the pattern to copy.
         {
           red: "stroke-red-400 group-hover:stroke-red-300",
           orange: "stroke-orange-400 group-hover:stroke-orange-300",

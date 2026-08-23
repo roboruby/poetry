@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Core
-    # The data-component / data-slot markup contract (M3/U3).
+    # The data-component / data-slot markup contract.
     class SelfIdentificationTest < Minitest::Test
       def test_component_data_attributes_carry_the_component_title
         assert_equal({ "data-component" => "x" }, Poetry::Core::X::Component.new.component_data_attributes)

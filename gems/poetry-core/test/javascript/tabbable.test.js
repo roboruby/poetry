@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from "vitest"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
-// The tabbable walk's radio-group rule (react-aria's walker): a
+// The tabbable walk's radio-group rule: a
 // radio GROUP is one tab stop - the checked radio represents it; an
 // all-unchecked group is represented by its first radio. Everything else
 // about the walk is pinned by the focus-scope suite that consumes it.

@@ -1,6 +1,6 @@
 // Every event a controller dispatches must appear in its OWN `static
 // events` declaration, full name as emitted - the manifest / registry /
-// llms surfaces render the declaration (N13 W1), this scan keeps it honest
+// llms surfaces render the declaration, this scan keeps it honest
 // against the source. Options are read from the 8 lines following each
 // dispatch call (calls in this codebase are short); a dispatch with a
 // non-literal event name fails the count check on purpose - give it a

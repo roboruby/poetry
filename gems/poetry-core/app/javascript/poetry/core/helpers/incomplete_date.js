@@ -1,5 +1,6 @@
-// The nullable-segment date/time value (react-aria's IncompleteDate
-// insight): segments are stored RAW so a user can edit day before
+// The nullable-segment date/time value (the IncompleteDate model, adapted
+// from react-aria - Apache-2.0, see THIRD_PARTY_NOTICES.md): segments
+// are stored RAW so a user can edit day before
 // month - the object can hold February 31st and only commit constrains.
 // Hour is stored in the LOCALE'S HOUR CYCLE with a separate dayPeriod bit
 // (0 = AM, 1 = PM), so am/pm edits are independent and "12 means 0" lives
@@ -60,7 +61,7 @@ export class IncompleteDate {
   }
 
   // The first arrow press on an EMPTY segment lands on the placeholder
-  // value, the second one moves it (react-aria's cycle contract). round:
+  // value, the second one moves it (the cycle contract). round:
   // PageUp/Down snap to the next multiple of amount instead of adding it.
   cycle(type, amount, placeholderValue, { round = false } = {}) {
     const { min, max } = this.limits(type)
@@ -208,8 +209,8 @@ function clampToLimits(value, min, max) {
   return Math.min(max, Math.max(min, value))
 }
 
-// The resolved hour cycle, with the two Intl bug detections ported from
-// react-aria's DateFormatter (Ref - react-aria §2): Chrome resolves
+// The resolved hour cycle, with two known Intl bug detections
+// built in: Chrome resolves
 // `hour12: false` to the buggy h24 per the ECMA-402 spec bug, and WebKit
 // misreports resolvedOptions().hourCycle in some locales - so the cycle is
 // INFERRED by formatting hour 0 and hour 23 and reading what comes out.

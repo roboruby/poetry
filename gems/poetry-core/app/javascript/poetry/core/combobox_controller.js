@@ -6,7 +6,7 @@ import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presenc
 import { setState, stateOf } from "@poetry/controllers/helpers/state"
 import { tabbableWithin } from "@poetry/controllers/helpers/tabbable"
 
-// The Combobox ORCHESTRATOR (Combobox): Select's shell
+// The Combobox ORCHESTRATOR: Select's shell
 // x Command's engine, composed VIA THE EVENT CONTRACT ONLY - this thin
 // controller owns open/close + the commit pipeline + autofill adoption and
 // listens for the embedded engine's poetry:command:select; it contains NO
@@ -773,7 +773,7 @@ export default class ComboboxController extends Controller {
   // popup would proceed from body's end, not from the combobox - close
   // (unchanged) and place focus where the un-portaled DOM would have
   // landed it: the trigger on Shift+Tab, the next tabbable after it on
-  // Tab (the react-aria rule). Multiple mode's typing surface is the
+  // Tab (the reference combobox rule). Multiple mode's typing surface is the
   // chips input at HOME, so its Tab-out proceeds naturally, untouched.
   #onKeydown = (event) => {
     if (event.key !== "Tab" || this.modalValue || !this.#isOpen()) return

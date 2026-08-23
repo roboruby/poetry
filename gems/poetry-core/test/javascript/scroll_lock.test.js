@@ -80,8 +80,8 @@ describe("scroll_lock helper", () => {
     expect(document.body.style.overflow).toBe("")
   })
 
-  // scrollbar-gutter: stable was this helper's original primary strategy
-  // (react-aria's preference). Measured 2026-08-01 with classic
+  // scrollbar-gutter: stable was this helper's original primary
+  // strategy. Measured 2026-08-01 with classic
   // scrollbars: Chrome drops the viewport's rail AND its reserved gutter
   // the moment the viewport's used overflow computes to hidden - on the
   // root, propagated from body, or set permanently - so the page shifted

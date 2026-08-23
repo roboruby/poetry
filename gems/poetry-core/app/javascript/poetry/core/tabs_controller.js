@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The Tabs activation machine (N9 W2): this controller owns ONLY the
+// The Tabs activation machine: this controller owns ONLY the
 // active-value state + attribute writes; the shared poetry--core--roving-focus
 // on the tablist owns the keyboard (default tabindex-managing mode - one Tab
 // stop). Triggers are DUMB buttons (click -> tabs#activate; with automatic

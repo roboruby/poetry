@@ -355,8 +355,8 @@ export default class SelectController extends Controller {
     })
   }
 
-  // --- alignItemWithTrigger (N13 W2: the Base UI SelectPopup algorithm,
-  // ported from SelectPositioner/SelectPopup @ the N6 checkout) ---
+  // --- alignItemWithTrigger (the Base UI SelectPopup algorithm,
+  // ported from SelectPositioner/SelectPopup) ---
   //
   // The popup opens OVER the trigger with the selected item's TEXT center
   // aligned to the trigger's value-text center (native <select> feel): the

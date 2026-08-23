@@ -4,7 +4,7 @@ require "test_helper"
 
 module Poetry
   module Core
-    # The identity core (StableId plan S0): key-token derivation and the
+    # The StableId identity core: key-token derivation and the
     # poetry_instance_id ladder. The contract under test: explicit id
     # wins; key: derives dom_id-first (so a host's to_key override - the
     # obfuscation lever - propagates); everything else falls back random,
@@ -93,7 +93,7 @@ module Poetry
         assert_equal "faq", component.stable_key
       end
 
-      # --- S3: the opt-in sequence mode ---
+      # --- the opt-in sequence mode ---
 
       def test_with_seed_is_deterministic_and_isolated
         a = StableId.with_seed("/products") { Array.new(3) { StableId.next_sequence_token } }

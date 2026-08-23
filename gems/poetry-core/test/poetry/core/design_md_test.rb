@@ -26,7 +26,7 @@ module Poetry
 
         assert_equal "alpha", front["version"]
         assert_equal "poetry default", front["name"]
-        # The spec's flat colors map = light mode, so an external design tool/the slop-gate analogue-side
+        # The spec's flat colors map = light mode, so foreign-tool
         # parsers read poetry files without knowing about modes.
         assert_equal "oklch(1 0 0)", front.dig("colors", "background")
         assert_equal "oklch(0.145 0 0)", front.dig("modes", "dark", "background")
@@ -87,8 +87,8 @@ module Poetry
         assert_empty parsed.dig("unknown", "colors")
       end
 
-      def test_parse_walks_a_hallmark_study_file
-        parsed = DesignMd.parse(fixture("brand-study-study.design.md"))
+      def test_parse_walks_a_prose_study_file
+        parsed = DesignMd.parse(fixture("prose-study.design.md"))
         colors = parsed.dig("colors", "light")
 
         # British "Colour anchor" heading, hex + rgb() bullets.
@@ -100,8 +100,8 @@ module Poetry
         assert_includes parsed.dig("unknown", "sections"), "Macrostructure"
       end
 
-      def test_parse_reads_a_stitch_front_matter_file
-        parsed = DesignMd.parse(fixture("stitch-brand.DESIGN.md"))
+      def test_parse_reads_a_front_matter_file
+        parsed = DesignMd.parse(fixture("front-matter-brand.DESIGN.md"))
         colors = parsed.dig("colors", "light")
 
         assert_equal "Aster Finance", parsed["name"]

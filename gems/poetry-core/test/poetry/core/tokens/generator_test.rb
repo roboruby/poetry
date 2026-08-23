@@ -22,7 +22,7 @@ module Poetry
           css = Generator.new.tailwind_theme_css
 
           assert_includes css, "@theme inline {"
-          # The Base-era multiplicative scale (N12): identical px to the old
+          # The Base-era multiplicative scale: identical px to the old
           # additive ny-v4 stops at the default --radius, plus 2xl..4xl for
           # the style ports.
           assert_includes css, "  --radius-sm: calc(var(--radius) * 0.6);"
@@ -43,7 +43,7 @@ module Poetry
           assert_includes front, "shadcn/ui v4 neutral"
         end
 
-        # M1 DoD: change one token -> every artifact regenerates from the source.
+        # Change one token -> every artifact regenerates from the source.
         def test_changing_a_token_flows_into_all_artifacts
           data = JSON.parse(File.read(Tokens.default_path))
           data["color"]["light"]["primary"]["$value"]["components"] = [0.3, 0.1, 200.0]

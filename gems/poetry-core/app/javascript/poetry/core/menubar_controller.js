@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { directionOf } from "@poetry/controllers/helpers/direction"
 import { setState } from "@poetry/controllers/helpers/state"
 
-// The Menubar cross-menu COORDINATOR (Menubar) - kept
+// The Menubar cross-menu COORDINATOR - kept
 // deliberately anorexic: ONE piece of state (`value`, which menu is open)
 // plus the three behaviors no other layer can own. The ownership split:
 // - roving-focus (horizontal, manageTabindex TRUE) owns which trigger is

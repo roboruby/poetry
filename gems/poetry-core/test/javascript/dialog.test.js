@@ -109,9 +109,9 @@ describe("poetry--core--dialog", () => {
     expect(dlg.hasAttribute("data-open")).toBe(false)
   })
 
-  // The CommandDialog affordance (Command): an OPT-IN
+  // The CommandDialog affordance: an OPT-IN
   // hotkey value toggles the dialog from a window keydown; "meta" matches
-  // metaKey OR ctrlKey (⌘K / ^K, the cmdk convention).
+  // metaKey OR ctrlKey (⌘K / ^K, the command-palette convention).
   describe("the opt-in hotkey", () => {
     // application.stop() does not DISCONNECT live controllers - remove the
     // root while the application still observes, so the window listener's

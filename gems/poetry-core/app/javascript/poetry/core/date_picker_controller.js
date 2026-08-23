@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 
-// The DatePicker glue (N9 W6): the thin coordinator between a Popover and
+// The DatePicker glue: the thin coordinator between a Popover and
 // the Calendar it wraps. The Calendar owns selection + the form value (its
 // name: hidden input); this controller only reacts to the calendar's change
 // event to (a) write the human-formatted date into the trigger label and
@@ -15,7 +15,7 @@ export default class DatePickerController extends Controller {
   }
 
   // Action: poetry--core--calendar:change->poetry--core--date-picker#picked
-  // on the wrapper. Range mode (N9 D1): the label joins the pair, a
+  // on the wrapper. Range mode: the label joins the pair, a
   // start-only pick shows one date, and the popover closes only once the
   // range COMPLETES (the shadcn convention - never mid-range).
   picked(event) {

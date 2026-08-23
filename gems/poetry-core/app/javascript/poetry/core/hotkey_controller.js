@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { isEditingTarget, matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 
-// Declarative global shortcut (the upstream library use-hotkeys borrow, 2026-07-12):
+// Declarative global shortcut:
 // put the controller on any clickable element and declare the descriptor -
 //
 //   <a href="/inbox" data-controller="poetry--core--hotkey"

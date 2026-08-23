@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # The pluggable icon-set registry (: Lucide default, per-set
+    # The pluggable icon-set registry (Lucide default, per-set
     # adapters). An icon set is anything responding to #include?(name),
     # #fetch(name) -> inner SVG markup, and #names. Sets register themselves
     # on require (poetry-lucide does); the active set is selected by

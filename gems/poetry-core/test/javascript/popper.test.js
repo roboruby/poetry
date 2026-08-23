@@ -328,7 +328,7 @@ describe("poetry--core--popper", () => {
     expect(floating.computePosition).toHaveBeenCalledTimes(2)
   })
 
-  // --- caller-supplied element anchor (the NavigationMenu viewport, D3) ---
+  // --- caller-supplied element anchor (the NavigationMenu viewport) ---
 
   it("setAnchorElement(element) re-arms autoUpdate against it and repositions", async () => {
     const { controller } = await mount()

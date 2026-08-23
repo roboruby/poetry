@@ -1,12 +1,12 @@
 import DialogController from "@poetry/controllers/dialog_controller"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
-// The Drawer (N9 W3b): the dialog machinery + the swipe-to-dismiss gesture.
+// The Drawer: the dialog machinery + the swipe-to-dismiss gesture.
 // Everything hard about the OVERLAY is inherited (native <dialog> platform
 // trap, backdrop-click discrimination, scroll lock, hotkey); this subclass
 // adds the two things a drawer is:
 //
-//   * ANIMATED presence - the first consumer of the N6 presence helpers:
+//   * ANIMATED presence - the first consumer of the presence helpers:
 //     enter rides the data-starting-style two-frame trick (a transition
 //     from --closed-transform), exit HOLDS the dialog through the
 //     data-ending-style transition before the native close() (the

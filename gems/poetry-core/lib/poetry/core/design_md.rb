@@ -4,16 +4,16 @@ require "yaml"
 
 module Poetry
   module Core
-    # DESIGN.md interop (N14 W1): poetry WRITES and READS the design-skill
-    # ecosystem's shared artifact - the file the slop-gate analogue emits (`study`),
-    # the design-rule analogue authors, Anthropic's frontend-design reads, and google-labs'
-    # open spec (github.com/google-labs-code/design.md, alpha) formalizes.
+    # DESIGN.md interop: poetry WRITES and READS the design-skill
+    # ecosystem's shared artifact - the DESIGN.md file that design tools
+    # emit, author, and read, formalized by an open spec
+    # (github.com/google-labs-code/design.md, alpha).
     #
     # Serialized files carry both interop surfaces at once:
     #
-    #   - YAML front matter in the google-labs shape (`version`/`name`/flat
+    #   - YAML front matter in the spec's shape (`version`/`name`/flat
     #     `colors:`/`typography:`/`rounded:`), plus namespaced extensions the
-    # spec tolerates: `modes.dark` (poetry ships BOTH modes) and
+    #     spec tolerates: `modes.dark` (poetry ships BOTH modes) and
     #     a `poetry:` block (source-of-truth pointers, contrast policy, theme
     #     treatment) that makes parse -> serialize lossless;
     #   - Markdown sections in the spec's canonical order (its linter checks
@@ -24,18 +24,22 @@ module Poetry
     # serialize(parse(md)) is byte-identical for files serialize emitted);
     # foreign files fall back to the section walker (heading variants across
     # the ecosystems, colors in hex/rgb/oklch). What cannot be parsed lands
-    # in doc["unknown"] - the import pipeline (W2) DROPS it with a report,
-    # never guesses (the poetry-reactive ethos).
+    # in doc["unknown"] - the import pipeline DROPS it with a report,
+    # never guesses.
+    #
+    # @example
+    #   doc = Poetry::Core::DesignMd.parse(File.read("DESIGN.md"))
+    #   doc.dig("colors", "light", "primary") # => a Tokens::Color
     class DesignMd
-      # The google-labs canonical section order (the spec's own linter warns
-      # on out-of-order sections).
+      # The spec's canonical section order (its own linter warns on
+      # out-of-order sections).
       SECTIONS = ["Overview", "Colors", "Typography", "Layout", "Elevation & Depth",
                   "Shapes", "Components", "Do's and Don'ts", "Intentional deviations"].freeze
 
       COMPONENTS_POINTER = "/poetry/llms.txt"
 
-      # Heading classifier for the tolerant walker - the spellings the three
-      # ecosystems actually use (the slop-gate analogue writes British "colour anchor").
+      # Heading classifier for the tolerant walker - the spellings emitting
+      # tools actually use (including British "colour").
       HEADING_KINDS = {
         colors: /\b(?:colou?rs?|palette)\b/i,
         typography: /\b(?:typography|type(?:\s+pairing)?|fonts?)\b/i,
@@ -50,9 +54,9 @@ module Poetry
       class << self
         # Build a document hash from the live token model. `details` carries
         # the per-theme presentation metadata: "typography" (pairing/family -
-        # metadata only, no poetry theme moves a font token;),
+        # metadata only, no poetry theme moves a font token),
         # "treatment", "components_count", optional "description".
-        # `deviations`: the host's declared.cn-* overrides from
+        # `deviations`: the host's declared .cn-* overrides from
         # config/poetry_components.yml - design intent, not drift, so the
         # export carries them (the poetry: front matter round-trips them).
         def build(tokens:, theme:, details:, deviations: [])
@@ -70,7 +74,7 @@ module Poetry
             "radius" => tokens.radius_css,
             "radius_scale" => Tokens::Generator::RADIUS_SCALE.dup,
             "contrast" => {
-              "floor" => "WCAG 2.2 AA (4.5:1) - locked, every gated pair ",
+              "floor" => "WCAG 2.2 AA (4.5:1) - locked, every gated pair",
               "target" => "AAA (7:1) wherever achievable at lock time",
               "gate" => "Poetry::Core::Tokens::ContrastGate",
               "aa_exceptions" => gate.results.select { |result| result.lock == :aa }.map(&:to_s)
@@ -110,7 +114,7 @@ module Poetry
               "theme" => doc["theme"],
               "source" => Tokens::DEFAULT_RELATIVE_PATH,
               "generator" => doc["generator"],
-              "dark_mode" => "class.dark ",
+              "dark_mode" => "class .dark",
               "radius" => doc["radius"],
               "radius_scale" => doc["radius_scale"],
               "typography_pairing" => doc.dig("typography", "pairing"),
@@ -188,7 +192,7 @@ module Poetry
             ## Typography
 
             - pairing: #{doc.dig("typography", "pairing")} (app-level metadata - no poetry theme
-              moves a font token;)
+              moves a font token)
             - family: #{doc.dig("typography", "family")}
           MD
         end
@@ -248,7 +252,7 @@ module Poetry
           MD
         end
 
-        # Declared.cn-* overrides: rendered only when the host has
+        # Declared .cn-* overrides: rendered only when the host has
         # any - the nine gem exports stay byte-stable.
         def deviations_section(doc)
           deviations = Array(doc["deviations"])
@@ -306,7 +310,7 @@ module Poetry
           }
         end
 
-        # A foreign DESIGN.md (the slop-gate analogue study, an external design tool export, hand-authored):
+        # A foreign DESIGN.md (another tool's export, or hand-authored):
         # front matter where present, then the section walker over the prose.
         def from_foreign(front, prose)
           front ||= {}
