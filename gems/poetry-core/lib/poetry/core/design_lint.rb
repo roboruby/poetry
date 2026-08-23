@@ -422,7 +422,7 @@ module Poetry
       # dashes and `01` tokens inside code samples are content, not design.
       COPY_EXEMPT_TAGS = %w[pre code kbd script style].freeze
 
-      # A curated cut of the design-rule analogue's 28-phrase list: the stock SaaS phrases
+      # A curated cut of a 28-phrase stock-SaaS list: the phrases
       # a model reaches for when no copy direction was given.
       BUZZWORDS = [
         "streamline your", "enterprise-grade", "harness the power", "unlock the power",
