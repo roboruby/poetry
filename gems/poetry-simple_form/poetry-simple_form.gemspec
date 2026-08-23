@@ -13,7 +13,7 @@ Gem::Specification.new do |spec|
                      "exists to make getting there boring."
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2"
-  spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt"]
+  spec.files = Dir["lib/**/*", "README.md", "LICENSE.txt", "CHANGELOG.md"]
 
   spec.add_dependency "poetry-ui"
   spec.add_dependency "simple_form", ">= 5.3", "< 6"
