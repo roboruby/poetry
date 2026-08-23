@@ -16,6 +16,7 @@ module Poetry
     # registry), never against a hand-maintained allowlist of names.
     class DocProseTest < Minitest::Test
       SKILL_DIR = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-design")
+      COMPONENT_SKILL_DIR = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-component")
       AGENTS_MD = Poetry::Ui.root.join("AGENTS.md")
 
       # Gem-repo path roots assertable from this repo. app/-rooted tokens
@@ -131,7 +132,8 @@ module Poetry
       private
 
       def prose_files
-        [AGENTS_MD, *Dir.glob("#{SKILL_DIR}/**/*.md").map { |file| Pathname.new(file) }]
+        skill_files = Dir.glob(["#{SKILL_DIR}/**/*.md", "#{COMPONENT_SKILL_DIR}/**/*.md"])
+        [AGENTS_MD, *skill_files.map { |file| Pathname.new(file) }]
       end
 
       def tokens
@@ -143,10 +145,10 @@ module Poetry
       end
 
       def resolvable_path?(text)
-        root = text.start_with?("references/") ? SKILL_DIR : Poetry::Ui.root
-        candidate = root.join(text.delete_suffix("/"))
-        return true if candidate.exist?
-        return true if text.include?("*") && !Dir.glob(candidate.to_s).empty?
+        roots = text.start_with?("references/") ? [SKILL_DIR, COMPONENT_SKILL_DIR] : [Poetry::Ui.root]
+        candidates = roots.map { |root| root.join(text.delete_suffix("/")) }
+        return true if candidates.any?(&:exist?)
+        return true if text.include?("*") && candidates.any? { |candidate| !Dir.glob(candidate.to_s).empty? }
 
         # Cross-skill mentions: the usage skill's generated reference files
         # (SkillText emits them) are legitimate vocabulary here.

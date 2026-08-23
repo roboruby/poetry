@@ -11,7 +11,7 @@ module Poetry
     destination File.expand_path("../tmp/skill-dest", __dir__)
     setup :prepare_destination
 
-    def test_installs_both_skills
+    def test_installs_every_skill
       run_generator
 
       assert_file ".claude/skills/poetry/SKILL.md" do |content|
@@ -26,6 +26,12 @@ module Poetry
       assert_file ".claude/skills/poetry-design/references/compose.md"
       assert_file ".claude/skills/poetry-design/references/audit.md"
       assert_file ".claude/skills/poetry-design/references/study.md"
+      assert_file ".claude/skills/poetry-component/SKILL.md" do |content|
+        assert_match(/^name: poetry-component$/, content)
+      end
+      assert_file ".claude/skills/poetry-component/references/anatomy.md"
+      assert_file ".claude/skills/poetry-component/references/documentation.md"
+      assert_file ".claude/skills/poetry-component/references/checklist.md"
     end
 
     def test_usage_skill_regenerates_from_the_live_registry

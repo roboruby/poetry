@@ -9,9 +9,9 @@ module Poetry
         Poetry::Ui.recipe_items
       end
 
-      test "the roster projects all five recipes with valid items" do
+      test "the roster projects all recipes with valid items" do
         assert_equal %w[agent-embed scaffold-templates screen-data-index screen-settings
-                        skill-poetry skill-poetry-design], items.names
+                        skill-poetry skill-poetry-component skill-poetry-design], items.names
 
         items.names.each do |name|
           item = items.item(name)

@@ -53,3 +53,4 @@ group :test do
   gem "pagy", "~> 43.0"
   gem "will_paginate"
 end
+gem "yard", require: false

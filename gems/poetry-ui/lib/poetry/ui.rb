@@ -178,6 +178,10 @@ module Poetry
           "poetry-design" => lambda {
             require "generators/poetry/skills_section"
             Object.new.extend(Poetry::Generators::SkillsSection).design_skill_files
+          },
+          "poetry-component" => lambda {
+            require "generators/poetry/skills_section"
+            Object.new.extend(Poetry::Generators::SkillsSection).component_skill_files
           }
         }
       end

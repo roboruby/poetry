@@ -15,7 +15,7 @@ module Poetry
 
       class << self
         def definitions
-          [agent_embed, skill_poetry, skill_poetry_design, scaffold_templates,
+          [agent_embed, skill_poetry, skill_poetry_design, skill_poetry_component, scaffold_templates,
            screen(
              "screen-data-index", title: "Data index screen",
                                   description: "The data-index block as a working feature slice: OrdersController, " \
@@ -60,6 +60,22 @@ module Poetry
               files = Object.new.extend(Poetry::Generators::SkillsSection).design_skill_files
               files.map do |rel, content|
                 { "path" => rel, "target" => ".claude/skills/poetry-design/#{rel}", "content" => content }
+              end
+            }
+          }
+        end
+
+        def skill_poetry_component
+          {
+            "name" => "skill-poetry-component",
+            "title" => "poetry-component skill bundle",
+            "description" => "The component-authoring Claude Code skill (anatomy / documentation / " \
+                             "audit references) - the same files `bin/rails g poetry:skill` installs.",
+            "files" => lambda {
+              require "generators/poetry/skills_section"
+              files = Object.new.extend(Poetry::Generators::SkillsSection).component_skill_files
+              files.map do |rel, content|
+                { "path" => rel, "target" => ".claude/skills/poetry-component/#{rel}", "content" => content }
               end
             }
           }

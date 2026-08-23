@@ -86,6 +86,10 @@ module Poetry
         assert_match(/^name: poetry-design$/, content)
       end
       assert_file ".claude/skills/poetry-design/references/audit.md"
+      assert_file ".claude/skills/poetry-component/SKILL.md" do |content|
+        assert_match(/^name: poetry-component$/, content)
+      end
+      assert_file ".claude/skills/poetry-component/references/checklist.md"
     end
 
     def test_tailwind_entry_injection_is_idempotent

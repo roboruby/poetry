@@ -10,17 +10,19 @@ module Poetry
     # it teaches (theme roster, design-lint rule set).
     class SkillTest < ActiveSupport::TestCase
       DESIGN_DIR = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-design")
+      COMPONENT_DIR = Poetry::Ui.root.join("lib/generators/poetry/skill/templates/poetry-component")
 
       def skill_files
         @skill_files ||= Poetry::Ui.skill_files
       end
 
-      # get_skill: the runtime map serves the SAME files the
-      # generator installs - boot-free, from the COMMITTED registries.
-      test "agent_skills serves both installed skills from committed sources" do
+      # The runtime map serves the SAME files the generator installs -
+      # boot-free, from the COMMITTED registries.
+      test "agent_skills serves every installed skill from committed sources" do
         skills = Poetry::Ui.agent_skills
         usage = skills.fetch("poetry").call
         design = skills.fetch("poetry-design").call
+        component = skills.fetch("poetry-component").call
 
         assert_includes usage.fetch("SKILL.md"), "# poetry - component usage"
         assert usage.key?("references/deciding.md")
@@ -29,6 +31,29 @@ module Poetry
                      "runtime delivery and the generator must install the same file set"
         assert_includes design.fetch("SKILL.md"), "poetry-design"
         assert_equal Dir.glob(DESIGN_DIR.join("**/*.md").to_s).length, design.length
+        assert_includes component.fetch("SKILL.md"), "poetry-component"
+        assert_equal Dir.glob(COMPONENT_DIR.join("**/*.md").to_s).length, component.length
+        assert component.key?("references/anatomy.md")
+        assert component.key?("references/documentation.md")
+        assert component.key?("references/checklist.md")
+      end
+
+      # The authoring skill's anatomy is the canonical section order -
+      # the audit checklist and the skeleton must state the same order.
+      test "component skill anatomy and checklist agree on the section order" do
+        anatomy = COMPONENT_DIR.join("references/anatomy.md").read
+        checklist = COMPONENT_DIR.join("references/checklist.md").read
+
+        %w[Includes Constants Slots Stimulus Styles Validations Parts Lifecycle].each do |section|
+          assert_includes anatomy, section
+        end
+        canonical = "includes & class config → constants → slots → stimulus → " \
+                    "styles & options → validations → parts → lifecycle → " \
+                    "public methods → private methods → nested classes"
+        assert_includes checklist.squish, canonical,
+                        "the checklist restates the anatomy's canonical order verbatim"
+        assert_includes anatomy, "Never reorder declarations within a section"
+        assert_includes checklist, "reordered *within* its section"
       end
 
       test "every registry component lives in exactly one skill family" do

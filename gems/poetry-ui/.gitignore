@@ -15,3 +15,4 @@ test/dummy/public/assets/
 script/theme_port/report-*.txt
 script/theme_port/parts-*.json
 .gstack/
+/.yardoc

@@ -78,8 +78,8 @@ Three ownership tiers, three upgrade behaviors:
 `/poetry/llms.txt` and `/poetry/llms-full.txt` (engine routes), the
 `poetry` MCP server (`bundle exec poetry-agent`, boot-free), `bin/rails
 poetry:check` (template verification — run it last), and the `poetry` /
-`poetry-design` Claude Code skills. See the generated `AGENTS.md` section
-in your app.
+`poetry-design` / `poetry-component` Claude Code skills. See the generated
+`AGENTS.md` section in your app.
 
 ## License
 
