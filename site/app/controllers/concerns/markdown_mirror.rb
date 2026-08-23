@@ -19,8 +19,15 @@ module MarkdownMirror
 
   private
 
+  # HEAD counts as GET here: crawlers probe with it, and Rails answers it
+  # through the same action (request.get? alone is false for HEAD, which
+  # used to 500 the .md address and hide the Link headers).
+  def readable_request?
+    request.get? || request.head?
+  end
+
   def markdown_wanted?
-    request.get? && (params[:format] == "md" || request.format == Mime[:md])
+    readable_request? && (params[:format] == "md" || request.format == Mime[:md])
   end
 
   def serve_markdown_mirror
@@ -39,7 +46,7 @@ module MarkdownMirror
 
     @markdown_alternate_path =
       begin
-        if request.get? && markdown_mirror.present?
+        if readable_request? && markdown_mirror.present?
           request.path == "/" ? "/llms.txt" : "#{request.path}.md"
         end
       rescue ActionController::RoutingError
@@ -48,11 +55,17 @@ module MarkdownMirror
   end
 
   # Advertise the twin on the HTML response too (the crawler-facing half
-  # of the contract: HTTP Link header + the layout's <link> tag).
+  # of the contract: HTTP Link header + the layout's <link> tag), plus a
+  # site-wide describedby pointer at the llms.txt index, so an agent
+  # landing mid-site discovers it without visiting the root.
   def advertise_markdown_mirror
-    return unless response.media_type == "text/html" && (path = markdown_alternate_path)
+    return unless response.media_type == "text/html"
 
-    response.headers["Link"] = [ response.headers["Link"],
-                                 %(<#{path}>; rel="alternate"; type="text/markdown") ].compact.join(", ")
+    links = [ response.headers["Link"] ]
+    if (path = markdown_alternate_path)
+      links << %(<#{path}>; rel="alternate"; type="text/markdown")
+    end
+    links << %(</llms.txt>; rel="describedby"; type="text/markdown")
+    response.headers["Link"] = links.compact.join(", ")
   end
 end

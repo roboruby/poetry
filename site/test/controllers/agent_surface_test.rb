@@ -247,6 +247,29 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_includes response.body, 'href="/llms.txt"'
   end
 
+  test "every HTML page carries a describedby pointer at the llms.txt index" do
+    [ "/components/badge", "/theming", "/agent-skills", "/" ].each do |path|
+      get path
+
+      assert_response :success, path
+      assert_includes response.headers["Link"],
+                      '</llms.txt>; rel="describedby"; type="text/markdown"', path
+    end
+  end
+
+  test "HEAD requests answer the mirror and carry the same Link headers" do
+    head "/components/badge.md"
+
+    assert_response :success
+    assert_match %r{text/markdown}, response.content_type
+
+    head "/components/badge"
+
+    assert_response :success
+    assert_includes response.headers["Link"], '</components/badge.md>; rel="alternate"; type="text/markdown"'
+    assert_includes response.headers["Link"], '</llms.txt>; rel="describedby"; type="text/markdown"'
+  end
+
   test "robots.txt welcomes crawlers with Content-Signal and the sitemap pointer" do
     get "/robots.txt"
 
