@@ -83,4 +83,5 @@ poetry:check` (template verification — run it last), and the `poetry` /
 
 ## License
 
-MIT
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+See `THIRD_PARTY_NOTICES.md` for adapted code.
