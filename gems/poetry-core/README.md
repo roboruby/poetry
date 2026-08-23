@@ -27,3 +27,4 @@ poetry-core evolves the framework layer of `view_component_plus` (the `Plus` gem
 ## License
 
 Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+See `THIRD_PARTY_NOTICES.md` for adapted code.
