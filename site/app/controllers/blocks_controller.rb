@@ -1,4 +1,4 @@
-# The blocks gallery (Blocks v1): one page per vetted composed screen.
+# The blocks gallery: one page per vetted composed screen.
 # The preview renders the REAL gem template inline; the code tab shows the
 # exact source `describe_block` returns and `poetry:block` copies in - the
 # shadcn model one altitude up: what you see is exactly what you'd own.

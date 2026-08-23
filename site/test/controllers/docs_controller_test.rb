@@ -34,8 +34,8 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "the gallery is fully populated - every page carries at least one example" do
-    # (The docs/page Empty branch covers FUTURE registry additions; since
-    # the 71-agent port there is no catalog entry without examples.)
+    # (The docs/page Empty branch covers FUTURE registry additions; today
+    # no catalog entry is without examples.)
     # The three GALLERY sections only: docs guides are prose-first pages
     # (theming carries no example partials by design).
     (DocsCatalog.components + DocsCatalog.charts + DocsCatalog.demos).each do |entry|

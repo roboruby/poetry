@@ -7,6 +7,9 @@
 # generators the installed skills use - the usage skill live from the
 # registry, poetry-design from the gem's curated templates, the site
 # skill from this app.
+#
+# @example Every installable skill set, name => { relative path => content }
+#   SkillCatalog.sets
 class SkillCatalog
   def self.sets
     {
@@ -52,8 +55,8 @@ class SkillCatalog
     Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }
   end
 
-  # The site-usage skill (S3 of the agent-legibility pass): how to navigate
-  # THIS site as an agent - docs-app content, not gem content.
+  # The site-usage skill: how to navigate THIS site as an agent -
+  # docs-app content, not gem content.
   def self.site_skill_files
     base = Rails.root.join("lib/skills/poetry-docs-site")
     Dir.glob("**/*.md", base: base).sort.to_h { |rel| [ rel, base.join(rel).read ] }

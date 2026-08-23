@@ -1,6 +1,6 @@
 require "test_helper"
 
-# The official registry endpoints (Ecosystem v1): shadcn-schema
+# The official registry endpoints: shadcn-schema
 # payloads generated live from the gems' committed registries - if these
 # facts drift from the source trees, the gem-side registry sync tests fail
 # first; here we prove the docs host actually serves them.

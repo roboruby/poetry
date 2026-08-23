@@ -37,7 +37,7 @@ import "controllers"
   }, true)
 })()
 
-// The chat-replay versioned replace (rig): streaming re-morphs the
+// The chat-replay versioned replace: streaming re-morphs the
 // SAME message row from a server stream, which inherits an out-of-order
 // delivery race - so every payload carries data-version and this action
 // applies only strictly-newer frames (Radan Skoric's versioned-replace

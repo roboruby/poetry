@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
-# The operator register ('s banked lead, built as the docs-site
-# self-embed): poetry's component contract projected in OPERATOR
+# The operator register: poetry's component contract projected in OPERATOR
 # vocabulary - what an in-page GUI agent needs to USE the rendered
 # components, as opposed to the author register (llms.txt) for agents
 # writing ERB. Served at /operator-register.json and fed to the embedded
@@ -10,6 +9,10 @@
 # moment the registry ships it. FAMILY_VERBS is the one authored table
 # (operator prose cannot be derived); components without an entry get the
 # generic line, so the register can lag the roster but never lie about it.
+#
+# @example The full register, as served at /operator-register.json
+#   OperatorRegister.as_json
+#   # => { "system" => ..., "default" => ..., "pages" => { "/components/select" => "...", ... } }
 class OperatorRegister
   SYSTEM = <<~TEXT.strip
     This site is built from poetry components. Every component stamps
@@ -107,8 +110,8 @@ class OperatorRegister
     # The ACTUAL data-component value: underscores survive in the DOM
     # (date_field, navigation_menu) and only path nesting joins with a
     # dash (command/dialog -> command-dialog). DocsCatalog slugs kebab
-    # BOTH, so derive from the registry key - the findings pass caught the
-    # register claiming values the DOM never stamps.
+    # BOTH, so derive from the registry key - deriving from the slug made
+    # the register claim values the DOM never stamps.
     def data_component(slug)
       component_values.fetch(slug, slug)
     end

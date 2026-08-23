@@ -12,9 +12,15 @@ require "zlib"
 # mode 0644, owner 0/0, mtime 0, gzip mtime 0), so the same skill files
 # always produce the same bytes and the digest can be computed from the
 # one builder that also serves the payload.
+#
+# @example A deterministic payload and its advertised digest
+#   bytes = SkillArchive.build("SKILL.md" => skill_source)
+#   SkillArchive.digest(bytes) # => "sha256:..."
 class SkillArchive
   BLOCK = 512
 
+  # @param files [Hash{String => String}] relative path => file content
+  # @return [String] gzipped tar bytes, identical for identical input
   def self.build(files)
     tar = StringIO.new.binmode
     files.sort.each { |path, content| write_member(tar, path, content) }

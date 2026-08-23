@@ -330,7 +330,7 @@
     "path": "/agent#activate"
   },
   {
-    "title": "Task list (the findings pass)",
+    "title": "Task list",
     "page": "Agent",
     "section": "docs",
     "path": "/agent#tasks"

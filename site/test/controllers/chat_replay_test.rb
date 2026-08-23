@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-# The replay rig: scripted Poetry::Ui::Chat frames streamed as
+# The chat replay rig: scripted Poetry::Ui::Chat frames streamed as
 # versioned Turbo Streams over SSE, state addressed entirely by URL.
 class ChatReplayTest < ActionDispatch::IntegrationTest
   test "the demo page renders completed turns and the pending streaming row" do

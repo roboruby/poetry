@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-# The API-description surface (S4 of the agent-legibility pass): a minimal
-# OpenAPI 3.1 document over the machine endpoints, and the RFC 9727 API
+# The API-description surface: a minimal OpenAPI 3.1 document over the
+# machine endpoints, and the RFC 9727 API
 # catalog pointing at it. ENDPOINTS is the one inventory; the suite gates
 # every declared path against the real routes so this cannot drift into a
 # document that lies. Response schemas stay thin on purpose - the shadcn
@@ -40,7 +40,7 @@ class MachineController < ApplicationController
   end
 
   # Absolute URLs derive from the request host - the site has no fixed
-  # domain under the naming hold, so nothing is hardcoded.
+  # production domain, so nothing is hardcoded.
   def sitemap
     urls = ([ "/" ] + DocsCatalog.all.map(&:path)).map do |path|
       "  <url><loc>#{request.base_url}#{path}</loc></url>"

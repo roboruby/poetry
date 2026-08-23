@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
-# The docs site's scripted conversation for the Chat Replay demo (the
-# rig's reference consumer). One script, addressed by segment
-# index via params - fully deterministic, so any state is a shareable URL
-# and every stream replays byte-identical.
+# The docs site's scripted conversation for the Chat Replay demo: the
+# reference consumer of Poetry::Ui::Chat's scripted-replay surface. One
+# script, addressed by segment index via params - fully deterministic, so
+# any state is a shareable URL and every stream replays byte-identical.
+#
+# @example The segment a request is streaming
+#   ChatReplay.segments[ChatReplay.cursor(params)]
 class ChatReplay
   class << self
     def script
@@ -32,10 +35,17 @@ class ChatReplay
     def segments = script.segments
 
     # The segment currently streaming, clamped to the script.
+    #
+    # @param params [ActionController::Parameters] request params; +:s+ is the segment index
+    # @return [Integer] a valid segment index into {segments}
     def cursor(params)
       params.fetch(:s, 1).to_i.clamp(1, segments.length - 1)
     end
 
+    # The approval decision carried by the request, if any.
+    #
+    # @param params [ActionController::Parameters] request params; +:a+ is "1" (approve) or "0" (deny)
+    # @return [Boolean, nil] nil when no decision was sent
     def decision(params)
       { "1" => true, "0" => false }[params[:a].to_s]
     end

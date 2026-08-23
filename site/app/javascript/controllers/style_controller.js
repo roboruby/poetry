@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 const STYLES = ["default", "vega", "nova", "mira", "rhea", "maia", "luma", "lyra", "sera"]
 const KEY = "poetry-docs-style"
 
-// The docs style axis (N12 W5): keeps exactly one style-<name> class on
+// The docs style axis: keeps exactly one style-<name> class on
 // <html> so the scoped fragments from style-registry.css apply. Orthogonal
 // to the dark axis (theme_controller). The layout's pre-paint script
 // applies the stored choice before first paint; this controller switches

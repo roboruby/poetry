@@ -3,7 +3,7 @@
 require "test_helper"
 require "rubygems/package"
 
-# The agent surface: markdown mirrors (append.md to a component
+# The agent surface: markdown mirrors (append .md to a component
 # page) and the web-installable skills at .well-known/skills - both served
 # from the same generators the installed skills use, so they cannot drift.
 class AgentSurfaceTest < ActionDispatch::IntegrationTest
@@ -59,7 +59,7 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_response :not_found
   end
 
-  # === The site-wide mirror matrix (agent-legibility S0+S2) ===
+  # === The site-wide mirror matrix (agent legibility) ===
 
   test "every catalog page mirrors as markdown under its own address" do
     DocsCatalog.all.each do |entry|
@@ -103,7 +103,7 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_includes response.body, "```erb"
   end
 
-  # === Discovery surfaces (S1, S3, S4) ===
+  # === Discovery surfaces ===
 
   test "the root llms.txt indexes every docs page" do
     get "/llms.txt"

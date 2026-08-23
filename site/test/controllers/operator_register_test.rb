@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-# The operator register (built as the docs-site self-embed): the
+# The operator register (the docs-site self-embed): the
 # GUI-operator projection of the component contract, and the opt-in
 # page-agent demo that consumes it.
 class OperatorRegisterTest < ActionDispatch::IntegrationTest
@@ -39,7 +39,7 @@ class OperatorRegisterTest < ActionDispatch::IntegrationTest
     get "/operator-register.json"
     pages = JSON.parse(response.body)["pages"]
 
-    # The findings pass caught the register claiming kebab values where the
+    # A live run caught the register claiming kebab values where the
     # DOM stamps underscores (date_field, navigation_menu) - gate the claim
     # against the RENDERED page for the tricky shapes.
     { "/components/date-field" => "date_field",

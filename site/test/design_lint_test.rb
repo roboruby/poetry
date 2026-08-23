@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-# The gallery dogfood (N14 W3): every view and example partial in this app
+# The gallery dogfood: every view and example partial in this app
 # lints clean against the DesignLint AST tier - the docs site is the
 # standing proof that poetry-built pages carry none of the slop the rules
 # target.
@@ -13,7 +13,7 @@ require "test_helper"
 class DesignLintTest < ActiveSupport::TestCase
   DESIGN_LINT_SKIPS = {
     # The typography recipes are byte-transcribed from upstream shadcn
-    # (N13 W3 decision: exact upstream classes); px-[0.3rem]/py-[0.2rem]
+    # (exact upstream classes, kept deliberately); px-[0.3rem]/py-[0.2rem]
     # are upstream's own inline-code spellings, kept verbatim.
     "app/views/examples/docs/typography/_inline_code.html.erb" =>
       "upstream shadcn typography recipe, byte-transcribed - off-scale paddings are upstream's own"

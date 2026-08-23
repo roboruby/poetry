@@ -1,8 +1,11 @@
-# The official poetry registry surface (Ecosystem v1): /r/*.json is
-# served LIVE from the gems' committed registries via their item
-# projections - never a second hand-maintained copy, so the hosted registry
-# is CI-verified-from-source by construction (the upstream port borrow). One flat
-# kebab namespace across the gems, collision-checked at first touch.
+# The official poetry registry surface: /r/*.json is served LIVE from the
+# gems' committed registries via their item projections - never a second
+# hand-maintained copy, so the hosted registry is CI-verified-from-source
+# by construction. One flat kebab namespace across the gems,
+# collision-checked at first touch.
+#
+# @example One item's shadcn-schema payload
+#   RegistryIndex.item("button") # => Hash, or nil for an unknown name
 class RegistryIndex
   class << self
     def item(name)

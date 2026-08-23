@@ -74,7 +74,7 @@
     animation: poetry-chart-fade 200ms ease calc(var(--poetry-motion-delay, 0ms) + var(--poetry-motion-duration, 1500ms)) both;
   }
 
-  /* A cross-render morph (A-W3) replaces the entrance: the controller
+  /* A cross-render morph replaces the entrance: the controller
      stamps data-motion="morph" before the new render's first paint, and
      this kill switch stops the fresh elements' entrance animations so the
      FLIP tween owns the frame. It stays on at "settled" - otherwise the

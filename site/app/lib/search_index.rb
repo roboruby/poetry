@@ -1,9 +1,12 @@
-# The docs search index (N13 W4): every catalog page rendered through an
+# The docs search index: every catalog page rendered through an
 # integration session, headings extracted from the SAME rendered truth the
 # gallery gates walk, committed at public/search-index.json. The palette
 # server-renders the heading entries as its Reference group - no client
 # fetch, no external indexer, no Node. Regenerate: bin/rails docs:search_index
 # (the freshness test fails with that instruction when the file drifts).
+#
+# @example Rebuild the committed index
+#   SearchIndex.write! # => number of entries written
 class SearchIndex
   PATH = Rails.root.join("public/search-index.json")
 

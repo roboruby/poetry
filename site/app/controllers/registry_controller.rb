@@ -1,12 +1,12 @@
-# The official registry endpoints (Ecosystem v1) - the docs site
-# doubles as the registry, exactly like shadcn's:
+# The official registry endpoints - the docs site doubles as the
+# registry, exactly like shadcn's:
 #
 #   /r/registry.json     the index (shadcn registry.json shape)
 #   /r/:name.json        one full item, file content embedded
 #   /r/registries.json   the public namespace directory - the client's
 #                        auto-resolution source for unconfigured @namespaces;
-# carries the verified field the trust tier
-#                        populates (@poetry is verified by construction: the
+#                        carries the verified field the installer's trust
+#                        tier reads (@poetry is verified by construction: the
 #                        payloads are generated from CI-gated gem registries)
 class RegistryController < ApplicationController
   def index

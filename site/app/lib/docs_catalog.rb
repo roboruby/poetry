@@ -2,6 +2,9 @@
 # the same files the gems' CI drift-gates - drive the sidebar, the command
 # palette, and the routable slugs. Nothing here is hand-maintained; a new
 # component appears in the nav the moment its gem registers it.
+#
+# @example Every routable docs page
+#   DocsCatalog.all.map(&:path)
 class DocsCatalog
   Entry = Struct.new(:slug, :title, :section, :description, :icon, keyword_init: true) do
     # Docs guides are top-level routes (/theming, /typography); the gallery
@@ -125,7 +128,7 @@ class DocsCatalog
 
     def docs = DOCS
 
-    # The blocks gallery (Blocks v1): registry-driven like components - the
+    # The blocks gallery: registry-driven like components - the
     # blocks section of poetry-ui's registry is the roster, so a new block
     # appears in the nav, palette, and 200-gate the moment the gem ships it.
     def blocks

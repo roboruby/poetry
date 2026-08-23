@@ -57,8 +57,8 @@ palette utilities.
   to overwrite a non-poetry file). Run it so external design skills can read
   the app's current design.
 - `bin/rails "poetry:design:import[path/to/DESIGN.md]"` plans role-mapped
-  token overrides from a foreign DESIGN.md (a brand study, a Stitch export,
-  a brand study): conservative role aliases, WCAG AA enforced on the
+  token overrides from a foreign DESIGN.md (a brand study, or an export
+  from an external design tool): conservative role aliases, WCAG AA enforced on the
   MERGED set, failing pairs dropped with a deterministic nearest-AA
   suggestion, dark values pinned when the source is light-only. The report
   lists every mapping and every drop (`POETRY_DESIGN_JSON=1` for JSON);

@@ -5,6 +5,9 @@
 # same disk sources the HTML pages render - DocsCatalog entries, the
 # example partials, the gem block templates - so the mirrors cannot say
 # anything the site doesn't.
+#
+# @example A gallery page's markdown twin
+#   DocsMarkdown.example_page(DocsCatalog.find("charts", "line"))
 class DocsMarkdown
   class << self
     # The generic gallery mirror: header + install note + every example as
@@ -120,7 +123,7 @@ class DocsMarkdown
       <<~MD
         #{header(entry)}
 
-        This page embeds page-agent v1.12.2 (MIT, vendored) configured with poetry's OPERATOR REGISTER - the component contract in GUI-operator vocabulary: `includeAttributes: ["data-component", "data-slot"]` plus per-page instructions served at [/operator-register.json](/operator-register.json). Nothing loads until a visitor activates it (bring-your-own OpenAI-compatible key, session-only). The task list on the page is the findings pass: each task is pre-classified as ARIA-alone / register-helps / expected-failure-on-the-agent's-input-layer (keyboard-first components cannot be driven by synthetic clicks).
+        This page embeds page-agent v1.12.2 (MIT, vendored) configured with poetry's OPERATOR REGISTER - the component contract in GUI-operator vocabulary: `includeAttributes: ["data-component", "data-slot"]` plus per-page instructions served at [/operator-register.json](/operator-register.json). Nothing loads until a visitor activates it (bring-your-own OpenAI-compatible key, session-only). The task list on the page carries pre-registered, measured expectations: each task is pre-classified as ARIA-alone / register-helps / expected-failure-on-the-agent's-input-layer (keyboard-first components cannot be driven by synthetic clicks).
       MD
     end
 

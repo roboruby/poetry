@@ -9,8 +9,8 @@ class DocsController < ApplicationController
   def index
   end
 
-  # The root llms.txt (S1 of the agent-legibility pass): the whole site
-  # indexed for agents, served at the conventional root address.
+  # The root llms.txt: the whole site indexed for agents, served at the
+  # conventional root address.
   def llms
     render plain: DocsMarkdown.site_index, content_type: "text/markdown"
   end
@@ -94,7 +94,7 @@ class DocsController < ApplicationController
     render template: "docs/page"
   end
 
-  # The live demo endpoints. The server contract on display:
+  # The optimistic-form live demo endpoints. The server contract on display:
   # success answers 204 - never a redirect (a redirect under morph
   # refreshes is a full reload and defeats the optimism); rejection
   # answers 422 so the client reconciles via morph refresh. Favorite

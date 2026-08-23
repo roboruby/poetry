@@ -25,8 +25,8 @@ Rails.application.routes.draw do
   get "agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false
 
-  # The official registry (Ecosystem v1) - shadcn-schema items
-  # served live from the gem registries; literal routes before the catch.
+  # The official registry - shadcn-schema items served live from the gem
+  # registries; literal routes before the catch.
   get "r/registry.json" => "registry#index", as: :registry_index
   get "r/registries.json" => "registry#directory", as: :registry_directory
   get "r/:name" => "registry#show", as: :registry_item, format: false,

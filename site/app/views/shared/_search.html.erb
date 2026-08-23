@@ -33,7 +33,7 @@
         <% group.with_item(value: entry.path) { entry.title } %>
       <% end %>
     <% end %>
-    <%# Full-text tier (N13 W4): heading-level deep links from the committed
+    <%# Full-text tier: heading-level deep links from the committed
         search index - server-rendered, the Command engine filters them like
         any other item. %>
     <% if SearchIndex.headings.any? %>

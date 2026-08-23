@@ -15,7 +15,7 @@ Bulk actions over a selectable table: a selection-driven floating bar with the l
 Composes: button, data_table, icon. Generate: `bin/rails g poetry:block action-bar`.
 Source (adapt freely - the sample content is meant to be replaced):
 
-<%# ActionBar is a BLOCK, not a component (the anatomy): the bar
+<%# ActionBar is a BLOCK, not a component: the bar
     is plain markup wired to two small engines - the data_table's
     selectable: engine dispatches selection-change, and the bar's
     controller shows/hides on it, retains the last non-zero count while
@@ -303,7 +303,7 @@ Composes: alert, button, icon. Generate: `bin/rails g poetry:block destructive-p
 Source (adapt freely - the sample content is meant to be replaced):
 
 <%# Page framing: the panel keeps its container + breathing room when it
-    is the page's subject (a judged-run lesson); drop the outer wrapper
+    is the page's subject; drop the outer wrapper
     when composing into an already-padded frame. %>
 <div class="mx-auto max-w-xl p-6">
   <section class="space-y-4 rounded-lg border border-destructive/50 p-6" aria-labelledby="destructive-panel-title">
@@ -312,7 +312,7 @@ Source (adapt freely - the sample content is meant to be replaced):
       <p class="text-sm text-muted-foreground">The token stops working immediately. Three services signed their last deploy with it — their next runs will fail until a replacement is configured.</p>
     </div>
     <%# Icon + title only: an alert DESCRIPTION rides the destructive tint,
-        which sits at 4.49:1 on white (the standing token-retune ledger) -
+        which sits at 4.49:1 on white (just under the AA floor) -
         the blast radius lives in the AA-clean muted copy above instead. %>
     <%= poetry_alert(variant: :destructive) do |alert| %>
       <% alert.with_icon(name: "triangle-alert") %>
@@ -366,8 +366,8 @@ Composes: badge, card, icon, link. Generate: `bin/rails g poetry:block section-c
 Source (adapt freely - the sample content is meant to be replaced):
 
 <%# Page framing: a section keeps its container + breathing room when it is
-    the page's subject - a bare card at the viewport origin reads cramped
-    (a judged-run lesson). Drop the wrapper only when composing into an
+    the page's subject - a bare card at the viewport origin reads
+    cramped. Drop the wrapper only when composing into an
     already-padded frame like the app-shell content area. %>
 <div class="mx-auto max-w-md p-6">
   <%= poetry_card do |card| %>
@@ -379,9 +379,9 @@ Source (adapt freely - the sample content is meant to be replaced):
     <% card.with_footer do %>
       <div class="flex w-full items-center justify-between gap-4">
         <span class="text-xs text-muted-foreground">Updated 2 days ago</span>
-        <%# The CTA reads as interactive (v1.1): always-underlined with a
-            trailing arrow - the affordance the judged card pairs kept
-            rewarding. %>
+        <%# The CTA reads as interactive: always-underlined with a
+            trailing arrow - the affordance that keeps it from reading
+            as plain text. %>
         <%= poetry_link(href: "/docs/billing", underline: :always, class: "inline-flex items-center gap-1") do %>
           Learn more <%= poetry_icon(name: :"arrow-right", class: "size-3.5") %>
         <% end %>

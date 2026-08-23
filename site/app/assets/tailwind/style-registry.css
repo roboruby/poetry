@@ -1,4 +1,4 @@
-/* poetry-docs style registry (N12 W5): all nine poetry themes coexist,
+/* poetry-docs style registry: all nine poetry themes coexist,
    scoped. Wrapped fragments in ./styles/ are GENERATED from the sibling
    gems by script/build_style_registry.rb - regenerate, don't hand-edit.
 

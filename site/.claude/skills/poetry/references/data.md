@@ -193,7 +193,7 @@ Slots: columns (many; with_column REQUIRES a content block (the cell renderer - 
 - PART `data-table` - Root surface - toolbar, table, and pagination footer stack here
 - PART `data-table-toolbar` - The row above the table holding the filter form - renders unless filter: false
 - PART `data-table-filter` - The GET filter form (role=search) - hidden fields carry the current sort; a new filter resets the page
-- PART `table-container` - The composed W1 Table's scroll container - Table renders it, this surface owns where it sits
+- PART `table-container` - The composed Table's scroll container - Table renders it, this surface owns where it sits
 - PART `data-table-footer` - The Pagination row - renders when total: is more than one page
 In blocks: `action-bar` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING root (if selectable?): `poetry--core--table-selection` registers; values label
