@@ -13,3 +13,4 @@ gem "minitest"
 gem "puma"
 gem "rails", "~> 8.1"
 gem "rake", "~> 13.0"
+gem "yard", require: false
