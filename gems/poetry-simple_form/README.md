@@ -38,3 +38,7 @@ by design (a flat wrapper cannot express the Field quartet).
 
 Existing `simple_form.*` i18n keys (labels/hints/placeholders) keep
 working — poetry's builder reads them as a fallback chain.
+
+## License
+
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
