@@ -86,3 +86,8 @@ server raises a teaching error on `tick_formatter`/`labels`).
 
 Part of the [poetry](../poetry) gem family. Status:
 six families, 52 gallery examples, the frozen spec-v1 adapter seam.
+
+## License
+
+Available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+See `THIRD_PARTY_NOTICES.md` for adapted code.
