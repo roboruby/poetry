@@ -18,7 +18,7 @@
 require "json"
 
 DIR = __dir__
-UI = "poetry-ui"
+UI = File.expand_path("../..", __dir__)
 parts = JSON.parse(File.read(File.join(DIR, "parts.json")))
 SHARED = parts["shared"]
 default_text = File.read(File.join(UI, "themes/default.css"))

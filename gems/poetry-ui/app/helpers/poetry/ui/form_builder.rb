@@ -334,7 +334,7 @@ module Poetry
         end
       end
 
-      # -- f.input: the inferred entrypoint -----------------------------
+      # -- f.input: the inferred entrypoint ------------------------------
       # form.input(:email) - one call, everything derived: type from `as:`
       # -> attachment duck-typing -> AR enum -> attribute type -> name
       # heuristics; hint/placeholder from the poetry_form (or simple_form)
@@ -408,7 +408,7 @@ module Poetry
         end
       end
 
-      # -- Rails-parity typed inputs ------------------------------------
+      # -- Rails-parity typed inputs -------------------------------------
       # The stock helper names answer with poetry Fields: text_field ->
       # field(type: :text) etc. password_field NEVER round-trips the value
       # (Rails' own behavior); revealable SECRETS (API keys) are
@@ -583,7 +583,7 @@ module Poetry
         end
       end
 
-      # -- Rails-arity adapters -----------------------------------------
+      # -- Rails-arity adapters ------------------------------------------
 
       # ActionView's select arity adapted onto poetry_select.
       def select(method, choices = nil, options = {}, html_options = {}, &)
@@ -611,7 +611,7 @@ module Poetry
         checkbox_group(method, pairs, **)
       end
 
-      # -- Actions ------------------------------------------------------
+      # -- Actions -------------------------------------------------------
 
       # form.submit -> a poetry Button (type submit); label from Rails'
       # own i18n default ("Create Model" / "Update Model"). loading: true
@@ -626,7 +626,7 @@ module Poetry
         @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { content }
       end
 
-      # -- Layout -------------------------------------------------------
+      # -- Layout --------------------------------------------------------
 
       # form.fieldset(legend: "Shipping") { |f| ... } - the grouped-fields
       # frame; yields the builder for nesting.

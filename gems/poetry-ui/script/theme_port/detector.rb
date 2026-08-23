@@ -19,8 +19,8 @@
 require "json"
 require "tailwind_merge"
 
-UI_ROOT = "poetry-ui"
-CHARTS_ROOT = "poetry-charts"
+UI_ROOT = File.expand_path("../..", __dir__)
+CHARTS_ROOT = File.expand_path("../poetry-charts", UI_ROOT)
 THEME = ARGV.fetch(0, "vega")
 UPSTREAM = File.expand_path("~/Desktop/save/shadcn-ui/apps/v4/registry/styles/style-#{THEME}.css")
 abort "no upstream style-#{THEME}.css at the pinned clone" unless File.exist?(UPSTREAM)

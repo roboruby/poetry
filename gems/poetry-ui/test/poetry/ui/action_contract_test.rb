@@ -4,8 +4,7 @@ require "test_helper"
 
 module Poetry
   module Ui
-    # The Ruby<->JS action contract: every Stimulus token
-    # a component RENDERS -
+    # The Ruby<->JS action contract: every Stimulus token a component RENDERS -
     # controller identifiers, action methods, targets - must exist in the
     # controllers manifest introspected from the live JS classes. A
     # controller rename can never silently strand gem-rendered wiring.
