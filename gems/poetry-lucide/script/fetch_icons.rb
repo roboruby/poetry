@@ -7,8 +7,7 @@
 #
 #   bundle exec ruby script/fetch_icons.rb
 #
-# Sanitization strips every dangerous construct from each SVG:
-# <script>, <foreignObject>, <use>/<image> with external
+# Sanitization: strips <script>, <foreignObject>, <use>/<image> with external
 # hrefs, and every on* handler attribute. Lucide is trusted-ish upstream;
 # the pipeline assumes it isn't.
 
