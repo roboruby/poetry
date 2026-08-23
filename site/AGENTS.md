@@ -36,7 +36,7 @@ pagination, typography, optimistic-forms, editors).
 - Exactly ONE `style-<name>` class lives on `<html>` at all times
   (server-rendered `style-default`, pre-paint localStorage swap). Never ship
   an unscoped visual theme layer.
-- The Chat Replay demo is the rig: Poetry::Ui::Chat frames stream
+- The Chat Replay demo is the deterministic replay rig: Poetry::Ui::Chat frames stream
   as versioned vreplace Turbo Streams over SSE (ChatReplayController;
   the custom action in application.js applies only strictly-newer
   data-version frames). State is entirely URL params - streams must stay
