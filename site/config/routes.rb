@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
+  get "landing" => "landing#show", as: :landing
   get "installation" => "docs#installation", as: :installation
   get "theming" => "docs#theming", as: :theming
   get "typography" => "docs#typography", as: :typography

@@ -18,6 +18,7 @@
    @import "./poetry/style-charts.css" layer(base); */
 @import "./style-registry.css";
 @import "./poetry/typeset.css";
+@import "./landing-brand.css";
 
 /* poetry/typeset presets: the docs prose rhythm. Matches the
    previous hand-utility scale (text-sm body) so the flip reads as a

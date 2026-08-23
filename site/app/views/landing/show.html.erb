@@ -1,0 +1,264 @@
+<%# The poetry landing page. One offer (the component library), one
+    audience (Rails developers), one action (start building). Brand:
+    brand-aurum (landing layout). Every visual value resolves through
+    the landing-page design rules; the hero artwork and its animated
+    loop are the page's single large visual. %>
+
+<header class="absolute inset-x-0 top-0 z-20">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
+    <a href="<%= landing_path %>" class="flex items-center gap-2 text-base font-semibold">
+      <%= poetry_icon(name: :feather, class: "size-5 text-primary") %> poetry
+    </a>
+    <nav aria-label="Site" class="flex items-center gap-6">
+      <%= poetry_link(href: installation_path, class: "hidden text-sm sm:inline-flex") { "Docs" } %>
+      <%= poetry_link(href: theming_path, class: "hidden text-sm sm:inline-flex") { "Themes" } %>
+      <%= poetry_link(href: forms_path, class: "hidden text-sm sm:inline-flex") { "Forms" } %>
+      <%= poetry_button(size: :sm, href: installation_path) { "Start building" } %>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <%# ---- Hero: the animated artwork as the full background ---------- %>
+  <section class="relative isolate overflow-hidden" data-controller="hero-media">
+    <div class="absolute inset-0 -z-10">
+      <%= video_tag "landing-hero.mp4",
+                    autoplay: true, loop: true, muted: true, playsinline: true,
+                    preload: "auto",
+                    poster: image_path("landing-hero.jpg"),
+                    aria: { hidden: true },
+                    data: { hero_media_target: "video" },
+                    class: "size-full object-cover" %>
+      <%= image_tag "landing-hero.jpg",
+                    alt: "",
+                    aria: { hidden: true },
+                    class: "absolute inset-0 -z-10 size-full object-cover" %>
+      <div class="absolute inset-0 bg-background/60"></div>
+    </div>
+
+    <div class="mx-auto max-w-6xl px-6 pb-24 pt-40 sm:pb-32 sm:pt-48">
+      <div class="max-w-170" data-controller="reveal" data-reveal>
+        <%= poetry_badge(variant: :secondary) { "Built for Rails 8" } %>
+        <h1 class="mt-6 text-5xl font-semibold text-foreground" style="text-wrap: balance">
+          The component library<br>Rails never shipped
+        </h1>
+        <p class="mt-6 max-w-170 text-lg text-muted-foreground" style="text-wrap: pretty">
+          87 components, 13 chart families, and 9 themes, rendered on the
+          server in plain Ruby and ERB. No React, no build step, no
+          node_modules.
+        </p>
+        <div class="mt-8 flex flex-wrap items-center gap-4">
+          <%= poetry_button(size: :lg, href: installation_path) do |button| %>
+            Start building
+            <% button.with_trailing { poetry_icon(name: :"arrow-right") } %>
+          <% end %>
+          <%= poetry_button(variant: :outline, size: :lg, href: theming_path) { "See the nine themes" } %>
+        </div>
+        <p class="mt-6 text-sm text-muted-foreground">
+          MIT licensed. 1,746 icons vendored. Every component legible to
+          your coding agent.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <%# ---- Proof: the numbers, right under the promise ----------------- %>
+  <section class="border-y border-border bg-card">
+    <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-12 sm:grid-cols-4" data-controller="reveal" data-reveal>
+      <%= poetry_stat(label: "Components") { "87" } %>
+      <%= poetry_stat(label: "Chart families") { "13" } %>
+      <%= poetry_stat(label: "Themes") { "9" } %>
+      <%= poetry_stat(label: "Vendored icons") { "1,746" } %>
+    </div>
+  </section>
+
+  <%# ---- Problem to solution ---------------------------------------- %>
+  <section class="mx-auto max-w-6xl px-6 py-24">
+    <div class="grid items-center gap-16 lg:grid-cols-2">
+      <div data-controller="reveal" data-reveal>
+        <h2 class="text-3xl font-semibold" style="text-wrap: balance">
+          Rails stopped at the view layer
+        </h2>
+        <div class="mt-6 space-y-4 text-muted-foreground" style="text-wrap: pretty">
+          <p>
+            The framework gives you routing, models, jobs, and mail, then
+            hands you an empty div for the interface. So every Rails team
+            either bolts on a JavaScript framework or rebuilds the same
+            fifty components badly, alone.
+          </p>
+          <p>
+            poetry finishes the layer. Accessible, themeable components
+            that install as Ruby, render as HTML over the wire, and work
+            with the Turbo and Stimulus you already run.
+          </p>
+        </div>
+      </div>
+      <div data-controller="reveal" data-reveal style="--reveal-delay: 0.15s">
+        <%= poetry_code_block(code: Rails.root.join("app/views/landing/compose_example.erb.sample").read,
+                              language: "erb", label: "app/views/dashboard/show.html.erb") %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---- Benefits ----------------------------------------------------- %>
+  <section class="border-t border-border bg-card/50">
+    <div class="mx-auto max-w-6xl px-6 py-24">
+      <h2 class="max-w-170 text-3xl font-semibold" data-controller="reveal" data-reveal style="text-wrap: balance">
+        What you get on day one
+      </h2>
+      <div class="mt-12 grid gap-6 sm:grid-cols-2">
+        <% [
+          { icon: :"square-terminal", title: "Ship real UI from ERB you already know",
+            body: "Every component is a Ruby helper with a typed contract: options are keywords, content is the block. If a value is wrong, you find out at render, not in production." },
+          { icon: :accessibility, title: "Accessible by construction",
+            body: "Keyboard contracts, focus management, and aria wiring live inside the components. Axe runs against every preview in CI, so the floor never quietly drops." },
+          { icon: :"chart-line", title: "Charts with no client engine",
+            body: "All 13 chart families compute their geometry in Ruby and ship as SVG in the initial HTML. They hold up in print, PDF, email, and with JavaScript turned off." },
+          { icon: :bot, title: "Legible to your coding agent",
+            body: "A committed registry, llms.txt, an MCP server, and generated skills mean your agent composes the same vetted components you do, with the same guardrails." }
+        ].each_with_index do |benefit, i| %>
+          <div data-controller="reveal" data-reveal style="--reveal-delay: <%= (i % 2) * 0.15 %>s">
+            <%= poetry_card do |card| %>
+              <% card.with_title do %>
+                <span class="flex items-center gap-3">
+                  <span class="flex size-8 items-center justify-center rounded-md bg-secondary">
+                    <%= poetry_icon(name: benefit[:icon], class: "size-4 text-primary") %>
+                  </span>
+                  <%= benefit[:title] %>
+                </span>
+              <% end %>
+              <p class="text-sm text-muted-foreground" style="text-wrap: pretty"><%= benefit[:body] %></p>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---- Tagline reveal (the page's own moment) ----------------------- %>
+  <section class="mx-auto max-w-6xl px-6 py-32" data-controller="word-reveal">
+    <p class="mx-auto max-w-170 text-center text-4xl font-semibold sm:text-5xl" style="text-wrap: balance">
+      <% "Rails gave you the framework. poetry gives you the interface. Write Ruby, ship design.".split.each do |word| %>
+        <span class="wr-word"><%= word %></span>
+      <% end %>
+    </p>
+  </section>
+
+  <%# ---- How it works -------------------------------------------------- %>
+  <section class="border-t border-border">
+    <div class="mx-auto max-w-6xl px-6 py-24">
+      <h2 class="max-w-170 text-3xl font-semibold" data-controller="reveal" data-reveal style="text-wrap: balance">
+        Three steps to the first screen
+      </h2>
+      <div class="mt-12 grid gap-8 lg:grid-cols-3">
+        <% [
+          { step: "1", title: "Install",
+            body: "One gem, one generator. Tokens, themes, Stimulus wiring, and the agent surface land in a single pass.",
+            code: "bundle add poetry-ui\nbin/rails g poetry:install", lang: "bash" },
+          { step: "2", title: "Compose",
+            body: "Build screens from vetted blocks and helpers. The compose surface routes a brief to the right starting point.",
+            code: "bin/rails g poetry:block top-nav\nbin/rails g poetry:block section-card", lang: "bash" },
+          { step: "3", title: "Verify",
+            body: "The check reads your templates against the committed registry and catches drift before your users do.",
+            code: "bin/rails poetry:check", lang: "bash" }
+        ].each_with_index do |item, i| %>
+          <div data-controller="reveal" data-reveal style="--reveal-delay: <%= i * 0.15 %>s">
+            <div class="flex items-center gap-3">
+              <span class="flex size-8 items-center justify-center rounded-md bg-primary text-base font-semibold text-primary-foreground"><%= item[:step] %></span>
+              <h3 class="text-xl font-semibold"><%= item[:title] %></h3>
+            </div>
+            <p class="mt-4 text-sm text-muted-foreground" style="text-wrap: pretty"><%= item[:body] %></p>
+            <div class="mt-6">
+              <%= poetry_code_block(code: item[:code], language: item[:lang]) %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---- FAQ ------------------------------------------------------------ %>
+  <section class="border-t border-border bg-card/50">
+    <div class="mx-auto max-w-3xl px-6 py-24">
+      <h2 class="text-3xl font-semibold" data-controller="reveal" data-reveal style="text-wrap: balance">
+        Questions Rails developers ask first
+      </h2>
+      <div class="mt-10" data-controller="reveal" data-reveal>
+        <%= poetry_accordion(collapsible: true) do |accordion| %>
+          <% accordion.with_item(value: "hotwire", title: "Does it work with Turbo and Hotwire?") do %>
+            Yes, it is built for them. Components survive Turbo Drive
+            visits, frames, streams, and morphing, and the interactive
+            pieces are plain Stimulus controllers the engine registers
+            for you.
+          <% end %>
+          <% accordion.with_item(value: "react", title: "Do I need React or a bundler?") do %>
+            No. Components render on the server as ERB and ship their
+            JavaScript over the importmap. There is no node build step
+            unless your app already has one.
+          <% end %>
+          <% accordion.with_item(value: "styling", title: "How is it styled?") do %>
+            Tailwind with a token layer on top. Color, radius, and
+            density live in theme tokens, so restyling the whole app is
+            a one line theme swap rather than a find and replace.
+          <% end %>
+          <% accordion.with_item(value: "brand", title: "Can it match my brand?") do %>
+            Nine themes ship in the box. Beyond that, a DESIGN.md import
+            maps your palette onto the token roles with contrast checked
+            at the door, and an override contract covers the last mile.
+          <% end %>
+          <% accordion.with_item(value: "a11y", title: "How serious is the accessibility story?") do %>
+            Components implement the APG keyboard patterns, manage focus,
+            and wire aria for you. Every preview runs through axe in CI,
+            and composite widgets carry manual test protocols.
+          <% end %>
+          <% accordion.with_item(value: "agents", title: "What does my coding agent get?") do %>
+            A committed component registry, llms.txt, an MCP server with
+            compose and check tools, and generated skills. Agents build
+            from the same contracts you read in the docs.
+          <% end %>
+          <% accordion.with_item(value: "viewcomponent", title: "Does it replace ViewComponent?") do %>
+            No, it stands on it. Components are ViewComponents under the
+            hood, so your existing ViewComponent knowledge, tests, and
+            previews carry straight over.
+          <% end %>
+          <% accordion.with_item(value: "cost", title: "What does it cost?") do %>
+            Nothing. The library is MIT licensed, the source is open, and
+            there is no paid tier gating components.
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+
+  <%# ---- Final CTA ------------------------------------------------------ %>
+  <section class="border-t border-border">
+    <div class="mx-auto max-w-6xl px-6 py-24 text-center" data-controller="reveal" data-reveal>
+      <h2 class="mx-auto max-w-170 text-3xl font-semibold sm:text-4xl" style="text-wrap: balance">
+        Your next screen is one helper away
+      </h2>
+      <p class="mx-auto mt-4 max-w-170 text-muted-foreground" style="text-wrap: pretty">
+        MIT licensed and rendered on the server. Read every line before
+        you trust it.
+      </p>
+      <div class="mt-8 flex justify-center">
+        <%= poetry_button(size: :lg, href: installation_path) do |button| %>
+          Start building
+          <% button.with_trailing { poetry_icon(name: :"arrow-right") } %>
+        <% end %>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="border-t border-border bg-card">
+  <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground">
+    <span class="flex items-center gap-2">
+      <%= poetry_icon(name: :feather, class: "size-4 text-primary") %> poetry — released under the MIT license
+    </span>
+    <nav aria-label="Footer" class="flex items-center gap-6">
+      <%= poetry_link(href: installation_path) { "Docs" } %>
+      <%= poetry_link(href: theming_path) { "Themes" } %>
+      <%= poetry_link(href: root_path) { "Component reference" } %>
+    </nav>
+  </div>
+</footer>

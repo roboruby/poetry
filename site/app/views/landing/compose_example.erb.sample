@@ -1,0 +1,13 @@
+<%= poetry_card do |card| %>
+  <% card.with_title { "Renewal forecast" } %>
+  <% card.with_description { "Quarter to date, updated hourly." } %>
+  <% card.with_action do %>
+    <%= poetry_badge(variant: :secondary) { "Live" } %>
+  <% end %>
+  <p class="text-sm text-muted-foreground">
+    92 accounts renew this quarter.
+  </p>
+  <% card.with_footer do %>
+    <%= poetry_button(size: :sm) { "Open the report" } %>
+  <% end %>
+<% end %>
