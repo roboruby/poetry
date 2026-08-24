@@ -80,15 +80,13 @@ module Poetry
         # Declares the live-mode surface: the live: and zoom: options plus
         # the with_brush slot.
         def live_option
-          # Embeds the {spec, frame} payload so the client renderer can
-          # recompute geometry when data changes without a server
-          # round-trip.
-          option :live, :boolean, default: false
-          # Drag-to-zoom on the plot; slices the data client-side, so it
-          # needs live: true.
-          option :zoom, :boolean, default: false
-          # The brush strip below the x axis - drag its window to slice
-          # the visible range; needs live: true.
+          option :live, :boolean, default: false,
+                                  doc: "Embeds the {spec, frame} payload so the client renderer can recompute " \
+                                       "geometry when data changes without a server round-trip."
+          option :zoom, :boolean, default: false,
+                                  doc: "Drag-to-zoom on the plot; slices the data client-side, so it needs live: true."
+          slot_doc :brush, "The brush strip below the x axis - drag its window to slice the visible range; needs " \
+                           "live: true."
           renders_one :brush, lambda { |height: 30|
             @brush_config = { height: height.to_f }
             nil
@@ -288,6 +286,10 @@ module Poetry
       def live_labels_configured?
         series_entries.any? { |entry| entry.respond_to?(:labels) && entry.labels }
       end
+
+      private :brush_config, :zoom?, :window_features?, :live_margin, :brush_top, :brush_svg
+      private :zoom_selection_svg, :window_plot_json, :window_brush_json, :live_payload, :live_payload_json, :live_spec
+      private :live_frame, :live_frame_extras, :ensure_live_compatible!, :live_labels_configured?
     end
   end
 end

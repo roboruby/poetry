@@ -18,23 +18,20 @@ module Poetry
           "align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching the chart edge it sits on."
         ].freeze
 
-        # Which chart edge the legend sits on: :top pads below it,
-        # :bottom (the default) pads above. A style axis, not an option -
-        # options silently drop the dictionary's variant classes.
-        style :align, default: :bottom, required: true, variants: %i[top bottom]
+        style :align, default: :bottom, required: true, variants: %i[top bottom],
+                      doc: "Which chart edge the legend sits on: :top pads below it, :bottom (the default) pads " \
+                           "above. A style axis, not an option - options silently drop the dictionary's variant " \
+                           "classes."
 
-        # The series config - key => { label:, color: } - the default
-        # item source.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit entries ([{ key:, name:, color: }]) overriding the
-        # config-derived list.
-        option :items, ActiveModel::Type::Value.new
-        # Hides the color swatches, leaving labels only.
-        option :hide_icon, :boolean, default: false
-        # Interactive legend: items render as buttons that toggle
-        # their series through the live controller (the host chart guards
-        # that live: is on).
-        option :toggle, :boolean, default: false
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - the " \
+                                                           "default item source."
+        option :items, ActiveModel::Type::Value.new,
+               doc: "Explicit entries ([{ key:, name:, color: }]) overriding the config-derived list."
+        option :hide_icon, :boolean, default: false, doc: "Hides the color swatches, leaving labels only."
+        option :toggle, :boolean, default: false,
+                                  doc: "Interactive legend: items render as buttons that toggle their series through " \
+                                       "the live controller (the host chart guards that live: is on)."
 
         part "chart-legend-content", "The legend row (<div>) - centered swatch + label pairs"
         part "chart-legend-item", "One legend entry (<div>; a <button> in toggle mode)",
@@ -117,6 +114,8 @@ module Poetry
             color: item[:color] || (entry && swatch_color(entry))
           }
         end
+
+        private :chart_config, :rows, :toggle_attributes, :root_attributes, :swatch_style
       end
     end
   end

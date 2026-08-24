@@ -149,6 +149,8 @@ module Poetry
                                        y: fnum(cy - mark[:r] - 6), "text-anchor": "middle")
         safe_join([dot, label])
       end
+
+      private :ref_x_pixel, :ref_y_pixel, :ref_plot, :reference_marks_svg
     end
   end
 end

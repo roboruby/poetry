@@ -35,7 +35,7 @@ module Poetry
           "Stack bars with the same stack: id; negatives automatically drop below the zero line.",
           "cell_fill: ->(row, value) { ... } colors bars per datum (validated CSS-safe); color_key: reads a row key.",
           "active_index: highlights one bar (fill-opacity 0.8 + dashed stroke - the active block look).",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
@@ -46,40 +46,33 @@ module Poetry
           def stack_or_self = stack || key
         end
 
-        # The rows to plot: an array of hashes, one per category.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 640
-        # ViewBox height in pixels.
-        option :height, :integer, default: 360
-        # Plot margin overrides ({ top:, right:, bottom:, left: }),
-        # merged over the defaults.
-        option :margin, ActiveModel::Type::Value.new
-        # Stack baseline mode - :expand normalizes each stack to
-        # percentages.
-        option :offset, :symbol, default: :none
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one per category."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 640,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 360, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults."
+        option :offset, :symbol, default: :none,
+                                 doc: "Stack baseline mode - :expand normalizes each stack to percentages."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options(duration: 400)
         live_option
-        # Pixels between side-by-side bars inside one category band.
-        option :bar_gap, :integer, default: 4
-        # Band trim on each side: a percent string of the band width, or
-        # a bare pixel number.
-        option :bar_category_gap, :string, default: "10%"
-        # :vertical = columns (the default); :horizontal = bars growing
-        # rightward - the category axis moves to the Y side
-        # (with_y_axis data_key:) and the numeric axis hides.
-        option :orientation, :symbol, default: :vertical
+        option :bar_gap, :integer, default: 4, doc: "Pixels between side-by-side bars inside one category band."
+        option :bar_category_gap, :string, default: "10%",
+                                           doc: "Band trim on each side: a percent string of the band width, or a " \
+                                                "bare pixel number."
+        option :orientation, :symbol, default: :vertical,
+                                      doc: ":vertical = columns (the default); :horizontal = bars growing rightward " \
+                                           "- the category axis moves to the Y side (with_y_axis data_key:) and the " \
+                                           "numeric axis hides."
 
         validates :offset, inclusion: { in: Cartesian::OFFSETS }
         validates :orientation, inclusion: { in: Cartesian::LAYOUTS }
@@ -125,10 +118,9 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # A bar series bound to data_key:. Bars sharing a stack: id pile
-        # up; radius: rounds corners; labels:/label_key: stamp values;
-        # color_key:/cell_fill: color per cell; active_index: highlights
-        # one bar; error_key: adds whiskers.
+        slot_doc :bars, "A bar series bound to data_key:. Bars sharing a stack: id pile up; radius: rounds corners; " \
+                        "labels:/label_key: stamp values; color_key:/cell_fill: color per cell; active_index: " \
+                        "highlights one bar; error_key: adds whiskers."
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0, labels: false, label_key: nil,
                                       color_key: nil, cell_fill: nil, active_index: nil, stroke_width: 2,
                                       error_key: nil, error_width: 5|
@@ -143,9 +135,8 @@ module Poetry
         # give it the data_key. The CartesianFamily value-axis hook, so
         # the include below declares this shape between x_axis and grid.
         def self.value_axis_slot
-          # The y axis: data_key: makes it the category axis (horizontal
-          # orientation); tick_count:/tick_formatter:/tick_margin: as on
-          # the x axis.
+          slot_doc :y_axis, "The y axis: data_key: makes it the category axis (horizontal orientation); " \
+                            "tick_count:/tick_formatter:/tick_margin: as on the x axis."
           renders_one :y_axis, lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
             @y_axis_config = AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
                                             tick_margin:, tick_count:)
@@ -315,6 +306,10 @@ module Poetry
             "series" => series_entries.to_h { |e| [e.key, { "radius" => e.radius }] }
           }
         end
+
+        private :cartesian, :bar_slots, :cells, :bar_path, :cell_fill, :active?
+        private :cell_label, :x_tick_label, :category_tick_label, :y_tick_label, :svg_label_prefix, :coordinates_json
+        private :live_type, :live_series, :live_axes, :live_x_scale_type, :live_category_axis?, :live_frame_extras
       end
     end
   end

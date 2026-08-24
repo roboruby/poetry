@@ -32,7 +32,7 @@ module Poetry
           "(opacity 0.2, compounding toward the center - the grid-fill look).",
           "dots: true marks every vertex (r 4, solid).",
           "Colors come from the config - never set fill/stroke on a radar directly.",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
@@ -44,29 +44,25 @@ module Poetry
         # The with_grid slot's captured config.
         GridConfig = Data.define(:type, :radial_lines, :fill, :opacity)
 
-        # The rows to plot: an array of hashes, one per category.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 250
-        # ViewBox height in pixels.
-        option :height, :integer, default: 250
-        # Margin overrides ({ top:, right:, bottom:, left: }), merged
-        # over the slim polar default.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one per category."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 250,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 250, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options
-        # The rim radius: a percent string of the max radius, or pixels.
-        option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
+        option :outer_radius, ActiveModel::Type::Value.new, default: "80%",
+                                                            doc: "The rim radius: a percent string of the max " \
+                                                                 "radius, or pixels."
 
         part "chart-svg", "The chart canvas (<svg>) - the aria-label surface, the tooltip's " \
                           "focus/keyboard surface (role=application when it attaches), and " \
@@ -105,36 +101,35 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        # A radar series bound to data_key:. fill_opacity: 0 with
-        # stroke_width: 2 draws lines only; dots: marks every vertex.
+        slot_doc :radars, "A radar series bound to data_key:. fill_opacity: 0 with stroke_width: 2 draws lines only; " \
+                          "dots: marks every vertex."
         renders_many :radars, lambda { |data_key:, fill_opacity: 0.6, stroke_width: 0, dots: false, dot_radius: 4|
           (@series_entries ||= []) << Series.new(data_key: data_key.to_s, fill_opacity:, stroke_width:,
                                                  dots:, dot_radius:)
           nil
         }
 
-        # The category labels around the rim: data_key: names the field;
-        # tick_formatter: reshapes each label.
+        slot_doc :angle_axis, "The category labels around the rim: data_key: names the field; tick_formatter: " \
+                              "reshapes each label."
         renders_one :angle_axis, lambda { |data_key:, tick_formatter: nil|
           @angle_axis_config = { data_key: data_key.to_s, tick_formatter: tick_formatter }
           nil
         }
 
-        # The polar grid: type: :circle swaps polygons for circles;
-        # radial_lines: false drops the spokes; fill: tints every ring
-        # with a series color at opacity:.
+        slot_doc :grid, "The polar grid: type: :circle swaps polygons for circles; radial_lines: false drops the " \
+                        "spokes; fill: tints every ring with a series color at opacity:."
         renders_one :grid, lambda { |type: :polygon, radial_lines: true, fill: nil, opacity: 0.2|
           @grid_config = GridConfig.new(type: type.to_sym, radial_lines:, fill: fill&.to_s, opacity:)
           nil
         }
 
-        # The legend row: align:, items:, and hide_icon:.
+        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
-        # The hover tooltip - multi-series rows under the category label.
+        slot_doc :tooltip, "The hover tooltip - multi-series rows under the category label."
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
@@ -318,6 +313,11 @@ module Poetry
         def motion_style_extras
           "--poetry-motion-center: #{fnum(cx)}px #{fnum(cy)}px"
         end
+
+        private :angle_axis_config, :grid_config, :rows, :categories, :angle_at, :radius_px
+        private :radius_ticks, :radius_for, :vertex, :polygon_path, :series_path, :grid_radii, :grid_polygon, :spoke_end
+        private :grid_fill_attribute, :angle_label, :hit_wedge, :coordinates_json, :svg_label_prefix
+        private :motion_style_extras
       end
     end
   end

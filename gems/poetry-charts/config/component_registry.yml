@@ -10,22 +10,34 @@ components:
     options:
     - name: axes
       type:
+      description: 'The axis config ({ x:, y: } hashes), also spec-carried.'
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: The rows to plot, serialized into the spec.
     - name: engine
       type: string
       required: true
+      description: The registered adapter's name; the controller hands it the mount
+        and the spec.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the mount; defaults to one built from the type
+        and engine.
     - name: series
       type:
       required: true
+      description: The series list ({ data_key:, ... } hashes) - the closed spec's
+        replacement for slots.
     - name: type
       type: symbol
       variants:
@@ -36,6 +48,7 @@ components:
       - radar
       - radial
       required: true
+      description: The chart type carried in the spec (see Spec::TYPES).
     slots: []
     description: 'The bring-your-own-engine path: a themed mount and chart-spec JSON
       for a client library (Chart.js, etc.) to draw, instead of poetry''s server-side
@@ -61,6 +74,13 @@ components:
     - 'The Container contract still applies: config colors, --chart tokens, dark mode.'
     - Prefer the default engine; adapters are for engine-specific needs (e.g. >10k
       points on canvas).
+    parts:
+    - name: chart-adapter-mount
+      description: The engine's drawing surface (role=img carrying the accessible
+        label) - the registered adapter renders into it
+    - name: chart-spec
+      description: The frozen chart-spec v1, served as JSON in an application/json
+        script for the adapter to consume
     stimulus:
     - element: frame
       controllers:
@@ -87,47 +107,68 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one per x category.'
     - name: height
       type: integer
       default: 360
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: live
       type: boolean
       default: false
+      description: Embeds the {spec, frame} payload so the client renderer can recompute
+        geometry when data changes without a server round-trip.
     - name: margin
       type:
+      description: 'Plot margin overrides ({ top:, right:, bottom:, left: }), merged
+        over the defaults.'
     - name: offset
       type: symbol
       variants:
       - none
       - expand
       default: none
+      description: Stack baseline mode - :expand normalizes each stack to percentages.
     - name: sync
       type: string
     - name: width
       type: integer
       default: 640
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     - name: zoom
       type: boolean
       default: false
+      description: 'Drag-to-zoom on the plot; slices the data client-side, so it needs
+        live: true.'
     slots:
     - name: reference_lines
       many: true
@@ -163,6 +204,8 @@ components:
         - label
     - name: brush
       many: false
+      description: 'The brush strip below the x axis - drag its window to slice the
+        visible range; needs live: true.'
       setter_args:
         brush: 0
       setter_kwargs:
@@ -170,6 +213,8 @@ components:
         - height
     - name: areas
       many: true
+      description: 'An area series bound to data_key:. Areas sharing a stack: id pile
+        up; gradient: true fades the fill; curve: picks the interpolation.'
       setter_args:
         area: 0
       setter_kwargs:
@@ -191,6 +236,8 @@ components:
         - tick_margin
     - name: y_axis
       many: false
+      description: 'The value axis: tick_count: sets how many ticks show; tick_formatter:
+        reshapes each label; tick_margin: pads it.'
       setter_args:
         y_axis: 0
       setter_kwargs:
@@ -286,10 +333,10 @@ components:
     - 'Stack areas by giving them the same stack: id; offset: :expand makes the stack
       percent-based.'
     - Colors come from the config - never set fill/stroke on an area directly.
-    - 'gradient: true on an area gets the shadcn 5%/95% fade fill.'
+    - 'gradient: true on an area gets the source''s 5%/95% fade fill.'
     - Charts render complete on the server; the tooltip layer attaches separately.
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -335,7 +382,7 @@ components:
       - name: "--poetry-motion-delay"
         description: the pre-animation hold (animation_begin, ms)
     - name: chart-motion-reveal
-      description: The entrance clipPath rect (recharts' area reveal) - the motion
+      description: The entrance clipPath rect (the ported area reveal) - the motion
         stylesheet scales it 0 -> 1; only when animate
     - name: chart-grid
       description: The gridline group (with_grid) - horizontal and/or vertical rules
@@ -353,7 +400,7 @@ components:
       - attr: data-key
         condition: the series key
     - name: chart-area-stroke
-      description: One series' top-curve stroke path (recharts strokes the curve,
+      description: One series' top-curve stroke path (the source strokes the curve,
         never the area outline)
       states:
       - attr: data-key
@@ -466,59 +513,86 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 400
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: bar_category_gap
       type: string
       default: 10%
+      description: 'Band trim on each side: a percent string of the band width, or
+        a bare pixel number.'
     - name: bar_gap
       type: integer
       default: 4
+      description: Pixels between side-by-side bars inside one category band.
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one per category.'
     - name: height
       type: integer
       default: 360
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: live
       type: boolean
       default: false
+      description: Embeds the {spec, frame} payload so the client renderer can recompute
+        geometry when data changes without a server round-trip.
     - name: margin
       type:
+      description: 'Plot margin overrides ({ top:, right:, bottom:, left: }), merged
+        over the defaults.'
     - name: offset
       type: symbol
       variants:
       - none
       - expand
       default: none
+      description: Stack baseline mode - :expand normalizes each stack to percentages.
     - name: orientation
       type: symbol
       variants:
       - vertical
       - horizontal
       default: vertical
+      description: ":vertical = columns (the default); :horizontal = bars growing
+        rightward - the category axis moves to the Y side (with_y_axis data_key:)
+        and the numeric axis hides."
     - name: sync
       type: string
     - name: width
       type: integer
       default: 640
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     - name: zoom
       type: boolean
       default: false
+      description: 'Drag-to-zoom on the plot; slices the data client-side, so it needs
+        live: true.'
     slots:
     - name: reference_lines
       many: true
@@ -554,6 +628,8 @@ components:
         - label
     - name: brush
       many: false
+      description: 'The brush strip below the x axis - drag its window to slice the
+        visible range; needs live: true.'
       setter_args:
         brush: 0
       setter_kwargs:
@@ -561,6 +637,9 @@ components:
         - height
     - name: bars
       many: true
+      description: 'A bar series bound to data_key:. Bars sharing a stack: id pile
+        up; radius: rounds corners; labels:/label_key: stamp values; color_key:/cell_fill:
+        color per cell; active_index: highlights one bar; error_key: adds whiskers.'
       setter_args:
         bar: 0
       setter_kwargs:
@@ -587,6 +666,8 @@ components:
         - tick_margin
     - name: y_axis
       many: false
+      description: 'The y axis: data_key: makes it the category axis (horizontal orientation);
+        tick_count:/tick_formatter:/tick_margin: as on the x axis.'
       setter_args:
         y_axis: 0
       setter_kwargs:
@@ -689,8 +770,8 @@ components:
       color_key: reads a row key.'
     - 'active_index: highlights one bar (fill-opacity 0.8 + dashed stroke - the active
       block look).'
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -866,41 +947,60 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: bar_category_gap
       type: string
       default: 10%
+      description: 'Band trim on each side: a percent string of the band width, or
+        a bare pixel number.'
     - name: bar_gap
       type: integer
       default: 4
+      description: Pixels between side-by-side bars inside one category band.
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one per x category.'
     - name: height
       type: integer
       default: 360
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: margin
       type:
+      description: 'Plot margin overrides ({ top:, right:, bottom:, left: }), merged
+        over the defaults.'
     - name: sync
       type: string
     - name: width
       type: integer
       default: 640
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     slots:
     - name: reference_lines
       many: true
@@ -936,6 +1036,8 @@ components:
         - label
     - name: areas
       many: true
+      description: 'An area mark bound to data_key:; areas sharing a stack: id pile
+        up (area stacks never join bar stacks).'
       setter_args:
         area: 0
       setter_kwargs:
@@ -948,6 +1050,8 @@ components:
         - stroke_width
     - name: bars
       many: true
+      description: 'A bar mark bound to data_key:; radius: rounds corners; bars sharing
+        a stack: id pile up within the bar marks.'
       setter_args:
         bar: 0
       setter_kwargs:
@@ -957,6 +1061,7 @@ components:
         - radius
     - name: lines
       many: true
+      description: 'A line mark bound to data_key:; dots: marks each point.'
       setter_args:
         line: 0
       setter_kwargs:
@@ -977,6 +1082,8 @@ components:
         - tick_margin
     - name: y_axis
       many: false
+      description: 'The value axis: tick_count: sets how many ticks show; tick_formatter:
+        reshapes each label; tick_margin: pads it.'
       setter_args:
         y_axis: 0
       setter_kwargs:
@@ -1047,7 +1154,7 @@ components:
     - 'stack: ids only combine within the same mark type (a bar stack never joins
       an area stack).'
     - Colors come from the config - never set fill/stroke on a mark directly.
-    - Entrance animation is on by default; each mark uses its own recharts mechanism.
+    - Entrance animation is on by default; each mark keeps its own reveal mechanism.
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - server-computed geometry in a fixed
@@ -1072,7 +1179,7 @@ components:
       - name: "--poetry-motion-delay"
         description: the pre-animation hold (animation_begin, ms)
     - name: chart-motion-reveal
-      description: The entrance clipPath rect (recharts' area reveal) - the motion
+      description: The entrance clipPath rect (the ported area reveal) - the motion
         stylesheet scales it 0 -> 1; only when animate
     - name: chart-grid
       description: The gridline group (with_grid) - horizontal and/or vertical rules
@@ -1090,7 +1197,7 @@ components:
       - attr: data-key
         condition: the series key
     - name: chart-area-stroke
-      description: One series' top-curve stroke path (recharts strokes the curve,
+      description: One series' top-curve stroke path (the source strokes the curve,
         never the area outline)
       states:
       - attr: data-key
@@ -1197,8 +1304,12 @@ components:
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - driving the per-series
+        color emission.'
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the frame
+        gets a unique per-render id.
     slots: []
     elements: []
     capsule: 7b90eeaff974
@@ -1236,18 +1347,28 @@ components:
       - bottom
       default: bottom
       required: true
+      description: 'Which chart edge the legend sits on: :top pads below it, :bottom
+        (the default) pads above. A style axis, not an option - options silently drop
+        the dictionary''s variant classes.'
     options:
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - the default item
+        source.'
     - name: hide_icon
       type: boolean
       default: false
+      description: Hides the color swatches, leaving labels only.
     - name: items
       type:
+      description: 'Explicit entries ([{ key:, name:, color: }]) overriding the config-derived
+        list.'
     - name: toggle
       type: boolean
       default: false
+      description: 'Interactive legend: items render as buttons that toggle their
+        series through the live controller (the host chart guards that live: is on).'
     slots: []
     elements:
     - item
@@ -1282,41 +1403,61 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one per x category.'
     - name: height
       type: integer
       default: 360
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: live
       type: boolean
       default: false
+      description: Embeds the {spec, frame} payload so the client renderer can recompute
+        geometry when data changes without a server round-trip.
     - name: margin
       type:
+      description: 'Plot margin overrides ({ top:, right:, bottom:, left: }), merged
+        over the defaults.'
     - name: sync
       type: string
     - name: width
       type: integer
       default: 640
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     - name: zoom
       type: boolean
       default: false
+      description: 'Drag-to-zoom on the plot; slices the data client-side, so it needs
+        live: true.'
     slots:
     - name: reference_lines
       many: true
@@ -1352,6 +1493,8 @@ components:
         - label
     - name: brush
       many: false
+      description: 'The brush strip below the x axis - drag its window to slice the
+        visible range; needs live: true.'
       setter_args:
         brush: 0
       setter_kwargs:
@@ -1359,6 +1502,9 @@ components:
         - height
     - name: lines
       many: true
+      description: 'A line series bound to data_key:. dots: marks each point; dot_color_key:
+        reads per-point dot colors from the row; labels: stamps each value above its
+        point; error_key: adds error whiskers.'
       setter_args:
         line: 0
       setter_kwargs:
@@ -1383,6 +1529,8 @@ components:
         - tick_margin
     - name: y_axis
       many: false
+      description: 'The value axis: tick_count: sets how many ticks show; tick_formatter:
+        reshapes each label; tick_margin: pads it.'
       setter_args:
         y_axis: 0
       setter_kwargs:
@@ -1476,15 +1624,15 @@ components:
     agent_rules:
     - 'Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:)
       / with_legend.'
-    - 'Lines default to stroke-width 2 and NO dots (the shadcn block look); dots:
+    - 'Lines default to stroke-width 2 and NO dots (the ported block look); dots:
       true adds them.'
     - 'dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors
       block).'
     - 'labels: true stamps each value above its point; give the chart margin top when
       using it.'
     - Colors come from the config - never set stroke on a line directly.
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-brush
       description: 'The brush strip group (with_brush): track + window + two handles
@@ -1671,37 +1819,57 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 400
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - name => { label:, color: } - naming and coloring
+        the slices.'
     - name: data
       type:
+      description: 'Default rows for pies that don''t bring their own data: - one
+        hash per slice.'
     - name: height
       type: integer
       default: 250
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: margin
       type:
+      description: 'Margin overrides ({ top:, right:, bottom:, left: }), merged over
+        the slim polar default.'
     - name: sync
       type: string
     - name: width
       type: integer
       default: 250
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     slots:
     - name: pies
       many: true
+      description: 'One ring of slices reading data_key: values and name_key: slice
+        names. inner_radius: makes the donut; padding_angle: spaces the slices; active_index:
+        pops one out by active_grow: pixels.'
       setter_args:
         pie: 0
       setter_kwargs:
@@ -1720,6 +1888,7 @@ components:
         - active_grow
     - name: center_label
       many: false
+      description: 'The donut-hole text: a title line plus an optional subtitle.'
       setter_args:
         center_label: 0
       setter_kwargs:
@@ -1728,10 +1897,13 @@ components:
         - subtitle
     - name: legend
       many: false
+      description: 'The legend row: align:, items:, and hide_icon:.'
       setter_args:
         legend: 0
     - name: tooltip
       many: false
+      description: The hover tooltip; the slice name carries the label, so hide_label
+        defaults on.
       setter_args:
         tooltip: 0
     description: A pie chart for showing parts of a whole.
@@ -1779,8 +1951,8 @@ components:
     - 'Stacked pies: two with_pie slots with their own data: and non-overlapping radii.'
     - 'active_index: pops one slice out by 10px (the donut-active look).'
     - The tooltip walks slices by hover AND arrow keys (role=application when attached).
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -1891,41 +2063,60 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one per category.'
     - name: height
       type: integer
       default: 250
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: margin
       type:
+      description: 'Margin overrides ({ top:, right:, bottom:, left: }), merged over
+        the slim polar default.'
     - name: outer_radius
       type:
       default: 80%
+      description: 'The rim radius: a percent string of the max radius, or pixels.'
     - name: sync
       type: string
     - name: width
       type: integer
       default: 250
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     slots:
     - name: radars
       many: true
+      description: 'A radar series bound to data_key:. fill_opacity: 0 with stroke_width:
+        2 draws lines only; dots: marks every vertex.'
       setter_args:
         radar: 0
       setter_kwargs:
@@ -1937,6 +2128,8 @@ components:
         - dot_radius
     - name: angle_axis
       many: false
+      description: 'The category labels around the rim: data_key: names the field;
+        tick_formatter: reshapes each label.'
       setter_args:
         angle_axis: 0
       setter_kwargs:
@@ -1945,6 +2138,8 @@ components:
         - tick_formatter
     - name: grid
       many: false
+      description: 'The polar grid: type: :circle swaps polygons for circles; radial_lines:
+        false drops the spokes; fill: tints every ring with a series color at opacity:.'
       setter_args:
         grid: 0
       setter_kwargs:
@@ -1955,10 +2150,12 @@ components:
         - opacity
     - name: legend
       many: false
+      description: 'The legend row: align:, items:, and hide_icon:.'
       setter_args:
         legend: 0
     - name: tooltip
       many: false
+      description: The hover tooltip - multi-series rows under the category label.
       setter_args:
         tooltip: 0
     description: A radar chart for comparing several variables on radial axes.
@@ -2005,8 +2202,8 @@ components:
       grid ring (opacity 0.2, compounding toward the center - the grid-fill look).'
     - 'dots: true marks every vertex (r 4, solid).'
     - Colors come from the config - never set fill/stroke on a radar directly.
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -2121,55 +2318,84 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 1500
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: ease
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - name => { label:, color: } - naming and coloring
+        the rings.'
     - name: data
       type:
       required: true
+      description: 'The rows to plot: an array of hashes, one ring per row.'
     - name: end_angle
       type: integer
       default: 360
+      description: Where the sweep ends - 180 makes a half gauge.
     - name: height
       type: integer
       default: 250
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: inner_radius
       type:
       default: 20%
+      description: 'The innermost ring edge: a percent string of the max radius, or
+        pixels.'
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: margin
       type:
+      description: 'Margin overrides ({ top:, right:, bottom:, left: }), merged over
+        the slim polar default.'
     - name: max_value
       type:
+      description: 'The angle-axis maximum: nil = the largest single value, so the
+        largest ring closes the full sweep EXACTLY (nicing it would leave a notch);
+        stacked gauges pass the stack total when the segments should fill the span.'
     - name: name_key
       type: string
       default: name
+      description: The row key naming each ring.
     - name: outer_radius
       type:
       default: 80%
+      description: 'The outermost ring edge: a percent string of the max radius, or
+        pixels.'
     - name: start_angle
       type: integer
       default: 0
+      description: Where the sweep starts, in degrees.
     - name: sync
       type: string
     - name: width
       type: integer
       default: 250
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     slots:
     - name: radial_bars
       many: true
+      description: 'A radial series reading data_key: values. background: draws the
+        muted track ring; bars sharing a stack: id share the ring and stack by angle;
+        corner_radius: rounds the arc ends.'
       setter_args:
         radial_bar: 0
       setter_kwargs:
@@ -2183,6 +2409,10 @@ components:
         - label_key
     - name: polar_grid
       many: false
+      description: 'The disc track behind the rings: radii: places the circles (default:
+        each ring''s centerline), fills: tints them, and radial_lines: draws the faint
+        value spokes that show through ring gaps and the open wedge (on by default;
+        gauges turn them off).'
       setter_args:
         polar_grid: 0
       setter_kwargs:
@@ -2192,6 +2422,9 @@ components:
         - radial_lines
     - name: center_label
       many: false
+      description: 'The center text: a title line plus an optional subtitle. The default
+        is the full gauge''s big centered number; compact: shrinks it and sits it
+        just above a half gauge''s flat baseline.'
       setter_args:
         center_label: 0
       setter_kwargs:
@@ -2201,10 +2434,13 @@ components:
         - compact
     - name: legend
       many: false
+      description: 'The legend row: align:, items:, and hide_icon:.'
       setter_args:
         legend: 0
     - name: tooltip
       many: false
+      description: The hover tooltip; the ring name carries the label, so hide_label
+        defaults on.
       setter_args:
         tooltip: 0
     description: A radial bar chart with bars wrapped around a circular axis.
@@ -2255,8 +2491,8 @@ components:
     - corner_radius rounds the arc ends (10 on a 10px ring = full pill caps).
     - with_polar_grid(radii:, fills:) draws the shape/text blocks' disc track; with_center_label
       fills the middle.
-    - 'Entrance animation is on by default (recharts parity); animate: false for a
-      static chart. Reduced-motion users always get the finished chart.'
+    - 'Entrance animation is on by default (source parity); animate: false for a static
+      chart. Reduced-motion users always get the finished chart.'
     parts:
     - name: chart-svg
       description: The chart canvas (<svg>) - the aria-label surface, the tooltip's
@@ -2373,34 +2609,51 @@ components:
     - name: animate
       type: boolean
       default: true
+      description: Entrance animation switch - reduced-motion users always get the
+        finished chart regardless.
     - name: animation_begin
       type: integer
       default: 0
+      description: Pre-animation hold in milliseconds.
     - name: animation_duration
       type: integer
       default: 400
+      description: Entrance/morph duration in milliseconds.
     - name: animation_easing
       type: symbol
       default: linear
+      description: Animation easing keyword (see EASINGS).
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - naming and coloring
+        every series.'
     - name: data
       type:
+      description: 'Default rows for series that don''t bring their own data: - one
+        hash per point.'
     - name: height
       type: integer
       default: 360
+      description: ViewBox height in pixels.
     - name: id
       type: string
+      description: Explicit DOM id token, stable across renders; otherwise the chart
+        gets a unique per-render id.
     - name: label
       type: string
+      description: Accessible name for the chart SVG; defaults to one built from the
+        configured series.
     - name: margin
       type:
+      description: 'Plot margin overrides ({ top:, right:, bottom:, left: }), merged
+        over the defaults.'
     - name: sync
       type: string
     - name: width
       type: integer
       default: 640
+      description: ViewBox width in pixels; the rendered chart scales to its container.
     slots:
     - name: reference_lines
       many: true
@@ -2436,6 +2689,8 @@ components:
         - label
     - name: scatters
       many: true
+      description: 'A point series colored by key:. data: gives it its own rows; error_key:
+        adds error whiskers.'
       setter_args:
         scatter: 0
       setter_kwargs:
@@ -2446,6 +2701,8 @@ components:
         - error_width
     - name: x_axis
       many: false
+      description: 'The numeric x axis: data_key: names the row key to plot; name:
+        labels its tooltip row.'
       setter_args:
         x_axis: 0
       setter_kwargs:
@@ -2456,6 +2713,8 @@ components:
         - name
     - name: y_axis
       many: false
+      description: 'The numeric y axis: data_key: names the row key to plot; name:
+        labels its tooltip row.'
       setter_args:
         y_axis: 0
       setter_kwargs:
@@ -2466,6 +2725,8 @@ components:
         - name
     - name: z_axis
       many: false
+      description: 'A third dimension sizing the markers: range: is marker AREA in
+        px2 mapped linearly from the data_key: values.'
       setter_args:
         z_axis: 0
       setter_kwargs:
@@ -2474,6 +2735,7 @@ components:
         - range
     - name: grid
       many: false
+      description: 'The gridlines: both directions by default.'
       setter_args:
         grid: 0
       setter_kwargs:
@@ -2482,10 +2744,12 @@ components:
         - horizontal
     - name: legend
       many: false
+      description: 'The legend row: align:, items:, and hide_icon:.'
       setter_args:
         legend: 0
     - name: tooltip
       many: false
+      description: The hover tooltip - per-point x/y(/z) rows under the series name.
       setter_args:
         tooltip: 0
     description: A scatter chart for the relationship between two variables.
@@ -2532,9 +2796,9 @@ components:
     - 'with_scatter(key:) colors points var(--color-<key>); data: gives a series its
       own rows.'
     - 'with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension
-      - the range is marker AREA in px2 (recharts ZAxis).'
+      - the range is marker AREA in px2 (the source''s z-axis contract).'
     - The tooltip hits per point and shows the x/y(/z) values with the series color.
-    - 'Entrance animation is on by default (recharts Scatter: 400ms linear); animate:
+    - 'Entrance animation is on by default (400ms linear, source-exact); animate:
       false for a static chart.'
     parts:
     - name: chart-svg
@@ -2645,12 +2909,16 @@ components:
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - resolving row
+        names and colors.'
     - name: hide_indicator
       type: boolean
       default: false
+      description: Hides the row swatches.
     - name: hide_label
       type: boolean
       default: false
+      description: Hides the category label.
     - name: indicator
       type: symbol
       variants:
@@ -2658,11 +2926,14 @@ components:
       - line
       - dashed
       default: dot
+      description: The row swatch shape.
     - name: items
       type:
       required: true
+      description: 'The rows: [{ key:, name:, value:, color: }] hashes, one per series.'
     - name: label
       type: string
+      description: The category label above the rows, resolved through the config.
     slots: []
     elements:
     - label
@@ -2683,7 +2954,7 @@ components:
     agent_rules:
     - Tooltip rows resolve names/colors through the chart config - pass key:, not
       a display string.
-    - 'indicator: :dot (default) | :line | :dashed matches the shadcn variants.'
+    - 'indicator: :dot (default) | :line | :dashed matches the ported variants.'
     - Numeric values render delimited (1,234) in the mono tabular column automatically.
     parts:
     - name: chart-tooltip-content
@@ -2720,18 +2991,24 @@ components:
     - name: config
       type:
       required: true
+      description: 'The series config - key => { label:, color: } - resolving row
+        names and colors.'
     - name: hide_indicator
       type: boolean
       default: false
+      description: Hides the row swatches.
     - name: hide_label
       type: boolean
       default: false
+      description: Hides the category label.
     - name: indicator
       type: symbol
       default: dot
+      description: The row swatch shape.
     - name: series_keys
       type:
       required: true
+      description: The series keys to pre-render rows for.
     slots: []
     elements: []
     capsule: 3aa9cd90e2e1

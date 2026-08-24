@@ -31,7 +31,7 @@ module Poetry
           "Stacked pies: two with_pie slots with their own data: and non-overlapping radii.",
           "active_index: pops one slice out by 10px (the donut-active look).",
           "The tooltip walks slices by hover AND arrow keys (role=application when attached).",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
@@ -40,26 +40,20 @@ module Poetry
                              :padding_angle, :stroke_width, :color_key, :labels, :label_key,
                              :active_index, :active_grow)
 
-        # Default rows for pies that don't bring their own data: - one
-        # hash per slice.
-        option :data, ActiveModel::Type::Value.new
-        # The series config - name => { label:, color: } - naming and
-        # coloring the slices.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 250
-        # ViewBox height in pixels.
-        option :height, :integer, default: 250
-        # Margin overrides ({ top:, right:, bottom:, left: }), merged
-        # over the slim polar default.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new,
+               doc: "Default rows for pies that don't bring their own data: - one hash per slice."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - name => { label:, color: } - naming " \
+                                                           "and coloring the slices."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 250,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 250, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options(delay: 400)
 
@@ -98,9 +92,9 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        # One ring of slices reading data_key: values and name_key: slice
-        # names. inner_radius: makes the donut; padding_angle: spaces the
-        # slices; active_index: pops one out by active_grow: pixels.
+        slot_doc :pies, "One ring of slices reading data_key: values and name_key: slice names. inner_radius: makes " \
+                        "the donut; padding_angle: spaces the slices; active_index: pops one out by active_grow: " \
+                        "pixels."
         renders_many :pies, lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
                                       outer_radius: "80%", padding_angle: 0, stroke_width: 0,
                                       color_key: :fill, labels: nil, label_key: nil,
@@ -115,20 +109,19 @@ module Poetry
         # real name.
         alias with_pie with_py
 
-        # The donut-hole text: a title line plus an optional subtitle.
+        slot_doc :center_label, "The donut-hole text: a title line plus an optional subtitle."
         renders_one :center_label, lambda { |title:, subtitle: nil|
           @center_label_config = { title: title, subtitle: subtitle }
           nil
         }
 
-        # The legend row: align:, items:, and hide_icon:.
+        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
-        # The hover tooltip; the slice name carries the label, so
-        # hide_label defaults on.
+        slot_doc :tooltip, "The hover tooltip; the slice name carries the label, so hide_label defaults on."
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = { hide_label: true }.merge(options)
           nil
@@ -162,8 +155,8 @@ module Poetry
         # would silently render the first ring's rows twice.
         # @api private
         def rows(entry)
-          @rows ||= {}
-          @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
+          @rows ||= {}.compare_by_identity
+          @rows[entry] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
         # One computed slice: its sector geometry plus name, value, and
@@ -175,8 +168,8 @@ module Poetry
         # collapse two rings into one geometry).
         # @api private
         def slices(entry)
-          @slices ||= {}
-          @slices[entry.object_id] ||= begin
+          @slices ||= {}.compare_by_identity
+          @slices[entry] ||= begin
             entry_rows = rows(entry)
             values = entry_rows.map { |row| row[entry.data_key] }
             max = Polar.max_radius(plot[:width], plot[:height])
@@ -249,6 +242,9 @@ module Poetry
         # ChartFamily#svg_label's chart-type lead-in.
         # @api private
         def svg_label_prefix = "Pie chart"
+
+        private :center_label_config, :rows, :slices, :slice_fill, :slice_label, :polar_items
+        private :polar_anchor, :polar_value_rows, :svg_label_prefix
       end
     end
   end

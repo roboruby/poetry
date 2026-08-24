@@ -20,4 +20,4 @@ RuboCop::RakeTask.new
 # css:verify_theme is compile-free (no tailwindcss binary), so it can
 # ride the default gate; css:verify_compiled stays explicit like the
 # browser suites.
-task default: %i[test test:dommy rubocop css:verify_theme css:verify_rendered]
+task default: %i[test test:dommy rubocop css:verify_theme css:verify_rendered yard:verify yard:coverage]

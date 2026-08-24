@@ -19,17 +19,14 @@ module Poetry
           end
         end
 
-        # The series config - key => { label:, color: } - resolving row
-        # names and colors.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # The series keys to pre-render rows for.
-        option :series_keys, ActiveModel::Type::Value.new, required: true
-        # The row swatch shape.
-        option :indicator, :symbol, default: :dot
-        # Hides the category label.
-        option :hide_label, :boolean, default: false
-        # Hides the row swatches.
-        option :hide_indicator, :boolean, default: false
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - " \
+                                                           "resolving row names and colors."
+        option :series_keys, ActiveModel::Type::Value.new, required: true,
+                                                           doc: "The series keys to pre-render rows for."
+        option :indicator, :symbol, default: :dot, doc: "The row swatch shape."
+        option :hide_label, :boolean, default: false, doc: "Hides the category label."
+        option :hide_indicator, :boolean, default: false, doc: "Hides the row swatches."
 
         # The config: option wrapped as a {Poetry::Charts::Config}.
         # @api private
@@ -56,6 +53,8 @@ module Poetry
               .merge(component_data_attributes)
           )
         end
+
+        private :chart_config, :items, :root_attributes
       end
     end
   end

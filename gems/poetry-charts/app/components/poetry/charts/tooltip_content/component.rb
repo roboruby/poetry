@@ -23,24 +23,20 @@ module Poetry
         # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Tooltip rows resolve names/colors through the chart config - pass key:, not a display string.",
-          "indicator: :dot (default) | :line | :dashed matches the shadcn variants.",
+          "indicator: :dot (default) | :line | :dashed matches the ported variants.",
           "Numeric values render delimited (1,234) in the mono tabular column automatically."
         ].freeze
 
-        # The series config - key => { label:, color: } - resolving row
-        # names and colors.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # The rows: [{ key:, name:, value:, color: }] hashes, one per
-        # series.
-        option :items, ActiveModel::Type::Value.new, required: true
-        # The row swatch shape.
-        option :indicator, :symbol, default: :dot
-        # The category label above the rows, resolved through the config.
-        option :label, :string
-        # Hides the category label.
-        option :hide_label, :boolean, default: false
-        # Hides the row swatches.
-        option :hide_indicator, :boolean, default: false
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - " \
+                                                           "resolving row names and colors."
+        option :items, ActiveModel::Type::Value.new, required: true,
+                                                     doc: "The rows: [{ key:, name:, value:, color: }] hashes, one " \
+                                                          "per series."
+        option :indicator, :symbol, default: :dot, doc: "The row swatch shape."
+        option :label, :string, doc: "The category label above the rows, resolved through the config."
+        option :hide_label, :boolean, default: false, doc: "Hides the category label."
+        option :hide_indicator, :boolean, default: false, doc: "Hides the row swatches."
 
         validates :indicator, inclusion: { in: %i[dot line dashed] }
 
@@ -163,6 +159,9 @@ module Poetry
             "--color-bg: #{color}; --color-border: #{color};"
           end
         end
+
+        private :chart_config, :rows, :nest_label?, :label_text, :row_classes, :indicator_classes, :value_wrap_classes
+        private :root_attributes
       end
     end
   end

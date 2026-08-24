@@ -33,7 +33,7 @@ module Poetry
           "All marks share the x band and ONE y domain; lines and areas ride the band centers.",
           "stack: ids only combine within the same mark type (a bar stack never joins an area stack).",
           "Colors come from the config - never set fill/stroke on a mark directly.",
-          "Entrance animation is on by default; each mark uses its own recharts mechanism."
+          "Entrance animation is on by default; each mark keeps its own reveal mechanism."
         ].freeze
 
         # One mark slot's captured series config, tagged by mark type.
@@ -43,32 +43,26 @@ module Poetry
           def stack_or_self = stack || key
         end
 
-        # The rows to plot: an array of hashes, one per x category.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 640
-        # ViewBox height in pixels.
-        option :height, :integer, default: 360
-        # Plot margin overrides ({ top:, right:, bottom:, left: }),
-        # merged over the defaults.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one per x category."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 640,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 360, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options
-        # Pixels between side-by-side bars inside one category band.
-        option :bar_gap, :integer, default: 4
-        # Band trim on each side: a percent string of the band width, or
-        # a bare pixel number.
-        option :bar_category_gap, :string, default: "10%"
+        option :bar_gap, :integer, default: 4, doc: "Pixels between side-by-side bars inside one category band."
+        option :bar_category_gap, :string, default: "10%",
+                                           doc: "Band trim on each side: a percent string of the band width, or a " \
+                                                "bare pixel number."
 
         part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
                           "role=img, or the focusable role=application accessibilityLayer when the " \
@@ -85,7 +79,7 @@ module Poetry
                "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
                "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
              }
-        part "chart-motion-reveal", "The entrance clipPath rect (recharts' area reveal) - the " \
+        part "chart-motion-reveal", "The entrance clipPath rect (the ported area reveal) - the " \
                                     "motion stylesheet scales it 0 -> 1; only when animate"
         part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
                            "across the plot"
@@ -96,7 +90,7 @@ module Poetry
                             "clipped by the reveal rect while animating"
         part "chart-area", "One series' fill path (var(--color-<key>) or its gradient)",
              states: { "data-key" => "the series key" }
-        part "chart-area-stroke", "One series' top-curve stroke path (recharts strokes the " \
+        part "chart-area-stroke", "One series' top-curve stroke path (the source strokes the " \
                                   "curve, never the area outline)",
              states: { "data-key" => "the series key" }
         part "chart-bar-series", "One series' bar group",
@@ -131,21 +125,21 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # An area mark bound to data_key:; areas sharing a stack: id pile
-        # up (area stacks never join bar stacks).
+        slot_doc :areas, "An area mark bound to data_key:; areas sharing a stack: id pile up (area stacks never join " \
+                         "bar stacks)."
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           push_series(:area, key: data_key, stack: stack && "area-#{stack}",
                              curve: curve.to_sym, fill_opacity:, gradient:, stroke_width:)
         }
 
-        # A bar mark bound to data_key:; radius: rounds corners; bars
-        # sharing a stack: id pile up within the bar marks.
+        slot_doc :bars, "A bar mark bound to data_key:; radius: rounds corners; bars sharing a stack: id pile up " \
+                        "within the bar marks."
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0|
           push_series(:bar, key: data_key, stack: stack && "bar-#{stack}", radius: radius)
         }
 
-        # A line mark bound to data_key:; dots: marks each point.
+        slot_doc :lines, "A line mark bound to data_key:; dots: marks each point."
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2,
                                        dots: false, dot_radius: 4|
           push_series(:line, key: data_key, curve: curve.to_sym, stroke_width:,
@@ -302,6 +296,10 @@ module Poetry
           (@series_entries ||= []) << Series.new(mark: mark, key: key.to_s, **attrs)
           nil
         end
+
+        private :bar_entries, :cartesian, :area_path, :top_line_path, :bar_slots, :cells
+        private :bar_path, :line_markers, :x_tick_label, :y_tick_label, :gradient_id, :area_fill, :svg_label_prefix
+        private :coordinates_json, :active_dot_markers
       end
     end
   end

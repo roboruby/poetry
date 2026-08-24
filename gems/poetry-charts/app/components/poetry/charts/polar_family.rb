@@ -85,7 +85,11 @@ module Poetry
             hide_indicator: tooltip_config.fetch(:hide_indicator, false)
           )
         end
+
+        private :coordinates_json, :tooltip_layer_component
       end
+
+      private :plot, :cx, :cy
     end
   end
 end

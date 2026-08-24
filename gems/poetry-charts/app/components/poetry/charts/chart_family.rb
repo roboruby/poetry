@@ -51,6 +51,8 @@ module Poetry
       def fnum(value)
         Geometry.js_number((value * 100).round / 100.0)
       end
+
+      private :fnum
     end
   end
 end

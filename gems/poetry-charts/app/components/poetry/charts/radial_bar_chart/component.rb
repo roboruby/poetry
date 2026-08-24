@@ -33,7 +33,7 @@ module Poetry
           "corner_radius rounds the arc ends (10 on a 10px ring = full pill caps).",
           "with_polar_grid(radii:, fills:) draws the shape/text blocks' disc track; " \
           "with_center_label fills the middle.",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
@@ -41,44 +41,35 @@ module Poetry
         Series = Data.define(:data_key, :stack, :background, :corner_radius, :color_key,
                              :labels, :label_key)
 
-        # The rows to plot: an array of hashes, one ring per row.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - name => { label:, color: } - naming and
-        # coloring the rings.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 250
-        # ViewBox height in pixels.
-        option :height, :integer, default: 250
-        # Margin overrides ({ top:, right:, bottom:, left: }), merged
-        # over the slim polar default.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one ring per row."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - name => { label:, color: } - naming " \
+                                                           "and coloring the rings."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 250,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 250, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options
-        # The row key naming each ring.
-        option :name_key, :string, default: "name"
-        # Where the sweep starts, in degrees.
-        option :start_angle, :integer, default: 0
-        # Where the sweep ends - 180 makes a half gauge.
-        option :end_angle, :integer, default: 360
-        # The innermost ring edge: a percent string of the max radius, or
-        # pixels.
-        option :inner_radius, ActiveModel::Type::Value.new, default: "20%"
-        # The outermost ring edge: a percent string of the max radius, or
-        # pixels.
-        option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
-        # The angle-axis maximum: nil = the largest single value, so the
-        # largest ring closes the full sweep EXACTLY (nicing it would
-        # leave a notch); stacked gauges pass the stack total when the
-        # segments should fill the span.
-        option :max_value, ActiveModel::Type::Value.new
+        option :name_key, :string, default: "name", doc: "The row key naming each ring."
+        option :start_angle, :integer, default: 0, doc: "Where the sweep starts, in degrees."
+        option :end_angle, :integer, default: 360, doc: "Where the sweep ends - 180 makes a half gauge."
+        option :inner_radius, ActiveModel::Type::Value.new, default: "20%",
+                                                            doc: "The innermost ring edge: a percent string of the " \
+                                                                 "max radius, or pixels."
+        option :outer_radius, ActiveModel::Type::Value.new, default: "80%",
+                                                            doc: "The outermost ring edge: a percent string of the " \
+                                                                 "max radius, or pixels."
+        option :max_value, ActiveModel::Type::Value.new,
+               doc: "The angle-axis maximum: nil = the largest single value, so the largest ring closes the full " \
+                    "sweep EXACTLY (nicing it would leave a notch); stacked gauges pass the stack total when the " \
+                    "segments should fill the span."
 
         part "chart-svg", "The chart canvas (<svg>) - the aria-label surface, the tooltip's " \
                           "focus/keyboard surface (role=application when it attaches), and " \
@@ -120,9 +111,9 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
-        # A radial series reading data_key: values. background: draws the
-        # muted track ring; bars sharing a stack: id share the ring and
-        # stack by angle; corner_radius: rounds the arc ends.
+        slot_doc :radial_bars, "A radial series reading data_key: values. background: draws the muted track ring; " \
+                               "bars sharing a stack: id share the ring and stack by angle; corner_radius: rounds " \
+                               "the arc ends."
         renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
                                             color_key: :fill, labels: nil, label_key: nil|
           (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,
@@ -131,32 +122,29 @@ module Poetry
           nil
         }
 
-        # The disc track behind the rings: radii: places the circles
-        # (default: each ring's centerline), fills: tints them, and
-        # radial_lines: draws the faint value spokes that show through
-        # ring gaps and the open wedge (on by default; gauges turn them
-        # off).
+        slot_doc :polar_grid, "The disc track behind the rings: radii: places the circles (default: each ring's " \
+                              "centerline), fills: tints them, and radial_lines: draws the faint value spokes that " \
+                              "show through ring gaps and the open wedge (on by default; gauges turn them off)."
         renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: true|
           @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
           nil
         }
 
-        # The center text: a title line plus an optional subtitle. The
-        # default is the full gauge's big centered number; compact:
-        # shrinks it and sits it just above a half gauge's flat baseline.
+        slot_doc :center_label, "The center text: a title line plus an optional subtitle. The default is the full " \
+                                "gauge's big centered number; compact: shrinks it and sits it just above a half " \
+                                "gauge's flat baseline."
         renders_one :center_label, lambda { |title:, subtitle: nil, compact: false|
           @center_label_config = { title: title, subtitle: subtitle, compact: compact }
           nil
         }
 
-        # The legend row: align:, items:, and hide_icon:.
+        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
-        # The hover tooltip; the ring name carries the label, so
-        # hide_label defaults on.
+        slot_doc :tooltip, "The hover tooltip; the ring name carries the label, so hide_label defaults on."
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = { hide_label: true }.merge(options)
           nil
@@ -271,11 +259,11 @@ module Poetry
         # stacked series continue from the previous series' end.
         # @api private
         def segments(entry)
-          @segments ||= {}
+          @segments ||= {}.compare_by_identity
           # Slot-identity memo, never data_key: two series may share a
           # data_key (different stacks), and a key-keyed memo would render
           # the first series' segments twice.
-          @segments[entry.object_id] ||= rows.each_with_index.map do |row, i|
+          @segments[entry] ||= rows.each_with_index.map do |row, i|
             ring_inner, ring_outer = ring(i)
             base = @segment_cursor&.dig(entry.stack, i) || start_angle.to_f
             seg_start = entry.stack ? base : start_angle.to_f
@@ -420,6 +408,11 @@ module Poetry
         # ChartFamily#svg_label's chart-type lead-in.
         # @api private
         def svg_label_prefix = "Radial bar chart"
+
+        private :polar_grid_config, :center_label_config, :rows, :radii, :ring, :stacked?, :angle_max
+        private :sweep, :clip_angle, :segments, :background_path, :segment_fill, :label_placement, :grid_radii
+        private :angle_tick_values, :spoke_points, :grid_fill_class, :polar_items, :polar_anchor, :polar_value_rows
+        private :svg_label_prefix
       end
     end
   end

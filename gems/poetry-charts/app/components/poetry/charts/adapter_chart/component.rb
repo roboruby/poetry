@@ -43,34 +43,27 @@ module Poetry
           end
         end
 
-        # The chart type carried in the spec (see Spec::TYPES).
-        option :type, :symbol, required: true
-        # The registered adapter's name; the controller hands it the
-        # mount and the spec.
-        option :engine, :string, required: true
-        # The rows to plot, serialized into the spec.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # The series list ({ data_key:, ... } hashes) - the closed spec's
-        # replacement for slots.
-        option :series, ActiveModel::Type::Value.new, required: true
-        # The axis config ({ x:, y: } hashes), also spec-carried.
-        option :axes, ActiveModel::Type::Value.new
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # Accessible name for the mount; defaults to one built from the
-        # type and engine.
-        option :label, :string
+        option :type, :symbol, required: true, doc: "The chart type carried in the spec (see Spec::TYPES)."
+        option :engine, :string, required: true,
+                                 doc: "The registered adapter's name; the controller hands it the mount and the spec."
+        option :data, ActiveModel::Type::Value.new, required: true, doc: "The rows to plot, serialized into the spec."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :series, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series list ({ data_key:, ... } hashes) - the closed " \
+                                                           "spec's replacement for slots."
+        option :axes, ActiveModel::Type::Value.new, doc: "The axis config ({ x:, y: } hashes), also spec-carried."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :label, :string, doc: "Accessible name for the mount; defaults to one built from the type and engine."
 
         validates :type, inclusion: { in: Spec::TYPES }
 
-        # No part contract yet: adapter_chart has no preview, so the
-        # part-contract tier cannot DOM-verify a declaration (the
-        # tooltip_layer rule - declare only what verifies). Add previews
-        # first, then declare chart-adapter-mount + chart-spec.
+        part "chart-adapter-mount", "The engine's drawing surface (role=img carrying the " \
+                                    "accessible label) - the registered adapter renders into it"
+        part "chart-spec", "The frozen chart-spec v1, served as JSON in an " \
+                           "application/json script for the adapter to consume"
 
         # Built (and validated) server-side - a bad series/axis key raises
         # at render, never in the browser.
@@ -98,6 +91,8 @@ module Poetry
         def mount_label
           label.presence || "#{type.to_s.capitalize} chart (#{engine})"
         end
+
+        private :spec, :chart_config, :chart_id, :mount_label
       end
     end
   end

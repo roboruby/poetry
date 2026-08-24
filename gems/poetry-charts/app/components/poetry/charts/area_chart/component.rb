@@ -33,37 +33,31 @@ module Poetry
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.",
           "Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.",
           "Colors come from the config - never set fill/stroke on an area directly.",
-          "gradient: true on an area gets the shadcn 5%/95% fade fill.",
+          "gradient: true on an area gets the source's 5%/95% fade fill.",
           "Charts render complete on the server; the tooltip layer attaches separately.",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
         # One with_area call's captured series config.
         Series = Data.define(:key, :stack, :curve, :fill_opacity, :gradient, :stroke_width)
 
-        # The rows to plot: an array of hashes, one per x category.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 640
-        # ViewBox height in pixels.
-        option :height, :integer, default: 360
-        # Plot margin overrides ({ top:, right:, bottom:, left: }),
-        # merged over the defaults.
-        option :margin, ActiveModel::Type::Value.new
-        # Stack baseline mode - :expand normalizes each stack to
-        # percentages.
-        option :offset, :symbol, default: :none
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one per x category."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 640,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 360, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults."
+        option :offset, :symbol, default: :none,
+                                 doc: "Stack baseline mode - :expand normalizes each stack to percentages."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options
         live_option
@@ -85,7 +79,7 @@ module Poetry
                "--poetry-motion-easing" => "the animation easing keyword (animation_easing)",
                "--poetry-motion-delay" => "the pre-animation hold (animation_begin, ms)"
              }
-        part "chart-motion-reveal", "The entrance clipPath rect (recharts' area reveal) - the " \
+        part "chart-motion-reveal", "The entrance clipPath rect (the ported area reveal) - the " \
                                     "motion stylesheet scales it 0 -> 1; only when animate"
         part "chart-grid", "The gridline group (with_grid) - horizontal and/or vertical rules " \
                            "across the plot"
@@ -96,7 +90,7 @@ module Poetry
                             "clipped by the reveal rect while animating"
         part "chart-area", "One series' fill path (var(--color-<key>) or its gradient)",
              states: { "data-key" => "the series key" }
-        part "chart-area-stroke", "One series' top-curve stroke path (recharts strokes the " \
+        part "chart-area-stroke", "One series' top-curve stroke path (the source strokes the " \
                                   "curve, never the area outline)",
              states: { "data-key" => "the series key" }
         part "chart-active-dots", "The hover-marker group (with_tooltip) - pre-rendered hidden " \
@@ -114,9 +108,8 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # An area series bound to data_key:. Areas sharing a stack: id
-        # pile up; gradient: true fades the fill; curve: picks the
-        # interpolation.
+        slot_doc :areas, "An area series bound to data_key:. Areas sharing a stack: id pile up; gradient: true fades " \
+                         "the fill; curve: picks the interpolation."
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
@@ -247,6 +240,10 @@ module Poetry
         # Whether the live frame renders a category axis.
         # @api private
         def live_category_axis? = x_axis?
+
+        private :cartesian, :series_path, :series_stroke_path, :x_tick_label, :y_tick_label
+        private :gradient_id, :fill_for, :svg_label_prefix, :coordinates_json, :live_type, :live_series, :live_axes
+        private :live_x_scale_type, :live_category_axis?
       end
     end
   end

@@ -27,11 +27,11 @@ module Poetry
         # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
-          "Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.",
+          "Lines default to stroke-width 2 and NO dots (the ported block look); dots: true adds them.",
           "dot_color_key: reads a per-row data key for per-point dot colors (the dots-colors block).",
           "labels: true stamps each value above its point; give the chart margin top when using it.",
           "Colors come from the config - never set stroke on a line directly.",
-          "Entrance animation is on by default (recharts parity); animate: false for a static chart. " \
+          "Entrance animation is on by default (source parity); animate: false for a static chart. " \
           "Reduced-motion users always get the finished chart."
         ].freeze
 
@@ -42,25 +42,20 @@ module Poetry
           def stack = nil
         end
 
-        # The rows to plot: an array of hashes, one per x category.
-        option :data, ActiveModel::Type::Value.new, required: true
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 640
-        # ViewBox height in pixels.
-        option :height, :integer, default: 360
-        # Plot margin overrides ({ top:, right:, bottom:, left: }),
-        # merged over the defaults.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new, required: true,
+                                                    doc: "The rows to plot: an array of hashes, one per x category."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 640,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 360, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options
         live_option
@@ -113,10 +108,9 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # A line series bound to data_key:. dots: marks each point;
-        # dot_color_key: reads per-point dot colors from the row;
-        # labels: stamps each value above its point; error_key: adds
-        # error whiskers.
+        slot_doc :lines, "A line series bound to data_key:. dots: marks each point; dot_color_key: reads per-point " \
+                         "dot colors from the row; labels: stamps each value above its point; error_key: adds error " \
+                         "whiskers."
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false, error_key: nil, error_width: 5|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
@@ -247,6 +241,10 @@ module Poetry
         # Whether the live frame renders a category axis.
         # @api private
         def live_category_axis? = x_axis?
+
+        private :cartesian, :series_path, :markers, :dot_fill, :x_tick_label, :y_tick_label
+        private :marker_label, :svg_label_prefix, :coordinates_json, :live_type, :live_series, :live_axes
+        private :live_x_scale_type, :live_category_axis?
       end
     end
   end

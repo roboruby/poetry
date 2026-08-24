@@ -32,9 +32,9 @@ module Poetry
           "Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.",
           "with_scatter(key:) colors points var(--color-<key>); data: gives a series its own rows.",
           "with_z_axis(data_key:, range: [64, 144]) sizes points by a third dimension - " \
-          "the range is marker AREA in px2 (recharts ZAxis).",
+          "the range is marker AREA in px2 (the source's z-axis contract).",
           "The tooltip hits per point and shows the x/y(/z) values with the series color.",
-          "Entrance animation is on by default (recharts Scatter: 400ms linear); animate: false for a static chart."
+          "Entrance animation is on by default (400ms linear, source-exact); animate: false for a static chart."
         ].freeze
 
         # One with_scatter call's captured series config.
@@ -44,26 +44,20 @@ module Poetry
         # The marker AREA range (px2) when no z axis sizes the points.
         DEFAULT_Z_RANGE = [64, 64].freeze
 
-        # Default rows for series that don't bring their own data: - one
-        # hash per point.
-        option :data, ActiveModel::Type::Value.new
-        # The series config - key => { label:, color: } - naming and
-        # coloring every series.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # chart gets a unique per-render id.
-        option :id, :string
-        # ViewBox width in pixels; the rendered chart scales to its
-        # container.
-        option :width, :integer, default: 640
-        # ViewBox height in pixels.
-        option :height, :integer, default: 360
-        # Plot margin overrides ({ top:, right:, bottom:, left: }),
-        # merged over the defaults.
-        option :margin, ActiveModel::Type::Value.new
-        # Accessible name for the chart SVG; defaults to one built from
-        # the configured series.
-        option :label, :string
+        option :data, ActiveModel::Type::Value.new,
+               doc: "Default rows for series that don't bring their own data: - one hash per point."
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - naming " \
+                                                           "and coloring every series."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id."
+        option :width, :integer, default: 640,
+                                 doc: "ViewBox width in pixels; the rendered chart scales to its container."
+        option :height, :integer, default: 360, doc: "ViewBox height in pixels."
+        option :margin, ActiveModel::Type::Value.new,
+               doc: "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults."
+        option :label, :string,
+               doc: "Accessible name for the chart SVG; defaults to one built from the configured series."
 
         motion_options(duration: 400, easing: :linear)
 
@@ -103,49 +97,46 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # A point series colored by key:. data: gives it its own rows;
-        # error_key: adds error whiskers.
+        slot_doc :scatters, "A point series colored by key:. data: gives it its own rows; error_key: adds error " \
+                            "whiskers."
         renders_many :scatters, lambda { |key:, data: nil, error_key: nil, error_width: 5|
           (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
                                                  error_key: error_key&.to_s, error_width:)
           nil
         }
 
-        # The numeric x axis: data_key: names the row key to plot;
-        # name: labels its tooltip row.
+        slot_doc :x_axis, "The numeric x axis: data_key: names the row key to plot; name: labels its tooltip row."
         renders_one :x_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
           @x_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
           nil
         }
 
-        # The numeric y axis: data_key: names the row key to plot;
-        # name: labels its tooltip row.
+        slot_doc :y_axis, "The numeric y axis: data_key: names the row key to plot; name: labels its tooltip row."
         renders_one :y_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
           @y_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
           nil
         }
 
-        # A third dimension sizing the markers: range: is marker AREA in
-        # px2 mapped linearly from the data_key: values.
+        slot_doc :z_axis, "A third dimension sizing the markers: range: is marker AREA in px2 mapped linearly from " \
+                          "the data_key: values."
         renders_one :z_axis, lambda { |data_key:, range: DEFAULT_Z_RANGE|
           @z_axis_config = { data_key: data_key.to_s, range: range }
           nil
         }
 
-        # The gridlines: both directions by default.
+        slot_doc :grid, "The gridlines: both directions by default."
         renders_one :grid, lambda { |vertical: true, horizontal: true|
           @grid_config = GridConfig.new(vertical:, horizontal:)
           nil
         }
 
-        # The legend row: align:, items:, and hide_icon:.
+        slot_doc :legend, "The legend row: align:, items:, and hide_icon:."
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
-        # The hover tooltip - per-point x/y(/z) rows under the series
-        # name.
+        slot_doc :tooltip, "The hover tooltip - per-point x/y(/z) rows under the series name."
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
@@ -223,8 +214,8 @@ module Poetry
         # silently render the first series' rows twice.
         # @api private
         def rows(entry)
-          @rows ||= {}
-          @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
+          @rows ||= {}.compare_by_identity
+          @rows[entry] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
         # Every series' values for one row key, flattened.
@@ -387,6 +378,11 @@ module Poetry
         def tick_label(tick)
           Geometry.js_number(tick.to_f)
         end
+
+        private :x_axis_config, :y_axis_config, :z_axis_config, :grid_config, :margins, :plot_left
+        private :plot_right, :plot_top, :plot_bottom, :rows, :axis_values, :x_ticks, :y_ticks, :nice_ticks, :x_scale
+        private :y_scale, :z_scale, :point_radius, :points, :axis_label, :coordinates_json, :tooltip_layer_component
+        private :svg_label, :ref_x_pixel, :ref_y_pixel, :ref_plot, :tick_label
       end
     end
   end

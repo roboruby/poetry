@@ -159,6 +159,9 @@ module Poetry
           { index: i, x: point[:x], y: point[:y1] }
         end
       end
+
+      private :tooltip_config, :legend_config, :legend_component, :cursor_svg, :frame_attributes
+      private :svg_interaction_attributes, :tooltip_layer_component, :active_dot_markers
     end
   end
 end

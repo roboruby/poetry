@@ -24,12 +24,11 @@ module Poetry
           "Give charts an explicit id: when the page renders more than one of the same chart."
         ].freeze
 
-        # The series config - key => { label:, color: } - driving the
-        # per-series color emission.
-        option :config, ActiveModel::Type::Value.new, required: true
-        # Explicit DOM id token, stable across renders; otherwise the
-        # frame gets a unique per-render id.
-        option :id, :string
+        option :config, ActiveModel::Type::Value.new, required: true,
+                                                      doc: "The series config - key => { label:, color: } - driving " \
+                                                           "the per-series color emission."
+        option :id, :string,
+               doc: "Explicit DOM id token, stable across renders; otherwise the frame gets a unique per-render id."
 
         part "chart", "The chart frame (<div>) - the aspect-video chrome, the tooltip layer's " \
                       "positioning anchor, and the id scope the per-series colors are emitted for",
@@ -73,6 +72,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :chart_config, :chart_id, :theme_css, :root_attributes
       end
     end
   end

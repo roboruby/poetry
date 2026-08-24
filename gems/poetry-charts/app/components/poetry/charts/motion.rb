@@ -35,15 +35,12 @@ module Poetry
         # (bar 400ms, pie delayed 400ms, scatter 400ms linear,
         # everything else 1500ms ease with no delay).
         def motion_options(duration: 1500, delay: 0, easing: :ease)
-          # Entrance animation switch - reduced-motion users always get
-          # the finished chart regardless.
-          option :animate, :boolean, default: true
-          # Entrance/morph duration in milliseconds.
-          option :animation_duration, :integer, default: duration
-          # Animation easing keyword (see EASINGS).
-          option :animation_easing, :symbol, default: easing
-          # Pre-animation hold in milliseconds.
-          option :animation_begin, :integer, default: delay
+          option :animate, :boolean, default: true,
+                                     doc: "Entrance animation switch - reduced-motion users always get the finished " \
+                                          "chart regardless."
+          option :animation_duration, :integer, default: duration, doc: "Entrance/morph duration in milliseconds."
+          option :animation_easing, :symbol, default: easing, doc: "Animation easing keyword (see EASINGS)."
+          option :animation_begin, :integer, default: delay, doc: "Pre-animation hold in milliseconds."
         end
       end
 
@@ -94,6 +91,8 @@ module Poetry
           .map { |v| Geometry.js_number((v.to_f * 10_000).round / 10_000.0) }
           .join(" ")
       end
+
+      private :animate?, :motion_style, :motion_sector_value
     end
   end
 end
