@@ -9,7 +9,7 @@ Shows the path to the current page as a trail of links.
 
 Class: Poetry::Ui::Breadcrumb::Component - BEM block `poetry-ui-breadcrumb`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly), separator (with_separator yields NOTHING to the block - no |param|, write content directly; with_separator keywords: icon: ONLY).
+Slots: items (The crumbs, in declaration order. A label with href: renders a link; without one, the current page. A block makes the <li>'s content caller-owned (a dropdown crumb, a custom-rendered link).; many; with_item yields NOTHING to the block - no |param|, write content directly), separator (Replaces the separator glyph in EVERY gap: an icon name, or a block for arbitrary content. Absent, the default chevron renders (with its RTL flip - a custom glyph is used as given).; with_separator yields NOTHING to the block - no |param|, write content directly; with_separator keywords: icon: ONLY).
 - PART `breadcrumb` - The <nav> landmark (aria-label=breadcrumb) around the trail
 - PART `breadcrumb-list` - The <ol> laying crumbs and separators out as one wrapping row
 - PART `breadcrumb-item` - One <li> of the trail - wraps a link, the current page, the ellipsis, or a block item's own content (a dropdown crumb, a custom link)
@@ -29,9 +29,9 @@ In blocks: `app-shell`, `page-header` - for a screen, start from the block (MCP 
 A site-navigation bar with links and optional dropdown panels.
 
 Class: Poetry::Ui::NavigationMenu::Component - BEM block `poetry-ui-navigation_menu`.
-- `label:` (string) - required
-- `viewport:` (boolean) - default false
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- `label:` (string) - required - The nav landmark's accessible name - a page may hold more than one nav.
+- `viewport:` (boolean) - default false - Opts into the shared morphing viewport: panels adopt into one positioned card that morphs size and position between triggers. Off, each panel opens under its own item (also the no-JS shape).
+Slots: items (The bar entries. with_item(title, value:) { panel } declares a trigger + panel; with_item(title, href:) a top-level link (with_link is the shorthand).; many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `navigation-menu` - The <nav> landmark around the whole disclosure bar | states: data-viewport (the mode marker ("true" = shared morphing viewport, "false" = per-item panels) - the dictionary's group-data chrome keys on it)
 - PART `navigation-menu-list` - The bar row holding every item
 - PART `navigation-menu-item` - One bar entry - wraps a trigger + panel pair or a top-level link | states: data-value (the entry's value - the controller's open/close key)
@@ -57,15 +57,15 @@ In blocks: `top-nav` - for a screen, start from the block (MCP compose/describe_
 Navigation for moving between pages of content.
 
 Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
-- `current:` (integer) - required
-- `current_variant:` (symbol) - one of outline|filled, default "outline"
-- `edges:` (symbol) - one of labeled|icons|none, default "labeled"
-- `label:` (string) - default "pagination"
-- `next_label:` (string) - default "Next"
-- `pages:` (boolean) - default true
-- `previous_label:` (string) - default "Previous"
-- `siblings:` (integer) - default 1
-- `total:` (integer) - required
+- `current:` (integer) - required - The current page number (1-based).
+- `current_variant:` (symbol) - one of outline|filled, default "outline" - How the current page link renders: :outline, or :filled for the primary Button treatment (an unambiguous active state).
+- `edges:` (symbol) - one of labeled|icons|none, default "labeled" - The Previous/Next treatment: :labeled (chevron + responsive text), :icons (chevron only - table footers), :none (no edge links).
+- `label:` (string) - default "pagination" - The nav landmark's accessible name.
+- `next_label:` (string) - default "Next" - The Next link's visible text (hidden on narrow viewports).
+- `pages:` (boolean) - default true - Set false to drop the numbered links - the compact two-button pager (pair with edges: :icons).
+- `previous_label:` (string) - default "Previous" - The Previous link's visible text (hidden on narrow viewports).
+- `siblings:` (integer) - default 1 - How many page links flank the current page before gaps elide to ellipses.
+- `total:` (integer) - required - The total page count.
 - PART `pagination` - The <nav> landmark (role=navigation, aria-label) around the page list
 - PART `pagination-content` - The <ul> holding every entry as one horizontal row
 - PART `pagination-item` - One <li> per entry - previous/next, a page link, or a gap
@@ -73,7 +73,7 @@ Class: Poetry::Ui::Pagination::Component - BEM block `poetry-ui-pagination`.
 In blocks: `data-index` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.
 - RULE: path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).
-- RULE: The current page is aria-current=page; current_variant: :outline (upstream parity, default) or :filled (the primary treatment - unambiguous active state); the rest are ghost links.
+- RULE: The current page is aria-current=page; current_variant: :outline (the default) or :filled (the primary treatment - unambiguous active state); the rest are ghost links.
 - RULE: edges: :icons renders chevron-only Previous/Next (the table-footer posture); :none drops them for a bare page list; pages: false drops the numbers (pair with edges: :icons for the compact pager).
 - RULE: Host paginates with kaminari, pagy (v43+), or will_paginate? Run bin/rails g poetry:pagination (no argument = detect and install an adapter for each loaded gem) and keep calling paginate / poetry_pagy_nav / will_paginate(renderer: PoetryLinkRenderer) - never hand-wire poetry_pagination around a paginator gem.
 
@@ -83,17 +83,17 @@ A collapsible app-shell navigation column.
 
 Class: Poetry::Ui::Sidebar::Component - BEM block `poetry-ui-sidebar`.
 Slot REQUIRED: with_nav (the sidebar column) - a call without it raises.
-- `collapsible:` (symbol) - one of offcanvas|icon|none, default "offcanvas"
-- `open:` (boolean) - default true
-- `side:` (symbol) - one of left|right, default "left"
-- `variant:` (symbol) - one of sidebar|floating|inset, default "sidebar"
-Slots: nav, inset.
+- `collapsible:` (symbol) - one of offcanvas|icon|none, default "offcanvas" - What collapsing does: slide fully away, shrink to an icon rail, or :none for a static column.
+- `open:` (boolean) - default true - The expanded/collapsed state at first paint - feed it from the persisted cookie so there is no collapse flash.
+- `side:` (symbol) - one of left|right, default "left" - Which edge the column hangs on.
+- `variant:` (symbol) - one of sidebar|floating|inset, default "sidebar" - The column treatment: flush column, floating card, or inset panel.
+Slots: nav (The sidebar column's content (required) - groups, menus, header/footer.), inset (The page area beside the column - rendered as the <main> inset.).
 - PART `sidebar-wrapper` - The provider shell around the column, the mobile dialog, and the inset | vars: --sidebar-width (the expanded column width (16rem) - the gap/container geometry reads it); --sidebar-width-icon (the collapsed icon-rail width (3rem))
 - PART `sidebar` - The desktop state peer - the collapse state lives here and the pure-CSS group-data chrome keys on it | states: data-state (expanded or collapsed - the controller flips it and persists the cookie); data-collapsible=offcanvas|icon|none (the collapse mode WHILE collapsed (empty while expanded - source parity)); data-variant=sidebar|floating|inset (the column treatment); data-side=left|right (which edge the column hangs on)
 - PART `sidebar-gap` - The in-flow width ghost that pushes the inset over - its width animates on collapse
 - PART `sidebar-container` - The fixed-position column itself | states: data-side=left|right (which edge it pins to)
 - PART `sidebar-inner` - The flex column receiving the nav slot - the mobile mode adopts its children from here
-- PART `sidebar-mobile` - The mobile sheet <dialog> (below md) - server-rendered empty; the controller adopts the nav children on open | states: data-open (sheet is open (presence flips the pair at runtime)); data-closed (sheet is closed (the server-rendered state)); data-mobile (always "true" - the mobile-mode marker); data-side=left|right (which edge the sheet slides from); data-sidebar (always "sidebar" - the upstream sub-part marker) | vars: --sidebar-width (overridden inline to the mobile sheet width (18rem))
+- PART `sidebar-mobile` - The mobile sheet <dialog> (below md) - server-rendered empty; the controller adopts the nav children on open | states: data-open (sheet is open (presence flips the pair at runtime)); data-closed (sheet is closed (the server-rendered state)); data-mobile (always "true" - the mobile-mode marker); data-side=left|right (which edge the sheet slides from); data-sidebar (always "sidebar" - the suite-wide sub-part marker) | vars: --sidebar-width (overridden inline to the mobile sheet width (18rem))
 - PART `sidebar-mobile-inner` - The adoption container the nav children move into while the sheet is open
 - PART `sidebar-inset` - The <main> page area beside the column
 - PART `sidebar-header` - Top block of the column (with_nav content)
@@ -104,8 +104,8 @@ Slots: nav, inset.
 - PART `sidebar-menu` - The <ul> of menu items inside a group
 - PART `sidebar-menu-item` - One <li> menu row (the group/menu-item hover scope)
 - PART `sidebar-menu-button` - The row's link (href:) or button - the navigation entry itself | states: data-active (the current route (active: - links also get aria-current=page)); data-size (the row size variant (default, sm, or lg) - the action/badge tops key on it); data-variant=default|outline (always - the treatment)
-- PART `sidebar-menu-action` - The item-corner action button, absolutely positioned in the row | states: data-sidebar (always "menu-action" - the upstream sub-part marker)
-- PART `sidebar-menu-badge` - The trailing count/status chrome in the row corner - pointer-transparent | states: data-sidebar (always "menu-badge" - the upstream sub-part marker)
+- PART `sidebar-menu-action` - The item-corner action button, absolutely positioned in the row | states: data-sidebar (always "menu-action" - the suite-wide sub-part marker)
+- PART `sidebar-menu-badge` - The trailing count/status chrome in the row corner - pointer-transparent | states: data-sidebar (always "menu-badge" - the suite-wide sub-part marker)
 In blocks: `app-shell` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - WIRING root: `poetry--core--sidebar` registers; values open, collapsible
 - WIRING peer: `poetry--core--sidebar` targets sidebar
@@ -124,11 +124,11 @@ A tablist of triggers that switch between content panels.
 
 Class: Poetry::Ui::Tabs::Component - BEM block `poetry-ui-tabs`.
 Slot REQUIRED: with_tab (at least one tab) - a call without it raises.
-- `default:` (string)
-- `label:` (string)
-- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
-- `variant:` (symbol) - one of default|line, default "default"
-Slots: tabs (many; with_tab yields NOTHING to the block - no |param|, write content directly).
+- `default:` (string) - The value of the server-rendered active tab; defaults to the first enabled tab. Raises when it matches no tab.
+- `label:` (string) - The tablist's accessible name - recommended when a page has several tab sets.
+- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal" - The tab axis; :vertical stacks the triggers and flips the arrow keys.
+- `variant:` (symbol) - one of default|line, default "default" - The list's visual treatment: :default a filled capsule, :line an underline indicator.
+Slots: tabs (Declares one tab: the title, its value:, and the panel as the block (defer: swaps in a lazy turbo-frame panel; panel: false declares a list-only tab). Omitting all three raises.; many; with_tab yields NOTHING to the block - no |param|, write content directly).
 - PART `tabs` - Root wrapper - the orientation rides here and flips the flex direction | states: data-orientation=horizontal|vertical (the tab axis (matches aria-orientation on the list))
 - PART `tabs-list` - The role=tablist row of triggers - the roving-focus keyboard group and the visual variant ride here | states: data-variant (the list treatment - default (filled capsule) or line (underline indicator))
 - PART `tabs-trigger` - One role=tab button per tab | states: data-active (the selected tab (the controller moves it with aria-selected on activation)); data-disabled (tab is disabled - also filters it from the roving-focus collection); data-value (the tab's value - the key the controller matches panels against)

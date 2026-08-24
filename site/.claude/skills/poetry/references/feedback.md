@@ -8,8 +8,8 @@ not suggestions. Options are keywords; content is the block.
 A callout that highlights an important inline message.
 
 Class: Poetry::Ui::Alert::Component - BEM block `poetry-ui-alert`.
-- `variant:` (symbol) - one of default|destructive, default "default", required
-Slots: icon (takes poetry_icon props, not a block), title, action.
+- `variant:` (symbol) - one of default|destructive, default "default", required - The intent axis; :destructive marks errors and announces assertively.
+Slots: icon (Optional leading icon; pass icon props (e.g. name: :"triangle-alert"), not a block.; takes poetry_icon props, not a block), title (The heading line of the callout.), action (Optional corner action (a dismiss button or link), pinned to the top-right.).
 - PART `alert` - The callout root - role rides the variant (destructive announces assertively via role=alert; default is a polite role=status) | states: data-variant=default|destructive (always - the resolved variant)
 - PART `alert-title` - The heading line, rendered when the title slot is set
 - PART `alert-action` - The corner action well (with_action) - a dismiss or link pinned to the top-right by the theme
@@ -23,8 +23,8 @@ In blocks: `destructive-panel` - for a screen, start from the block (MCP compose
 A region that lazily loads its content on visibility, with skeleton and error states.
 
 Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
-- `loading:` (symbol) - default "lazy"
-- `src:` (string) - required
+- `loading:` (symbol) - default "lazy" - :lazy fetches when the frame becomes visible; :eager fetches right after paint.
+- `src:` (string) - required - The URL to fetch - required; rendering without it raises.
 - PART `deferred` - The <turbo-frame> root - src is armed at connect(); failure is a state reflected here, never silent blankness | states: data-error (a frame fetch failed (error response, missing frame, or network error) - the controller stamps the error card; retry clears it)
 - PART `deferred-error` - The retryable error card, stamped into the frame from the slotted <template> on failure
 - WIRING root: `poetry--core--deferred` registers; values src
@@ -40,10 +40,10 @@ Class: Poetry::Ui::Deferred::Component - BEM block `poetry-ui-deferred`.
 A determinate progress bar toward task completion.
 
 Class: Poetry::Ui::Progress::Component - BEM block `poetry-ui-progress`.
-- `label:` (string) - required
-- `max:` (integer) - default 100
-- `show_value:` (boolean) - default true
-- `value:` (integer) - required
+- `label:` (string) - required - The progressbar's accessible name and visible caption.
+- `max:` (integer) - default 100 - The completion value.
+- `show_value:` (boolean) - default true - Set false to hide the percent readout.
+- `value:` (integer) - required - The current progress, clamped into 0..max:.
 - PART `progress` - Root (role=progressbar, aria-value* and the accessible name) - label, value readout, and track stack here
 - PART `progress-label` - The visible caption span (label:)
 - PART `progress-value` - The tabular percent readout - renders unless show_value: false
@@ -67,7 +67,7 @@ Class: Poetry::Ui::Skeleton::Component - BEM block `poetry-ui-skeleton`.
 An indeterminate loading indicator that announces itself.
 
 Class: Poetry::Ui::Spinner::Component - BEM block `poetry-ui-spinner`.
-- `label:` (string) - default "Loading"
+- `label:` (string) - default "Loading" - What assistive tech announces - name the loading context.
 - PART `spinner` - The spinning <svg> itself (the lucide loader-circle) - announces as role=status with aria-label from label:
 - RULE: Spinner announces itself (role=status + aria-label) - never a bare spinning div.
 - RULE: Set label: for the loading context ('Saving…'); the default is 'Loading'.
@@ -78,11 +78,11 @@ A brief, auto-dismissing notification message.
 
 Class: Poetry::Ui::Toast::Component - BEM block `poetry-ui-toast`.
 Slot REQUIRED: with_title (the message) - a call without it raises.
-- `variant:` (symbol) - one of default|success|info|warning|destructive|loading, default "default", required
-- `duration:` (integer)
-- `politeness:` (symbol) - one of polite|assertive, default "dynamic"
-- `show_close_button:` (boolean) - default true
-Slots: title, description, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly).
+- `variant:` (symbol) - one of default|success|info|warning|destructive|loading, default "default", required - The intent axis: it picks the icon, and :destructive announces assertively while :loading defaults to persistent.
+- `duration:` (integer) - nil = derived: 5000ms, or PERSISTENT when an action slot is present (the missable-undo guard). <= 0 = persistent.
+- `politeness:` (symbol) - one of polite|assertive, default "dynamic" - Derived from the variant: destructive announces assertively.
+- `show_close_button:` (boolean) - default true - The corner dismiss button - named as the dialog family names it.
+Slots: title (The message (REQUIRED - the announced payload's first line).), description (Supporting copy under the title.), action (Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason "action". Its presence makes the toast persistent by default.; takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly).
 - PART `toast` - The notification item itself (<li>, role=status) - variant, open state, and the toaster's stack facts all ride here | states: data-open (toast is showing (the server-rendered state; the dismiss exit flips the pair before removal)); data-closed (toast is animating out); data-variant=default|success|info|warning|destructive|loading (always - the resolved variant); data-queued (the toaster holds it hidden past the visible limit (timer paused until a slot frees up)) | vars: --poetry-toast-index (stack position written by the toaster's reflow (newest visible toast = 0))
 - PART `toast-icon` - The variant's icon well (aria-hidden; the default variant renders none)
 - PART `toast-title` - The message - the announced payload's first line (required slot)
@@ -99,10 +99,10 @@ Slots: title, description, action (takes poetry_button props, not a block; with_
 ## toast_trigger (`poetry_toast_trigger`)
 
 Class: Poetry::Ui::ToastTrigger::Component - BEM block `poetry-ui-toast_trigger`.
-- `size:` (symbol) - default "default"
-- `template:` (string) - required
-- `toaster:` (string)
-- `variant:` (symbol) - default "outline"
+- `size:` (symbol) - default "default" - The Button size the trigger renders at.
+- `template:` (string) - required - The id of the <template> element holding the rendered toast to stamp.
+- `toaster:` (string) - Scopes the stamp to one toaster region id on multi-toaster pages; omit for the page's toaster.
+- `variant:` (symbol) - default "outline" - The Button variant the trigger renders at.
 - PART `toast-trigger` - The stamping button - press clones the template's toast into the toaster region | states: data-variant (always - the Button variant the trigger renders at); data-size (always - the Button size the trigger renders at)
 - PART `label` - The Button's label span (the trigger renders AS a poetry Button)
 - WIRING root: `poetry--core--toast-trigger` registers; values template, toaster (if); actions fire on click
@@ -116,9 +116,9 @@ Class: Poetry::Ui::ToastTrigger::Component - BEM block `poetry-ui-toast_trigger`
 The region that stacks and manages toast notifications.
 
 Class: Poetry::Ui::Toaster::Component - BEM block `poetry-ui-toaster`.
-- `position:` (symbol) - one of top-left|top-center|top-right|bottom-left|bottom-center|bottom-right, default "bottom-right", required
-- `hotkey:` (string) - default "F8"
-- `limit:` (integer) - default 3
+- `position:` (symbol) - one of top-left|top-center|top-right|bottom-left|bottom-center|bottom-right, default "bottom-right", required - The stack's corner - set here, not per toast; each toast's slide direction follows it.
+- `hotkey:` (string) - default "F8" - The keyboard shortcut that focuses the most recent toast.
+- `limit:` (integer) - default 3 - The maximum visible toasts; overflow queues hidden with timers held.
 - PART `toaster` - The toast viewport itself (<ol>, role=region, data-turbo-permanent) - the corner geometry and the Turbo Stream append target ride here | states: data-position=top-left|top-center|top-right|bottom-left|bottom-center|bottom-right (always - the corner; each toast's slide direction keys off it via group/toaster); data-poetry-top-layer (always - the dismissal layer exempts presses here, so clicking a toast never dismisses the overlay under it)
 - WIRING root: `poetry--core--toaster` registers; values hotkey, limit, position
 - RULE: Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.

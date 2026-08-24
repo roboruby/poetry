@@ -9,15 +9,15 @@ A vertically stacked set of interactive headings that each reveal a section of c
 
 Class: Poetry::Ui::Accordion::Component - BEM block `poetry-ui-accordion`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
-- `collapsible:` (boolean) - default false
-- `heading_level:` (symbol) - one of h2|h3|h4|h5|h6, default "h3"
-- `open:` (list) - default "dynamic"
-- `type:` (symbol) - one of single|multiple, default "single"
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- `collapsible:` (boolean) - default false - With type: :single, allows the open section to be closed again.
+- `heading_level:` (symbol) - one of h2|h3|h4|h5|h6, default "h3" - The heading element wrapping each trigger; pick it to fit the page outline.
+- `open:` (list) - default "dynamic" - Value keys of the sections rendered expanded on load.
+- `type:` (symbol) - one of single|multiple, default "single" - Whether one section (:single) or several (:multiple) may be open at once.
+Slots: items (The accordion sections. Each takes value: (its open-state key), title:, and a block of panel content; disabled: true locks the section closed.; many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `accordion` - The list root - both controllers (the open-set machine and roving focus) ride here | states: data-orientation=vertical (always vertical - the only axis the accordion ships)
 - PART `accordion-item` - One value-keyed section wrapping its header and panel | states: data-open (the item is expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (the item is collapsed); data-value (the item's open-state key (always present)); data-disabled (with_item(disabled: true) - the item is locked (styling hook; the trigger carries the native disabled attribute))
 - PART `accordion-header` - The heading element (heading_level:, h3 default) hosting the trigger button
-- PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (Base UI trigger parity, controller-written; absent while closed)); data-disabled (with_item(disabled: true) - stamped beside the native disabled attribute; roving focus filters it out at query time)
+- PART `accordion-trigger` - The toggle button inside the header - the chevron rotation rides aria-expanded, not a data attribute | states: data-panel-open (its panel is open (controller-written; absent while closed)); data-disabled (with_item(disabled: true) - stamped beside the native disabled attribute; roving focus filters it out at query time)
 - PART `accordion-content` - The role=region panel - the presence animation and the measured height var ride here | states: data-open (panel is open or entering); data-closed (panel is closed or animating out (hidden lands after the exit finishes)) | vars: --accordion-panel-height (the measured content height (controller-written) that feeds the accordion-down/up keyframes)
 - WIRING root: `poetry--core--accordion` registers; values type, collapsible | `poetry--core--roving-focus` registers; values orientation, manage_tabindex; actions keydown on keydown
 - WIRING trigger: `poetry--core--accordion` actions toggle on click
@@ -34,10 +34,10 @@ A user's image with an initials fallback.
 
 Class: Poetry::Ui::Avatar::Component - BEM block `poetry-ui-avatar`.
 Content block REQUIRED (the initials fallback) - a blockless call raises.
-- `label:` (string) - required
-- `size:` (symbol) - one of default|sm|lg, default "default"
-- `src:` (string)
-Slots: badge.
+- `label:` (string) - required - The person's name - the avatar's accessible name (blank raises). The required flag also carries the fact to the registry so static checks see it.
+- `size:` (symbol) - one of default|sm|lg, default "default" - The diameter axis.
+- `src:` (string) - The image URL; without it only the initials fallback shows.
+Slots: badge (Decorative presence dot, bottom-right; keep the status meaning in label:.).
 - PART `avatar` - Root span (role=img carrying the accessible name) - fallback, image, and badge layer inside it | states: data-size=default|sm|lg (always - the resolved size)
 - PART `avatar-fallback` - The initials layer (the content block) - always in the DOM, showing until the image covers it
 - PART `avatar-image` - The <img> layered absolutely over the fallback - only when src: is given; a failed load paints nothing
@@ -54,8 +54,8 @@ A small count or status descriptor.
 
 Class: Poetry::Ui::Badge::Component - BEM block `poetry-ui-badge`.
 Content block REQUIRED (the visible status text) - a blockless call raises.
-- `variant:` (symbol) - one of default|secondary|destructive|outline|ghost|link|success|warning|info, default "default", required
-- `href:` (string)
+- `variant:` (symbol) - one of default|secondary|destructive|outline|ghost|link|success|warning|info, default "default", required - The intent axis; success/warning/info are the soft record-status treatments.
+- `href:` (string) - Renders the pill as a real <a> - a navigational chip; the theme's link hover treatments activate on exactly this element.
 - PART `badge` - The status pill itself (a <span>; a real <a> when href: is given) - the whole component is this one element | states: data-variant=default|secondary|destructive|outline|ghost|link|success|warning|info (always - the resolved variant)
 In blocks: `data-index`, `section-card` - for a screen, start from the block (MCP compose/describe_block, or `bin/rails g poetry:block`), not from scratch.
 - RULE: Badges are non-interactive status labels - never attach click handlers; use Button for actions. The one interactive form is href:, which renders the badge AS a real link (a navigational chip - the themes' [a&]:hover treatments activate).
@@ -68,10 +68,10 @@ In blocks: `data-index`, `section-card` - for a screen, start from the block (MC
 A container that groups related content and actions.
 
 Class: Poetry::Ui::Card::Component - BEM block `poetry-ui-card`.
-- `content_class:` (string)
-- `header_class:` (string)
-- `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
-Slots: title, description, action, footer (with_footer yields NOTHING to the block - no |param|, write content directly).
+- `content_class:` (string) - Extra classes merged into the body cell (caller classes win). A chat-in-a-card layout passes min-h-0 flex-1 p-0 so the transcript can flex and scroll.
+- `header_class:` (string) - Extra classes merged into the header row - border-b rules the title off from the body.
+- `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3" - The heading element for the title - pick it to fit the page outline.
+Slots: title (The heading line, rendered as a real heading element (title_tag:).), description (Muted one-liner under the title.), action (The header's trailing corner control (a button, menu, or link).), footer (The bottom row (actions/meta). class: merges into the footer div (a border-t divider is the canonical use); every other option (id:, data:, ...) rides onto the footer div verbatim.; with_footer yields NOTHING to the block - no |param|, write content directly).
 - PART `card` - Root container - the vertical flex stack
 - PART `card-header` - The title row grid - gains a trailing auto column when card-action is present
 - PART `card-title` - The heading (title_tag, h3 by default)
@@ -90,11 +90,11 @@ A slideshow for cycling through content, built on native scroll-snap.
 
 Class: Poetry::Ui::Carousel::Component - BEM block `poetry-ui-carousel`.
 Slot REQUIRED: with_item (at least one slide) - a call without it raises.
-- `label:` (string) - required
-- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
-- `show_controls:` (boolean) - default true
-- `track_classes:` (string)
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly; with_item keywords: classes: ONLY; with_item REQUIRES a content block (the slide)).
+- `label:` (string) - required - The carousel region's accessible name - required; rendering without it raises.
+- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal" - The scroll axis; snapping, controls, and arrow keys follow it.
+- `show_controls:` (boolean) - default true - Renders the prev/next buttons; slides stay reachable by swipe, wheel, and keyboard without them.
+- `track_classes:` (string) - Utility classes for the slide track - change spacing as a trio: track_classes: "-ml-1" pairs with item classes "pl-1 -scroll-ml-1".
+Slots: items (Declares one slide. The content block is required; classes: sizes the slide (basis-full default).; many; with_item yields NOTHING to the block - no |param|, write content directly; with_item keywords: classes: ONLY; with_item REQUIRES a content block (the slide)).
 - PART `carousel` - The role=region root - the controller (paging, button state, arrow keys) rides here | states: data-orientation=horizontal|vertical (the scroll axis)
 - PART `carousel-content` - The viewport - a real scroll-snap container (tabindex=0); the platform owns the physics
 - PART `carousel-item` - One role=group slide - sized by item classes (basis-full default)
@@ -113,12 +113,12 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 A read-only value with a button to copy it to the clipboard.
 
 Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_text`.
-- `described_by:` (string)
-- `disabled:` (boolean) - default false
-- `id:` (string)
-- `label:` (string)
-- `text_to_copy:` (string)
-- `value:` (string) - required
+- `described_by:` (string) - Ids for the input's aria-describedby (hint or error text).
+- `disabled:` (boolean) - default false - Disables the input and the copy button together.
+- `id:` (string) - The readonly input's DOM id (auto-generated when omitted) - the Field/Label for= target.
+- `label:` (string) - The readonly input's accessible name when no Label/Field association exists.
+- `text_to_copy:` (string) - Overrides what lands on the clipboard when the displayed value truncates: display short, copy full.
+- `value:` (string) - required - The displayed text - also what copies, unless text_to_copy: overrides it.
 - PART `clipboard-text` - Root - the controller rides here | states: data-copied (stamped for a beat after a successful copy (the stacked copy/check glyphs swap off it))
 - PART `clipboard-text-group` - The bordered field surface - InputGroup's chrome
 - PART `input-group-control` - The readonly mono <input> showing the value - selectable, never editable; InputGroup's control slot
@@ -135,12 +135,12 @@ Class: Poetry::Ui::ClipboardText::Component - BEM block `poetry-ui-clipboard_tex
 A syntax-highlighted code panel with a copy button and optional line numbers.
 
 Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
-- `code:` (string) - required
-- `copy:` (boolean) - default true
-- `highlight_lines:` ()
-- `label:` (string)
-- `language:` (string) - default "text"
-- `line_numbers:` (boolean) - default false
+- `code:` (string) - required - The source text to highlight - required.
+- `copy:` (boolean) - default true - Renders the copy button in the panel's corner.
+- `highlight_lines:` () - 1-based line numbers to tint via the theme's highlight hook.
+- `label:` (string) - The scroll region's accessible name; defaults to the localized "Code" (a focusable scrollable region must be named - axe).
+- `language:` (string) - default "text" - The lexer name ("ruby", "js", ...); unknown languages fall back to plain text.
+- `line_numbers:` (boolean) - default false - Renders CSS-counter line numbers - never part of selection or copied text.
 - PART `code-block` - Root - the syntax-palette surface (cn-code-block) | states: data-language (always - the lexer name, a styling/tooling hook); data-line-numbers (line_numbers: - turns on the ::before CSS counters); data-copied (copy: only - stamped for a beat after a successful copy (the clipboard-text engine))
 - PART `code-block-pre` - The scroll container - tabindex 0 + role region + label (a scrollable region must be keyboard-reachable and named)
 - PART `code-block-code` - The code element - rouge's .line/.hll spans and the seven --syntax-* token maps live under it; the copy affordance reads ITS textContent
@@ -158,10 +158,10 @@ An interactive element that expands and collapses a section of content.
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
 Content block REQUIRED (the disclosed panel body) - a blockless call raises.
 Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
-- `open:` (boolean) - default false
-Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+- `open:` (boolean) - default false - The server-rendered initial state; the trigger toggles it client-side.
+Slots: trigger (The disclosure control - a real button, wired for you (aria-expanded, aria-controls); options merge onto it.; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `collapsible` - The disclosure root - the state controller flips the pair here | states: data-open (expanded (server-rendered from open:; the controller flips the pair at runtime)); data-closed (collapsed (the server-rendered default))
-- PART `collapsible-trigger` - The disclosure button - mirrors aria-expanded | states: data-panel-open (its content is open (Base UI trigger parity, controller-written; absent while closed))
+- PART `collapsible-trigger` - The disclosure button - mirrors aria-expanded | states: data-panel-open (its content is open (controller-written; absent while closed))
 - PART `collapsible-content` - The disclosure panel - stays in the DOM when closed (hidden) and rides the presence helper on exit | states: data-open (content is open or entering); data-closed (content is closed or animating out (hidden lands after the exit finishes))
 - WIRING root: `poetry--core--state` registers
 - WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
@@ -178,19 +178,19 @@ A table with sorting, row selection, and sticky headers.
 
 Class: Poetry::Ui::DataTable::Component - BEM block `poetry-ui-data_table`.
 Slot REQUIRED: with_column (at least one column) - a call without it raises.
-- `caption:` (string)
-- `container_class:` (string)
-- `empty_text:` (string) - default "No results."
-- `filter:` (boolean) - default true
-- `filter_label:` (string) - default "Filter"
-- `filter_name:` (string) - default "q"
-- `filter_placeholder:` (string) - default "Filter…"
-- `frame:` (string)
-- `scroll_label:` (string)
-- `selectable:` ()
-- `selection_name:` (string) - default "selected_ids"
-- `sticky_header:` (boolean) - default false
-Slots: columns (many; with_column REQUIRES a content block (the cell renderer - { |row| ... })).
+- `caption:` (string) - The table's accessible purpose, rendered as its <caption>.
+- `container_class:` (string) - Caps the scroll container's height (e.g. "max-h-96") - without a cap the sticky header has nothing to stick inside.
+- `empty_text:` (string) - default "No results." - Shown in a full-width row when rows are empty.
+- `filter:` (boolean) - default true - Renders the filter form; false drops the toolbar row.
+- `filter_label:` (string) - default "Filter" - The filter input's accessible label.
+- `filter_name:` (string) - default "q" - The query-param key the filter submits under.
+- `filter_placeholder:` (string) - default "Filter…" - The filter input's placeholder text.
+- `frame:` (string) - Wrap in a <turbo-frame data-turbo-action="advance"> so hosts with Turbo scope the round trip to the table while the URL still advances. The host response must render the same frame id.
+- `scroll_label:` (string) - Accessible name for the sticky scroll region; falls back to caption:.
+- `selectable:` () - Row selection: a lambda mapping each row to its id turns the feature ON - a leading checkbox column (select-all with a real indeterminate middle state, shift ranges, count announcements) whose checkboxes ARE the form value (selection_name[], plain checkboxes with no JS). Pair with the action-bar block for bulk actions.
+- `selection_name:` (string) - default "selected_ids" - The checkbox field name; selected row ids post as selection_name[].
+- `sticky_header:` (boolean) - default false - Forwarded to the inner Table: sticky_header pins the thead while the table's scroll container scrolls; container_class caps that container's height ("max-h-96") - without a cap nothing sticks. The sticky scroll region needs an accessible name (the ScrollArea rule); scroll_label: falls back to caption:.
+Slots: columns (Columns are DECLARED here and rendered per row by the template. A sortable column's key must be in the state's whitelist - catching drift between the view's columns and the controller's sortable: list at render, not as a silently unsortable header.; many; with_column REQUIRES a content block (the cell renderer - { |row| ... })).
 - PART `data-table` - Root surface - toolbar, table, and pagination footer stack here
 - PART `data-table-toolbar` - The row above the table holding the filter form - renders unless filter: false
 - PART `data-table-filter` - The GET filter form (role=search) - hidden fields carry the current sort; a new filter resets the page
@@ -210,9 +210,9 @@ In blocks: `action-bar` - for a screen, start from the block (MCP compose/descri
 An empty-state placeholder with an icon, message, and actions.
 
 Class: Poetry::Ui::Empty::Component - BEM block `poetry-ui-empty`.
-- `media_variant:` (symbol) - one of default|icon, default "default"
-- `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3"
-Slots: media, title, description.
+- `media_variant:` (symbol) - one of default|icon, default "default" - The media slot's treatment; :icon gives the rounded muted icon tile.
+- `title_tag:` (symbol) - one of h1|h2|h3|h4|h5|h6, default "h3" - The title's heading level - a real heading element, so set it to fit the page outline.
+Slots: media (Optional leading visual above the title - an icon or illustration.), title (The headline, rendered as a real heading (see title_tag).), description (Muted copy under the title.).
 - PART `empty` - The empty-state root - the centered header and content stack
 - PART `empty-header` - Wrapper around media/title/description - renders when at least one of those slots is set
 - PART `empty-icon` - The media slot's box - media_variant: :icon gives the rounded muted icon tile | states: data-variant=default|icon (always - the resolved media_variant)
@@ -229,11 +229,11 @@ Slots: media, title, description.
 A generic list row with media, content, and actions.
 
 Class: Poetry::Ui::Item::Component - BEM block `poetry-ui-item`.
-- `size:` (symbol) - one of default|sm|xs, default "default", required
-- `variant:` (symbol) - one of default|outline|muted, default "default", required
-- `media_variant:` (symbol) - one of default|icon|image, default "default"
-- `tag:` (symbol) - default "div"
-Slots: media, title, description, actions, header, footer.
+- `size:` (symbol) - one of default|sm|xs, default "default", required - The row's density.
+- `variant:` (symbol) - one of default|outline|muted, default "default", required - The row's visual treatment - :outline boxes it, :muted recedes.
+- `media_variant:` (symbol) - one of default|icon|image, default "default" - The media treatment - :icon for a glyph, :image for a thumbnail.
+- `tag:` (symbol) - default "div" - The root element - tag: :a (href via passthrough) makes the whole row clickable.
+Slots: media (The leading media cell - a glyph or thumbnail (see media_variant).), title (The title row.), description (The muted description line (clamps to two lines).), actions (The trailing actions cell - buttons, a menu, a switch.), header (Full-width row above the media/content columns.), footer (Full-width row below the media/content columns.).
 - PART `item` - The row root (a div by default; tag: :a for a clickable row) - variant and density land here as data attributes | states: data-variant=default|outline|muted (the row's visual variant); data-size=default|sm|xs (the row's density)
 - PART `item-media` - The leading media cell - sized and rounded by its variant | states: data-variant=default|icon|image (the media treatment)
 - PART `item-content` - The center column collecting title, description, and loose content
@@ -254,9 +254,9 @@ A key-value list for labeled attributes on detail pages.
 
 Class: Poetry::Ui::MetadataList::Component - BEM block `poetry-ui-metadata_list`.
 Slot REQUIRED: with_item (at least one item (label: plus the value block)) - a call without it raises.
-- `columns:` (symbol) - one of one|two|three, default "one"
-- `orientation:` (symbol) - one of vertical|horizontal, default "vertical"
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- `columns:` (symbol) - one of one|two|three, default "one" - How many columns the facts spread across on wide viewports.
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical" - Label placement - above the value, or beside it for the classic key/value sheet.
+Slots: items (The facts. Each takes label: (the fact's name, the <dt>) and the value as its block (the <dd>).; many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `metadata-list` - The <dl> root - the record's fact sheet | states: data-orientation=vertical|horizontal (always - label placement); data-columns=one|two|three (always - the column count word)
 - PART `metadata-list-item` - One fact group (a <div> holding its <dt>/<dd> pair)
 - PART `metadata-list-label` - The fact's name (<dt>) - muted, small
@@ -271,12 +271,12 @@ Slots: items (many; with_item yields NOTHING to the block - no |param|, write co
 A gauge that shows a quantity within a known range.
 
 Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
-- `label:` (string) - required
-- `max:` (integer) - default 100
-- `min:` (integer) - default 0
-- `show_value:` (boolean) - default true
-- `value:` (integer) - required
-- `value_text:` (string)
+- `label:` (string) - required - The meter's accessible name and visible caption.
+- `max:` (integer) - default 100 - The range's upper bound - must exceed min:.
+- `min:` (integer) - default 0 - The range's lower bound.
+- `show_value:` (boolean) - default true - Set false to hide the visible readout.
+- `value:` (integer) - required - The measured quantity, clamped into min:..max:.
+- `value_text:` (string) - Verbatim human-readable value ("3 of 4 seats") replacing the percentage readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on role=meter, so aria-valuenow carries the value.
 - PART `meter` - Root (role=meter, aria-value*, and the accessible name); label, readout, and track stack here
 - PART `meter-label` - The visible caption span (label:)
 - PART `meter-value` - The readout - value_text: verbatim, else the range percentage; renders unless show_value: false
@@ -292,11 +292,11 @@ A single KPI: a muted label over a large metric value.
 
 Class: Poetry::Ui::Stat::Component - BEM block `poetry-ui-stat`.
 Content block REQUIRED (the metric value) - a blockless call raises.
-- `delta:` (string)
-- `label:` (string) - required
-- `sentiment:` (symbol) - one of positive|negative|neutral
-- `trend:` (symbol) - one of up|down|flat, default "up"
-Slots: description, media.
+- `delta:` (string) - The change text shown in the pill beside the value ("+12.5%").
+- `label:` (string) - required - The metric's name, shown muted above the value.
+- `sentiment:` (symbol) - one of positive|negative|neutral - Overrides the trend-derived sentiment - color follows sentiment, never the arrow (set :positive when DOWN is the good direction).
+- `trend:` (symbol) - one of up|down|flat, default "up" - The arrow direction; also derives the default sentiment.
+Slots: description (Muted supporting copy rendered under the value.), media (The trend-visual slot (sparkline, chart, glyph) below the text stack.).
 - PART `stat` - The stat root - a label/value/delta/description column
 - PART `stat-label` - The muted metric name above the value
 - PART `stat-value` - The metric itself - large, semibold, tabular numerals
@@ -314,9 +314,9 @@ A semantic table for rows and columns of data.
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
 Content block REQUIRED (the table sections (poetry_table_* helpers)) - a blockless call raises.
-- `container_class:` (string)
-- `scroll_label:` (string)
-- `sticky_header:` (boolean) - default false
+- `container_class:` (string) - Extra classes for the scroll container - e.g. "max-h-96" to cap its height.
+- `scroll_label:` (string) - The scroll region's accessible name, required with sticky_header: a scrollable region a keyboard can't reach fails WCAG (axe scrollable-region-focusable), and a focusable region needs a name.
+- `sticky_header:` (boolean) - default false - Pins the <thead> while the container scrolls; needs a height cap (container_class:) to take effect, and requires scroll_label:.
 - PART `table` - The semantic <table> element itself - the root the part helpers compose into
 - PART `table-caption` - The <caption> (poetry_table_caption) - the table's accessible purpose
 - PART `table-header` - The <thead> (poetry_table_header) holding the column-header row
@@ -337,10 +337,10 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 A set of removable chips or tokens.
 
 Class: Poetry::Ui::TagGroup::Component - BEM block `poetry-ui-tag_group`.
-- `described_by:` (string)
-- `label:` (string) - required
-- `name:` (string)
-Slots: tags (many; with_tag yields NOTHING to the block - no |param|, write content directly).
+- `described_by:` (string) - Space-separated hint/error ids for the GRID (the labelled element) - a raw aria-describedby in html_attributes would land on the outer wrapper div, unassociated for AT.
+- `label:` (string) - required - The grid's accessible name, rendered as a caption span. Required.
+- `name:` (string) - Makes the group a form value: one hidden <name>[] input submits per tag.
+Slots: tags (Declares one chip. value: is its identity (and form value); label: is the accessible name and the visible text when no block is given; removable: false drops the remove button.; many; with_tag yields NOTHING to the block - no |param|, write content directly).
 - PART `tag-group` - The labelled wrapper - caption span + grid stack here
 - PART `tag-group-label` - The caption span (label:), wired via aria-labelledby (a grid is not a labelable form control - never a <label>)
 - PART `tag-group-grid` - The tag collection (role=grid; role=group + the tab stop when empty) - roving focus, removal keys, and the focus-scoped live region ride here | states: data-empty (no tags remain (controller-kept after removals))
@@ -360,8 +360,8 @@ A sequence of dated events as an ordered list.
 
 Class: Poetry::Ui::Timeline::Component - BEM block `poetry-ui-timeline`.
 Slot REQUIRED: with_item (at least one item (title:, with the description as its block)) - a call without it raises.
-- `orientation:` (symbol) - one of vertical|horizontal, default "vertical"
-Slots: items (many; with_item yields NOTHING to the block - no |param|, write content directly).
+- `orientation:` (symbol) - one of vertical|horizontal, default "vertical" - The layout axis: :vertical reads as a feed, :horizontal as a step tracker.
+Slots: items (Declares one event: title:, optional time: (renders a <time>), optional icon: (replaces the dot), completed: for progress - the description is the block.; many; with_item yields NOTHING to the block - no |param|, write content directly).
 - PART `timeline` - The <ol> root - the event sequence | states: data-orientation=vertical|horizontal (always - the layout axis)
 - PART `timeline-item` - One event (<li>): indicator + rail segment + header + description | states: data-completed (the step is done - recolors its indicator and rail segment)
 - PART `timeline-indicator` - The decorative marker on the rail - a dot, or icon:'s glyph (aria-hidden; the sequence lives in the list semantics)
@@ -381,10 +381,10 @@ A horizontal group of controls that acts as one keyboard tab stop - Tab passes o
 
 Class: Poetry::Ui::Toolbar::Component - BEM block `poetry-ui-toolbar`.
 Slot REQUIRED: with_button (at least one control (with_button / with_input)) - a call without it raises.
-- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal"
-- `label:` (string) - required
-- `loop:` (boolean) - default true
-Slots: items (many; types button|input|separator - one with_<type> setter each, options as keywords).
+- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal" - The strip's axis; :vertical stacks the controls and flips the arrow keys.
+- `label:` (string) - required - The toolbar's accessible name. Required.
+- `loop:` (boolean) - default true - Whether arrow navigation wraps at the ends.
+Slots: items (The control slots: with_button (a real Button - tag: :a makes it a link), with_input (search/filter), with_separator (its orientation flips automatically).; many; types button|input|separator - one with_<type> setter each, options as keywords).
 - PART `toolbar` - The role=toolbar root - one Tab stop; arrow keys rove across the slotted controls (roving-focus, with the caret guard protecting inputs) | states: data-orientation=horizontal|vertical (always - which arrows rove)
 - WIRING `poetry--core--roving-focus`: values loop, manageTabindex, orientation; actions keydown; events poetry--core--roving-focus:entry
 - RULE: A Toolbar is ONE Tab stop: arrows move between its controls - use it for grouped actions over a surface (table bulk actions, editor strips), never as page navigation.
@@ -397,7 +397,7 @@ Slots: items (many; types button|input|separator - one with_<type> setter each, 
 A hierarchical list of expandable, selectable nodes.
 
 Class: Poetry::Ui::Tree::Component - BEM block `poetry-ui-tree`.
-- `label:` (string) - required
+- `label:` (string) - required - The tree's accessible name. Required.
 - PART `tree` - The treegrid container (role=treegrid, the accessible name) - roving focus, expansion keys, and typeahead ride here; rows are FLAT siblings
 - PART `tree-item` - One row (role=row > gridcell) - hierarchy in aria-level/posinset/setsize, indentation via --poetry-tree-level; rows under a collapsed ancestor render hidden | states: data-expanded (the row's subtree is open (parents only; aria-expanded is the canonical twin)); data-disabled (the item is disabled (skipped by arrows and typeahead)); data-value (always - the toggle event's identity); data-level (always - the 1-based depth (aria-level's twin; --poetry-tree-level drives the indent)) | vars: --poetry-tree-level (the 1-based depth - indentation is calc((level - 1) * step) in the dictionary)
 - PART `tree-item-toggle` - The chevron (parents only): tabindex -1, never steals focus, aria-label flips Expand/Collapse | states: data-expand-label (always - the localized Expand string the controller swaps in on collapse); data-collapse-label (always - the localized Collapse string the controller swaps in on expand)
@@ -416,7 +416,7 @@ Prose styling for long-form and rendered-markdown content.
 
 Class: Poetry::Ui::Typeset::Component - BEM block `poetry-ui-typeset`.
 Content block REQUIRED (the rendered prose HTML) - a blockless call raises.
-- `preset:` (string)
+- `preset:` (string) - Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables (e.g. "docs").
 - PART `typeset` - The prose container - every bare element inside is styled by the app-owned typeset.css; not-typeset (class or data attribute) opts a subtree out
 - RULE: Wrap RENDERED markdown / prose HTML (headings, paragraphs, lists, tables) - never app chrome; poetry components style themselves.
 - RULE: preset: "docs" appends typeset-docs - a preset is a tiny class in the app's own CSS setting --typeset-size/-leading/-flow (and font vars).

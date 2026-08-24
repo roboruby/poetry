@@ -8,10 +8,10 @@ not suggestions. Options are keywords; content is the block.
 A file or image chip showing its name, type, and size.
 
 Class: Poetry::Ui::Attachment::Component - BEM block `poetry-ui-attachment`.
-- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required
-- `size:` (symbol) - one of default|sm|xs, default "default", required
-- `state:` (symbol) - one of idle|uploading|processing|error|done, default "done"
-Slots: media (with_media yields NOTHING to the block - no |param|, write content directly; with_media keywords: variant: ONLY), title, description, actions (many; with_action yields NOTHING to the block - no |param|, write content directly), trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
+- `orientation:` (symbol) - one of horizontal|vertical, default "horizontal", required - Row (:horizontal) or stacked thumbnail-card (:vertical) layout.
+- `size:` (symbol) - one of default|sm|xs, default "default", required - The chip density axis.
+- `state:` (symbol) - one of idle|uploading|processing|error|done, default "done" - The upload lifecycle state; flip it by re-render or Turbo Stream replace, never in JS.
+Slots: media (Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.; with_media yields NOTHING to the block - no |param|, write content directly; with_media keywords: variant: ONLY), title (The file name line. User content - never mark it html_safe.), description (Muted metadata under the title (size, type); in the error state, the failure explanation.), actions (Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires label:.; many; with_action yields NOTHING to the block - no |param|, write content directly), trigger (Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) layered under the actions. Don't also wrap the chip in a link.; with_trigger yields NOTHING to the block - no |param|, write content directly).
 - PART `attachment` - The chip root - the server-owned upload lifecycle rides here (flip data-upload-state by re-render / Turbo Stream replace) | states: data-upload-state=idle|uploading|processing|error|done (always - the resolved state); data-size=default|sm|xs (always - the resolved size); data-orientation=horizontal|vertical (always - the resolved orientation)
 - PART `attachment-media` - The media slot's box - the icon tile or the caller's <img> | states: data-variant=icon|image (always - the media variant)
 - PART `attachment-content` - Text column wrapping title/description - renders when either slot is set
@@ -32,11 +32,11 @@ A chat message bubble aligned to its sender.
 
 Class: Poetry::Ui::Bubble::Component - BEM block `poetry-ui-bubble`.
 Content block REQUIRED (the message content) - a blockless call raises.
-- `variant:` (symbol) - one of default|secondary|muted|tinted|outline|ghost|destructive, default "default", required
-- `align:` (symbol) - one of start|end, default "start"
-- `href:` (string)
-- `tag:` (symbol) - one of div|button|a, default "div"
-Slots: reactions (with_reactions yields NOTHING to the block - no |param|, write content directly; with_reactions keywords: label:, side:, align: ONLY).
+- `variant:` (symbol) - one of default|secondary|muted|tinted|outline|ghost|destructive, default "default", required - The intent axis; :ghost is for tool output / system text flowing full-width.
+- `align:` (symbol) - one of start|end, default "start" - Which side the bubble hugs; inside a Message, set the Message's align instead.
+- `href:` (string) - Renders the content as a real anchor; implies tag: :a.
+- `tag:` (symbol) - one of div|button|a, default "div" - The content element: :div (default), or :button/:a for a quick reply.
+Slots: reactions (The reactions pill overlaid on an edge; label: names the cluster for assistive tech, side:/align: place it (default bottom end).; with_reactions yields NOTHING to the block - no |param|, write content directly; with_reactions keywords: label:, side:, align: ONLY).
 - PART `bubble` - The message surface root - variant and alignment ride here | states: data-variant=default|secondary|muted|tinted|outline|ghost|destructive (always - the resolved variant); data-align=start|end (always - the resolved align)
 - PART `bubble-content` - The body (<div>, or a <button>/<a> quick reply via tag:) - the content block renders here
 - PART `bubble-reactions` - The reactions pill overlay (role=group, named by label:) | states: data-side (always - which edge the pill overlays (default bottom)); data-align (always - placement along that edge (default end))
@@ -51,8 +51,8 @@ Slots: reactions (with_reactions yields NOTHING to the block - no |param|, write
 A chat row pairing an author and avatar with message content.
 
 Class: Poetry::Ui::Message::Component - BEM block `poetry-ui-message`.
-- `align:` (symbol) - one of start|end, default "start"
-Slots: avatar, header, footer.
+- `align:` (symbol) - one of start|end, default "start" - Which side the row sits on; :end mirrors it for the local user's side.
+Slots: avatar (The sender's avatar, kept beside the content column - decorative context; put meaningful sender identity in the header.), header (The sender identity line above the bubbles.), footer (Timestamps / delivery state below the bubbles.).
 - PART `message` - The chat-row root - avatar plus a content column; align: :end mirrors the row for the local user's side | states: data-align=start|end (always - the resolved align)
 - PART `message-avatar` - The avatar slot's box, kept out of the content column
 - PART `message-content` - The content column - header, the body block (the Bubbles), footer
@@ -68,12 +68,12 @@ Slots: avatar, header, footer.
 A streaming-aware transcript that keeps the latest message in view.
 
 Class: Poetry::Ui::MessageScroller::Component - BEM block `poetry-ui-message_scroller`.
-- `auto_scroll:` (boolean) - default true
-- `default_scroll_position:` (symbol) - one of start|end|last-anchor, default "end"
-- `id:` (string) - required
-- `jump_button:` (boolean) - default true
-- `preserve_scroll_on_prepend:` (boolean) - default true
-- `track_visibility:` (boolean) - default false
+- `auto_scroll:` (boolean) - default true - Follows the newest message while the reader sits at the bottom; scrolling up releases the follow.
+- `default_scroll_position:` (symbol) - one of start|end|last-anchor, default "end" - Where the viewport lands on connect: the newest message (:end), the oldest (:start), or the last anchor: true row (:"last-anchor").
+- `id:` (string) - required - The transcript's stable identifier - the content element renders dom id "<id>-messages" for Turbo Streams to target.
+- `jump_button:` (boolean) - default true - Renders the floating jump-to-latest button (shown once the reader leaves the bottom).
+- `preserve_scroll_on_prepend:` (boolean) - default true - Keeps the reading position stable when history prepends into the content element.
+- `track_visibility:` (boolean) - default false - Opt-in observation of which rows are on screen - emits a visibility event as the visible set changes.
 - PART `message-scroller` - The transcript root the controller drives - runtime scroll state is mirrored here | states: data-mode=following-bottom|free-scrolling|anchored-to-message|settling-jump (always once connected - the 4-state machine); data-scrollable (overflow exists - carries which edges have room (start, end, or both as a space-separated pair)); data-autoscrolling (a programmatic scroll is settling - the follow-bottom release is suppressed while set)
 - PART `message-scroller-viewport` - The native scroll region (role=region, focusable) - the controller mirrors the same runtime attributes here | states: data-scrollable (overflow exists - the same edge tokens as the root); data-autoscrolling (a programmatic scroll is settling)
 - PART `message-scroller-content` - The row container and Turbo Stream append target (stable dom id <id>-messages); role=log announces additions
