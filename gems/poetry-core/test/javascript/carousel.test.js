@@ -133,7 +133,7 @@ describe("poetry--core--carousel", () => {
 
   it("select events carry the nearest index", async () => {
     let detail = null
-    el("root").addEventListener("poetry--core--carousel:select", (event) => { detail = event.detail })
+    el("root").addEventListener("poetry:carousel:select", (event) => { detail = event.detail })
 
     layout(1)
     el("viewport").dispatchEvent(new Event("scroll"))

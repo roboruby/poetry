@@ -15,10 +15,13 @@ const KEY_STEP = 5 // percent per arrow press (the APG "larger than one pixel" s
 const DEFAULT_MIN = 10
 const DEFAULT_MAX = 90
 
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:resizable"
+
 export default class ResizableController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--resizable:resize"]
+  static events = ["poetry:resizable:resize"]
 
   static values = {
     orientation: { type: String, default: "horizontal" }
@@ -101,7 +104,7 @@ export default class ResizableController extends Controller {
 
     this.#write(before, beforeSize)
     this.#write(after, pool - beforeSize)
-    this.dispatch("resize", { detail: { sizes: this.#panels().map((panel) => this.#sizeOf(panel)) } })
+    this.dispatch("resize", { prefix: EVENT_PREFIX, detail: { sizes: this.#panels().map((panel) => this.#sizeOf(panel)) } })
   }
 
   #write(panel, size) {

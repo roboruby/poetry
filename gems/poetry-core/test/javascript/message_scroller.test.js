@@ -12,6 +12,7 @@ import { registerPoetryControllers } from "@poetry/controllers"
 // and disconnect teardown.
 
 const ID = "poetry--core--message-scroller"
+const EVENTS = "poetry:message-scroller" // the component-facing event namespace
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 0))
 // MutationObserver delivers on a microtask; a macrotask hop is past it.
@@ -173,7 +174,7 @@ async function mount({ values = {}, rows = [], metrics = {} } = {}) {
 function recordEvents(root, ...names) {
   const seen = []
   for (const name of names) {
-    root.addEventListener(`${ID}:${name}`, (event) => seen.push({ name, detail: event.detail }))
+    root.addEventListener(`${EVENTS}:${name}`, (event) => seen.push({ name, detail: event.detail }))
   }
   return seen
 }

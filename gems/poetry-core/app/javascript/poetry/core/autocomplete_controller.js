@@ -15,7 +15,7 @@ const ITEM_SELECTOR = '[data-slot="autocomplete-item"]'
 const EVENT_PREFIX = "poetry:autocomplete"
 
 export default class AutocompleteController extends Controller {
-  static events = ["poetry:autocomplete:commit", "poetry:autocomplete:open", "poetry:autocomplete:close"]
+  static events = ["poetry:autocomplete:commit", "poetry:autocomplete:open", "poetry:autocomplete:closed"]
 
   static targets = ["input", "content", "list", "empty"]
 
@@ -186,6 +186,6 @@ export default class AutocompleteController extends Controller {
     this.contentTarget.setAttribute("data-closed", "")
     this.inputTarget.setAttribute("aria-expanded", "false")
     this.#clearHighlight()
-    this.dispatch("close", { prefix: EVENT_PREFIX })
+    this.dispatch("closed", { prefix: EVENT_PREFIX })
   }
 }

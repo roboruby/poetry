@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest"
 import { Application } from "@hotwired/stimulus"
-import { registerPoetryControllers } from "@poetry/controllers"
+// Registered directly: scroll-spy is PARKED out of the public registration
+// map (no component consumes it yet) but keeps its behavior coverage.
+import ScrollSpyController from "@poetry/controllers/scroll_spy_controller"
 
 const nextFrame = () => new Promise((resolve) => setTimeout(resolve, 20))
 
@@ -25,7 +27,7 @@ describe("poetry--core--scroll-spy", () => {
     placeSection("usage", -40)
     placeSection("theming", 400)
     application = Application.start()
-    registerPoetryControllers(application)
+    application.register("poetry--core--scroll-spy", ScrollSpyController)
     await nextFrame()
   })
 

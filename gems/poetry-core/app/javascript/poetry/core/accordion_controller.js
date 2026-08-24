@@ -14,10 +14,13 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 // Comfortably longer than the 0.2s accordion keyframe.
 const TRANSITION_FALLBACK_MS = 400
 
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:accordion"
+
 export default class extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--accordion:change"]
+  static events = ["poetry:accordion:change"]
 
   static values = {
     type: { type: String, default: "single" },
@@ -39,7 +42,7 @@ export default class extends Controller {
       this.#open(item)
     }
     this.#reflectDisabled()
-    this.dispatch("change", { detail: { values: this.#openItems().map((i) => i.dataset.value) } })
+    this.dispatch("change", { prefix: EVENT_PREFIX, detail: { values: this.#openItems().map((i) => i.dataset.value) } })
   }
 
   connect() {

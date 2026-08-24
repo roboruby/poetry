@@ -58,12 +58,15 @@ const USER_SCROLL_KEYS = new Set([
 // Viewport scroll/wheel/touchmove/keydown listeners are wired here (passive
 // flags need addEventListener) - do NOT also declare them as data-actions.
 // The jump button IS a data-action: click->...#jump.
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:message-scroller"
+
 export default class extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
   static events = [
-    "poetry--core--message-scroller:mode", "poetry--core--message-scroller:pinned", "poetry--core--message-scroller:scrollable",
-    "poetry--core--message-scroller:unpinned", "poetry--core--message-scroller:visibility"
+    "poetry:message-scroller:mode", "poetry:message-scroller:pinned", "poetry:message-scroller:scrollable",
+    "poetry:message-scroller:unpinned", "poetry:message-scroller:visibility"
   ]
 
   static targets = ["viewport", "content", "spacer", "button"]
@@ -298,10 +301,10 @@ export default class extends Controller {
 
     this.mode = next
     this.element.dataset.mode = next
-    this.dispatch("mode", { detail: { from: previous, to: next, mode: next } })
+    this.dispatch("mode", { prefix: EVENT_PREFIX, detail: { from: previous, to: next, mode: next } })
 
-    if (next === "following-bottom") this.dispatch("pinned")
-    if (previous === "following-bottom") this.dispatch("unpinned", { detail: { reason } })
+    if (next === "following-bottom") this.dispatch("pinned", { prefix: EVENT_PREFIX })
+    if (previous === "following-bottom") this.dispatch("unpinned", { prefix: EVENT_PREFIX, detail: { reason } })
   }
 
   // Owns the one follow-bottom transition: ARM at the bottom (however you got
@@ -329,7 +332,7 @@ export default class extends Controller {
 
     if (!areScrollStatesEqual(this.scrollableState, nextState)) {
       this.scrollableState = nextState
-      this.dispatch("scrollable", { detail: { ...nextState } })
+      this.dispatch("scrollable", { prefix: EVENT_PREFIX, detail: { ...nextState } })
     }
   }
 
@@ -391,6 +394,7 @@ export default class extends Controller {
     if (!areVisibilityStatesEqual(this.visibilityState, nextState)) {
       this.visibilityState = nextState
       this.dispatch("visibility", {
+        prefix: EVENT_PREFIX,
         detail: {
           currentAnchorId: nextState.currentAnchorId,
           visibleMessageIds: [...nextState.visibleMessageIds]

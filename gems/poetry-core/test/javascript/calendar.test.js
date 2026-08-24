@@ -73,7 +73,7 @@ describe("poetry--core--calendar", () => {
   it("clicking a day selects it: hidden input + vocabulary + change event", async () => {
     application = await mount()
     let detail = null
-    el("cal").addEventListener("poetry--core--calendar:change", (event) => { detail = event.detail })
+    el("cal").addEventListener("poetry:calendar:change", (event) => { detail = event.detail })
 
     dayFor("2026-06-20").click()
 
@@ -297,7 +297,7 @@ describe("poetry--core--calendar range mode", () => {
   it("walks the addToRange states: start, complete, extend, restart, clear", async () => {
     application = await mountRange()
     const changes = []
-    el("cal").addEventListener("poetry--core--calendar:change", (e) => changes.push({ ...e.detail }))
+    el("cal").addEventListener("poetry:calendar:change", (e) => changes.push({ ...e.detail }))
 
     // First click: a start-only pick renders as a plain selected single day.
     dayFor("2026-06-10").click()

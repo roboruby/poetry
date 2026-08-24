@@ -10,9 +10,6 @@ import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 // appearance; the visible count RETAINS its last non-zero value while the
 // bar animates out (never a "None selected" flash); Escape anywhere
 // inside clears the selection (the table's engine listens for
-// poetry:data-table:clear-selection bubbling up their shared wrapper).
-const EVENT_PREFIX = "poetry:action-bar"
-
 export default class ActionBarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).

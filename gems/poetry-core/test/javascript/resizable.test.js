@@ -95,7 +95,7 @@ describe("poetry--core--resizable", () => {
 
   it("the resize event reports every panel's size", () => {
     let detail = null
-    el("group").addEventListener("poetry--core--resizable:resize", (event) => { detail = event.detail })
+    el("group").addEventListener("poetry:resizable:resize", (event) => { detail = event.detail })
 
     el("handle").dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true, cancelable: true }))
 

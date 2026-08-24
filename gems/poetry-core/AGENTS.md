@@ -46,7 +46,10 @@ files against the manifest stamped at last bless.
 - State vocabulary is Base UI: bare boolean data attributes via
   `helpers/state.js` `setState` — never write `data-state="open"` style pairs.
 - `static events = [...]` declares every event a controller dispatches, FULL
-  names as emitted (`poetry:select:change`, `poetry--core--tabs:change`).
+  names as emitted. Component-facing events use the `poetry:<component>:<event>`
+  namespace (`poetry:select:change`, `poetry:tabs:change`); layer/utility
+  controllers (dismissable, focus-scope, roving-focus, hotkey) keep the
+  identifier prefix (`poetry--core--dismissable:dismiss`).
   `test/javascript/events_declaration.test.js` scans the source and fails on
   any undeclared or non-literal dispatch. The manifest, registry, and
   llms-full all render from the declaration.

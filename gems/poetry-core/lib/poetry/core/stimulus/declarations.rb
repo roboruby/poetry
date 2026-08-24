@@ -56,13 +56,25 @@ module Poetry
           end
         end
 
-        # A validated cross-controller event name for action `on:` sources
-        # ("poetry--core--calendar:change") - ends the hand-written string
-        # seam between dispatching and listening controllers.
+        # A validated cross-controller event name for action `on:` sources,
+        # resolved to the manifest's REAL emitted name ("poetry:calendar:change";
+        # layer controllers keep the identifier prefix) - ends the hand-written
+        # string seam between dispatching and listening controllers.
         def event_name(controller, name)
           identifier = resolve_identifier(controller)
-          validate_event!(identifier, Manifest.definition(identifier), name)
-          "#{identifier}:#{name}"
+          known = Manifest.definition(identifier)&.fetch("events", nil)
+          return "#{identifier}:#{name}" if known.nil?
+
+          matches = known.select { |event| event.end_with?(":#{name}") }
+          return matches.first if matches.length == 1
+
+          if matches.length > 1
+            raise DeclarationError,
+                  "ambiguous event #{name.inspect} for #{identifier} " \
+                  "(#{matches.sort.join(", ")}) - use the full event string"
+          end
+          raise DeclarationError,
+                "unknown event #{name.inspect} for #{identifier} - known: #{known.sort.join(", ")}"
         end
 
         def extract_conditions!(context, options)
@@ -94,14 +106,6 @@ module Poetry
 
         def validate_action!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("methods", []), name, "action method")
-        end
-
-        def validate_event!(identifier, definition, name)
-          known = definition&.fetch("events", nil)
-          return if known.nil? || known.include?("#{identifier}:#{name}")
-
-          raise DeclarationError,
-                "unknown event #{name.inspect} for #{identifier} - known: #{known.sort.join(", ")}"
         end
 
         def validate_name!(identifier, known, name, kind)

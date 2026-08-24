@@ -18,7 +18,7 @@
       "toggle"
     ],
     "events": [
-      "poetry--core--accordion:change"
+      "poetry:accordion:change"
     ]
   },
   "poetry--core--action-bar": {
@@ -70,7 +70,7 @@
       "keydown"
     ],
     "events": [
-      "poetry:autocomplete:close",
+      "poetry:autocomplete:closed",
       "poetry:autocomplete:commit",
       "poetry:autocomplete:open"
     ]
@@ -141,7 +141,7 @@
       "selectedValueChanged"
     ],
     "events": [
-      "poetry--core--calendar:change"
+      "poetry:calendar:change"
     ]
   },
   "poetry--core--carousel": {
@@ -167,7 +167,7 @@
       "scrolled"
     ],
     "events": [
-      "poetry--core--carousel:select"
+      "poetry:carousel:select"
     ]
   },
   "poetry--core--checkbox-group": {
@@ -765,11 +765,11 @@
       "userScrollIntent"
     ],
     "events": [
-      "poetry--core--message-scroller:mode",
-      "poetry--core--message-scroller:pinned",
-      "poetry--core--message-scroller:scrollable",
-      "poetry--core--message-scroller:unpinned",
-      "poetry--core--message-scroller:visibility"
+      "poetry:message-scroller:mode",
+      "poetry:message-scroller:pinned",
+      "poetry:message-scroller:scrollable",
+      "poetry:message-scroller:unpinned",
+      "poetry:message-scroller:visibility"
     ]
   },
   "poetry--core--navigation-menu": {
@@ -1056,7 +1056,7 @@
       "keydown"
     ],
     "events": [
-      "poetry--core--resizable:resize"
+      "poetry:resizable:resize"
     ]
   },
   "poetry--core--roving-focus": {
@@ -1083,26 +1083,6 @@
     ],
     "events": [
       "poetry--core--roving-focus:entry"
-    ]
-  },
-  "poetry--core--scroll-spy": {
-    "targets": [
-      "link"
-    ],
-    "values": {
-      "offset": {
-        "type": "Number",
-        "default": 96
-      }
-    },
-    "classes": [],
-    "methods": [
-      "connect",
-      "disconnect",
-      "refresh"
-    ],
-    "events": [
-      "poetry--core--scroll-spy:changed"
     ]
   },
   "poetry--core--search-field": {
@@ -1276,8 +1256,8 @@
       "toggle"
     ],
     "events": [
-      "poetry--core--sidebar:mobile-toggle",
-      "poetry--core--sidebar:toggle"
+      "poetry:sidebar:mobile-toggle",
+      "poetry:sidebar:toggle"
     ]
   },
   "poetry--core--slider": {
@@ -1390,7 +1370,7 @@
       "setValue"
     ],
     "events": [
-      "poetry--core--tabs:change"
+      "poetry:tabs:change"
     ]
   },
   "poetry--core--tag-group": {

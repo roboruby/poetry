@@ -3,6 +3,7 @@ import { Application } from "@hotwired/stimulus"
 import AccordionController from "@poetry/controllers/accordion_controller"
 
 const ID = "poetry--core--accordion"
+const EVENTS = "poetry:accordion" // the component-facing event namespace
 let application
 
 function item(value, state = "closed") {
@@ -112,7 +113,7 @@ describe("poetry--core--accordion", () => {
   it("dispatches change with the open values", async () => {
     await mount({ type: "multiple" })
     let detail
-    document.addEventListener(`${ID}:change`, (e) => { detail = e.detail })
+    document.addEventListener(`${EVENTS}:change`, (e) => { detail = e.detail })
     trigger("a").click()
     trigger("c").click()
 

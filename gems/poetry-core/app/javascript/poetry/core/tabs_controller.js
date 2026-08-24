@@ -19,10 +19,13 @@ import { setState } from "@poetry/controllers/helpers/state"
 const TRIGGER_SELECTOR = '[data-slot="tabs-trigger"]'
 const PANEL_SELECTOR = '[data-slot="tabs-content"]'
 
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:tabs"
+
 export default class TabsController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--tabs:change"]
+  static events = ["poetry:tabs:change"]
 
   static values = {
     // false = manual activation (arrows only move focus; Enter/Space - the
@@ -94,7 +97,7 @@ export default class TabsController extends Controller {
       else panel.setAttribute("data-hidden", "")
     }
 
-    if (!silent) this.dispatch("change", { detail: { value } })
+    if (!silent) this.dispatch("change", { prefix: EVENT_PREFIX, detail: { value } })
   }
 
   #triggerFrom(event) {

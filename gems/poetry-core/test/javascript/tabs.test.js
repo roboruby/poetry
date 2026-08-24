@@ -116,7 +116,7 @@ describe("poetry--core--tabs", () => {
 
   it("dispatches a change event with the activated value", () => {
     let detail = null
-    el("root").addEventListener("poetry--core--tabs:change", (event) => { detail = event.detail })
+    el("root").addEventListener("poetry:tabs:change", (event) => { detail = event.detail })
 
     click(el("tab-password"))
 

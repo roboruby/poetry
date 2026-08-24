@@ -23,10 +23,13 @@ import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 // no duplicate ids - the render-twice rejection) and shows it through the
 // sheet presence path; closing holds through the slide-out, then moves
 // the children back. Crossing to desktop while open restores INSTANTLY.
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:sidebar"
+
 export default class SidebarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--sidebar:mobile-toggle", "poetry--core--sidebar:toggle"]
+  static events = ["poetry:sidebar:mobile-toggle", "poetry:sidebar:toggle"]
 
   static targets = ["sidebar", "inner", "mobileDialog", "mobileInner"]
   static values = {
@@ -141,7 +144,7 @@ export default class SidebarController extends Controller {
     enterPresence(this.mobileDialogTarget)
     this.#lock()
     this.#mobileOpen = true
-    this.dispatch("mobile-toggle", { detail: { open: true } })
+    this.dispatch("mobile-toggle", { prefix: EVENT_PREFIX, detail: { open: true } })
   }
 
   // Close the native dialog and move the nav children HOME.
@@ -150,7 +153,7 @@ export default class SidebarController extends Controller {
     while (this.mobileInnerTarget.firstChild) this.innerTarget.appendChild(this.mobileInnerTarget.firstChild)
     this.#unlock()
     this.#mobileOpen = false
-    this.dispatch("mobile-toggle", { detail: { open: false } })
+    this.dispatch("mobile-toggle", { prefix: EVENT_PREFIX, detail: { open: false } })
   }
 
   // Crossing to desktop while the sheet is open restores INSTANTLY (no
@@ -189,7 +192,7 @@ export default class SidebarController extends Controller {
       sidebar.setAttribute("data-state", collapsed ? "collapsed" : "expanded")
       sidebar.setAttribute("data-collapsible", collapsed ? this.collapsibleValue : "")
     }
-    this.dispatch("toggle", { detail: { open: this.openValue } })
+    this.dispatch("toggle", { prefix: EVENT_PREFIX, detail: { open: this.openValue } })
   }
 
   #persist() {

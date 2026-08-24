@@ -19,8 +19,6 @@ export default class PressedController extends Controller {
   // events_declaration.test.js enforces the list stays honest).
   static events = ["poetry:toggle:change"]
 
-  static values = {}
-
   toggle() {
     if (this.#disabled()) return
 

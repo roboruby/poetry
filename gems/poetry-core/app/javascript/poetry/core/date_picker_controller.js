@@ -14,7 +14,7 @@ export default class DatePickerController extends Controller {
     locale: { type: String, default: "en-US" }
   }
 
-  // Action: poetry--core--calendar:change->poetry--core--date-picker#picked
+  // Action: poetry:calendar:change->poetry--core--date-picker#picked
   // on the wrapper. Range mode: the label joins the pair, a
   // start-only pick shows one date, and the popover closes only once the
   // range COMPLETES (the shadcn convention - never mid-range).

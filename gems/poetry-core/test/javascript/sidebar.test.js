@@ -108,7 +108,7 @@ describe("poetry--core--sidebar", () => {
   it("dispatches a toggle event with the open state", async () => {
     application = await mount({ open: true })
     let detail = null
-    el("wrapper").addEventListener("poetry--core--sidebar:toggle", (event) => { detail = event.detail })
+    el("wrapper").addEventListener("poetry:sidebar:toggle", (event) => { detail = event.detail })
 
     el("trigger").click()
 

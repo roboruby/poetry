@@ -32,10 +32,13 @@ import { Controller } from "@hotwired/stimulus"
 const DAY_SELECTOR = '[data-slot="calendar-day"]'
 const MS_PER_DAY = 86400000
 
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:calendar"
+
 export default class CalendarController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--calendar:change"]
+  static events = ["poetry:calendar:change"]
 
   static targets = ["grid", "caption", "input", "startInput", "endInput", "day"]
   static values = {
@@ -94,13 +97,13 @@ export default class CalendarController extends Controller {
     if (this.modeValue === "range") {
       this.#addToRange(button.dataset.date)
       this.#reflectSelection()
-      this.dispatch("change", { detail: { start: this.rangeStartValue, end: this.rangeEndValue } })
+      this.dispatch("change", { prefix: EVENT_PREFIX, detail: { start: this.rangeStartValue, end: this.rangeEndValue } })
       return
     }
 
     this.selectedValue = button.dataset.date
     this.#reflectSelection()
-    this.dispatch("change", { detail: { value: this.selectedValue } })
+    this.dispatch("change", { prefix: EVENT_PREFIX, detail: { value: this.selectedValue } })
   }
 
   // react-day-picker's addToRange algorithm, transcribed (ISO strings compare

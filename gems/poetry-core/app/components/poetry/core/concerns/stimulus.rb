@@ -173,7 +173,10 @@ module Poetry
             when :action
               definition.fetch("methods", []).include?(Poetry::Core::Stimulus::Declarations.camelize(name))
             when :event
-              definition.fetch("events", []).include?("#{identifier}:#{name}")
+              # Real emitted names (poetry:<component>:<event> for component
+              # events; identifier-prefixed for layer events) - match by the
+              # ":<name>" suffix, the same rule event_name resolves by.
+              definition.fetch("events", []).any? { |event| event.end_with?(":#{name}") }
             end
           end
 

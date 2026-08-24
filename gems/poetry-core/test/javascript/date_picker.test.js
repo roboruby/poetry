@@ -14,7 +14,7 @@ const el = (id) => document.getElementById(id)
 const markup = ({ mode = "" } = {}) => `
   <div id="picker" data-controller="poetry--core--date-picker"
        ${mode ? `data-poetry--core--date-picker-mode-value="${mode}"` : ""}
-       data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
+       data-action="poetry:calendar:change->poetry--core--date-picker#picked">
     <button id="trigger" type="button">
       <span id="label" data-poetry--core--date-picker-target="label">Pick a date</span>
     </button>
@@ -30,7 +30,7 @@ async function mount() {
 }
 
 const fireChange = (value) =>
-  el("picker").dispatchEvent(new CustomEvent("poetry--core--calendar:change", { bubbles: true, detail: { value } }))
+  el("picker").dispatchEvent(new CustomEvent("poetry:calendar:change", { bubbles: true, detail: { value } }))
 
 describe("poetry--core--date-picker", () => {
   let application
@@ -70,7 +70,7 @@ describe("poetry--core--date-picker", () => {
     }
     document.body.innerHTML = `
       <div id="picker" data-controller="poetry--core--date-picker"
-           data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
+           data-action="poetry:calendar:change->poetry--core--date-picker#picked">
         <input id="din" type="text" data-poetry--core--date-picker-target="input"
                data-action="input->poetry--core--date-picker#inputChanged keydown->poetry--core--date-picker#inputKeydown">
         <div id="pop" data-controller="poetry--core--popover"></div>
@@ -93,7 +93,7 @@ describe("poetry--core--date-picker", () => {
 
     expect(el("cal-input").value).toBe("2026-06-20")
 
-    el("picker").dispatchEvent(new CustomEvent("poetry--core--calendar:change", {
+    el("picker").dispatchEvent(new CustomEvent("poetry:calendar:change", {
       bubbles: true, detail: { value: "2026-06-05" }
     }))
 
@@ -116,7 +116,7 @@ describe("poetry--core--date-picker", () => {
     registerPoetryControllers(application)
     await nextFrame()
 
-    el("picker").dispatchEvent(new CustomEvent("poetry--core--calendar:change", {
+    el("picker").dispatchEvent(new CustomEvent("poetry:calendar:change", {
       bubbles: true, detail: { start: "2026-06-09", end: "2026-06-18" }
     }))
 
@@ -142,7 +142,7 @@ describe("poetry--core--date-picker", () => {
 describe("poetry--core--date-picker through the portal bridge", () => {
   const nested = () => `
     <div id="picker" data-controller="poetry--core--date-picker"
-         data-action="poetry--core--calendar:change->poetry--core--date-picker#picked">
+         data-action="poetry:calendar:change->poetry--core--date-picker#picked">
       <div id="pop" data-slot="popover" data-component="popover"
            data-controller="poetry--core--popover">
         <button id="trigger" type="button" data-slot="popover-trigger"
@@ -168,7 +168,7 @@ describe("poetry--core--date-picker through the portal bridge", () => {
     expect(el("content").parentNode).toBe(document.body, "the popover portaled")
 
     el("calendar").dispatchEvent(
-      new CustomEvent("poetry--core--calendar:change", { bubbles: true, detail: { value: "2026-06-20" } })
+      new CustomEvent("poetry:calendar:change", { bubbles: true, detail: { value: "2026-06-20" } })
     )
     await nextFrame()
 

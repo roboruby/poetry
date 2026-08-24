@@ -11,10 +11,13 @@ import { Controller } from "@hotwired/stimulus"
 // library-grade machinery: loop (it clones slides), autoplay, and a plugin API.
 const SLIDE_SELECTOR = '[data-slot="carousel-item"]'
 
+// The component-facing event namespace (the poetry:<component> rule).
+const EVENT_PREFIX = "poetry:carousel"
+
 export default class CarouselController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--carousel:select"]
+  static events = ["poetry:carousel:select"]
 
   static targets = ["viewport", "previous", "next"]
   static values = {
@@ -126,7 +129,7 @@ export default class CarouselController extends Controller {
     if (this.hasPreviousTarget) this.previousTarget.disabled = index <= 0
     if (this.hasNextTarget) this.nextTarget.disabled = index >= last || this.#atEnd()
 
-    this.dispatch("select", { detail: { index } })
+    this.dispatch("select", { prefix: EVENT_PREFIX, detail: { index } })
   }
 
   // Embla trims snap points the scroller cannot reach (containScroll);

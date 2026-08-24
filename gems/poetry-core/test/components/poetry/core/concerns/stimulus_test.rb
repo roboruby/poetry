@@ -280,7 +280,7 @@ module Poetry
                        DeclaredComponent.stimulus_action(:toggle, on: :click)
           assert_equal "keydown@window->poetry--core--action-bar#clear",
                        DeclaredComponent.stimulus_action(:action_bar, :clear, on: :keydown, at: :window)
-          assert_equal "poetry--core--accordion:change", DeclaredComponent.stimulus_event(:change)
+          assert_equal "poetry:accordion:change", DeclaredComponent.stimulus_event(:change)
         end
 
         def test_stimulus_action_raises_on_ambiguity
@@ -300,7 +300,7 @@ module Poetry
         end
 
         def test_stimulus_event_resolves_and_validates
-          assert_equal "poetry--core--accordion:change", DeclaredComponent.new.stimulus_event(:change)
+          assert_equal "poetry:accordion:change", DeclaredComponent.new.stimulus_event(:change)
           assert_raises(Poetry::Core::Stimulus::Declarations::DeclarationError) do
             DeclaredComponent.new.stimulus_event(:accordion, :vanished)
           end
@@ -348,7 +348,7 @@ module Poetry
           expected = build_attributes do |attrs|
             bar = Poetry::Core::Stimulus::Builder.new("poetry--core--action-bar", attrs)
             bar.register_controller
-            bar.with_action(:keydown, on: "poetry--core--accordion:change")
+            bar.with_action(:keydown, on: "poetry:accordion:change")
           end
 
           assert_equal expected, EventListeningComponent.new.stimulus_attributes_for(:root)

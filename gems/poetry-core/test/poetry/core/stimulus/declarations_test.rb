@@ -46,7 +46,7 @@ module Poetry
         end
 
         test "event_name validates against the emitting controller" do
-          assert_equal "poetry--core--accordion:change",
+          assert_equal "poetry:accordion:change",
                        Declarations.event_name(:accordion, :change)
           assert_raises(Declarations::DeclarationError) do
             Declarations.event_name(:accordion, :vanished)
