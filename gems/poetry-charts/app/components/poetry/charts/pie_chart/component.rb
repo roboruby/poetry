@@ -20,6 +20,7 @@ module Poetry
       #     <% c.with_tooltip %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
 
@@ -111,14 +112,11 @@ module Poetry
           nil
         }
 
-        # Pie slices are hit by pointerover on the marked sector, not
-        # bisect - the svg gains the enter action after the module's
-        # pointer/keyboard set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
-        end
+        # The polar chassis: margin/plot/center geometry plus the
+        # per-slice pointerover hit; the single-series tooltip chrome and
+        # payload ride the polar_* hooks below.
+        include Poetry::Charts::PolarFamily
+        include Poetry::Charts::PolarFamily::SingleSeriesTooltip
 
         def series_entries
           pies? # force slot evaluation (slots evaluate lazily)
@@ -130,24 +128,7 @@ module Poetry
           @center_label_config
         end
 
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
-        end
-
         # -- geometry ---------------------------------------------------------
-
-        MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
-
-        def plot
-          @plot ||= begin
-            m = MARGIN.merge((margin || {}).to_h.symbolize_keys)
-            { left: m[:left].to_f, top: m[:top].to_f,
-              width: width - m[:left] - m[:right], height: height - m[:top] - m[:bottom] }
-          end
-        end
-
-        def cx = plot[:left] + (plot[:width] / 2.0)
-        def cy = plot[:top] + (plot[:height] / 2.0)
 
         # Memoized per SLOT (object identity), never per data_key: two rings
         # may share a data_key with different data:, and a key-keyed memo
@@ -219,46 +200,15 @@ module Poetry
 
         # -- the tooltip payload (polar shape) ---------------------------------
 
-        # The FIRST pie drives the tooltip (stacked pies: document); slices
-        # carry per-index names/colors so the single chrome row retints.
-        def coordinates_json
-          entry = series_entries.first
-          return "{}" unless entry
+        # The SingleSeriesTooltip hooks: the FIRST pie's slices are the
+        # items (stacked pies: document), anchored at their label points;
+        # values read that pie's own rows.
+        def polar_items(entry) = slices(entry)
+        def polar_anchor(slice) = slice.label_point
+        def polar_value_rows(entry) = rows(entry)
 
-          primary = slices(entry)
-          {
-            "layout" => "polar",
-            "categories" => primary.map { |s| chart_config.label_for(s.name, s.name) },
-            "names" => primary.map { |s| chart_config.label_for(s.name, s.name) },
-            "colors" => primary.map(&:fill),
-            "anchors" => primary.map { |s| s.label_point.map { |v| v.round(2) } },
-            "values" => { entry.data_key => rows(entry).map do |row|
-              Poetry::Charts.display_value(row[entry.data_key])
-            end }
-          }.to_json
-        end
-
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
-        def svg_label
-          label.presence || "Pie chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
-
-        def tooltip_layer_component
-          TooltipLayer::Component.new(
-            config: chart_config,
-            series_keys: [series_entries.first&.data_key].compact,
-            indicator: tooltip_config.fetch(:indicator, :dot),
-            hide_label: tooltip_config.fetch(:hide_label, true),
-            hide_indicator: tooltip_config.fetch(:hide_indicator, false)
-          )
-        end
-
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Pie chart"
       end
     end
   end

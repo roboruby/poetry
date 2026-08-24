@@ -20,6 +20,7 @@ module Poetry
       #     <% c.with_tooltip %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
 
@@ -114,13 +115,10 @@ module Poetry
           nil
         }
 
-        # Vertex dots are hit by pointerover, not bisect - the svg gains
-        # the enter action after the module's set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
-        end
+        # The polar chassis (margin/plot/center + the pointerover hit).
+        # PolarFamily alone: radar keeps TooltipWiring's multi-series
+        # chrome and its own payload below.
+        include Poetry::Charts::PolarFamily
 
         def series_entries
           radars? # force slot evaluation (slots evaluate lazily)
@@ -137,24 +135,7 @@ module Poetry
           @grid_config
         end
 
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
-        end
-
         # -- geometry ---------------------------------------------------------
-
-        MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
-
-        def plot
-          @plot ||= begin
-            m = MARGIN.merge((margin || {}).to_h.symbolize_keys)
-            { left: m[:left].to_f, top: m[:top].to_f,
-              width: width - m[:left] - m[:right], height: height - m[:top] - m[:bottom] }
-          end
-        end
-
-        def cx = plot[:left] + (plot[:width] / 2.0)
-        def cy = plot[:top] + (plot[:height] / 2.0)
 
         def rows
           @rows ||= data.map { |row| row.to_h.transform_keys(&:to_s) }
@@ -266,23 +247,14 @@ module Poetry
           }.to_json
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
-        def svg_label
-          label.presence || "Radar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Radar chart"
 
         # The polar center, so the motion stylesheet can scale the entrance
         # from it (recharts lerps every vertex from (cx, cy) - a uniform
         # scale is the identical per-frame geometry).
         def motion_style_extras
           "--poetry-motion-center: #{fnum(cx)}px #{fnum(cy)}px"
-        end
-
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
         end
       end
     end

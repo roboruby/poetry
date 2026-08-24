@@ -29,6 +29,14 @@ module Poetry
   # @example Render a chart through the dispatcher helper
   #   poetry_chart :bar, data: rows, series: [{ data_key: :revenue }]
   module Charts
+    # The cartesian slot grammar's shared value types: the curve whitelist
+    # and the axis/grid capture shapes the family slots accumulate into.
+    # Scatter carries its own AxisConfig (both axes numeric - different
+    # fields); radar carries its own GridConfig (polygon/circle rings).
+    CURVES = %i[natural linear step step_before step_after monotone_x].freeze
+    AxisConfig = Data.define(:data_key, :tick_formatter, :tick_margin, :tick_count)
+    GridConfig = Data.define(:vertical, :horizontal)
+
     class << self
       # Gem root (the directory containing lib/, app/, config/).
       def root

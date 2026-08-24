@@ -18,6 +18,7 @@ module Poetry
       #     <% c.with_bar data_key: :desktop, radius: 8 %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::Live
@@ -113,59 +114,23 @@ module Poetry
           nil
         }
 
-        renders_one :x_axis, lambda { |data_key:, tick_formatter: nil, tick_margin: 8|
-          @x_axis_config = AreaChart::Component::AxisConfig.new(data_key: data_key.to_s, tick_formatter:,
-                                                                tick_margin:, tick_count: nil)
-          nil
-        }
-
         # In the horizontal orientation the Y axis IS the category axis -
-        # give it the data_key (the horizontal/mixed block shape).
-        renders_one :y_axis, lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
-          @y_axis_config = AreaChart::Component::AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
-                                                                tick_margin:, tick_count:)
-          nil
-        }
+        # give it the data_key (the horizontal/mixed block shape). The
+        # CartesianFamily value-axis hook, so the include below declares
+        # this shape between x_axis and grid.
+        def self.value_axis_slot
+          renders_one :y_axis, lambda { |data_key: nil, tick_count: 3, tick_formatter: nil, tick_margin: 8|
+            @y_axis_config = AxisConfig.new(data_key: data_key&.to_s, tick_formatter:,
+                                            tick_margin:, tick_count:)
+            nil
+          }
+        end
 
-        renders_one :grid, lambda { |vertical: false, horizontal: true|
-          @grid_config = AreaChart::Component::GridConfig.new(vertical:, horizontal:)
-          nil
-        }
-
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
-
-        # The slot captures options only; the tooltip layer itself
-        # (controller + chrome wiring) is declared by TooltipWiring.
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = options
-          nil
-        }
+        include Poetry::Charts::CartesianFamily
 
         def series_entries
           bars? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
-        end
-
-        def x_axis_config
-          x_axis?
-          @x_axis_config
-        end
-
-        def y_axis_config
-          y_axis?
-          @y_axis_config
-        end
-
-        def grid_config
-          grid?
-          @grid_config
-        end
-
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
         def horizontal?
@@ -249,20 +214,11 @@ module Poetry
           formatter ? formatter.call(tick).to_s : Geometry.js_number(tick.to_f)
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
-        def svg_label
-          label.presence || "Bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Bar chart"
 
         def coordinates_json
           cartesian.coordinates.to_json
-        end
-
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
         end
 
         # -- live mode ---------------------------------------------------

@@ -21,6 +21,7 @@ module Poetry
       #     <% c.with_tooltip %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::ReferenceMarks
@@ -107,7 +108,7 @@ module Poetry
         }
 
         renders_one :grid, lambda { |vertical: true, horizontal: true|
-          @grid_config = AreaChart::Component::GridConfig.new(vertical:, horizontal:)
+          @grid_config = GridConfig.new(vertical:, horizontal:)
           nil
         }
 
@@ -152,10 +153,6 @@ module Poetry
         def grid_config
           grid?
           @grid_config
-        end
-
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
         # -- geometry: two recharts-niced linear scales -----------------------
@@ -290,10 +287,8 @@ module Poetry
           )
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
+        # The whole-name override of ChartFamily#svg_label: scatter's
+        # series read from the config by key, not from its entries.
         def svg_label
           label.presence ||
             "Scatter chart: #{series_entries.map { |e| chart_config[e.key]&.label || e.key }.join(", ")}"
@@ -310,10 +305,6 @@ module Poetry
 
         def tick_label(tick)
           Geometry.js_number(tick.to_f)
-        end
-
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
         end
       end
     end

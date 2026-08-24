@@ -20,6 +20,7 @@ module Poetry
       #     <% c.with_tooltip %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::BarMath
@@ -127,32 +128,7 @@ module Poetry
                              dots:, dot_radius:)
         }
 
-        renders_one :x_axis, lambda { |data_key:, tick_formatter: nil, tick_margin: 8|
-          @x_axis_config = AreaChart::Component::AxisConfig.new(data_key: data_key.to_s, tick_formatter:,
-                                                                tick_margin:, tick_count: nil)
-          nil
-        }
-
-        renders_one :y_axis, lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
-          @y_axis_config = AreaChart::Component::AxisConfig.new(data_key: nil, tick_formatter:,
-                                                                tick_margin:, tick_count:)
-          nil
-        }
-
-        renders_one :grid, lambda { |vertical: false, horizontal: true|
-          @grid_config = AreaChart::Component::GridConfig.new(vertical:, horizontal:)
-          nil
-        }
-
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
-
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = options
-          nil
-        }
+        include Poetry::Charts::CartesianFamily
 
         def series_entries
           # Force every mark slot (slots evaluate lazily); the shared
@@ -164,25 +140,6 @@ module Poetry
         end
 
         def bar_entries = series_entries.select { |e| e.mark == :bar }
-
-        def x_axis_config
-          x_axis?
-          @x_axis_config
-        end
-
-        def y_axis_config
-          y_axis?
-          @y_axis_config
-        end
-
-        def grid_config
-          grid?
-          @grid_config
-        end
-
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
-        end
 
         def horizontal? = false
 
@@ -257,13 +214,8 @@ module Poetry
           entry.gradient ? "url(##{gradient_id(entry)})" : "var(--color-#{entry.key})"
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
-        def svg_label
-          label.presence || "Composed chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Composed chart"
 
         def coordinates_json
           cartesian.coordinates.to_json
@@ -276,10 +228,6 @@ module Poetry
           super
         end
 
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
-        end
-
         SERIES_DEFAULTS = { stack: nil, curve: nil, fill_opacity: nil, gradient: nil,
                             stroke_width: nil, dots: nil, dot_radius: nil, radius: nil }.freeze
         private_constant :SERIES_DEFAULTS
@@ -288,7 +236,7 @@ module Poetry
 
         def push_series(mark, key:, **attrs)
           attrs = SERIES_DEFAULTS.merge(attrs)
-          if attrs[:curve] && !AreaChart::Component::CURVES.include?(attrs[:curve])
+          if attrs[:curve] && !CURVES.include?(attrs[:curve])
             raise ArgumentError, "unknown curve #{attrs[:curve].inspect}"
           end
 

@@ -19,6 +19,7 @@ module Poetry
       # Series colors ride var(--color-<key>) (the Container emission);
       # per-x pixel coordinates are embedded for the tooltip controller.
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
         include Poetry::Charts::Live
@@ -34,11 +35,7 @@ module Poetry
           "Reduced-motion users always get the finished chart."
         ].freeze
 
-        CURVES = %i[natural linear step step_before step_after monotone_x].freeze
-
         Series = Data.define(:key, :stack, :curve, :fill_opacity, :gradient, :stroke_width)
-        AxisConfig = Data.define(:data_key, :tick_formatter, :tick_margin, :tick_count)
-        GridConfig = Data.define(:vertical, :horizontal)
 
         option :data, ActiveModel::Type::Value.new, required: true
         option :config, ActiveModel::Type::Value.new, required: true
@@ -111,55 +108,11 @@ module Poetry
           nil
         }
 
-        renders_one :x_axis, lambda { |data_key:, tick_formatter: nil, tick_margin: 8|
-          @x_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_formatter:, tick_margin:, tick_count: nil)
-          nil
-        }
-
-        renders_one :y_axis, lambda { |tick_count: 3, tick_formatter: nil, tick_margin: 8|
-          @y_axis_config = AxisConfig.new(data_key: nil, tick_formatter:, tick_margin:, tick_count:)
-          nil
-        }
-
-        renders_one :grid, lambda { |vertical: false, horizontal: true|
-          @grid_config = GridConfig.new(vertical:, horizontal:)
-          nil
-        }
-
-        renders_one :legend, lambda { |**options|
-          @legend_config = options
-          nil
-        }
-
-        # The slot captures options only; the tooltip layer itself
-        # (controller + chrome wiring) is declared by TooltipWiring.
-        renders_one :tooltip, lambda { |**options|
-          @tooltip_config = options
-          nil
-        }
+        include Poetry::Charts::CartesianFamily
 
         def series_entries
           areas? # force slot evaluation
           @series_entries ||= []
-        end
-
-        def x_axis_config
-          x_axis?
-          @x_axis_config
-        end
-
-        def y_axis_config
-          y_axis?
-          @y_axis_config
-        end
-
-        def grid_config
-          grid?
-          @grid_config
-        end
-
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
         def cartesian
@@ -221,24 +174,11 @@ module Poetry
           entry.gradient ? "url(##{gradient_id(entry)})" : "var(--color-#{entry.key})"
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
-
-        # The accessible name for the role=img SVG: explicit label: or a
-        # sensible default from the configured series.
-        def svg_label
-          label.presence || "Area chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Area chart"
 
         def coordinates_json
           cartesian.coordinates.to_json
-        end
-
-        # SVG attribute numbers: 2-decimal rounding, JS-style formatting
-        # (bare integers) - keeps the markup compact and stable.
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
         end
 
         # -- live mode ---------------------------------------------------

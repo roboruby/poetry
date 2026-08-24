@@ -19,6 +19,7 @@ module Poetry
       #     <% c.with_tooltip %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        include Poetry::Charts::ChartFamily
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
 
@@ -130,13 +131,11 @@ module Poetry
           nil
         }
 
-        # Arcs are hit by pointerover on the marked sector, not bisect -
-        # the svg gains the enter action after the module's set.
-        use_stimulus do
-          on :svg do
-            controller(TooltipWiring::CONTROLLER, if: :tooltip?) { action :enter, on: :pointerover }
-          end
-        end
+        # The polar chassis: margin/plot/center geometry plus the per-arc
+        # pointerover hit; the single-series tooltip chrome and payload
+        # ride the polar_* hooks below.
+        include Poetry::Charts::PolarFamily
+        include Poetry::Charts::PolarFamily::SingleSeriesTooltip
 
         def series_entries
           radial_bars? # force slot evaluation (slots evaluate lazily)
@@ -153,26 +152,10 @@ module Poetry
           @center_label_config
         end
 
-        def chart_config
-          @chart_config ||= Poetry::Charts::Config.wrap(config)
-        end
-
         # -- geometry ---------------------------------------------------------
 
-        MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
         TRIM = 0.1
         GAP = 4.0
-
-        def plot
-          @plot ||= begin
-            m = MARGIN.merge((margin || {}).to_h.symbolize_keys)
-            { left: m[:left].to_f, top: m[:top].to_f,
-              width: width - m[:left] - m[:right], height: height - m[:top] - m[:bottom] }
-          end
-        end
-
-        def cx = plot[:left] + (plot[:width] / 2.0)
-        def cy = plot[:top] + (plot[:height] / 2.0)
 
         def rows
           @rows ||= data.map { |row| row.to_h.transform_keys(&:to_s) }
@@ -350,45 +333,20 @@ module Poetry
 
         # -- the tooltip payload (polar shape, ring anchors) -------------------
 
-        def coordinates_json
-          entry = series_entries.first
-          return "{}" unless entry
+        # The SingleSeriesTooltip hooks: the first series' segments are
+        # the items, anchored mid-ring / mid-sweep; values read the chart
+        # rows.
+        def polar_items(entry) = segments(entry)
 
-          primary = segments(entry)
-          {
-            "layout" => "polar",
-            "categories" => primary.map { |s| chart_config.label_for(s.name, s.name) },
-            "names" => primary.map { |s| chart_config.label_for(s.name, s.name) },
-            "colors" => primary.map(&:fill),
-            "anchors" => primary.map do |s|
-              Polar.polar_to_cartesian(cx, cy, (s.ring_inner + s.ring_outer) / 2.0,
-                                       (s.seg_start + s.seg_end) / 2.0).map { |v| v.round(2) }
-            end,
-            "values" => { entry.data_key => rows.map { |row| Poetry::Charts.display_value(row[entry.data_key]) } }
-          }.to_json
+        def polar_anchor(segment)
+          Polar.polar_to_cartesian(cx, cy, (segment.ring_inner + segment.ring_outer) / 2.0,
+                                   (segment.seg_start + segment.seg_end) / 2.0)
         end
 
-        def chart_id
-          @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
-        end
+        def polar_value_rows(_entry) = rows
 
-        def svg_label
-          label.presence || "Radial bar chart: #{chart_config.entries.map { |e| e.label || e.key }.join(", ")}"
-        end
-
-        def tooltip_layer_component
-          TooltipLayer::Component.new(
-            config: chart_config,
-            series_keys: [series_entries.first&.data_key].compact,
-            indicator: tooltip_config.fetch(:indicator, :dot),
-            hide_label: tooltip_config.fetch(:hide_label, true),
-            hide_indicator: tooltip_config.fetch(:hide_indicator, false)
-          )
-        end
-
-        def fnum(value)
-          Geometry.js_number((value * 100).round / 100.0)
-        end
+        # ChartFamily#svg_label's chart-type lead-in.
+        def svg_label_prefix = "Radial bar chart"
       end
     end
   end
