@@ -183,7 +183,7 @@ module Poetry
           # Adds validations for the option attribute.
           #
           # @param name [Symbol] the attribute name
-          # @param type [Symbol] the attribute type
+          # @param _type [Symbol] the attribute type (unused; kept for signature parity)
           # @param required [Boolean] whether the attribute is required
           def add_option_validations(name, _type, required)
             # Type validation is automatic via ActiveModel::Type
