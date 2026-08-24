@@ -35,11 +35,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Use poetry_hover_card - never hand-roll hover-div previews.",
           "THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card " \
           "MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). " \

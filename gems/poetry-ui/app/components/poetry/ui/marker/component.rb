@@ -48,8 +48,16 @@ module Poetry
                "data-variant" => { condition: "always - the resolved variant",
                                    values: VARIANTS.map(&:to_s) }
              }
+        # "The label IS the information" - an empty marker renders a bare
+        # divider span pretending to inform.
+        requires_content "the marker label"
+
         part "marker-icon", "Decorative icon wrapper (aria-hidden always)"
         part "marker-content", "The label span - the marker text itself"
+
+        def before_render
+          ensure_content!
+        end
 
         def root_attributes
           attrs = { "data-slot" => "marker", "data-variant" => variant }.merge(component_data_attributes)

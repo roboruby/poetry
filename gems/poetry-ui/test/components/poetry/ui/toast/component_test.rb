@@ -123,12 +123,12 @@ module Poetry
           html = render_toast
           close = doc(html).css('[data-slot="toast-close"]').first
 
-          assert close, "the icon-only close ships by default (closable: true)"
+          assert close, "the icon-only close ships by default (show_close_button: true)"
           assert_equal "Close", close["aria-label"]
           assert_equal "close", close["data-poetry--core--toast-target"]
           assert_includes close["data-action"], "click->poetry--core--toast#dismiss"
 
-          refute_predicate doc(render_toast(closable: false)).css('[data-slot="toast-close"]'), :any?
+          refute_predicate doc(render_toast(show_close_button: false)).css('[data-slot="toast-close"]'), :any?
         end
 
         def test_variant_classes_ride_the_popover_token_surface

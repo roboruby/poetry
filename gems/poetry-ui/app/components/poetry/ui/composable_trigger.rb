@@ -16,15 +16,26 @@ module Poetry
     # capture, which is what carries the wiring into the caller's block.)
     #
     # The wiring hash is flat and symbol-keyed (the field.control_attributes
-    # convention): id + aria + the Stimulus behavior the overlay needs on its
-    # trigger. Identity stays the caller's - the overlay's own data-slot is
-    # NOT in the hash, so the composed control keeps its own name and the
-    # overlay's trigger part is simply replaced by caller markup (exactly
-    # upstream's render-prop story). Splat the wiring onto a WIRING-FREE
+    # convention): the Stimulus behavior the overlay needs on its trigger,
+    # plus id/aria/slot where the overlay's trigger anatomy carries them -
+    # the popper consumers (popover, hover card, tooltip, dropdown) hand
+    # over their full trigger anatomy, the modal family (dialog, alert,
+    # sheet, drawer) hands only the open action. data-component stays the
+    # caller's either way, so the composed control keeps its own name (the
+    # render-prop story). Splat the wiring onto a WIRING-FREE
     # control: a receiver with its own data-action would end up with two
     # attributes and the first parsed wins (the caller-data-action gotcha).
     # Without compose: the classic path renders (a composed Button).
     module ComposableTrigger
+      # The one compose bullet every includer ships - hoisted so the
+      # contract has a single author and can never fork per family again.
+      AGENT_RULE =
+        "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
+        "the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; " \
+        "poppers add id/aria and their trigger slot, modals hand only the open action) - " \
+        "splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); " \
+        "without compose: the classic composed Button renders."
+
       private
 
       # The custom-trigger markup when compose: true, or nil for the

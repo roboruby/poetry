@@ -13,6 +13,16 @@ module Poetry
           end
         end
 
+        # The full-width header/footer rows around the columns.
+        def with_header_and_footer
+          render_component do |item|
+            item.with_header { "Pinned" }
+            item.with_title { "Framed Item" }
+            item.with_description { "Header above, footer below." }
+            item.with_footer { "Updated 2 hours ago" }
+          end
+        end
+
         def outline_with_icon_and_actions
           render_component(variant: :outline, media_variant: :icon) do |item|
             item.with_media { embed(Poetry::Ui::Icon::Component.new(name: :"badge-check")) }

@@ -87,6 +87,8 @@ module Poetry
         part "attachment-title", "The file name line (title slot; user content, never html_safe)"
         part "attachment-description", "Muted metadata / failure copy under the title"
         part "attachment-actions", "Row of with_action poetry Buttons"
+        part "attachment-trigger", "The whole-chip control (with_trigger: a button or tag: :a " \
+                                    "anchor) - wraps the picker/download affordance"
         part "attachment-status", "sr-only role=status announcement for the in-flight and " \
                                   "error states (uploading/processing/error)"
 

@@ -227,6 +227,7 @@ module Poetry
               value :side
               value :align
               value :side_offset
+              value :align_offset
               value :avoid_collisions
             end
           end
@@ -270,6 +271,7 @@ module Poetry
         option :side, :symbol, default: :bottom
         option :align, :symbol, default: :start
         option :side_offset, :integer, default: 4
+        option :align_offset, :integer, default: 0
         option :avoid_collisions, :boolean, default: true
         option :loop, :boolean, default: false
         # Base UI alignItemWithTrigger parity - the popup opens OVER the
@@ -565,12 +567,14 @@ module Poetry
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
         }
 
-        def initialize(option_set:, selected_value:, label: nil, item_wiring: {}, **extra_attributes)
+        # heading: is the canonical keyword (combobox/command use it);
+        # label: stays accepted for the original surface.
+        def initialize(option_set:, selected_value:, heading: nil, label: nil, item_wiring: {}, **extra_attributes)
           super(extra_attributes)
           @item_wiring = item_wiring
           @option_set = option_set
           @selected_value = selected_value
-          @label_text = label
+          @label_text = heading || label
         end
 
         def before_render

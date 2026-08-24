@@ -23,7 +23,7 @@ module Poetry
           "completion over time is Progress. There is NO indeterminate meter - unknown " \
           "duration means Spinner.",
           "label: is REQUIRED - the meter's accessible name and visible caption.",
-          "value_label: replaces the visible readout verbatim (\"3 of 4 seats\"); without it " \
+          "value_text: replaces the visible readout verbatim (\"3 of 4 seats\"); without it " \
           "the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 " \
           "deprecated it on role=meter; aria-valuenow carries the value."
         ].freeze
@@ -35,13 +35,16 @@ module Poetry
         # the flag carries the fact to the registry (the Progress twin).
         option :label, :string, required: true
         # Verbatim human-readable value ("3 of 4") - the visible readout.
-        option :value_label, :string
+        # One suite-wide name for the human-readable value (Slider's
+        # value_text:). Visible readout only here - ARIA 1.2 deprecated
+        # aria-valuetext on role=meter, aria-valuenow carries the value.
+        option :value_text, :string
         option :show_value, :boolean, default: true
 
         part "meter", "Root (role=meter, aria-value*, and the accessible name); label, " \
                       "readout, and track stack here"
         part "meter-label", "The visible caption span (label:)"
-        part "meter-value", "The readout - value_label: verbatim, else the range percentage; " \
+        part "meter-value", "The readout - value_text: verbatim, else the range percentage; " \
                             "renders unless show_value: false"
         part "meter-track", "The full-width rail (Progress's cn chrome)"
         part "meter-indicator", "The filled bar - inline width percentage of the range"
@@ -64,7 +67,7 @@ module Poetry
         end
 
         def readout
-          value_label.presence || "#{percent.round}%"
+          value_text.presence || "#{percent.round}%"
         end
 
         def root_attributes

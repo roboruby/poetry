@@ -81,6 +81,19 @@ module Poetry
           end
         end
 
+        # A grouped run - the role=group wrapper between separators.
+        def grouped
+          render_component do |menu|
+            menu.with_trigger(tag: :div, class: SURFACE_CLASSES) { "Surface" }
+            menu.with_group do |group|
+              group.with_item { "Cut" }
+              group.with_item { "Copy" }
+            end
+            menu.with_separator
+            menu.with_checkbox_item(checked: true, disabled: true) { "Locked toggle" }
+          end
+        end
+
         # Server-rendered open state (controllable-state: the attributes
         # are the store; positionless open anchors to the trigger rect).
         def open

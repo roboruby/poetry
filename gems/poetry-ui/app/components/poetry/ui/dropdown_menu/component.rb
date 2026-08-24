@@ -195,11 +195,7 @@ module Poetry
         include ItemSlots
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
           "Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.",
           "Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a " \
@@ -358,7 +354,8 @@ module Poetry
         part "dropdown-menu-sub-trigger", "The role=menuitem row opening its submenu",
              states: {
                "data-popup-open" => "its submenu is open (written with aria-expanded; absence is the " \
-                                    "closed state)"
+                                    "closed state)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)"
              }
         part "dropdown-menu-sub-content", "The nested role=menu panel - its own popper content on the " \
                                           "same presence machinery",

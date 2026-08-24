@@ -21,8 +21,8 @@ module Poetry
       #
       # @example Removable recipients that submit as recipients[]
       #   render Poetry::Ui::TagGroup::Component.new(label: "Recipients", name: "recipients") do |group|
-      #     group.with_tag(value: "ada", text: "Ada")
-      #     group.with_tag(value: "grace", text: "Grace")
+      #     group.with_tag(value: "ada", label: "Ada")
+      #     group.with_tag(value: "grace", label: "Grace")
       #   end
       class Component < Poetry::Core::Component
         AGENT_RULES = [
@@ -37,8 +37,8 @@ module Poetry
           "a TagGroup holds items that exist until removed."
         ].freeze
 
-        renders_many :tags, lambda { |value:, text: nil, disabled: false, removable: true, **options, &block|
-          tag_row(value: value, text: text, disabled: disabled, removable: removable, **options, &block)
+        renders_many :tags, lambda { |value:, label: nil, disabled: false, removable: true, **options, &block|
+          tag_row(value: value, label: label, disabled: disabled, removable: removable, **options, &block)
         }
 
         # BOTH controllers declare on the grid element - the one-Attributes
@@ -131,7 +131,7 @@ module Poetry
         # Built here (not in the template) so the slot lambda can compose
         # the full row - content, remove button, hidden input - around the
         # consumer's block.
-        def tag_row(value:, text:, disabled:, removable:, **options, &block)
+        def tag_row(value:, label:, disabled:, removable:, **options, &block)
           # Rows are the reorderable collection: identity derives from
           # value: (the collection contract - unique within the group),
           # namespaced under the group's instance id so two groups with
@@ -141,7 +141,7 @@ module Poetry
           attrs = {
             "id" => row_id, "role" => "row", "data-slot" => "tag-group-tag",
             "data-value" => value, "data-poetry-collection-item" => "",
-            "aria-label" => text || value.to_s,
+            "aria-label" => label || value.to_s,
             "tabindex" => "-1", "class" => css(:tag)
           }
           attrs["data-disabled"] = "" if disabled
@@ -157,9 +157,9 @@ module Poetry
           content_tag(:div, merged) do
             content_tag(:span, { "role" => "gridcell", "class" => css(:cell) }) do
               safe_join([
-                # text: doubles as the visible content when no block is
+                # label: doubles as the visible content when no block is
                 # given (the builder's model-array path renders text-only).
-                block ? capture(&block) : text.to_s,
+                block ? capture(&block) : label.to_s,
                 (remove_button(row_id, disabled: disabled) if removable),
                 (hidden_input(value) if name.present?)
               ].compact)

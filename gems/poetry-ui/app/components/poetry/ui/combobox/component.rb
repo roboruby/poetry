@@ -310,6 +310,9 @@ module Poetry
 
         # Custom zero-results content (defaults to t('poetry.combobox.empty')).
         renders_one :empty
+        # Custom pending content (a spinner); the HOST toggles visibility
+        # (Turbo frame events) - the part renders hidden (Command parity).
+        renders_one :loading
 
         # The option UNION forwarded to the embedded command list: item |
         # group (heading + items) | separator - one ordered collection
@@ -348,6 +351,7 @@ module Poetry
               value :side
               value :align
               value :side_offset
+              value :align_offset
               value :avoid_collisions
             end
           end
@@ -437,6 +441,7 @@ module Poetry
         option :side, :symbol, default: :bottom
         option :align, :symbol, default: :start
         option :side_offset, :integer, default: 4
+        option :align_offset, :integer, default: 0
         option :avoid_collisions, :boolean, default: true
         option :dir, :symbol
         # The trigger width utility (the demo 200px as its scale spelling,
@@ -528,6 +533,8 @@ module Poetry
                                         "demo) - the parent item's data-selected absence hides it"
         part "command-separator", "Decorative divider (aria-hidden) - hidden by the engine " \
                                   "whenever the query is non-empty"
+        part "command-loading", "Pending affordance (role=status) - rendered hidden; the HOST " \
+                                "unhides it around async refills"
         part "command-status", "The engine's sr-only polite result-count live region",
              states: {
                "data-zero" => "always - the localized zero-results template",
@@ -788,6 +795,16 @@ module Poetry
         def empty_part
           content_tag(:div, empty? ? empty : t("poetry.combobox.empty"),
                       "data-slot" => "command-empty", "hidden" => true, "class" => Command::Style.css(:empty))
+        end
+
+        # Pending affordance (role=status) - rendered hidden; the HOST
+        # unhides it around async refills (Command's part, shared keys).
+        def loading_part
+          content_tag(:div, "data-slot" => "command-loading", "role" => "status",
+                            "hidden" => true, "class" => Command::Style.css(:loading)) do
+            safe_join([content_tag(:span, t("poetry.command.loading"), class: Command::Style.css(:sr_only)),
+                       loading].compact)
+          end
         end
 
         # The engine's sr-only polite result-count region (localized

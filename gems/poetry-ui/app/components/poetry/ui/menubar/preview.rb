@@ -72,6 +72,22 @@ module Poetry
           end
         end
 
+        # A labelled, grouped menu - the label heading + role=group wrapper.
+        def grouped_with_label
+          render_component(label: "Grouped") do |bar|
+            bar.with_menu do |menu|
+              menu.with_trigger { "File" }
+              menu.with_label { "Recent" }
+              menu.with_group do |group|
+                group.with_item { "Report.pdf" }
+                group.with_item { "Notes.txt" }
+              end
+              menu.with_separator
+              menu.with_checkbox_item(checked: true, disabled: true) { "Autosave" }
+            end
+          end
+        end
+
         private
 
         def file_menu(bar)
@@ -142,6 +158,7 @@ module Poetry
             menu.with_item(inset: true) { "Add Profile..." }
           end
         end
+
       end
     end
   end

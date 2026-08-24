@@ -55,7 +55,7 @@ components:
       actions:
       - toggle
       events:
-      - poetry--core--accordion:change
+      - poetry:accordion:change
     - identifier: poetry--core--roving-focus
       targets: []
       values:
@@ -212,7 +212,9 @@ components:
       - sm
       default: default
       required: true
-    options: []
+    options:
+    - name: content_class
+      type: string
     slots:
     - name: trigger
       many: false
@@ -273,9 +275,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - 'Destructive confirmations use AlertDialog with with_action(variant: :destructive)
       - never a bare Dialog, never data-turbo-confirm.'
     - with_title AND with_description are REQUIRED (both raise).
@@ -482,6 +485,9 @@ components:
       description: Muted metadata / failure copy under the title
     - name: attachment-actions
       description: Row of with_action poetry Buttons
+    - name: attachment-trigger
+      description: 'The whole-chip control (with_trigger: a button or tag: :a anchor)
+        - wraps the picker/download affordance'
     - name: attachment-status
       description: sr-only role=status announcement for the in-flight and error states
         (uploading/processing/error)
@@ -537,7 +543,7 @@ components:
       - itemPress
       - keydown
       events:
-      - poetry:autocomplete:close
+      - poetry:autocomplete:closed
       - poetry:autocomplete:commit
       - poetry:autocomplete:open
     - identifier: poetry--core--popper
@@ -889,6 +895,7 @@ components:
     - ghost is for tool output / system text flowing full-width - not a visual preference.
     - 'Reactions REQUIRE label: (the accessible name for the cluster).'
     - Inside a Message, alignment follows the Message's align - do not set both.
+    requires_content: the message content
     parts:
     - name: bubble
       description: The message surface root - variant and alignment ride here
@@ -1139,7 +1146,7 @@ components:
       - select
       - selectedValueChanged
       events:
-      - poetry--core--calendar:change
+      - poetry:calendar:change
     agent_rules:
     - 'name: makes it a form control (the chosen date posts as an ISO string in a
       hidden input; range mode posts name[start] + name[end]).'
@@ -1418,7 +1425,7 @@ components:
       - scrollTo
       - scrolled
       events:
-      - poetry--core--carousel:select
+      - poetry:carousel:select
     agent_rules:
     - 'label: is REQUIRED - the carousel region''s accessible name.'
     - Declare slides with with_item - the component stamps the slide roles (role=group
@@ -1794,9 +1801,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
     - 'Server-render the initial state via open: - never toggle data-open/data-closed
       by hand.'
@@ -1804,6 +1812,7 @@ components:
       it.
     - 'For URL-controlled disclosure without JS, render open: from params - the same
       markup serves both.'
+    requires_content: the disclosed panel body
     required_slots:
       trigger: the disclosure control
     parts:
@@ -1861,6 +1870,9 @@ components:
       - center
       - end
       default: start
+    - name: align_offset
+      type: integer
+      default: 0
     - name: avoid_collisions
       type: boolean
       default: true
@@ -1920,6 +1932,8 @@ components:
     - name: trigger
       many: false
     - name: empty
+      many: false
+    - name: loading
       many: false
     - name: items
       many: true
@@ -2161,6 +2175,9 @@ components:
     - name: command-separator
       description: Decorative divider (aria-hidden) - hidden by the engine whenever
         the query is non-empty
+    - name: command-loading
+      description: Pending affordance (role=status) - rendered hidden; the HOST unhides
+        it around async refills
     - name: command-status
       description: The engine's sr-only polite result-count live region
       states:
@@ -2219,6 +2236,7 @@ components:
         - name: side
         - name: align
         - name: side_offset
+        - name: align_offset
         - name: avoid_collisions
     - element: trigger
       controllers:
@@ -2640,6 +2658,9 @@ components:
     - name: long_press_delay
       type: integer
       default: 700
+    - name: loop
+      type: boolean
+      default: false
     - name: modal
       type: boolean
       default: true
@@ -2872,7 +2893,7 @@ components:
     - indicator_check
     - indicator_circle
     - sub_indicator
-    capsule: bcb08b8b8632
+    capsule: b281fa4ea8f5
     controllers:
     - identifier: poetry--core--context-menu
       targets: []
@@ -2998,6 +3019,8 @@ components:
         description: 'popper: the anchor rect''s measured width'
       - name: "--anchor-height"
         description: 'popper: the anchor rect''s measured height'
+    - name: context-menu-group
+      description: role=group semantic grouping between separators
     - name: context-menu-label
       description: Non-interactive heading for a run of items
     - name: context-menu-item
@@ -3017,6 +3040,8 @@ components:
           activation)
       - attr: data-unchecked
         condition: unchecked
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
       - attr: data-close-on-select
         condition: per-item override of the menu's close-on-select default ("false"
           keeps the menu open)
@@ -3098,6 +3123,7 @@ components:
         values:
         - name: open
         - name: modal
+        - name: loop
       - identifier: poetry--core--popper
         registers: true
         values:
@@ -3453,7 +3479,7 @@ components:
           conditional: if range?
         actions:
         - method: picked
-          'on': poetry--core--calendar:change
+          'on': poetry:calendar:change
     - element: label
       controllers:
       - identifier: poetry--core--date-picker
@@ -3591,9 +3617,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - Open dialogs with with_trigger(...) - never a hand-wired button.
     - with_title is REQUIRED (the accessible name); with_description when the purpose
       needs explaining.
@@ -4153,9 +4180,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
     - Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake
       it with radio items.
@@ -4275,6 +4303,8 @@ components:
       - attr: data-popup-open
         condition: its submenu is open (written with aria-expanded; absence is the
           closed state)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
     - name: dropdown-menu-sub-content
       description: The nested role=menu panel - its own popper content on the same
         presence machinery
@@ -4849,9 +4879,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - Use poetry_hover_card - never hand-roll hover-div previews.
     - 'THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in
       a hover card MUST exist at the trigger link''s destination (or another keyboard/touch-reachable
@@ -5299,8 +5330,12 @@ components:
       description: The title row
     - name: item-description
       description: The muted description line
+    - name: item-header
+      description: Full-width row above the media/content columns
     - name: item-actions
       description: The trailing actions cell
+    - name: item-footer
+      description: Full-width row below the media/content columns
   poetry/ui/kbd:
     class_name: Poetry::Ui::Kbd::Component
     identifier: poetry--ui--kbd
@@ -5369,6 +5404,7 @@ components:
     - 'Mark the active nav item with current: true (aria-current), never with a bespoke
       class.'
     - 'external: true handles target/rel safely - never hand-write target=_blank.'
+    requires_content: the visible link text
     parts:
     - name: link
       description: 'The rendered <a> - the whole component; current: marks it aria-current=page'
@@ -5414,6 +5450,7 @@ components:
     - 'Icons ride the icon slot (decorative always): with_icon(name:) for a lucide
       glyph, with_icon { } for other media (a Spinner mid-run).'
     - 'Use variant: :separator for date/section breaks; :border under pinned headers.'
+    requires_content: the marker label
     parts:
     - name: marker
       description: 'The divider/status root - the label is real announced content
@@ -5821,6 +5858,10 @@ components:
         description: 'popper: the trigger''s measured width'
       - name: "--anchor-height"
         description: 'popper: the trigger''s measured height'
+    - name: menubar-group
+      description: role=group semantic grouping between separators
+    - name: menubar-label
+      description: Non-interactive heading for a run of items
     - name: menubar-item
       description: One role=menuitem action row
       states:
@@ -5838,6 +5879,8 @@ components:
           activation)
       - attr: data-unchecked
         condition: unchecked
+      - attr: data-disabled
+        condition: item is disabled (always written together with aria-disabled)
       - attr: data-close-on-select
         condition: per-item override of the menu's close-on-select default ("false"
           keeps the menu open)
@@ -5871,6 +5914,8 @@ components:
       - attr: data-popup-open
         condition: its submenu is open (written with aria-expanded; absence is the
           closed state)
+      - attr: data-inset
+        condition: 'indented to align with checkbox/radio item text (inset: true)'
     - name: menubar-sub-content
       description: The nested role=menu panel - its own popper content on the same
         presence machinery
@@ -6095,11 +6140,11 @@ components:
       - syncAfterScroll
       - userScrollIntent
       events:
-      - poetry--core--message-scroller:mode
-      - poetry--core--message-scroller:pinned
-      - poetry--core--message-scroller:scrollable
-      - poetry--core--message-scroller:unpinned
-      - poetry--core--message-scroller:visibility
+      - poetry:message-scroller:mode
+      - poetry:message-scroller:pinned
+      - poetry:message-scroller:scrollable
+      - poetry:message-scroller:unpinned
+      - poetry:message-scroller:visibility
     agent_rules:
     - Stream by UPDATING a row's text (morph/replace) - appending nodes per token
       re-announces the row to AT.
@@ -6266,7 +6311,7 @@ components:
     - name: value
       type: integer
       required: true
-    - name: value_label
+    - name: value_text
       type: string
     slots: []
     description: A gauge that shows a quantity within a known range.
@@ -6277,7 +6322,7 @@ components:
       completion over time is Progress. There is NO indeterminate meter - unknown
       duration means Spinner.
     - 'label: is REQUIRED - the meter''s accessible name and visible caption.'
-    - 'value_label: replaces the visible readout verbatim ("3 of 4 seats"); without
+    - 'value_text: replaces the visible readout verbatim ("3 of 4 seats"); without
       it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2
       deprecated it on role=meter; aria-valuenow carries the value.'
     parts:
@@ -6287,7 +6332,7 @@ components:
     - name: meter-label
       description: The visible caption span (label:)
     - name: meter-value
-      description: 'The readout - value_label: verbatim, else the range percentage;
+      description: 'The readout - value_text: verbatim, else the range percentage;
         renders unless show_value: false'
     - name: meter-track
       description: The full-width rail (Progress's cn chrome)
@@ -6921,9 +6966,10 @@ components:
       events: []
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
     - Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for
       pointer-only previews use HoverCard.
@@ -7516,7 +7562,7 @@ components:
       - dragStart
       - keydown
       events:
-      - poetry--core--resizable:resize
+      - poetry:resizable:resize
     agent_rules:
     - Declare panels with with_panel(default_size:, min_size:, max_size:) - sizes
       are PERCENTAGES and the component interleaves the separator handles.
@@ -7714,6 +7760,9 @@ components:
     - name: align_item_with_trigger
       type: boolean
       default: false
+    - name: align_offset
+      type: integer
+      default: 0
     - name: avoid_collisions
       type: boolean
       default: true
@@ -7984,6 +8033,7 @@ components:
         - name: side
         - name: align
         - name: side_offset
+        - name: align_offset
         - name: avoid_collisions
     - element: trigger
       controllers:
@@ -8462,8 +8512,8 @@ components:
       - open
       - toggle
       events:
-      - poetry--core--sidebar:mobile-toggle
-      - poetry--core--sidebar:toggle
+      - poetry:sidebar:mobile-toggle
+      - poetry:sidebar:toggle
     agent_rules:
     - 'Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page
       area (the trigger lives in the inset).'
@@ -9076,6 +9126,7 @@ components:
     - 'sticky_header requires scroll_label: - the container becomes a focusable scroll
       region (tabindex=0 + role=region) and a keyboard-reachable region needs a name
       (the ScrollArea rule).'
+    requires_content: the table sections (poetry_table_* helpers)
     parts:
     - name: table
       description: The semantic <table> element itself - the root the part helpers
@@ -9155,7 +9206,7 @@ components:
       - focusActivate
       - setValue
       events:
-      - poetry--core--tabs:change
+      - poetry:tabs:change
     agent_rules:
     - 'Declare tabs with with_tab(title, value:) + the panel block (or defer: for
       a lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.'
@@ -9583,9 +9634,6 @@ components:
       default: default
       required: true
     options:
-    - name: closable
-      type: boolean
-      default: true
     - name: duration
       type: integer
     - name: politeness
@@ -9594,6 +9642,9 @@ components:
       - polite
       - assertive
       default: dynamic
+    - name: show_close_button
+      type: boolean
+      default: true
     slots:
     - name: title
       many: false
@@ -10171,6 +10222,12 @@ components:
       - center
       - end
       default: center
+    - name: align_offset
+      type: integer
+      default: 0
+    - name: avoid_collisions
+      type: boolean
+      default: true
     - name: content_class
       type: string
     - name: delay_duration
@@ -10247,9 +10304,10 @@ components:
       - poetry:tooltip:open
     agent_rules:
     - 'with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger:
-      the block is yielded the wiring (id/aria + data: with the overlay''s trigger
-      slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button,
-      a plain tag); without compose: the classic composed Button renders.'
+      the block is yielded the trigger wiring (the Stimulus behavior the overlay needs;
+      poppers add id/aria and their trigger slot, modals hand only the open action)
+      - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag);
+      without compose: the classic composed Button renders.'
     - Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
     - Tooltip content is TEXT and never interactive/focusable - links, buttons, or
       inputs inside are a contract violation (use Popover).
@@ -10334,6 +10392,8 @@ components:
         - name: side
         - name: align
         - name: side_offset
+        - name: align_offset
+        - name: avoid_collisions
     - element: trigger
       controllers:
       - identifier: poetry--core--tooltip

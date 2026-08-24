@@ -107,7 +107,8 @@ module Poetry
         option :duration, :integer
         # Derived from the variant: destructive announces assertively.
         option :politeness, :symbol, default: -> { variant == :destructive ? :assertive : :polite }
-        option :closable, :boolean, default: true
+        # The corner X - named as the dialog family names it.
+        option :show_close_button, :boolean, default: true
 
         validates :politeness, inclusion: { in: POLITENESS }
 

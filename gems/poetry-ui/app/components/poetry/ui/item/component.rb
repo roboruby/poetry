@@ -60,7 +60,9 @@ module Poetry
         part "item-content", "The center column collecting title, description, and loose content"
         part "item-title", "The title row"
         part "item-description", "The muted description line"
+        part "item-header", "Full-width row above the media/content columns"
         part "item-actions", "The trailing actions cell"
+        part "item-footer", "Full-width row below the media/content columns"
 
         def content_column?
           title? || description? || content.present?

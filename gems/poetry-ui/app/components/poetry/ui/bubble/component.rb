@@ -31,6 +31,9 @@ module Poetry
                       role: "group", "aria-label" => label, &block)
         }
 
+        # The content block IS the message; an empty bubble is an empty pill.
+        requires_content "the message content"
+
         style :variant, default: :default, required: true, variants: VARIANTS
 
         option :align, :symbol, default: :start
@@ -54,6 +57,10 @@ module Poetry
                "data-side" => "always - which edge the pill overlays (default bottom)",
                "data-align" => "always - placement along that edge (default end)"
              }
+
+        def before_render
+          ensure_content!
+        end
 
         def root_attributes
           html_attributes.merge_if_not_set(

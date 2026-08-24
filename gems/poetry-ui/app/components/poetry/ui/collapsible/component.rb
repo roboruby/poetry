@@ -18,11 +18,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
           "Server-render the initial state via open: - never toggle data-open/data-closed by hand.",
           "Content stays in the DOM when closed (hidden) - do not conditionally render it.",
@@ -77,8 +73,12 @@ module Poetry
                "data-closed" => "content is closed or animating out (hidden lands after the exit finishes)"
              }
 
+        # A missing body yields a trigger disclosing an empty panel.
+        requires_content "the disclosed panel body"
+
         def before_render
           raise ArgumentError, "Collapsible requires with_trigger (the disclosure control)" unless trigger?
+          ensure_content!
         end
 
         def state

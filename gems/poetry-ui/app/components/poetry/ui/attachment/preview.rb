@@ -14,6 +14,16 @@ module Poetry
           end
         end
 
+        # The whole-chip trigger control (download/open affordance).
+        def with_trigger
+          render_component do |attachment|
+            attachment.with_trigger(tag: :a, href: "/files/report.pdf") { "Download" }
+            attachment.with_media { icon(:file) }
+            attachment.with_title { "quarterly-report.pdf" }
+            attachment.with_description { "1.2 MB" }
+          end
+        end
+
         def uploading
           render_component(state: :uploading) do |attachment|
             attachment.with_media { icon(:file) }

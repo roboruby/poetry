@@ -35,11 +35,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.",
           "Tooltip content is TEXT and never interactive/focusable - links, buttons, or inputs inside " \
           "are a contract violation (use Popover).",
@@ -98,6 +94,8 @@ module Poetry
               value :side
               value :align
               value :side_offset
+              value :align_offset
+              value :avoid_collisions
             end
           end
           # The Radix trigger handlers, ported: pointermove opens (touch
@@ -133,6 +131,8 @@ module Poetry
         option :side, :symbol, default: :top # Radix Tooltip default - the trio's odd one out
         option :align, :symbol, default: :center
         option :side_offset, :integer, default: 0 # shadcn Content default (the arrow supplies the gap)
+        option :align_offset, :integer, default: 0
+        option :avoid_collisions, :boolean, default: true
         # Plain-text announcement override for rich content (the visual
         # children stay; the announced body becomes this text).
         option :label, :string

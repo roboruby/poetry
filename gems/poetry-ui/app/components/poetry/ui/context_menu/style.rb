@@ -37,7 +37,7 @@ module Poetry
         element :sub_trigger, "cn-context-menu-sub-trigger flex cursor-default items-center " \
                               "outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0"
 
-        element :sub_content, "cn-context-menu-subcontent z-50 " \
+        element :sub_content, "cn-context-menu-sub-content z-50 " \
                               "origin-(--transform-origin) overflow-hidden"
 
         # Source-exact wrapper span (anonymous in new-york-v4; poetry names

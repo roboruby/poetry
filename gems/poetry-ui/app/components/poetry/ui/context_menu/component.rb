@@ -231,6 +231,7 @@ module Poetry
               register
               value :open
               value :modal
+              value :loop
             end
             controller :popper do
               register
@@ -271,6 +272,7 @@ module Poetry
 
         option :open, :boolean, default: false
         option :modal, :boolean, default: true
+        option :loop, :boolean, default: false
         option :long_press_delay, :integer, default: 700
         option :disabled, :boolean, default: false
         option :label, :string
@@ -308,6 +310,7 @@ module Poetry
                "--anchor-width" => "popper: the anchor rect's measured width",
                "--anchor-height" => "popper: the anchor rect's measured height"
              }
+        part "context-menu-group", "role=group semantic grouping between separators"
         part "context-menu-label", "Non-interactive heading for a run of items"
         part "context-menu-item", "One role=menuitem action row",
              states: {
@@ -320,6 +323,7 @@ module Poetry
                "data-checked" => "checked (the controller re-writes the pair with aria-checked on " \
                                  "activation)",
                "data-unchecked" => "unchecked",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)",
                "data-close-on-select" => "per-item override of the menu's close-on-select default " \
                                          "(\"false\" keeps the menu open)"
              }

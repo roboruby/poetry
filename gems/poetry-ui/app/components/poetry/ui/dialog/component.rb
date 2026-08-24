@@ -20,11 +20,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Open dialogs with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.",
           "Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).",

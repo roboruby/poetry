@@ -24,6 +24,7 @@
           it scopes over both - no command part in here). %>
       <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
         <%= empty_part %>
+        <%= loading_part %>
         <%= list_body %>
       <% end %>
       <%= status_part %>
@@ -38,6 +39,7 @@
       </div>
       <%= content_tag(:div, **Poetry::Core::HTML::Attributes.new(list_attributes).to_attributes) do %>
         <%= empty_part %>
+        <%= loading_part %>
         <%= list_body %>
       <% end %>
       <%= status_part %>

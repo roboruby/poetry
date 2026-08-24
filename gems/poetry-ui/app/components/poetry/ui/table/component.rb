@@ -48,7 +48,11 @@ module Poetry
         part "table-head", "A column header <th> (poetry_table_head)"
         part "table-cell", "A data <td> (poetry_table_cell)"
 
+        # No content = an empty <table> in a scroll container.
+        requires_content "the table sections (poetry_table_* helpers)"
+
         def before_render
+          ensure_content!
           return unless sticky_header && scroll_label.blank?
 
           raise ArgumentError,

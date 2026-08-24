@@ -533,7 +533,7 @@ module Poetry
                                **(describedby ? { described_by: describedby } : {}),
                                **options.transform_keys(&:to_sym)
                              )) do |group|
-              values.each { |value| group.with_tag(value: value, text: value) }
+              values.each { |value| group.with_tag(value: value, label: value) }
             end
           end
       end

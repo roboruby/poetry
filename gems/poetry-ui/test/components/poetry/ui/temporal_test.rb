@@ -183,7 +183,7 @@ module Poetry
         root = html.css('[data-slot="date-picker"]').first
 
         assert_includes root["data-controller"], "poetry--core--date-picker"
-        assert_includes root["data-action"], "poetry--core--calendar:change->poetry--core--date-picker#picked"
+        assert_includes root["data-action"], "poetry:calendar:change->poetry--core--date-picker#picked"
         assert_predicate html.css('[data-slot="popover-trigger"]'), :any?, "the field is a popover trigger"
         assert_predicate html.css('[data-slot="calendar"]'), :any?, "the panel is a Calendar"
         assert_predicate html.css('input[name="due_on"]'), :any?, "the Calendar carries the form field"

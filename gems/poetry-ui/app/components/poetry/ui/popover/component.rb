@@ -33,11 +33,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.",
           "Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for pointer-only " \
           "previews use HoverCard.",

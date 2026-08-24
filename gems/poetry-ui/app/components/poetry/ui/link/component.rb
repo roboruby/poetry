@@ -25,6 +25,14 @@ module Poetry
 
         part "link", "The rendered <a> - the whole component; current: marks it aria-current=page"
 
+        # An empty link is a focusable, invisible <a> - the worst of the
+        # floating crash class.
+        requires_content "the visible link text"
+
+        def before_render
+          ensure_content!
+        end
+
         def call
           content_tag(:a, content, **root_attributes.to_attributes)
         end

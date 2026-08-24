@@ -38,7 +38,7 @@ not_applicable:
   variant-only: # worn by no base-variant component - the shared upstream
     # style files also serve the aria/radix variants
     - cn-combobox-item-text
-    - cn-context-menu-sub-content
+    - cn-context-menu-subcontent
     - cn-dropdown-menu-subcontent
     - cn-progress
     - cn-separator

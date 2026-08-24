@@ -301,6 +301,8 @@ module Poetry
                "--anchor-width" => "popper: the trigger's measured width",
                "--anchor-height" => "popper: the trigger's measured height"
              }
+        part "menubar-group", "role=group semantic grouping between separators"
+        part "menubar-label", "Non-interactive heading for a run of items"
         part "menubar-item", "One role=menuitem action row",
              states: {
                "data-variant" => "default or destructive (the danger treatment)",
@@ -312,6 +314,7 @@ module Poetry
                "data-checked" => "checked (the controller re-writes the pair with aria-checked on " \
                                  "activation)",
                "data-unchecked" => "unchecked",
+               "data-disabled" => "item is disabled (always written together with aria-disabled)",
                "data-close-on-select" => "per-item override of the menu's close-on-select default " \
                                          "(\"false\" keeps the menu open)"
              }
@@ -333,7 +336,8 @@ module Poetry
         part "menubar-sub-trigger", "The role=menuitem row opening its submenu",
              states: {
                "data-popup-open" => "its submenu is open (written with aria-expanded; absence is the " \
-                                    "closed state)"
+                                    "closed state)",
+               "data-inset" => "indented to align with checkbox/radio item text (inset: true)"
              }
         part "menubar-sub-content", "The nested role=menu panel - its own popper content on the same " \
                                     "presence machinery",

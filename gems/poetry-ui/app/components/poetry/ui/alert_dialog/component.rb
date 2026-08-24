@@ -31,11 +31,7 @@ module Poetry
         SIZES = %i[default sm].freeze
 
         AGENT_RULES = [
-          "with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: " \
-          "the block is yielded the wiring (id/aria + data: with the overlay's trigger slot " \
-          "and Stimulus behavior) - splat it onto a wiring-free control " \
-          "(poetry_sidebar_menu_button, a plain tag); without compose: the classic composed " \
-          "Button renders.",
+          ComposableTrigger::AGENT_RULE,
           "Destructive confirmations use AlertDialog with with_action(variant: :destructive) - " \
           "never a bare Dialog, never data-turbo-confirm.",
           "with_title AND with_description are REQUIRED (both raise).",
@@ -121,6 +117,10 @@ module Poetry
 
         style :size, default: :default, required: true, variants: SIZES
 
+        # The panel's class merge seam (dialog parity - alert was the only
+        # panel overlay without it).
+        option :content_class, :string
+
         part "alert-dialog", "Root wrapper around the trigger and the <dialog> element"
         part "alert-dialog-content", "The role=alertdialog <dialog> panel - sizing, animation, " \
                                      "and the open state ride here",
@@ -166,7 +166,7 @@ module Poetry
 
         def dialog_attributes
           {
-            "class" => css(:content),
+            "class" => css(:content, class: content_class),
             # Explicit role: overrides the implicit dialog role (aria-modal
             # still comes from showModal).
             "role" => "alertdialog",
