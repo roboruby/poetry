@@ -127,8 +127,11 @@
           <% end %>
         <% end %>
         <%= poetry_sidebar_footer do %>
-          <div class="px-2 py-1 text-xs text-muted-foreground">
-            poetry <%= Poetry::Ui::VERSION %> · charts <%= Poetry::Charts::VERSION %>
+          <%# One release version across every gem - poetry-ui speaks for
+              the suite. The rail keeps just the number. %>
+          <div class="px-2 py-1 text-xs text-muted-foreground group-data-[collapsible=icon]:px-0
+                      group-data-[collapsible=icon]:text-center">
+            <span class="group-data-[collapsible=icon]:hidden">poetry </span><%= Poetry::Ui::VERSION %>
           </div>
         <% end %>
       <% end %>
