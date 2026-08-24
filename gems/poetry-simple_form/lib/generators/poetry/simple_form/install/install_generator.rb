@@ -4,6 +4,7 @@ require "rails/generators"
 
 module Poetry
   module SimpleForm
+    # The gem's Rails generators.
     module Generators
       # `rails g poetry:simple_form:install` - one initializer, the whole
       # shim: activate! re-maps the input types and installs the
@@ -12,6 +13,8 @@ module Poetry
       class InstallGenerator < Rails::Generators::Base
         source_root File.expand_path("templates", __dir__)
 
+        # Write config/initializers/poetry_simple_form.rb.
+        # @api private
         def create_initializer
           create_file "config/initializers/poetry_simple_form.rb", <<~RUBY_FILE
             # poetry renders simple_form's inputs (the migration bridge):

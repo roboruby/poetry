@@ -2,12 +2,19 @@
 
 module Poetry
   module SimpleForm
+    # The input classes the bridge maps simple_form's types onto.
     module Inputs
       # The shim's shared floor: every input renders through a
       # Poetry::Ui::FormBuilder bound to the SAME object/template, so the
       # poetry Field quartet (label/hint/error/aria) is byte-identical to
       # the native-builder path - no duplicated derivation.
       class Base < ::SimpleForm::Inputs::Base
+        # Render the attribute as a whole poetry Field through the bound
+        # Poetry::Ui::FormBuilder; the subclass's `poetry_as` pins the
+        # control type (nil lets poetry infer it).
+        #
+        # @param wrapper_options [Hash, nil] unused - the Field owns its chrome
+        # @return [String] the rendered Field HTML
         def input(wrapper_options = nil)
           poetry_builder.input(attribute_name, as: poetry_as, **poetry_options)
         rescue ArgumentError => e

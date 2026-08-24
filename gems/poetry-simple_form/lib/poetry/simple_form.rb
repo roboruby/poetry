@@ -4,16 +4,22 @@ require "simple_form"
 require "poetry/simple_form/version"
 require "poetry/simple_form/inputs"
 
+# The poetry namespace.
 module Poetry
   # The simple_form migration bridge: the
   # shim re-maps simple_form's input TYPES onto classes that render whole
   # poetry Fields through Poetry::Ui::FormBuilder, bypassing the wrapper
-  # tree by design (a flat wrapper cannot express the Field quartet - see
-  # the 2026-08-16 review). Existing `f.input` calls keep working; the end
-  # state is form_with(builder: Poetry::Ui::FormBuilder).
+  # tree by design - a flat wrapper stack cannot express the Field quartet
+  # (label/hint/error/aria), so the poetry Field renders it whole. Existing
+  # `f.input` calls keep working; the end state is
+  # form_with(builder: Poetry::Ui::FormBuilder).
   module SimpleForm
     # Idempotent: map the 80% path + install the passthrough wrapper.
     # Call from an initializer (`rails g poetry:simple_form:install`).
+    #
+    # @example config/initializers/poetry_simple_form.rb
+    #   Poetry::SimpleForm.activate!
+    # @return [void]
     def self.activate!
       builder = ::SimpleForm::FormBuilder
       builder.map_type :string, :email, :url, :tel, :search, :citext, to: Inputs::StringInput

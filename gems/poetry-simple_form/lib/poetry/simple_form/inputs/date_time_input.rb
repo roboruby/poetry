@@ -7,6 +7,10 @@ module Poetry
       # simple_form's stock select trio (poetry has no composite control
       # yet - a raise mid-migration would be hostile).
       class DateTimeInput < ::SimpleForm::Inputs::DateTimeInput
+        # Render :date/:time attributes as poetry DateField/TimeField;
+        # :datetime defers to the stock select trio via super.
+        #
+        # @return [String] the rendered HTML
         def input(wrapper_options = nil)
           return super if input_type == :datetime
 
