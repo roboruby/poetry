@@ -97,7 +97,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-1.5;
+  @apply gap-1.5 has-data-[slot=alert-dialog-media]:gap-x-6;
 }
 
 .cn-alert-dialog-media {
@@ -532,7 +532,7 @@
  * mini-badge; the chip focus ring is poetry's a11y addition (Base UI
  * styles chip highlight as real :focus-visible). */
 .cn-combobox-chips {
-  @apply min-h-9 gap-1.5 rounded-md border border-input px-2.5 py-1.5 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-data-[slot=combobox-chip]:px-1.5;
+  @apply min-h-9 gap-1.5 rounded-md border border-input px-2.5 py-1.5 text-sm shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-[3px] focus-within:ring-ring/50 has-data-[slot=combobox-chip]:px-1.5 has-aria-invalid:border-destructive dark:has-aria-invalid:border-destructive/50 has-aria-invalid:ring-[3px] has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40;
 }
 
 .cn-combobox-chip {

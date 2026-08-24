@@ -31,7 +31,7 @@
 
 /* MARK: Alert */
 .cn-alert {
-  @apply grid grid-cols-[0_1fr] items-start gap-0.5 rounded-2xl border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current;
+  @apply grid grid-cols-[0_1fr] items-start gap-y-0.5 rounded-2xl border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current;
 }
 
 .cn-alert-action {
@@ -88,7 +88,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-1.5;
+  @apply gap-1.5 has-data-[slot=alert-dialog-media]:gap-x-6;
 }
 
 .cn-alert-dialog-media {
@@ -195,7 +195,7 @@
  * destructive variant re-colors focus-visible:ring-* and can only beat
  * the base treatment from the same layer. */
 .cn-badge {
-  @apply h-5 gap-1 rounded-3xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3;
+  @apply h-5 gap-1 rounded-3xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
 }
 
 .cn-badge-variant-ghost {
@@ -470,7 +470,7 @@
 }
 
 .cn-command-input-wrapper {
-  @apply gap-2 p-1 pb-0;
+  @apply m-1.5 mb-0 h-8 gap-2 rounded-4xl border border-input/30 bg-input/50 px-2 shadow-none;
 }
 
 .cn-command-input {
@@ -521,7 +521,7 @@
 /* The chips FIELD (multiple:) - luma's tinted borderless field; chips
  * lift off the tint as background pills. */
 .cn-combobox-chips {
-  @apply min-h-9 gap-1.5 rounded-3xl border border-transparent bg-input/50 px-2.5 py-1.5 text-sm transition-[color,box-shadow,background-color] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 has-data-[slot=combobox-chip]:px-1.5;
+  @apply min-h-9 gap-1.5 rounded-3xl border border-transparent bg-input/50 px-2.5 py-1.5 text-sm transition-[color,box-shadow,background-color] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/30 has-data-[slot=combobox-chip]:px-1.5 has-aria-invalid:border-destructive dark:has-aria-invalid:border-destructive/50 has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40;
 }
 
 .cn-combobox-chip {

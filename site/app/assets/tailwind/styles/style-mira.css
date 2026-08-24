@@ -19,14 +19,14 @@
  * holds AA via relative-oklch light-mode darkening (AA-contrast posture).
  * Mira-judged: boxed accordion root (the root hook); accordion trigger
  * carries poetry's focus-visible cluster (upstream ships none); the
- * floating before:-frame drawer is deferred (edge-attached idiom kept,
- * ledgered); input-group-button-size-sm dropped (no poetry sm size);
+ * floating drawer geometry is live (ported from the source popup
+ * rules); input-group-button-size-sm dropped (no poetry sm size);
  * calendar cell density (--cell-size 6) deferred.
  */
 
 /* MARK: Alert */
 .cn-alert {
-  @apply grid grid-cols-[0_1fr] items-start gap-0.5 rounded-lg border px-2 py-1.5 text-left text-xs/relaxed has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-1.5 [&>svg]:size-3.5 [&>svg]:translate-y-0.5 [&>svg]:text-current;
+  @apply grid grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-2 py-1.5 text-left text-xs/relaxed has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-1.5 [&>svg]:size-3.5 [&>svg]:translate-y-0.5 [&>svg]:text-current;
 }
 
 .cn-alert-action {
@@ -83,7 +83,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-1;
+  @apply gap-1 has-data-[slot=alert-dialog-media]:gap-x-4;
 }
 
 .cn-alert-dialog-media {
@@ -190,7 +190,7 @@
  * destructive variant re-colors focus-visible:ring-* and can only beat
  * the base treatment from the same layer. */
 .cn-badge {
-  @apply h-5 gap-1 rounded-full border border-transparent px-2 py-0.5 text-[0.625rem] font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-2.5;
+  @apply h-5 gap-1 rounded-full border border-transparent px-2 py-0.5 text-[0.625rem] font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-2.5 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/30 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
 }
 
 .cn-badge-variant-ghost {
@@ -465,7 +465,7 @@
 }
 
 .cn-command-input-wrapper {
-  @apply gap-2 p-1 pb-0;
+  @apply m-1 mb-0 h-7 gap-2 rounded-md border-none bg-input/20 dark:bg-input/30 px-2 shadow-none;
 }
 
 .cn-command-input {
@@ -516,7 +516,7 @@
 /* The chips FIELD (multiple:) - mira's compact field; micro chips on
  * the badge's full-round micro type. */
 .cn-combobox-chips {
-  @apply min-h-7 gap-1 rounded-md border border-input bg-input/20 px-2 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1;
+  @apply min-h-7 gap-1 rounded-md border border-input bg-input/20 px-2 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-2 focus-within:ring-ring/30 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1 has-aria-invalid:border-destructive dark:has-aria-invalid:border-destructive/50 has-aria-invalid:ring-2 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40;
 }
 
 .cn-combobox-chip {
@@ -1445,7 +1445,7 @@
 }
 
 .cn-switch-thumb {
-  @apply rounded-full bg-background group-data-[size=default]/switch:size-4 group-data-[size=sm]/switch:size-3 data-checked:translate-x-[calc(100%-2px)] data-unchecked:translate-x-0 rtl:data-checked:-translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground dark:data-unchecked:bg-foreground;
+  @apply rounded-full bg-background group-data-[size=default]/switch:size-3.5 group-data-[size=sm]/switch:size-3 data-checked:translate-x-[calc(100%-2px)] data-unchecked:translate-x-0 rtl:data-checked:-translate-x-[calc(100%-2px)] dark:data-checked:bg-primary-foreground dark:data-unchecked:bg-foreground;
 }
 
 /* MARK: Table */

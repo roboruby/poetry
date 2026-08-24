@@ -24,7 +24,7 @@
 
 /* MARK: Alert */
 .cn-alert {
-  @apply grid grid-cols-[0_1fr] items-start gap-0.5 rounded-lg border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current;
+  @apply grid grid-cols-[0_1fr] items-start gap-y-0.5 rounded-lg border px-2.5 py-2 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current;
 }
 
 .cn-alert-action {
@@ -81,7 +81,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-1.5;
+  @apply gap-1.5 has-data-[slot=alert-dialog-media]:gap-x-4;
 }
 
 .cn-alert-dialog-media {
@@ -188,7 +188,7 @@
  * destructive variant re-colors focus-visible:ring-* and can only beat
  * the base treatment from the same layer. */
 .cn-badge {
-  @apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3;
+  @apply h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3 focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
 }
 
 .cn-badge-variant-ghost {
@@ -364,11 +364,11 @@
 }
 
 .cn-button-group-orientation-horizontal {
-  @apply *:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-md! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):has(~[data-slot])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-r-none [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-r-md! [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-l-none [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:border-l-0;
+  @apply *:data-slot:rounded-r-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-r-lg! [&>[data-slot]~[data-slot]]:rounded-l-none [&>[data-slot]~[data-slot]]:border-l-0 [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):has(~[data-slot])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-r-none [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-r-lg! [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-l-none [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:border-l-0;
 }
 
 .cn-button-group-orientation-vertical {
-  @apply flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-md! [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):has(~[data-slot])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-b-none [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-b-md! [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-t-none [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:border-t-0;
+  @apply flex-col *:data-slot:rounded-b-none [&>[data-slot]:not(:has(~[data-slot]))]:rounded-b-lg! [&>[data-slot]~[data-slot]]:rounded-t-none [&>[data-slot]~[data-slot]]:border-t-0 [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):has(~[data-slot])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-b-none [&>:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover]):not(:has(~[data-slot]))_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-b-lg! [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:rounded-t-none [&>[data-slot]~:is([data-slot=select],[data-slot=dropdown-menu],[data-slot=popover])_:is([data-slot=select-trigger],[data-slot=dropdown-menu-trigger],[data-slot=popover-trigger])]:border-t-0;
 }
 
 .cn-button-group-text {
@@ -463,7 +463,7 @@
 }
 
 .cn-command-input-wrapper {
-  @apply gap-2 p-1 pb-0;
+  @apply m-1 mb-0 h-8 gap-2 rounded-lg border border-input/30 bg-input/30 px-2 shadow-none;
 }
 
 .cn-command-input {
@@ -514,7 +514,7 @@
 /* The chips FIELD (multiple:) - nova's rounded-lg field; chips take
  * the badge's near-pill radius. */
 .cn-combobox-chips {
-  @apply min-h-8 gap-1.5 rounded-lg border border-input px-2.5 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1.5;
+  @apply min-h-8 gap-1.5 rounded-lg border border-input px-2.5 py-1 text-sm transition-colors focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1.5 has-aria-invalid:border-destructive dark:has-aria-invalid:border-destructive/50 has-aria-invalid:ring-3 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40;
 }
 
 .cn-combobox-chip {
@@ -1495,7 +1495,7 @@
  * dims (text-foreground/60, dark:text-muted-foreground) must lose to the
  * data-active colors, which they only can in-layer. */
 .cn-tabs-trigger {
-  @apply gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100;
+  @apply gap-1.5 rounded-md border border-transparent px-2 py-1 text-sm font-medium text-foreground/60 hover:text-foreground has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 dark:text-muted-foreground dark:hover:text-foreground group-data-[variant=line]/tabs-list:data-active:shadow-none [&_svg:not([class*='size-'])]:size-4 group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground after:bg-foreground group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100 group-data-[variant=default]/tabs-list:data-active:shadow-sm;
 }
 
 .cn-tabs-content {

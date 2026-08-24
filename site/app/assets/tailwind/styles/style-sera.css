@@ -34,7 +34,7 @@
 
 /* MARK: Alert */
 .cn-alert {
-  @apply grid grid-cols-[0_1fr] items-start gap-1 border bg-background px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current relative after:absolute after:-inset-y-px after:-left-px after:w-0.5;
+  @apply grid grid-cols-[0_1fr] items-start gap-y-1 border bg-background px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 [&>svg]:size-4 [&>svg]:translate-y-0.5 [&>svg]:text-current relative after:absolute after:-inset-y-px after:-left-px after:w-0.5;
 }
 
 .cn-alert-action {
@@ -91,7 +91,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-2;
+  @apply gap-2 has-data-[slot=alert-dialog-media]:gap-x-6;
 }
 
 .cn-alert-dialog-media {
@@ -198,7 +198,7 @@
  * destructive variant re-colors focus-visible:ring-* and can only beat
  * the base treatment from the same layer. */
 .cn-badge {
-  @apply gap-1.5 rounded-none border-0 bg-transparent px-0 py-0 text-[0.625rem] font-semibold uppercase tracking-widest transition-colors has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 has-[>svg:first-child]:pl-0 has-[>svg:last-child]:pr-0 [&>svg]:size-3;
+  @apply gap-1.5 rounded-none border-0 bg-transparent px-0 py-0 text-[0.625rem] font-semibold uppercase tracking-widest transition-colors has-data-[icon=inline-end]:pr-0 has-data-[icon=inline-start]:pl-0 has-[>svg:first-child]:pl-0 has-[>svg:last-child]:pr-0 [&>svg]:size-3 focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-2 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
 }
 
 .cn-badge-variant-ghost {
@@ -218,7 +218,7 @@
 }
 
 .cn-badge-variant-destructive {
-  @apply text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive [a]:hover:text-destructive/70;
+  @apply text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive [a]:hover:text-destructive/70 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40;
 }
 
 .cn-badge-variant-outline {
@@ -524,7 +524,7 @@
 /* The chips FIELD (multiple:) - sera's underline field (border-b only,
  * no box); chips wear the small-caps editorial voice. */
 .cn-combobox-chips {
-  @apply min-h-10 gap-1.5 rounded-none border border-transparent border-b-input px-0 py-1 text-sm transition-[color,border-color] focus-within:border-b-ring;
+  @apply min-h-10 gap-1.5 rounded-none border border-transparent border-b-input px-0 py-1 text-sm transition-[color,border-color] focus-within:border-b-ring has-aria-invalid:border-b-destructive dark:has-aria-invalid:border-b-destructive/50;
 }
 
 .cn-combobox-chip {

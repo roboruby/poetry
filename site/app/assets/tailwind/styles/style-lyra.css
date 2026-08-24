@@ -37,7 +37,7 @@
 
 /* MARK: Alert */
 .cn-alert {
-  @apply grid grid-cols-[0_1fr] items-start gap-0.5 rounded-none border px-2.5 py-2 text-left text-xs has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 [&>svg]:size-4 [&>svg]:translate-y-0 [&>svg]:text-current;
+  @apply grid grid-cols-[0_1fr] items-start gap-y-0.5 rounded-none border px-2.5 py-2 text-left text-xs has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 [&>svg]:size-4 [&>svg]:translate-y-0 [&>svg]:text-current;
 }
 
 .cn-alert-action {
@@ -94,7 +94,7 @@
 }
 
 .cn-alert-dialog-header {
-  @apply gap-1.5;
+  @apply gap-1.5 has-data-[slot=alert-dialog-media]:gap-x-4;
 }
 
 .cn-alert-dialog-media {
@@ -201,7 +201,7 @@
  * destructive variant re-colors focus-visible:ring-* and can only beat
  * the base treatment from the same layer. */
 .cn-badge {
-  @apply h-5 gap-1 rounded-none border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3;
+  @apply h-5 gap-1 rounded-none border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 has-[>svg:first-child]:pl-1.5 has-[>svg:last-child]:pr-1.5 [&>svg]:size-3 focus-visible:border-ring focus-visible:ring-1 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 aria-invalid:ring-1 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40;
 }
 
 .cn-badge-variant-ghost {
@@ -221,7 +221,7 @@
 }
 
 .cn-badge-variant-destructive {
-  @apply bg-destructive/10 [a]:hover:bg-destructive/20 text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive dark:bg-destructive/20;
+  @apply bg-destructive/10 [a]:hover:bg-destructive/20 text-[oklch(from_var(--destructive)_calc(l*0.85)_c_h)] dark:text-destructive dark:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40;
 }
 
 .cn-badge-variant-outline {
@@ -535,7 +535,7 @@
 /* The chips FIELD (multiple:) - lyra's dense square field; hairline
  * focus ring, square chips. */
 .cn-combobox-chips {
-  @apply min-h-8 gap-1.5 rounded-none border border-input px-2.5 py-1 text-xs transition-colors focus-within:border-ring focus-within:ring-1 focus-within:ring-ring/50 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1.5;
+  @apply min-h-8 gap-1.5 rounded-none border border-input px-2.5 py-1 text-xs transition-colors focus-within:border-ring focus-within:ring-1 focus-within:ring-ring/50 dark:bg-input/30 has-data-[slot=combobox-chip]:px-1.5 has-aria-invalid:border-destructive dark:has-aria-invalid:border-destructive/50 has-aria-invalid:ring-1 has-aria-invalid:ring-destructive/20 dark:has-aria-invalid:ring-destructive/40;
 }
 
 .cn-combobox-chip {
