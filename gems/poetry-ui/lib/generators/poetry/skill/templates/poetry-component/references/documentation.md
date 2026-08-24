@@ -46,19 +46,29 @@ class Component < Poetry::Core::Component
   API: full docs, never `@api private`.
 - Markdown markup; full sentences; wrap at the file's prevailing width.
 
-## Declaration comments
+## Declaration docs
 
-Every `option`, `style`, `renders_one`, and `renders_many` declaration
-carries a one-line (max two) reference comment directly above it. The
-doc build publishes that comment as the declared surface's documentation
-(component pages and the hosted API reference), and auto-appends the
-machine facts - type, default, variants - so the comment adds MEANING
-only:
+Every `option` and `style` carries a `doc:` string, and every
+`renders_one`/`renders_many` a `slot_doc` declaration directly above
+it. That string is the declared surface's documentation everywhere at
+once - the registry (option/style/slot descriptions), llms.txt and the
+agent surface, the component page's API section, and the generated API
+reference - with the machine facts (type, default, variants)
+auto-appended, so the prose adds MEANING only:
 
-- The caller-visible effect and its interactions ("Ignored unless
-  `tag: :a`."), never the implementation ("sets @foo").
-- Never repeat the type or default; never start the prose with `@word`
-  (YARD parses it as a tag and truncates the line).
+- One sentence, two at most: the caller-visible effect and its
+  interactions ("Ignored unless `tag: :a`."), never the implementation
+  ("sets @foo").
+- Never repeat the type, default, or variant list - the projections
+  carry those already.
+
+```ruby
+option :loading, :boolean, default: false,
+       doc: "The no-JS loading state: aria-busy, a spinner, and the control disabled."
+
+slot_doc :trigger, "The button that opens the dialog."
+renders_one :trigger, lambda { |**options, &block| ... }
+```
 
 Constants that define the surface get one-liners too: vocabulary arrays
 ("The closed vocabulary for the variant axis."), `AGENT_RULES`
