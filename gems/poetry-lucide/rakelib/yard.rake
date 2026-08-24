@@ -25,3 +25,32 @@ namespace :yard do
     puts "yard:verify: clean (#{warnings.length - real.length} allowlisted)"
   end
 end
+
+# The coverage ratchet: .yard_coverage records the accepted number of
+# undocumented objects; the gate fails when the count grows. Lowering the
+# floor is deliberate - run yard:coverage:record after a documentation pass.
+namespace :yard do
+  def yard_undocumented_count
+    out = `bundle exec yard stats --no-progress 2>&1`
+    out.scan(/\(\s*(\d+) undocumented\)/).flatten.map(&:to_i).sum
+  end
+
+  desc "Fail when undocumented-object count exceeds the recorded floor"
+  task :coverage do
+    floor_file = ".yard_coverage"
+    abort "yard:coverage: no #{floor_file} - run yard:coverage:record" unless File.exist?(floor_file)
+    floor = File.read(floor_file).to_i
+    count = yard_undocumented_count
+    abort "yard:coverage: #{count} undocumented objects (floor #{floor})" if count > floor
+    puts "yard:coverage: #{count} undocumented (floor #{floor})"
+  end
+
+  namespace :coverage do
+    desc "Record the current undocumented-object count as the floor"
+    task :record do
+      count = yard_undocumented_count
+      File.write(".yard_coverage", "#{count}\n")
+      puts "recorded floor: #{count}"
+    end
+  end
+end
