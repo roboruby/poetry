@@ -1,7 +1,9 @@
 --markup markdown
 --no-private
+--hide-api private
 --readme README.md
 lib/**/*.rb
 -
+CHANGELOG.md
 THIRD_PARTY_NOTICES.md
 LICENSE.txt
