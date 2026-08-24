@@ -61,6 +61,9 @@ export default class ChartWindowController extends Controller {
   // -- drag machinery ---------------------------------------------------------
 
   #bind() {
+    // A second gesture before pointerup (multi-touch, programmatic events)
+    // would overwrite the handler refs and strand the first pair forever.
+    this.#unbind()
     this.onMove = (event) => this.#move(event)
     this.onUp = (event) => this.#up(event)
     window.addEventListener("pointermove", this.onMove)

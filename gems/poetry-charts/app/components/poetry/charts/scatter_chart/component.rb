@@ -171,9 +171,12 @@ module Poetry
         def plot_top = margins[:top].to_f
         def plot_bottom = height - margins[:bottom] - (x_axis? ? Cartesian::X_AXIS_HEIGHT : 0)
 
+        # Memoized per SLOT (object identity), never per key: two series may
+        # share a key with different data:, and a key-keyed memo would
+        # silently render the first series' rows twice.
         def rows(entry)
           @rows ||= {}
-          @rows[entry.key] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
+          @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
         def axis_values(key)

@@ -149,17 +149,22 @@ module Poetry
         def cx = plot[:left] + (plot[:width] / 2.0)
         def cy = plot[:top] + (plot[:height] / 2.0)
 
+        # Memoized per SLOT (object identity), never per data_key: two rings
+        # may share a data_key with different data:, and a key-keyed memo
+        # would silently render the first ring's rows twice.
         def rows(entry)
           @rows ||= {}
-          @rows[entry.data_key] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
+          @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
         Slice = Data.define(:index, :name, :value, :fill, :path, :mid_angle, :middle_radius, :label_point,
                             :inner, :outer, :start_angle, :end_angle)
 
+        # Slot-identity memo, matching rows (a shared data_key must not
+        # collapse two rings into one geometry).
         def slices(entry)
           @slices ||= {}
-          @slices[entry.data_key] ||= begin
+          @slices[entry.object_id] ||= begin
             entry_rows = rows(entry)
             values = entry_rows.map { |row| row[entry.data_key] }
             max = Polar.max_radius(plot[:width], plot[:height])

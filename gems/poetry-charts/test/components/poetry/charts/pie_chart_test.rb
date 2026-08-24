@@ -97,6 +97,19 @@ module Poetry
         assert_empty groups.last.css("[data-index]")
       end
 
+      def test_two_rings_sharing_a_data_key_keep_their_own_data
+        html = render_inline(PieChart::Component.new(config: STACKED_CONFIG, id: "sk")) do |chart|
+          chart.with_pie(data: DATA, data_key: :visitors, name_key: :browser, outer_radius: 60)
+          chart.with_pie(data: MONTH_DATA.map { |row| row.merge(visitors: row[:desktop]) },
+                         data_key: :visitors, name_key: :month, inner_radius: 70, outer_radius: 90)
+        end
+
+        groups = html.css('[data-slot="chart-pie"]')
+
+        assert_equal [5, 3], groups.map { |g| g.css("path").length },
+                     "a shared data_key must never collapse two rings into one memoized geometry"
+      end
+
       def test_inside_labels_ride_the_middle_radius
         html = render_pie do |chart|
           chart.with_pie(data_key: :visitors, name_key: :browser, labels: :list, label_key: :browser)

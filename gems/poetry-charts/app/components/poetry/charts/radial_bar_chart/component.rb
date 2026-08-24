@@ -234,7 +234,10 @@ module Poetry
         # stacked series continue from the previous series' end.
         def segments(entry)
           @segments ||= {}
-          @segments[entry.data_key] ||= rows.each_with_index.map do |row, i|
+          # Slot-identity memo, never data_key: two series may share a
+          # data_key (different stacks), and a key-keyed memo would render
+          # the first series' segments twice.
+          @segments[entry.object_id] ||= rows.each_with_index.map do |row, i|
             ring_inner, ring_outer = ring(i)
             base = @segment_cursor&.dig(entry.stack, i) || start_angle.to_f
             seg_start = entry.stack ? base : start_angle.to_f
