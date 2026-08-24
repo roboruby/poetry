@@ -4381,7 +4381,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 427
+          "line": 433
         },
         {
           "name": "align_offset",
@@ -4398,7 +4398,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 429
+          "line": 435
         },
         {
           "name": "avoid_collisions",
@@ -4415,79 +4415,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 430
-        },
-        {
-          "name": "chevrons",
-          "scope": "instance",
-          "group": null,
-          "signature": "chevrons",
-          "docstring": "The double chevron is the combobox tell (Select wears\nchevron-down). show_clear adds the swap class: the chevron\ngoes invisible (keeping its box) while the sibling X is showable.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 877
-        },
-        {
-          "name": "chip_part",
-          "scope": "instance",
-          "group": null,
-          "signature": "chip_part(chip_value = nil)",
-          "docstring": "One chip: a div taking REAL focus (tabindex=-1, styled by\n:focus-visible - NO data-highlighted here), named by its value\ntext, holding the native remove button. nil value = the blank\nskeleton the <template> ships for the controller.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 903
-        },
-        {
-          "name": "chip_remove_part",
-          "scope": "instance",
-          "group": null,
-          "signature": "chip_remove_part(label)",
-          "docstring": "ChipRemove: a NATIVE button (tabindex=-1) labelled \"Remove\n<label>\" via I18n, so every chip's remove affordance has an\naccessible name.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 924
-        },
-        {
-          "name": "chip_template",
-          "scope": "instance",
-          "group": null,
-          "signature": "chip_template",
-          "docstring": "The blank chip skeleton the controller clones per client-side\ncommit - SERVER markup stays the single source of chip anatomy.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 939
-        },
-        {
-          "name": "chips_stimulus_attributes",
-          "scope": "instance",
-          "group": null,
-          "signature": "chips_stimulus_attributes",
-          "docstring": "The frame carries the popper anchor AND the combobox press action\n- one Attributes instance (the Accordion lesson, via Select).",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 972
-        },
-        {
-          "name": "clear_button",
-          "scope": "instance",
-          "group": null,
-          "signature": "clear_button",
-          "docstring": "The show_clear: X - a SIBLING of the trigger (button-in-button is\ninvalid HTML), absolutely seated over the chevron slot. Server\nrenders the truthful initial state (hidden with no value); the\ncontroller flips it on every commit.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 886
+          "line": 436
         },
         {
           "name": "dir",
@@ -4504,7 +4432,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 431
+          "line": 437
         },
         {
           "name": "disabled",
@@ -4521,7 +4449,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 408
+          "line": 414
         },
         {
           "name": "empty",
@@ -4538,19 +4466,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 298
-        },
-        {
-          "name": "extract_trigger_aria!",
-          "scope": "instance",
-          "group": null,
-          "signature": "extract_trigger_aria!",
-          "docstring": "Pull the trigger-bound aria-* out of the root's html attributes\n(both flat \"aria-label\" and nested aria: {label:} spellings) so\nField's control_attributes wire the combobox, not the wrapper.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 849
+          "line": 304
         },
         {
           "name": "filter",
@@ -4567,7 +4483,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 421
+          "line": 427
         },
         {
           "name": "id",
@@ -4584,31 +4500,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 405
-        },
-        {
-          "name": "inline_input_attributes",
-          "scope": "instance",
-          "group": null,
-          "signature": "inline_input_attributes",
-          "docstring": "The inline filter input (multiple): the ONE typing surface - the\nField-targetable id lands HERE (no trigger exists), aria-expanded\nis DYNAMIC (the input sits outside the popup, unlike single's\nalways-rendered listbox), and the input NEVER mirrors selection\ntext (the placeholder rides it; chips are the value display).",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 952
-        },
-        {
-          "name": "inline_input_stimulus_attributes",
-          "scope": "instance",
-          "group": null,
-          "signature": "inline_input_stimulus_attributes",
-          "docstring": "BOTH controllers' keyboard maps ride the one input: the engine's\nfilter/arrows/Enter, then the shell's chips map (Backspace /\nArrowLeft / reopen / the closed-popup Escape wipe).",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 979
+          "line": 411
         },
         {
           "name": "items",
@@ -4625,7 +4517,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 306
+          "line": 312
         },
         {
           "name": "loading",
@@ -4642,7 +4534,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 301
+          "line": 307
         },
         {
           "name": "loop",
@@ -4659,7 +4551,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 424
+          "line": 430
         },
         {
           "name": "modal",
@@ -4676,7 +4568,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 414
+          "line": 420
         },
         {
           "name": "multiple",
@@ -4693,7 +4585,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 410
+          "line": 416
         },
         {
           "name": "name",
@@ -4710,53 +4602,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 401
-        },
-        {
-          "name": "named?",
-          "scope": "instance",
-          "group": null,
-          "signature": "named?",
-          "docstring": "",
-          "params": [],
-          "return": {
-            "types": [
-              "Boolean"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 842
-        },
-        {
-          "name": "native_options",
-          "scope": "instance",
-          "group": null,
-          "signature": "native_options",
-          "docstring": "The blank option (Rails include_blank semantics, value=\"\") rides\nthe placeholder - and is always present when no option matches,\nso the native select never silently rests on the first option\nwhile the trigger shows the placeholder (Select-exact). multiple\nhas no blank option (an empty multi-select just posts nothing);\nselected flags flip to array inclusion.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 989
-        },
-        {
-          "name": "native_selected?",
-          "scope": "instance",
-          "group": null,
-          "signature": "native_selected?(entry_value)",
-          "docstring": "",
-          "params": [],
-          "return": {
-            "types": [
-              "Boolean"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 1011
+          "line": 407
         },
         {
           "name": "open",
@@ -4773,7 +4619,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 406
+          "line": 412
         },
         {
           "name": "placeholder",
@@ -4790,7 +4636,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 402
+          "line": 408
         },
         {
           "name": "required",
@@ -4807,19 +4653,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 407
-        },
-        {
-          "name": "root_stimulus_attributes",
-          "scope": "instance",
-          "group": null,
-          "signature": "root_stimulus_attributes",
-          "docstring": "BOTH controllers build into ONE Attributes instance - a plain\nHash#merge of two would overwrite data-controller instead of\ntoken-concatenating it (the Accordion lesson, via Select).\nmultiple adds a THIRD: the command engine mounts on the ROOT (the\ninline input sits outside the popup, so the engine must scope\nover both) - single keeps it on the popup's command part.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 1021
+          "line": 413
         },
         {
           "name": "search_placeholder",
@@ -4836,7 +4670,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 404
+          "line": 410
         },
         {
           "name": "show_clear",
@@ -4853,7 +4687,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 417
+          "line": 423
         },
         {
           "name": "side",
@@ -4870,7 +4704,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 425
+          "line": 431
         },
         {
           "name": "side_offset",
@@ -4887,7 +4721,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 428
+          "line": 434
         },
         {
           "name": "trigger",
@@ -4904,7 +4738,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 295
+          "line": 301
         },
         {
           "name": "value",
@@ -4921,19 +4755,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 400
-        },
-        {
-          "name": "value_display",
-          "scope": "instance",
-          "group": null,
-          "signature": "value_display",
-          "docstring": "The value DISPLAY: server-rendered selected-option label (no\nFOUC), or the placeholder text; data-placeholder on the span\ncarries the placeholder so the controller can restore it.",
-          "params": [],
-          "return": null,
-          "examples": [],
-          "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 868
+          "line": 406
         },
         {
           "name": "width",
@@ -4950,7 +4772,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 432
+          "line": 438
         },
         {
           "name": "with_empty",
@@ -4967,7 +4789,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 298
+          "line": 304
         },
         {
           "name": "with_item",
@@ -4984,7 +4806,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 306
+          "line": 312
         },
         {
           "name": "with_loading",
@@ -5001,7 +4823,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 301
+          "line": 307
         },
         {
           "name": "with_trigger",
@@ -5018,7 +4840,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/combobox/component.rb",
-          "line": 295
+          "line": 301
         }
       ],
       "constants": [
@@ -12557,7 +12379,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 144
+          "line": 146
         },
         {
           "name": "label",
@@ -12574,7 +12396,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 139
+          "line": 141
         },
         {
           "name": "loop",
@@ -12591,7 +12413,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 141
+          "line": 143
         },
         {
           "name": "menus",
@@ -12608,7 +12430,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 74
+          "line": 76
         },
         {
           "name": "value",
@@ -12625,7 +12447,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 142
+          "line": 144
         },
         {
           "name": "with_menu",
@@ -12642,7 +12464,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/ui/menubar/component.rb",
-          "line": 74
+          "line": 76
         }
       ],
       "constants": [
@@ -14117,23 +13939,6 @@
           "examples": [],
           "file": "app/components/poetry/ui/pagination/component.rb",
           "line": 47
-        },
-        {
-          "name": "initialize",
-          "scope": "instance",
-          "group": null,
-          "signature": "initialize(path:, **)",
-          "docstring": "path: is passed as a keyword but held as a callable, not an option\n(options are typed data; a proc is behavior).",
-          "params": [],
-          "return": {
-            "types": [
-              "Component"
-            ],
-            "text": "a new instance of Component"
-          },
-          "examples": [],
-          "file": "app/components/poetry/ui/pagination/component.rb",
-          "line": 162
         },
         {
           "name": "label",
