@@ -70,7 +70,9 @@
               beside the rail, clicking it expands the sidebar. Get Started
               matches by its entries' exact paths (top-level slugs); the
               galleries match by path prefix. %>
-          <% [["Get Started", :rocket, nil, DocsCatalog.docs],
+          <% [["Get Started", :rocket, nil, DocsCatalog.doc_sections["Get Started"]],
+              ["Advanced", :layers, nil, DocsCatalog.doc_sections["Advanced"]],
+              ["AI Native", :sparkles, nil, DocsCatalog.doc_sections["AI Native"]],
               ["Components", :component, "/components", DocsCatalog.components],
               ["Charts", :"chart-area", "/charts", DocsCatalog.charts],
               ["Blocks", :"layout-template", "/blocks", DocsCatalog.blocks],
