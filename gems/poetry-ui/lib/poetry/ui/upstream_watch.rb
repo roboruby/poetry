@@ -17,12 +17,14 @@ module Poetry
     #
     # The one hard edge: families listed in VERBATIM_FAMILIES are claimed
     # as verbatim ports, so any upstream change there fails the watch.
+    #
+    # @api private
     module UpstreamWatch
       module_function
 
       # Registry dirs scanned inside the upstream checkout. new-york-v4 is
       # the surface poetry ported from (upstream now calls it the legacy
-      # source registry); bases/{base,aria,radix}/ui is its in-flight
+      # source registry); the bases/*/ui set is its in-flight
       # successor - watched so the migration shows up here, not in a
       # surprise re-review.
       SCAN_DIRS = [

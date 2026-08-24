@@ -7,11 +7,16 @@ module Poetry
   # `rails g poetry:agents` - writes or refreshes the poetry section of the
   # host's AGENTS.md (the agent-facing pointer to llms.txt / poetry check)
   # without running the full install. poetry:install performs the same step.
+  #
+  # @example
+  #   bin/rails g poetry:agents
   class AgentsGenerator < Rails::Generators::Base
     include Generators::AgentsSection
 
     desc "Write or refresh the poetry section of AGENTS.md (pointer to llms.txt + poetry check)"
 
+    # Step: applies the shared AGENTS.md section.
+    # @api private
     def write_agents_md
       apply_agents_section
     end

@@ -3,14 +3,13 @@
 module Poetry
   module Ui
     module Button
-      # The Button dictionary - shadcn/ui new-york-v4, source-validated
-      # 2026-06-27; re-expressed through the cn-* theme layer: entries
-      # carry the stable `cn-button*` names plus the
-      # structural/behavioral inline set (upstream's literal split);
-      # the visual classes live in themes/default.css. NOTE dark destructive:
-      # shadcn paints dark:bg-destructive/60 - the composite the contrast
-      # gate measures (6.5:1); solid dark destructive is 2.9:1 and must never
-      # carry white text undiluted (the rule now lives in the theme file's
+      # The Button dictionary, re-expressed through the cn-* theme layer:
+      # entries carry the stable `cn-button*` names plus the
+      # structural/behavioral inline set; the visual classes live in
+      # themes/default.css. NOTE dark destructive: the dark treatment
+      # paints bg-destructive/60 - the composite the contrast gate
+      # measures (6.5:1); solid dark destructive is 2.9:1 and must never
+      # carry white text undiluted (the rule lives in the theme file's
       # .cn-button-variant-destructive).
       class Style < Poetry::Core::Style
         base "cn-button inline-flex shrink-0 items-center justify-center whitespace-nowrap " \

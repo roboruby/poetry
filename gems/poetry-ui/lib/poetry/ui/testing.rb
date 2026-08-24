@@ -10,7 +10,7 @@ module Poetry
   module Ui
     # Consumer-facing interaction testers: drive poetry components
     # through their REAL keyboard/pointer
-    # sequences in a Capybara system test and assert against the Base UI
+    # sequences in a Capybara system test and assert against the public
     # attribute contract (data-open, aria-expanded, data-highlighted) -
     # never against markup internals. Each tester is an executable spec of
     # its component's interaction contract; agents are taught to test
@@ -40,18 +40,43 @@ module Poetry
       # or a Capybara node, and an optional session (defaults to
       # Capybara.current_session, or the including test's `page`).
 
+      # A Select tester rooted at the component.
+      #
+      # @param root [String, Capybara::Node::Element] the component root
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Select]
       def poetry_select(root, session: nil)
         Select.new(root, session: session || testing_session)
       end
 
+      # A Combobox tester rooted at the component (single or multiple).
+      #
+      # @param root [String, Capybara::Node::Element] the component root
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Combobox]
       def poetry_combobox(root, session: nil)
         Combobox.new(root, session: session || testing_session)
       end
 
+      # A DropdownMenu tester rooted at the component.
+      #
+      # @param root [String, Capybara::Node::Element] the component root
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Menu]
       def poetry_dropdown_menu(root, session: nil)
         Menu.new(root, session: session || testing_session)
       end
 
+      # A Dialog tester rooted at the component.
+      #
+      # @param root [String, Capybara::Node::Element] the element carrying
+      #   data-component=dialog (trigger + content)
+      # @param session [Capybara::Session, nil] defaults to the test's
+      #   `page` (or Capybara.current_session)
+      # @return [Dialog]
       def poetry_dialog(root, session: nil)
         Dialog.new(root, session: session || testing_session)
       end

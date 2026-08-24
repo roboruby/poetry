@@ -60,7 +60,7 @@ module Poetry
         # size vars to auto, IT is what sizes the popup (all-absolute panels
         # would collapse the auto popup to 0x0). Only an EXITING panel lifts
         # out of flow (data-ending-style rides the whole exit), overlaying
-        # the incoming one while both are visible - the Base UI move, done
+        # the incoming one while both are visible - the crossfade, done
         # declaratively.
         element :viewport_shell, "relative overflow-hidden"
         element :viewport_panel, "w-max min-w-48 data-ending-style:absolute " \

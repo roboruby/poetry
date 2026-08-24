@@ -30,7 +30,7 @@ module Poetry
 
         element :group, "cn-command-group overflow-hidden"
 
-        # The source's [&_[cmdk-group-heading]] chain, landed on the part.
+        # The source's group-heading descendant chain, landed on the part.
         element :heading, "cn-command-group-heading"
 
         # group/command-item: bare marker, no CSS - the vega shortcut
@@ -61,7 +61,7 @@ module Poetry
         # section - p-0 must beat cn-dialog-content's p-6 in-layer).
         element :dialog_content, "cn-command-dialog"
 
-        # CommandDialog: the source's [&_[cmdk-*]] h-12 retuning chain,
+        # CommandDialog: the source's h-12 inner-part retuning chain,
         # rewritten onto poetry's data-slots per the contract. Stays inline:
         # utilities-layer arbitrary selectors beat the themed part rules -
         # exactly the override behavior the source chain had via cn().

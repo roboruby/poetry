@@ -3,12 +3,11 @@
 module Poetry
   module Ui
     module Carousel
-      # shadcn Carousel (base-vega) adapted to native scroll-snap: the
-      # content wrapper becomes the REAL scroll container
-      # (overflow + snap + hidden scrollbar) instead of the engine's
+      # Style dictionary for the Carousel family, on native scroll-snap:
+      # the content wrapper is the REAL scroll container
+      # (overflow + snap + hidden scrollbar) rather than an
       # overflow-hidden + transform track; the gutter idiom (-ml-4 track,
-      # pl-4 items) and the control positions stay source-exact (the
-      # controls' cn-rtl-flip drops as always).
+      # pl-4 items) and the control positions are kept as designed.
       class Style < Poetry::Core::Style
         base "relative"
 

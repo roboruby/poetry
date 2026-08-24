@@ -2,8 +2,9 @@
 
 module Poetry
   module Ui
+    # A thin divider line between content regions.
     module Separator
-      # The Separator - a thin divider. Decorative by default (aria-hidden;
+      # A thin divider. Decorative by default (aria-hidden;
       # it separates visually but adds nothing for AT). Set decorative: false
       # for a semantic boundary (role=separator with the orientation), e.g.
       # between toolbar groups.
@@ -11,12 +12,16 @@ module Poetry
       # @example Horizontal divider between sections
       #   render Poetry::Ui::Separator::Component.new
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "A purely visual divider stays decorative (the default): aria-hidden, role absent.",
           "Set decorative: false only when the divide is semantically meaningful (role=separator)."
         ].freeze
 
+        # The divider's axis.
         option :orientation, :symbol, default: :horizontal
+        # Whether the divide is purely visual (aria-hidden) or a semantic
+        # boundary (role=separator).
         option :decorative, :boolean, default: true
 
         validates :orientation, inclusion: { in: %i[horizontal vertical] }
@@ -28,10 +33,12 @@ module Poetry
                                        values: %w[horizontal vertical] }
              }
 
+        # @api private
         def call
           content_tag(:div, nil, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           attrs = { "data-slot" => "separator", "data-orientation" => orientation }
           if decorative

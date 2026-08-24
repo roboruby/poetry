@@ -9,7 +9,7 @@ module Poetry
         end
 
         # Display truncates, the clipboard gets the FULL value via
-        # text_to_copy (kumo's textToCopy contract).
+        # text_to_copy (the ported source's textToCopy contract).
         def truncated_copy
           render_component(value: "pk_live_51Nx…9fQ2", label: "API key",
                            text_to_copy: "pk_live_51NxAbCdEfGhIjKlMnOpQrStUvWxYz0123456789fQ2")

@@ -13,8 +13,8 @@ module Poetry
         base "cn-menubar flex items-center"
 
         # POETRY ADDITION: the logical Menu grouping needs a host element
-        # for its menu + popper controllers; display:contents erases it
-        # from layout and the a11y tree (Radix renders no element here).
+        # for its behavior wiring; display:contents erases it from layout
+        # and the a11y tree (the source anatomy renders no element here).
         element :menu, "contents"
 
         element :trigger, "cn-menubar-trigger flex items-center outline-hidden select-none"
@@ -50,7 +50,7 @@ module Poetry
         element :sub_content, "cn-menubar-sub-content z-50 " \
                               "origin-(--transform-origin) overflow-hidden"
 
-        # Source-exact wrapper span (anonymous in new-york-v4; poetry names
+        # Source-exact wrapper span (anonymous in the ported source; poetry names
         # it menubar-item-indicator - the self-identification rule).
         element :item_indicator, "pointer-events-none absolute " \
                                  "flex items-center justify-center"

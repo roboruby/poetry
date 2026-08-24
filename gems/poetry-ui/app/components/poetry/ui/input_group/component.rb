@@ -2,6 +2,7 @@
 
 module Poetry
   module Ui
+    # The InputGroup family - one bordered field surface for a control plus addons.
     module InputGroup
       # The InputGroup - one bordered field surface holding a control plus
       # addons (icons, text, kbd hints, tiny buttons). The GROUP wears the
@@ -21,6 +22,7 @@ module Poetry
       class Component < Poetry::Core::Component
         requires_content "its control + addons"
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "The control INSIDE must be poetry_input_group_input/_textarea - a plain poetry_input " \
           "keeps its own border+ring and double-chromes the group.",
@@ -40,14 +42,20 @@ module Poetry
                                  values: %w[inline-start inline-end block-start block-end] }
              }
 
+        # Enforces the required content block before render.
+        # @api private
         def before_render
           ensure_content!
         end
 
+        # Renders the group surface around the content.
+        # @api private
         def call
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
+        # The group surface's attributes.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "role" => "group", "data-slot" => "input-group" }.merge(component_data_attributes)

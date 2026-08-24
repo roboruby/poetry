@@ -2,21 +2,23 @@
 
 module Poetry
   module Ui
+    # Person images with initials fallbacks.
     module Avatar
-      # The Avatar - a person's image over an initials fallback, with the
-      # server-native fallback strategy: the fallback ALWAYS renders and the
-      # image sits absolutely above it with alt="" - a failed load paints
-      # nothing, so the initials show through. Zero JS, no layout shift (vs
-      # Base UI's client-side load-state swap). The accessible name lives on
-      # the root (role=img + aria-label), never on the layered img.
+      # A person's image over an always-rendered initials fallback. The
+      # image layers absolutely above the fallback with an empty alt, so a
+      # failed load paints nothing and the initials show through - zero
+      # JS, no layout shift. The accessible name lives on the root
+      # (role=img + aria-label via label:), never on the layered img.
       #
       # @example Image with initials fallback
       #   render Poetry::Ui::Avatar::Component.new(src: user.avatar_url, label: "Ada Lovelace") { "AL" }
       class Component < Poetry::Core::Component
         requires_content "the initials fallback"
 
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm lg].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "label: (the person's name) is REQUIRED - it is the avatar's accessible name (role=img).",
           "The content block is the fallback (initials) and is also required - it is what shows " \
@@ -26,13 +28,15 @@ module Poetry
           "Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count."
         ].freeze
 
+        # Decorative presence dot, bottom-right; keep the status meaning in label:.
         renders_one :badge
 
+        # The image URL; without it only the initials fallback shows.
         option :src, :string
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (the floating-crash
-        # class: a required option the static tier could not see).
+        # The person's name - the avatar's accessible name (blank raises). The required
+        # flag also carries the fact to the registry so static checks see it.
         option :label, :string, required: true
+        # The diameter axis.
         option :size, :symbol, default: :default
 
         validates :size, inclusion: { in: SIZES }
@@ -48,18 +52,22 @@ module Poetry
                              "is given; a failed load paints nothing"
         part "avatar-badge", "The decorative presence dot (the badge slot), bottom-right"
 
+        # Enforces label: and the initials content block.
+        # @api private
         def before_render
           raise ArgumentError, "Avatar requires label: (the person's name - its accessible name)" if label.blank?
 
           ensure_content!
         end
 
+        # @api private
         def call
           content_tag(:span, root_attributes.to_attributes) do
             safe_join([fallback, image, badge_part].compact)
           end
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

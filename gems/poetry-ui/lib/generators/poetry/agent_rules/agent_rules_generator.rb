@@ -13,10 +13,16 @@ module Poetry
   # plus an idempotent marker-import into CLAUDE.md and AGENTS.md:
   # insert-between-markers, replace-on-rerun, and detect-but-never-rewrite
   # when a file carries a broken half-marker.
+  #
+  # @example
+  #   bin/rails g poetry:agent_rules
   class AgentRulesGenerator < Rails::Generators::Base
+    # The opening half of the marker pair bounding the import block.
     START_MARKER = "<!-- poetry:agent-rules:start -->"
+    # The closing half of the marker pair bounding the import block.
     END_MARKER = "<!-- poetry:agent-rules:end -->"
 
+    # The marker-bounded pointer inserted into CLAUDE.md and AGENTS.md.
     IMPORT_BLOCK = <<~MD.freeze
       #{START_MARKER}
       Follow the poetry component rules in `.poetry/agent-rules.md` (generated - do not edit)
@@ -24,6 +30,7 @@ module Poetry
       #{END_MARKER}
     MD
 
+    # The once-only seed content of .poetry/house-rules.md.
     HOUSE_RULES_SEED = <<~MD
       # poetry house rules
 
@@ -34,16 +41,22 @@ module Poetry
 
     desc "Install the poetry agent ruleset (.poetry/agent-rules.md + house-rules.md + CLAUDE.md/AGENTS.md import)"
 
+    # Step: force-writes the generated .poetry/agent-rules.md.
+    # @api private
     def create_agent_rules
       create_file ".poetry/agent-rules.md", generated_rules, force: true
     end
 
+    # Step: seeds .poetry/house-rules.md once (never overwritten).
+    # @api private
     def seed_house_rules
       return if File.exist?(File.join(destination_root, ".poetry/house-rules.md"))
 
       create_file ".poetry/house-rules.md", HOUSE_RULES_SEED
     end
 
+    # Step: marker-imports the ruleset into CLAUDE.md and AGENTS.md.
+    # @api private
     def import_into_instruction_files
       %w[CLAUDE.md AGENTS.md].each { |file| marker_import(file) }
     end

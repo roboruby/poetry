@@ -2,6 +2,7 @@
 
 module Poetry
   module Ui
+    # The Icon family - inline SVG icons from the configured icon set.
     module Icon
       # The Icon component: template-less, rendering an icon's vendored,
       # pre-sanitized inner markup from the configured icon set
@@ -15,16 +16,21 @@ module Poetry
       # @example A decorative icon inside a labeled control
       #   render Poetry::Ui::Icon::Component.new(name: :plus)
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Icons are decorative by default (aria-hidden); pass label: when the icon stands alone.",
           "Never inline raw <svg> markup where an icon exists - use poetry_icon."
         ].freeze
 
-        # format: :"icon-name" is the machine-readable value contract:
-        # the registry carries it, poetry check validates literals against the
-        # icon set statically - the :folder_plus render-crash class, moved left.
+        # The icon's name in the active set. format: :"icon-name" is the
+        # machine-readable value contract: the registry carries it, and
+        # literal names are validated against the icon set statically -
+        # a misspelled name is caught before it can crash a render.
         option :name, :symbol, required: true, format: :"icon-name"
+        # The accessible name - given, the icon is standalone (role=img);
+        # absent, it is decorative (aria-hidden).
         option :label, :string
+        # Per-render icon set override (defaults to config.icon_library).
         option :library, :symbol
 
         validate :icon_must_exist
@@ -32,6 +38,8 @@ module Poetry
         part "icon", "The <svg> root itself - the vendored icon markup renders inside; " \
                      "ARIA (label: vs decorative) rides here"
 
+        # Renders the <svg> with the icon's inner markup.
+        # @api private
         def call
           # Vendored + sanitized at vendor time (the fetch pipeline) - the
           # inner markup is trusted by construction; render never parses.

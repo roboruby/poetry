@@ -2,17 +2,17 @@
 
 module Poetry
   module Ui
+    # Drawer family: the swipeable edge sheet on the dialog spine.
     module Drawer
-      # The Drawer - the gesture overlay: a Sheet-shaped edge dialog you can
-      # SWIPE away. Everything hard is inherited (the native <dialog> +
-      # showModal() platform trap, required title, dismissible:); the deltas
-      # are the poetry--core--drawer controller (the swipe CSS-var contract
-      # + the presence-hold animated close - the first consumer of the
-      # presence machinery) and the drawer chrome (edge-rounded popup,
-      # transition-driven enter/exit, the optional swipe handle).
+      # A drawer: an edge-anchored dialog you can SWIPE away, most at
+      # home as the mobile bottom sheet. Everything hard is inherited
+      # from Dialog (the native <dialog> focus trap, required title,
+      # dismissible:); the drawer adds the swipe gesture, the
+      # edge-rounded popup with transition-driven enter/exit, the
+      # optional grab handle, and snap_points: preset resting heights
+      # for bottom sheets.
       #
-      # Snap points shipped 2026-08-01 (snap_points:); still deferred with
-      # their machinery: nested drawer stacking visuals, bleed.
+      # Nested drawer stacking visuals and bleed are not supported.
       #
       # @example
       #   render Poetry::Ui::Drawer::Component.new(show_swipe_handle: true) do |drawer|
@@ -22,10 +22,13 @@ module Poetry
       #     "Drawer body"
       #   end
       class Component < Dialog::Component
+        # The closed vocabulary for the direction axis.
         DIRECTIONS = %i[down up left right].freeze
 
+        # Accepted CSS length spellings for snap points (px or rem).
         SNAP_POINT_LENGTH = /\A\d+(\.\d+)?(px|rem)\z/
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Open drawers with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
@@ -77,24 +80,25 @@ module Poetry
           on :close
         end
 
-        # The dismissal direction (the Base UI swipeDirection vocabulary);
-        # the edge chrome + swipe axis derive from it.
+        # The dismiss direction - :down is the mobile bottom sheet; the
+        # edge chrome and swipe axis derive from it.
         style :direction, default: :down, required: true, variants: DIRECTIONS
 
+        # Renders the grab pill so the swipe gesture is discoverable.
         option :show_swipe_handle, :boolean, default: false
 
-        # Source parity: modal={false}. Non-modal opens with show() - no
-        # top layer, no scrim, no focus trap, no scroll lock; the page
-        # behind stays interactive. Esc (while focus is inside), the
-        # swipe, and any wired close button still exit; there is no
-        # backdrop to click, so pointer dismissal is off by nature.
+        # Non-modal (false) opens with show() - no top layer, no scrim,
+        # no focus trap, no scroll lock; the page behind stays
+        # interactive. Esc (while focus is inside), the swipe, and any
+        # wired close button still exit; there is no backdrop to click,
+        # so pointer dismissal is off by nature.
         option :modal, :boolean, default: true
 
-        # Source parity: snapPoints - preset resting heights for a bottom
-        # sheet, ascending: fractions of the full height (0..1] or CSS
-        # px/rem lengths (the source's ["31rem", 1]). The popup runs
-        # full-height and opens at the first point; drags move between
-        # points, below the first dismisses. direction: :down only.
+        # Preset resting heights for a bottom sheet, ascending: fractions
+        # of the full height (0..1] or CSS px/rem lengths (["31rem", 1]).
+        # The popup runs full-height and opens at the first point; drags
+        # move between points, below the first dismisses. direction:
+        # :down only.
         option :snap_points, ActiveModel::Type::Value.new
 
         part "drawer", "Root wrapper around the trigger and the <dialog> element"
@@ -134,16 +138,18 @@ module Poetry
         part "drawer-body", "The scrollable content region between header and footer"
         part "drawer-footer", "Action row pinned to the bottom of the popup"
 
+        # Enforces the inherited title contract plus snap-point validity.
+        # @api private
         def before_render
           super
           validate_snap_points! if snap_points.present?
         end
 
         # The parent's show_close_button does not apply: a Drawer has no
-        # corner X (source parity - the source closes by swipe, backdrop,
-        # or footer actions), so the inherited option is hidden from
-        # introspection. A projected option the template ignores would be
-        # a contract lie.
+        # corner X (it closes by swipe, backdrop, or footer actions), so
+        # the inherited option is hidden from introspection. A projected
+        # option the template ignores would be a contract lie.
+        # @api private
         def self.option_attributes
           super - %i[show_close_button]
         end
@@ -151,6 +157,7 @@ module Poetry
         # The <dialog> IS the drawer popup: the chrome + swipe wiring land
         # here. The swipe vars are written to this element by the controller
         # and ::backdrop inherits them (the overlay fade rides along).
+        # @api private
         def dialog_attributes
           attrs = {
             # Non-modal show() skips the top layer, so the UA :modal

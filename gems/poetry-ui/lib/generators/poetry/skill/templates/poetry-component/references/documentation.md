@@ -11,7 +11,13 @@ surface, and the docs. Write each for its consumer.
 Every published component class opens with a YARD docblock:
 
 - **One to three sentences** on what it renders and when to reach for
-  it. Present tense, no history.
+  it. Present tense, no history. This is the *reference lead* - a public
+  reader with zero codebase context must parse every word.
+- Optionally ONE short paragraph of load-bearing behavior facts a USER
+  needs (keyboard behavior, required slots, form participation), written
+  to stand alone. Maintainer rationale is a different register: it lives
+  as a plain comment above the method it concerns, never in the class
+  docblock. Whole docblock ≤ 15 lines.
 - **One `@example`** showing minimal usage through the helper or
   `render`. Add a second example only when the primary axis (variant,
   size, slots) isn't obvious from the first.
@@ -31,9 +37,32 @@ class Component < Poetry::Core::Component
 
 - YARD tags (`@param`, `@return`, `@example`) on every public method
   whose signature or return isn't obvious from the name.
-- Lifecycle methods (`initialize`, `before_render`, `call`) get a
-  comment only when they do something beyond the base class contract.
+- Template-facing methods (`*_attributes`, `*_id`, `*_classes`, part
+  builders) and lifecycle overrides (`initialize`, `before_render`,
+  `call`) carry a one-line comment ending in `@api private` - they are
+  public for the template's sake, not the consumer's, and the doc set
+  hides them.
+- Hand-written slot writers a caller uses (`with_*`) are real public
+  API: full docs, never `@api private`.
 - Markdown markup; full sentences; wrap at the file's prevailing width.
+
+## Declaration comments
+
+Every `option`, `style`, `renders_one`, and `renders_many` declaration
+carries a one-line (max two) reference comment directly above it. The
+doc build publishes that comment as the declared surface's documentation
+(component pages and the hosted API reference), and auto-appends the
+machine facts - type, default, variants - so the comment adds MEANING
+only:
+
+- The caller-visible effect and its interactions ("Ignored unless
+  `tag: :a`."), never the implementation ("sets @foo").
+- Never repeat the type or default; never start the prose with `@word`
+  (YARD parses it as a tag and truncates the line).
+
+Constants that define the surface get one-liners too: vocabulary arrays
+("The closed vocabulary for the variant axis."), `AGENT_RULES`
+("Projected into the registry, llms.txt, and the agent surface.").
 
 ## Private methods
 
@@ -73,6 +102,21 @@ its own - state the constraint, not where it came from:
 ## YARD setup
 
 Each gem carries a `.yardopts` (markdown markup, README as the index,
-CHANGELOG and notices as extra files). `yard doc` from the gem root
-builds the API docs; keep it warning-clean - an unresolvable reference
-or malformed tag is a review finding.
+`--hide-api private`, previews and generator templates excluded,
+CHANGELOG and notices as extra files) and loads the shared handler kit
+(`poetry-core/yard/poetry_yard.rb`), which makes the declarative
+surfaces - `class_methods do`, `option`/`style` readers, slot writers,
+`part` anatomy - visible to the doc build.
+
+Gates, from the gem root:
+
+- `rake yard:verify` - fails on any warning (an unresolvable reference
+  or malformed tag is a review finding; structural warnings are
+  allowlisted in the task).
+- `rake yard:coverage` - the ratchet: fails when the undocumented-object
+  count exceeds the committed `.yard_coverage` floor. After a
+  documentation pass, lower the floor with `rake yard:coverage:record`.
+
+Previews are OUTSIDE the doc set: preview.rb comments are for gallery
+authors (Lookbook tags like `@label`/`@!group` live there) and are never
+published.

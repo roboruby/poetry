@@ -17,7 +17,7 @@ module Poetry
     class FormBuilder < ActionView::Helpers::FormBuilder
       include TypeInference
 
-      # The agent surface (W3): flows into the registry's form_builder
+      # The agent-facing rules: flow into the registry's form_builder
       # section and llms.txt's Forms section.
       AGENT_RULES = [
         "Model-bound forms use form_with(model:, builder: Poetry::Ui::FormBuilder) - inside " \
@@ -36,6 +36,8 @@ module Poetry
         "(switch: true -> the setting row)."
       ].freeze
 
+      # One-line summaries of the builder methods, projected into the
+      # registry's form_builder section (keys group related methods).
       METHOD_SUMMARIES = {
         "input" => "the inferred entrypoint: type from as:/attachments/enums/column/name",
         "association" => "reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)",
@@ -347,9 +349,34 @@ module Poetry
         radio_group: :radio_group, autocomplete: :autocomplete,
         tag_group: :tag_group, date_picker: :date_picker, calendar: :calendar
       }.freeze
+      # The as: values that answer with #field carrying a native input type.
       TYPED_FIELDS = %i[email url tel].freeze
+      # The as: values whose dispatch method takes the collection as its
+      # second positional argument.
       COLLECTION_ARGS = %i[select combobox radio_group autocomplete].freeze
 
+      # The inferred entrypoint: one call, everything derived from the
+      # model. The control type comes from as: when given, otherwise from
+      # attachment duck-typing, AR enums, the attribute/column type, and
+      # name heuristics; hint/placeholder resolve from the poetry_form
+      # (or simple_form) i18n chain when not passed; length and numeric
+      # validations become maxlength/min/max/step attributes.
+      #
+      # @example
+      #   <%= form_with(model: user, builder: Poetry::Ui::FormBuilder) do |f| %>
+      #     <%= f.input :email %>
+      #     <%= f.input :role, as: :select, collection: %w[admin member] %>
+      #     <%= f.input :active, switch: true %>
+      #     <%= f.submit %>
+      #   <% end %>
+      #
+      # @param method [Symbol] the model attribute
+      # @param as [Symbol, nil] explicit control type - an INPUT_DISPATCH
+      #   key, :email/:url/:tel, :boolean, or :enum (overrides inference)
+      # @param collection [Enumerable, nil] choices for collection-shaped
+      #   types (:select, :combobox, :radio_group, :autocomplete)
+      # @param hint [String, nil] hint text (overrides the i18n chain)
+      # @return [ActiveSupport::SafeBuffer] the rendered Field
       def input(method, as: nil, collection: nil, hint: nil, **options)
         type = as || infer_input_type(method, collection: collection)
         hint ||= form_i18n(:hints, method)
@@ -381,7 +408,7 @@ module Poetry
       # form.association(:company) - reflection-derived: belongs_to ->
       # company_id + Combobox, has_many/HABTM -> singular_ids + the
       # checkbox group; collection from the association klass, label
-      # method auto-detected (to_label/name/title/to_s - simple_form's
+      # method auto-detected (to_label/name/title/to_s, the conventional
       # chain). as: overrides (:select, :combobox, :checkbox_group).
       def association(method, as: nil, collection: nil, hint: nil, **)
         reflection = object.class.respond_to?(:reflect_on_association) &&
@@ -413,18 +440,37 @@ module Poetry
       # field(type: :text) etc. password_field NEVER round-trips the value
       # (Rails' own behavior); revealable SECRETS (API keys) are
       # sensitive_input, login passwords stay type=password here.
+      #
+      # @!method text_field(method, hint: nil, **options)
+      #   form.text_field(:name) - a Field-wrapped Input (type: :text).
+      #   @return [ActiveSupport::SafeBuffer]
+      # @!method email_field(method, hint: nil, **options)
+      #   form.email_field(:email) - a Field-wrapped Input (type: :email).
+      #   @return [ActiveSupport::SafeBuffer]
+      # @!method url_field(method, hint: nil, **options)
+      #   form.url_field(:website) - a Field-wrapped Input (type: :url).
+      #   @return [ActiveSupport::SafeBuffer]
+      # @!method telephone_field(method, hint: nil, **options)
+      #   form.telephone_field(:phone) - a Field-wrapped Input (type: :tel).
+      #   @return [ActiveSupport::SafeBuffer]
       { text_field: :text, email_field: :email, url_field: :url,
         telephone_field: :tel }.each do |helper, type|
         define_method(helper) do |method, hint: nil, **options|
           field(method, hint: hint, type: type, **options)
         end
       end
+      # The Rails alias for telephone_field.
       alias phone_field telephone_field
 
+      # form.password_field(:password) - a Field-wrapped Input
+      # (type: :password); the value NEVER round-trips (Rails' own
+      # behavior). Revealable secrets are #sensitive_input.
       def password_field(method, hint: nil, **)
         field(method, hint: hint, type: :password, value: nil, **)
       end
 
+      # form.text_area(:bio) - a Field-wrapped Textarea (rows: passes
+      # through; auto-grow is CSS, never a JS autosizer).
       def text_area(method, hint: nil, **)
         field(method, as: :textarea, hint: hint, **)
       end
@@ -602,6 +648,8 @@ module Poetry
                       **html_options.transform_keys(&:to_sym), &)
       end
 
+      # ActionView's collection_select arity, verbatim, adapted onto
+      # poetry_select (value_method/text_method read off each item).
       # rubocop:disable Metrics/ParameterLists -- the ActionView arity, verbatim
       def collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
         pairs = collection.map { |item| [item.public_send(text_method), item.public_send(value_method)] }
@@ -611,11 +659,15 @@ module Poetry
       end
       # rubocop:enable Metrics/ParameterLists
 
+      # ActionView's collection_radio_buttons arity adapted onto
+      # radio_group (one hidden native radio per item, same serialization).
       def collection_radio_buttons(method, collection, value_method, text_method, **)
         pairs = collection.map { |item| [item.public_send(value_method), item.public_send(text_method)] }
         radio_group(method, pairs, **)
       end
 
+      # ActionView's collection_check_boxes arity adapted onto
+      # checkbox_group (name[] items plus the leading clearing hidden).
       def collection_check_boxes(method, collection, value_method, text_method, **)
         pairs = collection.map { |item| [item.public_send(value_method), item.public_send(text_method)] }
         checkbox_group(method, pairs, **)
@@ -631,6 +683,8 @@ module Poetry
         @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { value }
       end
 
+      # form.button - #submit with block/content support: the block (or
+      # value) is the Button's content, type stays submit.
       def button(value = nil, **options, &block)
         content = block ? @template.capture(&block) : value || submit_default_value
         @template.render(Button::Component.new(type: :submit, **options.transform_keys(&:to_sym))) { content }
@@ -802,7 +856,7 @@ module Poetry
         end
       end
 
-      # The vcf dual-key recipe: company_id also reads errors on :company
+      # The dual-key error read: company_id also reads errors on :company
       # (validates :company, presence: true is the Rails idiom, but the
       # form field is the _id attribute).
       def error_for(method)
@@ -816,7 +870,7 @@ module Poetry
         message
       end
 
-      # Presence -> required, with the vcf filtering recipe: conditional
+      # Presence -> required, with the necessary filtering: conditional
       # validators (:if/:unless) never claim required, and :on contexts
       # must match the record's persistence.
       def required?(method)
@@ -832,19 +886,22 @@ module Poetry
         end
       end
 
-      # The Rails 8 respellings (the vcf coverage lesson): ActionView 8
+      # The Rails 8 respellings: ActionView 8
       # aliases textarea/checkbox at ITS class body, so a subclass override
       # of the old name never reaches them - define both, version-gated.
       if ActionView::VERSION::MAJOR >= 8
 
         public
 
+        # The Rails 8 spelling of #text_area.
         def textarea(method, hint: nil, **) = text_area(method, hint: hint, **)
 
+        # The Rails 8 spelling of #check_box.
         def checkbox(method, options = {}, checked_value = "1", unchecked_value = "0")
           check_box(method, options, checked_value, unchecked_value)
         end
 
+        # The Rails 8 spelling of #collection_check_boxes.
         def collection_checkboxes(method, collection, value_method, text_method, **)
           collection_check_boxes(method, collection, value_method, text_method, **)
         end

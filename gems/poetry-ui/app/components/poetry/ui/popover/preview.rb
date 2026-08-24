@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Popover
-      # The Popover preview matrix: the shadcn popover-demo composition
+      # The Popover preview matrix: the ported popover-demo composition
       # (form-in-popover, w-80 override) plus both modality modes, the
       # anchor part, the label: naming fallback, a placement sample, and
       # the server-rendered open state.
@@ -22,7 +22,7 @@ module Poetry
         end
 
         # The anchor part takes the popper anchor target: the panel
-        # positions against IT, not the trigger (Radix PopoverAnchor).
+        # positions against IT, not the trigger (the source's anchor part).
         def with_anchor
           render_component do |popover|
             popover.with_trigger(variant: :outline) { "Open popover" }

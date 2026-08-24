@@ -2,19 +2,25 @@
 
 module Poetry
   module Ui
+    # Chat message bubbles.
     module Bubble
-      # The message surface of the AI-chat set: one bubble per message, 7
-      # variants on semantic tokens, content polymorphic via tag: (:button /
-      # :a quick replies), an optional reactions pill overlay. Purely
-      # presentational - no controller.
+      # A chat message bubble - one per message, aligned to the sender's
+      # side. The content block is the message; tag: :button or :a (with
+      # href:) turns the bubble into a quick reply, and the reactions slot
+      # overlays a pill of reactions. Purely presentational - no
+      # JavaScript.
       #
       # @example An assistant reply
       #   render Poetry::Ui::Bubble::Component.new(variant: :secondary) { "Here's the summary." }
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the variant axis.
         VARIANTS = %i[default secondary muted tinted outline ghost destructive].freeze
+        # The closed vocabulary for the align axis.
         ALIGNS = %i[start end].freeze
+        # The closed vocabulary for the tag: axis.
         CONTENT_TAGS = %i[div button a].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "One Bubble per message; stack a sender's run inside poetry_bubble_group.",
           "Quick replies are tag: :button (with the caller's data-action) or tag: :a + " \
@@ -24,6 +30,8 @@ module Poetry
           "Inside a Message, alignment follows the Message's align - do not set both."
         ].freeze
 
+        # The reactions pill overlaid on an edge; label: names the cluster for
+        # assistive tech, side:/align: place it (default bottom end).
         renders_one :reactions, lambda { |label:, side: :bottom, align: :end, &block|
           content_tag(:div,
                       class: css(:reactions), "data-slot" => "bubble-reactions",
@@ -34,10 +42,14 @@ module Poetry
         # The content block IS the message; an empty bubble is an empty pill.
         requires_content "the message content"
 
+        # The intent axis; :ghost is for tool output / system text flowing full-width.
         style :variant, default: :default, required: true, variants: VARIANTS
 
+        # Which side the bubble hugs; inside a Message, set the Message's align instead.
         option :align, :symbol, default: :start
+        # The content element: :div (default), or :button/:a for a quick reply.
         option :tag, :symbol, default: :div
+        # Renders the content as a real anchor; implies tag: :a.
         option :href, :string
 
         validates :align, inclusion: { in: ALIGNS }
@@ -58,10 +70,13 @@ module Poetry
                "data-align" => "always - placement along that edge (default end)"
              }
 
+        # Enforces the message content block.
+        # @api private
         def before_render
           ensure_content!
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "bubble", "data-variant" => variant, "data-align" => align }
@@ -69,13 +84,14 @@ module Poetry
           )
         end
 
-        # href: implies the anchor (the Button doctrine) - an href on the
-        # default :div would otherwise be silently dropped, the dead-control
-        # bug class the suite memorializes on Button.
+        # href: implies the anchor - an href on the default :div would
+        # otherwise be silently dropped, leaving a dead control.
+        # @api private
         def content_tag_name
           href.present? ? :a : tag
         end
 
+        # @api private
         def content_attributes
           attrs = { class: css(:content), "data-slot" => "bubble-content" }
           attrs[:href] = href if content_tag_name == :a

@@ -41,16 +41,15 @@ module Poetry
         element :sub_content, "cn-dropdown-menu-sub-content z-50 " \
                               "origin-(--transform-origin) overflow-hidden"
 
-        # Source-exact wrapper span (anonymous in new-york-v4; poetry names
-        # it dropdown-menu-item-indicator - the self-identification rule).
+        # The indicator wrapper span, named dropdown-menu-item-indicator
+        # (the self-identification rule).
         element :item_indicator, "cn-dropdown-menu-item-indicator pointer-events-none absolute " \
                                  "flex items-center justify-center"
 
-        # POETRY ADDITION: the source renders the indicator only while
-        # checked (Radix ItemIndicator unmounts); poetry keeps it in the
-        # DOM and the parent item's data-checked/data-unchecked pair drives
-        # visibility, so the controller's aria-checked/data-checked flip is
-        # the whole toggle.
+        # The indicator stays in the DOM (never unmounted while
+        # unchecked); the parent item's data-checked/data-unchecked pair
+        # drives visibility, so the controller's aria-checked/data-checked
+        # flip is the whole toggle.
         element :item_indicator_state, "[[data-unchecked]>&]:hidden"
 
         # The source's inline lucide icon classes, named per part.

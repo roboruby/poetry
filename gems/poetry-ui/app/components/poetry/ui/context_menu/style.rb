@@ -40,7 +40,7 @@ module Poetry
         element :sub_content, "cn-context-menu-sub-content z-50 " \
                               "origin-(--transform-origin) overflow-hidden"
 
-        # Source-exact wrapper span (anonymous in new-york-v4; poetry names
+        # Source-exact wrapper span (anonymous in the ported source; poetry names
         # it context-menu-item-indicator - the self-identification rule).
         element :item_indicator, "cn-context-menu-item-indicator pointer-events-none absolute " \
                                  "flex items-center justify-center"

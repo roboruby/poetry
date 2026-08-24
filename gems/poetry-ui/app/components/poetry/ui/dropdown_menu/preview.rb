@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module DropdownMenu
-      # The DropdownMenu preview matrix: the shadcn demo composition plus
+      # The DropdownMenu preview matrix: the ported demo composition plus
       # both item variants, both toggle kinds, inset, disabled, a 2-deep
       # sub, RTL, and the server-rendered open state.
       class Preview < Poetry::Core::Preview::Base

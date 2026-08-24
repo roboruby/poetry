@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module HoverCard
-      # The HoverCard preview matrix: the shadcn hover-card-demo profile
+      # The HoverCard preview matrix: the ported hover-card-demo profile
       # preview (the @nextjs card, w-80 override), the server-pinned open
       # state, a placement sample, and custom delays. Every preview's card
       # content is reachable at the trigger's href - the

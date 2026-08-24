@@ -4,22 +4,29 @@ require "date"
 
 module Poetry
   module Ui
+    # Server-rendered month-grid date pickers.
     module Calendar
-      # The Calendar - a server-rendered month grid (Ruby Date math) driven
-      # by poetry--core--calendar. poetry owns the engine rather than
-      # wrapping a JS date library: the initial month renders correctly
-      # with no JS, and the controller handles navigation + selection on
-      # top. Selection is a real form value (name: -> a hidden input); a
-      # bare Calendar picks a date, the DatePicker wraps it in a Popover.
+      # A month grid for picking a date, computed server-side with Ruby
+      # date math: the initial month renders correctly with no JS, and
+      # the controller adds navigation and selection on top. Selection is
+      # a real form value - name: posts the chosen date as an ISO string
+      # in a hidden input (range mode posts name[start] and name[end]).
+      # A bare Calendar is the always-visible grid; DatePicker wraps it
+      # in a popover behind a text field.
       #
       # @example A form-posting date pick
       #   render Poetry::Ui::Calendar::Component.new(name: "event[date]", selected: "2026-07-04")
       class Component < Poetry::Core::Component
+        # The date-valued keywords, parsed to Date (or nil) for the template.
+        # @api private
         attr_reader :selected, :today, :min, :max, :range_start, :range_end
 
+        # The closed vocabulary for the mode axis.
         MODES = %i[single range].freeze
+        # The closed vocabulary for the caption_layout axis.
         CAPTION_LAYOUTS = %i[label dropdown].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "name: makes it a form control (the chosen date posts as an ISO string in a hidden input; " \
           "range mode posts name[start] + name[end]).",
@@ -49,7 +56,7 @@ module Poetry
               value :min, from: :min_iso
               value :max, from: :max_iso
               # Localized month names (I18n) so JS month navigation needs
-              # no Intl - app-locale correct, dommy-engine safe.
+              # no locale API of its own - app-locale correct everywhere.
               value :month_names, from: :month_names_list
             end
           end
@@ -65,8 +72,7 @@ module Poetry
           on :nav_next do
             controller(:calendar) { action :nextMonth, on: :click }
           end
-          # Template-consumed elements (previously hand-written wiring
-          # strings in the ERB):
+          # Elements consumed by the template:
           on :dropdown do
             controller(:calendar) { action :jump, on: :change }
           end
@@ -87,10 +93,18 @@ module Poetry
           end
         end
 
+        # Makes the calendar a form control: the pick posts as an ISO string in a
+        # hidden input; range mode posts name[start] + name[end].
         option :name, :string
+        # Picks one date (:single) or a span (:range). Range selection completes on
+        # the second click; a click before the start swaps, a re-click clears.
         option :mode, :symbol, default: :single
+        # The first weekday column (0 = Sunday .. 6 = Saturday).
         option :week_start, :integer, default: 0 # 0 = Sunday
+        # :label shows the month text; :dropdown swaps it for month + year selects
+        # (jump navigation).
         option :caption_layout, :symbol, default: :label
+        # Adds the ISO week-number column (each row's Thursday decides the number).
         option :week_numbers, :boolean, default: false
 
         part "calendar", "Root wrapper - the calendar controller (navigation, selection, roving " \
@@ -134,6 +148,10 @@ module Poetry
              }
         part "calendar-day-label", "The day-number span inside the button"
 
+        # Parses the date-valued keywords (month:, selected:, min:, max:, today:) -
+        # each accepts a Date or an ISO string; selected: in range mode also takes
+        # a Date..Date Range, an [start, end] pair, or a {start:, end:} hash.
+        # @api private
         def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **) # rubocop:disable Metrics/ParameterLists
           super(**)
           raise ArgumentError, "unknown mode #{mode.inspect} (one of #{MODES.join(", ")})" unless MODES.include?(mode)
@@ -153,9 +171,13 @@ module Poetry
           @month = to_date(month) || @selected || @range_start || @today
         end
 
+        # @api private
         def range? = mode == :range
+        # @api private
         def range_complete? = !!(@range_start && @range_end)
 
+        # Whether the date falls inside the current range selection.
+        # @api private
         def in_span?(date)
           return false unless range?
           return date == @range_start unless range_complete?
@@ -165,6 +187,7 @@ module Poetry
 
         # The 42 cells (6 weeks) for the visible month, leading/trailing
         # days from the neighbours so every week is full.
+        # @api private
         def cells
           first = Date.new(@month.year, @month.month, 1)
           lead = (first.wday - week_start) % 7
@@ -172,21 +195,29 @@ module Poetry
           (0...42).map { |offset| start + offset }
         end
 
+        # @api private
         def weekday_labels
           Date::ABBR_DAYNAMES.rotate(week_start).map { |name| name[0, 2] }
         end
 
+        # @api private
         def in_month?(date) = date.month == @month.month
+        # @api private
         def selected?(date) = @selected && date == @selected
+        # @api private
         def today?(date) = date == @today
+        # @api private
         def disabled?(date) = (@min && date < @min) || (@max && date > @max)
 
+        # @api private
         def caption
           @month.strftime("%B %Y")
         end
 
+        # @api private
         def dropdown_caption? = caption_layout == :dropdown
 
+        # @api private
         def month_options
           Date::MONTHNAMES.compact.each_with_index.map { |label, index| [label, index + 1] }
         end
@@ -194,6 +225,7 @@ module Poetry
         # min:/max: pin the year list when both are given; otherwise ten
         # years either side of the initial month (the demo-friendly default;
         # bound it deliberately via min:/max: in real pickers).
+        # @api private
         def year_options
           years = @min && @max ? (@min.year..@max.year) : ((@month.year - 10)..(@month.year + 10))
           years.map { |year| [year.to_s, year] }
@@ -201,12 +233,14 @@ module Poetry
 
         # The ISO week of a displayed row: its Thursday decides (ISO 8601),
         # which stays correct under any week_start.
+        # @api private
         def iso_week(week)
           week.find { |date| date.cwday == 4 }.cweek
         end
 
         # Exactly one day is the tab stop: the selection (the range start
         # in range mode), else today (in view), else the first enabled day.
+        # @api private
         def tab_stop
           anchor = range? ? @range_start : @selected
           @tab_stop ||= (anchor if anchor && in_month?(anchor)) ||
@@ -214,6 +248,7 @@ module Poetry
                         cells.find { |date| in_month?(date) && !disabled?(date) }
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "calendar", "class" => css }.merge(stimulus_attributes_for(:root))
@@ -222,8 +257,9 @@ module Poetry
         end
 
         # aria-selected lives on the role=gridcell (the ARIA grid contract -
-        # it is not a valid attribute on a plain button, the axe catch).
-        # Range mode marks the whole span.
+        # it is not a valid attribute on a plain button). Range mode marks
+        # the whole span.
+        # @api private
         def cell_attributes(date)
           selected = range? ? in_span?(date) : selected?(date)
           {
@@ -232,6 +268,7 @@ module Poetry
           }
         end
 
+        # @api private
         def day_attributes(date)
           iso = date.iso8601
           attrs = {
@@ -251,10 +288,12 @@ module Poetry
           attrs
         end
 
+        # @api private
         def previous_options
           nav_options("Previous month", :nav_previous)
         end
 
+        # @api private
         def next_options
           nav_options("Next month", :nav_next)
         end

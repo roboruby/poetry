@@ -9,6 +9,14 @@ module Poetry
     # (transcript + timing); rendering frames into Message rows is the
     # consumer's job (the docs replay demo is the reference consumer).
     #
+    # A tool with `approval: true` PAUSES its segment after the input frame;
+    # the frames that follow (its output - or denial - and later parts)
+    # belong to the continuation and are produced by
+    # `continuation_frames(approved:)` - the human-in-the-loop
+    # model, server-shaped: the pause is a rendered form, the continuation
+    # is the stream after the decision.
+    #
+    # @example Scripting a turn with a tool call
     #   script = Poetry::Ui::Chat.script do
     #     user "What's the weather in Tokyo?"
     #     assistant do |w|
@@ -20,14 +28,11 @@ module Poetry
     #   end
     #   script.segments  # => enumerable segments; assistant segments carry
     #                    #    frames (accumulated part states + sleeps + versions)
-    #
-    # A tool with `approval: true` PAUSES its segment after the input frame;
-    # the frames that follow (its output - or denial - and later parts)
-    # belong to the continuation and are produced by
-    # `continuation_frames(approved:)` - the human-in-the-loop
-    # model, server-shaped: the pause is a rendered form, the continuation
-    # is the stream after the decision.
     module Chat
+      # Builds a Script from the block - instance_eval'd, so bare `user`
+      # and `assistant` calls declare the segments in transcript order.
+      #
+      # @return [Script] the compiled, deterministic script
       def self.script(&)
         Script.new(&)
       end
@@ -38,6 +43,8 @@ module Poetry
       # A step of the conversation: :user (text) or :assistant (frames,
       # possibly pausing for approval).
       class Segment
+        # kind (:user or :assistant), the deterministic DOM id, the user
+        # text, and the AssistantTurn (assistant segments only).
         attr_reader :kind, :id, :text, :turn
 
         def initialize(kind:, id:, text: nil, turn: nil)
@@ -47,13 +54,26 @@ module Poetry
           @turn = turn
         end
 
+        # Whether this segment stops at an approval pause.
+        #
+        # @return [Boolean]
         def pause? = kind == :assistant && turn.pause?
 
+        # The frame timeline up to (and including) an approval pause, or
+        # the whole turn when nothing pauses.
+        #
+        # @return [Array<Frame>]
         def frames = turn.frames
 
+        # The frames after the approval pause, resolved by the decision.
+        #
+        # @param approved [Boolean] the human decision at the pause
+        # @return [Array<Frame>]
         def continuation_frames(approved:) = turn.continuation_frames(approved: approved)
 
         # The final resting parts (approval segments resolve per decision).
+        #
+        # @return [Array<Hash>] the part list as last rendered
         def final_parts(approved: true)
           return [{ kind: :text, text: text }] if kind == :user
           return frames.last.parts unless pause?
@@ -65,7 +85,9 @@ module Poetry
       # The DSL root: collects user/assistant segments in scripted order
       # and assigns each a deterministic id.
       class Script
+        # Per-chunk streaming delay (ms) when a text part names none.
         DEFAULT_TEXT_DELAY_MS = 30
+        # Words per streamed text chunk in the compiled frames.
         TEXT_CHUNK_WORDS = 3
 
         def initialize(&)
@@ -74,10 +96,18 @@ module Poetry
           instance_eval(&)
         end
 
+        # Declares a user message at this point in the transcript.
+        #
+        # @param text [String] the user's message
         def user(text)
           @segments << Segment.new(kind: :user, id: next_id, text: text)
         end
 
+        # Declares an assistant turn: pass plain text, or take the block
+        # form and compose text / reasoning / tool parts in order.
+        #
+        # @param text [String, nil] shortcut for a single text part
+        # @yieldparam writer [Writer] appends parts to the turn
         def assistant(text = nil, &block)
           turn = AssistantTurn.new
           if block
@@ -88,6 +118,7 @@ module Poetry
           @segments << Segment.new(kind: :assistant, id: next_id, turn: turn)
         end
 
+        # @return [Array<Segment>] the declared segments, in scripted order
         attr_reader :segments
 
         private
@@ -105,11 +136,20 @@ module Poetry
           @parts = []
         end
 
+        # The Writer collecting this turn's parts (memoized - `assistant`
+        # yields it).
+        #
+        # @return [Writer]
         def writer = @writer ||= Writer.new(@parts)
 
+        # Whether any tool part requests approval (pausing the segment).
+        #
+        # @return [Boolean]
         def pause? = @parts.any? { |part| part[:kind] == :tool && part[:approval] }
 
         # Frames up to (and including) the pause, or the whole turn.
+        #
+        # @return [Array<Frame>]
         def frames
           compile(@parts.take_while.with_index { |_part, i| i.zero? || !pause_before?(i) })
         end
@@ -120,6 +160,9 @@ module Poetry
         # (denial streams tool-output-denied and stops;
         # the approved branch carries the follow-through). So a denied
         # continuation is exactly the resolution frame.
+        #
+        # @param approved [Boolean] the human decision at the pause
+        # @return [Array<Frame>]
         def continuation_frames(approved:)
           raise Error, "turn has no approval pause" unless pause?
 
@@ -194,16 +237,40 @@ module Poetry
           @parts = parts
         end
 
+        # Appends a streamed text part.
+        #
+        # @param text [String] the assistant prose
+        # @param delay_ms [Integer, nil] per-chunk delay override (defaults
+        #   to Script::DEFAULT_TEXT_DELAY_MS)
+        # @return [Writer] self, for chaining
         def text(text, delay_ms: nil)
           @parts << { kind: :text, text: text, delay_ms: delay_ms }.compact
           self
         end
 
+        # Appends a reasoning part - streamed like text, rendered as the
+        # collapsible thinking block.
+        #
+        # @param text [String] the reasoning prose
+        # @param delay_ms [Integer, nil] per-chunk delay override
+        # @return [Writer] self, for chaining
         def reasoning(text, delay_ms: nil)
           @parts << { kind: :reasoning, text: text, delay_ms: delay_ms }.compact
           self
         end
 
+        # Appends a tool-call part: the input frame streams first (state
+        # :loading), then after sleep_ms the resolution frame carries the
+        # output. approval: true pauses the segment at the input frame for
+        # a human decision; denied: true scripts the denied resolution.
+        #
+        # @param name [String] the tool name as rendered
+        # @param input [Hash] the tool input payload
+        # @param output [Object, nil] the result shown on resolution
+        # @param sleep_ms [Integer] thinking time before the resolution
+        # @param approval [Boolean] pause for a human decision after input
+        # @param denied [Boolean] script the denied resolution
+        # @return [Writer] self, for chaining
         # rubocop:disable Metrics/ParameterLists -- the writer vocabulary mirrors the tool part's options
         def tool(name, input:, output: nil, sleep_ms: 0, approval: false, denied: false)
           @parts << { kind: :tool, name: name, input: input, output: output,

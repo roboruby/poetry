@@ -3,11 +3,11 @@
 module Poetry
   module Ui
     module Avatar
-      # shadcn Avatar, re-expressed through the cn-* theme layer.
-      # :image keeps poetry's "absolute inset-0" deviation inline (the
+      # Re-expressed through the cn-* theme layer.
+      # :image keeps the "absolute inset-0" rule inline (the
       # server-native layered fallback keeps BOTH fallback and image in the
       # DOM, so the image must cover the initials); the after:* ring
-      # machinery stays inline per upstream's own split.
+      # machinery stays inline as a structural rule.
       class Style < Poetry::Core::Style
         base "cn-avatar group/avatar relative flex shrink-0 select-none " \
              "after:absolute after:inset-0 after:border after:border-border " \

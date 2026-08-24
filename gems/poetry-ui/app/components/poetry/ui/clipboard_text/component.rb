@@ -2,20 +2,21 @@
 
 module Poetry
   module Ui
+    # ClipboardText family: a read-only value with one copy affordance.
     module ClipboardText
-      # The ClipboardText (the kumo contract): a read-only value with
-      # one copy affordance - API keys, install commands, resource IDs. The
-      # value rides a readonly mono input on InputGroup's chrome (selectable,
-      # never editable), the trailing ghost Button copies, and the controller
-      # stamps data-copied on the root for a beat - the stacked copy/check
-      # glyphs swap off it in CSS. The announcement goes through the
-      # live-region singleton; the execCommand fallback restores the user's
-      # own selection and focus (poetry--core--clipboard-text).
+      # A read-only value with one copy affordance - API keys, install
+      # commands, resource IDs. The value renders in a readonly monospace
+      # input (selectable, never editable) with a trailing copy button.
+      # A successful copy stamps data-copied on the root for a moment, so
+      # the stacked copy/check glyphs swap in CSS, and announces itself
+      # to screen readers; the fallback copy path restores the user's own
+      # selection and focus.
       #
       # @example An install command with a copy button
       #   render Poetry::Ui::ClipboardText::Component.new(value: "gem install poetry-ui",
       #                                                   label: "Install command")
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "A read-only value with one copy affordance (poetry_clipboard_text) - API keys, install " \
           "commands, IDs. Editable text is an Input; a secret that needs masking is a SensitiveInput.",
@@ -41,13 +42,21 @@ module Poetry
           end
         end
 
+        # The displayed text - also what copies, unless text_to_copy:
+        # overrides it.
         option :value, :string, required: true
-        # Copy override when the displayed value truncates (kumo's
-        # textToCopy): display short, copy full.
+        # Overrides what lands on the clipboard when the displayed value
+        # truncates: display short, copy full.
         option :text_to_copy, :string
+        # The readonly input's DOM id (auto-generated when omitted) - the
+        # Field/Label for= target.
         option :id, :string
+        # The readonly input's accessible name when no Label/Field
+        # association exists.
         option :label, :string
+        # Ids for the input's aria-describedby (hint or error text).
         option :described_by, :string
+        # Disables the input and the copy button together.
         option :disabled, :boolean, default: false
 
         part "clipboard-text", "Root - the controller rides here",
@@ -71,10 +80,14 @@ module Poetry
         # component's primary action), aria-controls to the input, stacked
         # copy/check glyphs inside.
 
+        # The readonly input's id (given or auto-generated).
+        # @api private
         def control_id
           @control_id ||= id.presence || poetry_instance_id("poetry-clipboard-text")
         end
 
+        # Attributes for the root wrapper.
+        # @api private
         def root_attributes
           attrs = {
             "data-slot" => "clipboard-text",
@@ -83,6 +96,8 @@ module Poetry
           html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
+        # Attributes for the bordered field surface.
+        # @api private
         def group_attributes
           {
             "role" => "group",
@@ -91,6 +106,8 @@ module Poetry
           }
         end
 
+        # Attributes for the trailing addon cell.
+        # @api private
         def addon_attributes
           {
             "data-slot" => "input-group-addon",
@@ -99,6 +116,8 @@ module Poetry
           }
         end
 
+        # Attributes for the readonly value input.
+        # @api private
         def input_attributes
           attrs = Poetry::Core::HTML::Attributes.new(
             "type" => "text",
@@ -119,6 +138,7 @@ module Poetry
 
         # The copy affordance: a ghost icon Button, a real tab stop (it IS
         # the component's action).
+        # @api private
         def copy_button
           Button::Component.new({
             variant: :ghost, size: :"icon-xs", disabled: disabled,

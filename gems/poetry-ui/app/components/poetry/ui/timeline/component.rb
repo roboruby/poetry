@@ -2,16 +2,19 @@
 
 module Poetry
   module Ui
+    # Dated event sequences as ordered lists.
     module Timeline
-      # The Timeline - a sequence of dated events as a real ordered
-      # list: activity feeds, order status,
-      # deploy history. Each item wears a decorative indicator (a dot, or
-      # icon:'s glyph) on a connector rail; completed: marks progress and
-      # recolors the item's indicator and rail segment. No upstream
-      # shadcn/Base UI analogue; the anatomy follows ReUI's Timeline on
-      # <ol>/<li> semantics (the MetadataList precedent: the platform
-      # element the pattern owes its readers). Styling is utility-only
-      # (the Separator/Spinner rule): data-slot names are the restyle seam.
+      # A sequence of dated events rendered as a real ordered list
+      # (<ol>/<li>) - activity feeds, order status, deploy history. Each
+      # item carries a decorative indicator (a dot, or icon:'s glyph) on
+      # a connector rail; completed: marks progress and recolors the
+      # item's indicator and rail segment. orientation: :horizontal lays
+      # the steps left-to-right (an order tracker); the vertical default
+      # reads as a feed.
+      #
+      # A Timeline records history - for steps the user advances through,
+      # use Stepper. Styling is utility-only: the data-slot names are the
+      # restyle seam.
       #
       # @example
       #   render Poetry::Ui::Timeline::Component.new do |timeline|
@@ -19,6 +22,7 @@ module Poetry
       #     timeline.with_item(title: "In transit") { "Estimated delivery Thursday." }
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "A sequence of dated events (activity feed, order status, deploy history) is a " \
           "Timeline - never a hand-rolled stack of dots and left borders (this is the <ol> " \
@@ -36,6 +40,8 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item (title:, with the description as its block)" }.freeze
 
+        # Declares one event: title:, optional time: (renders a <time>), optional icon:
+        # (replaces the dot), completed: for progress - the description is the block.
         renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
                                        **options, &block|
           # class: merges through the dictionary (caller classes win on
@@ -52,6 +58,7 @@ module Poetry
           end
         }
 
+        # The layout axis: :vertical reads as a feed, :horizontal as a step tracker.
         style :orientation, default: :vertical, variants: %i[vertical horizontal]
 
         part "timeline", "The <ol> root - the event sequence",
@@ -72,14 +79,17 @@ module Poetry
         part "timeline-time", "The event's <time> - muted, small"
         part "timeline-content", "Muted description under the header (the item's block)"
 
+        # @api private
         def before_render
           raise ArgumentError, "Timeline requires at least one with_item" unless items?
         end
 
+        # @api private
         def call
           content_tag(:ol, safe_join(items.map(&:to_s)), **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "timeline", "data-orientation" => orientation }

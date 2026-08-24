@@ -2,15 +2,17 @@
 
 module Poetry
   module Ui
-    # Family identity, derived from the includer's namespace
-    # (Poetry::Ui::HoverCard::Component -> "HoverCard" / "hover-card"):
-    # the data-slot prefix, error nouns, and sibling constants (the Style
-    # dictionary) all resolve through it, so shared kernels never
-    # hard-code a family. Carries the two identity surfaces every overlay
-    # family re-typed: the root shell and the instance-id seed. A family
-    # with a different root (the menu roots stamp dir) or a different id
-    # shape (Menus::Sub) simply overrides.
+    # Gives an including component its family identity, derived from the
+    # namespace (Poetry::Ui::HoverCard::Component -> "HoverCard" /
+    # "hover-card"): the data-slot prefix, error nouns, and the sibling
+    # Style dictionary all resolve through it, so shared modules never
+    # hard-code a family name. Also supplies the root-shell attributes
+    # and the instance-id seed; a family with a different root or id
+    # shape simply overrides.
     module FamilyIdentity
+      # The family root's data-slot, Stimulus, and self-identification
+      # attributes, merged under any caller-passed HTML attributes.
+      # @api private
       def root_attributes
         html_attributes.merge_if_not_set(
           { "data-slot" => family_slot_prefix }

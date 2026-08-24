@@ -2,27 +2,28 @@
 
 module Poetry
   module Ui
+    # Checkbox family: the form-participating tri-state toggle.
     module Checkbox
-      # First of the toggle family - the one that carries tri-state and
-      # the family's form-integration architecture. Poetry INVERTS Radix's hidden-input model: the hidden
-      # native <input type=checkbox> IS the form participant and the store
-      # (server-rendered name/value/checked, Rails "1"/"0" plus the
-      # unchecked-hidden pair), while the visual button[role=checkbox] only
-      # REFLECTS it via aria-checked + the checked pair (data-checked /
-      # data-unchecked / data-indeterminate, Base UI vocabulary). The shared
-      # poetry--core--checked controller (reused verbatim by Switch) flips
-      # the input, lets the REAL change event bubble, and re-syncs from the
-      # input on native form reset.
+      # A checkbox. A hidden native <input type=checkbox> is the form
+      # participant and the source of truth (server-rendered
+      # name/value/checked, Rails "1"/"0" plus the unchecked-hidden
+      # pair), while the visual button[role=checkbox] only reflects it
+      # via aria-checked and the data-checked / data-unchecked /
+      # data-indeterminate triple. Toggling flips the input and lets the
+      # real change event bubble; a native form reset re-syncs the
+      # visual state from the input. checked: is tri-valued - true,
+      # false, or :indeterminate (for select-all parents).
       #
-      # No wrapper element: button + inputs render as SIBLINGS (fragment) -
-      # the source's `peer` class contract for peer-* label styling breaks
-      # if poetry wraps.
+      # The button and inputs render as siblings with no wrapper
+      # element, so peer-* label styling keyed on the `peer` class works.
       #
       # @example A form checkbox
       #   render Poetry::Ui::Checkbox::Component.new(name: "terms", label: "Accept terms")
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the checked: axis.
         STATES = [true, false, :indeterminate].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all " \
           "(the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan out " \
@@ -59,9 +60,11 @@ module Poetry
           end
         end
 
-        # The tri-valued checked: type (mirrors Radix CheckedState): casts to
-        # exactly true | false | :indeterminate - one option, one source of
-        # truth, no separate indeterminate: flag.
+        # The tri-valued checked: type - casts to exactly
+        # true | false | :indeterminate, so one option carries the whole
+        # state with no separate indeterminate: flag.
+        #
+        # @api private
         class CheckedState < ActiveModel::Type::Value
           def type
             :checked_state
@@ -74,17 +77,18 @@ module Poetry
           end
         end
 
-        # checked: is ONE tri-valued option ([true, false, :indeterminate]) -
-        # not a separate indeterminate: flag (mirrors Radix CheckedState).
+        # The state as ONE tri-valued option (true, false, or
+        # :indeterminate) - there is no separate indeterminate: flag.
         option :checked, CheckedState.new, default: false
-        # PRESENCE gates the hidden native input pair - poetry's server-side
-        # answer to Radix's runtime closest('form') isFormControl check.
+        # Form participation: present renders the hidden native input
+        # pair; absent leaves the checkbox visual-only (controlled UI).
         option :name, :string
-        # Rails check_box parity ("1", not Radix's "on").
+        # The value submitted when checked (the Rails check_box "1").
         option :value, :string, default: "1"
-        # The paired hidden's value submitted when unchecked (FormBuilder
-        # parity); nil suppresses the pair (the array idiom).
+        # The paired hidden input's value submitted when unchecked; nil
+        # suppresses the pair (the checkbox-array idiom).
         option :unchecked_value, :string, default: "0"
+        # Disables the visual button and the hidden input together.
         option :disabled, :boolean, default: false
         # aria-required ONLY, never native required - native required on the
         # hidden input would make an unfocusable control invalid.
@@ -110,38 +114,53 @@ module Poetry
                "data-indeterminate" => "mirrors the control - the glyph swaps to minus"
              }
 
+        # Whether checked: is :indeterminate.
+        # @api private
         def indeterminate?
           checked == :indeterminate
         end
 
+        # Whether checked: is exactly true.
+        # @api private
         def checked?
           checked == true
         end
 
+        # The state word behind the data-* stamp.
+        # @api private
         def state
           return "indeterminate" if indeterminate?
 
           checked? ? "checked" : "unchecked"
         end
 
+        # The aria-checked value ("mixed" for indeterminate).
+        # @api private
         def aria_checked
           indeterminate? ? "mixed" : checked?.to_s
         end
 
         # The label-for target (Field-issued or auto) - server-stable so the
         # sibling input resolves structurally by id, wrapper-free.
+        # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-checkbox")
         end
 
+        # The hidden input's id, derived from the control's.
+        # @api private
         def input_id
           "#{control_id}-input"
         end
 
+        # Whether the hidden input pair renders (name: present).
+        # @api private
         def form_participant?
           name.present?
         end
 
+        # Attributes for the visual button[role=checkbox].
+        # @api private
         def root_attributes
           attrs = {
             "type" => "button", "role" => "checkbox", "id" => control_id,

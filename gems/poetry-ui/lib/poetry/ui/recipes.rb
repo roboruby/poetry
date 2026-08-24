@@ -10,10 +10,17 @@ module Poetry
     # collision-checks recipes against components and blocks at first
     # touch).
     module Recipes
+      # Gem-relative path of the scaffold override template set.
       SCAFFOLD_TEMPLATES = "lib/generators/poetry/scaffold_templates/templates"
+      # Gem-relative path holding the screen-slice and embed sources.
       SCREEN_SOURCES = "lib/generators/poetry/recipes"
 
       class << self
+        # Every recipe definition, in registry order: the agent embed, the
+        # three skill bundles, the scaffold-template set, and the screen
+        # slices.
+        #
+        # @return [Array<Hash>] name/title/description + lazy "files"
         def definitions
           [agent_embed, skill_poetry, skill_poetry_design, skill_poetry_component, scaffold_templates,
            screen(

@@ -2,21 +2,24 @@
 
 module Poetry
   module Ui
-    # The InputGroup-chrome field kit: what the affix-field controls
-    # (NumberField, SearchField, SensitiveInput; the segmented date/time
-    # fields share the id ladder) re-typed around InputGroup's chrome -
-    # the control-id ladder, the bordered group shell, the addon cells,
-    # and the ghost tool-button recipe. The visible-input skeletons stay
-    # per family: their attribute sets genuinely differ.
+    # Gives a field component InputGroup's chrome: the control-id
+    # ladder, the bordered group shell, the addon cells, and the ghost
+    # tool-button recipe (steppers, clear, reveal, copy). Used by the
+    # affix-field controls (NumberField, SearchField, SensitiveInput);
+    # each includer keeps its own visible-input skeleton, since those
+    # attribute sets genuinely differ.
     module InputGroupField
       include FamilyIdentity
 
       # The control-id ladder: a caller id wins, else the family
       # instance seed.
+      # @api private
       def control_id
         @control_id ||= id.presence || instance_id
       end
 
+      # The bordered role=group shell wearing InputGroup's chrome.
+      # @api private
       def group_attributes
         {
           "role" => "group",
@@ -25,6 +28,8 @@ module Poetry
         }
       end
 
+      # One addon cell aligned inline-start or inline-end on the group row.
+      # @api private
       def addon_attributes(align)
         {
           "data-slot" => "input-group-addon",

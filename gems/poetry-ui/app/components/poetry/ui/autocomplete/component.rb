@@ -2,13 +2,13 @@
 
 module Poetry
   module Ui
+    # Free-text inputs with filtering suggestion popups.
     module Autocomplete
-      # The Autocomplete (Base UI's Autocomplete, first-party composed):
-      # a REAL text input that IS the form value, suggesting from a
-      # server-rendered list that filters as you type. The sibling of
-      # Combobox - there the value is a SELECTED ITEM behind a native
-      # <select>; here the text itself submits as an ordinary param.
-      # Selecting a suggestion writes the input and closes.
+      # A text input that suggests from a server-rendered list, filtered
+      # as you type, while the text itself stays the form value: free text
+      # submits as an ordinary param, and picking a suggestion writes it
+      # into the input and closes the popup. When the value must be a
+      # selected item rather than free text, use Combobox instead.
       #
       # @example Free text with suggestions
       #   render Poetry::Ui::Autocomplete::Component.new(name: "tag", label: "Search tags") do |auto|
@@ -16,6 +16,7 @@ module Poetry
       #     auto.with_item(label: "fix")
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "The input IS the value: name: is the param key and free text submits as-is - " \
           "suggestions are conveniences, not constraints (constrained pick = Combobox).",
@@ -63,14 +64,21 @@ module Poetry
           end
         end
 
+        # The form param key; the input's text submits under it as-is.
         option :name, :string, required: true
+        # The initial input text.
         option :value, :string
+        # Stable DOM id token for the root and list ids.
         option :id, :string
+        # Placeholder text shown while the input is empty.
         option :placeholder, :string
         # The accessible name (or wire aria-labelledby via html attrs).
         option :label, :string
+        # The no-matches message; hidden while anything matches.
         option :empty_text, :string, default: "No results."
+        # Server-renders the suggestion popup open.
         option :open, :boolean, default: false
+        # Opens the suggestions on focus; false waits for typing.
         option :open_on_focus, :boolean, default: true
 
         part "autocomplete", "Root wrapper carrying the controller + popper pair"
@@ -93,6 +101,8 @@ module Poetry
              }
         part "autocomplete-empty", "The no-matches message (hidden while anything matches)"
 
+        # Forces the composition block so with_item calls land before the template renders.
+        # @api private
         def before_render
           content
         end
@@ -100,14 +110,24 @@ module Poetry
         # Hand-rolled builder: ViewComponent lambda slots nil-wrap
         # non-component returns, so the builder collects plain models and
         # before_render forces the composition block.
+
+        # Adds one suggestion to the popup list.
+        #
+        # @param label [String] what filtering matches and what commit writes into the input
+        # @param value [String, nil] overrides the committed text when it differs from the label
+        # @param disabled [Boolean] skipped by filtering and commit
+        # @param highlighted [Boolean] server-renders the item highlighted
         def with_item(label:, value: nil, disabled: false, highlighted: false)
           item_models << Item.new(label: label, value: value, disabled: disabled,
                                   highlighted: highlighted)
           self
         end
 
+        # The collected suggestion models.
+        # @api private
         def item_models = (@item_models ||= [])
 
+        # @api private
         def autocomplete_id
           @autocomplete_id ||= if (token = dom_id_token(id))
                                  "poetry-autocomplete-#{token}"
@@ -116,8 +136,10 @@ module Poetry
                                end
         end
 
+        # @api private
         def list_id = "#{autocomplete_id}-list"
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "class" => css, "data-slot" => "autocomplete", "id" => autocomplete_id }
@@ -126,6 +148,7 @@ module Poetry
           )
         end
 
+        # @api private
         def input_attributes
           attrs = {
             name: name, value: value, placeholder: placeholder, type: :text,
@@ -137,6 +160,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:input).transform_keys(&:to_sym))
         end
 
+        # @api private
         def content_attributes
           attrs = {
             "class" => css(:content), "data-slot" => "autocomplete-content"
@@ -150,6 +174,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:content))
         end
 
+        # @api private
         def item_attributes(item, index)
           attrs = {
             "class" => Poetry::Ui::Command::Style.css(:item), "data-slot" => "autocomplete-item",
@@ -163,6 +188,8 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:item))
         end
 
+        # One suggestion's plain data model, collected by with_item.
+        # @api private
         Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
       end
     end

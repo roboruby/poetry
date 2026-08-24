@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Table
-      # The Table preview: the shadcn table-demo (recent invoices) with a
+      # The Table preview: the ported table-demo (recent invoices) with a
       # caption, a footer total, and a selected row. Built with the same
       # data-slot + Style parts the poetry_table_* helpers stamp (the
       # helpers themselves are covered by the components-helper drift test).

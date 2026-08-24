@@ -2,22 +2,20 @@
 
 module Poetry
   module Ui
+    # Removable-chip collections.
     module TagGroup
-      # The TagGroup - a removable-chip
-      # collection: recipients, filters, labels. Grid semantics (container
-      # role=grid, each tag role=row > gridcell), one Tab stop with roving
-      # arrows (wrapping, horizontal), Delete/Backspace removes the focused
-      # tag, each remove button removes exactly its own, and focus recovers
-      # forward-then-backward (the container takes over when the last tag
-      # goes - role flips to group). The container is a live region only
-      # while focus is within. Form mode: name: serializes one hidden
-      # name[] input per tag; removal is CANCELABLE
-      # (poetry:tag-group:remove) for Turbo-owned re-renders.
+      # A collection of removable chips - recipients, filters, labels.
+      # The group is one Tab stop with grid semantics: arrow keys move
+      # between tags, Delete/Backspace removes the focused tag, each
+      # chip's remove button removes exactly its own, and focus recovers
+      # to a neighbor after a removal. With name: the group is a form
+      # value - one hidden name[] input submits per tag. Removal is
+      # cancelable via the poetry:tag-group:remove event, so a server
+      # (Turbo) re-render can own it instead.
       #
-      # Documented divergence from the source tag contract: selection modes
-      # are DEFERRED - poetry tags are removal-first (the toggle-a-choice
-      # job belongs to ToggleGroup; the pick-from-options job to Combobox
-      # multiple, whose chips these visually match).
+      # label: is required - it names the grid for assistive tech. Tags
+      # here are removal-only: toggling fixed choices is ToggleGroup,
+      # picking from options is Combobox multiple.
       #
       # @example Removable recipients that submit as recipients[]
       #   render Poetry::Ui::TagGroup::Component.new(label: "Recipients", name: "recipients") do |group|
@@ -25,6 +23,7 @@ module Poetry
       #     group.with_tag(value: "grace", label: "Grace")
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Removable chips are a TagGroup - never hand-rolled badges with x buttons; removal " \
           "keyboard (Delete/Backspace), focus recovery, and the live region ride the controller.",
@@ -37,13 +36,15 @@ module Poetry
           "a TagGroup holds items that exist until removed."
         ].freeze
 
+        # Declares one chip. value: is its identity (and form value); label: is the accessible
+        # name and the visible text when no block is given; removable: false drops the remove button.
         renders_many :tags, lambda { |value:, label: nil, disabled: false, removable: true, **options, &block|
           tag_row(value: value, label: label, disabled: disabled, removable: removable, **options, &block)
         }
 
-        # BOTH controllers declare on the grid element - the one-Attributes
-        # rule holds by construction; roving-focus owns the arrow keys with
-        # the group's own keydown layered on the same event.
+        # Both controllers declare on the grid element: roving-focus owns
+        # the arrow keys, with the group's own keydown (removal keys)
+        # layered on the same event.
         use_stimulus do
           on :grid do
             controller :tag_group do
@@ -62,7 +63,9 @@ module Poetry
           end
         end
 
+        # Makes the group a form value: one hidden <name>[] input submits per tag.
         option :name, :string
+        # The grid's accessible name, rendered as a caption span. Required.
         option :label, :string, required: true
         # Space-separated hint/error ids for the GRID (the labelled element) -
         # a raw aria-describedby in html_attributes would land on the outer
@@ -88,28 +91,32 @@ module Poetry
         part "tag-group-remove", "The per-tag remove button - tabbable (Tab steps from the " \
                                  "row into it), removes exactly its own tag"
 
+        # @api private
         def before_render
           raise ArgumentError, "TagGroup requires label: (the grid's accessible name)" if label.blank?
         end
 
-        # The scoped-descendant pattern: one instance id (ladder: caller
-        # id -> key -> random), every inner id derives from it - so a
-        # keyed group's label AND rows are all morph-stable, and rows
-        # never touch a group-level allocator.
+        # One instance id (ladder: caller id -> key -> random); every
+        # inner id derives from it - so a keyed group's label AND rows are
+        # all morph-stable, and rows never touch a group-level allocator.
+        # @api private
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-tag-group")
         end
 
+        # @api private
         def label_id
           "#{instance_id}-label"
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "tag-group", "class" => css }.merge(component_data_attributes)
           )
         end
 
+        # @api private
         def grid_attributes
           attrs = {
             "role" => tags.any? ? "grid" : "group",
@@ -131,6 +138,7 @@ module Poetry
         # Built here (not in the template) so the slot lambda can compose
         # the full row - content, remove button, hidden input - around the
         # consumer's block.
+        # @api private
         def tag_row(value:, label:, disabled:, removable:, **options, &block)
           # Rows are the reorderable collection: identity derives from
           # value: (the collection contract - unique within the group),

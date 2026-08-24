@@ -2,14 +2,16 @@
 
 module Poetry
   module Ui
+    # The app-shell frame: collapsible navigation column plus content inset.
     module Sidebar
-      # The Sidebar - the app-shell frame: a collapsible navigation column
-      # plus the main content inset, coordinated by poetry--core--sidebar
-      # (the collapse is pure CSS off data-state; the controller flips the
-      # attribute, persists the sidebar_state cookie, and binds Cmd/Ctrl+B).
-      # Server-first: pass open: from the cookie
+      # The app-shell frame: a collapsible navigation column plus the main
+      # content inset. Reach for it as the outermost layout of an
+      # application screen. The collapse is pure CSS off data-state; the
+      # controller flips the attribute, persists the sidebar_state cookie,
+      # and binds Cmd/Ctrl+B. Server-first: pass open: from the cookie
       # (cookies[:sidebar_state] != "false") so the first paint matches the
-      # user's last choice with no flash.
+      # user's last choice with no flash. Below the md breakpoint the
+      # column becomes a slide-in sheet.
       #
       # @example App shell wired to the persisted cookie
       #   <%= poetry_sidebar(open: cookies[:sidebar_state] != "false", collapsible: :icon) do |shell| %>
@@ -22,15 +24,21 @@ module Poetry
       #     <% end %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the side axis.
         SIDES = %i[left right].freeze
+        # The closed vocabulary for the column-treatment axis.
         VARIANTS = %i[sidebar floating inset].freeze
+        # The closed vocabulary for the collapse-mode axis.
         COLLAPSIBLE = %i[offcanvas icon none].freeze
 
+        # The expanded column width.
         WIDTH = "16rem"
+        # The collapsed icon-rail width.
         WIDTH_ICON = "3rem"
-        # SIDEBAR_WIDTH_MOBILE (source): the mobile sheet's panel width.
+        # The mobile sheet's panel width.
         WIDTH_MOBILE = "18rem"
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Wrap the WHOLE shell: with_nav is the sidebar column, with_inset is the page area " \
           "(the trigger lives in the inset).",
@@ -42,12 +50,13 @@ module Poetry
           "navigation navigates."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # The same facts the before_render raise enforces, stated statically
+        # so static checks can flag a missing nav without rendering.
         REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
 
+        # The sidebar column's content (required) - groups, menus, header/footer.
         renders_one :nav
+        # The page area beside the column - rendered as the <main> inset.
         renders_one :inset
 
         use_stimulus do
@@ -84,9 +93,15 @@ module Poetry
           end
         end
 
+        # The expanded/collapsed state at first paint - feed it from the
+        # persisted cookie so there is no collapse flash.
         option :open, :boolean, default: true
+        # Which edge the column hangs on.
         option :side, :symbol, default: :left
+        # The column treatment: flush column, floating card, or inset panel.
         option :variant, :symbol, default: :sidebar
+        # What collapsing does: slide fully away, shrink to an icon rail,
+        # or :none for a static column.
         option :collapsible, :symbol, default: :offcanvas
 
         validates :side, inclusion: { in: SIDES }
@@ -154,24 +169,29 @@ module Poetry
                "data-sidebar" => "always \"menu-badge\" - the upstream sub-part marker"
              }
 
+        # @api private
         def before_render
           raise ArgumentError, "Sidebar requires with_nav (the sidebar column)" unless nav?
         end
 
+        # @api private
         def data_state
           open ? "expanded" : "collapsed"
         end
 
-        # data-collapsible carries the mode only WHILE collapsed (source
-        # parity) - the expanded peer has an empty data-collapsible.
+        # data-collapsible carries the mode only WHILE collapsed - the
+        # expanded peer has an empty data-collapsible.
+        # @api private
         def data_collapsible
           open ? "" : collapsible.to_s
         end
 
+        # @api private
         def inset_variant?
           %i[floating inset].include?(variant)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -182,6 +202,7 @@ module Poetry
           )
         end
 
+        # @api private
         def peer_attributes
           {
             "data-slot" => "sidebar", "class" => css(:peer),
@@ -190,10 +211,12 @@ module Poetry
           }.merge(stimulus_attributes_for(:peer))
         end
 
+        # @api private
         def gap_classes
           inset_variant? ? "#{css(:gap)} #{css(:gap_inset)}" : css(:gap)
         end
 
+        # @api private
         def container_classes
           inset_variant? ? "#{css(:container)} #{css(:container_inset)}" : css(:container)
         end
@@ -202,6 +225,7 @@ module Poetry
         # EMPTY - the controller adopts the nav children on open. Skinned
         # with the Sheet's presence classes off the sidebar dictionary;
         # md:hidden keeps it out of the desktop layout wholesale.
+        # @api private
         def mobile_dialog_attributes
           attrs = {
             "data-slot" => "sidebar-mobile", "data-sidebar" => "sidebar",
@@ -213,6 +237,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:mobile))
         end
 
+        # @api private
         def mobile_title_id
           @mobile_title_id ||= poetry_instance_id("poetry-sidebar-mobile")
         end

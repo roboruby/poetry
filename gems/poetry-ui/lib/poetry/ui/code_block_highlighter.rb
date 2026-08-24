@@ -9,6 +9,9 @@ module Poetry
     module CodeBlockHighlighter
       module_function
 
+      # Whether rouge is loadable in this host (memoized).
+      #
+      # @return [Boolean]
       def available?
         return @available if defined?(@available)
 

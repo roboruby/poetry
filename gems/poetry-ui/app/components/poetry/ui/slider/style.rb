@@ -3,14 +3,13 @@
 module Poetry
   module Ui
     module Slider
-      # Re-expressed through the cn-* theme layer. Poetry's geometry
-      # spine stays ENTIRELY inline: the --slider-start/--slider-end custom
-      # properties (server-rendered, controller-rewritten via CSSOM) and
-      # every calc() consumer on :range and the :anchor trio - a swapped
-      # theme can restyle the surfaces but can never break the math. The
-      # RECORDED golden-diff exception also survives theme-side: the thumb
-      # keeps the source ring-4 swelling focus ring, and bg-white is
-      # LITERAL in source (the thumb stays white in dark mode).
+      # Style dictionary for the Slider family. The geometry spine stays
+      # ENTIRELY inline: the --slider-start/--slider-end custom properties
+      # (server-rendered, controller-rewritten via CSSOM) and every calc()
+      # consumer on :range and the :anchor trio - a swapped theme can
+      # restyle the surfaces but can never break the math. The thumb keeps
+      # the ring-4 swelling focus ring, and bg-white is literal (the thumb
+      # stays white in dark mode).
       class Style < Poetry::Core::Style
         base "cn-slider relative flex w-full touch-none items-center select-none " \
              "data-[disabled]:opacity-50 data-[orientation=vertical]:h-full " \
@@ -31,9 +30,9 @@ module Poetry
         element :thumb, "cn-slider-thumb block shrink-0 " \
                         "disabled:pointer-events-none disabled:opacity-50"
 
-        # The per-thumb positioning anchor (Radix wraps each thumb in an
-        # absolutely positioned span - poetry's version rides the geometry
-        # vars; calc(P% - 0.5rem) centers the 1rem thumb at P%).
+        # The per-thumb positioning anchor - an absolutely positioned span
+        # riding the geometry vars; calc(P% - 0.5rem) centers the 1rem
+        # thumb at P%.
         element :anchor, "absolute data-[orientation=horizontal]:top-1/2 " \
                          "data-[orientation=horizontal]:-translate-y-1/2 " \
                          "data-[orientation=vertical]:left-1/2 data-[orientation=vertical]:-translate-x-1/2"

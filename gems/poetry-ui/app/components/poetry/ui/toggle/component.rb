@@ -2,33 +2,31 @@
 
 module Poetry
   module Ui
+    # Pressed-state buttons.
     module Toggle
-      # The toggle-family member that is NOT a form
-      # control. A Toggle is a styled
-      # pressed-state button: aria-pressed + the bare data-pressed presence
-      # boolean (Base UI vocabulary; unpressed = attribute absent) on a plain
-      # <button> (no ARIA role - that IS the APG toggle-button pattern),
-      # and NO hidden input, NO name:/value:, NO FormBuilder mapping -
-      # explicit, Radix-exact (its Toggle carries zero form machinery).
-      # Pressed state is UI state (bold-in-a-toolbar, bookmark-on); if the
-      # state must submit with a form that's a Checkbox, an instant on/off
-      # setting is a Switch, exclusive/grouped sets are ToggleGroup.
+      # A pressed-state button: aria-pressed plus a bare data-pressed
+      # presence attribute on a plain <button> - the standard ARIA
+      # toggle-button pattern. Pressed state is UI state
+      # (bold-in-a-toolbar, bookmark-on), so a Toggle carries no form
+      # machinery: state that must submit with a form is a Checkbox, an
+      # instant on/off setting is a Switch, and exclusive or grouped sets
+      # are a ToggleGroup.
       #
-      # Machinery: the poetry--core--pressed micro-controller (the smallest
-      # in the suite) - deliberately separate from poetry--core--checked
-      # (different ARIA vocabulary, no input to sync). The source's
-      # exported `toggleVariants` helper ports as the shared Toggle::Style
-      # dictionary (+ the VARIANTS/SIZES constants) that ToggleGroup items
-      # consume.
+      # Icon-only toggles require label:, and the label must not change
+      # with state ("Bookmark", never "Remove bookmark") - aria-pressed
+      # already carries the state.
       #
       # @example An icon-only bookmark toggle
       #   render Poetry::Ui::Toggle::Component.new(label: "Bookmark", pressed: bookmarked?) do
       #     poetry_icon(name: :bookmark)
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the variant axis.
         VARIANTS = %i[default outline].freeze
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm lg].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_toggle - never a Button with hand-managed aria-pressed.",
           "Toggle is UI state, NOT form data: never try to submit it. Form value -> Checkbox; instant " \
@@ -41,9 +39,9 @@ module Poetry
           "Pressed visual is accent - don't override data-pressed colors per-instance (theme-level only)."
         ].freeze
 
-        # The aria-pressed vocabulary owner: flip + mirror data-pressed,
-        # written together; the DOM is the store (no Values). No keydown
-        # code - Space AND Enter activate a native button (Radix-exact).
+        # Click flips aria-pressed and data-pressed together; the DOM is
+        # the store (no Values). No keydown wiring - Space and Enter
+        # already activate a native button.
         use_stimulus do
           on :root do
             controller :pressed do
@@ -53,10 +51,14 @@ module Poetry
           end
         end
 
+        # The visual treatment; :outline adds a border for standalone use.
         style :variant, default: :default, required: true, variants: VARIANTS
+        # The control's size axis.
         style :size, default: :default, required: true, variants: SIZES
 
+        # The server-rendered pressed state.
         option :pressed, :boolean, default: false
+        # Disables the control and forwards to the native button.
         option :disabled, :boolean, default: false
         # REQUIRED when icon-only; must be state-INVARIANT (APG: aria-pressed
         # carries the state - a flipping name makes SRs announce nonsense).
@@ -73,7 +75,8 @@ module Poetry
              }
 
         # An icon-only (or empty) toggle without an accessible name never
-        # ships (the base-contract rule).
+        # ships.
+        # @api private
         def before_render
           return if label.present? || visible_text?
 
@@ -82,10 +85,12 @@ module Poetry
                 "'Bookmark', never 'Remove bookmark')"
         end
 
+        # @api private
         def call
           content_tag(:button, content, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "type" => "button", "data-slot" => "toggle",
@@ -93,10 +98,10 @@ module Poetry
             "data-variant" => variant, "data-size" => size,
             "disabled" => disabled
           }
-          # Base UI presence boolean: pressed -> bare data-pressed,
-          # unpressed -> attribute absent (never data-pressed=false).
+          # Pressed is a bare presence attribute: data-pressed when on,
+          # absent when off (never data-pressed=false).
           attrs["data-pressed"] = "" if pressed
-          # Radix emits data-disabled alongside native disabled - kept for
+          # data-disabled renders alongside native disabled - kept for
           # styling-hook parity (and the group-context roving filter).
           attrs["data-disabled"] = "" if disabled
           attrs["aria-label"] = label if label.present?

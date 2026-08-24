@@ -7,7 +7,16 @@ module Poetry
       # trapped inside, Escape (or the close affordance) dismisses, and
       # focus RETURNS to the trigger. The root you hand this tester is the
       # element carrying data-component=dialog (trigger + content).
+      #
+      # @example Opening, asserting, dismissing
+      #   dialog = poetry_dialog("[data-component='dialog']")
+      #   dialog.open(via: :keyboard)
+      #   assert_equal "Are you sure?", dialog.title
+      #   dialog.close
       class Dialog < Tester
+        # Whether the dialog is currently open.
+        #
+        # @return [Boolean]
         def open?(wait: 0)
           part?("dialog-content", wait: wait) &&
             !hidden_part("dialog-content")["data-open"].nil?
@@ -15,6 +24,10 @@ module Poetry
           false
         end
 
+        # Opens the dialog (no-op when already open). via: :keyboard
+        # focuses the trigger and presses Enter; :mouse presses it.
+        #
+        # @return [Dialog] self
         def open(via: :mouse)
           return self if open?
 
@@ -30,12 +43,18 @@ module Poetry
           self
         end
 
+        # Escape-closes the open dialog and waits for the closed state.
+        #
+        # @return [Dialog] self
         def close
           keys(:escape) if open?
           root.assert_selector("[data-slot='dialog-content'][data-closed]", visible: :all)
           self
         end
 
+        # The dialog's accessible title text.
+        #
+        # @return [String]
         def title
           part("dialog-title").text
         end

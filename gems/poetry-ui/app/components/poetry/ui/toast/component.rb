@@ -2,26 +2,25 @@
 
 module Poetry
   module Ui
+    # Transient notifications.
     module Toast
+      # The closed vocabulary for the variant axis.
       VARIANTS = %i[default success info warning destructive loading].freeze
+      # The closed vocabulary for announcement politeness.
       POLITENESS = %i[polite assertive].freeze
 
-      # One notification - poetry's OWN build: the upstream source
-      # delegates to a React-only toast library poetry cannot take, so
-      # poetry keeps its visual language (popover
-      # token surface, the variant icon set) on Radix-Toast a11y
-      # semantics. The item is role=status aria-live=OFF: it never
-      # announces itself - on connect the poetry--core--toast controller
-      # speaks ONCE through the announce singleton at the variant's
-      # politeness (destructive -> assertive), the Radix duplication
-      # insight (injecting a node that IS a live region mis-announces).
+      # One notification, rendered inside a Toaster region. The item
+      # itself is role=status with aria-live off: it never announces
+      # itself - on arrival the controller speaks it exactly once through
+      # a shared live region at the variant's politeness (:destructive
+      # announces assertively), so duplicating the announcement by hand
+      # is a regression.
       #
-      # Timing is APG/WCAG 2.2.1: the auto-dismiss timer pauses on hover,
-      # focus-within, window blur and tab-hidden; duration <= 0 means
-      # persistent - and an ACTION-BEARING toast defaults to persistent
-      # (a missable undo is a bug). Toasts never steal focus on show; the
-      # toaster's F8 hotkey reaches them. Swipe-to-dismiss is gated on
-      # browser verification and does not ship in this pass (contract).
+      # The auto-dismiss timer pauses on hover, focus-within, window
+      # blur, and hidden tabs; duration <= 0 means persistent - and an
+      # action-bearing toast defaults to persistent (a missable undo is a
+      # bug). Toasts never steal focus on show; the toaster's hotkey
+      # (F8 by default) reaches them.
       #
       # @example An undo toast (persistent because it carries an action)
       #   render Poetry::Ui::Toast::Component.new(variant: :success) do |toast|
@@ -29,13 +28,13 @@ module Poetry
       #     toast.with_action { "Undo" }
       #   end
       class Component < Poetry::Core::Component
-        # The variant icon set (default ships no icon; loading spins -
-        # the promise-lifecycle opener).
+        # The icon each variant renders (:default ships none; :loading spins).
         VARIANT_ICONS = {
           success: :"circle-check", info: :info, warning: :"triangle-alert",
           destructive: :"octagon-x", loading: :"loader-circle"
         }.freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never " \
           "hand-append into #poetry-toaster.",
@@ -48,21 +47,20 @@ module Poetry
         ].freeze
 
         # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { title: "the message" }.freeze
 
-        # The forwarding-lambda fact: with_action renders a
-        # Button - callers get Button's full typed-slot contract statically.
+        # The component behind the forwarding slot: with_action renders a Button.
         SLOT_RENDERS = { action: Button::Component }.freeze
 
         # The message (REQUIRED - the announced payload's first line).
         renders_one :title
 
+        # Supporting copy under the title.
         renders_one :description
 
-        # Typed Button slot (undo / view / retry): clicking it dismisses
-        # with reason "action" (the controller reads the origin slot).
+        # Typed Button slot (undo / view / retry): clicking it dismisses the
+        # toast with reason "action". Its presence makes the toast persistent by default.
         renders_one :action, lambda { |**options, &block|
           wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
           # Caller attribute keys merge WITH the wiring (stimulus concat)
@@ -100,6 +98,8 @@ module Poetry
           end
         end
 
+        # The intent axis: it picks the icon, and :destructive announces
+        # assertively while :loading defaults to persistent.
         style :variant, default: :default, required: true, variants: VARIANTS
 
         # nil = derived: 5000ms, or PERSISTENT when an action slot is
@@ -107,7 +107,7 @@ module Poetry
         option :duration, :integer
         # Derived from the variant: destructive announces assertively.
         option :politeness, :symbol, default: -> { variant == :destructive ? :assertive : :polite }
-        # The corner X - named as the dialog family names it.
+        # The corner dismiss button - named as the dialog family names it.
         option :show_close_button, :boolean, default: true
 
         validates :politeness, inclusion: { in: POLITENESS }
@@ -132,10 +132,12 @@ module Poetry
         part "toast-title", "The message - the announced payload's first line (required slot)"
         part "toast-description", "Supporting copy under the title"
 
+        # @api private
         def before_render
           raise ArgumentError, "Toast requires with_title (the message)" unless title?
         end
 
+        # @api private
         def effective_duration
           return duration unless duration.nil?
 
@@ -146,23 +148,26 @@ module Poetry
           action? || variant == :loading ? 0 : 5000
         end
 
+        # @api private
         def variant_icon
           VARIANT_ICONS[variant]
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
               "data-slot" => "toast", "data-variant" => variant, "data-open" => "",
               # aria-live=off ON PURPOSE: the announce singleton does the
-              # talking, exactly once (items are duplicated-announcement
-              # sources otherwise - the Radix insight).
+              # talking, exactly once (an item that is itself a live
+              # region would announce a second time).
               "role" => "status", "aria-live" => "off", "aria-atomic" => "true",
               "tabindex" => "0"
             }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
 
+        # @api private
         def close_button_attributes
           stimulus_attributes_for(:close).merge("data-slot" => "toast-close")
         end

@@ -4,23 +4,20 @@ require "digest"
 
 module Poetry
   module Ui
+    # Deferred family: lazy-loaded regions with loading and error states.
     module Deferred
-      # A deferred region. Turbo owns the loading physics
-      # (loading: :lazy fetches when the frame becomes VISIBLE - so a
-      # deferred Tabs panel or HoverCard body loads on first reveal with
-      # no extra wiring; :eager fetches right after paint). poetry owns
-      # the states: a Skeleton placeholder (the component block overrides
-      # it) and a visible, retryable error card via poetry--core--deferred
-      # - Turbo alone leaves failure as silent blankness.
-      #
-      # Styleless on purpose: the frame and placeholder are structural
-      # wrappers; Skeleton and Button bring the themed surfaces, and the
-      # error card rides static template utilities (scanned into the
-      # safelist like every committed template class).
+      # A deferred region: a Turbo Frame that fetches its content when it
+      # becomes VISIBLE (loading: :lazy, the default - so a deferred Tabs
+      # panel or HoverCard body loads on first reveal with no extra
+      # wiring) or right after paint (:eager). The block is the loading
+      # placeholder (a Skeleton renders when absent), and a failed fetch
+      # shows a visible, retryable error card instead of silent
+      # blankness.
       #
       # @example
       #   render Poetry::Ui::Deferred::Component.new(src: "/dashboard/activity")
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_deferred(src:) for expensive regions - never a spinner div + a hand-rolled fetch.",
           "loading: :lazy (the default) fetches on visibility: a deferred region inside a hidden " \
@@ -51,10 +48,10 @@ module Poetry
           end
         end
 
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (the floating-crash
-        # class - a required option the static tier could not see).
+        # The URL to fetch - required; rendering without it raises.
         option :src, :string, required: true
+        # :lazy fetches when the frame becomes visible; :eager fetches
+        # right after paint.
         option :loading, :symbol, default: :lazy
 
         part "deferred", "The <turbo-frame> root - src is armed at connect(); failure is " \
@@ -67,15 +64,18 @@ module Poetry
         part "deferred-error", "The retryable error card, stamped into the frame from the " \
                                "slotted <template> on failure"
 
+        # Enforces the required src.
+        # @api private
         def before_render
           raise ArgumentError, "poetry_deferred requires src:" if src.blank?
         end
 
         # No src in the markup ON PURPOSE: the URL rides the controller
         # value and connect() arms it, so a fast response can never beat
-        # the controllers module graph to the frame (the Turbo 8
-        # frame-missing default would promote that failure to a full-page
-        # visit - caught live on the docs site).
+        # the controllers module graph to the frame (Turbo 8's
+        # frame-missing default would promote that race to a full-page
+        # visit).
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

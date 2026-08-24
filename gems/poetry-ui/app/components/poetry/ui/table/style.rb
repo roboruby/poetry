@@ -3,11 +3,10 @@
 module Poetry
   module Ui
     module Table
-      # Re-expressed through the cn-* theme layer. Zero JS - the
-      # row's selected state stays the Base UI vocabulary (data-selected),
-      # its tint now in the theme with every other row tint (same-side).
-      # The scroll container carries the themed hook (upstream ships the
-      # mechanism AS the identical-everywhere cn-table-container rule).
+      # Re-expressed through the cn-* theme layer. Zero JS - the row's
+      # selected state travels as data-selected, its tint in the theme
+      # with every other row tint. The scroll container carries its own
+      # themed hook (cn-table-container).
       class Style < Poetry::Core::Style
         base "cn-table"
 

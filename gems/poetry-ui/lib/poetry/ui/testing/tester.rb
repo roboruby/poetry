@@ -7,6 +7,7 @@ module Poetry
       # contract surface - never CSS classes), and Capybara-native waiting.
       # Subclasses encode one component's real interaction sequences.
       class Tester
+        # @return [Capybara::Session] the session driving the browser
         attr_reader :session
 
         def initialize(root, session:)
@@ -16,6 +17,8 @@ module Poetry
 
         # The component root node, re-found on every access so Turbo
         # re-renders never leave the tester holding a stale element.
+        #
+        # @return [Capybara::Node::Element]
         def root
           case @root_locator
           when String then session.find(@root_locator)

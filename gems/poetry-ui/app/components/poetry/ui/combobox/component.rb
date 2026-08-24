@@ -2,6 +2,8 @@
 
 module Poetry
   module Ui
+    # Combobox family: the searchable select - a trigger, a filterable
+    # listbox popup, and a native-select form story.
     module Combobox
       # The placement vocabularies, declared ONCE at module level - shared
       # by the validations and the part-state declarations.
@@ -9,14 +11,17 @@ module Poetry
       ALIGNS = %i[start center end].freeze
       DIRS = %i[ltr rtl].freeze
 
-      # The server-side option registry: Select's OptionSet (unique
-      # non-blank values, labels for the native <select> and the value
-      # display) fused with Command's ItemSet (server-stable option ids
-      # "#{id}-item-<n>" - the aria-activedescendant contract - and the
-      # initial highlight seat: the selected option, else the first
-      # enabled item). Duplicate or blank values raise at render (the
-      # base-contract rule).
+      # The server-side option registry: collects every option in render
+      # order with unique non-blank values, keeps labels for the native
+      # <select> and the value display, assigns the server-stable option
+      # ids ("#{id}-item-<n>") that aria-activedescendant depends on, and
+      # seats the initial highlight (the selected option, else the first
+      # enabled item). Duplicate or blank values raise at render.
+      #
+      # @api private
       class OptionSet
+        # One registered option: value, label, disabled.
+        # @api private
         Entry = Struct.new(:value, :label, :disabled)
 
         attr_reader :entries, :highlighted_id
@@ -53,7 +58,7 @@ module Poetry
 
         # A selected value seats the highlight on ITS option (unless
         # disabled; the controller's open-seed falls back client-side);
-        # no value -> first enabled (Command's rule verbatim).
+        # no value -> first enabled (Command's rule).
         def highlight?(value, disabled)
           return false if @highlighted_id || disabled
 
@@ -65,6 +70,8 @@ module Poetry
       # Component and the nested Group so both levels render the same
       # anatomy through the same Builder. Hosts must expose #option_set
       # (the shared OptionSet) and #selected_value.
+      #
+      # @api private
       module Helpers
         private
 
@@ -73,7 +80,7 @@ module Poetry
         end
 
         # The engine's separator part (Command::Style verbatim) - hidden by
-        # the controller whenever the query is non-empty (upstream parity).
+        # the controller whenever the query is non-empty.
         def separator_part(**options)
           attrs = {
             # aria-hidden, never role=separator: inside role=listbox a
@@ -85,10 +92,9 @@ module Poetry
         end
 
         # COMBOBOX-OWNED addition onto each command-item: the
-        # committed-value check - TRAILING ms-auto per the demo, not
-        # Select's absolute gutter. Server-rendered always; the item's
-        # data-selected absence hides it while unselected (attribute-driven,
-        # replacing the demo's opacity-by-value-equality JSX).
+        # committed-value check - TRAILING (ms-auto), not Select's
+        # absolute gutter. Server-rendered always; the item's
+        # data-selected absence hides it in CSS while unselected.
         def item_indicator
           content_tag(:span, "data-slot" => "combobox-item-indicator",
                              "class" => Style.css(:item_indicator, class: Style.css(:item_indicator_state))) do
@@ -97,8 +103,8 @@ module Poetry
         end
       end
 
-      # One role=option div carrying BOTH meanings (the two-meanings
-      # rule): it stays a valid COMMAND item
+      # One role=option div carrying BOTH meanings: it stays a valid
+      # COMMAND item
       # (data-value + data-poetry-collection-item + the engine's
       # activate/pointerHighlight actions + keywords/filter_value/
       # always_render, NO tabindex - activedescendant, never DOM focus)
@@ -134,7 +140,7 @@ module Poetry
           item_id, highlighted = option_set.register(value: @value, label: plain_label, disabled: @disabled)
 
           # multiple passes the committed LIST - selection is ARRAY
-          # INCLUSION (Base UI); single stays the scalar equality.
+          # INCLUSION; single stays the scalar equality.
           selected = if selected_value.is_a?(Array)
                        selected_value.include?(@value)
                      else
@@ -149,7 +155,7 @@ module Poetry
             command.with_action(:activate, on: :click)
             command.with_action(:pointer_highlight, on: :pointermove)
           end)
-          # Base UI selected state: bare data-selected on the committed
+          # The selected state: bare data-selected on the committed
           # option, NOTHING while unselected (absence IS the state).
           attrs["data-selected"] = "" if selected
           attrs["data-highlighted"] = "" if highlighted
@@ -169,12 +175,11 @@ module Poetry
         end
       end
 
-      # role=group labelled by its heading part (Command's group shape
-      # verbatim) - the same item union one level down, registering its
-      # options into the PARENT's option set so ids, the native <select>,
-      # and the value display see every option in DOM order. Plain
-      # ViewComponent::Base ON PURPOSE: nested parts are anatomy, not
-      # registered components.
+      # role=group labelled by its heading part (Command's group shape) -
+      # the same item union one level down, registering its options into
+      # the PARENT's option set so ids, the native <select>, and the
+      # value display see every option in DOM order. Kept internal ON
+      # PURPOSE: nested parts are anatomy, not registered components.
       #
       # @api private
       class Group < Poetry::Core::Component
@@ -183,6 +188,8 @@ module Poetry
 
         attr_reader :option_set, :selected_value
 
+        # The group's members: with_item options and with_separator
+        # dividers, interleaved in declaration order.
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
@@ -229,39 +236,22 @@ module Poetry
         end
       end
 
-      # The Combobox: Select's shell x
-      # Command's engine - the shadcn DOCS composition (Button
-      # role=combobox + Popover + Command) made server-native. The
-      # root/trigger/native-select/value-display are Select's contract
-      # shapes verbatim (a combobox-role button anchor, a visually-hidden
-      # server-rendered native <select> as THE serialization truth, the
-      # native-first commit pipeline in poetry--core--combobox); the popup
-      # is the full embedded Command anatomy (input + filtered listbox),
-      # rendered HERE against Command::Style + the poetry--core--command
-      # controller rather than by nesting Command::Component - composition
-      # AT THE MARKUP CONTRACT: nesting the component would collide ids
-      # (Command's root id would duplicate the trigger's), could not seat
-      # the indicator inside each item, and could not retune the input to
-      # the demo's h-9. The engine controller and its event contract are
-      # reused unchanged; the two controllers compose via
-      # poetry:command:select only (zero shared code, greps fence both
-      # directions).
+      # A searchable select: a button that opens a popup holding a filter
+      # input and a listbox of options, committing the chosen value to a
+      # visually hidden native <select> that is the form's source of
+      # truth. Options are server-rendered and filtered client-side as
+      # you type; the selected option's label shows in the trigger.
       #
-      # THE THREE DELIBERATE DELTAS vs Select (each pinned by tests):
-      # open focuses the INPUT (a typing session - APG editable combobox;
-      # the selected option gets highlight + scrollIntoView, not focus);
-      # Tab while open CLOSES WITHOUT COMMIT (Popover semantics, modal:
-      # false default); a printable key on the closed trigger OPENS and
-      # SEEDS the filter (no closed-trigger typeahead-commit).
+      # Opening focuses the filter input (the selected option is
+      # highlighted and scrolled into view, not focused); Tab while open
+      # closes WITHOUT committing; a printable key on the closed trigger
+      # opens the popup and seeds the filter.
       #
-      # MULTIPLE (Base UI's multiple, input-inside layout): value: takes a
-      # LIST, the chips FIELD replaces the trigger (chips in value order +
-      # the filter input inline - still data-slot=command-input, the
-      # engine's markup contract), the command engine mounts on the ROOT
-      # so it scopes over both surfaces, the native <select multiple>
-      # posts name[], the listbox turns aria-multiselectable, and
-      # selection TOGGLES with the popup staying open. Single mode's DOM
-      # is byte-identical to the pre-multiple component.
+      # With multiple: true, value: takes a LIST, a chips field (chips in
+      # value order plus the filter input inline) replaces the trigger,
+      # the native <select multiple> posts name[], the listbox turns
+      # aria-multiselectable, and selection TOGGLES with the popup
+      # staying open.
       #
       # @example
       #   render Poetry::Ui::Combobox::Component.new(name: "framework", "aria-label" => "Framework") do |combobox|
@@ -276,6 +266,7 @@ module Poetry
         # interactive control the label must reach - never on the root div.
         TRIGGER_ARIA_KEYS = %w[label labelledby describedby invalid required].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_combobox (f.poetry_combobox in forms) - never hand-wire Popover+Command+hidden-input; " \
           "this component IS that wiring, with the form story done right.",
@@ -298,9 +289,8 @@ module Poetry
           "IS the deselect gesture (chip-remove is its pointer twin)."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # The required slots, stated statically so static checks can flag
+        # a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         # Optional custom trigger content rendered BEFORE the value span
@@ -412,42 +402,57 @@ module Poetry
           end
         end
 
+        # The committed value; with multiple:, an array of values.
         option :value, :string
+        # The form field name on the native <select>; multiple: appends
+        # [] for you.
         option :name, :string
+        # Shown in the value display (multiple: in the inline input)
+        # while nothing is committed.
         option :placeholder, :string
+        # Placeholder for the popup's filter input (single mode).
         option :search_placeholder, :string
+        # The trigger's DOM id - the Field label target; every other part
+        # id derives from it.
         option :id, :string
+        # Server-renders the popup open.
         option :open, :boolean, default: false
+        # Forwards to the native <select> for constraint validation.
         option :required, :boolean, default: false
+        # Disables the trigger, the filter input, and the native select.
         option :disabled, :boolean, default: false
-        # Base UI's multiple: value: becomes LIST-capable (single stays the
-        # scalar), the trigger is replaced by the chips field, the native
-        # <select multiple> posts name[], selection toggles without closing.
+        # Multi-select mode: value: becomes LIST-capable (single stays
+        # the scalar), the trigger is replaced by the chips field, the
+        # native <select multiple> posts name[], selection toggles
+        # without closing.
         option :multiple, :boolean, default: false
-        # DEFAULT FALSE - Popover semantics (Tab-out closes, no scrim); the
-        # delta vs Select's modal: true. true restores the focus-scope trap
-        # for dialog-critical pickers.
+        # DEFAULT FALSE - popover semantics (Tab-out closes, no scrim).
+        # true restores the focus-scope trap for dialog-critical pickers.
         option :modal, :boolean, default: false
-        # Base UI's showClear (single mode only): the trigger-side
-        # deselection X - swaps in over the chevrons while a value is
-        # committed, commits the blank value through the pipeline. Forces
-        # the blank native option so the cleared state serializes as ""
-        # (the include_blank contract).
+        # Single mode only: the trigger-side deselection X - swaps in
+        # over the chevrons while a value is committed and commits the
+        # blank value, so the cleared state serializes as "".
         option :show_clear, :boolean, default: false
         # Forwarded to the embedded engine: false = server-driven options
         # (the async Turbo-frame recipe).
         option :filter, :boolean, default: true
+        # Wraps arrow-key highlight movement past either end of the list.
         option :loop, :boolean, default: false
+        # The popup's preferred side of the trigger; collisions may flip it.
         option :side, :symbol, default: :bottom
+        # The popup's alignment along the trigger's edge.
         option :align, :symbol, default: :start
+        # Gap in px between the trigger and the popup.
         option :side_offset, :integer, default: 4
+        # Skid in px along the aligned edge.
         option :align_offset, :integer, default: 0
+        # Flips/shifts the popup to stay inside the viewport.
         option :avoid_collisions, :boolean, default: true
+        # Writing-direction override (ltr/rtl) stamped on the root.
         option :dir, :symbol
-        # The trigger width utility (the demo 200px as its scale spelling,
-        # w-50 - DesignLint off-scale-arbitrary; the popup ALWAYS
-        # tracks it via the anchor-width binding - one knob, two surfaces).
-        # nil resolves to the dictionary's default_width (w-50).
+        # The trigger width utility class; the popup ALWAYS tracks the
+        # trigger's measured width, so one knob sizes both surfaces.
+        # nil resolves to the dictionary's default (w-50).
         option :width, :string
 
         validates :side, inclusion: { in: SIDES }
@@ -564,6 +569,9 @@ module Poetry
                                      "'Remove <label>') - a press removes the value and is never " \
                                      "a chips-area press"
 
+        # Normalizes the multiple-mode list value before the typed
+        # attribute write.
+        # @api private
         def initialize(attributes = {})
           # multiple: value: is LIST-capable (single keeps the scalar
           # :string cast) - the array is normalized ahead of the typed
@@ -578,6 +586,8 @@ module Poetry
           @trigger_aria = extract_trigger_aria!
         end
 
+        # Enforces the item, naming, and mode-compatibility contracts.
+        # @api private
         def before_render
           raise ArgumentError, "Combobox requires at least one item (with_item / with_group)" unless items?
 
@@ -598,26 +608,37 @@ module Poetry
         # '#{id}' trigger / '#{id}-content' / '#{id}-list' (the
         # aria-controls target of BOTH combobox roles) / '#{id}-native' /
         # '#{id}-input' / '#{id}-item-<n>'.
+        # @api private
         def trigger_id
           @trigger_id ||= id.presence || poetry_instance_id("poetry-combobox")
         end
 
+        # The popup panel's id.
+        # @api private
         def content_id
           "#{trigger_id}-content"
         end
 
+        # The listbox's id - both combobox roles point aria-controls here.
+        # @api private
         def list_id
           "#{trigger_id}-list"
         end
 
+        # The hidden native select's id.
+        # @api private
         def native_id
           "#{trigger_id}-native"
         end
 
+        # The popup filter input's id (single mode).
+        # @api private
         def input_id
           "#{trigger_id}-input"
         end
 
+        # The shared option registry for this render.
+        # @api private
         def option_set
           # multiple seeds the highlight on the FIRST committed value (the
           # scalar rule, list-shaped).
@@ -628,18 +649,25 @@ module Poetry
         # single: the committed scalar; multiple: the committed LIST (array
         # inclusion is the selection test everywhere downstream - items,
         # native options, chips).
+        # @api private
         def selected_value
           @selected_value ||= multiple ? selected_values : value.presence.to_s
         end
 
+        # The committed list (multiple mode; empty otherwise).
+        # @api private
         def selected_values
           @list_value || []
         end
 
+        # The committed option's label for the value display (single mode).
+        # @api private
         def selected_label
           option_set.label_for(selected_value) if !multiple && selected_value.present?
         end
 
+        # Attributes for the root wrapper.
+        # @api private
         def root_attributes
           root = { "data-slot" => "combobox" }
           root["dir"] = dir.to_s if dir
@@ -648,13 +676,14 @@ module Poetry
           )
         end
 
-        # The serialization truth (Select's decision verbatim): a real
-        # <select> carrying name/required/disabled and ALL options with
-        # selected - visually hidden (sr-only, painted) and out of both
-        # trees (aria-hidden + tabindex=-1). The change action is the
-        # autofill-adoption path (nativeChanged). multiple flips the
-        # multiple attribute and posts the Rails array convention (name[],
-        # appended unless the given name already ends with it).
+        # The serialization truth: a real <select> carrying
+        # name/required/disabled and ALL options with selected - visually
+        # hidden (sr-only, painted) and out of both trees (aria-hidden +
+        # tabindex=-1). The change action is the autofill-adoption path.
+        # multiple flips the multiple attribute and posts the Rails array
+        # convention (name[], appended unless the given name already ends
+        # with it).
+        # @api private
         def native_select
           attrs = {
             "id" => native_id, "data-slot" => "combobox-native",
@@ -668,16 +697,17 @@ module Poetry
           content_tag(:select, native_options, attrs)
         end
 
-        # The combobox-role trigger (the demo's Button variant=outline):
-        # aria-controls points at the LISTBOX (the a11y-true relationship
-        # the controller resolves the popup through), aria-haspopup=listbox
-        # names the popup kind, and there is NO aria-autocomplete here -
-        # the typing session belongs to the popup input (the double-
-        # combobox kept for source parity).
         # The width utility the trigger/chips carry - the option, or the
         # dictionary default (w-50).
+        # @api private
         def width_classes = width || css(:default_width)
 
+        # The combobox-role trigger button: aria-controls points at the
+        # LISTBOX (the a11y-true relationship the controller resolves the
+        # popup through), aria-haspopup=listbox names the popup kind, and
+        # there is NO aria-autocomplete here - the typing session belongs
+        # to the popup input.
+        # @api private
         def trigger_button
           attrs = {
             "id" => trigger_id, "data-slot" => "combobox-trigger", "type" => "button",
@@ -685,7 +715,7 @@ module Poetry
             "aria-haspopup" => "listbox",
             "class" => classnames(css(:trigger), width_classes)
           }
-          # Base UI trigger state: bare data-popup-open while open, NO
+          # The trigger state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
           attrs["data-placeholder"] = "" unless selected_label
@@ -700,20 +730,22 @@ module Poetry
         # A custom trigger slot (leading icon) GROUPS with the value display
         # - three bare children under justify-between would strand the text
         # mid-row (icon left, text center, chevrons right). Slot-less
-        # triggers keep the flat two-child markup byte-identical.
+        # triggers keep the flat two-child markup.
+        # @api private
         def leading_content
           return value_display unless trigger?
 
           content_tag(:span, safe_join([trigger, value_display]), "class" => Style.css(:trigger_leading))
         end
 
-        # The chips FIELD (multiple: - replaces the trigger, Base UI's
+        # The chips FIELD (multiple: - replaces the trigger with an
         # input-inside layout): the popper anchor frame holding one chip
         # per committed value IN VALUE ORDER, the inline filter input
         # (data-slot=command-input - the engine's markup contract), and
         # the <template> chip skeleton the controller clones for
         # client-side commits. role=toolbar rides the frame only while it
         # holds chips; an empty selection wears data-placeholder instead.
+        # @api private
         def chips_frame
           attrs = {
             "data-slot" => "combobox-chips",
@@ -734,6 +766,7 @@ module Poetry
         # appended by the controller on open - NEVER roving-focus, the
         # embedded Command is activedescendant). No role: the listbox
         # lives inside.
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id, "data-slot" => "combobox-content", "tabindex" => "-1",
@@ -746,22 +779,28 @@ module Poetry
           attrs
         end
 
-        # The embedded engine root: its OWN poetry--core--command
-        # controller with filter/loop forwarded - the composition boundary
-        # (this component renders Command's anatomy; the engine controller
-        # is reused unchanged).
+        # The committed value(s) as the controller's value payload.
+        # @api private
         def value_payload = multiple ? selected_values : value.to_s
 
+        # The embedded engine root with filter/loop forwarded - the
+        # composition boundary: this component renders Command's anatomy
+        # against the engine's own controller, reused unchanged. Nesting
+        # Command::Component instead would collide ids (its root id would
+        # duplicate the trigger's), could not seat the indicator inside
+        # each item, and could not retune the input's height.
+        # @api private
         def command_attributes
           { "data-slot" => "command", "class" => Command::Style.css }
             .merge(stimulus_attributes_for(:command_part))
         end
 
-        # The popup's filter input (Command's contract at the demo's h-9
-        # scale): its OWN accessible name - t('.filter_label'), distinct
+        # The popup's filter input (Command's contract, retuned to h-9):
+        # its OWN accessible name - t('.filter_label'), distinct
         # from the field label naming the trigger. aria-expanded is
         # statically true (the listbox is always rendered inside the
         # popup; the TRIGGER carries the dynamic flip).
+        # @api private
         def input_attributes
           attrs = {
             "type" => "text", "id" => input_id, "data-slot" => "command-input",
@@ -779,7 +818,8 @@ module Poetry
 
         # THE listbox - the aria-controls target of both combobox roles
         # (the trigger resolves the popup through it). multiple declares
-        # aria-multiselectable (Base UI-exact).
+        # aria-multiselectable.
+        # @api private
         def list_attributes
           attrs = {
             "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
@@ -792,6 +832,7 @@ module Poetry
 
         # Zero-matches message - rendered hidden; the engine unhides it
         # when the filter pass leaves no visible items.
+        # @api private
         def empty_part
           content_tag(:div, empty? ? empty : t("poetry.combobox.empty"),
                       "data-slot" => "command-empty", "hidden" => true, "class" => Command::Style.css(:empty))
@@ -799,6 +840,7 @@ module Poetry
 
         # Pending affordance (role=status) - rendered hidden; the HOST
         # unhides it around async refills (Command's part, shared keys).
+        # @api private
         def loading_part
           content_tag(:div, "data-slot" => "command-loading", "role" => "status",
                             "hidden" => true, "class" => Command::Style.css(:loading)) do
@@ -809,6 +851,7 @@ module Poetry
 
         # The engine's sr-only polite result-count region (localized
         # templates carried as data attributes - Command's keys, shared).
+        # @api private
         def status_part
           content_tag(:span, nil,
                       "data-slot" => "command-status", "role" => "status", "aria-live" => "polite",
@@ -852,8 +895,8 @@ module Poetry
           content_tag(:span, selected_label || placeholder, attrs)
         end
 
-        # The double chevron is the combobox tell (source-exact; Select
-        # wears chevron-down). show_clear adds the swap class: the chevron
+        # The double chevron is the combobox tell (Select wears
+        # chevron-down). show_clear adds the swap class: the chevron
         # goes invisible (keeping its box) while the sibling X is showable.
         def chevrons
           classes = classnames(Style.css(:trigger_icon), (Style.css(:trigger_icon_swap) if show_clear))
@@ -878,9 +921,9 @@ module Poetry
         end
 
         # One chip: a div taking REAL focus (tabindex=-1, styled by
-        # :focus-visible - NO data-highlighted here, Base UI-exact), named
-        # by its value text, holding the native remove button. nil value =
-        # the blank skeleton the <template> ships for the controller.
+        # :focus-visible - NO data-highlighted here), named by its value
+        # text, holding the native remove button. nil value = the blank
+        # skeleton the <template> ships for the controller.
         def chip_part(chip_value = nil)
           label = chip_value && (option_set.label_for(chip_value) || chip_value)
           attrs = {
@@ -890,7 +933,7 @@ module Poetry
           attrs["aria-label"] = label if label
           # aria-disabled is the truth AND the axe contrast exemption - a
           # div can't carry native disabled, so without it the dimmed chip
-          # reads as failing text (Base UI sets it too).
+          # reads as failing text.
           attrs["aria-disabled"] = "true" if disabled
           attrs["data-disabled"] = "" if disabled
           attrs.merge!(stimulus_attributes_for(:chip))
@@ -900,8 +943,8 @@ module Poetry
         end
 
         # ChipRemove: a NATIVE button (tabindex=-1) labelled "Remove
-        # <label>" via I18n - Base UI's demo names it; shadcn omits it,
-        # poetry closes that gap.
+        # <label>" via I18n, so every chip's remove affordance has an
+        # accessible name.
         def chip_remove_part(label)
           attrs = {
             "data-slot" => "combobox-chip-remove", "type" => "button", "tabindex" => "-1",
@@ -937,7 +980,7 @@ module Poetry
             "aria-haspopup" => "listbox", "aria-autocomplete" => "list", "autocomplete" => "off",
             "autocorrect" => "off", "spellcheck" => "false", "class" => css(:chip_input)
           }
-          # Base UI input state: bare data-popup-open while open, NO
+          # The input state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
           attrs["placeholder"] = placeholder if placeholder.present?

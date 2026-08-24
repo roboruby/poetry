@@ -3,6 +3,8 @@
 require "yaml"
 
 module Poetry
+  # Namespace for poetry's Rails generators and their shared step
+  # modules.
   module Generators
     # The host-facing AGENTS.md section: a short, registry-derived
     # pointer layer for coding agents working in the host app - llms.txt
@@ -16,10 +18,14 @@ module Poetry
     # Thor only registers methods added directly on the generator class as
     # steps, so each generator declares its own public step and calls
     # apply_agents_section.
+    #
+    # @api private
     module AgentsSection
       BEGIN_MARKER = "<!-- poetry:agents:begin -->"
       END_MARKER = "<!-- poetry:agents:end -->"
 
+      # Writes or refreshes the marker-bounded poetry section in the
+      # host's AGENTS.md.
       def apply_agents_section
         path = File.join(destination_root, "AGENTS.md")
         if File.exist?(path) && File.read(path).include?(BEGIN_MARKER)
@@ -33,6 +39,7 @@ module Poetry
         end
       end
 
+      # The marker-bounded section text, registry-derived.
       def agents_section
         <<~MD
           #{BEGIN_MARKER}
@@ -109,6 +116,8 @@ module Poetry
         MD
       end
 
+      # The human count line (components + charts + blocks) for the
+      # section heading.
       def agents_component_counts
         parts = ["#{agents_registry_size(Poetry::Ui.root)} components"]
         # Tolerant on charts: a stubbed/partial gem without a registry file
@@ -120,6 +129,8 @@ module Poetry
         parts.join(" + ")
       end
 
+      # One section's entry count from a gem's committed registry (nil
+      # when the gem ships none).
       def agents_registry_size(root, section: "components")
         path = root.join("config/component_registry.yml")
         return nil unless File.exist?(path)

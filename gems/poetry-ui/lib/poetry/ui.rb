@@ -8,8 +8,11 @@ require_relative "ui/code_block_highlighter"
 require_relative "ui/recipes"
 require_relative "ui/chat"
 
+# The poetry namespace: poetry-ui shares it with poetry-core (the DSL)
+# and the optional poetry-charts.
 module Poetry
-  # The component library: shadcn-parity ViewComponents built entirely on
+  # The component library: ViewComponents tracking the full ported
+  # component vocabulary, built entirely on
   # poetry-core's PUBLIC DSL - if a component here needs private core API,
   # that is a core API gap, not a license to reach in.
   module Ui
@@ -124,7 +127,8 @@ module Poetry
         path.exist? ? YAML.safe_load_file(path) : nil
       end
 
-      # The shadcn-interop item projection, boot-free
+      # The interop item projection - registry items in the ecosystem's
+      # shared JSON item schema, boot-free
       # from the COMMITTED registry - the docs site serves /r/*.json from
       # this, and the add generator matches gem-satisfied dependencies
       # against its names.
@@ -139,7 +143,7 @@ module Poetry
       # The recipes projection: skill bundles, scaffold template
       # sets, and screen slices as registry items -
       # served at /r/*.json beside components and blocks, installed by
-      # poetry:add or any shadcn-compatible client.
+      # poetry:add or any client speaking the same item schema.
       def recipe_items
         Poetry::Core::RecipeItems.new(
           recipes: Recipes.definitions, gem_name: "poetry-ui", gem_version: VERSION
@@ -186,6 +190,11 @@ module Poetry
         }
       end
 
+      # The usage-skill files regenerated boot-free from the COMMITTED
+      # registries (never the booted builders above) - what the MCP server
+      # and the recipes projection serve without Rails.
+      #
+      # @api private
       def runtime_skill_files
         Poetry::Core::SkillText.new(
           registry: Poetry::Core::Registry.committed(root),
@@ -203,13 +212,16 @@ module Poetry
         nil
       end
 
-      # The registry "helper_args" map: max positional arity for EVERY
-      # poetry_* helper, introspected from the real method signatures (the
-      # site_nav crash: `poetry_link "text", href:` on a
-      # kwargs-only helper). Rest-signatures are omitted - the linter
-      # enforces arity only where a key exists.
+      # The parameter kinds that count as positional in a signature.
       POSITIONAL_PARAM_KINDS = %i[req opt].freeze
 
+      # The registry "helper_args" map: max positional arity for EVERY
+      # poetry_* helper, introspected from the real method signatures, so
+      # the linter can flag the crash class of `poetry_link "text", href:`
+      # against a kwargs-only helper. Rest-signatures are omitted - the
+      # linter enforces arity only where a key exists.
+      #
+      # @api private
       def registry_helper_args
         helper_names.sort.filter_map do |name|
           params = ComponentsHelper.instance_method(name.to_sym).parameters

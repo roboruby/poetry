@@ -3,13 +3,12 @@
 module Poetry
   module Ui
     module Toast
-      # Re-expressed through the cn-* theme layer - still poetry's
-      # OWN visual (the source delegates to a React-only toast
-      # library). The corner-aware
-      # slide chains ride the theme with the rest of the treatment (they
-      # key on the TOASTER's data-position through group/toaster at
-      # runtime); the default variant stays an empty string (the base IS
-      # the default - nothing to name).
+      # Re-expressed through the cn-* theme layer - poetry's own visual
+      # (no upstream treatment to mirror). The corner-aware slide chains
+      # ride the theme with the rest of the treatment (they key on the
+      # TOASTER's data-position through group/toaster at runtime); the
+      # default variant stays an empty string (the base IS the default -
+      # nothing to name).
       class Style < Poetry::Core::Style
         base "cn-toast pointer-events-auto relative flex w-full items-start outline-hidden"
 

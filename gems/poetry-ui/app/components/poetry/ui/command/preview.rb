@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Command
-      # The Command preview matrix: the shadcn command-demo composition
+      # The Command preview matrix: the ported command-demo composition
       # (inline, groups + shortcuts + keywords), the ⌘K dialog variant,
       # the zero-match empty state, disabled items, the filter:false
       # server mode, an initial value: highlight, and RTL.
@@ -52,7 +52,7 @@ module Poetry
         # The zero-match state: type any non-matching query ("zzz") - every
         # item hides, the custom empty part shows, and the status region
         # announces "0 results". The pinned group survives via
-        # always_render (cmdk forceMount).
+        # always_render (the source's forceMount).
         def zero_match
           render_component("aria-label": "Jump to", placeholder: "Search pages…",
                            class: "rounded-lg border shadow-md") do |command|
@@ -87,7 +87,7 @@ module Poetry
           end
         end
 
-        # filter: false - the SERVER-DRIVEN mode (cmdk shouldFilter=false):
+        # filter: false - the SERVER-DRIVEN mode (the source's shouldFilter=false):
         # typing never hides items client-side; the host re-renders the
         # list (Turbo frame ?q=) and Command keeps highlight + activation +
         # the count announcement. The loading part is the host-toggled

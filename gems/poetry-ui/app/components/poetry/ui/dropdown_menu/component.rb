@@ -2,31 +2,32 @@
 
 module Poetry
   module Ui
+    # The DropdownMenu family - the button-triggered action menu.
     module DropdownMenu
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # The closed vocabulary for the side placement axis.
       SIDES = %i[top right bottom left].freeze
+      # The closed vocabulary for the align placement axis.
       ALIGNS = %i[start center end].freeze
+      # The closed vocabulary for the dir (reading direction) axis.
       DIRS = %i[ltr rtl].freeze
 
-      # The shared menus-family kernel wearing this family identity -
-      # SLOT_BUILDERS (reopened at the bottom, once the classes exist) keeps
-      # the registry recursion on the family classes.
+      # The shared menus item union wearing this family's identity -
+      # SLOT_BUILDERS is added in a reopen at the bottom of the file,
+      # once the family classes it names exist.
       module ItemSlots
         extend ActiveSupport::Concern
         include Poetry::Ui::Menus::ItemSlots
       end
 
-      # The menus-family ANCHOR: a button-triggered role=menu popup on
-      # the shipped primitive stack.
-      # Two hosts, one owned controller: the root carries poetry--core--menu
-      # (open/activate/typeahead/submenus) + poetry--core--popper (trigger-
-      # anchored positioning); the content's layer controllers (focus-scope,
-      # dismissable, roving-focus) are TOKEN-ACTIVATED by the menu
-      # controller on open - a statically-connected trap on a hidden menu
-      # would steal focus at page load, so the markup renders NO layer
-      # tokens (menu_controller.js appends/removes them).
+      # A dropdown menu: a button that opens a popup list of actions
+      # (role=menu), composed from items, checkbox items, radio groups,
+      # labels, separators, groups, and nested submenus. Reach for it
+      # when one control offers several actions; choosing a form VALUE
+      # belongs to Select or Combobox instead.
+      #
+      # Requires with_trigger (the menu button) and at least one item.
+      # Arrow-key navigation, typeahead, and focus containment activate
+      # when the menu opens; the closed menu renders inert and hidden.
       #
       # @example A menu button with actions
       #   render Poetry::Ui::DropdownMenu::Component.new do |menu|
@@ -39,6 +40,7 @@ module Poetry
 
         include ItemSlots
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.",
@@ -58,21 +60,21 @@ module Poetry
           "Critical actions must exist somewhere reachable without JS (menus are JS-required interaction)."
         ].freeze
 
-        # The forwarding-lambda fact: with_trigger renders a Button -
-        # callers get Button's full typed-slot contract statically.
+        # Slot-to-component map: with_trigger renders a Button, so callers
+        # get Button's full option and slot contract on the trigger.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The trigger is a poetry Button wired as the menu button (demo
-        # parity: with_trigger(variant: :outline) { "Open" }) - the slot
-        # owns the aria-haspopup/expanded/controls wiring regardless of
-        # the composed content, so composition cannot drop the aria.
+        # The menu button - a poetry Button (options forward to it, e.g.
+        # variant: :outline). The slot owns the aria-haspopup/expanded/
+        # controls wiring regardless of the composed content, so
+        # composition cannot drop the aria.
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
             "aria-haspopup" => "menu", "aria-expanded" => open.to_s, "aria-controls" => content_id
           }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
+          # Trigger state: bare data-popup-open while open, NO attribute
+          # while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
           composed_trigger(wiring, options, &block) || begin
             options[:disabled] = true if disabled && !options.key?(:disabled)
@@ -80,6 +82,10 @@ module Poetry
           end
         }
 
+        # The content's layer behaviors (focus containment, dismissal,
+        # roving focus) are attached by the menu controller on open rather
+        # than declared statically here - a statically-connected focus
+        # trap on a hidden menu would steal focus at page load.
         use_stimulus do
           on :root do
             controller :menu do
@@ -123,15 +129,26 @@ module Poetry
           end
         end
 
+        # Renders the menu already open on page load.
         option :open, :boolean, default: false
+        # While open, pointer interaction outside the menu is blocked;
+        # false keeps the rest of the page interactive.
         option :modal, :boolean, default: true
+        # Which side of the trigger the menu opens on (flips on collision).
         option :side, :symbol, default: :bottom
+        # The menu's alignment against the trigger's edge.
         option :align, :symbol, default: :center
+        # Gap in pixels between the trigger and the menu.
         option :side_offset, :integer, default: 4
+        # Pixel shift along the alignment edge.
         option :align_offset, :integer, default: 0
+        # Flips/shifts placement to keep the menu inside the viewport.
         option :avoid_collisions, :boolean, default: true
+        # Arrow-key navigation wraps from the last item back to the first.
         option :loop, :boolean, default: false
+        # Reading direction; :rtl flips submenu sides and indicators.
         option :dir, :symbol
+        # Disables the menu trigger button.
         option :disabled, :boolean, default: false
 
         validates :side, inclusion: { in: SIDES }
@@ -222,19 +239,27 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
+        # Enforces the required slots before render.
+        # @api private
         def before_render
           raise ArgumentError, "DropdownMenu requires with_trigger (the menu button)" unless trigger?
           raise ArgumentError, "DropdownMenu requires at least one item" unless items?
         end
 
+        # The trigger element's server-stable id.
+        # @api private
         def trigger_id
           "#{instance_id}-trigger"
         end
 
+        # The content element's server-stable id (aria-controls target).
+        # @api private
         def content_id
           "#{instance_id}-content"
         end
 
+        # The root wrapper's attributes.
+        # @api private
         def root_attributes
           root = { "data-slot" => "dropdown-menu" }
           root["dir"] = dir.to_s if dir
@@ -243,6 +268,8 @@ module Poetry
           )
         end
 
+        # The role=menu panel's attributes.
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
@@ -296,30 +323,31 @@ module Poetry
       end
       
 
-      # The builder classes behind lambda-wrapped slot types: a
-      # lambda hides its return class from introspection, so the owner
-      # declares it and the registry walker recurses into the builder's own
-      # call surface (with_sub yields a Sub with its own items).
-      # REQUIRED_SLOTS states the same facts the before_render
-      # raises enforce, so poetry check flags the omission without
-      # rendering (the menu crash class).
+      # The builder classes behind lambda-wrapped slot types: a lambda
+      # hides its return class from introspection, so the owner declares
+      # it and the registry walker recurses into the builder's own call
+      # surface (with_sub yields a Sub with its own items).
       module ItemSlots
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
       end
 
       class Component
+        # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { trigger: "the menu button", item: "at least one item" }.freeze
       end
 
       class Group
+        # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
       end
 
       class RadioGroup
+        # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { radio_item: "at least one radio item" }.freeze
       end
 
       class Sub
+        # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { trigger: "the sub-menu item", item: "at least one item" }.freeze
       end
     end

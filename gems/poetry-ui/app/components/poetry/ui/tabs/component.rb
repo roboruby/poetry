@@ -2,13 +2,18 @@
 
 module Poetry
   module Ui
+    # Tabbed views switched by a tablist.
     module Tabs
-      # The Tabs - a tablist of triggers switching panels, data-driven like
-      # Accordion: declare each tab (title + panel block) and the component
-      # owns the ARIA wiring (role=tab/tablist/tabpanel, aria-selected /
-      # -controls / -labelledby ids), the server-rendered active tab, and
-      # the two-controller split: poetry--core--tabs (activation) on the
-      # root + poetry--core--roving-focus (keyboard) on the tablist.
+      # A tablist of triggers that switches between panels. Declare each
+      # tab with with_tab (title plus a panel block) and the component
+      # wires the tab/tablist/tabpanel roles, their ids, and the keyboard:
+      # arrow keys move focus along the tablist and activate the focused
+      # tab. The active panel is server-rendered visible, so the initial
+      # view needs no JS.
+      #
+      # default: picks the active tab by value (otherwise the first
+      # enabled tab wins); label: names the tablist for assistive tech -
+      # recommended when a page has several tab sets.
       #
       # @example
       #   <%= poetry_tabs(default: "account", label: "Account settings") do |tabs| %>
@@ -16,9 +21,12 @@ module Poetry
       #     <% tabs.with_tab("Password", value: "password") do %>...panel...<% end %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[horizontal vertical].freeze
+        # The closed vocabulary for the list-variant axis.
         VARIANTS = %i[default line].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Declare tabs with with_tab(title, value:) + the panel block (or defer: for a " \
           "lazy turbo-frame panel) - never hand-wire role=tab/tabpanel ids.",
@@ -31,14 +39,11 @@ module Poetry
         ].freeze
 
         # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
 
-        # panel: false opts a tab out of having a panel AT ALL (upstream's
-        # list-only demos - tabs-line, tabs-disabled): no tabpanel renders
-        # and the trigger drops aria-controls. The raise still guards the
-        # accidental case - list-only is a declaration, never a default.
+        # Declares one tab: the title, its value:, and the panel as the block (defer: swaps in
+        # a lazy turbo-frame panel; panel: false declares a list-only tab). Omitting all three raises.
         renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
           unless block || defer || panel == false
             raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
@@ -53,10 +58,10 @@ module Poetry
           on :root do
             controller(:tabs) { register }
           end
-          # BOTH controllers declare on ONE element (the ToggleGroup lesson,
-          # held by construction here): roving-focus registers and owns the
-          # keyboard; the tabs controller is NOT registered on the list -
-          # its focus_activate action routes up to the root instance.
+          # Both controllers declare on one element: roving-focus registers
+          # and owns the keyboard; the tabs controller is NOT registered on
+          # the list - its focus_activate action routes up to the root
+          # instance.
           on :list do
             controller :roving_focus do
               register
@@ -73,11 +78,14 @@ module Poetry
           end
         end
 
+        # The value of the server-rendered active tab; defaults to the
+        # first enabled tab. Raises when it matches no tab.
         option :default, :string
+        # The tablist's accessible name - recommended when a page has several tab sets.
         option :label, :string
+        # The tab axis; :vertical stacks the triggers and flips the arrow keys.
         option :orientation, :symbol, default: :horizontal
-        # The variant styles the LIST element (an element-variant, the Empty
-        # media pattern) - the root carries no variant classes.
+        # The list's visual treatment: :default a filled capsule, :line an underline indicator.
         option :variant, :symbol, default: :default
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
@@ -106,6 +114,7 @@ module Poetry
                "data-value" => "the owning tab's value"
              }
 
+        # @api private
         def before_render
           raise ArgumentError, "Tabs requires at least one with_tab" unless tabs?
 
@@ -115,33 +124,40 @@ module Poetry
                                "(#{tab_defs.map(&:value).inspect})"
         end
 
+        # @api private
         def tab_defs
           @tab_defs ||= []
         end
 
         # The server-rendered active tab: default: when given, else the
         # first enabled tab.
+        # @api private
         def active_value
           @active_value ||= default.presence || tab_defs.reject(&:disabled).first&.value || tab_defs.first.value
         end
 
+        # @api private
         def active?(tab)
           tab.value == active_value
         end
 
+        # @api private
         def trigger_id(tab) = "#{instance_id}-trigger-#{tab.value}"
+        # @api private
         def panel_id(tab) = "#{instance_id}-panel-#{tab.value}"
 
         # defer: swaps the panel body for a lazy turbo-frame - a
         # hidden panel is not visible, so Turbo fetches on first
         # activation with zero tabs-controller involvement. The panel
         # block (if given) becomes the frame's placeholder.
+        # @api private
         def panel_body(tab)
           return capture(&tab.panel) unless tab.defer
 
           helpers.poetry_deferred(src: tab.defer) { tab.panel ? capture(&tab.panel) : nil }
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -150,6 +166,7 @@ module Poetry
           )
         end
 
+        # @api private
         def list_attributes
           attrs = {
             "role" => "tablist", "data-slot" => "tabs-list", "data-variant" => variant,
@@ -160,6 +177,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:list))
         end
 
+        # @api private
         def trigger_attributes(tab)
           attrs = {
             "type" => "button", "role" => "tab", "id" => trigger_id(tab),
@@ -178,6 +196,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def panel_attributes(tab)
           attrs = {
             "role" => "tabpanel", "id" => panel_id(tab), "data-slot" => "tabs-content",
@@ -191,6 +210,8 @@ module Poetry
           attrs
         end
 
+        # One declared tab (built by with_tab).
+        # @api private
         Tab = Data.define(:title, :value, :disabled, :panel, :defer, :panel_less)
 
         private

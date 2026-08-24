@@ -2,13 +2,16 @@
 
 module Poetry
   module Ui
+    # Vertically stacked expand/collapse sections.
     module Accordion
-      # An expand/collapse list of value-keyed sections - presence +
-      # roving-focus together. Triggers are real buttons inside headings
-      # (APG: Arrow keys move between headers as convenience - every
-      # trigger stays tabbable, manageTabindex: false); panels are
-      # role=region wired aria-labelledby; single non-collapsible marks
-      # the locked-open trigger aria-disabled.
+      # An expand/collapse list of sections keyed by value. type: :single
+      # (the default) keeps one section open at a time; type: :multiple
+      # allows several. Pass open: to server-render the expanded sections.
+      #
+      # Triggers are real buttons inside headings, so every section stays
+      # reachable by Tab; arrow keys also move focus between triggers.
+      # Panels are labelled regions. A single non-collapsible accordion
+      # marks the locked-open trigger disabled to assistive tech.
       #
       # @example Single-open accordion with the first item expanded
       #   render Poetry::Ui::Accordion::Component.new(open: %w[a]) do |accordion|
@@ -16,9 +19,12 @@ module Poetry
       #     accordion.with_item(value: "b", title: "Second") { "Second panel" }
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the type axis.
         TYPES = %i[single multiple].freeze
+        # The closed vocabulary for the heading_level axis.
         HEADINGS = %i[h2 h3 h4 h5 h6].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Items via with_item(value:, title:) { panel content } - value is the open-state key.",
           "type: :single (default) opens one at a time; pass collapsible: true to allow closing it.",
@@ -28,11 +34,11 @@ module Poetry
           "disabled: true on with_item locks that item (native disabled on the trigger; roving focus skips it)."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
+        # The accordion sections. Each takes value: (its open-state key), title:, and a block of
+        # panel content; disabled: true locks the section closed.
         renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
           open_item = open_values.include?(value.to_s)
           item_id = "#{instance_id}-#{value}"
@@ -64,9 +70,13 @@ module Poetry
           end
         end
 
+        # Whether one section (:single) or several (:multiple) may be open at once.
         option :type, :symbol, default: :single
+        # With type: :single, allows the open section to be closed again.
         option :collapsible, :boolean, default: false
+        # Value keys of the sections rendered expanded on load.
         option :open, :list, default: -> { [] }
+        # The heading element wrapping each trigger; pick it to fit the page outline.
         option :heading_level, :symbol, default: :h3
 
         validates :type, inclusion: { in: TYPES }
@@ -107,14 +117,19 @@ module Poetry
                                              "feeds the accordion-down/up keyframes"
              }
 
+        # Enforces the required item slot.
+        # @api private
         def before_render
           raise ArgumentError, "Accordion requires at least one with_item" unless items?
         end
 
+        # The open: values normalized to strings.
+        # @api private
         def open_values
           Array(open).map(&:to_s)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "accordion", "data-orientation" => "vertical" }
@@ -142,7 +157,7 @@ module Poetry
           trigger_attrs["aria-disabled"] = "true" if open_item && type == :single && !collapsible
           # Native disabled owns interaction and focus; data-disabled is the
           # roving-focus query filter (a natively disabled button already
-          # drops from the tab order, matching Radix/Base UI).
+          # drops from the tab order on its own).
           if disabled
             trigger_attrs[:disabled] = true
             trigger_attrs["data-disabled"] = ""

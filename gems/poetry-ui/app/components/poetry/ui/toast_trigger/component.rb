@@ -2,13 +2,14 @@
 
 module Poetry
   module Ui
+    # Client-side toast delivery.
     module ToastTrigger
-      # The client-side toast delivery trigger (the no-round-trip path -
-      # a client-side toast() factory's job, done with
-      # server-rendered markup): press -> the toaster clones the addressed
-      # <template>'s toast into its region. The toast inside the template
-      # is byte-for-byte what a Turbo Stream would append; the toaster's
-      # childList observer reconciles limit + reflow like any other path.
+      # A button that shows a toast without a server round-trip: on press
+      # the toaster stamps a clone of an addressed <template>'s toast
+      # into its region. The template holds one fully rendered
+      # poetry_toast - exactly what a Turbo Stream would append - so the
+      # visible limit, queueing, and stacking behave the same on either
+      # path. For purely client-side moments: copied, undone, queued.
       #
       # @example
       #   <%= render Poetry::Ui::ToastTrigger::Component.new(template: "copied-toast") do %>
@@ -20,6 +21,7 @@ module Poetry
       #     <% end %>
       #   </template>
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "template: names a <template> element id holding ONE rendered poetry_toast - " \
           "the trigger stamps a clone into the toaster on press.",
@@ -42,9 +44,14 @@ module Poetry
           end
         end
 
+        # The id of the <template> element holding the rendered toast to stamp.
         option :template, :string, required: true
+        # Scopes the stamp to one toaster region id on multi-toaster pages;
+        # omit for the page's toaster.
         option :toaster, :string
+        # The Button variant the trigger renders at.
         option :variant, :symbol, default: :outline
+        # The Button size the trigger renders at.
         option :size, :symbol, default: :default
 
         part "toast-trigger", "The stamping button - press clones the template's toast " \
@@ -57,6 +64,7 @@ module Poetry
         # inner anatomy lands in this component's data-component scope.
         part "label", "The Button's label span (the trigger renders AS a poetry Button)"
 
+        # @api private
         def button_options
           wiring = { data: { slot: "toast-trigger" } }
                    .merge(stimulus_attributes_for(:root))

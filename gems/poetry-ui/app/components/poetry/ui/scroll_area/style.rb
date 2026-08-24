@@ -3,11 +3,9 @@
 module Poetry
   module Ui
     module ScrollArea
-      # shadcn ScrollArea (base-vega) root/viewport, source-exact - plus the
-      # native-scrollbar deviation: overflow-auto +
-      # scrollbar-width/scrollbar-color (Baseline CSS) replace Base UI's JS
-      # scrollbar/thumb parts, so those part dictionaries are deliberately
-      # not ported.
+      # Style dictionary for the ScrollArea family: overflow-auto +
+      # scrollbar-width/scrollbar-color (Baseline CSS) style the native
+      # scrollbars, so no scrollbar/thumb part dictionaries exist.
       class Style < Poetry::Core::Style
         base "relative"
 

@@ -21,6 +21,9 @@ module Poetry
   # JSONC file poetry can't parse is reported, never clobbered. Editors whose
   # MCP config is global / IDE-managed (Zed, Windsurf, RubyMine) get a
   # copy-paste block printed instead.
+  #
+  # @example
+  #   bin/rails g poetry:editor
   class EditorGenerator < Rails::Generators::Base
     # Editors whose MCP config is global or IDE-managed, so poetry prints a
     # paste-block instead of writing a project file.
@@ -36,22 +39,32 @@ module Poetry
     desc "Wire poetry's MCP server + component snippets into your editors " \
          "(.mcp.json / .cursor/mcp.json / .vscode/mcp.json + .vscode/poetry.code-snippets)"
 
+    # Step: upserts the poetry server into .mcp.json.
+    # @api private
     def write_claude_code_config
       upsert_mcp ".mcp.json", "mcpServers", stdio: false
     end
 
+    # Step: upserts the poetry server into .cursor/mcp.json.
+    # @api private
     def write_cursor_config
       upsert_mcp ".cursor/mcp.json", "mcpServers", stdio: false
     end
 
+    # Step: upserts the poetry server into .vscode/mcp.json.
+    # @api private
     def write_vscode_config
       upsert_mcp ".vscode/mcp.json", "servers", stdio: true
     end
 
+    # Step: writes one VS Code snippet per poetry_* helper.
+    # @api private
     def write_snippets
       create_file ".vscode/poetry.code-snippets", "#{JSON.pretty_generate(snippets)}\n", force: true
     end
 
+    # Step: prints the paste-blocks for IDE-managed MCP configs.
+    # @api private
     def announce_manual_editors
       say "\npoetry:editor - editors with global / IDE-managed MCP config (paste-blocks):", :green
       say MANUAL_EDITORS

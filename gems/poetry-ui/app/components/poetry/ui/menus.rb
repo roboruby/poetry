@@ -2,16 +2,16 @@
 
 module Poetry
   module Ui
-    # The menus-family kernel: ONE implementation of the item union and
-    # its anatomy classes, worn by DropdownMenu, ContextMenu, and Menubar.
+    # Gives a menu family (DropdownMenu, ContextMenu, Menubar) one shared
+    # implementation of the menu item union and its anatomy classes.
     # Family identity - the data-slot prefix, the Style dictionary, the
-    # error noun, the builder classes - resolves through the includer's
-    # namespace at render time (constants referenced lexically here would
-    # bind to THIS module, never the family). Each family keeps a thin
-    # ItemSlots module carrying its own SLOT_BUILDERS (the registry
-    # recursion map must name the family classes) and, for Menubar, the
-    # per-kind indicator override - the kernel's one substantive fork.
+    # error noun, the builder classes - resolves through the including
+    # family's namespace at render time, never through constants named
+    # here, so one implementation serves every family. Each family keeps
+    # a thin ItemSlots module carrying its own SLOT_BUILDERS and, where
+    # needed, a per-kind indicator override.
     module Menus
+      # The closed vocabulary for the item variant axis.
       ITEM_VARIANTS = %i[default destructive].freeze
 
       # Shared attribute builders for the item union - mixed into every
@@ -44,11 +44,10 @@ module Poetry
           stimulus_attributes(:menu) { |menu| menu.with_action(:activate, on: :click) }
         end
 
-        # data-slot="<family>-item-indicator" is a POETRY ADDITION
-        # (new-york-v4's span is anonymous) - the self-identification rule.
-        # State is carried by the parent item's aria-checked/data-checked
-        # pair; the glyph itself stays decorative (Icon defaults to
-        # aria-hidden).
+        # The named check/circle glyph wrapper (the self-identification
+        # rule: data-slot="<family>-item-indicator"). State is carried by
+        # the parent item's aria-checked/data-checked pair; the glyph
+        # itself stays decorative (Icon defaults to aria-hidden).
         def item_indicator(icon, icon_class, kind)
           extra = [family_style.css(:item_indicator_state), indicator_extra_class(kind)].compact
           content_tag(:span, "data-slot" => "#{family_slot_prefix}-item-indicator",
@@ -84,6 +83,19 @@ module Poetry
         include Helpers
 
         included do
+          # The menu composition API: one ordered items collection
+          # accepting seven kinds, interleaved in call order -
+          #   with_item          an action row (href: renders it as a real
+          #                      link; submit: as a real submit button)
+          #   with_checkbox_item a toggleable checked/unchecked row
+          #   with_radio_group   a single-select scope; add rows inside it
+          #                      via with_radio_item(value:)
+          #   with_label         a non-interactive heading for a run of items
+          #   with_separator     a horizontal rule between runs
+          #   with_group         semantic grouping around the same union,
+          #                      one level down
+          #   with_sub           a nested submenu: its own with_trigger plus
+          #                      the same union, recursively
           renders_many :items, types: {
             item: { renders: ->(**options, &block) { item_part(**options, &block) }, as: :item },
             checkbox_item: {
@@ -99,6 +111,8 @@ module Poetry
 
         private
 
+        # Builds one action row - a role=menuitem div, or a real <a> /
+        # submit <button> when href: / submit: is given.
         def item_part(**options, &)
           variant = (options.delete(:variant) || :default).to_sym
           unless ITEM_VARIANTS.include?(variant)
@@ -151,6 +165,7 @@ module Poetry
           content_tag(link ? :a : :div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { content }
         end
 
+        # Builds one role=menuitemcheckbox toggle row.
         def checkbox_item_part(**options, &block)
           checked = options.delete(:checked) || false
           shortcut = options.delete(:shortcut)
@@ -169,6 +184,7 @@ module Poetry
           end
         end
 
+        # Builds the non-interactive heading row.
         def label_part(inset: false, **options, &block)
           attrs = {
             "data-slot" => "#{family_slot_prefix}-label",
@@ -178,6 +194,7 @@ module Poetry
           content_tag(:div, Poetry::Core::HTML::Attributes.merged(attrs, options)) { capture(&block) }
         end
 
+        # Builds the role=separator rule.
         def separator_part(**options)
           attrs = {
             "data-slot" => "#{family_slot_prefix}-separator", "role" => "separator",
@@ -189,8 +206,7 @@ module Poetry
       end
 
       # role=group semantic grouping between separators - the same item
-      # union, one level down. internal_component!: full machinery, no
-      # registry entry (the nested parts are anatomy, not components).
+      # union, one level down.
       #
       # @api private
       class Group < Poetry::Core::Component
@@ -218,9 +234,8 @@ module Poetry
         end
       end
 
-      # role=group scoping the single-select value for its radio items.
-      # Duplicate radio values raise ArgumentError at render (the
-      # base-contract rule); radio items exist ONLY through this group.
+      # role=group scoping the single-select value for its radio items -
+      # radio items exist only through this group; duplicate values raise.
       #
       # @api private
       class RadioGroup < Poetry::Core::Component
@@ -229,6 +244,7 @@ module Poetry
 
         attr_reader :group_value
 
+        # One role=menuitemradio row; value: must be unique within the group.
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
           key = value.to_s
@@ -268,10 +284,8 @@ module Poetry
         end
       end
 
-      # A submenu scope: its own popper instance (sub_trigger = anchor,
-      # sub_content = content; side flips under RTL) around the same item
-      # union, recursively. The sub layer controllers (dismissable +
-      # roving-focus) are added by the menu controller when the sub opens.
+      # A submenu scope - its own positioning instance (trigger anchors
+      # content; side flips under RTL) around the same item union, recursively.
       #
       # @api private
       class Sub < Poetry::Core::Component

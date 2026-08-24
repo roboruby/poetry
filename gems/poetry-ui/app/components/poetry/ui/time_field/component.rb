@@ -2,22 +2,25 @@
 
 module Poetry
   module Ui
+    # Segmented time-of-day editors.
     module TimeField
-      # The segmented time editor: DateField at hour granularity - one
-      # segment engine, two components. The
-      # native input is <input type=time>, the wire format HH:MM[:SS],
-      # and the locale decides 12- vs 24-hour editing (a dayPeriod
-      # segment appears exactly when the locale is twelve-hour;
-      # hour_cycle: pins it). Segments share the date-field-* part
-      # vocabulary - the controller builds them, and TimeField IS a
-      # DateField underneath (the NumberField/InputGroup precedent for
-      # cross-component slot reuse).
+      # A segmented time editor: hour, minute, and - with seconds: -
+      # second segments, each typed or stepped independently. The form
+      # value is a native <input type=time> submitting HH:MM[:SS], and
+      # without JS that native input simply renders, so the field always
+      # works. The user's locale decides 12- vs 24-hour editing (an
+      # AM/PM segment appears exactly when the locale is twelve-hour);
+      # hour_cycle: pins it explicitly.
+      #
+      # A TimeField is a DateField specialized to time-of-day - segments
+      # share the date-field-* part vocabulary.
       #
       # @example
       #   render Poetry::Ui::TimeField::Component.new(
       #     name: "starts_at", label: "Start time", value: "09:30"
       #   )
       class Component < DateField::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Time entry is a TimeField (poetry_time_field / form.time_field) - never a masked " \
           "Input or a pair of selects; params[<name>] is HH:MM (HH:MM:SS with seconds:).",
@@ -39,9 +42,9 @@ module Poetry
           end
         end
 
-        # HH:MM[:SS] editing; seconds: adds the third segment.
+        # Adds the seconds segment; the wire format becomes HH:MM:SS.
         option :seconds, :boolean, default: false
-        # Pin the hour cycle (h12/h23/h11/h24) instead of the locale's.
+        # Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.
         option :hour_cycle, :string
 
         part "time-field", "Root - the controller and the enhanced/disabled surface ride " \

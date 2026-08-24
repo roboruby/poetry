@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Spinner
-      # shadcn Spinner (base-vega), source-exact: the loader glyph, spinning.
+      # Style dictionary for the Spinner family: the loader glyph, spinning.
       class Style < Poetry::Core::Style
         base "size-4 animate-spin"
       end

@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Questionnaire
-      # Re-expressed through the cn-* theme layer: structural classes
-      # ported verbatim from shadcn's base questionnaire wrapper; the
-      # visual voice lives in each theme's cn-questionnaire-* rules.
+      # Style dictionary for the Questionnaire family: structural classes
+      # inline; the visual voice lives in each theme's cn-questionnaire-*
+      # rules.
       class Style < Poetry::Core::Style
         base "cn-questionnaire flex w-full min-w-0 flex-col"
 

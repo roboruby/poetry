@@ -2,13 +2,17 @@
 
 module Poetry
   module Ui
+    # A site-navigation bar with disclosure panels.
     module NavigationMenu
-      # The NavigationMenu - a site-nav DISCLOSURE BAR (never a menu role):
-      # top-level links and hoverable/clickable triggers whose panels open
-      # under their items. The viewport=false mode: each panel
-      # is its own popup on the presence machinery, positioned inside its
-      # relative item; viewport: true switches to the Base UI-style
-      # morphing shared viewport.
+      # A site-navigation bar - a <nav> landmark, never a menu role:
+      # top-level links plus triggers whose panels of links open on
+      # hover or click beneath their items. It is a DISCLOSURE bar,
+      # so Tab moves through it normally and nothing traps focus.
+      #
+      # By default each panel opens under its own item. viewport: true
+      # switches to one shared card that morphs its size and position
+      # between triggers - the fit for rich title-and-description panel
+      # grids.
       #
       # @example Disclosure bar with a panel and a link
       #   <%= poetry_navigation_menu(label: "Main") do |nav| %>
@@ -18,6 +22,7 @@ module Poetry
       #     <% nav.with_link("Docs", href: docs_path) %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "label: is REQUIRED (the nav landmark's accessible name).",
           "with_item(title, value:) declares a trigger + panel; with_link(title, href:) is a " \
@@ -31,8 +36,13 @@ module Poetry
           "(the top-nav block shows the viewport pattern)."
         ].freeze
 
+        # One declared bar entry - a link (href:) or a trigger + panel pair.
+        # @api private
         Entry = Data.define(:title, :value, :href, :panel)
 
+        # The bar entries. with_item(title, value:) { panel } declares a trigger
+        # + panel; with_item(title, href:) a top-level link (with_link is the
+        # shorthand).
         renders_many :items, lambda { |title, value: nil, href: nil, &panel|
           if href.nil? && panel.nil?
             raise ArgumentError, "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
@@ -83,13 +93,11 @@ module Poetry
           end
         end
 
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (the floating-crash
-        # class: a required option the static tier could not see).
+        # The nav landmark's accessible name - a page may hold more than one nav.
         option :label, :string, required: true
-        # The morphing shared viewport: panels adopt into one
-        # positioned popup that morphs size/position between triggers. false
-        # (the default) keeps the per-item popovers - also the no-JS shape.
+        # Opts into the shared morphing viewport: panels adopt into one
+        # positioned card that morphs size and position between triggers.
+        # Off, each panel opens under its own item (also the no-JS shape).
         option :viewport, :boolean, default: false
 
         part "navigation-menu", "The <nav> landmark around the whole disclosure bar",
@@ -146,19 +154,28 @@ module Poetry
                "data-active" => "the current page (active: true)"
              }
 
+        # Enforces the required label and at least one entry.
+        # @api private
         def before_render
           raise ArgumentError, "NavigationMenu requires label: (the nav landmark's name)" if label.blank?
           raise ArgumentError, "NavigationMenu requires at least one with_item or with_link" unless items?
         end
 
+        # Declares a top-level destination link - shorthand for
+        # with_item(title, href:).
+        # @param title [String] the visible link text
+        # @param href [String] the destination URL
         def with_link(title, href:)
           with_item(title, href: href)
         end
 
+        # The declared entries, in bar order.
+        # @api private
         def entries
           @entries ||= []
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -170,6 +187,7 @@ module Poetry
           )
         end
 
+        # @api private
         def item_attributes(entry)
           attrs = {
             "data-slot" => "navigation-menu-item", "data-value" => entry.value,
@@ -179,6 +197,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def trigger_attributes(entry)
           {
             "type" => "button", "data-slot" => "navigation-menu-trigger",
@@ -187,6 +206,7 @@ module Poetry
           }.merge(stimulus_attributes_for(:trigger))
         end
 
+        # @api private
         def panel_attributes(entry)
           {
             "id" => panel_id(entry), "data-slot" => "navigation-menu-content",
@@ -198,11 +218,11 @@ module Poetry
           }
         end
 
-        # The shared shell (viewport mode): popper positions the positioner
-        # against the ACTIVE trigger (poetry--core--popper rides the nav root;
-        # the controller re-anchors it per activation with the full
-        # positioning engine); the popup carries the morphing size vars;
+        # The shared shell (viewport mode): the positioner is re-anchored
+        # against the ACTIVE trigger on each activation with the full
+        # positioning engine; the popup carries the morphing size vars;
         # panels adopt into the viewport.
+        # @api private
         def positioner_attributes
           attrs = {
             "data-slot" => "navigation-menu-positioner", "hidden" => true,
@@ -211,6 +231,7 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:positioner))
         end
 
+        # @api private
         def panel_id(entry)
           "#{instance_id}-panel-#{entry.value}"
         end

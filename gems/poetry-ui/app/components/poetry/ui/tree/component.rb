@@ -2,23 +2,22 @@
 
 module Poetry
   module Ui
+    # Hierarchical expandable lists.
     module Tree
-      # The Tree (the flat-treegrid contract): a
-      # hierarchical expandable list - file navigators, nested categories,
-      # org structures. The DOM is a FLAT list of role=row siblings;
-      # hierarchy lives entirely in server-computed aria-level/posinset/
-      # setsize (static per render), which is exactly what makes a
-      # server-rendered tree viable - no nested group markup. Rows under a
-      # collapsed ancestor render hidden; poetry--core--tree owns roving
-      # focus over visible rows, the four-branch ArrowLeft/Right expansion
-      # keys (ArrowLeft on a leaf walks to the PARENT), Enter/press
-      # toggling, and typeahead. Expansion state IS the DOM - the host
-      # persists it by listening for poetry:tree:toggle.
+      # A hierarchical expandable list - file navigators, nested
+      # categories, org structures. The DOM is a flat list of sibling
+      # rows; hierarchy lives entirely in server-computed
+      # aria-level/posinset/setsize, so no nested markup is needed and
+      # the whole tree server-renders. Rows under a collapsed ancestor
+      # render hidden. Arrow keys move over visible rows,
+      # ArrowLeft/Right collapse and expand (ArrowLeft on a leaf walks to
+      # the parent), Enter/press toggles, and typing jumps to a matching
+      # row.
       #
-      # Items build through a plain nested builder (not slots).
-      #
-      # Documented divergence: selection modes are deferred (the TagGroup
-      # reasoning) - v1 is navigation + expansion; href: items navigate.
+      # Items build through a nested builder (see with_item). Expansion
+      # state lives in the DOM - persist it by listening for
+      # poetry:tree:toggle and re-rendering with expanded: from your
+      # store. href: items navigate; a Tree offers no selection modes.
       #
       # @example
       #   <%= poetry_tree(label: "Files") do |tree| %>
@@ -27,6 +26,7 @@ module Poetry
       #     <% end %>
       #   <% end %>
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Hierarchical expandable lists are a Tree - never hand-rolled nested <ul>s with " \
           "click handlers; the treegrid semantics, expansion keys, and focus rules ride the " \
@@ -56,6 +56,7 @@ module Poetry
           end
         end
 
+        # The tree's accessible name. Required.
         option :label, :string, required: true
 
         part "tree", "The treegrid container (role=treegrid, the accessible name) - roving " \
@@ -85,6 +86,7 @@ module Poetry
              }
         part "tree-item-label", "The row's text - a link when href: is given"
 
+        # @api private
         def before_render
           raise ArgumentError, "Tree requires label: (the treegrid's accessible name)" if label.blank?
 
@@ -93,19 +95,32 @@ module Poetry
           content
         end
 
+        # Declares one row. Nest children by calling with_item again on the
+        # yielded builder.
+        #
+        # @param options [Hash] text: (the row's label, required), value: (the
+        #   toggle event's identity, defaults to text:), expanded: (render the
+        #   subtree open), disabled:, href: (the label renders as a link)
+        # @example
+        #   tree.with_item(text: "docs", value: "docs", expanded: true) do |docs|
+        #     docs.with_item(text: "intro.md", href: "/docs/intro")
+        #   end
         def with_item(**options, &block)
           root_items << Item.new(**options).tap { |item| block&.call(item) }
           nil
         end
 
+        # @api private
         def root_items
           @root_items ||= []
         end
 
+        # @api private
         def rows
           @rows ||= flatten(root_items, level: 1, hidden: false)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -115,6 +130,7 @@ module Poetry
           )
         end
 
+        # @api private
         def row_attributes(row, index)
           attrs = {
             "id" => row_id(index), "role" => "row", "data-slot" => "tree-item",
@@ -135,6 +151,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def toggle_attributes(row, index)
           {
             "type" => "button", "tabindex" => "-1",
@@ -147,34 +164,43 @@ module Poetry
           }.merge(stimulus_attributes_for(:toggle))
         end
 
+        # @api private
         def row_id(index)
           "#{tree_id}-item-#{index}"
         end
 
+        # @api private
         def tree_id
           @tree_id ||= poetry_instance_id("poetry-tree")
         end
 
+        # @api private
         def first_visible_index
           @first_visible_index ||= rows.index { |row| !row.hidden } || 0
         end
 
-        # One flattened row (built by #flatten above).
+        # One flattened row (built by #flatten below).
+        # @api private
         Row = Struct.new(
           :text, :value, :href, :level, :posinset, :setsize,
           :expanded, :expandable, :disabled, :hidden,
           keyword_init: true
         )
 
-        # The nested builder handed to consumer blocks.
+        # The nested builder yielded to item blocks - call with_item on it
+        # to declare children. Never constructed directly.
         class Item
+          # @api private
           attr_reader :options, :children
 
+          # @api private
           def initialize(**options)
             @options = options
             @children = []
           end
 
+          # Declares a child row; takes the same keywords as the
+          # component's with_item and yields its own builder for nesting.
           def with_item(**)
             child = Item.new(**)
             @children << child

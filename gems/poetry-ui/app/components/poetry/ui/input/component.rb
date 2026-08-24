@@ -2,8 +2,9 @@
 
 module Poetry
   module Ui
+    # The Input family - the single-line native text control.
     module Input
-      # The text Input - shadcn new-york-v4 parity. Template-less; error
+      # The text Input - the styled native <input>. Template-less; error
       # state is carried by aria-invalid (set by the Field/FormBuilder from
       # model errors), which the classes style directly - state IS the
       # accessibility attribute, never a parallel class.
@@ -16,6 +17,7 @@ module Poetry
         # not a separate component.
         MASK = %i[poetry core mask].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Inside a form, never render Input directly - use the FormBuilder's field (it wires ids, errors, and aria).",
           "Error styling comes from aria-invalid, set from model errors - never hand-toggle error classes.",
@@ -24,15 +26,21 @@ module Poetry
           "submits; read data-raw for the bare value."
         ].freeze
 
+        # The native type attribute (text, email, password, file, ...).
         option :type, :string, default: "text"
+        # The submitted param name.
         option :name, :string
+        # The current value.
         option :value, :string
+        # Native placeholder text - not a substitute for a Label.
         option :placeholder, :string
+        # Disables the native input.
         option :disabled, :boolean, default: false
+        # Marks the input aria-invalid - the error skin keys on the attribute.
         option :invalid, :boolean, default: false
-        # Mask descriptor grammar. Extra knobs
-        # (slot char, always-show, auto-clear) ride Stimulus values via
-        # data: - one declarative option covers the common case.
+        # Format-as-you-type mask descriptor ('(999) 999-9999'). Extra
+        # knobs (slot char, always-show, auto-clear) ride Stimulus values
+        # via data: - one declarative option covers the common case.
         option :mask, :string
 
         part "input", "The <input> element itself - no inner anatomy; error state is " \
@@ -42,10 +50,14 @@ module Poetry
                              "controller (the masked text is what submits)"
              }
 
+        # Renders the <input> element.
+        # @api private
         def call
           tag.input(**root_attributes.to_attributes)
         end
 
+        # The <input> element's attributes.
+        # @api private
         def root_attributes
           attrs = { "type" => type, "data-slot" => "input" }.merge(component_data_attributes)
           attrs["name"] = name if name.present?

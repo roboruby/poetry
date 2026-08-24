@@ -3,15 +3,13 @@
 module Poetry
   module Ui
     module Sheet
-      # Re-expressed through the cn-* theme layer, still on the
-      # native-dialog spine. m-0 and the per-side auto margins moved to the
-      # theme TOGETHER (the split-side conflict rule: the side margins must
-      # beat m-0, which they only can from the same layer); the UA display
-      # guard stays inline.
+      # Style dictionary for the Sheet family, on the native-dialog spine.
+      # m-0 and the per-side auto margins live in the theme TOGETHER (the
+      # side margins must beat m-0, which they only can from the same
+      # layer); the UA display guard stays inline.
       class Style < Poetry::Core::Style
         # open:flex, NOT flex: a bare display class would defeat the UA's
-        # dialog:not([open]) { display: none } (the Dialog's 2026-07-01
-        # browser-pass lesson, inherited here).
+        # dialog:not([open]) { display: none }.
         # w-full rides the theme so the sides' w-3/4 beats it in-layer.
         # No `relative`: the top layer discards it and the UA reasserts
         # `absolute`, which pins the sheet to the DOCUMENT edge (it scrolls
@@ -35,7 +33,7 @@ module Poetry
         element :header, "cn-sheet-header flex flex-col"
         element :title, "cn-sheet-title"
         element :description, "cn-sheet-description"
-        # mt-auto pins the footer to the bottom edge (source).
+        # mt-auto pins the footer to the bottom edge.
         element :footer, "cn-sheet-footer mt-auto flex flex-col"
         element :close, "cn-sheet-close"
 

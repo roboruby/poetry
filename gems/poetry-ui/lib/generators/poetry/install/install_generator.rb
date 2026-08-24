@@ -9,9 +9,9 @@ module Poetry
   #
   #   app/assets/tailwind/poetry/tokens.css   the design tokens (:root + .dark)
   #   app/assets/tailwind/poetry/theme.css    the Tailwind v4 @theme mapping
-  #   app/assets/tailwind/poetry/animate.css  vendored tw-animate-css (the
-  #                                           shadcn v4 animation layer -
-  #                                           Rails hosts have no npm)
+  #   app/assets/tailwind/poetry/animate.css  the vendored animation
+  #                                           utility layer (Rails hosts
+  #                                           have no npm)
   #   app/assets/tailwind/poetry/safelist.txt every dictionary + template class
   #                                           (so the host build never purges
   #                                           classes resolved in Ruby)
@@ -26,11 +26,16 @@ module Poetry
   # safelist pass picks the chart dictionaries up on its own; what a host
   # still needs by hand is the motion stylesheet in the Tailwind entry and
   # the Stimulus registration, and that is exactly what the flag does).
+  #
+  # @example
+  #   bin/rails g poetry:install --theme vega
   class InstallGenerator < Rails::Generators::Base
     include Generators::AgentsSection
     include Generators::SkillsSection
 
+    # The host's Tailwind entry stylesheet (import/@source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
+    # The theme slot: --theme swaps its CONTENT, the filename stays put.
     STYLE_SLOT = "app/assets/tailwind/poetry/style-default.css"
     # Every shipped fragment opens with `/* poetry <name> theme` - the sniff
     # reads the slot's first line back so a plain re-run keeps the theme.
@@ -68,7 +73,8 @@ module Poetry
       %(@source "./poetry/safelist.txt";)
     ].freeze
 
-    # The shadcn base layer (its init writes the same into globals.css):
+    # The base layer (upstream's init writes the same defaults into the
+    # host stylesheet):
     # without it body/border/outline don't ride the tokens and dark mode
     # only flips the components. Seeded once,
     # user-owned - re-install never overwrites.
@@ -90,6 +96,7 @@ module Poetry
 
     # Fails fast BEFORE any file lands: --charts against a bundle without
     # the gem would otherwise half-install (css copied, dead registration).
+    # @api private
     def verify_charts_gem
       return if !options[:charts] || charts_available?
 
@@ -99,6 +106,7 @@ module Poetry
 
     # Same fail-fast for --theme: an unknown name (or one poetry-charts
     # doesn't ship when --charts is on) must not half-install.
+    # @api private
     def verify_theme_choice
       unless ui_theme_path.exist?
         available = Dir[Poetry::Ui.root.join("themes/*.css").to_s].map { |f| File.basename(f, ".css") }.sort
@@ -111,6 +119,9 @@ module Poetry
                          "every installed poetry gem must provide themes/#{resolved_theme}.css"
     end
 
+    # Step: copies tokens, the Tailwind theme mapping, the vendored css,
+    # and the theme slot.
+    # @api private
     def copy_tokens_and_theme
       create_file "app/assets/tailwind/poetry/tokens.css",
                   Poetry::Core.root.join("tokens/tokens.css").read, force: true
@@ -118,9 +129,10 @@ module Poetry
                   Poetry::Core.root.join("tokens/tailwind-theme.css").read, force: true
       create_file "app/assets/tailwind/poetry/animate.css",
                   Poetry::Core.root.join("vendor/tw-animate-css/tw-animate.css").read, force: true
-      # shadcn's first-party utility layer (shimmer / scroll-fade families +
-      # the chat-set keyframes), vendored verbatim at a pinned SHA.
-      # Vendored source: shadcn/tailwind.css @ d0fae528 (host filename stays utilities.css).
+      # The upstream first-party utility layer (shimmer / scroll-fade
+      # families + the chat-set keyframes), vendored verbatim at a pinned
+      # SHA - provenance in THIRD_PARTY_NOTICES.md (host filename stays
+      # utilities.css).
       create_file "app/assets/tailwind/poetry/utilities.css",
                   Poetry::Core.root.join("vendor/shadcn-tailwind/tailwind.css").read, force: true
       create_file "app/assets/tailwind/poetry/aliases.css",
@@ -134,13 +146,16 @@ module Poetry
       create_file "app/assets/tailwind/poetry/style-default.css",
                   ui_theme_path.read, force: true
       create_file "app/assets/tailwind/poetry/base.css", BASE_CSS, skip: true
-      # poetry/typeset (the shadcn/typeset port): prose styling for
+      # poetry/typeset (the vendored prose-styling port - provenance in
+      # THIRD_PARTY_NOTICES.md): prose styling for
       # rendered markdown. App-OWNED like base.css (skip, never force) -
       # the whole point of the artifact is that the file is yours to tune.
       create_file "app/assets/tailwind/poetry/typeset.css",
                   Poetry::Ui.root.join("typeset/typeset.css").read, skip: true
     end
 
+    # Step: writes the dictionary + template-class safelist.
+    # @api private
     def generate_safelist
       # Style.descendants is empty until the component classes load - under
       # `rails g` nothing has autoloaded them (the fresh-app proof caught
@@ -156,6 +171,9 @@ module Poetry
       create_file "app/assets/tailwind/poetry/safelist.txt", safelist.text, force: true
     end
 
+    # Step: injects the poetry @import/@source lines into the host's
+    # Tailwind entry.
+    # @api private
     def wire_tailwind_entry
       unless File.exist?(File.join(destination_root, TAILWIND_ENTRY))
         create_file TAILWIND_ENTRY, %(@import "tailwindcss";\n)
@@ -163,6 +181,8 @@ module Poetry
       ENTRY_LINES.each { |line| inject_unless_present(TAILWIND_ENTRY, line) }
     end
 
+    # Step: writes the commented configuration initializer.
+    # @api private
     def create_initializer
       create_file "config/initializers/poetry.rb", <<~RUBY, skip: true
         # frozen_string_literal: true
@@ -174,6 +194,8 @@ module Poetry
       RUBY
     end
 
+    # Step: writes the empty copy-in manifest.
+    # @api private
     def create_manifest
       create_file "config/poetry_components.yml", "components: {}\n", skip: true
     end
@@ -181,6 +203,7 @@ module Poetry
     # Pins alone don't register controllers: without this call every poetry
     # controller is dead JS (the browser pass caught the dialog trigger
     # doing nothing in a fresh host).
+    # @api private
     def register_controllers
       index = "app/javascript/controllers/index.js"
       unless File.exist?(File.join(destination_root, index))
@@ -200,6 +223,7 @@ module Poetry
     # a gem-path @import would not resolve) - vendored artifact, force like
     # tokens; the entry @import and the Stimulus registration ride the same
     # idempotent primitives as the core wiring.
+    # @api private
     def wire_charts
       return unless options[:charts]
 
@@ -228,6 +252,7 @@ module Poetry
 
     # The llms.txt / llms-full.txt agent docs are engine routes - without
     # the mount they are unreachable (the fresh-app proof caught this).
+    # @api private
     def mount_engine
       routes = File.join(destination_root, "config/routes.rb")
       return unless File.exist?(routes)
@@ -238,6 +263,7 @@ module Poetry
 
     # The AGENTS.md pointer section - marker-bounded so a re-run
     # refreshes it in place. Standalone refresh: `rails g poetry:agents`.
+    # @api private
     def write_agents_md
       apply_agents_section
     end
@@ -245,6 +271,7 @@ module Poetry
     # The Claude Code skills - part of the standard
     # install surface, like AGENTS.md. Standalone refresh:
     # `rails g poetry:skill` (re-run after updating poetry gems).
+    # @api private
     def write_skills
       apply_poetry_skills
     end
@@ -252,6 +279,7 @@ module Poetry
     # Dark mode is one layout line, but nothing else in the install touches
     # the layout - without the pointer the theme never applies before first
     # paint and hosts rediscover the flash-of-light-mode pothole.
+    # @api private
     def announce_color_scheme
       say_status :note, "dark mode: render <%= poetry_color_scheme_script %> in your layout <head> " \
                         "(docs/theming.md, \"Color scheme\")", :cyan
@@ -261,6 +289,7 @@ module Poetry
     # must MORPH to be seamless - two layout metas the install cannot add
     # for the host (the redirect trap and server contract live in
     # the doc).
+    # @api private
     def announce_optimistic_form
       say_status :note, "optimistic forms: add <meta name=\"turbo-refresh-method\" content=\"morph\"> " \
                         "+ <meta name=\"turbo-refresh-scroll\" content=\"preserve\"> to your layout " \

@@ -2,16 +2,16 @@
 
 module Poetry
   module Ui
+    # The InputOtp family - fixed-length one-time-code entry.
     module InputOtp
-      # Fixed-length one-time-code entry - poetry's OWN single-input
-      # build (shadcn wraps an npm OTP library; poetry keeps that lib's
-      # one architecturally right idea and ships no dependency). There
-      # are NO per-cell inputs: one real
+      # Fixed-length one-time-code entry built around a single input:
+      # there are NO per-cell inputs. One real
       # native <input> (autocomplete one-time-code) holds the whole value,
       # stretched invisibly over the row, so paste, SMS autofill, IME,
-      # constraint validation and serialization are all native and AT
+      # constraint validation and serialization are all native and
+      # assistive technology
       # sees ONE text field. The n slot cells are a purely presentational
-      # aria-hidden MIRROR painted by poetry--core--otp: auto-advance and
+      # aria-hidden MIRROR painted by JS: auto-advance and
       # backspace-retreat are not features, they are the native caret
       # PROJECTED (data-active follows selectionStart).
       #
@@ -24,7 +24,9 @@ module Poetry
       # @example
       #   render Poetry::Ui::InputOtp::Component.new(name: "code", length: 6, groups: [3, 3])
       class Component < Poetry::Core::Component
+        # The supported code lengths - cell UIs degrade past ~8.
         LENGTH_RANGE = (1..12)
+        # The built-in per-char filters with their native pattern + inputmode.
         PATTERNS = {
           digits: { js: "\\d", char: "[0-9]", inputmode: "numeric" },
           alphanumeric: { js: "[a-zA-Z0-9]", char: "[a-zA-Z0-9]", inputmode: "text" }
@@ -33,6 +35,7 @@ module Poetry
         # everything else the caller passes styles the container.
         INPUT_FACING = %w[id aria-label aria-describedby aria-invalid aria-required].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_input_otp / form.otp_field - NEVER build per-cell inputs (n Tab stops, broken " \
           "paste, broken SMS autofill, unnameable cells).",
@@ -83,6 +86,7 @@ module Poetry
         # :digits (numeric keypad) | :alphanumeric | a custom Regexp -
         # the per-char filter + the native pattern attribute + inputmode.
         option :pattern, ActiveModel::Type::Value.new, default: :digits
+        # Disables the native input (the whole row dims).
         option :disabled, :boolean, default: false
         # aria-required on the input - never native required (the Field
         # rule: required rides server-side validation + aria).
@@ -112,6 +116,8 @@ module Poetry
         part "input-otp-separator", "The between-groups dash - role=separator kept for parity " \
                                     "but aria-hidden (a recorded divergence)"
 
+        # Validates length, groups, and pattern up front.
+        # @api private
         def initialize(attributes = {})
           super
 
@@ -120,26 +126,38 @@ module Poetry
           pattern_spec # raises on garbage patterns up front
         end
 
+        # The resolved cell clustering ([length] when groups: is absent).
+        # @api private
         def group_sizes
           @group_sizes ||= (groups.presence || [length]).map { |size| Integer(size) }
         end
 
+        # The value truncated to length, as rendered into input and cells.
+        # @api private
         def display_value
           value.to_s[0, length].to_s
         end
 
+        # The character painted into the cell at index ("" when empty).
+        # @api private
         def char_at(index)
           display_value[index].to_s
         end
 
+        # The native input's server-stable id.
+        # @api private
         def input_id
           @input_id ||= poetry_instance_id("poetry-input-otp")
         end
 
+        # Whether the rendered value already fills every cell.
+        # @api private
         def complete?
           display_value.length >= length
         end
 
+        # The row container's attributes.
+        # @api private
         def root_attributes
           attrs = {
             "data-slot" => "input-otp-container",
@@ -152,6 +170,8 @@ module Poetry
           )
         end
 
+        # The real native input's attributes.
+        # @api private
         def input_attributes
           attrs = {
             "type" => "text", "name" => name, "id" => input_id,
@@ -172,6 +192,8 @@ module Poetry
                                         .merge_if_not_set(attrs.merge(stimulus_attributes_for(:input)))
         end
 
+        # One mirror cell's attributes.
+        # @api private
         def slot_attributes(_index)
           attrs = {
             class: css(:slot), "data-slot" => "input-otp-slot", "data-active" => "false"

@@ -2,24 +2,22 @@
 
 module Poetry
   module Ui
+    # A numeric input with steppers and display formatting.
     module NumberField
-      # The NumberField: Base UI's number-field contract on
-      # poetry's InputGroup visual language. Base UI dropped the spinbutton
-      # ARIA pattern - the anatomy is a formatted visible <input type=text>
-      # (aria-roledescription "Number field") beside a visually-hidden
-      # <input type=number> that is the form/validation truth: the raw JS
-      # number submits (a currency field showing $1,234.50 submits 1234.5),
-      # and native required/min/max validation rides the hidden input.
+      # A numeric field with stepper buttons and locale-aware display
+      # formatting. The anatomy is a formatted visible <input type=text>
+      # (announced as "Number field") beside a visually-hidden
+      # <input type=number> that is the form and validation truth: the
+      # raw number submits (a currency field showing $1,234.50 submits
+      # 1234.5), and native required/min/max validation rides the hidden
+      # input.
       #
-      # Visuals compose from existing primitives:
-      # the group wears InputGroup's chrome (the input keeps data-slot=
-      # input-group-control - the themes' focus-ring hook), the steppers
-      # are ghost icon Buttons in addon cells. Zero new theme CSS.
-      #
-      # Documented divergences from Base UI: no scrub area (unscheduled),
-      # Latin-digit parsing only (locale separators and currency/percent
-      # symbols ARE handled via Intl.formatToParts), and the server renders
-      # the raw number - the display formats on connect.
+      # Visuals compose from existing primitives - the group wears
+      # InputGroup's chrome and the steppers are ghost icon Buttons - so
+      # themes restyle it through those components. The server renders
+      # the raw number; the display formats on connect. Typed input
+      # parses Latin digits (locale separators and currency/percent
+      # symbols are handled).
       #
       # @example
       #   render Poetry::Ui::NumberField::Component.new(
@@ -27,6 +25,7 @@ module Poetry
       #   )
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
           "input type=number.",
@@ -84,31 +83,45 @@ module Poetry
           end
         end
 
+        # The submitted field name - rides the hidden number input.
         option :name, :string, required: true
         # Initial value - a number; nil renders empty (null semantics).
         option :value, ActiveModel::Type::Value.new
+        # The lower clamp for stepping and native validation.
         option :min, :float
+        # The upper clamp for stepping and native validation.
         option :max, :float
+        # The arrow-key / stepper increment.
         option :step, :float, default: 1.0
-        # Shift-arrow / Alt-arrow step sizes (Base UI largeStep/smallStep).
+        # The Shift-arrow step size (the coarse jump).
         option :large_step, :float, default: 10.0
+        # The Alt-arrow step size (the fine adjustment).
         option :small_step, :float, default: 0.1
-        # Snap stepped values to step multiples from min (Base UI snapOnStep).
+        # Snaps stepped values to step multiples counted from min:.
         option :snap, :boolean, default: false
         # Opt-in wheel stepping while the input is focused.
         option :wheel, :boolean, default: false
         # Intl.NumberFormatOptions for the DISPLAY (submission stays raw).
         option :format, ActiveModel::Type::Value.new
+        # Locale tag pinning the display and parsing separators; the page
+        # locale otherwise.
         option :locale, :string
+        # Placeholder text for the empty input.
         option :placeholder, :string
+        # Disables both inputs and the steppers; the group chrome dims.
         option :disabled, :boolean, default: false
+        # Makes the visible input read-only (steppers and typing inert).
         option :readonly, :boolean, default: false
+        # Requires a value - native validation rides the hidden input.
         option :required, :boolean, default: false
+        # Marks the field invalid (aria-invalid on the visible input; the
+        # group wears the destructive ring).
         option :invalid, :boolean, default: false
+        # The visible input's dom id - the seam a Label's for_id: points at.
         option :id, :string
-        # Standalone accessible name -> aria-label on the visible input
-        # (the slider precedent). Inside a form, the Field label wires ids
-        # instead - pass neither and pair with poetry_label/form.
+        # Standalone accessible name -> aria-label on the visible input.
+        # Inside a form, the Field label wires ids instead - pass neither
+        # and pair with poetry_label/form.
         option :label, :string
         # aria-describedby wiring for Field hint/error pairing.
         option :described_by, :string
@@ -140,6 +153,8 @@ module Poetry
         # ownership attributes them to Button (the date-picker-trigger
         # pattern), so they are documented here in prose only.
 
+        # Rejects a non-numeric value: early.
+        # @api private
         def initialize(attributes = {})
           super
           return unless value.present? && !numeric?(value)
@@ -147,12 +162,15 @@ module Poetry
           raise ArgumentError, "value: must be a number (got #{value.inspect})"
         end
 
+        # Enforces the format: Hash contract.
+        # @api private
         def before_render
           return unless format.present? && !format.is_a?(Hash)
 
           raise ArgumentError, "format: takes an Intl.NumberFormatOptions Hash"
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "data-slot" => "number-field",
@@ -164,6 +182,7 @@ module Poetry
           html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
+        # @api private
         def input_attributes
           attrs = Poetry::Core::HTML::Attributes.new(
             "type" => "text",
@@ -190,6 +209,7 @@ module Poetry
 
         # The form/validation truth: raw number out, native constraint
         # validation on. Focus never lands here (tabindex -1, aria-hidden).
+        # @api private
         def hidden_attributes
           attrs = Poetry::Core::HTML::Attributes.new(
             "type" => "number",
@@ -210,14 +230,16 @@ module Poetry
 
         # The stepper Buttons (ghost, icon-xs, InputGroup's tiny-button
         # chrome): tabindex -1 keeps them off the Tab order - keyboard
-        # users step on the input (Base UI; aria-hidden deliberately NOT
-        # applied so touch screen readers can still activate them).
+        # users step on the input. aria-hidden is deliberately NOT applied,
+        # so touch screen readers can still activate them.
+        # @api private
         def stepper(direction)
           group_tool_button(slot: "number-field-#{direction}",
                             label: t("poetry.number_field.#{direction}"),
                             wiring: stimulus_attributes_for(direction))
         end
 
+        # @api private
         def stepper_icon(direction)
           direction == :increment ? :plus : :minus
         end
@@ -229,8 +251,7 @@ module Poetry
         end
 
         # Integer ranges starting at zero take the digit keyboard; decimals
-        # or open/negative ranges need the full layout (Base UI's iOS rule,
-        # collapsed to one axis).
+        # or open/negative ranges need the full layout.
         def inputmode
           whole = step == step.to_i && (!min.present? || min == min.to_i)
           min.present? && min >= 0 && whole && format.blank? ? "numeric" : "decimal"

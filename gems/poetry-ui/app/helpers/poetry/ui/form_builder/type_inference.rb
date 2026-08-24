@@ -3,15 +3,16 @@
 module Poetry
   module Ui
     class FormBuilder < ActionView::Helpers::FormBuilder
-      # The f.input inference pipeline - the
-      # simple_form absorption, vendored rather than integrated: `as:` wins,
+      # The f.input inference pipeline,
+      # vendored rather than integrated: `as:` wins,
       # then attachment duck-typing, AR enums, the model's attribute type,
       # and name heuristics on string columns. The resolver maps into
-      # poetry's vocabulary (richer targets than simple_form had: Combobox,
+      # poetry's vocabulary (richer targets than the classic form DSLs
+      # had: Combobox,
       # SensitiveInput, DatePicker), and the validator extractors turn
       # length/numericality/format validations into control attributes.
       module TypeInference
-        # Name heuristics on string-typed attributes (simple_form's
+        # Name heuristics on string-typed attributes (the classic naming
         # regexes, trimmed to the ones poetry renders distinctly).
         STRING_HEURISTICS = {
           /password/ => :password,
@@ -21,6 +22,7 @@ module Poetry
           /search|query/ => :search
         }.freeze
 
+        # Model column type -> f.input control type.
         COLUMN_TYPES = {
           text: :text, boolean: :boolean, date: :date, time: :time,
           datetime: :datetime, integer: :number, float: :number,

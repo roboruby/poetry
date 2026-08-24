@@ -2,31 +2,28 @@
 
 module Poetry
   module Ui
+    # Instant-effect on/off controls.
     module Switch
-      # The Switch - the toggle family's
-      # instant-effect on/off control: Checkbox's architecture wearing a
-      # different ARIA skin and a thumb. Same store inversion (the hidden
-      # native input is the form participant and the store), same
-      # poetry--core--checked controller reused VERBATIM (zero fork - the
-      # deltas are markup/validation-level). The contract deltas:
-      # role="switch", aria-checked strictly true|false (NEVER "mixed" -
-      # :indeterminate raises ArgumentError), Enter is NOT suppressed (the
-      # controller's Enter guard keys off role=checkbox - Radix-exact
-      # asymmetry), and the size variant is carried entirely by data-size +
-      # group/switch selectors.
+      # An on/off control whose effect applies immediately - flip it and
+      # the change happens now, where a Checkbox stages a value for a
+      # later submit. Renders a button[role=switch] backed by a hidden
+      # native input: give it name: and it participates in form
+      # submission and fires a real change event on toggle, so a settings
+      # form can auto-submit (e.g. Turbo's
+      # data-action: "change->form#requestSubmit").
       #
-      # Doctrine: a Switch flips an effect IMMEDIATELY (announces on/off);
-      # a Checkbox stages a value for submit. name: exists because settings
-      # forms submit switches too - the flagship recipe is the Turbo
-      # auto-submit (form data-action: "change->form#requestSubmit" hangs
-      # off the store input's REAL change event).
+      # A switch is strictly binary - :indeterminate raises ArgumentError.
+      # Give every switch an accessible name via label: or a paired
+      # Label/Field.
       #
       # @example A named setting switch
       #   render Poetry::Ui::Switch::Component.new(name: "notifications", checked: true,
       #                                            label: "Email notifications")
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch announces " \
           "on/off; that's the point).",
@@ -41,8 +38,8 @@ module Poetry
           "the input sync (the controller writes all three)."
         ].freeze
 
-        # The SHARED family controller (shipped by Checkbox, reused with
-        # zero fork): input first, real change event, then reflect.
+        # Click toggles the hidden input first (firing a real change
+        # event), then reflects the new state onto the control.
         use_stimulus do
           on :root do
             controller :checked do
@@ -53,17 +50,22 @@ module Poetry
           end
         end
 
-        # data-size on the control; the thumb reads it via
-        # group-data-[size=*]/switch - no per-element size classes.
+        # The control's size axis; the thumb scales to match.
         style :size, default: :default, required: true, variants: SIZES
 
+        # The server-rendered on/off state.
         option :checked, :boolean, default: false
+        # Names the hidden input, making the switch a form participant.
         option :name, :string
+        # Submitted when the switch is on. Ignored without name:.
         option :value, :string, default: "1"
+        # Submitted when the switch is off, so the field always posts. Ignored without name:.
         option :unchecked_value, :string, default: "0"
+        # Disables the control and its hidden input - a disabled switch neither toggles nor submits.
         option :disabled, :boolean, default: false
-        # aria-required ONLY, never native required (the Field family rule).
+        # Marks the switch required via aria-required (never the native attribute).
         option :required, :boolean, default: false
+        # The accessible name, rendered as aria-label - not visible text.
         option :label, :string
 
         part "switch", "The visual button[role=switch] - reflects the hidden input via " \
@@ -83,11 +85,11 @@ module Poetry
                "data-unchecked" => "mirrors the control - the thumb sits at the start"
              }
 
+        # @api private
         def initialize(attributes = {})
           # A switch is strictly binary: aria-checked on role=switch must
-          # never be "mixed" - the violation is unrepresentable (the
-          # base-contract rule). Guarded BEFORE the boolean cast would
-          # silently truthy it away.
+          # never be "mixed" - the violation is unrepresentable. Guarded
+          # BEFORE the boolean cast would silently truthy it away.
           if attributes.values_at(:checked, "checked").any? { |value| value.to_s == "indeterminate" }
             raise ArgumentError, "Switch is strictly binary - no :indeterminate (use Checkbox for tri-state)"
           end
@@ -95,22 +97,27 @@ module Poetry
           super
         end
 
+        # @api private
         def state
           checked ? "checked" : "unchecked"
         end
 
+        # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-switch")
         end
 
+        # @api private
         def input_id
           "#{control_id}-input"
         end
 
+        # @api private
         def form_participant?
           name.present?
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "type" => "button", "role" => "switch", "id" => control_id,

@@ -2,12 +2,13 @@
 
 module Poetry
   module Ui
+    # Collapsible family: the plain show/hide disclosure.
     module Collapsible
-      # A disclosure on the EXISTING poetry--core--state controller - no
-      # new machinery. The server renders open/closed as the data-open/
-      # data-closed pair; the trigger mirrors aria-expanded; content stays
-      # in the DOM (hidden, searchable by re-render) and rides the
-      # presence helper on exit.
+      # A disclosure: a trigger button that shows and hides one content
+      # panel. The server renders the initial open/closed state, the
+      # trigger mirrors aria-expanded, and closed content stays in the
+      # DOM (hidden) so it survives re-renders and stays findable -
+      # exit animations are awaited before hiding.
       #
       # @example
       #   render Poetry::Ui::Collapsible::Component.new do |collapsible|
@@ -17,6 +18,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "The trigger is with_trigger { \"label\" } - a real button, wired for you (aria-expanded/controls).",
@@ -25,11 +27,12 @@ module Poetry
           "For URL-controlled disclosure without JS, render open: from params - the same markup serves both."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # The required slots, stated statically so static checks can flag
+        # a missing trigger without rendering.
         REQUIRED_SLOTS = { trigger: "the disclosure control" }.freeze
 
+        # The disclosure control - a real button, wired for you
+        # (aria-expanded, aria-controls); options merge onto it.
         renders_one :trigger, lambda { |**options, &block|
           attrs = {
             type: "button", "data-slot" => "collapsible-trigger",
@@ -54,6 +57,8 @@ module Poetry
           end
         end
 
+        # The server-rendered initial state; the trigger toggles it
+        # client-side.
         option :open, :boolean, default: false
 
         part "collapsible", "The disclosure root - the state controller flips the pair here",
@@ -76,19 +81,27 @@ module Poetry
         # A missing body yields a trigger disclosing an empty panel.
         requires_content "the disclosed panel body"
 
+        # Enforces the required trigger and panel body.
+        # @api private
         def before_render
           raise ArgumentError, "Collapsible requires with_trigger (the disclosure control)" unless trigger?
           ensure_content!
         end
 
+        # The state word behind the data-* stamps.
+        # @api private
         def state
           open ? "open" : "closed"
         end
 
+        # The panel's id - the trigger's aria-controls target.
+        # @api private
         def content_id
           @content_id ||= "#{instance_id}-content"
         end
 
+        # Attributes for the disclosure root.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "collapsible", "data-#{state}" => "" }
@@ -97,6 +110,8 @@ module Poetry
           )
         end
 
+        # Attributes for the content panel.
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id, "data-slot" => "collapsible-content", "data-#{state}" => ""

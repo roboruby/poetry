@@ -3,21 +3,15 @@
 module Poetry
   module Ui
     module Command
-      # The CommandDialog variant: the ⌘K
-      # palette - a Command inside the platform Dialog chrome. Like
-      # AlertDialog, it reuses the poetry--core--dialog controller and the
-      # native <dialog> + showModal() trap UNCHANGED with its own template
-      # (Dialog's fixed visible header can't be made sr-only from outside -
-      # the pragmatic AlertDialog-precedent call): the header is sr-only
-      # (title/description default to the source strings via i18n), the
-      # content wears Dialog's chrome retuned to overflow-hidden p-0, and
-      # the embedded Command carries the h-12 override chain. The global
-      # hotkey is OPT-IN (hotkey: "meta+k") - the dialog controller's
-      # window listener toggles the dialog; shadcn leaves this to a caller
-      # useEffect, poetry ships it because every consumer writes the same
-      # ten lines. The embedded Command's input rides the
-      # t('poetry.command.input_label') aria-label (the dialog's sr-only
-      # title names the DIALOG, not the input).
+      # The Command palette inside a modal dialog - the app-wide "press
+      # Cmd+K" search. The native <dialog> focus trap does the overlay
+      # work; the dialog's title and description are screen-reader-only
+      # (localized defaults name the dialog), so the visible surface is
+      # the palette itself.
+      #
+      # The global hotkey is OPT-IN (hotkey: "meta+k") and toggles the
+      # dialog from anywhere; the trigger button remains the visible way
+      # in. Items use Command's contract: act on poetry:command:select.
       #
       # @example
       #   render Poetry::Ui::Command::DialogComponent.new(hotkey: "meta+k") do |dialog|
@@ -29,6 +23,7 @@ module Poetry
         # use the same slot API as bare poetry_command.
         delegate :with_item, :with_group, :with_separator, :with_empty, :with_loading, to: :command
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "App-wide palettes use poetry_command_dialog with hotkey: ('meta+k') - never a hand-wired " \
           "window keydown listener around poetry_dialog.",
@@ -70,17 +65,30 @@ module Poetry
           end
         end
 
+        # The dialog's sr-only accessible name (localized default) -
+        # override rather than remove.
         option :title, :string, default: -> { I18n.t("poetry.command.dialog_title") }
+        # The sr-only description wired to aria-describedby (localized
+        # default).
         option :description, :string, default: -> { I18n.t("poetry.command.dialog_description") }
+        # A global shortcut ("meta+k") that toggles the palette from
+        # anywhere; an accelerator, not the only way in.
         option :hotkey, :string
+        # Renders the corner X (Esc always closes regardless).
         option :show_close_button, :boolean, default: true
+        # Backdrop clicks close the palette; false keeps it open.
         option :dismissible, :boolean, default: true
-        # Command passthrough (the embedded palette's options).
+        # Passed through to the embedded Command: client-side filtering.
         option :filter, :boolean, default: true
+        # Passed through: wraps arrow-key highlight movement at the ends.
         option :loop, :boolean, default: false
+        # Passed through: the filter input's placeholder text.
         option :placeholder, :string
+        # Passed through: the listbox's accessible name.
         option :list_label, :string
+        # Passed through: seats the initial highlight on this item value.
         option :value, :string
+        # Passed through: the embedded palette's base DOM id.
         option :id, :string
 
         part "command-dialog", "Root wrapper around the trigger and the <dialog> - the " \
@@ -103,12 +111,14 @@ module Poetry
 
         # data-component self-id: "command-dialog", not the path-derived
         # "dialog" (which would shadow Dialog's own self-identification).
+        # @api private
         def self.component_title
           "command-dialog"
         end
 
         # The embedded Command, carrying the h-12 dialog override chain
-        # (the source CommandDialog className, rewritten onto data-slots).
+        # (rewritten onto data-slots).
+        # @api private
         def command
           @command ||= begin
             options = {
@@ -123,14 +133,20 @@ module Poetry
           end
         end
 
+        # The sr-only title's id - the dialog's aria-labelledby target.
+        # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # The sr-only description's id - the aria-describedby target.
+        # @api private
         def description_id
           "#{instance_id}-description"
         end
 
+        # Attributes for the root wrapper.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "command-dialog" }
@@ -139,8 +155,9 @@ module Poetry
           )
         end
 
-        # Dialog's content chrome with the source override (overflow-hidden
+        # Dialog's content chrome retuned for the palette (overflow-hidden
         # p-0 win on conflicts); labelled/described by the sr-only header.
+        # @api private
         def dialog_attributes
           {
             "class" => Poetry::Ui::Dialog::Style.css(:content, class: Style.css(:dialog_content)),
@@ -152,14 +169,15 @@ module Poetry
         end
 
         # Validated action descriptor for the template's close button.
+        # @api private
         def close_action
           stimulus_action(:close)
         end
 
         private
 
-        # A manifest-validated Builder for descriptor strings (pure - never
-        # touches the component's own html_attributes).
+        # (Descriptor strings resolve through the declared elements above,
+        # never through hand-written wiring.)
 
         # Server-stable unique id for the aria wiring (two palettes on one
         # page must not share label ids).

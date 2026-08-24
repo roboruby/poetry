@@ -86,7 +86,7 @@ module Poetry
         # instance keeps its wrapper-free markup.
         element :clear_anchor, "relative inline-flex"
 
-        # The show_clear: X (Base UI Combobox.Clear): a trigger SIBLING
+        # The show_clear: X: a trigger SIBLING
         # (button-in-button is invalid) absolutely seated over the chevron
         # slot (px-3 gutter + size-4 icon -> a size-6 hitbox at end-2
         # centers on it). Structural-only chrome, like the chevron itself.

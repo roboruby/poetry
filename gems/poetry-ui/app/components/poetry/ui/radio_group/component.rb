@@ -2,25 +2,21 @@
 
 module Poetry
   module Ui
+    # A mutually exclusive option set: radio dots or selectable choice cards.
     module RadioGroup
-      # The RadioGroup - the first roving-focus consumer with SELECTION
-      # semantics. Two machines
-      # compose on one root (the Accordion/ToggleGroup shape): the thin
-      # poetry--core--radio-group checked-value machine (zero keyboard
-      # code) and poetry--core--roving-focus in its DEFAULT tabindex-
-      # managing mode with orientation "both" (APG radio: all four arrows,
-      # horizontal pair RTL-flipped). Selection follows focus by consuming
-      # roving-focus's cancelable entry event - it fires only on
-      # arrow/Home/End navigation, never on Tab, so Tab into the group can
-      # never change the value (Radix-exact).
+      # A set of mutually exclusive options, exactly one checkable -
+      # radio dots with labels, or selectable choice cards (item
+      # variant: :card). Reach for it when a handful of options should all
+      # be visible at once; larger lists belong in a Select.
       #
-      # The form story is the hidden-native-input rule: one hidden
-      # <input type=radio> PER item, shared name (aria-hidden, tabindex=-1)
-      # - native radio serialization, byte-identical to
-      # collection_radio_buttons (checked value only; NOTHING submits when
-      # none is checked, so presence validation stays honest). The server
-      # renders the roving tab stop (checked item tabindex=0, rest -1) so
-      # the one-Tab-stop contract holds before JS connects.
+      # Keyboard: the group is one Tab stop; arrow keys move between items
+      # and selection follows that navigation - Tab into the group never
+      # changes the value. Form participation: one hidden native
+      # <input type=radio> per item under the shared name:, so the checked
+      # value serializes exactly like collection_radio_buttons and NOTHING
+      # submits while none is checked (presence validation stays honest).
+      # The server renders the roving tab stop (checked item tabindex=0,
+      # rest -1) so the one-Tab-stop contract holds before JS connects.
       #
       # @example
       #   render Poetry::Ui::RadioGroup::Component.new(
@@ -30,10 +26,13 @@ module Poetry
       #     group.with_item(value: "yearly", label: "Yearly")
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the keyboard-axis option.
         ORIENTATIONS = %i[both vertical horizontal].freeze
 
+        # The closed vocabulary for the per-item variant axis.
         ITEM_VARIANTS = %i[default card].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_radio_group / form.radio_group - never hand-roll role=radio buttons.",
           "Every item MUST have a unique value: (ArgumentError on duplicates).",
@@ -52,17 +51,15 @@ module Poetry
           "red ring."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # The same facts the before_render raise enforces, stated statically
+        # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
 
         # One item per option: a real button[role=radio] carrying its own
-        # hidden native radio; label: renders the demo's item+Label row.
-        # variant: :card renders the choice-card row instead - title (+
-        # optional description:) inside a selectable bordered label, the
-        # radio pinned to the right (upstream's FieldLabel-wrapping-Field
-        # Choice Card recipe, flattened onto the label).
+        # hidden native radio; label: renders the dot beside a paired
+        # Label. variant: :card renders the choice-card row instead - title
+        # (+ optional description:) inside a selectable bordered label,
+        # the radio pinned to the right.
         renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
                                        description: nil, variant: :default, **options|
           unless ITEM_VARIANTS.include?(variant)
@@ -83,9 +80,9 @@ module Poetry
 
           next item if label.blank?
 
-          # Source parity (radio-group-demo): the item + Label pairing row.
-          # The for= targets the BUTTON id - label clicks check via the
-          # controller (native label->button activation).
+          # The item + Label pairing row. The for= targets the BUTTON id -
+          # label clicks check via the controller (native label->button
+          # activation).
           content_tag(:div, class: css(:row)) do
             safe_join([item, render(Label::Component.new(for_id: item_id).with_content(label))])
           end
@@ -113,7 +110,7 @@ module Poetry
             controller(:radio_group) { action :check, on: :click }
           end
           # THE form participant: the hidden native radio the controller
-          # syncs (previously a hand-written target string).
+          # syncs.
           on :input do
             controller(:radio_group) { target :input }
           end
@@ -126,15 +123,15 @@ module Poetry
         option :value, :string
         # aria-required on the ROOT only - never native required on the
         # hidden inputs (constraint-validation focus would land on an
-        # aria-hidden input; the Field rule).
+        # aria-hidden input).
         option :required, :boolean, default: false
         # Disables every item (root-level).
         option :disabled, :boolean, default: false
-        # Arrow wrap at the ends (Radix default true).
+        # Arrow-key navigation wraps at the ends.
         option :loop, :boolean, default: true
-        # Keyboard axis. APG radio = all four arrows (:both, the default +
-        # Radix parity); :vertical/:horizontal restrict the axis. NO visual
-        # effect (source has none).
+        # Keyboard axis: :both allows all four arrows (the standard radio
+        # pattern); :vertical/:horizontal restrict the axis. No visual
+        # effect.
         option :orientation, :symbol, default: :both
         # aria-invalid on the items (the destructive ring) - set by
         # Field/FormBuilder from model errors.
@@ -174,6 +171,7 @@ module Poetry
         part "radio-group-card-description", "Muted copy under the choice card's title " \
                                              "(description:)"
 
+        # @api private
         def before_render
           raise ArgumentError, "RadioGroup requires at least one with_item" unless items?
 
@@ -184,16 +182,19 @@ module Poetry
                 "accessible name is an APG violation"
         end
 
+        # @api private
         def checked?(item_value)
           value.present? && value.to_s == item_value
         end
 
         # The label-for/aria target root id - server-stable (Field-issued
         # or auto) so item ids derive deterministically.
+        # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-radio-group")
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "role" => "radiogroup", "data-slot" => "radio-group", "id" => control_id
@@ -274,8 +275,8 @@ module Poetry
           attrs.merge!(stimulus_attributes_for(:item))
 
           # The native input is the button's SIBLING - a focusable native
-          # control inside a role=radio button is axe nested-interactive
-          # (caught by the a11y rig, 2026-07-03).
+          # control inside a role=radio button is an axe nested-interactive
+          # violation.
           safe_join([
                       content_tag(:button, Poetry::Core::HTML::Attributes.merged(attrs, options)) do
                         indicator(checked)
@@ -286,8 +287,8 @@ module Poetry
 
         def indicator(checked)
           attrs = { class: css(:indicator), "data-slot" => "radio-group-indicator" }
-          # A hidden attr toggle, not presence - shadcn renders no check
-          # animation (source-exact, morph-safe).
+          # A hidden attr toggle, not element presence - no check animation
+          # is rendered (morph-safe).
           attrs[:hidden] = true unless checked
           content_tag(:span, content_tag(:span, "", class: css(:dot)), attrs)
         end

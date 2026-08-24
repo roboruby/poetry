@@ -2,29 +2,28 @@
 
 module Poetry
   module Ui
+    # Numbered page navigation.
     module Pagination
-      # The Pagination - data-driven (Rails hands you current + total from a
-      # collection), so the component owns the truncation math instead of
-      # making you compose every <li>. A `<nav aria-label>` of Button-styled
-      # links: outline for the current page (aria-current=page), ghost for
-      # the rest; first/last always shown, current +/- siblings around it,
-      # ellipses for the gaps. path: is a callable page -> url.
+      # Numbered page navigation, data-driven: give it current + total
+      # and a path: callable (page -> url) and it owns the truncation
+      # math instead of making you compose every <li> - first and last
+      # always shown, a window of siblings around the current page,
+      # ellipses for the gaps. Renders a <nav> landmark of Button-styled
+      # links with the current page marked aria-current=page.
       #
       # @example Paginating a product list
       #   render Poetry::Ui::Pagination::Component.new(current: 3, total: 12,
       #                                                path: ->(page) { products_path(page: page) })
       class Component < Poetry::Core::Component
-        # :outline is upstream parity and stays the default; :filled renders
-        # the current page as the primary Button (the outline marker is easy
-        # to mistake for a hover/focus ring; the data-index block and docs
-        # adopt :filled).
+        # The closed vocabulary for the current_variant axis - how the
+        # current page link renders.
         CURRENT_VARIANTS = %i[outline filled].freeze
 
-        # The edge treatment: :labeled (chevron + responsive text, upstream
-        # parity, default), :icons (chevron-only - table footers/toolbars),
-        # :none (no Previous/Next at all).
+        # The closed vocabulary for the edges axis - the Previous/Next
+        # treatment.
         EDGES = %i[labeled icons none].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.",
           "path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).",
@@ -41,16 +40,27 @@ module Poetry
           "around a paginator gem."
         ].freeze
 
+        # The current page number (1-based).
         option :current, :integer, required: true
+        # The total page count.
         option :total, :integer, required: true
+        # How many page links flank the current page before gaps elide to
+        # ellipses.
         option :siblings, :integer, default: 1
+        # The Previous/Next treatment: :labeled (chevron + responsive text),
+        # :icons (chevron only - table footers), :none (no edge links).
         option :edges, :symbol, default: :labeled
-        # pages: false drops the numbered links - the compact two-button
-        # pager (upstream pagination-icons-only).
+        # Set false to drop the numbered links - the compact two-button
+        # pager (pair with edges: :icons).
         option :pages, :boolean, default: true
+        # How the current page link renders: :outline, or :filled for the
+        # primary Button treatment (an unambiguous active state).
         option :current_variant, :symbol, default: :outline
+        # The nav landmark's accessible name.
         option :label, :string, default: "pagination"
+        # The Previous link's visible text (hidden on narrow viewports).
         option :previous_label, :string, default: "Previous"
+        # The Next link's visible text (hidden on narrow viewports).
         option :next_label, :string, default: "Next"
 
         validates :current_variant, inclusion: { in: CURRENT_VARIANTS }
@@ -64,6 +74,8 @@ module Poetry
         part "pagination-ellipsis", "The elided-pages marker between windows - aria-hidden with an " \
                                     "sr-only 'More pages'"
 
+        # Rejects the empty-nav combination.
+        # @api private
         def before_render
           return if pages || edges != :none
 
@@ -71,12 +83,15 @@ module Poetry
                                "edges: :none would render an empty nav"
         end
 
+        # @api private
         def show_edges? = edges != :none
+        # @api private
         def icon_edges? = edges == :icons
 
         # The page sequence with :gap markers where pages are elided. Small
         # ranges show every page; larger ones show first, last, and a window
         # of +/- siblings around current.
+        # @api private
         def items
           return (1..total).to_a if total <= 5 + (siblings * 2)
 
@@ -84,20 +99,23 @@ module Poetry
           with_gaps([1, *window, total])
         end
 
+        # @api private
         def current?(page) = page == current
+        # @api private
         def path_for(page) = @path.call(page)
 
-        # ghost for other pages; the current page renders per
-        # current_variant (:outline = upstream parity, :filled = primary).
+        # Ghost for other pages; the current page renders per
+        # current_variant (:outline, or :filled for the primary Button).
+        # @api private
         def page_variant(page)
           return :ghost unless current?(page)
 
           current_variant == :filled ? :default : :outline
         end
 
-        # A numbered page link: outline+aria-current for the current page,
-        # ghost otherwise; icon-sized. data-slot + data-active are the
-        # source-exact hooks.
+        # A numbered page link: aria-current for the current page, ghost
+        # otherwise; icon-sized. data-slot + data-active are the restyle hooks.
+        # @api private
         def page_options(page)
           {
             tag: :a, href: path_for(page), size: :icon,
@@ -112,6 +130,7 @@ module Poetry
 
         # Prev/Next: default-sized ghost links with the edge padding tweak;
         # disabled (aria-disabled, no navigation) at the boundary.
+        # @api private
         def edge_options(page, aria_label, padding)
           options = {
             tag: :a, href: path_for(page), variant: :ghost,
@@ -130,9 +149,12 @@ module Poetry
           options
         end
 
+        # @api private
         def previous_options = edge_options(current - 1, "Go to previous page", css(:edge_previous))
+        # @api private
         def next_options = edge_options(current + 1, "Go to next page", css(:edge_next))
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "role" => "navigation", "aria-label" => label, "data-slot" => "pagination" }

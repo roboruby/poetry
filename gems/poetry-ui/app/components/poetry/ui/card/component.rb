@@ -2,11 +2,14 @@
 
 module Poetry
   module Ui
+    # Content surface cards.
     module Card
-      # The Card - shadcn new-york-v4 parity via data-slot composition:
-      # one component whose parts are slots arranged by the template;
-      # every part carries its data-slot role, and the header grid reacts
-      # to the presence of an action via has-data-[slot=card-action].
+      # A content surface composed from slots: a header (title,
+      # description, and a trailing corner action), the body content
+      # block, and a footer row. The header grid gains its trailing
+      # column automatically when an action is present, and the title
+      # renders as a real heading (h3 by default - set title_tag: to fit
+      # the page outline).
       #
       # @example
       #   render Poetry::Ui::Card::Component.new do |card|
@@ -15,38 +18,38 @@ module Poetry
       #     "Body content"
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Compose with the slots (title/description/action/footer) - never rebuild the header grid by hand.",
           "The card body is the content block; use CardAction for the header-corner control.",
           "The title renders as a real heading (h3 default) - set title_tag: to fit the page outline."
         ].freeze
 
+        # The heading line, rendered as a real heading element (title_tag:).
         renders_one :title
+        # Muted one-liner under the title.
         renders_one :description
+        # The header's trailing corner control (a button, menu, or link).
         renders_one :action
-        # class: merges into the footer div (upstream CardFooter className -
-        # the border-t divider variant is the canonical use); every other
-        # option (id:, data:, ...) rides onto the footer div verbatim.
+        # The bottom row (actions/meta). class: merges into the footer div
+        # (a border-t divider is the canonical use); every other option
+        # (id:, data:, ...) rides onto the footer div verbatim.
         renders_one :footer, lambda { |**options, &block|
           @footer_options = options
           @footer_block = block
           nil
         }
 
-        # A real HEADING (h3 by default) - a deliberate a11y improvement
-        # over shadcn's div. Visual classes unchanged, so parity holds.
+        # The heading element for the title - pick it to fit the page outline.
         option :title_tag, :symbol, default: :h3
 
-        # The body cell's class merge seam (caller classes win via
-        # tailwind_merge, the footer's existing pattern) - the chat-in-a-
-        # card posture needs the content cell to flex and drop its padding
-        # (min-h-0 flex-1 p-0), exactly what upstream passes to
-        # CardContent.
+        # Extra classes merged into the body cell (caller classes win). A
+        # chat-in-a-card layout passes min-h-0 flex-1 p-0 so the transcript
+        # can flex and scroll.
         option :content_class, :string
 
-        # The header row's seam, completing the trio (header/content/
-        # footer) - upstream's chat demos pass border-b to CardHeader to
-        # rule the title off from the transcript.
+        # Extra classes merged into the header row - border-b rules the
+        # title off from the body.
         option :header_class, :string
 
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
@@ -60,18 +63,24 @@ module Poetry
         part "card-content", "The body - the content block renders here"
         part "card-footer", "The bottom row (actions/meta)"
 
+        # The caller's footer block, captured by with_footer.
+        # @api private
         attr_reader :footer_block
 
+        # @api private
         def footer_attributes
           options = (@footer_options || {}).dup
           { "data-slot" => "card-footer",
             class: css(:footer, class: options.delete(:class)) }.merge(options)
         end
 
+        # Whether any header slot is set.
+        # @api private
         def header?
           title? || description? || action?
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "card" }.merge(component_data_attributes)

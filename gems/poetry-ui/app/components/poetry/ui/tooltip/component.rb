@@ -2,27 +2,25 @@
 
 module Poetry
   module Ui
+    # Hover/focus text hints.
     module Tooltip
       # The placement vocabularies - the popper-consumer kit owns them.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
-      # The popper-consumer trio's timing machine: the
-      # hover/focus text hint that must never receive
-      # focus. Two hosts, one owned controller: the root carries
-      # poetry--core--tooltip (delay timers, the provider-scoped warm
-      # grace, one-open-globally, close-on-scroll, open-only
-      # aria-describedby) + poetry--core--popper (anchored positioning,
-      # first consumer of the ARROW target). The content's dismissable
-      # layer is TOKEN-ACTIVATED while open (Esc peels the tooltip first,
-      # topmost-only); focus-scope is NOT composed at all - focus never
-      # enters a tooltip, the defining trio contrast.
+      # A hover/focus text hint. The bubble describes its trigger and
+      # never receives focus: content is role=tooltip, the trigger's
+      # aria-describedby exists only while open (a description pointing
+      # at hidden content mis-announces), and no aria-haspopup/expanded
+      # is written - a tooltip is a description, not a popup the user
+      # operates. Opening is delayed on hover but instant on keyboard
+      # focus; only one tooltip is open globally; Esc closes the tooltip
+      # first when overlays are stacked; touch never opens one, so
+      # essential information must never live only in a tooltip.
       #
-      # A11y is the strictest of the trio: content is role=tooltip and the
-      # trigger's aria-describedby exists WHILE OPEN ONLY (a describedby to
-      # hidden content mis-announces); no aria-haspopup/expanded (a tooltip
-      # is a description, not a popup the user operates); touch never opens
-      # one (no long-press path, Radix-exact).
+      # Content must be plain text, never interactive - use Popover for
+      # links or controls. Wrap rows of triggers in one
+      # poetry_tooltip_provider so moving along the row skips the delay.
       #
       # @example A described icon button
       #   render Poetry::Ui::Tooltip::Component.new do |tooltip|
@@ -35,6 +33,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.",
@@ -51,16 +50,14 @@ module Poetry
         ].freeze
 
         # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { trigger: "the described control" }.freeze
 
-        # The forwarding-lambda fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
+        # The component behind the forwarding slot: with_trigger renders a Button.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The described control - commonly a poetry Button (demo parity:
-        # with_trigger(variant: :outline) { "Hover" }). The slot owns the
+        # The described control - commonly a poetry Button
+        # (with_trigger(variant: :outline) { "Hover" }). The slot owns the
         # state + timing wiring regardless of the composed content.
         # NO aria-haspopup/expanded/controls - the tooltip is invisible as
         # a popup; aria-describedby is written by the controller on open
@@ -69,8 +66,8 @@ module Poetry
           wiring = {
             "id" => trigger_id, "data-slot" => "tooltip-trigger"
           }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
+          # Open state is a bare data-popup-open presence attribute -
+          # absent while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
           wiring["aria-describedby"] = content_id if open
           composed_trigger(wiring, options, &block) ||
@@ -99,9 +96,9 @@ module Poetry
               value :avoid_collisions
             end
           end
-          # The Radix trigger handlers, ported: pointermove opens (touch
-          # excluded, once per hover), pointerdown/click close, focus opens
-          # instantly / blur closes.
+          # The trigger handlers: pointermove opens (touch excluded, once
+          # per hover), pointerdown/click close, focus opens instantly /
+          # blur closes.
           on :trigger do
             controller "poetry--core--tooltip" do
               action :pointer_move, on: :pointermove
@@ -116,21 +113,20 @@ module Poetry
           on :content do
             controller(:popper) { target :content }
           end
-          # The arrow target (previously a hand-written string in the ERB).
+          # The arrow's positioning target.
           on :arrow do
             controller(:popper) { target :arrow }
           end
         end
 
+        # Server-renders the tooltip open.
         option :open, :boolean, default: false
-        # nil = inherit the provider's data-delay-duration (default 0 -
-        # shadcn's provider override of Radix's 700, kept source-exact).
+        # The hover-open delay in ms; nil inherits the provider's (default 0).
         option :delay_duration, :integer
-        # nil = inherit the provider (the controller checks attribute
-        # PRESENCE, so an unset value must render no attribute at all).
+        # When true the bubble closes as the pointer leaves the trigger -
+        # it cannot be hovered into; nil inherits the provider.
         option :disable_hoverable_content, :boolean
-        # Placement: Radix Tooltip defaults - top (the trio's odd one out)
-        # with side_offset 0 (the arrow supplies the gap).
+        # Placement defaults: :top with side_offset 0 (the arrow supplies the gap).
         popper_placement_options(side: :top, side_offset: 0)
         # Plain-text announcement override for rich content (the visual
         # children stay; the announced body becomes this text).
@@ -163,15 +159,16 @@ module Poetry
                                 values: SIDES.map(&:to_s) }
              }
 
+        # @api private
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?
         end
 
+        # @api private
         def content_attributes
-          # The Radix triple (closed | delayed-open | instant-open) is now
-          # the Base UI pair: a server-pinned open tooltip renders bare
-          # data-open (the controller adds data-instant on ITS opens - the
-          # reason attribute is runtime-only).
+          # A server-pinned open tooltip renders bare data-open; the
+          # controller adds data-instant on ITS opens - the reason
+          # attribute is runtime-only.
           attrs = {
             "id" => content_id, "role" => "tooltip",
             "data-slot" => "tooltip-content", (open ? "data-open" : "data-closed") => "",

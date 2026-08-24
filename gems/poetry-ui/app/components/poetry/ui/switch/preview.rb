@@ -5,7 +5,7 @@ module Poetry
     module Switch
       # The Switch preview matrix: both sizes x both states x disabled,
       # the Field-bound recipe, and the RTL thumb-travel fix (the poetry
-      # addition over shadcn's LTR-only translate).
+      # addition over the source's LTR-only translate).
       class Preview < Poetry::Core::Preview::Base
         # @!group States
 
@@ -54,7 +54,7 @@ module Poetry
 
         # The RTL travel fix: the knob still moves toward the "on" end
         # (rtl:data-checked:-translate-x-... - a poetry addition;
-        # shadcn's translate is physical/LTR-only).
+        # the source's translate is physical/LTR-only).
         def rtl
           render_component(name: "rtl_demo", checked: true, label: "وضع الطيران", dir: "rtl")
         end

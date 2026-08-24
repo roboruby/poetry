@@ -3,12 +3,11 @@
 module Poetry
   module Ui
     module Resizable
-      # shadcn Resizable (base-vega), source-exact - except the GROUP's
-      # layout key: upstream styles it off aria-orientation, which ARIA
-      # does not permit on a plain group container (an axe aria-allowed-attr
-      # violation upstream ships) - poetry keys the same classes off
-      # data-orientation, its established layout token. The handle keeps
-      # the source's aria-[orientation] selectors (valid on role=separator).
+      # Style dictionary for the Resizable family. The GROUP's layout keys
+      # off data-orientation - aria-orientation is not permitted on a
+      # plain group container (an axe aria-allowed-attr violation). The
+      # handle keeps aria-[orientation] selectors (valid on
+      # role=separator).
       class Style < Poetry::Core::Style
         base "flex h-full w-full data-[orientation=vertical]:flex-col"
 

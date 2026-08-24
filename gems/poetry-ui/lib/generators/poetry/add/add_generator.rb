@@ -20,6 +20,9 @@ module Poetry
   # RUNTIME (the gem provides them - no copy), targets are
   # traversal-checked, and gem dependencies are REPORTED, never installed.
   # Every install records provenance in the manifest.
+  #
+  # @example
+  #   bin/rails g poetry:add button
   class AddGenerator < Rails::Generators::Base
     argument :addresses, type: :array,
                          banner: "Component|@registry/item|https://…/item.json|./item.json ..."
@@ -28,11 +31,16 @@ module Poetry
     # registry items emit the same map as registryDependencies).
     DEPENDENCIES = Poetry::Ui::COMPONENT_DEPENDENCIES
 
+    # The copy-in provenance manifest poetry:install seeds.
     MANIFEST = "config/poetry_components.yml"
+    # The host's Tailwind entry stylesheet (for @source injection).
     TAILWIND_ENTRY = "app/assets/tailwind/application.css"
 
     desc "Copy poetry components/blocks (plus dependencies) into the app, from the gems or any registry address"
 
+    # Generator step: partitions the addresses and installs local
+    # (gem-owned) and remote items.
+    # @api private
     def add_components
       local, remote = addresses.map { |raw| Poetry::Core::RegistryAddress.parse(raw) }
                                .partition { |address| local?(address) }

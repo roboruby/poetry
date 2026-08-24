@@ -14,29 +14,40 @@ module Poetry
   # heuristics and `null: false` -> required), a MetadataList show, and a
   # destructive-variant delete. The copies are the app's to edit; re-runs
   # never overwrite (skip-if-exists, the poetry:add contract).
+  #
+  # @example
+  #   bin/rails g poetry:scaffold_templates
   class ScaffoldTemplatesGenerator < Rails::Generators::Base
     source_root File.expand_path("templates", __dir__)
 
+    # The scaffold view templates the override set ships.
     VIEW_TEMPLATES = %w[index show new edit _form partial].freeze
 
+    # The --skip-controller option description (multi-line).
     SKIP_CONTROLLER_DESC = "Skip the scaffold_controller override (index keeps the stock " \
                            "all-records query; the generated index view expects @state/@pages " \
                            "from the poetry controller template)"
 
     class_option :skip_controller, type: :boolean, default: false, desc: SKIP_CONTROLLER_DESC
 
+    # Step: copies the scaffold view template overrides (skip-if-exists).
+    # @api private
     def copy_view_templates
       VIEW_TEMPLATES.each do |name|
         copy_file "#{name}.html.erb.tt", "lib/templates/erb/scaffold/#{name}.html.erb.tt", skip: true
       end
     end
 
+    # Step: copies the scaffold controller override unless skipped.
+    # @api private
     def copy_controller_template
       return if options[:skip_controller]
 
       copy_file "controller.rb.tt", "lib/templates/rails/scaffold_controller/controller.rb.tt", skip: true
     end
 
+    # Step: prints what the override set changes.
+    # @api private
     def show_next_steps
       say ""
       say "poetry scaffold templates installed.", :green

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module ContextMenu
-      # The ContextMenu preview matrix: the shadcn context-menu-demo port
+      # The ContextMenu preview matrix: the ported context-menu-demo port
       # (items + shortcuts, a submenu, checkbox items, a radio group) on a
       # right-click surface, plus inset/disabled items, the disabled
       # surface (native menu returns), RTL, the focusable-surface keyboard

@@ -2,17 +2,17 @@
 
 module Poetry
   module Ui
+    # Single-Tab-stop control strips.
     module Toolbar
-      # The Toolbar - one Tab stop of grouped controls over a data surface
-      # (bulk actions above a table, an editor's control strip). Base UI
-      # ships Toolbar; poetry composes it from existing vocabulary: the
-      # root wears
-      # role=toolbar + the roving-focus engine, and the typed slots render
-      # real Buttons / Inputs / Separators stamped as collection items -
-      # arrows move between controls, Tab leaves the whole strip. The
-      # roving caret guard is what makes an Input inside a toolbar
-      # safe: horizontal arrows stay with the caret until its boundary.
-      # Styling is utility-only (the Separator/Spinner rule).
+      # One Tab stop of grouped controls over a data surface - bulk
+      # actions above a table, an editor's control strip. The root wears
+      # role=toolbar; the typed slots render real Buttons, Inputs, and
+      # Separators, and arrow keys move between them while Tab leaves the
+      # whole strip. An Input inside stays safe to edit: horizontal
+      # arrows stay with the text caret until it reaches a boundary.
+      #
+      # label: is required - screen readers announce it on entering the
+      # toolbar. Styling is utility-only; restyle via data-slot=toolbar.
       #
       # @example
       #   render Poetry::Ui::Toolbar::Component.new(label: "Bulk actions") do |toolbar|
@@ -21,8 +21,10 @@ module Poetry
       #     toolbar.with_input(name: "q", placeholder: "Filter…")
       #   end
       class Component < Poetry::Core::Component
+        # The roving-focus controller's identifier path.
         ROVING = %i[poetry core roving_focus].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "A Toolbar is ONE Tab stop: arrows move between its controls - use it for grouped " \
           "actions over a surface (table bulk actions, editor strips), never as page navigation.",
@@ -39,6 +41,8 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { button: "at least one control (with_button / with_input)" }.freeze
 
+        # The control slots: with_button (a real Button - tag: :a makes it a link),
+        # with_input (search/filter), with_separator (its orientation flips automatically).
         renders_many :items, types: {
           button: {
             renders: ->(**options) { Poetry::Ui::Button::Component.new(**item_options(options)) },
@@ -59,9 +63,12 @@ module Poetry
           }
         }
 
+        # The strip's axis; :vertical stacks the controls and flips the arrow keys.
         style :orientation, default: :horizontal, variants: %i[horizontal vertical]
 
+        # The toolbar's accessible name. Required.
         option :label, :string, required: true
+        # Whether arrow navigation wraps at the ends.
         option :loop, :boolean, default: true
 
         part "toolbar", "The role=toolbar root - one Tab stop; arrow keys rove across the " \
@@ -71,14 +78,17 @@ module Poetry
                                        values: %w[horizontal vertical] }
              }
 
+        # @api private
         def before_render
           raise ArgumentError, "Toolbar requires at least one control slot" unless items?
         end
 
+        # @api private
         def call
           content_tag(:div, safe_join(items.map(&:to_s)), **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

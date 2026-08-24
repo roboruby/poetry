@@ -2,14 +2,15 @@
 
 module Poetry
   module Ui
+    # DateField family: the segmented date editor over a native input.
     module DateField
-      # The segmented date editor: a real native <input type=date> that IS
-      # the form value - no JS means native pickers, and its value format
-      # is already the ISO wire contract - progressively enhanced by
-      # poetry--core--date-field into per-segment role=spinbutton editing
-      # (locale decides segment order via Intl.formatToParts; arrows
-      # cycle, digits accumulate and auto-advance, blur constrains
-      # February 31st). The enhanced input drops out of the tab order but
+      # A segmented date editor: a real native <input type=date> IS the
+      # form value - with no JS the native picker works and the value is
+      # already ISO - progressively enhanced into per-segment
+      # role=spinbutton editing. The locale decides segment order and
+      # numerals; arrows cycle values, typed digits accumulate and
+      # auto-advance, and blur constrains impossible dates like
+      # February 31st. The enhanced input drops out of the tab order but
       # keeps carrying name/required/min/max - native constraint
       # validation stays on.
       #
@@ -17,6 +18,7 @@ module Poetry
       #   render Poetry::Ui::DateField::Component.new(name: "event[on]", label: "Event date")
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
           "Input, three selects, or a bare input type=date when the design system is in play.",
@@ -52,20 +54,33 @@ module Poetry
           end
         end
 
+        # The form field name - required; the value posts as ISO
+        # yyyy-mm-dd with or without JS.
         option :name, :string, required: true
         # Date, or an ISO yyyy-mm-dd string; nil renders empty.
         option :value, ActiveModel::Type::Value.new
+        # The earliest allowed date (Date or ISO string) - rides native
+        # constraint validation.
         option :min, ActiveModel::Type::Value.new
+        # The latest allowed date (Date or ISO string) - rides native
+        # constraint validation.
         option :max, ActiveModel::Type::Value.new
+        # Marks the native input required.
         option :required, :boolean, default: false
+        # Disables the field; the segment group dims and goes inert.
         option :disabled, :boolean, default: false
+        # The value shows but cannot be edited.
         option :readonly, :boolean, default: false
+        # Paints the destructive border/ring and sets aria-invalid.
         option :invalid, :boolean, default: false
+        # The native input's DOM id - the Field label target.
         option :id, :string
-        # Standalone accessible name (the NumberField precedent) - inside
-        # a form the Field label wires ids instead.
+        # Standalone accessible name; inside a form the Field label wires
+        # ids instead. Segments announce it themselves.
         option :label, :string
+        # Ids for aria-describedby (hint or error text).
         option :described_by, :string
+        # Pins the field to a locale other than the page's.
         option :locale, :string
         # What the first arrow press on an empty segment lands on;
         # defaults to today.
@@ -96,6 +111,8 @@ module Poetry
         part "date-field-input", "The native <input type=date> - THE form value in both " \
                                  "modes; tabindex -1 + aria-hidden once segments exist"
 
+        # Attributes for the field root.
+        # @api private
         def root_attributes
           attrs = {
             "data-slot" => slot_prefix,
@@ -106,6 +123,8 @@ module Poetry
           html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
         end
 
+        # Attributes for the segment row the controller fills.
+        # @api private
         def group_attributes
           attrs = {
             "role" => "presentation",
@@ -118,6 +137,8 @@ module Poetry
           attrs.merge(stimulus_attributes_for(:group))
         end
 
+        # Attributes for the native input - the form value.
+        # @api private
         def input_attributes
           attrs = Poetry::Core::HTML::Attributes.new(
             "type" => input_type,

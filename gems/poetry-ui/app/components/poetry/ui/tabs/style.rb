@@ -10,9 +10,8 @@ module Poetry
       # The after:* line-indicator geometry stays inline except its paint.
       # The indicator's OPACITY PAIR (rest 0 / active 100) lives fully
       # inline: the rest state is a utility, so a theme-side activation
-      # sits in layer(base) and loses to it unconditionally - the exact
-      # split-side violation that shipped the line variant with an
-      # invisible indicator until 2026-08-14.
+      # sits in layer(base) and loses to it unconditionally - splitting
+      # the pair leaves the line variant's indicator invisible.
       class Style < Poetry::Core::Style
         base "cn-tabs group/tabs flex data-horizontal:flex-col"
 

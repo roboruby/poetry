@@ -2,26 +2,20 @@
 
 module Poetry
   module Ui
+    # Exclusive or multi-select toggle sets.
     module ToggleGroup
-      # Last of the toggle family: a set
-      # of Toggle-styled items under one value machine and one roving tab
-      # stop - the Accordion composition, second consumer. Two machines on
-      # one root: poetry--core--toggle-group owns the pressed-values set
-      # (single: {v}<->{} deselect-to-empty; multiple: XOR) and
-      # poetry--core--roving-focus in its DEFAULT tabindex-managing mode
-      # owns the keyboard (one Tab stop, arrows move focus WITHOUT
-      # selecting - a deliberate Radix deviation from APG radio, kept so
-      # browsing options never fires effects).
+      # A set of Toggle-styled buttons under one value: type: :single
+      # keeps at most one pressed (re-pressing deselects to empty),
+      # :multiple toggles each item independently. The group is one Tab
+      # stop - arrow keys move focus between items WITHOUT selecting, so
+      # browsing options never fires effects; Space/Enter press the
+      # focused item. Single groups render role=radiogroup with
+      # aria-checked items; multiple groups render role=toolbar with
+      # aria-pressed items.
       #
-      # The source-verified role split: type=single renders role=radiogroup
-      # with role=radio items + aria-checked (aria-pressed STRIPPED);
-      # type=multiple renders role=toolbar with aria-pressed items. Items
-      # are DUMB buttons (no per-item poetry--core--pressed - one owner, no
-      # event soup), styled by the shared Toggle::Style dictionary.
-      #
-      # NO form participation (Toggle's rule at group scale): a
-      # single-select that must submit is a RadioGroup; a multi-select that
-      # must submit is a checkbox group.
+      # A ToggleGroup is UI state, not form data: a single-select that
+      # must submit is a RadioGroup, a multi-select that must submit is a
+      # checkbox group. spacing: 0 renders the classic segmented control.
       #
       # @example A text-alignment switcher
       #   render Poetry::Ui::ToggleGroup::Component.new(value: "left", label: "Text alignment") do |group|
@@ -29,9 +23,12 @@ module Poetry
       #     group.with_item(value: "center", label: "Align center") { icon(:"align-center") }
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the type axis.
         TYPES = %i[single multiple].freeze
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[horizontal vertical].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_toggle_group - never hand-assemble Toggles with your own exclusivity logic.",
           "ToggleGroup is UI state, NOT form data: submitting single-select -> RadioGroup; submitting " \
@@ -48,13 +45,11 @@ module Poetry
         ].freeze
 
         # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # One item per toggle: DUMB buttons under the group machine - no
-        # per-item controller, data-action -> group#toggle, styled by the
-        # shared Toggle dictionary + the item overrides.
+        # Declares one item: value: (unique - duplicates raise), label: (required
+        # when icon-only), disabled:; the block is the content. Pressed state comes from value:/values:.
         renders_many :items, lambda { |value:, label: nil, disabled: false, **options, &block|
           item_value = register_item_value!(value)
           content = capture(&block)
@@ -68,11 +63,11 @@ module Poetry
             "data-value" => item_value,
             "data-variant" => variant, "data-size" => size, "data-spacing" => spacing
           }
-          # Base UI presence boolean: pressed -> bare data-pressed,
-          # unpressed -> attribute absent (never data-pressed=false).
+          # Pressed is a bare presence attribute: data-pressed when on,
+          # absent when off (never data-pressed=false).
           attrs["data-pressed"] = "" if on
-          # The role/vocabulary split (Radix-exact: single strips
-          # aria-pressed and wears the radio vocabulary).
+          # The role/vocabulary split: single wears the radio vocabulary
+          # (aria-checked), never aria-pressed.
           if single?
             attrs["role"] = "radio"
             attrs["aria-checked"] = on.to_s
@@ -109,29 +104,26 @@ module Poetry
           end
         end
 
-        # The axes are Toggle's, consumed through the shared dictionary;
-        # the root cascades them to items as data attributes (ROOT WINS -
-        # the source's context.variant || item rule).
+        # The shared Toggle variant axis, cascaded from the root to every item (root wins).
         style :variant, default: :default, required: true, variants: Toggle::Component::VARIANTS
+        # The shared Toggle size axis, cascaded from the root to every item (root wins).
         style :size, default: :default, required: true, variants: Toggle::Component::SIZES
 
+        # :single keeps at most one item pressed; :multiple toggles items independently.
         option :type, :symbol, default: :single
         # single: the pressed item's value. ArgumentError with :multiple.
         option :value, :string
         # multiple: the pressed items' values. ArgumentError with :single.
         option :values, :list, default: -> { [] }
-        # 0 = SEGMENTED: joined corners + collapsed outline borders (the
-        # source's data-[spacing=0] chain); >0 = free-standing with a gap.
-        # Default 2 = upstream's default (free-standing); pass spacing: 0
-        # explicitly for the classic segmented control.
+        # 0 = the classic segmented control (joined corners, collapsed
+        # outline borders); >0 = free-standing items separated by that gap step.
         option :spacing, :integer, default: 2
-        # Roving axis + data-orientation + layout (data-vertical flips the
-        # root to a column; the segment chain is orientation-guarded).
+        # The roving axis; :vertical stacks the items and flips the arrow keys.
         option :orientation, :symbol, default: :horizontal
-        # Disables every item (Radix root disabled).
+        # Disables every item in the group.
         option :disabled, :boolean, default: false
-        # The group accessible name -> aria-label (poetry addition: shadcn
-        # ships nameless radiogroups/toolbars).
+        # The group's accessible name (aria-label) - a nameless
+        # radiogroup/toolbar logs a lint warning.
         option :label, :string
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
@@ -165,8 +157,8 @@ module Poetry
                "data-spacing" => "cascaded from the root - keys the segmented corner/border chain"
              }
 
-        # The Accordion value/values API precedent verbatim: the wrong pair
-        # for the type is unrepresentable, not ignored.
+        # The wrong value pair for the type is unrepresentable, not ignored.
+        # @api private
         def initialize(attributes = {})
           type = (attributes[:type] || attributes["type"] || :single).to_sym
           raise ArgumentError, "ToggleGroup type must be :single or :multiple" unless TYPES.include?(type)
@@ -181,6 +173,7 @@ module Poetry
           super
         end
 
+        # @api private
         def before_render
           raise ArgumentError, "ToggleGroup requires at least one with_item" unless items?
 
@@ -193,14 +186,17 @@ module Poetry
           )
         end
 
+        # @api private
         def single?
           type != :multiple
         end
 
+        # @api private
         def pressed_values
           @pressed_values ||= (single? ? Array(value) : Array(values)).compact.map(&:to_s)
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "role" => single? ? "radiogroup" : "toolbar",

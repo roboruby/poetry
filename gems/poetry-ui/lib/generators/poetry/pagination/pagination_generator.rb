@@ -13,9 +13,14 @@ module Poetry
     # (siblings/edges compute the visible pages) - the paginator's own
     # window options deliberately do not apply, so pagination looks the
     # same whichever gem drives it.
+    #
+    # @example
+    #   bin/rails g poetry:pagination pagy
     class PaginationGenerator < Rails::Generators::Base
       source_root File.expand_path("templates", __dir__)
 
+      # Per-paginator adapter wiring: how to detect the gem, which
+      # template to copy, and where it lands.
       ADAPTERS = {
         "kaminari" => { detect: -> { defined?(::Kaminari) },
                         template: "kaminari_paginator.html.erb",
@@ -32,6 +37,9 @@ module Poetry
                            banner: "kaminari|pagy|will_paginate",
                            desc: "the paginator to adapt (omit to detect every installed one)"
 
+      # Step: copies the adapter(s) for the requested or detected
+      # paginator(s).
+      # @api private
       def install_adapters
         names = requested_adapters
         if names.empty?

@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Textarea
-      # The Textarea preview matrix: the five shadcn examples (demo,
+      # The Textarea preview matrix: the five ported examples (demo,
       # disabled, with-label, with-text, with-button) plus the invalid
       # state and long auto-grown content.
       class Preview < Poetry::Core::Preview::Base

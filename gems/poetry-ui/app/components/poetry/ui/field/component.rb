@@ -2,14 +2,14 @@
 
 module Poetry
   module Ui
+    # The Field family - the label/control/hint/error wrapper for one form control.
     module Field
-      # The Field wrapper - the error quartet (label / control / hint /
-      # error) with the aria wiring every reviewed form library leaves
-      # manual: the control (the content block) receives its id from the
-      # field, and control_attributes carries aria-invalid +
-      # aria-describedby pointing at the hint and error ids. The
-      # FormBuilder composes this from model truth; Field itself is
-      # model-agnostic.
+      # The Field wrapper - label, control, hint, and error as one unit
+      # with the aria wiring done for you: the control (the content
+      # block) receives its id from the field, and control_attributes
+      # carries aria-invalid + aria-describedby pointing at the hint and
+      # error ids. The FormBuilder composes this from model truth; Field
+      # itself is model-agnostic.
       #
       # @example
       #   render Poetry::Ui::Field::Component.new(
@@ -18,10 +18,13 @@ module Poetry
       #     tag.input(type: "email", name: "email", **field.control_attributes)
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[vertical horizontal setting responsive].freeze
 
+        # The closed vocabulary for the hint_position axis.
         HINT_POSITIONS = %i[below above].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Wire the control with field.control_attributes - never hand-write aria-describedby.",
           "Error text arrives via error: (from model errors upstream) - never a bare red <p>.",
@@ -34,27 +37,31 @@ module Poetry
           "recipe (it needs that FieldGroup ancestor to measure against)."
         ].freeze
 
-        # Upstream fieldVariants' orientation axis. Horizontal is the
-        # boolean-control pattern: the control lands in the first grid
-        # column, label + hint/error stack in the second, the control
-        # row-centers against the label line (upstream approximates the
-        # same with items-start + mt-px).
+        # The layout axis. :horizontal is the boolean-control pattern: the
+        # control lands in the first grid column, label + hint/error stack
+        # in the second, and the control row-centers against the label line.
         style :orientation, default: :vertical, required: true, variants: ORIENTATIONS
 
+        # The control's DOM id - the hint/error/label ids derive from it.
         option :id, :string, required: true
+        # The visible label text, associated with the control via for=.
         option :label_text, :string
+        # Plain-text guidance under the control (escaped wholesale); use
+        # with_hint for authored markup.
         option :hint, :string
-        # Where the hint renders relative to the control. :above puts the
-        # guidance before a tall control (upstream's textarea-field demo;
-        # instructions-before-input). aria-describedby is identical either
-        # way - this is visual order only.
+        # Where the hint renders relative to the control - :above puts
+        # guidance before a tall control. aria-describedby is identical
+        # either way; this is visual order only.
         option :hint_position, :symbol, default: :below
+        # The error line (typically from model errors) - presence flips
+        # the invalid skin and leads the control's aria-describedby.
         option :error, :string
-        # invalid: flips the invalid skin (data-invalid + aria-invalid)
-        # WITHOUT an error line - upstream's `<Field data-invalid>` with a
-        # muted FieldDescription (the switch-invalid demo). error: implies
-        # it; use invalid: alone when the hint copy IS the requirement.
+        # Flips the invalid skin (data-invalid + aria-invalid) WITHOUT an
+        # error line. error: implies it; use invalid: alone when the hint
+        # copy IS the requirement.
         option :invalid, :boolean, default: false
+        # Marks the control required via aria-required only - never the
+        # native required attribute.
         option :required, :boolean, default: false
         # group: the control is a role-bearing <div> (RadioGroup, Slider) -
         # label[for] would be inert (Chrome flags it), so the label drops
@@ -81,6 +88,8 @@ module Poetry
         part "switch-input", "A nested Switch's hidden native input - the same wrapper-free " \
                              "fragment escape as checkbox-input (the setting-row layout)"
 
+        # Validates hint_position and forces the content capture.
+        # @api private
         def before_render
           # Force the content block first: with_hint registers during the
           # capture, and the template's hint tag must see it.
@@ -92,17 +101,30 @@ module Poetry
                                "#{HINT_POSITIONS.inspect}"
         end
 
+        # The hint element's id (referenced from aria-describedby).
+        # @api private
         def hint_id = "#{id}-hint"
+        # The error element's id (leads aria-describedby).
+        # @api private
         def error_id = "#{id}-error"
+        # The label element's id (referenced from aria-labelledby when group:).
+        # @api private
         def label_id = "#{id}-label"
 
-        # Block-form hint for AUTHORED MARKUP (a link in the guidance -
-        # upstream styles [&>a] in cn-field-description). The captured
-        # buffer renders as-is and is never re-blessed: ERB-authored markup
-        # stays markup, every interpolated value escapes normally, and a
-        # plain-String return is escaped by capture. Untrusted data belongs
-        # in hint: (escaped wholesale) or inside <%= %> in the block -
-        # never pre-marked html_safe.
+        # Block-form hint for authored markup - a link or emphasis inside
+        # the guidance. Call it BEFORE the control renders, so the hint id
+        # lands in the control's aria-describedby; conflicts with hint: -
+        # use one or the other. The captured buffer renders as-is and is
+        # never re-blessed: ERB-authored markup stays markup, every
+        # interpolated value escapes normally, and a plain-String return
+        # is escaped by capture. Untrusted data belongs in hint: (escaped
+        # wholesale) or inside <%= %> in the block - never pre-marked
+        # html_safe.
+        #
+        # @example A hint containing a link
+        #   <% field.with_hint do %>
+        #     Forgot it? <%= link_to "Reset your password", reset_path %>
+        #   <% end %>
         def with_hint(&block)
           raise ArgumentError, "Field with_hint conflicts with hint: - use one or the other" if hint.present?
           if @control_attributes_issued
@@ -115,14 +137,22 @@ module Poetry
           self
         end
 
+        # The captured hint block, consumed by the template.
+        # @api private
         attr_reader :hint_block
 
+        # Whether any hint (string or block form) is present.
+        # @api private
         def hint_present? = hint.present? || !@hint_block.nil?
 
+        # Whether the field wears the invalid skin (error: or invalid:).
+        # @api private
         def invalid? = invalid || error.present?
 
-        # Everything the control inside the field must carry - merged by
-        # the FormBuilder (or the caller) into the control's attributes.
+        # Everything the control inside the field must carry - the id,
+        # aria-describedby (error id first, then hint id), aria-invalid,
+        # aria-required, and aria-labelledby when group:. Merge it into
+        # the control's attributes (the FormBuilder does this for you).
         def control_attributes
           @control_attributes_issued = true
           attrs = { "id" => id }
@@ -138,6 +168,8 @@ module Poetry
           attrs
         end
 
+        # The quartet root's attributes.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "field", "data-invalid" => invalid?,

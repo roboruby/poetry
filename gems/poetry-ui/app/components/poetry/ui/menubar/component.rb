@@ -2,13 +2,17 @@
 
 module Poetry
   module Ui
+    # A desktop-style menu bar of drop-down menus.
     module Menubar
       # Shared vocabularies, declared once at module level so the root
       # Component and the nested menu-level classes read the same lists.
       DIRS = %i[ltr rtl].freeze
 
-      # The kernel Helpers plus the family fork: Menubar themes its checkbox
-      # and radio indicators separately (a per-kind cn class rides along).
+      # The shared menus-family helpers plus this family's fork: Menubar
+      # themes its checkbox and radio indicators separately (a per-kind
+      # class rides along).
+      #
+      # @api private
       module Helpers
         include Poetry::Ui::Menus::Helpers
       
@@ -19,22 +23,27 @@ module Poetry
         end
       end
       
-      # The shared menus-family kernel wearing this family identity -
+      # The shared menus-family item slots wearing this family's identity -
       # SLOT_BUILDERS (reopened at the bottom, once the classes exist) keeps
       # the registry recursion on the family classes.
+      #
+      # @api private
       module ItemSlots
         extend ActiveSupport::Concern
         include Poetry::Ui::Menus::ItemSlots
         include Helpers
       end
 
-      # The menus-family sibling of DropdownMenu: a desktop-app
-      # command bar - role=menubar, ONE tab stop (horizontal roving focus
-      # across role=menuitem triggers), each menu a full family popup on its
-      # own poetry--core--menu instance (modal: false - hover-slide needs
-      # the sibling triggers pressable while a menu is open). The thin
-      # poetry--core--menubar coordinator owns value + toggle/hover-slide/
-      # edge-navigate; everything heavier stays in the shared primitives.
+      # A desktop-app command bar: File / Edit / View menus on one
+      # role=menubar row. The bar is a single tab stop - arrow keys move
+      # between the top-level triggers - and each trigger opens a full
+      # drop-down menu (action items, checkbox and radio rows, submenus,
+      # separators, shortcut hints). Menus are non-modal, so once one is
+      # open, hovering a sibling trigger slides to its menu.
+      #
+      # label: (the bar's accessible name) and at least one with_menu are
+      # required. For site navigation use NavigationMenu; for a single
+      # actions menu use DropdownMenu.
       #
       # @example An application command bar
       #   render Poetry::Ui::Menubar::Component.new(label: "Application") do |bar|
@@ -46,6 +55,7 @@ module Poetry
       #     end
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_menubar for app-chrome command menus ONLY - site navigation is NavigationMenu " \
           "(untrapped), a single actions menu is DropdownMenu.",
@@ -60,6 +70,9 @@ module Poetry
           "family contract."
         ].freeze
 
+        # The top-level menus. Each takes with_trigger (the menu button) plus
+        # the family item slots (with_item, with_checkbox_item, with_radio_group,
+        # with_sub, with_separator, ...); value: defaults to the menu's position.
         renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         use_stimulus do
@@ -125,12 +138,14 @@ module Poetry
           end
         end
 
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (the floating-crash
-        # class: a required option the static tier could not see).
+        # The bar's accessible name - a page may hold more than one menubar.
         option :label, :string, required: true
+        # Wraps arrow-key movement past either end of the bar.
         option :loop, :boolean, default: false
+        # Server-renders the menu with this value open (values default to
+        # "menu-<position>").
         option :value, :string
+        # The reading direction; :rtl flips arrow-key movement and submenu sides.
         option :dir, :symbol
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
@@ -226,20 +241,24 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
+        # Enforces the required label and menu slots.
+        # @api private
         def before_render
-          # The base-contract rule: the bar's accessible name is
-          # not optional (APG - a page may hold more than one menubar).
+          # The bar's accessible name is not optional - a page may hold
+          # more than one menubar.
           raise ArgumentError, "Menubar requires label: (the bar's accessible name)" if label.blank?
           raise ArgumentError, "Menubar requires at least one with_menu" unless menus?
         end
 
+        # @api private
         def value_string = value.to_s
 
+        # @api private
         def root_attributes
           root = {
             "data-slot" => "menubar", "role" => "menubar", "aria-label" => label,
-            # The bar ROOT keeps the open/closed pair (Base UI has no
-            # bar-root state attr - poetry keeps the mounted pair).
+            # The bar ROOT keeps the open/closed pair so themes can key
+            # on bar-wide state.
             (value.present? ? "data-open" : "data-closed") => ""
           }
           root["dir"] = dir.to_s if dir
@@ -251,16 +270,19 @@ module Poetry
         # The bar-level tab stop is server-rendered (exactly one tabindex=0
         # before any JS): the open menu's trigger when value: matches,
         # otherwise the first enabled trigger.
+        # @api private
         def tab_stop?(menu)
           tab_stop_menu.equal?(menu)
         end
 
+        # @api private
         def open_menu?(menu_value)
           value.present? && value.to_s == menu_value
         end
 
         # Registers a Menu part and hands back its 1-based position (the
         # default value: "menu-<position>").
+        # @api private
         def register_menu(menu)
           menu_parts << menu
           menu_parts.size
@@ -278,12 +300,11 @@ module Poetry
         end
       end
 
-      # One logical menu: the trigger + content pair. Radix renders no
-      # element here; poetry hosts the pair's poetry--core--menu +
-      # poetry--core--popper controllers on a display:contents wrapper
-      # (out of the bar's flex layout AND the accessibility tree), keeping
-      # the rendered semantics Radix-parity. Plain ViewComponent::Base ON
-      # PURPOSE - the nested parts are anatomy, not registry components.
+      # One logical menu: the trigger + content pair, hosted on a
+      # display:contents wrapper that its behavior wiring rides - erased
+      # from the bar's flex layout AND the accessibility tree, so the
+      # rendered semantics stay a flat menubar. The nested parts are
+      # anatomy, not registry components.
       #
       # @api private
       class Menu < Poetry::Core::Component
@@ -292,9 +313,9 @@ module Poetry
 
         attr_reader :value, :disabled
 
-        # The top-level trigger DELTA: a real button that is role=menuitem
-        # INSIDE role=menubar (vs DropdownMenu's plain menu button), wired
-        # to the COORDINATOR (toggle / gated hover-slide / keyboard open).
+        # The top-level menu button: a real button that is role=menuitem
+        # INSIDE role=menubar, wired to the bar coordinator (toggle /
+        # gated hover-slide / keyboard open).
         renders_one :trigger, lambda { |**options, &block|
           attrs = {
             "type" => "button", "id" => trigger_id, "data-slot" => "menubar-trigger",
@@ -304,7 +325,7 @@ module Poetry
             "data-value" => value,
             "class" => Style.css(:trigger, class: options.delete(:class))
           }.merge(trigger_stimulus_attributes)
-          # Base UI trigger state: bare data-popup-open while open, NO
+          # Trigger open state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open?
           if disabled
@@ -357,8 +378,7 @@ module Poetry
         # The per-menu machinery scope: the family menu controller (modal
         # FALSE - the bar's hover-slide needs sibling triggers pressable,
         # so no body scrim / no trap) + its popper with the menubar
-        # positioning overrides (align start / alignOffset -4 / sideOffset
-        # 8, source-validated).
+        # positioning overrides (align start / alignOffset -4 / sideOffset 8).
         def menu_attributes
           wiring = stimulus_attributes(:menu, :popper) do |menu, popper|
             menu.register_controller
@@ -400,8 +420,8 @@ module Poetry
         end
       end
 
-      # role=group semantic grouping between separators - the shared kernel
-      # anatomy wearing this family identity.
+      # role=group semantic grouping between separators - the shared
+      # menus-family anatomy wearing this family's identity.
       #
       # @api private
       class Group < Poetry::Ui::Menus::Group
@@ -410,7 +430,7 @@ module Poetry
       
 
       # role=group scoping the single-select value for its radio items -
-      # the shared kernel anatomy wearing this family identity.
+      # the shared menus-family anatomy wearing this family's identity.
       #
       # @api private
       class RadioGroup < Poetry::Ui::Menus::RadioGroup
@@ -418,8 +438,9 @@ module Poetry
       end
       
 
-      # A submenu scope (recursive item union on its own popper) - the
-      # shared kernel anatomy wearing this family identity.
+      # A submenu scope (the full item vocabulary again, on its own
+      # positioned panel) - the shared menus-family anatomy wearing this
+      # family's identity.
       #
       # @api private
       class Sub < Poetry::Ui::Menus::Sub
@@ -431,31 +452,37 @@ module Poetry
       # hides its return class from introspection, so the owners declare
       # them and the registry walker recurses into each builder's own call
       # surface (with_menu yields a Menu; with_sub a Sub). REQUIRED_SLOTS
-      # states the same facts the before_render raises enforce, so
-      # poetry check flags the omission without rendering (the menu
-      # crash class: with_trigger left out, four truthful checks silent).
+      # states the same facts the before_render raises enforce, so static
+      # checks flag an omission without rendering.
       class Component
+        # Maps slot names to the classes their builder lambdas return.
         SLOT_BUILDERS = { menu: Menu }.freeze
+        # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { menu: "at least one menu" }.freeze
       end
 
       class Menu
+        # Slots this menu cannot render without.
         REQUIRED_SLOTS = { trigger: "the top-level menu button", item: "at least one item" }.freeze
       end
 
       class Group
+        # Slots this group cannot render without.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
       end
 
       class RadioGroup
+        # Slots this radio group cannot render without.
         REQUIRED_SLOTS = { radio_item: "at least one radio item" }.freeze
       end
 
       class Sub
+        # Slots this submenu cannot render without.
         REQUIRED_SLOTS = { trigger: "the sub-menu item", item: "at least one item" }.freeze
       end
 
       module ItemSlots
+        # Maps nested slot names to the classes their builder lambdas return.
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
       end
     end

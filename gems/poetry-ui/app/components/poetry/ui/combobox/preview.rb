@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Combobox
-      # The Combobox preview matrix: the shadcn combobox-demo composition
+      # The Combobox preview matrix: the ported combobox-demo composition
       # (framework picker), placeholder vs valued, grouped options, the
       # server-rendered open state, disabled trigger/options, the
       # filter:false server mode, RTL, and the width knob.
@@ -31,7 +31,7 @@ module Poetry
           end
         end
 
-        # show_clear (Base UI showClear): the trigger-side deselection X
+        # show_clear (the source's showClear): the trigger-side deselection X
         # swaps in over the chevrons while a value is committed - the
         # golden pins the swap (X visible, chevron box kept but invisible).
         def clear
@@ -128,7 +128,7 @@ module Poetry
 
         # ## Multiple
 
-        # multiple: true - the chips FIELD replaces the trigger (Base UI's
+        # multiple: true - the chips FIELD replaces the trigger (the source's
         # input-inside layout): value: takes an array, one chip per
         # committed value in value order, the filter input rides inline,
         # selection TOGGLES with the popup staying open, and the native

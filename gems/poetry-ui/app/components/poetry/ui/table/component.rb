@@ -2,12 +2,19 @@
 
 module Poetry
   module Ui
+    # Semantic data tables composed from part helpers.
     module Table
-      # The Table - a real semantic `<table>` wrapped in an overflow
-      # container. Composed with the part helpers (poetry_table_header /
-      # _body / _row / _head / _cell / _footer / _caption), which stamp the
-      # data-slot + source-exact classes onto the semantic elements. Zero JS;
-      # DataTable drives sorting/filtering/selection on top.
+      # A semantic <table> wrapped in a horizontally scrolling container.
+      # Compose the sections with the part helpers (poetry_table_header /
+      # _body / _row / _head / _cell / _footer / _caption), which render
+      # real thead/tbody/tr/th/td elements carrying the family's styling.
+      # Static and JS-free by itself - DataTable adds sorting, filtering,
+      # and selection on top.
+      #
+      # sticky_header: true pins the <thead> while the container scrolls.
+      # It only takes effect once container_class: caps the height (e.g.
+      # "max-h-96"), and it requires scroll_label: - the container becomes
+      # a focusable scroll region, which needs an accessible name.
       #
       # @example
       #   render Poetry::Ui::Table::Component.new do
@@ -17,6 +24,7 @@ module Poetry
       #     ])
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Compose the table with the part helpers (poetry_table_header/_body/_row/_head/_cell) - " \
           "they carry the data-slot + classes onto real thead/tbody/tr/th/td.",
@@ -28,7 +36,10 @@ module Poetry
           "(tabindex=0 + role=region) and a keyboard-reachable region needs a name (the ScrollArea rule)."
         ].freeze
 
+        # Pins the <thead> while the container scrolls; needs a height cap
+        # (container_class:) to take effect, and requires scroll_label:.
         option :sticky_header, :boolean, default: false
+        # Extra classes for the scroll container - e.g. "max-h-96" to cap its height.
         option :container_class, :string
         # The scroll region's accessible name, required with sticky_header:
         # a scrollable region a keyboard can't reach fails WCAG (axe
@@ -51,6 +62,7 @@ module Poetry
         # No content = an empty <table> in a scroll container.
         requires_content "the table sections (poetry_table_* helpers)"
 
+        # @api private
         def before_render
           ensure_content!
           return unless sticky_header && scroll_label.blank?
@@ -59,6 +71,7 @@ module Poetry
                 "Table sticky_header: requires scroll_label: (the scroll region's accessible name)"
         end
 
+        # @api private
         def container_attributes
           extra = [(css(:container_sticky) if sticky_header), container_class].compact.join(" ")
           attrs = { "data-slot" => "table-container", "class" => css(:container, class: extra.presence) }
@@ -66,6 +79,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "table" }.merge(component_data_attributes)

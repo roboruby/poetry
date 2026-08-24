@@ -2,14 +2,12 @@
 
 module Poetry
   module Ui
+    # Labeled facts about one record, as a description list.
     module MetadataList
-      # The MetadataList - the detail-page vocabulary: labeled facts
-      # about one record as a real description list (<dl>), in one or
-      # more columns, with the label above the value (vertical) or beside
-      # it (horizontal). No upstream shadcn/Base UI analogue - a
-      # poetry-original anatomy on platform semantics. Styling is
-      # utility-only (the Separator/Spinner rule): data-slot names are
-      # the restyle seam.
+      # Labeled facts about one record - a real description list (<dl>)
+      # for detail pages, in one or more columns, with each label above
+      # its value (vertical) or beside it (horizontal). Values compose
+      # freely: text, a Badge, a Link, a Timestamp.
       #
       # @example A record's fact sheet
       #   render Poetry::Ui::MetadataList::Component.new(columns: :two) do |list|
@@ -17,6 +15,7 @@ module Poetry
       #     list.with_item(label: "Owner") { "Ada Lovelace" }
       #   end
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Record facts on a detail page belong in a MetadataList - never a hand-rolled grid of " \
           "label/value divs (this is the <dl> the page owes its readers).",
@@ -28,10 +27,11 @@ module Poetry
           "the list itself stays read-only vocabulary."
         ].freeze
 
-        # The same fact the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering.
+        # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
 
+        # The facts. Each takes label: (the fact's name, the <dt>) and the
+        # value as its block (the <dd>).
         renders_many :items, lambda { |label:, **options, &block|
           # class: merges through the dictionary (caller classes win on
           # conflicts) - a plain hash merge would REPLACE css(:item).
@@ -44,7 +44,10 @@ module Poetry
           end
         }
 
+        # Label placement - above the value, or beside it for the classic
+        # key/value sheet.
         style :orientation, default: :vertical, variants: %i[vertical horizontal]
+        # How many columns the facts spread across on wide viewports.
         style :columns, default: :one, variants: %i[one two three]
 
         part "metadata-list", "The <dl> root - the record's fact sheet",
@@ -58,14 +61,18 @@ module Poetry
         part "metadata-list-label", "The fact's name (<dt>) - muted, small"
         part "metadata-list-value", "The fact's value (<dd>) - composes text, badges, links"
 
+        # Enforces the required item slot.
+        # @api private
         def before_render
           raise ArgumentError, "MetadataList requires at least one with_item" unless items?
         end
 
+        # @api private
         def call
           content_tag(:dl, safe_join(items.map(&:to_s)), **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "metadata-list", "data-orientation" => orientation,

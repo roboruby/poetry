@@ -2,9 +2,10 @@
 
 module Poetry
   module Ui
+    # The FieldSeparator family - the divider row between stacked fields.
     module FieldSeparator
       # The FieldSeparator - the divider between stacked fields inside a
-      # FieldGroup (upstream FieldSeparator): a Separator drawn across the
+      # FieldGroup: a Separator drawn across the
       # row, with an optional inline caption riding on top ("Or continue
       # with"). The caption is visual chrome on a decorative rule - the
       # Separator inside stays aria-hidden either way.
@@ -12,6 +13,7 @@ module Poetry
       # @example A captioned divider between stacked fields
       #   render Poetry::Ui::FieldSeparator::Component.new { "Or continue with" }
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Divides stacked fields inside a poetry_field_group - not a general-purpose rule " \
           "(that is poetry_separator).",
@@ -27,12 +29,16 @@ module Poetry
         part "field-separator-content", "The inline caption span (block content) - sits on " \
                                         "the line, backed by the page background"
 
+        # Renders the divider row (rule + optional caption).
+        # @api private
         def call
           content_tag(:div, **root_attributes.to_attributes) do
             safe_join([rule, caption].compact)
           end
         end
 
+        # The divider row's attributes.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             # Normalized to "true"/"false": ViewComponent's content? is

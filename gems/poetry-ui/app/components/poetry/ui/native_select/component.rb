@@ -2,10 +2,11 @@
 
 module Poetry
   module Ui
+    # A styled native <select>.
     module NativeSelect
-      # The NativeSelect - a styled REAL <select> (platform picker, form
-      # submission, mobile UX for free) with the shadcn chrome and a
-      # decorative chevron. The fast path is options: pairs; compose
+      # A styled REAL <select> - platform picker, form submission, and
+      # mobile UX for free - with a decorative chevron replacing the
+      # native arrow. The fast path is options: pairs; compose
       # <option>/<optgroup> in the content block for anything richer
       # (poetry_native_select_option / _optgroup stamp the classes).
       #
@@ -16,25 +17,32 @@ module Poetry
       #     selected: "newest"
       #   )
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "This is a REAL <select> - use it for plain picking; the JS Select is for styled options.",
           "Pair it with a Label (for_id: its id) or a Field - a bare select has no accessible name.",
           "The fast path is options: [[label, value], ...] + selected:; a content block overrides it."
         ].freeze
 
+        # The submitted field name, forwarded to the native select.
         option :name, :string
+        # The select's dom id - the seam a Label's for_id: points at.
         option :id, :string
         # The accessible name for label-less placements (a visible Label
         # paired via id:/for_id: is still the default pattern).
         option :label, :string
+        # The control size axis; :sm suits dense toolbars and table rows.
         option :size, :symbol, default: :default
+        # Disables the native select; the wrapper dims the whole pair.
         option :disabled, :boolean, default: false
+        # Marks the select invalid (aria-invalid on the element itself).
         option :invalid, :boolean, default: false
-        # Space-separated hint/error ids for the SELECT itself (the Field
-        # quartet's aria-describedby) - a raw aria-describedby in
-        # html_attributes would land on the wrapper div, unassociated for AT.
+        # Space-separated hint/error ids wired to the SELECT itself - a raw
+        # aria-describedby in html_attributes would land on the wrapper div,
+        # unassociated for assistive technology.
         option :described_by, :string
 
         validates :size, inclusion: { in: SIZES }
@@ -57,12 +65,14 @@ module Poetry
                                      "poetry_native_select_option) - Canvas system colors " \
                                      "keep the native dropdown legible"
 
+        # @api private
         def call
           content_tag(:div, wrapper_attributes.to_attributes) do
             safe_join([select_element, chevron])
           end
         end
 
+        # @api private
         def wrapper_attributes
           html_attributes.merge_if_not_set(
             {
@@ -71,6 +81,7 @@ module Poetry
           )
         end
 
+        # @api private
         def select_attributes
           attrs = { "data-slot" => "native-select", "data-size" => size, "class" => css(:select) }
           attrs["name"] = name if name.present?

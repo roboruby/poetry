@@ -2,18 +2,21 @@
 
 module Poetry
   module Ui
+    # Ratio-locked media containers.
     module AspectRatio
-      # The AspectRatio - a container that locks its width:height ratio
-      # (CSS aspect-ratio via the --ratio custom property). The content is
-      # whatever should keep the shape: an image, an embed, a placeholder.
+      # A container that locks its width:height ratio (CSS aspect-ratio
+      # via the --ratio custom property). The content is whatever should
+      # keep the shape: an image, an embed, a placeholder.
       #
       # @example A 16:9 media box
       #   render Poetry::Ui::AspectRatio::Component.new(ratio: "16/9") do
       #     image_tag "cover.jpg", class: "size-full object-cover"
       #   end
       class Component < Poetry::Core::Component
+        # The accepted CSS <ratio> grammar for ratio: ("16/9", "1", "1.5").
         RATIO = %r{\A\d+(\.\d+)?(\s*/\s*\d+(\.\d+)?)?\z}
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Pass ratio: as a string fraction ('16/9', '1/1') - Ruby's 16/9 is integer division (1).",
           "The child fills the box itself (size-full object-cover on an image)."
@@ -29,6 +32,8 @@ module Poetry
                             "theme's aspect-ratio rule"
              }
 
+        # Validates the ratio: grammar.
+        # @api private
         def before_render
           return if ratio.present? && ratio.match?(RATIO)
 
@@ -36,10 +41,12 @@ module Poetry
                 "AspectRatio ratio: must be a CSS ratio ('16/9', '1', '1.5') - got #{ratio.inspect}"
         end
 
+        # @api private
         def call
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

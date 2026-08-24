@@ -2,8 +2,9 @@
 
 module Poetry
   module Ui
+    # A pulsing placeholder box shown while content loads.
     module Skeleton
-      # The Skeleton - a pulsing placeholder while content loads. Size it with
+      # A pulsing placeholder while content loads. Size it with
       # utility classes (h-4 w-32, size-10 rounded-full, ...); the content
       # block is optional (usually empty - the box IS the placeholder).
       #
@@ -11,6 +12,7 @@ module Poetry
       #   render Poetry::Ui::Skeleton::Component.new(class: "size-10 rounded-full")
       #   render Poetry::Ui::Skeleton::Component.new(class: "h-4 w-32")
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Skeleton is a loading placeholder - size it with classes (h-4 w-32); it has no content of its own.",
           "Mark the live region that will replace it (aria-busy on the container), not the skeleton."
@@ -18,10 +20,12 @@ module Poetry
 
         part "skeleton", "The pulsing placeholder box itself - sized entirely by utility classes"
 
+        # @api private
         def call
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "skeleton" }.merge(component_data_attributes)

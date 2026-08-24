@@ -2,27 +2,24 @@
 
 module Poetry
   module Ui
+    # The toast viewport.
     module Toaster
+      # The closed vocabulary for the corner axis.
       POSITIONS = %i[top-left top-center top-right bottom-left bottom-center bottom-right].freeze
 
-      # The toast viewport: a labeled
-      # role=region <ol> rendered ONCE in the layout - the Turbo Stream
-      # append target (id=poetry-toaster, data-turbo-permanent: toasts
-      # survive Drive visits, so flash-after-redirect stays visible). The
-      # poetry--core--toaster controller acquires the announce singleton
-      # for its lifetime, owns the F8 hotkey (focus to the most recent
-      # toast; prior focus remembered for the dismiss return), enforces
-      # the visible limit (overflow queues hidden with timers held), and
-      # writes the stack reflow index (--poetry-toast-index).
+      # The toast viewport: a labeled role=region list rendered once in
+      # the layout, and the append target for streamed toasts
+      # (id=poetry-toaster). It is data-turbo-permanent - toasts survive
+      # Drive visits, so flash-after-redirect stays visible. The region
+      # owns the hotkey (F8 by default: focus the most recent toast, with
+      # prior focus restored after dismiss), enforces the visible limit
+      # (overflow queues hidden with timers held), and keeps the stack's
+      # positions as toasts come and go.
       #
-      # THE RAILS-NATIVE PATH (core): server code appends toasts with
-      # turbo_stream.poetry_toast(title: "Saved", variant: :success) -
-      # from controller responses, form streams, and
-      # Turbo::StreamsChannel.broadcast_append_to in jobs.
-      #
-      # THE FLASH -> TOAST RECIPE (documented, opt-in - apps own their
-      # flash semantics): render the mapping next to the toaster in the
-      # application layout; stream responses skip flash and append.
+      # Server code appends toasts with turbo_stream.poetry_toast(title:
+      # "Saved", variant: :success) - from controller responses, form
+      # streams, and broadcasts. To surface Rails flash as toasts, render
+      # the mapping next to the toaster in the layout (see the example).
       #
       # @example The flash -> toast mapping in the layout
       #   <%= poetry_toaster do %>
@@ -36,6 +33,7 @@ module Poetry
         # The stream append target (the turbo_stream.poetry_toast default).
         DEFAULT_ID = "poetry-toaster"
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Exactly ONE poetry_toaster per layout; it is data-turbo-permanent.",
           "Server-side toasts go through turbo_stream.poetry_toast / the flash recipe - never " \
@@ -59,10 +57,13 @@ module Poetry
           end
         end
 
-        # On the TOASTER, not the toast (the region owns the corner).
+        # The stack's corner - set here, not per toast; each toast's slide
+        # direction follows it.
         style :position, default: :"bottom-right", required: true, variants: POSITIONS
 
+        # The keyboard shortcut that focuses the most recent toast.
         option :hotkey, :string, default: "F8"
+        # The maximum visible toasts; overflow queues hidden with timers held.
         option :limit, :integer, default: 3
 
         part "toaster", "The toast viewport itself (<ol>, role=region, data-turbo-permanent) - " \
@@ -76,6 +77,7 @@ module Poetry
                                                        "dismisses the overlay under it" }
              }
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

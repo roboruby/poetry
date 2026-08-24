@@ -2,25 +2,23 @@
 
 module Poetry
   module Ui
+    # A click-opened panel anchored to its trigger.
     module Popover
       # The placement vocabularies - the popper-consumer kit owns them.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
-      # The popper-consumer trio's click-open member: a role=dialog panel
-      # anchored to its trigger - the APG
-      # dialog-pattern-lite. Two hosts, one owned controller: the root
-      # carries poetry--core--popover (toggle / dismiss / focus-in+return)
-      # + poetry--core--popper (anchored positioning); the content's layer
-      # controllers (focus-scope, dismissable) are TOKEN-ACTIVATED by the
-      # popover controller on open - a statically-connected trap on hidden
-      # content would steal focus at page load, so the markup renders NO
-      # layer tokens.
+      # A click-opened role=dialog panel anchored to its trigger, for
+      # interactive content: small forms, filters, pickers. Opening
+      # moves focus to the first tabbable element in the panel; Escape
+      # or outside interaction closes it and returns focus to the
+      # trigger. Non-modal by default - the rest of the page stays
+      # interactive while it is open.
       #
-      # Deliberate contrasts with the menu family: modal defaults FALSE
-      # (Radix Popover parity), focus moves to the first tabbable on open
-      # (focus-scope's mount default, not vetoed - no data-open-reason),
-      # and the trigger has no custom keydown (native button Enter/Space).
+      # with_trigger composes a Button as the control. Name the panel
+      # via with_title (preferred) or label: - a dialog needs an
+      # accessible name. The focus and dismiss behavior activates only
+      # while open, so closed popovers cost nothing at page load.
       #
       # @example
       #   render Poetry::Ui::Popover::Component.new do |popover|
@@ -32,6 +30,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.",
@@ -48,46 +47,41 @@ module Poetry
           "comprehension does not)."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { trigger: "the panel's control" }.freeze
 
-        # The forwarding-lambda fact: with_trigger renders a Button -
-        # callers get Button's full typed-slot contract statically.
+        # The class each slot's builder renders - with_trigger composes a
+        # Button, so callers get Button's full option contract.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The trigger is a poetry Button wired as the dialog control (demo
-        # parity: with_trigger(variant: :outline) { "Open popover" }) - the
-        # slot owns the aria-haspopup/expanded/controls wiring regardless
-        # of the composed content, so composition cannot drop the aria.
-        # aria-controls is rendered ALWAYS (Radix: open-only) - the static
-        # server id is the controller's structural-resolution seam.
+        # The control that opens the panel - a composed Button. The slot
+        # owns the aria-haspopup/expanded/controls wiring regardless of the
+        # composed content, so composition cannot drop the aria;
+        # aria-controls renders even while closed (the stable id is the
+        # wiring's resolution seam).
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "popover-trigger",
             "aria-haspopup" => "dialog", "aria-expanded" => open.to_s, "aria-controls" => content_id
           }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
+          # Trigger open state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           wiring["data-popup-open"] = "" if open
           composed_trigger(wiring, options, &block) ||
             Button::Component.new(**wiring, **options, &block)
         }
 
-        # OPTIONAL alternate popper anchor (Radix PopoverAnchor): when
-        # present IT carries the popper anchor target and the content
-        # positions against it - the root then drops the trigger-selector
-        # anchor value (targets beat selectors in popper's fallback chain).
+        # Optional alternate anchor: when present, the panel positions
+        # against IT instead of the trigger (targets beat selectors in the
+        # positioning fallback chain).
         renders_one :anchor, lambda { |**options, &block|
           attrs = { "data-slot" => "popover-anchor" }
                   .merge(stimulus_attributes_for(:anchor_part))
           content_tag(:div, attrs.merge(options)) { capture(&block) }
         }
 
-        # Panel heading - presence wires the content's aria-labelledby
-        # (POETRY ADDITION: new-york-v4 ships the part as an unwired div,
-        # leaving a nameless role=dialog).
+        # Panel heading - presence wires the content's aria-labelledby, so
+        # the title names the dialog.
         renders_one :title
 
         # Supporting text - presence wires the content's aria-describedby.
@@ -125,17 +119,18 @@ module Poetry
           end
         end
 
+        # Server-renders the panel open.
         option :open, :boolean, default: false
-        # Radix Popover default FALSE - the deliberate contrast with the
-        # menu family's modal: true (documented in both contracts).
+        # Reserves interaction for the panel while open; the default keeps
+        # the rest of the page interactive.
         option :modal, :boolean, default: false
-        # Placement: shadcn Content defaults (bottom / center / 4 / 0).
+        # The placement axes for the anchored panel (side, align, offsets).
         popper_placement_options(side: :bottom, side_offset: 4)
         # role=dialog fallback name when no title part is present.
         option :label, :string
-        # The panel's class merge seam (shadcn demo parity: the caller
-        # overrides the w-72 default with content_class: "w-80"; root-level
-        # class: styles the wrapper, not the panel).
+        # Class merge seam for the panel itself (e.g. widen the default
+        # with content_class: "w-80") - root-level class: styles the
+        # wrapper, not the panel.
         option :content_class, :string
 
         part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
@@ -158,6 +153,8 @@ module Poetry
         part "popover-title", "The heading - the panel's accessible name via aria-labelledby"
         part "popover-description", "Muted copy under the title, wired to aria-describedby"
 
+        # Enforces the required trigger and warns on a nameless dialog.
+        # @api private
         def before_render
           raise ArgumentError, "Popover requires with_trigger (the panel's control)" unless trigger?
 
@@ -170,14 +167,17 @@ module Poetry
           )
         end
 
+        # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # @api private
         def description_id
           "#{instance_id}-description"
         end
 
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id, "role" => "dialog", "tabindex" => "-1",

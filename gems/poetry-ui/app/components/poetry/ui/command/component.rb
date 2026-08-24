@@ -2,17 +2,17 @@
 
 module Poetry
   module Ui
+    # Command family: the filterable command palette and its dialog form.
     module Command
-      # The controller identifier, declared ONCE - every data attribute
-      # derives from it through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # The engine pieces below (ItemSet, Helpers, Item, Group) build the
+      # palette's anatomy; Combobox reuses the same markup contract.
 
       # The server-side item registry: every rendered item (DOM order)
       # lands here so option ids are server-stable ("#{id}-item-<n>" - the
       # aria-activedescendant contract) and the initial highlight (the
       # value: option, else the first enabled item) is decided in render
       # order before the input derives its activedescendant. Duplicate or
-      # blank values raise at render (the base contract).
+      # blank values raise at render.
       #
       # @api private
       class ItemSet
@@ -69,8 +69,8 @@ module Poetry
         end
 
         # role=separator, server-rendered VISIBLE - the controller hides
-        # every separator whenever the query is non-empty (cmdk parity: a
-        # filtered list has no stable sections).
+        # every separator whenever the query is non-empty (a filtered
+        # list has no stable sections).
         def separator_part(**options)
           attrs = {
             # Decorative inside role=listbox (only option/group children
@@ -153,8 +153,8 @@ module Poetry
       # role=group labelled by its heading part (aria-labelledby wired) -
       # the same item union one level down, registering its items into the
       # PARENT's item set so ids and the initial highlight stay in DOM
-      # order. Plain ViewComponent::Base ON PURPOSE: nested parts are
-      # anatomy, not registered components.
+      # order. Kept internal ON PURPOSE: nested parts are anatomy, not
+      # registered components.
       #
       # @api private
       class Group < Poetry::Core::Component
@@ -163,6 +163,8 @@ module Poetry
 
         attr_reader :item_set, :item_wiring
 
+        # The group's members: with_item actions and with_separator
+        # dividers, interleaved in declaration order.
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
@@ -203,32 +205,27 @@ module Poetry
           "#{group_id}-heading"
         end
 
-        # A styled heading, no ARIA role (cmdk-exact) - the group points at
-        # it via aria-labelledby.
+        # A styled heading, no ARIA role - the group points at it via
+        # aria-labelledby.
         def heading_part
           content_tag(:div, @heading_text, "data-slot" => "command-group-heading", "id" => heading_id,
                                            "class" => Style.css(:heading))
         end
       end
 
-      # The Command palette: a filterable
-      # command list - an always-visible search input over a listbox of
-      # actions, filtered client-side as you type. THE NET-NEW APG BUILD
-      # (no Radix primitive; shadcn wraps cmdk): the APG editable-combobox
-      # pattern with aria-activedescendant - real focus stays pinned to
-      # the input for the whole session, the highlighted option carries
-      # data-highlighted + its server-stable id in the input's
-      # aria-activedescendant, and options never get tabindex (the
-      # deliberate delta vs the menus/Select family's roving focus).
+      # A command palette: an always-visible search input over a listbox
+      # of actions, filtered client-side as you type. Real focus stays
+      # pinned to the input for the whole session; the highlighted option
+      # carries data-highlighted and its server-stable id in the input's
+      # aria-activedescendant, and options never take focus themselves.
       #
-      # THE FILTER (poetry--core--command + helpers/filter_rank.js) is
-      # deterministic substring + a 5-band rank - NOT cmdk's fuzzy scorer -
-      # and HIDE-ONLY: the server renders ALL items, the controller hides
-      # non-matches (hidden + data-hidden) and never reorders the DOM.
-      # Activation is an EVENT (cancelable poetry:command:select), never an
-      # action - the host (or Combobox, which wraps this engine) owns the
-      # consequences. filter: false is the server-driven mode (cmdk
-      # shouldFilter parity) - the Turbo-frame async seam.
+      # The filter is deterministic substring matching with ranked bands,
+      # and HIDE-ONLY: the server renders ALL items and the controller
+      # hides non-matches, never reordering the DOM. Activating an item
+      # fires a cancelable poetry:command:select event - the host (or
+      # Combobox, which wraps this engine) owns the consequences.
+      # filter: false leaves filtering to the server (the Turbo-frame
+      # async recipe).
       #
       # @example
       #   render Poetry::Ui::Command::Component.new("aria-label": "Command menu") do |command|
@@ -238,6 +235,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include Helpers
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_command - never hand-roll a filterable listbox with an input + a list and ad-hoc JS.",
           "Command items DO things; they carry no form value. Picking a value for a form is Combobox " \
@@ -259,8 +257,8 @@ module Poetry
         # interactive control the label must reach - never on the root div.
         INPUT_ARIA_KEYS = %w[label labelledby describedby].freeze
 
-        # The named? disjunction, stated statically: the command-palette
-        # crash class - id-or-aria, checkable at write time.
+        # The accessible-name requirement stated statically: an id or an
+        # aria name must be given, checkable at write time.
         REQUIRES_ANY = [
           { hint: "the input's accessible name",
             options: %w[id aria-label aria-labelledby aria] }
@@ -307,12 +305,19 @@ module Poetry
           end
         end
 
+        # Client-side filtering; false leaves the list server-driven.
         option :filter, :boolean, default: true
+        # Wraps arrow-key highlight movement past either end of the list.
         option :loop, :boolean, default: false
+        # The filter input's placeholder text.
         option :placeholder, :string
+        # The listbox's accessible name.
         option :list_label, :string, default: -> { I18n.t("poetry.command.list_label") }
+        # Seats the initial highlight on the item with this value.
         option :value, :string
+        # Disables the filter input.
         option :disabled, :boolean, default: false
+        # The base DOM id; the input, list, and item ids derive from it.
         option :id, :string
 
         part "command", "Root of the palette - the input row over the listbox, carrying the " \
@@ -362,11 +367,15 @@ module Poetry
                                "placeholder the controller interpolates)"
              }
 
+        # Pulls the input-bound aria-* out of the root attributes.
+        # @api private
         def initialize(attributes = {})
           super
           @input_aria = extract_input_aria!
         end
 
+        # Enforces the accessible-name requirement.
+        # @api private
         def before_render
           return if named?
 
@@ -376,22 +385,31 @@ module Poetry
 
         # Stable server ids: "#{id}-input" / "#{id}-list" / "#{id}-item-<n>"
         # (aria-activedescendant NEEDS server-stable option ids).
+        # @api private
         def base_id
           @base_id ||= id.presence || poetry_instance_id("poetry-command")
         end
 
+        # The filter input's id.
+        # @api private
         def input_id
           "#{base_id}-input"
         end
 
+        # The listbox's id - the input's aria-controls target.
+        # @api private
         def list_id
           "#{base_id}-list"
         end
 
+        # The shared item registry for this render.
+        # @api private
         def item_set
           @item_set ||= ItemSet.new(base_id: base_id, highlight_value: value)
         end
 
+        # Attributes for the palette root.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "id" => base_id, "data-slot" => "command" }
@@ -404,6 +422,7 @@ module Poetry
         # always rendered and visible in bare Command (Combobox flips it on
         # its trigger instead). The activedescendant is server-rendered
         # from the ItemSet (populated by the template's capture pass).
+        # @api private
         def input_attributes
           attrs = {
             "type" => "text", "id" => input_id, "data-slot" => "command-input",
@@ -419,6 +438,8 @@ module Poetry
           attrs
         end
 
+        # Attributes for the role=listbox list.
+        # @api private
         def list_attributes
           {
             "id" => list_id, "data-slot" => "command-list", "role" => "listbox",
@@ -429,11 +450,15 @@ module Poetry
         # Zero-matches message - rendered hidden; the controller unhides it
         # when the filter pass leaves no visible items. No role: the sr
         # story rides the status live region.
+        # @api private
         def empty_part
           content_tag(:div, empty? ? empty : t("poetry.command.empty"),
                       "data-slot" => "command-empty", "hidden" => true, "class" => css(:empty))
         end
 
+        # Pending affordance (role=status) - rendered hidden; the HOST
+        # toggles it.
+        # @api private
         def loading_part
           content_tag(:div, "data-slot" => "command-loading", "role" => "status",
                             "hidden" => true, "class" => css(:loading)) do
@@ -442,10 +467,11 @@ module Poetry
           end
         end
 
-        # POETRY ADDITION: the sr-only polite result-count region - the
-        # controller writes the debounced count from the LOCALIZED
-        # templates carried as data attributes (data-other keeps a literal
-        # %{count} placeholder), so the engine stays i18n-free.
+        # The sr-only polite result-count region - the controller writes
+        # the debounced count from the LOCALIZED templates carried as
+        # data attributes (data-other keeps a literal %{count}
+        # placeholder), so the engine stays i18n-free.
+        # @api private
         def status_part
           content_tag(:span, nil,
                       "data-slot" => "command-status", "role" => "status", "aria-live" => "polite",

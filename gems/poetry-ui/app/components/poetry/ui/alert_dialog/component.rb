@@ -2,20 +2,17 @@
 
 module Poetry
   module Ui
+    # Modal confirmations that must be answered.
     module AlertDialog
-      # The AlertDialog - Dialog's `dismissible: false` posture, promoted
-      # to a component: a must-be-answered confirmation. It reuses the
-      # poetry--core--dialog controller and the
-      # native <dialog> + showModal() platform trap UNCHANGED, hard-coding
-      # the posture: backdrop clicks never dismiss (dismissible is not an
-      # option here), while Esc still closes - the controller's
-      # cancel->close deliberately ignores dismissibleValue, exactly Radix
-      # AlertDialog's behavior (outside interaction prevented, escape
-      # allowed). Deltas from Dialog: explicit role=alertdialog, title AND
-      # description both required, typed action/cancel Button slots (both
-      # dismiss the dialog through the shared controller; cancel takes
-      # initial focus per APG), no X close button, and the source's size
-      # variant + media well.
+      # A modal confirmation that must be answered before anything else.
+      # Built on the native <dialog> element: clicking the backdrop never
+      # dismisses it, though Esc still cancels. Use it for destructive or
+      # irreversible actions; for anything needing input, use Dialog.
+      #
+      # Title and description are both required, as are the action and
+      # cancel buttons - both close the dialog when activated, and cancel
+      # (the least-destructive choice) takes initial focus. There is no
+      # corner close button.
       #
       # @example Destructive confirmation
       #   render Poetry::Ui::AlertDialog::Component.new do |dialog|
@@ -29,8 +26,10 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::FamilyIdentity
 
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Destructive confirmations use AlertDialog with with_action(variant: :destructive) - " \
@@ -41,20 +40,16 @@ module Poetry
           "Cancel keeps variant: :outline; do not make cancel visually primary."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = {
           title: "the accessible name", description: "the alertdialog must explain itself",
           action: "the confirming choice", cancel: "the safe way out"
         }.freeze
 
-        # The forwarding-lambda fact: with_trigger renders a
-        # Button - callers get Button's full typed-slot contract statically.
+        # Slots that render a Button; slot keywords are forwarded as Button props.
         SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
 
-        # The trigger is a poetry Button wired to open - the inherited
-        # Dialog pattern: with_trigger(variant: :destructive) { "Delete" }.
+        # The button that opens the dialog; keywords are forwarded as Button props.
         renders_one :trigger, lambda { |**options, &block|
           composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
             options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
@@ -63,23 +58,20 @@ module Poetry
             Button::Component.new(**options, &block)
           end
         }
+        # The heading - the dialog's accessible name (required).
         renders_one :title
+        # The explanation read alongside the title by assistive tech (required).
         renders_one :description
-        # Optional icon/illustration well (the v4 source addition).
+        # Optional icon/illustration well above the title.
         renders_one :media
-        # The confirming choice - a typed Button slot with the source
-        # default (callers override to :destructive for deletes). Closes the
-        # shared dialog on activation, exactly like Radix AlertDialogAction
-        # (a caller passing their own data-action opts out of the auto-close).
+        # The confirming choice (required) - a Button; pass variant: :destructive for deletes.
+        # Activating it also closes the dialog (a caller-supplied data-action opts out).
         renders_one :action, lambda { |**options, &block|
           options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
-        # The safe way out - outline (source default) and the INITIAL focus:
-        # the native <dialog> focus heuristic honors autofocus (APG: focus
-        # the least-destructive action). Like Radix AlertDialogCancel it
-        # dismisses the dialog through the shared controller - without this
-        # wiring the modal is unclosable except by Esc.
+        # The safe way out (required) - an outline Button that takes initial focus
+        # and closes the dialog on activation.
         renders_one :cancel, lambda { |**options, &block|
           wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
           options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
@@ -116,10 +108,10 @@ module Poetry
           end
         end
 
+        # The panel size; :sm compacts the layout and switches the footer to a two-column grid.
         style :size, default: :default, required: true, variants: SIZES
 
-        # The panel's class merge seam (dialog parity - alert was the only
-        # panel overlay without it).
+        # Extra classes merged onto the panel element.
         option :content_class, :string
 
         part "alert-dialog", "Root wrapper around the trigger and the <dialog> element"
@@ -140,6 +132,8 @@ module Poetry
                                          "(required slot)"
         part "alert-dialog-footer", "The choice row - cancel then action"
 
+        # Enforces the four required slots.
+        # @api private
         def before_render
           raise ArgumentError, "AlertDialog requires with_title (the accessible name)" unless title?
           unless description?
@@ -149,15 +143,18 @@ module Poetry
           raise ArgumentError, "AlertDialog requires with_cancel (the safe way out)" unless cancel?
         end
 
+        # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # @api private
         def description_id
           "#{instance_id}-description"
         end
 
 
+        # @api private
         def dialog_attributes
           {
             "class" => css(:content, class: content_class),
@@ -172,9 +169,10 @@ module Poetry
           }.merge(stimulus_attributes_for(:content))
         end
 
-        # The source's group-has-data-[slot] selector acrobatics, emitted as
-        # explicit server-side conditionals - poetry knows at render time
-        # whether media exists and which size was picked.
+        # The media/size layout branches emitted as explicit server-side
+        # conditionals - poetry knows at render time whether media exists
+        # and which size was picked, so no CSS selector gymnastics.
+        # @api private
         def header_classes
           css(:header, class: [
             (css(:header_with_media) if media?),
@@ -183,14 +181,17 @@ module Poetry
           ].compact.join(" "))
         end
 
+        # @api private
         def media_classes
           css(:media, class: (css(:media_size_default) if size == :default))
         end
 
+        # @api private
         def title_classes
           css(:title, class: (css(:title_beside_media) if media? && size == :default))
         end
 
+        # @api private
         def footer_classes
           css(:footer, class: (css(:footer_size_sm) if size == :sm))
         end

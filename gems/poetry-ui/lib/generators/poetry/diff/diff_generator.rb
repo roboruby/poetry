@@ -13,9 +13,15 @@ module Poetry
   # the app's copies stand against what the installed gems ship NOW.
   # Read-only by contract - it prints, it never writes; `poetry:add`
   # re-run is the (skip-if-exists) way to pick up newly-shipped files.
+  #
+  # @example
+  #   bin/rails g poetry:diff
   class DiffGenerator < Rails::Generators::Base
+    # The copy-in provenance manifest poetry:add records into.
     MANIFEST = "config/poetry_components.yml"
+    # Where component copy-ins land in the host app.
     COMPONENT_ROOT = "app/components/poetry/ui"
+    # Where block copy-ins land in the host app.
     BLOCKS_ROOT = "app/views/blocks"
     # The ownership header poetry:block stamps on copy (stripped before
     # comparing, like the gem template's own poetry:block header).
@@ -23,6 +29,8 @@ module Poetry
 
     desc "Report drift between copied-in poetry components/blocks and what the installed gems ship (read-only)"
 
+    # Step: reports drift for every manifest-recorded component copy-in.
+    # @api private
     def report_components
       entries = manifest_components
       if entries.empty?
@@ -32,6 +40,8 @@ module Poetry
       end
     end
 
+    # Step: reports how copied blocks differ from the gem templates.
+    # @api private
     def report_blocks
       copied = Dir[File.join(destination_root, BLOCKS_ROOT, "_*.html.erb")]
       return if copied.empty?

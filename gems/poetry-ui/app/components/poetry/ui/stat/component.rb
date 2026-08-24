@@ -2,14 +2,13 @@
 
 module Poetry
   module Ui
+    # One KPI: a labelled value with an optional sentiment-aware delta.
     module Stat
-      # The Stat - one KPI: a muted label over a large tabular-nums value,
-      # with an optional sentiment-aware delta, supporting description, and
-      # a media slot for a trend visual - the dashboard vocabulary a
-      # data-heavy page otherwise lacks. No upstream shadcn/Base UI
-      # analogue; the anatomy is poetry's slot idiom. Styling is
-      # utility-only (the Separator/Spinner rule): data-slot names are the
-      # restyle seam until a theme wants cn hooks.
+      # One KPI: a muted label over a large tabular-nums value, with an
+      # optional sentiment-aware delta, supporting description, and a
+      # media slot for a trend visual. Reach for it on dashboards - one
+      # Stat per metric, composed in a grid. Styling is utility-only:
+      # data-slot names are the restyle seam.
       #
       # @example Revenue KPI with a delta
       #   render Poetry::Ui::Stat::Component.new(label: "Revenue", delta: "+12.5%", trend: :up) do
@@ -18,14 +17,18 @@ module Poetry
       class Component < Poetry::Core::Component
         requires_content "the metric value"
 
+        # The closed vocabulary for the trend axis.
         TRENDS = %i[up down flat].freeze
+        # The closed vocabulary for the sentiment axis.
         SENTIMENTS = %i[positive negative neutral].freeze
 
         # trend picks the arrow; sentiment defaults FROM the trend (up is
         # good, down is bad) and is overridden when the metric inverts.
         DEFAULT_SENTIMENT = { up: :positive, down: :negative, flat: :neutral }.freeze
+        # The arrow glyph each trend renders in the delta pill.
         TREND_ICON = { up: :"trending-up", down: :"trending-down", flat: :minus }.freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "One Stat is ONE metric: label: names it, the content block is the value - compose " \
           "several in a grid (typically each inside a Card) for a dashboard row.",
@@ -37,12 +40,19 @@ module Poetry
           "A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts)."
         ].freeze
 
+        # Muted supporting copy rendered under the value.
         renders_one :description
+        # The trend-visual slot (sparkline, chart, glyph) below the text stack.
         renders_one :media
 
+        # The metric's name, shown muted above the value.
         option :label, :string, required: true
+        # The change text shown in the pill beside the value ("+12.5%").
         option :delta, :string
+        # The arrow direction; also derives the default sentiment.
         option :trend, :symbol, default: :up
+        # Overrides the trend-derived sentiment - color follows sentiment,
+        # never the arrow (set :positive when DOWN is the good direction).
         option :sentiment, :symbol
 
         validates :trend, inclusion: { in: TRENDS }
@@ -63,22 +73,27 @@ module Poetry
         part "stat-description", "Muted supporting copy under the value"
         part "stat-media", "The trend-visual slot (sparkline, chart, glyph) below the text stack"
 
+        # @api private
         def before_render
           ensure_content!
         end
 
+        # @api private
         def resolved_sentiment
           sentiment || DEFAULT_SENTIMENT.fetch(trend)
         end
 
+        # @api private
         def delta_classes
           "#{css(:delta)} #{css(:"delta_#{resolved_sentiment}")}"
         end
 
+        # @api private
         def trend_icon
           TREND_ICON.fetch(trend)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "stat" }.merge(component_data_attributes)

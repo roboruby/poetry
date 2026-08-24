@@ -5,7 +5,7 @@ module Poetry
     module AlertDialog
       class Preview < Poetry::Core::Preview::Base
         # The canonical recipe: a destructive confirmation. Backdrop clicks
-        # never dismiss it; Esc still cancels (Radix-exact posture).
+        # never dismiss it; Esc still cancels (source-exact posture).
         def destructive_confirm
           render_component do |dialog|
             dialog.with_trigger(variant: :destructive) { "Delete account" }

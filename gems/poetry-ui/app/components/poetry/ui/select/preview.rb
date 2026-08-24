@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module Select
-      # The Select preview matrix: the shadcn select-demo composition, the
+      # The Select preview matrix: the ported select-demo composition, the
       # scrollable grouped list (scroll-button case), placeholder vs
       # valued, both trigger sizes, disabled, invalid (the Field
       # aria-invalid chain), RTL, and the server-rendered open state.

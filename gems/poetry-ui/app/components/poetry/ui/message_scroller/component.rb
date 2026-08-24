@@ -2,25 +2,28 @@
 
 module Poetry
   module Ui
+    # A streaming-aware chat transcript scroller.
     module MessageScroller
-      # The streaming-aware transcript -
-      # the Gen-UI centerpiece: a native scroll region driven by the
-      # poetry--core--message-scroller 4-state machine. Baseline without
-      # JS: a plain scrollable region, fully readable. The content element
-      # is the Turbo Stream append target (stable dom id); rows are
-      # poetry_message_scroller_item wrappers.
+      # A scrollable chat transcript that follows the newest message
+      # while streaming, releases when the reader scrolls up, and offers
+      # a jump-to-latest button. Without JavaScript it is a plain
+      # scrollable region, fully readable.
       #
-      # The controller's autoScroll default is the source-faithful FALSE;
-      # this wrapper is poetry's opinionated chat posture and renders the
-      # value TRUE unless auto_scroll: false.
+      # The content element is the Turbo Stream append target (stable
+      # dom id "<id>-messages"); rows are poetry_message_scroller_item
+      # wrappers keyed by message id. History prepends keep the reading
+      # position; a row rendered with anchor: true becomes the held
+      # reading line.
       #
       # @example A chat transcript
       #   render Poetry::Ui::MessageScroller::Component.new(id: "chat") do
       #     # poetry_message_scroller_item rows
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the default_scroll_position axis.
         SCROLL_POSITIONS = %i[start end last-anchor].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Stream by UPDATING a row's text (morph/replace) - appending nodes per token re-announces the row to AT.",
           "Rows are poetry_message_scroller_item(id: message.id) - the id is how anchoring and Streams find them.",
@@ -58,11 +61,23 @@ module Poetry
           end
         end
 
+        # The transcript's stable identifier - the content element renders
+        # dom id "<id>-messages" for Turbo Streams to target.
         option :id, :string, required: true
+        # Follows the newest message while the reader sits at the bottom;
+        # scrolling up releases the follow.
         option :auto_scroll, :boolean, default: true
+        # Where the viewport lands on connect: the newest message (:end),
+        # the oldest (:start), or the last anchor: true row (:"last-anchor").
         option :default_scroll_position, :symbol, default: :end
+        # Keeps the reading position stable when history prepends into the
+        # content element.
         option :preserve_scroll_on_prepend, :boolean, default: true
+        # Opt-in observation of which rows are on screen - emits a
+        # visibility event as the visible set changes.
         option :track_visibility, :boolean, default: false
+        # Renders the floating jump-to-latest button (shown once the reader
+        # leaves the bottom).
         option :jump_button, :boolean, default: true
 
         validates :default_scroll_position, inclusion: { in: SCROLL_POSITIONS }
@@ -98,6 +113,7 @@ module Poetry
         part "message-scroller-spacer", "Tail spacer faking scroll room below a short " \
                                         "anchored turn - hidden at height 0"
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "message-scroller" }
@@ -106,6 +122,7 @@ module Poetry
           )
         end
 
+        # @api private
         def viewport_attributes
           {
             "class" => css(:viewport), "data-slot" => "message-scroller-viewport",
@@ -114,6 +131,7 @@ module Poetry
           }.merge(stimulus_attributes_for(:viewport))
         end
 
+        # @api private
         def content_attributes
           {
             "id" => "#{id}-messages", "class" => css(:content),
@@ -122,11 +140,13 @@ module Poetry
           }.merge(stimulus_attributes_for(:content))
         end
 
+        # @api private
         def spacer_attributes
           { "data-slot" => "message-scroller-spacer", "aria-hidden" => "true", "hidden" => true }
             .merge(stimulus_attributes_for(:spacer))
         end
 
+        # @api private
         def button_attributes
           {
             class: css(:button),

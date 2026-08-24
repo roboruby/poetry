@@ -18,10 +18,21 @@ module Poetry
       #   scope = scope.where("title LIKE ?", "%#{Note.sanitize_sql_like(state.q)}%") if state.q
       #   notes = scope.order(state.order_clause).offset(...).limit(per)
       class State
+        # The closed vocabulary for the sort direction.
         DIRECTIONS = %w[asc desc].freeze
 
+        # The sanitized pieces: filter query, sort column, direction,
+        # page number, and the sortable whitelist.
         attr_reader :q, :sort, :dir, :page, :sortable
 
+        # Builds state from request params: sort survives only when it
+        # appears in the sortable: whitelist, dir only when asc/desc, the
+        # page floors at 1, and the query is stripped.
+        #
+        # @param params [Hash] the request params
+        # @param sortable [Array] the whitelist of sortable column keys
+        # @param default_sort [String, nil] the column when none is given
+        # @param default_dir [String] the direction when none is given
         def self.from_params(params, sortable:, default_sort: nil, default_dir: "asc")
           allowed = Array(sortable).map(&:to_s)
           raw_sort = params[:sort].to_s
@@ -36,6 +47,8 @@ module Poetry
           )
         end
 
+        # Direct construction with pre-sanitized values; prefer
+        # .from_params for anything that came in on a request.
         def initialize(q: nil, sort: nil, dir: "asc", page: 1, sortable: [])
           @q = q
           @sort = sort
@@ -44,10 +57,12 @@ module Poetry
           @sortable = sortable
         end
 
+        # Whether the column is in the sortable whitelist.
         def sortable?(column)
           sortable.include?(column.to_s)
         end
 
+        # Whether the column is the actively sorted one.
         def sorted_by?(column)
           sort == column.to_s
         end

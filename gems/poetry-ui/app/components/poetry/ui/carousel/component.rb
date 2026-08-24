@@ -2,15 +2,15 @@
 
 module Poetry
   module Ui
+    # Carousel family: the scroll-snap slide strip and its paging controls.
     module Carousel
-      # The Carousel - slides on the PLATFORM's scroll-snap, no JS
-      # carousel engine: the viewport is a real scroll container (touch,
-      # momentum, snapping for free), and poetry--core--carousel adds
-      # prev/next paging, button state, and arrow keys. Declare slides with
-      # with_item; the component owns the region/slide ARIA and the
-      # controls.
+      # A slide carousel on native scroll-snap: the viewport is a real
+      # scroll container, so touch, momentum, and snapping work with no
+      # JS, and prev/next paging plus arrow keys are layered on top.
+      # Declare slides with with_item; the component owns the region and
+      # slide ARIA and renders the controls.
       #
-      # Deferred (each would need an engine): loop, autoplay, plugins.
+      # Looping, autoplay, and plugins are not supported.
       #
       # @example
       #   render Poetry::Ui::Carousel::Component.new(label: "Featured") do |carousel|
@@ -18,8 +18,10 @@ module Poetry
       #     carousel.with_item { "Slide two" }
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[horizontal vertical].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "label: is REQUIRED - the carousel region's accessible name.",
           "Declare slides with with_item - the component stamps the slide roles " \
@@ -31,15 +33,16 @@ module Poetry
           "\"pl-1 -scroll-ml-1\" - the gutter padding and its snap scroll-margin move together."
         ].freeze
 
-        # The lambda's raise, declared (the SLOT_BUILDERS pattern): poetry
-        # check states the same requirement statically.
+        # States statically that with_item requires a content block, so
+        # static checks can flag the omission without rendering.
         SLOT_REQUIRED_CONTENT = { item: "the slide" }.freeze
 
-        # The same facts the before_render raise enforces, stated
-        # statically: poetry check flags the omission without rendering
-        # (the menu crash class - required slots the contract kept silent).
+        # The required slots, stated statically so static checks can flag
+        # a missing slide without rendering.
         REQUIRED_SLOTS = { item: "at least one slide" }.freeze
 
+        # Declares one slide. The content block is required; classes: sizes
+        # the slide (basis-full default).
         renders_many :items, lambda { |classes: nil, &block|
           raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
 
@@ -77,15 +80,16 @@ module Poetry
           end
         end
 
-        # required: the hand raise in before_render carries the message;
-        # the flag carries the fact to the registry (the floating-crash
-        # class - a required option the static tier could not see).
+        # The carousel region's accessible name - required; rendering
+        # without it raises.
         option :label, :string, required: true
+        # The scroll axis; snapping, controls, and arrow keys follow it.
         option :orientation, :symbol, default: :horizontal
+        # Renders the prev/next buttons; slides stay reachable by swipe,
+        # wheel, and keyboard without them.
         option :show_controls, :boolean, default: true
-        # Track-level utility overrides (upstream's CarouselContent
-        # className) - the spacing idiom: track_classes: "-ml-1" pairs
-        # with item classes "pl-1 -scroll-ml-1".
+        # Utility classes for the slide track - change spacing as a trio:
+        # track_classes: "-ml-1" pairs with item classes "pl-1 -scroll-ml-1".
         option :track_classes, :string
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
@@ -99,17 +103,25 @@ module Poetry
                                  "platform owns the physics"
         part "carousel-item", "One role=group slide - sized by item classes (basis-full default)"
 
+        # Enforces the required label and at least one slide.
+        # @api private
         def before_render
           raise ArgumentError, "Carousel requires label: (the region's accessible name)" if label.blank?
           raise ArgumentError, "Carousel requires at least one with_item" unless items?
         end
 
+        # The declared slides in render order.
+        # @api private
         def slides
           @slides ||= []
         end
 
+        # Whether the scroll axis is vertical.
+        # @api private
         def vertical? = orientation == :vertical
 
+        # Attributes for the role=region root.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {
@@ -119,6 +131,8 @@ module Poetry
           )
         end
 
+        # Attributes for the scroll-snap viewport.
+        # @api private
         def viewport_attributes
           {
             "data-slot" => "carousel-content",
@@ -129,6 +143,8 @@ module Poetry
           }.merge(stimulus_attributes_for(:viewport))
         end
 
+        # Attributes for one slide.
+        # @api private
         def item_attributes(slide)
           # class: rides the merger so caller classes WIN on conflicts -
           # a raw join left basis-1/3 vs the dictionary's basis-full to
@@ -141,6 +157,8 @@ module Poetry
           }
         end
 
+        # Button options for one prev/next control.
+        # @api private
         def control_options(direction)
           {
             variant: :outline, size: :"icon-sm",
@@ -150,6 +168,8 @@ module Poetry
           }.merge(stimulus_attributes_for(direction))
         end
 
+        # One declared slide: its extra classes and content block.
+        # @api private
         Slide = Data.define(:classes, :block)
       end
     end

@@ -2,22 +2,18 @@
 
 module Poetry
   module Ui
+    # The HoverCard family - the pointer-hover link preview.
     module HoverCard
-      # The placement vocabularies - the popper-consumer kit owns them.
+      # The placement vocabularies - shared with every popup surface.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
-      # The popper-consumer trio's pointer-only member: a rich preview
-      # behind a LINK, for sighted pointer users, BY DESIGN not an
-      # interaction path. The root carries
-      # poetry--core--hover-card (open/close pair timers, the touch
-      # double-guard, the focus mirror, the per-open tabindex strip, the
-      # selection hold) + poetry--core--popper; the content's dismissable
-      # layer is TOKEN-ACTIVATED while open. NO focus-scope anywhere in
-      # the lifecycle (focus never moves in - the trio's simplest
-      # teardown) and NO aria surface (no haspopup/expanded/describedby,
-      # role-less content - advertising a keyboard-unreachable surface to
-      # AT is worse than silence, Radix-exact).
+      # A rich preview that opens when a pointer hovers a LINK - for
+      # sighted pointer users, BY DESIGN not an interaction path. Focus
+      # never moves into the card, and it presents NO aria surface (no
+      # haspopup/expanded/describedby, role-less content): advertising a
+      # keyboard-unreachable surface to assistive technology is worse
+      # than silence.
       #
       # THE REACHABLE-ELSEWHERE RULE (non-negotiable): everything in a
       # hover card must exist at the trigger link's destination - the
@@ -33,6 +29,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::PopperConsumer
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Use poetry_hover_card - never hand-roll hover-div previews.",
@@ -50,29 +47,27 @@ module Poetry
           "Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first open."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
 
-        # The enriched LINK (Radix Primitive.a): a real navigable <a> -
+        # The enriched LINK: a real navigable <a> -
         # THE no-JS fallback. tag: passthrough exists but change it
         # knowingly (an <a> is the contract's fallback story). NO
         # aria-haspopup/expanded/describedby - the card is invisible to
         # the accessibility tree on purpose. Built as a lazy anatomy part
         # (rendered at render time, not at with_trigger time).
         #
-        # variant:/size: route through Button::Component (the tooltip
-        # convention) - Button's href-implies-anchor keeps the trigger a
+        # variant:/size: route through Button::Component -
+        # Button's href-implies-anchor keeps the trigger a
         # REAL <a> wearing button styling, so the reachable-elsewhere
-        # contract holds (the upstream sides demo look, contract intact).
+        # contract holds.
         renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
           @trigger_href = href
           attrs = {
             "id" => trigger_id, "data-slot" => "hover-card-trigger"
           }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
-          # attribute while closed (absence IS the state).
+          # Trigger state: bare data-popup-open while open, NO attribute
+          # while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
           next composed_trigger(attrs, options, &block) if options[:compose]
           if options.key?(:variant) || options.key?(:size)
@@ -100,7 +95,7 @@ module Poetry
               value :avoid_collisions
             end
           end
-          # The Radix trigger handlers, ported: pointerenter/leave pair
+          # The trigger handlers: pointerenter/leave pair
           # timers (touch excluded), focus opens immediately / blur closes,
           # and the touchstart guard (a tap navigates, never focus-opens).
           on :trigger do
@@ -118,17 +113,19 @@ module Poetry
           end
         end
 
+        # Renders the card already open on page load.
         option :open, :boolean, default: false
         # Defer the card body to a lazy turbo-frame. The panel is
         # hidden until hover, so the fetch fires on first open for free;
         # the component block (if any) becomes the frame's placeholder.
         option :defer, :string
-        option :open_delay, :integer, default: 600 # Base UI PreviewCard OPEN_DELAY
+        # Hover-intent delay in ms before the card opens.
+        option :open_delay, :integer, default: 600
         option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
-        # Placement: shadcn Content defaults (bottom / center / 4 / 0).
+        # Placement defaults: bottom / center, 4px side offset.
         popper_placement_options(side: :bottom, side_offset: 4)
-        # The panel's class merge seam (demo parity: content_class: "w-80"
-        # overrides the source w-64).
+        # The panel's class merge seam - e.g. content_class: "w-80" widens
+        # the card.
         option :content_class, :string
 
         part "hover-card", "Root wrapper around the trigger link and the panel"
@@ -151,6 +148,8 @@ module Poetry
              },
              vars: Poetry::Ui::PopperConsumer.content_vars
 
+        # Enforces the required trigger; warns when it has no href.
+        # @api private
         def before_render
           raise ArgumentError, "HoverCard requires with_trigger (the enriched link)" unless trigger?
 
@@ -165,6 +164,8 @@ module Poetry
           )
         end
 
+        # The preview panel's attributes.
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id,
@@ -179,10 +180,9 @@ module Poetry
 
       end
 
-      # The trigger anatomy part. Plain ViewComponent::Base ON PURPOSE:
-      # Poetry::Core::Component descendants register in the component
-      # registry, and the trigger is anatomy, not a component (the
-      # DropdownMenu precedent).
+      # The trigger anatomy part - renders the chosen tag carrying
+      # pre-built wiring. internal_component!: full machinery, no
+      # registry entry (the trigger is anatomy, not a component).
       #
       # @api private
       class Trigger < Poetry::Core::Component

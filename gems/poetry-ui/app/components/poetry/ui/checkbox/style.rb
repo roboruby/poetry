@@ -6,9 +6,9 @@ module Poetry
       # Re-expressed through the cn-* theme layer: the well treatment
       # rides .cn-checkbox in themes/default.css. Poetry mechanisms stay
       # inline: data-unchecked:invisible keeps the indicator in the DOM
-      # CSS-hidden (Radix unmounts via Presence; there is no exit animation
-      # to await), the glyph size matches source (CheckIcon size-3.5,
-      # upstream-inline in TSX), and :input is the sr-only form store.
+      # CSS-hidden (nothing unmounts; there is no exit animation to
+      # await), the glyph keeps its designed size-3.5, and :input is the
+      # sr-only form store.
       class Style < Poetry::Core::Style
         base "cn-checkbox peer relative shrink-0 outline-none after:absolute " \
              "after:-inset-x-3 after:-inset-y-2 " \

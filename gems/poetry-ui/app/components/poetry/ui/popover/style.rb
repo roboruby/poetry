@@ -15,7 +15,7 @@ module Poetry
         element :content, "cn-popover-content z-50 w-72 " \
                           "origin-(--transform-origin) outline-hidden"
 
-        # new-york-v4 additions (plain divs in source; poetry wires their
+        # Ported-source additions (plain divs there; poetry wires their
         # ids to the dialog's aria-labelledby/describedby).
         element :header, "cn-popover-header flex flex-col"
         element :title, "cn-popover-title"

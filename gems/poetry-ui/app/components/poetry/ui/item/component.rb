@@ -2,6 +2,7 @@
 
 module Poetry
   module Ui
+    # The Item family - the generic list row.
     module Item
       # The Item - the generic list row (Empty's sibling): media, a
       # title/description content column, and trailing actions, with
@@ -16,10 +17,14 @@ module Poetry
       #     item.with_description { "Nightly, retained 30 days" }
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the variant axis.
         VARIANTS = %i[default outline muted].freeze
+        # The closed vocabulary for the size (density) axis.
         SIZES = %i[default sm xs].freeze
+        # The closed vocabulary for the media_variant axis.
         MEDIA_VARIANTS = %i[default icon image].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Rows live inside poetry_item_group (role=list) and each row passes role: \"listitem\" - " \
           "a role=list parent with roleless children fails aria-required-children.",
@@ -30,19 +35,28 @@ module Poetry
           "A clickable row is tag: :a with href: - never wrap an Item in a bare <a>."
         ].freeze
 
+        # The leading media cell - a glyph or thumbnail (see media_variant).
         renders_one :media
+        # The title row.
         renders_one :title
+        # The muted description line (clamps to two lines).
         renders_one :description
+        # The trailing actions cell - buttons, a menu, a switch.
         renders_one :actions
+        # Full-width row above the media/content columns.
         renders_one :header
+        # Full-width row below the media/content columns.
         renders_one :footer
 
-        # The variant/size axes are STYLE attributes (the Badge/Button DSL) -
-        # they compose the dictionary's variant classes into the root class.
+        # The row's visual treatment - :outline boxes it, :muted recedes.
         style :variant, default: :default, required: true, variants: VARIANTS
+        # The row's density.
         style :size, default: :default, required: true, variants: SIZES
 
+        # The root element - tag: :a (href via passthrough) makes the
+        # whole row clickable.
         option :tag, :symbol, default: :div
+        # The media treatment - :icon for a glyph, :image for a thumbnail.
         option :media_variant, :symbol, default: :default
 
         validates :media_variant, inclusion: { in: MEDIA_VARIANTS }
@@ -64,14 +78,20 @@ module Poetry
         part "item-actions", "The trailing actions cell"
         part "item-footer", "Full-width row below the media/content columns"
 
+        # Whether the center column renders (title, description, or loose content).
+        # @api private
         def content_column?
           title? || description? || content.present?
         end
 
+        # The media cell's classes for the resolved media_variant.
+        # @api private
         def media_classes
           "#{css(:media)} #{css(:"media_#{media_variant}")}".strip
         end
 
+        # The row root's attributes.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

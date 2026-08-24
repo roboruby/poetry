@@ -3,7 +3,7 @@
 module Poetry
   module Ui
     module InputOtp
-      # The InputOTP preview matrix: the four shadcn examples (demo,
+      # The InputOTP preview matrix: the four ported examples (demo,
       # pattern, controlled, separator) plus fill states, invalid, and
       # disabled. Values are DUMMIES only - never a real code (the value
       # is a live credential in production).

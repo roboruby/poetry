@@ -3,11 +3,7 @@
 module Poetry
   module Ui
     module Select
-      # Re-expressed through the cn-* theme layer. Still popper-only
-      # (the source's popper-conditional classes stay baked in - now inside
-      # the theme rules). Mechanisms inline: popper vars, the viewport's
-      # trigger-size binding (whole part machinery, unnamed), the
-      # indicator-visibility switch, the sr-only form bubble, glyph sizes.
+      # Style dictionary for the Select family.
       class Style < Poetry::Core::Style
         element :trigger, "cn-select-trigger flex w-fit items-center justify-between whitespace-nowrap " \
                           "outline-none disabled:cursor-not-allowed disabled:opacity-50 " \
@@ -22,11 +18,10 @@ module Poetry
 
         # Padding/scroll-margin are theme-owned via cn-select-viewport
         # (sera runs p-1.5). Sizing vars stay structural.
-        # min-h, NOT upstream's h: Radix neutralizes its own h binding with
-        # injected flex styles poetry doesn't carry - a hard h collapses the
-        # whole popup to trigger height (62px for a five-item list) the
-        # moment the var is fed (the part-var wiring made it live; goldens
-        # never see open popups, so only a human caught it).
+        # min-h on purpose, never a hard h: a hard h collapses the whole
+        # popup to trigger height (62px for a five-item list) the moment
+        # the trigger-height var is fed (goldens never see open popups, so
+        # only a human catches it).
         element :viewport, "cn-select-viewport min-h-[var(--radix-select-trigger-height)] w-full " \
                            "min-w-[var(--radix-select-trigger-width)]"
 
@@ -41,15 +36,13 @@ module Poetry
 
         element :scroll_button, ""
 
-        # Source-exact wrapper span (named select-item-indicator in
-        # new-york-v4) - the RIGHT-2 gutter, the mirror image of
-        # dropdown-menu's left gutter.
+        # The indicator wrapper span - the RIGHT-2 gutter, the mirror image
+        # of dropdown-menu's left gutter.
         element :item_indicator, "cn-select-item-indicator absolute flex items-center justify-center"
 
-        # POETRY ADDITION: the source renders the check only while selected
-        # (Radix ItemIndicator unmounts); poetry keeps it in the DOM and the
-        # parent item's bare data-selected drives visibility (unselected =
-        # attribute ABSENCE - no data-unselected exists), so the controller's
+        # The check stays in the DOM always; the parent item's bare
+        # data-selected drives visibility (unselected = attribute ABSENCE -
+        # no data-unselected exists), so the controller's
         # aria-selected/data-selected twin-flip is the whole toggle.
         element :item_indicator_state, "[:not([data-selected])>&]:hidden"
 

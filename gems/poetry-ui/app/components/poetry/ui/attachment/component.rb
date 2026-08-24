@@ -2,13 +2,16 @@
 
 module Poetry
   module Ui
+    # File/image upload chips.
     module Attachment
-      # File/image chip for the AI-chat set. poetry ships the ATTRIBUTE
-      # CONTRACT: the server renders data-upload-state
-      # (idle|uploading|processing|error|done) and flips it by re-render /
-      # Turbo Stream replace - upload orchestration is explicitly the
-      # host's. In-flight and error states carry an sr-only role=status
-      # announcement (i18n'd); the visual lifecycle is pure CSS.
+      # A file or image chip showing an upload's name, metadata, and
+      # lifecycle state. The server owns the state: render state:
+      # (idle/uploading/processing/error/done) and update it by
+      # re-rendering or a Turbo Stream replace - the component ships no
+      # upload JavaScript of its own.
+      #
+      # In-flight and error states carry a translated screen-reader
+      # status announcement; the visual lifecycle is pure CSS.
       #
       # @example A finished upload
       #   render Poetry::Ui::Attachment::Component.new do |attachment|
@@ -16,12 +19,18 @@ module Poetry
       #     attachment.with_description { "1.2 MB" }
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the state axis (the server-owned upload lifecycle).
         STATES = %i[idle uploading processing error done].freeze
+        # The closed vocabulary for the size axis.
         SIZES = %i[default sm xs].freeze
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[horizontal vertical].freeze
+        # The closed vocabulary for the with_media variant.
         MEDIA_VARIANTS = %i[icon image].freeze
+        # States that render the screen-reader status announcement.
         ANNOUNCED_STATES = %i[uploading processing error].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "State is server-owned: render data-upload-state and flip it by Turbo Stream replace - " \
           "never toggle it in JS.",
@@ -33,6 +42,7 @@ module Poetry
           "error state needs a with_description explaining the failure - the tint alone is not the message."
         ].freeze
 
+        # Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.
         renders_one :media, lambda { |variant: :icon, &block|
           raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
 
@@ -41,8 +51,11 @@ module Poetry
                                                          "cn-attachment-media-variant-image"
                                                        end)), &block)
         }
+        # The file name line. User content - never mark it html_safe.
         renders_one :title
+        # Muted metadata under the title (size, type); in the error state, the failure explanation.
         renders_one :description
+        # Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires label:.
         renders_many :actions, lambda { |label:, **options, &block|
           # Caller data: augments the slot marker instead of replacing it
           # at the kwargs splat.
@@ -51,6 +64,8 @@ module Poetry
                                 size: options.delete(:size) || :"icon-xs",
                                 label: label, data: data, **options, &block)
         }
+        # Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:)
+        # layered under the actions. Don't also wrap the chip in a link.
         renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
           attrs = Poetry::Core::HTML::Attributes.merged(
             { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
@@ -60,9 +75,12 @@ module Poetry
           content_tag(tag, attrs, &block)
         }
 
+        # The chip density axis.
         style :size, default: :default, required: true, variants: SIZES
+        # Row (:horizontal) or stacked thumbnail-card (:vertical) layout.
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
 
+        # The upload lifecycle state; flip it by re-render or Turbo Stream replace, never in JS.
         option :state, :symbol, default: :done
 
         validates :state, inclusion: { in: STATES }
@@ -92,10 +110,13 @@ module Poetry
         part "attachment-status", "sr-only role=status announcement for the in-flight and " \
                                   "error states (uploading/processing/error)"
 
+        # Whether the current state renders the screen-reader status announcement.
+        # @api private
         def announced?
           ANNOUNCED_STATES.include?(state)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

@@ -2,19 +2,24 @@
 
 module Poetry
   module Ui
+    # Action buttons and button-styled links.
     module Button
-      # The reference contract every other component follows. What it
-      # establishes suite-wide: data-slot = role / data-component +
-      # data-variant + data-size self-identification; semantic-role tokens
-      # only; the 3px no-offset focus ring; `tag: :a` polymorphic root;
-      # icon-only REQUIRES label: (ArgumentError); loading = aria-busy +
-      # sr-only text + a static spinner, fully working with zero JS.
+      # A button. Variants carry semantic intent (one default-variant
+      # action per view); size covers text and icon-only forms. Renders a
+      # real <a> when href: is given, and a no-JS loading state
+      # (aria-busy + spinner) via loading:.
+      #
+      # Icon-only sizes require label: - an icon button without an
+      # accessible name raises.
       #
       # @example
       #   render Poetry::Ui::Button::Component.new(variant: :default) { "Save" }
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the variant axis.
         VARIANTS = %i[default destructive outline secondary ghost link].freeze
+        # The closed vocabulary for the size axis; icon* are the square icon-only forms.
         SIZES = %i[default xs sm lg icon icon-xs icon-sm icon-lg].freeze
+        # The closed vocabulary for the native type: attribute.
         TYPES = %i[button submit reset].freeze
 
         # The contract's agent-rules section (projected into the registry,
@@ -31,28 +36,34 @@ module Poetry
           "Pick the variant by intent; one primary (default) action per view."
         ].freeze
 
-        # An empty button ships nothing a user can see - the browser pass
-        # showed label:-only usage silently rendering blank squares (label:
-        # is the accessible name, not visible text).
-        # The before_render disjunction, stated statically: poetry check
-        # flags a call satisfying no alternative without rendering (the
-        # toast crash class).
+        # At least one of these must be present or nothing visible renders;
+        # static checks read this without rendering.
         REQUIRES_ANY = [
           { hint: "nothing visible renders without one - label: is only the accessible name",
             content: true, slots: %w[leading trailing], options: %w[loading] }
         ].freeze
 
+        # Optional leading visual, rendered inside the icon span.
         renders_one :leading
+        # Optional trailing visual, rendered inside the icon span.
         renders_one :trailing
 
+        # The visual intent axis; :destructive marks irreversible actions.
         style :variant, default: :default, required: true, variants: VARIANTS
+        # The size axis; the icon* sizes are square icon-only forms (label: required).
         style :size, default: :default, required: true, variants: SIZES
 
+        # The native button type; ignored when the button renders as an anchor.
         option :type, :symbol, default: :button
+        # Renders the same styling on an <a> when :a - navigation wearing button clothes.
         option :tag, :symbol, default: :button
+        # Disables the control (native disabled; aria-disabled on the anchor form).
         option :disabled, :boolean, default: false
+        # The no-JS loading state: aria-busy, a spinner, and the control disabled.
         option :loading, :boolean, default: false
+        # The accessible name for icon-only usage - not visible text.
         option :label, :string
+        # The link target; implies the anchor form.
         option :href, :string
 
         validates :type, inclusion: { in: TYPES }
@@ -72,6 +83,8 @@ module Poetry
                       "flex row directly)"
         part "spinner", "The loading indicator, swapped in for the leading icon while loading:"
 
+        # Raises when an icon-only size lacks label:.
+        # @api private
         def initialize(...)
           super
           return unless icon_only? && label.blank?
@@ -81,6 +94,8 @@ module Poetry
           raise ArgumentError, "icon-only Button requires label: (the accessible name)"
         end
 
+        # Enforces that something visible renders.
+        # @api private
         def before_render
           return if content? || leading? || trailing? || loading
 
@@ -89,21 +104,25 @@ module Poetry
                 "an icon slot (with_leading/with_trailing), or loading: - label: is only the accessible name"
         end
 
+        # Whether size: is one of the square icon-only forms.
+        # @api private
         def icon_only?
           size.to_s.start_with?("icon")
         end
 
-        # href: implies the anchor (the Badge/menu-item convention): an
-        # href on a native <button> would be silently DROPPED - the docs
-        # landing page shipped exactly that dead button before this line.
+        # href: implies the anchor: an href on a native <button> would be
+        # silently dropped, leaving a dead control.
+        # @api private
         def link_tag?
           tag == :a || href.present?
         end
 
+        # @api private
         def root_tag
           link_tag? ? :a : :button
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(base_attributes.merge(tag_attributes))
         end

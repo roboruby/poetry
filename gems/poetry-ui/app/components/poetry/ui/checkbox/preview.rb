@@ -19,7 +19,7 @@ module Poetry
 
         # Server/programmatic only - the select-all parent over a partial
         # selection. Announces as "mixed"; the first toggle resolves to
-        # checked (Radix-exact).
+        # checked (source-exact).
         def indeterminate
           render_component(name: "select_all", checked: :indeterminate, label: "Select all rows")
         end

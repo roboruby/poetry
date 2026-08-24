@@ -15,13 +15,25 @@ module Poetry
       # (single) or the chips inline input (multiple) carries aria-controls
       # naming the listbox; the content wrapper is its ancestor -
       # id-anchored selectors keep Capybara's waiting semantics.
+      #
+      # @example Filtering, then committing
+      #   combo = poetry_combobox("#assignee")
+      #   combo.filter("Ada").select_option("Ada Lovelace")
+      #   assert_equal "ada", combo.value
       class Combobox < Tester
+        # Whether the popup is currently open.
+        #
+        # @return [Boolean]
         def open?(wait: 0)
           session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
         rescue Capybara::ElementNotFound
           false
         end
 
+        # Opens the popup (no-op when already open). via: :keyboard focuses
+        # the trigger and presses ArrowDown; :mouse presses it.
+        #
+        # @return [Combobox] self
         def open(via: :mouse)
           return self if open?
 
@@ -37,6 +49,9 @@ module Poetry
           self
         end
 
+        # Escape-closes the open popup and waits for the closed state.
+        #
+        # @return [Combobox] self
         def close
           keys(:escape) if open?
           session.assert_selector("##{content_id}[data-closed]", visible: :all)
@@ -46,6 +61,8 @@ module Poetry
         # Type into the filter input (opens first when closed). Single mode
         # keeps the input inside the (portaled) popup; multiple keeps it
         # inline in the chips field at home.
+        #
+        # @return [Combobox] self
         def filter(query)
           open
           filter_input.set(query)
@@ -54,6 +71,8 @@ module Poetry
 
         # Commit by exact visible text; single-select waits for the close,
         # multiple leaves the popover up (assert on values/chips instead).
+        #
+        # @return [Combobox] self
         def select_option(text, via: :mouse)
           self.open(via: via)
 
@@ -68,16 +87,23 @@ module Poetry
         end
 
         # Single: the committed value. Multiple: the committed value list.
+        #
+        # @return [String, Array<String>]
         def value
           native = hidden_part("combobox-native")
           native.multiple? ? native.value : native.value.to_s
         end
 
+        # The visible chip texts (multiple mode).
+        #
+        # @return [Array<String>]
         def chips
           parts("combobox-chip").map(&:text)
         end
 
         # Remove a chip by its accessible text (multiple mode).
+        #
+        # @return [Combobox] self
         def remove_chip(text)
           press(root.find("[data-slot='combobox-chip']", text: text).find("button"))
           self

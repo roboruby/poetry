@@ -2,13 +2,13 @@
 
 module Poetry
   module Ui
+    # Dialog family: the modal overlay on the native <dialog> element.
     module Dialog
-      # The Dialog - the depth-moat overlay, built ON the platform:
-      # a native <dialog> + showModal() owns focus trapping, Esc, top-layer
-      # stacking, and focus return; the poetry--core--dialog controller adds
-      # the data-open/data-closed pair, backdrop dismissal, and the scroll
-      # lock. The title is
-      # REQUIRED (the accessible name - aria-labelledby is always wired).
+      # A modal dialog built ON the platform: a native <dialog> +
+      # showModal() owns focus trapping, Esc, top-layer stacking, and
+      # focus return; poetry adds the data-open/data-closed pair,
+      # backdrop dismissal, and the scroll lock. The title is REQUIRED
+      # (the accessible name - aria-labelledby is always wired).
       #
       # @example A confirmation dialog
       #   render Poetry::Ui::Dialog::Component.new do |dialog|
@@ -20,6 +20,7 @@ module Poetry
         include Poetry::Ui::ComposableTrigger
         include Poetry::Ui::FamilyIdentity
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
           "Open dialogs with with_trigger(...) - never a hand-wired button.",
@@ -29,9 +30,8 @@ module Poetry
           "Destructive confirmations pair a destructive Button in the footer - never auto-submit."
         ].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # The required slots, stated statically so static checks can flag
+        # a missing title without rendering.
         REQUIRED_SLOTS = { title: "the accessible name" }.freeze
 
         # The forwarding-lambda fact: with_trigger renders a Button -
@@ -48,8 +48,11 @@ module Poetry
             Button::Component.new(**options, &block)
           end
         }
+        # The heading - the dialog's accessible name; required.
         renders_one :title
+        # Muted copy under the title, wired to aria-describedby.
         renders_one :description
+        # The action row at the bottom of the panel.
         renders_one :footer
 
         # Sheet and Drawer subclass this and REDECLARE both elements with
@@ -80,15 +83,15 @@ module Poetry
           end
         end
 
+        # Backdrop clicks close the dialog; false keeps confirmations
+        # from being dismissed accidentally (Esc still closes).
         option :dismissible, :boolean, default: true
 
-        # Source parity: showCloseButton - false drops the corner X (the
-        # forced-choice recipe: footer actions and Esc remain). Sheet
-        # inherits this.
+        # Renders the corner X; false forces a deliberate footer choice
+        # (footer actions and Esc remain). Sheet inherits this.
         option :show_close_button, :boolean, default: true
-        # Merged onto the <dialog> panel (upstream's DialogContent/
-        # SheetContent className seam - e.g. max-h-[50vh] caps a
-        # top/bottom sheet).
+        # Extra classes merged onto the <dialog> panel (e.g.
+        # "max-h-[50vh]" caps a top/bottom sheet).
         option :content_class, :string
 
         part "dialog", "Root wrapper around the trigger and the <dialog> element"
@@ -103,18 +106,26 @@ module Poetry
         part "dialog-description", "Muted copy under the title, wired to aria-describedby"
         part "dialog-footer", "Action row at the bottom of the panel"
 
+        # Enforces the required title.
+        # @api private
         def before_render
           raise ArgumentError, "#{family_name} requires with_title (the accessible name)" unless title?
         end
 
+        # The title's id - the aria-labelledby target.
+        # @api private
         def title_id
           "#{instance_id}-title"
         end
 
+        # The description's id - the aria-describedby target.
+        # @api private
         def description_id
           "#{instance_id}-description"
         end
 
+        # Attributes for the <dialog> panel.
+        # @api private
         def dialog_attributes
           attrs = {
             "class" => css(:content, class: panel_classes),
@@ -130,6 +141,7 @@ module Poetry
         # Validated action descriptor for the template's close button -
         # resolves against the class's OWN declarations (Sheet/Drawer get
         # their controller without overriding).
+        # @api private
         def close_action
           stimulus_action(:close)
         end
@@ -143,6 +155,7 @@ module Poetry
         # Drawer drew its themed border + w-full across the docs mounts).
         # Only the tailwind resolution is stripped: in :bem mode the root
         # block--modifier tokens ARE the host's styling contract.
+        # @api private
         def html_attributes
           return super unless Poetry::Core::Config.current.css_mode == :tailwind
 

@@ -5,10 +5,12 @@ module Poetry
     # Serves llms.txt / llms-full.txt generated live from the component
     # registry - the docs an LLM retrieves can never drift from the code.
     class LlmsController < ActionController::Base
+      # GET /poetry/llms.txt - the catalog index.
       def index
         render plain: llms_text.index
       end
 
+      # GET /poetry/llms-full.txt - the full per-component reference.
       def full
         render plain: llms_text.full
       end

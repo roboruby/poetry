@@ -2,23 +2,21 @@
 
 module Poetry
   module Ui
+    # Multiline free-text inputs.
     module Textarea
-      # Input's multiline sibling: the
-      # native <textarea> on poetry's semantic tokens, template-less,
-      # ZERO JS - auto-grow is the field-sizing-content CSS property
-      # (unsupported browsers keep min-h-16/rows: + the native resize
-      # handle: a feature, not a bug). The value renders as element
-      # CONTENT (textarea semantics), so the escape surface is the
-      # </textarea> breakout - ERB/content_tag escaping covers it and a
-      # render test pins it permanently. All the a11y work happens at the
-      # Field layer (label pairing, describedby, aria-invalid,
-      # aria-required-not-native) - this component just refuses to bypass
-      # it.
+      # A multiline free-text input: the native <textarea> with the
+      # library's styling and zero JS. It auto-grows with its content via
+      # CSS (the field-sizing-content property); browsers without support
+      # keep the rows:/minimum-height sizing plus the native resize
+      # handle. Label pairing, description wiring, and error state flow
+      # in from the Field/FormBuilder layer - use Input for single-line
+      # text.
       #
       # @example A free-text field
       #   render Poetry::Ui::Textarea::Component.new(name: "bio", rows: 4,
       #                                              placeholder: "Tell us about yourself")
       class Component < Poetry::Core::Component
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Wire through Field/FormBuilder (control_attributes) - never hand-write the aria plumbing.",
           "Placeholder is NOT a label - pair with Label/Field always.",
@@ -27,27 +25,32 @@ module Poetry
           "Do not set native required - required flows as aria-required via Field."
         ].freeze
 
+        # The submitted field name.
         option :name, :string
+        # The initial text, rendered as the element's content.
         option :value, :string
+        # Hint text shown while empty - never a substitute for a label.
         option :placeholder, :string
-        # Initial visual rows; with field-sizing-content it acts as the
-        # minimum height alongside min-h-16 (and the unsupported-browser
-        # fallback size).
+        # The initial visual rows - the minimum height under CSS
+        # auto-grow, and the fixed size in browsers without it.
         option :rows, :integer
+        # Disables the control and forwards to the native element.
         option :disabled, :boolean, default: false
-        # aria-invalid -> the destructive ring; set by Field/FormBuilder
-        # from model errors.
+        # Marks the field errored (aria-invalid + the destructive ring);
+        # set by Field/FormBuilder from model errors.
         option :invalid, :boolean, default: false
 
         part "textarea", "The <textarea> element itself - value renders as content; " \
                          "auto-grow is the field-sizing-content CSS property, zero JS"
 
+        # @api private
         def call
           # value as CONTENT (escaped by content_tag - the </textarea>
           # injection surface).
           content_tag(:textarea, value, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           attrs = { "data-slot" => "textarea" }.merge(component_data_attributes)
           attrs["name"] = name if name.present?

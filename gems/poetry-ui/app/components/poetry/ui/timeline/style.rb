@@ -6,11 +6,11 @@ module Poetry
       # Utility-only (the Separator/Spinner rule): no upstream cn hook
       # exists for a Timeline, so the surface is structural utilities on
       # semantic tokens - data-slot selectors are the restyle seam. Both
-      # orientations live in ONE dictionary via the named-group pattern
-      # (ReUI's Timeline idiom): the root carries group/timeline +
-      # data-orientation, each item group/timeline-item + data-completed,
-      # and every element restyles itself off those two markers - so one
-      # attribute flip re-lays the whole sequence.
+      # orientations live in ONE dictionary via the named-group pattern:
+      # the root carries group/timeline + data-orientation, each item
+      # group/timeline-item + data-completed, and every element restyles
+      # itself off those two markers - so one attribute flip re-lays the
+      # whole sequence.
       class Style < Poetry::Core::Style
         base "group/timeline flex"
 

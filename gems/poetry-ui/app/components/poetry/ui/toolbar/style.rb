@@ -3,10 +3,10 @@
 module Poetry
   module Ui
     module Toolbar
-      # Utility-only (the Separator/Spinner rule): shadcn ships no toolbar,
-      # so there is no upstream look to be faithful to - the strip is a
-      # structural gap row; data-slot=toolbar is the restyle seam for any
-      # theme that wants chrome (border, background) on it.
+      # Utility-only (the Separator/Spinner rule): there is no upstream
+      # look to be faithful to - the strip is a structural gap row;
+      # data-slot=toolbar is the restyle seam for any theme that wants
+      # chrome (border, background) on it.
       class Style < Poetry::Core::Style
         base "flex w-fit items-center gap-1"
 

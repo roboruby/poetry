@@ -2,9 +2,10 @@
 
 module Poetry
   module Ui
+    # Segmented groups of adjacent controls.
     module ButtonGroup
-      # The ButtonGroup - visually joins adjacent controls (buttons, inputs,
-      # select triggers) into one segmented unit: outer corners stay rounded,
+      # Visually joins adjacent controls (buttons, inputs, select
+      # triggers) into one segmented unit: outer corners stay rounded,
       # inner corners and doubled borders collapse. Compose the members in
       # the content block; poetry_button_group_text and
       # poetry_button_group_separator are the non-button parts.
@@ -19,8 +20,10 @@ module Poetry
       class Component < Poetry::Core::Component
         requires_content "its member controls"
 
+        # The closed vocabulary for the orientation axis.
         ORIENTATIONS = %i[horizontal vertical].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Members go in the content block - the group's selectors join ANY data-slot children " \
           "(buttons, inputs, select triggers); never hand-round the inner corners.",
@@ -28,6 +31,7 @@ module Poetry
           "A visual divider between members is poetry_button_group_separator, not a styled border."
         ].freeze
 
+        # The join axis - a horizontal row or a vertical stack.
         style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
 
         part "button-group", "The role=group root - its selectors join ANY data-slot children into " \
@@ -38,14 +42,18 @@ module Poetry
         part "button-group-text", "A non-button member (the poetry_button_group_text helper's div) - " \
                                   "a text affix joined like a button"
 
+        # Enforces the member-controls content block.
+        # @api private
         def before_render
           ensure_content!
         end
 
+        # @api private
         def call
           content_tag(:div, content, **root_attributes.to_attributes)
         end
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             {

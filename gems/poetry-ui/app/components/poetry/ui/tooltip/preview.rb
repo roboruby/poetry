@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Tooltip
-      # The Tooltip preview matrix: the shadcn tooltip-demo composition,
+      # The Tooltip preview matrix: the ported tooltip-demo composition,
       # the provider warm row (one scope, three controls), the label:
-      # announcement override, a placement sample, the Radix opt-back
+      # announcement override, a placement sample, the provider-style opt-back
       # delay, and the server-pinned open state.
       class Preview < Poetry::Core::Preview::Base
         # The tooltip-demo port: outline Button trigger, plain text hint.
@@ -41,7 +41,7 @@ module Poetry
           end
         end
 
-        # Placement sample (Radix Tooltip defaults side: :top - the trio's
+        # Placement sample (the ported source defaults side: :top - the trio's
         # odd one out; the arrow follows the resolved side).
         def side_bottom
           render_component(side: :bottom, align: :start) do |tooltip|
@@ -50,7 +50,7 @@ module Poetry
           end
         end
 
-        # The Radix opt-back for hint-dense screens: shadcn's provider
+        # the provider-style opt-back for hint-dense screens: the source's provider
         # default is 0ms; 700ms is the recommended delay when a page is
         # dense with tooltips.
         def delayed

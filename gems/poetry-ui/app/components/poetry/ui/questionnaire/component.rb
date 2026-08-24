@@ -2,20 +2,19 @@
 
 module Poetry
   module Ui
+    # A one-question-at-a-time survey form.
     module Questionnaire
-      # The Questionnaire - shadcn's one-question-at-a-time survey
-      # composite (their @shadcn/react primitive), ported form-native: the
+      # A one-question-at-a-time survey. Reach for it when a flow asks
+      # several questions in sequence and should submit as one form. The
       # root IS a real form (form_with), items are fieldsets with legend
-      # titles, choices are native radio/checkbox inputs, and the free
-      # text answer is a real input - the whole thing serializes as
-      # ordinary Rails params with zero JS. The server renders the
-      # complete initial state (active item, statuses, shortcut labels,
-      # button visibility); the poetry--core--questionnaire controller
-      # owns the runtime transitions.
+      # titles, choices are native radio/checkbox inputs, and the free-text
+      # answer is a real input - the whole thing serializes as ordinary
+      # Rails params with zero JS. The server renders the complete initial
+      # state (active item, statuses, shortcut labels, button visibility);
+      # the controller owns the runtime transitions.
       #
-      # Rails divergence, on purpose: multiple-selection items name their
-      # checkboxes "<name>[]" so params arrive as arrays - upstream's
-      # FormData reads repeated bare names.
+      # Multiple-selection items name their checkboxes "<name>[]" so
+      # params arrive as arrays.
       #
       # @example
       #   render Poetry::Ui::Questionnaire::Component.new(url: "/surveys") do |survey|
@@ -25,12 +24,15 @@ module Poetry
       #     end
       #   end
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the shortcuts axis.
         SHORTCUT_MODES = %i[letters numbers].freeze
+        # The key labels each shortcut mode assigns, in document order.
         SHORTCUT_KEYS = {
           letters: ("A".."Z").to_a,
           numbers: ("1".."9").to_a
         }.freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "The root is a REAL form (url:/method:) - answers submit as ordinary params; " \
           "validate server-side and re-render invalid items with error:.",
@@ -50,16 +52,20 @@ module Poetry
         # with_progress (bare) renders the auto "Question X of Y" text;
         # with_progress { custom } replaces it (marked data-custom so the
         # controller leaves it alone). class: merges onto the progress
-        # element (upstream's className seam - e.g. w-full for a
-        # full-width segment bar over the base w-fit).
+        # element (e.g. w-full for a full-width segment bar over the base
+        # w-fit).
         renders_one :progress
         alias __vc_with_progress with_progress
 
+        # Opts the progress readout in. Bare, it renders the live
+        # "Question X of Y" text; a block replaces the text; class: merges
+        # onto the progress element.
         def with_progress(**options, &)
           @progress_class = options[:class]
           __vc_with_progress(&)
         end
 
+        # @api private
         attr_reader :progress_class
 
         use_stimulus do
@@ -100,19 +106,25 @@ module Poetry
           end
         end
 
+        # The form's submit URL - answers post here as ordinary params.
         option :url, :string, required: true
-        # Named http_method (not method:) - an option named `method` would
-        # shadow Object#method.
+        # The form's HTTP verb. Named http_method (not method:) - an option
+        # named `method` would shadow Object#method.
         option :http_method, :symbol, default: :post
+        # The root form's DOM id; item element ids derive from it.
         option :id, :string
         # nil (off), :letters (A, B, C...) or :numbers (1-9): server-
         # rendered key labels + one-keystroke answering.
         option :shortcuts, :symbol
         # The initially active item by name; default is the first item.
         option :default_item, :string
+        # The back-navigation button's text.
         option :previous_label, :string, default: "Previous"
+        # The skip button's text (shown only while the active item is optional).
         option :skip_label, :string, default: "Skip"
+        # The forward-navigation button's text.
         option :next_label, :string, default: "Next"
+        # The final submit button's text (replaces Next on the last item).
         option :submit_label, :string, default: "Submit"
 
         validates :shortcuts, inclusion: { in: SHORTCUT_MODES }, allow_nil: true
@@ -183,6 +195,7 @@ module Poetry
                                       "belong to Button's anatomy, not this contract; each " \
                                       "carries data-visible/data-hidden + hidden/inert)"
 
+        # @api private
         def before_render
           # Evaluate the composition block first - with_item is hand-rolled
           # (not a VC slot), so nothing else forces the block this early.
@@ -190,6 +203,9 @@ module Poetry
           raise ArgumentError, "Questionnaire needs at least one with_item" if item_models.empty?
         end
 
+        # Adds one question. name: is the param key, title: the visible
+        # heading; the yielded builder takes answers (with_choice) and an
+        # optional free-text field (with_input).
         # Hand-rolled (not a VC slot): the yielded builder is a plain
         # object, and ViewComponent lambda slots only forward to component
         # returns - a builder return wraps as nil.
@@ -200,8 +216,10 @@ module Poetry
           item
         end
 
+        # @api private
         def item_models = (@item_models ||= [])
 
+        # @api private
         def questionnaire_id
           @questionnaire_id ||= if (token = dom_id_token(id))
                                   "questionnaire-#{token}"
@@ -210,40 +228,52 @@ module Poetry
                                 end
         end
 
+        # @api private
         def enabled_items = item_models.reject(&:disabled)
 
+        # @api private
         def active_item
           @active_item ||= enabled_items.find { |item| item.name == default_item } ||
                            enabled_items.first
         end
 
+        # @api private
         def active_index = enabled_items.index(active_item) || 0
 
+        # @api private
         def first? = active_index.zero?
+        # @api private
         def last? = active_index >= enabled_items.size - 1
 
+        # @api private
         def progress_label
           "Question #{active_index + 1} of #{enabled_items.size}"
         end
 
+        # @api private
         def shortcuts_string = shortcuts.to_s
 
-        # Server-side shortcut assignment (the SSR-faithful half): keys in
-        # document order per item; the controller only handles keystrokes.
+        # Server-side shortcut assignment: keys in document order per item;
+        # the controller only handles keystrokes.
+        # @api private
         def shortcut_for(_item, index)
           return nil unless shortcuts
 
           SHORTCUT_KEYS.fetch(shortcuts)[index]
         end
 
+        # @api private
         def item_dom_id(item, suffix)
           "#{questionnaire_id}-#{item.name.to_s.parameterize}-#{suffix}"
         end
 
+        # @api private
         def field_name(item) = item.multiple ? "#{item.name}[]" : item.name.to_s
 
+        # @api private
         def input_type(item) = item.multiple ? "checkbox" : "radio"
 
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "questionnaire", "id" => questionnaire_id }
@@ -252,6 +282,7 @@ module Poetry
           )
         end
 
+        # @api private
         def item_attributes(item)
           active = item == active_item
           attrs = {
@@ -270,6 +301,7 @@ module Poetry
 
         # Symbol-keyed Button kwargs for one nav action: part classes,
         # slot, wiring, and the server-rendered visibility stamp.
+        # @api private
         def nav_button_options(kind, hidden:)
           stimulus_element = { next: :next_button, submit: :submit_button }.fetch(kind, kind)
           attrs = { class: css(kind), "data-slot": "questionnaire-#{kind}" }
@@ -283,6 +315,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def choice_attributes(item, choice, index)
           attrs = {
             "class" => css(:choice), "data-slot" => "questionnaire-choice",
@@ -296,7 +329,11 @@ module Poetry
           attrs
         end
 
+        # One answer row's data, built via Item#with_choice.
+        # @api private
         Choice = Struct.new(:value, :label, :description, :checked, :disabled, keyword_init: true)
+        # The free-text answer's data, built via Item#with_input.
+        # @api private
         TextInput = Struct.new(:label, :placeholder, :value, keyword_init: true)
 
         # One question: title/description as args, choices and the
@@ -305,6 +342,7 @@ module Poetry
           attr_reader :name, :title, :description, :required, :multiple, :disabled,
                       :error, :choices, :input, :class_name
 
+          # @api private
           def initialize(name:, title:, **options)
             @name = name
             @title = title
@@ -318,17 +356,28 @@ module Poetry
             @input = nil
           end
 
+          # Adds one answer to the question.
+          # @param value [String] the submitted param value
+          # @param label [String] the visible answer text
+          # @param description [String, nil] muted copy under the answer text
+          # @param checked [Boolean] pre-selects the answer
+          # @param disabled [Boolean] renders the answer unpickable
           def with_choice(value:, label:, description: nil, checked: false, disabled: false)
             @choices << Choice.new(value: value, label: label, description: description,
                                    checked: checked, disabled: disabled)
             self
           end
 
+          # Adds the optional free-text answer field, named after the item.
+          # @param label [String] the field's accessible label
+          # @param placeholder [String, nil] hint text while empty
+          # @param value [String, nil] the pre-filled answer
           def with_input(label:, placeholder: nil, value: nil)
             @input = TextInput.new(label: label, placeholder: placeholder, value: value)
             self
           end
 
+          # @api private
           def default_error
             if required
               "Choose an answer to continue."
@@ -337,12 +386,15 @@ module Poetry
             end
           end
 
+          # @api private
           def error_message = error || default_error
 
+          # @api private
           def answered?
             choices.any?(&:checked) || input&.value.to_s.strip != ""
           end
 
+          # @api private
           def status = answered? ? "answered" : "unanswered"
         end
       end

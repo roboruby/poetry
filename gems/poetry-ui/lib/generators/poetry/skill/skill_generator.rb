@@ -17,11 +17,16 @@ module Poetry
   #
   # poetry:install runs the same step; this standalone exists as the
   # refresh path (and for hosts that installed before the skills shipped).
+  #
+  # @example
+  #   bin/rails g poetry:skill
   class SkillGenerator < Rails::Generators::Base
     include Generators::SkillsSection
 
     desc "Install the poetry Claude Code skills (usage + design + authoring) into .claude/skills/"
 
+    # Step: applies the three skill directories.
+    # @api private
     def install_skills
       apply_poetry_skills
     end

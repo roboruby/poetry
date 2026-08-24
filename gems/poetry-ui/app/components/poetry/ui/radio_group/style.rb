@@ -3,14 +3,13 @@
 module Poetry
   module Ui
     module RadioGroup
-      # Re-expressed through the cn-* theme layer: the well + dot
-      # treatments ride the themes. The indicator is a theme-SIZED box
-      # (upstream's 2026-07 refactor) so the absolutely-centered dot
-      # anchors against a real rect regardless of the item's display -
-      # an unsized anchor span centers only by flow accident (7px off
-      # under nova's flex item). :input stays the hidden native form
-      # bridge and :row the demo pairing row - both structural, no cn
-      # names.
+      # Style dictionary for the RadioGroup family: the well + dot
+      # treatments ride the themes. The indicator is a theme-SIZED box so
+      # the absolutely-centered dot anchors against a real rect regardless
+      # of the item's display - an unsized anchor span centers only by
+      # flow accident (7px off under nova's flex item). :input stays the
+      # hidden native form bridge and :row the label pairing row - both
+      # structural, no cn names.
       class Style < Poetry::Core::Style
         base "cn-radio-group"
 

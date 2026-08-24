@@ -2,17 +2,16 @@
 
 module Poetry
   module Ui
+    # A modal panel that slides in from a screen edge.
     module Sheet
-      # The Sheet - the shipped Dialog re-skinned to slide in from a screen
-      # edge, exactly the move shadcn makes one layer up (its sheet.tsx is
-      # Radix Dialog re-exported). Everything hard is INHERITED: the native
-      # <dialog> + showModal() platform trap (focus trap, Esc, top layer,
-      # focus return), the poetry--core--dialog controller (the data-open/
-      # data-closed pair,
-      # coordinate-discriminated backdrop dismissal, scroll lock,
-      # dismissible:, show_close_button:), and the required title. The
-      # deltas: the side style (edge-anchored margins replace the parent's
-      # m-auto centering) and the source's slide-in animation.
+      # A modal panel that slides in from a screen edge - navigation on
+      # the left, detail/edit panels on the right, pickers on the bottom.
+      # A re-skinned Dialog, so everything hard is INHERITED: the native
+      # <dialog> + showModal() platform behavior (focus trap, Esc, top
+      # layer, focus return), the data-open/data-closed pair, backdrop
+      # dismissal, scroll lock, dismissible:, show_close_button:, and the
+      # required title. The deltas: the side style (edge-anchored margins
+      # replace the parent's centering) and the slide-in animation.
       #
       # @example
       #   render Poetry::Ui::Sheet::Component.new(side: :right) do |sheet|
@@ -21,8 +20,10 @@ module Poetry
       #     "Sheet body"
       #   end
       class Component < Dialog::Component
+        # The closed vocabulary for the side style axis.
         SIDES = %i[top right bottom left].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Open sheets with with_trigger(...) - never a hand-wired button.",
           "with_title is REQUIRED (the accessible name) - the inherited Dialog rule.",
@@ -31,9 +32,9 @@ module Poetry
           "Do not rebuild a centered Dialog with a Sheet; use Dialog."
         ].freeze
 
-        # The Sheet gets its OWN controller - the dialog machinery + the
-        # presence-hold close its dictionary was waiting on (the Drawer
-        # subclass pattern, minus the swipe).
+        # The Sheet gets its OWN controller - the dialog machinery plus
+        # the presence-hold close (the closed slide-out finishes before
+        # the panel hides).
         # Redeclaring both elements REPLACES Dialog's :dialog controller
         # wholesale (replace-on-redeclare); the inherited trigger lambda and
         # close_action late-bind here through stimulus_action.
@@ -59,7 +60,7 @@ module Poetry
           end
         end
 
-        # THE Sheet delta - a physical direction (source parity: right
+        # The edge the sheet slides in from - a physical direction (right
         # stays right in RTL).
         style :side, default: :right, required: true, variants: SIDES
 

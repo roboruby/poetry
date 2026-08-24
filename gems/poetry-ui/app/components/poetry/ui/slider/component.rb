@@ -2,17 +2,16 @@
 
 module Poetry
   module Ui
+    # A draggable numeric value (or range) on a continuous track.
     module Slider
-      # The Slider: a
-      # numeric value (or a [low, high] range - two thumbs) on a
-      # continuous track. ONE new controller (poetry--core--slider), not
-      # composition - no shared primitive covers value-math keyboard
-      # (roving-focus moves FOCUS between items; slider keys move VALUES
-      # on one focused thumb). Every thumb is its own Tab stop
-      # (Radix-exact, APG multithumb - no roving).
+      # A numeric value (or a [low, high] range - two thumbs) picked by
+      # dragging along a continuous track. Reach for it when the value is
+      # approximate by nature; precise known-number entry belongs in a
+      # number input. Every thumb is its own Tab stop, and arrow keys move
+      # the focused thumb by step:.
       #
       # The server renders everything the controller would: aria-value*
-      # per thumb (range bounds NEIGHBOR-CLAMPED - APG multithumb), the
+      # per thumb (range bounds clamped to the neighboring thumb), the
       # --slider-start/--slider-end geometry vars (no first-paint jump),
       # and one hidden <input type=hidden> per thumb - name single,
       # name[] range, which is precisely Rails' array-param convention
@@ -22,8 +21,10 @@ module Poetry
       # @example
       #   render Poetry::Ui::Slider::Component.new(name: "volume", value: 50, label: "Volume")
       class Component < Poetry::Core::Component
+        # The closed vocabulary for the axis option.
         ORIENTATIONS = %i[horizontal vertical].freeze
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_slider / form.slider - never hand-roll a draggable div.",
           "Every thumb MUST have a distinct accessible name (label: - array of two for ranges). " \
@@ -38,6 +39,8 @@ module Poetry
           "Never transition the thumb/range position with CSS - geometry must track the pointer."
         ].freeze
 
+        # One dedicated controller on purpose: slider keys move VALUES on
+        # one focused thumb - value-math no focus-moving primitive covers.
         use_stimulus do
           on :root do
             controller :slider do
@@ -72,25 +75,30 @@ module Poetry
         end
 
         # Form name; single thumb -> name; range -> name + "[]" per input
-        # (Rails array param - Radix-exact).
+        # (the Rails array-param convention).
         option :name, :string, required: true
         # Single-thumb value. ArgumentError if given with values:.
         option :value, ActiveModel::Type::Value.new
         # Range mode: [low, high] -> two thumbs, sorted. ArgumentError if
         # given with value:, unsorted, or length != 2.
         option :values, ActiveModel::Type::Value.new
+        # The track's lower bound.
         option :min, :float, default: 0.0
+        # The track's upper bound; must exceed min:.
         option :max, :float, default: 100.0
         # Snap increment; decimal steps supported (precision-aware
         # rounding lives in the controller's math core).
         option :step, :float, default: 1.0
-        # Range-mode minimum gap in STEPS (Radix minStepsBetweenThumbs):
-        # high - low >= n*step; thumbs can never cross.
+        # Range-mode minimum gap in STEPS: high - low >= n*step; thumbs
+        # can never cross.
         option :min_steps_between_thumbs, :integer, default: 0
+        # The track axis.
         option :orientation, :symbol, default: :horizontal
-        # Flip the value direction along the axis (Radix inverted);
-        # composes with RTL (both = ltr math).
+        # Flips the value direction along the axis; composes with RTL
+        # (both = ltr math).
         option :inverted, :boolean, default: false
+        # Renders the control inert; the hidden inputs still submit the
+        # server value.
         option :disabled, :boolean, default: false
         # Per-thumb accessible names -> aria-label; range REQUIRES two.
         # Alternatively labelled_by (external wiring). Enforced.
@@ -148,6 +156,7 @@ module Poetry
                                   "with the root's)"
              }
 
+        # @api private
         def initialize(attributes = {})
           if attributes.values_at(:value, "value").any? && attributes.values_at(:values, "values").any?
             raise ArgumentError, "value: is the single-thumb API and values: the range API - pass one"
@@ -160,48 +169,55 @@ module Poetry
         end
 
         # Always an array internally: [v] single, [low, high] range.
+        # @api private
         def thumb_values
           @thumb_values ||= if values.present?
                               Array(values).map { |item| numeric(item, "values") }
                             else
-                              # No value at all -> ONE thumb at min (a
-                              # documented divergence from shadcn's
-                              # [min, max] two-thumb useMemo fallback).
+                              # No value at all -> ONE thumb at min.
                               [numeric(value.presence || min, "value")]
                             end
         end
 
+        # @api private
         def range?
           thumb_values.length > 1
         end
 
+        # @api private
         def input_name
           range? ? "#{name}[]" : name
         end
 
+        # @api private
         def control_id
           @control_id ||= poetry_instance_id("poetry-slider")
         end
 
+        # @api private
         def thumb_id(index)
           "#{control_id}-thumb-#{index}"
         end
 
-        # The thumb's EFFECTIVE bounds (APG multithumb: the high thumb's
-        # min is the low thumb's value + the gap) - server-rendered, then
-        # rewritten by the controller on every neighbor move.
+        # The thumb's EFFECTIVE bounds (the high thumb's min is the low
+        # thumb's value + the gap) - server-rendered, then rewritten by
+        # the controller on every neighbor move.
+        # @api private
         def thumb_min(index)
           index.zero? ? number(min) : number(thumb_values[index - 1] + gap)
         end
 
+        # @api private
         def thumb_max(index)
           index == thumb_values.length - 1 ? number(max) : number(thumb_values[index + 1] - gap)
         end
 
+        # @api private
         def thumb_label(index)
           Array(label)[index]
         end
 
+        # @api private
         def thumb_text(index)
           return unless value_text.present?
 
@@ -209,6 +225,7 @@ module Poetry
           value_text.respond_to?(:call) ? value_text.call(value) : I18n.t(value_text, value: value)
         end
 
+        # @api private
         def root_attributes
           attrs = {
             "data-slot" => "slider", "id" => control_id,
@@ -220,16 +237,19 @@ module Poetry
           )
         end
 
+        # @api private
         def track_attributes
           { class: css(:track), "data-slot" => "slider-track", "data-orientation" => orientation }
             .merge(stimulus_attributes_for(:track))
         end
 
+        # @api private
         def range_attributes
           { class: css(:range), "data-slot" => "slider-range", "data-orientation" => orientation }
             .merge(stimulus_attributes_for(:range))
         end
 
+        # @api private
         def anchor_attributes(index)
           anchor = if range? && index.zero? then :anchor_start
                    elsif index == thumb_values.length - 1 then :anchor_end
@@ -241,6 +261,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def thumb_attributes(index)
           attrs = {
             role: "slider", id: thumb_id(index), class: css(:thumb),
@@ -261,6 +282,7 @@ module Poetry
         # The form bridge: hidden inputs submit the server value even when
         # disabled (a slider always HAS a value; the control is inert, the
         # datum is not) - contrast native disabled fields.
+        # @api private
         def input_attributes(index)
           { type: "hidden", name: input_name, value: number(thumb_values[index]) }
             .merge(stimulus_attributes_for(:input))
@@ -268,6 +290,7 @@ module Poetry
 
         # Trailing-zero-free rendering: 50.0 -> "50", 0.5 -> "0.5" (aria
         # announcements and params never carry float noise).
+        # @api private
         def number(value)
           value == value.to_i ? value.to_i : value
         end

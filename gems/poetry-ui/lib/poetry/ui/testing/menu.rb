@@ -13,13 +13,24 @@ module Poetry
       # scoping stops holding for the content and its items - the trigger's
       # aria-controls id is the production controllers' own resolution
       # rule, and id-anchored selectors keep Capybara's waiting semantics.
+      #
+      # @example Activating a menu item
+      #   menu = poetry_dropdown_menu("#row-actions")
+      #   menu.choose("Archive", via: :keyboard)
       class Menu < Tester
+        # Whether the menu is currently open.
+        #
+        # @return [Boolean]
         def open?(wait: 0)
           session.has_selector?("##{content_id}[data-open]", visible: :all, wait: wait)
         rescue Capybara::ElementNotFound
           false
         end
 
+        # Opens the menu (no-op when already open). via: :keyboard focuses
+        # the trigger and presses ArrowDown; :mouse presses it.
+        #
+        # @return [Menu] self
         def open(via: :mouse)
           return self if open?
 
@@ -35,6 +46,9 @@ module Poetry
           self
         end
 
+        # Escape-closes the open menu and waits for the closed state.
+        #
+        # @return [Menu] self
         def close
           keys(:escape) if open?
           session.assert_selector("##{content_id}[data-closed]", visible: :all)
@@ -42,6 +56,8 @@ module Poetry
         end
 
         # Opens first when closed; activates by exact visible text.
+        #
+        # @return [Menu] self
         def choose(text, via: :mouse)
           self.open(via: via)
 
@@ -55,6 +71,9 @@ module Poetry
           self
         end
 
+        # The visible item texts (opens the menu first when closed).
+        #
+        # @return [Array<String>]
         def items
           open unless open?
           content.all("[data-slot='dropdown-menu-item']").map(&:text)

@@ -5,7 +5,7 @@ module Poetry
     module Alert
       # Re-expressed through the cn-* theme layer: entries carry the
       # stable names + the structural inline set; themes/default.css holds
-      # the design (the ny-v4 grid treatment, variants).
+      # the design (the grid treatment, variants).
       class Style < Poetry::Core::Style
         base "cn-alert relative w-full"
 

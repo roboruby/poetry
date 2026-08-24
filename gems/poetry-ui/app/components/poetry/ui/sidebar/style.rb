@@ -3,14 +3,12 @@
 module Poetry
   module Ui
     module Sidebar
-      # Re-expressed through the cn-* theme layer. The collapse /
-      # rail / inset geometry chains (width vars, offcanvas math, icon-mode
+      # Style dictionary for the Sidebar family. The collapse / rail /
+      # inset geometry chains (width vars, offcanvas math, icon-mode
       # size! pads, peer-size action tops) stay ENTIRELY inline - the
       # machinery a swapped theme must never break; surfaces, tints, and
-      # type ride the theme. The mobile <dialog> follows the Drawer rule:
-      # m-0 and the side margins BOTH stay inline so the merger keeps
-      # collapsing them. Upstream's size names (cn-sidebar-menu-button-
-      # size-*) are kept verbatim.
+      # type ride the theme. The mobile <dialog> keeps m-0 and the side
+      # margins BOTH inline so the class merger keeps collapsing them.
       class Style < Poetry::Core::Style
         base ""
 

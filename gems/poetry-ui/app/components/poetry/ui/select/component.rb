@@ -2,20 +2,25 @@
 
 module Poetry
   module Ui
+    # A single-select dropdown field: a combobox trigger opening a popup listbox.
     module Select
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
+      # The closed vocabulary for the trigger size axis.
       SIZES = %i[sm default].freeze
+      # The closed vocabulary for the popup placement-side axis.
       SIDES = %i[top right bottom left].freeze
+      # The closed vocabulary for the popup alignment axis.
       ALIGNS = %i[start center end].freeze
+      # The closed vocabulary for the text-direction axis.
       DIRS = %i[ltr rtl].freeze
 
       # The server-side option registry: every rendered option (DOM order)
       # lands here so the hidden native <select> and the trigger's value
       # display are rendered from the same truth as the listbox items.
-      # Duplicate values raise at render (the base-contract rule).
+      # Duplicate values raise at render.
+      #
+      # @api private
       class OptionSet
+        # One registered option: committable value, plain-text label, disabled flag.
         Entry = Struct.new(:value, :label, :disabled)
 
         attr_reader :entries
@@ -43,8 +48,10 @@ module Poetry
 
       # Shared part builders for the option union - mixed into the root
       # Component and the nested Group so both levels render the same
-      # anatomy through the same Builder. Hosts must expose #option_set
-      # (the shared OptionSet) and #selected_value.
+      # anatomy. Hosts must expose #option_set (the shared OptionSet) and
+      # #selected_value.
+      #
+      # @api private
       module Helpers
         private
 
@@ -63,8 +70,8 @@ module Poetry
           content_tag(:div, nil, attrs.merge(options))
         end
 
-        # Server-rendered always (Radix ItemIndicator unmounts; poetry lets
-        # the item's data-selected absence hide it) - the check stays decorative.
+        # Server-rendered always - the parent item's data-selected absence
+        # hides the check, so it stays decorative.
         def item_indicator
           content_tag(:span, "data-slot" => "select-item-indicator",
                              "class" => Style.css(:item_indicator, class: Style.css(:item_indicator_state))) do
@@ -73,15 +80,13 @@ module Poetry
         end
       end
 
-      # One role=option div (APG select-only combobox / Radix-exact). A
-      # part component ON PURPOSE (not an eager lambda): rendering happens
-      # in DOM order inside the viewport, so the shared OptionSet registers
-      # options in exactly the order the native <select> must mirror -
-      # whether the item sits at the top level or inside a group.
-      # aria-selected and data-selected are written TOGETHER, never separately
-      # (the family twin-write rule, aria-selected flavored; unselected =
-      # data-selected ABSENT); disabled divs carry aria-disabled +
-      # data-disabled together.
+      # One role=option div. A part component on purpose (not an eager
+      # lambda): rendering happens in DOM order inside the viewport, so the
+      # shared OptionSet registers options in exactly the order the native
+      # <select> must mirror - whether the item sits at the top level or
+      # inside a group. aria-selected and data-selected are written
+      # together, never separately (unselected = data-selected absent);
+      # disabled divs carry aria-disabled + data-disabled together.
       #
       # @api private
       class Item < Poetry::Core::Component
@@ -112,8 +117,8 @@ module Poetry
             "aria-selected" => selected.to_s,
             "class" => Style.css(:item, class: html_attributes.delete(:class))
           }.merge(@item_wiring)
-          # Base UI selected state: bare data-selected on the committed
-          # option, NOTHING while unselected (absence IS the state).
+          # Selected state: bare data-selected on the committed option,
+          # nothing while unselected (absence IS the state).
           attrs["data-selected"] = "" if selected
           if @disabled
             attrs["aria-disabled"] = "true"
@@ -132,24 +137,21 @@ module Poetry
         end
       end
 
-      # The listbox capstone: the APG
-      # select-only combobox on the menus machinery (popper + token-
-      # activated focus-scope/dismissable/roving-focus + the shared
-      # typeahead) driven by the NEW poetry--core--select controller -
-      # deliberately NOT a mode of poetry--core--menu.
+      # A single-select dropdown: a button showing the committed value that
+      # opens a popup listbox of options, with arrow-key navigation and
+      # typeahead. Reach for it when a form field commits exactly one value
+      # from a short, known list (long or filterable lists belong to
+      # Combobox; 2-4 options read better as a RadioGroup).
       #
-      # THE FORM STORY (the load-bearing decision): a visually-hidden
-      # native <select> (data-slot=select-native) with real server-rendered
-      # <option>s is the single serialization truth - the initial value
-      # posts before any JS, required rides native constraint validation,
-      # autofill lands on a real select (adopted into the UI via
-      # nativeChanged), and the controller dispatches native change/input
-      # on commit so Turbo auto-submit works unmodified.
-      #
-      # POSITIONING is popper-only: Radix/shadcn default to the
-      # item-aligned overlay (content covers the trigger); poetry drops
-      # below the trigger like every other popper consumer - a documented
-      # parity delta.
+      # Form participation: a visually-hidden native <select> with real
+      # server-rendered <option>s is the serialization truth - the initial
+      # value posts before any JS runs, required: rides native constraint
+      # validation, browser autofill lands on the native select and is
+      # adopted into the UI, and committing an option dispatches native
+      # change/input events so auto-submitting forms work unmodified. The
+      # popup drops below the trigger by default. Every Select needs an
+      # accessible name (a Field label via id:, or aria-label) or it
+      # raises at render.
       #
       # @example A named form select
       #   render Poetry::Ui::Select::Component.new(name: "fruit", id: "fruit",
@@ -160,6 +162,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include Helpers
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_select (f.poetry_select in forms) - never hand-roll role=listbox popups, and never " \
           "fake a select with DropdownMenu radio items bound to a hidden field.",
@@ -185,9 +188,8 @@ module Poetry
         # interactive control the label must reach - never on the root div.
         TRIGGER_ARIA_KEYS = %w[label labelledby describedby invalid required].freeze
 
-        # The same facts the before_render raise enforces, stated statically:
-        # poetry check flags the omission without rendering (the menu crash
-        # class - required slots the contract kept silent).
+        # The same facts the before_render raise enforces, stated statically
+        # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
         # Optional custom trigger content rendered BEFORE the value span
@@ -260,29 +262,48 @@ module Poetry
           end
         end
 
+        # The committed option value - the item whose value: matches renders
+        # as selected and its label fills the trigger.
         option :value, :string
+        # The form field name, carried by the hidden native <select>.
         option :name, :string
+        # Text shown in the trigger until an option is committed; also
+        # rendered as the blank native <option> (posts "" when untouched).
         option :placeholder, :string
+        # The trigger's DOM id - what a Field label's for: must point at;
+        # giving one also satisfies the accessible-name requirement.
         option :id, :string
+        # Server-renders the popup already open.
         option :open, :boolean, default: false
+        # Marks the hidden native <select> required - native constraint
+        # validation blocks submission while unset.
         option :required, :boolean, default: false
+        # Disables the trigger and the hidden native <select>.
         option :disabled, :boolean, default: false
+        # While open, blocks pointer interaction outside the popup.
         option :modal, :boolean, default: true
+        # Preferred popup side relative to the trigger.
         option :side, :symbol, default: :bottom
+        # Popup alignment along the chosen side's edge.
         option :align, :symbol, default: :start
+        # Gap in pixels between trigger and popup.
         option :side_offset, :integer, default: 4
+        # Pixel shift along the alignment axis.
         option :align_offset, :integer, default: 0
+        # Flips/shifts the popup to keep it inside the viewport.
         option :avoid_collisions, :boolean, default: true
+        # Arrow-key navigation wraps from the last option back to the first.
         option :loop, :boolean, default: false
-        # Base UI alignItemWithTrigger parity - the popup opens OVER the
-        # trigger with the selected item aligned on it (native-select feel);
-        # falls back to popper positioning on touch, viewport-edge triggers,
-        # or squeezed heights. Default off (the shadcn posture is popper).
+        # Opens the popup OVER the trigger with the selected item aligned on
+        # it (native-select feel); falls back to regular below-the-trigger
+        # positioning on touch, viewport-edge triggers, or squeezed heights.
         option :align_item_with_trigger, :boolean, default: false
+        # Text direction for the select and its popup.
         option :dir, :symbol
+        # The trigger size axis.
         option :size, :symbol, default: :default
-        # Merged onto the trigger button (upstream's SelectTrigger className
-        # seam - e.g. w-full over the base w-fit). class: styles the root.
+        # Extra classes merged onto the trigger button (e.g. w-full over the
+        # base w-fit); class: styles the root wrapper instead.
         option :trigger_class, :string
 
         validates :size, inclusion: { in: SIZES }
@@ -357,6 +378,7 @@ module Poetry
         part "select-item-text", "The option's label span - the value display copies from it"
         part "select-separator", "Decorative divider between options (aria-hidden)"
 
+        # @api private
         def initialize(attributes = {})
           if attributes.key?(:multiple) || attributes.key?("multiple")
             raise ArgumentError, "Select does not support multiple: - multi-select is Combobox territory"
@@ -366,6 +388,7 @@ module Poetry
           @trigger_aria = extract_trigger_aria!
         end
 
+        # @api private
         def before_render
           raise ArgumentError, "Select requires at least one item (with_item / with_group)" unless items?
 
@@ -376,32 +399,38 @@ module Poetry
         end
 
         # The Field-targetable id lands on the TRIGGER (label[for=id]
-        # click-focuses the combobox); content/native derive from it -
-        # server-generated, portal-safe, stream-safe.
+        # click-focuses the combobox); content/native ids derive from it.
+        # @api private
         def trigger_id
           @trigger_id ||= id.presence || poetry_instance_id("poetry-select")
         end
 
+        # @api private
         def content_id
           "#{trigger_id}-content"
         end
 
+        # @api private
         def native_id
           "#{trigger_id}-native"
         end
 
+        # @api private
         def option_set
           @option_set ||= OptionSet.new
         end
 
+        # @api private
         def selected_value
           @selected_value ||= value.presence.to_s
         end
 
+        # @api private
         def selected_label
           option_set.label_for(selected_value) if selected_value.present?
         end
 
+        # @api private
         def root_attributes
           root = { "data-slot" => "select" }
           root["dir"] = dir.to_s if dir
@@ -412,8 +441,9 @@ module Poetry
 
         # The serialization truth: a real <select> carrying name/required/
         # disabled and ALL options with selected - visually hidden (sr-only,
-        # painted) and out of both trees (aria-hidden + tabindex=-1). The
-        # change action is the autofill-adoption path (nativeChanged).
+        # painted) and out of both trees (aria-hidden + tabindex=-1). Its
+        # change event is the autofill-adoption path.
+        # @api private
         def native_select
           attrs = {
             "id" => native_id, "data-slot" => "select-native",
@@ -426,6 +456,7 @@ module Poetry
           content_tag(:select, native_options, attrs)
         end
 
+        # @api private
         def trigger_button
           attrs = {
             "id" => trigger_id, "data-slot" => "select-trigger", "type" => "button",
@@ -433,7 +464,7 @@ module Poetry
             "aria-autocomplete" => "none", "data-size" => size.to_s,
             "class" => css(:trigger, class: trigger_class)
           }
-          # Base UI trigger state: bare data-popup-open while open, NO
+          # Trigger open state: bare data-popup-open while open, no
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
           attrs["data-placeholder"] = "" unless selected_label
@@ -445,6 +476,7 @@ module Poetry
           end
         end
 
+        # @api private
         def content_attributes
           # No widget role here: the popup shell holds scroll buttons too,
           # and role=listbox permits only option/group children (axe
@@ -461,6 +493,7 @@ module Poetry
           attrs
         end
 
+        # @api private
         def viewport_attributes
           {
             "data-slot" => "select-viewport", "role" => "listbox",
@@ -473,6 +506,7 @@ module Poetry
         # visibility per scroll extremes (syncScrollButtons) and runs the
         # rAF hover-scroll; aria-hidden throughout (keyboard scrolls via
         # focus + scroll-my-1).
+        # @api private
         def scroll_button(direction)
           attrs = {
             "data-slot" => "select-scroll-#{direction}-button", "aria-hidden" => "true",
@@ -541,7 +575,7 @@ module Poetry
 
         # BOTH controllers build into ONE Attributes instance - a plain
         # Hash#merge of two would overwrite data-controller instead of
-        # token-concatenating it (the Accordion lesson).
+        # token-concatenating it.
         def value_string = value.to_s
 
         def item_wiring
@@ -552,8 +586,7 @@ module Poetry
       # role=group with an optional heading label (aria-labelledby wired) -
       # the same item union one level down, registering its options into
       # the PARENT's option set so the native select and value display see
-      # every option. Plain ViewComponent::Base ON PURPOSE: nested parts
-      # are anatomy, not registered components.
+      # every option.
       #
       # @api private
       class Group < Poetry::Core::Component
@@ -562,13 +595,13 @@ module Poetry
 
         attr_reader :option_set, :selected_value, :item_wiring
 
+        # The same item | separator union as the root, one level down.
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
         }
 
-        # heading: is the canonical keyword (combobox/command use it);
-        # label: stays accepted for the original surface.
+        # heading: is the canonical keyword; label: is accepted as an alias.
         def initialize(option_set:, selected_value:, heading: nil, label: nil, item_wiring: {}, **extra_attributes)
           super(extra_attributes)
           @item_wiring = item_wiring
@@ -599,8 +632,8 @@ module Poetry
           "#{group_id}-label"
         end
 
-        # A styled heading, no ARIA role (Radix-exact) - the group points
-        # at it via aria-labelledby.
+        # A styled heading, no ARIA role - the group points at it via
+        # aria-labelledby.
         def label_part
           return if @label_text.blank?
 

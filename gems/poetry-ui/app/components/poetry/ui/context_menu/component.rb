@@ -2,6 +2,7 @@
 
 module Poetry
   module Ui
+    # ContextMenu family: the right-click/long-press menu.
     module ContextMenu
       # Shared vocabularies, declared once at module level so the root
       # Component and the nested menu-level classes read the same lists.
@@ -11,21 +12,21 @@ module Poetry
       # The shared menus-family kernel wearing this family identity -
       # SLOT_BUILDERS (reopened at the bottom, once the classes exist) keeps
       # the registry recursion on the family classes.
+      #
+      # @api private
       module ItemSlots
         extend ActiveSupport::Concern
         include Poetry::Ui::Menus::ItemSlots
       end
 
-      # The menus-family sibling of DropdownMenu: the same
-      # shared machinery, with the trigger DELTA - a
-      # right-click/long-press SURFACE, not a button. The surface is NOT a
-      # widget: no role, no aria-haspopup, not in the tab order (unless
-      # focusable_surface: opts in); with no JS the browser-native context
-      # menu appears untouched (the suite's strongest PE story). Position:
-      # side: is API (Base UI parity - ContextMenuContent exposes side,
-      # default right); align start / offset 2 stay fixed - context menus
-      # anchor at the pointer via popper's virtual-anchor mode, written by
-      # the thin poetry--core--context-menu controller.
+      # A context menu: the same menu anatomy as DropdownMenu, opened by
+      # right-click or long-press on a SURFACE instead of a button. The
+      # surface is NOT a widget - no role, no aria-haspopup, not in the
+      # tab order (unless focusable_surface: opts in) - and with no JS
+      # the browser-native context menu appears untouched. The menu
+      # anchors at the pointer position; side: picks which side of the
+      # pointer it opens toward (default right), and collisions can
+      # still flip it.
       #
       # @example Right-click surface with actions
       #   render Poetry::Ui::ContextMenu::Component.new do |menu|
@@ -36,6 +37,7 @@ module Poetry
       class Component < Poetry::Core::Component
         include ItemSlots
 
+        # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "NEVER make a context menu the only path to an action - it is an invisible affordance; every " \
           "item needs a visible equivalent (a '...' DropdownMenu button, a toolbar, a detail page).",
@@ -51,7 +53,7 @@ module Poetry
           "Do not nest a ContextMenu trigger surface inside another ContextMenu trigger surface."
         ].freeze
 
-        # DELTA - the right-click/long-press SURFACE: wraps arbitrary
+        # The right-click/long-press SURFACE: wraps arbitrary
         # content (a card, a row, a region); polymorphic tag: (default
         # :span, set tag: :div to wrap block content). NOT a button: no
         # role, no aria-haspopup, no tabindex by default. The inline
@@ -65,7 +67,7 @@ module Poetry
             "aria-controls" => content_id,
             "style" => ["-webkit-touch-callout: none", options.delete(:style)].compact.join("; ")
           }.merge(stimulus_attributes_for(:trigger))
-          # Base UI trigger state: bare data-popup-open while open, NO
+          # The surface state: bare data-popup-open while open, NO
           # attribute while closed (absence IS the state).
           attrs["data-popup-open"] = "" if open
           attrs["data-disabled"] = "" if disabled
@@ -91,8 +93,8 @@ module Poetry
             end
             controller :popper do
               register
-              # side: is API (Base UI parity); align start / side_offset 2
-              # stay fixed; collisions still flip the side.
+              # side: is the one placement knob; align start / side_offset
+              # 2 stay fixed; collisions still flip the side.
               value :side
               value :align, :start
               value :side_offset, 2
@@ -126,14 +128,25 @@ module Poetry
           end
         end
 
+        # Server-renders the menu open (rare - context menus normally
+        # open from the gesture).
         option :open, :boolean, default: false
+        # Traps focus in the open menu; false keeps the page interactive.
         option :modal, :boolean, default: true
+        # Wraps arrow-key movement past either end of the menu.
         option :loop, :boolean, default: false
+        # Touch long-press duration in ms before the menu opens.
         option :long_press_delay, :integer, default: 700
+        # Inerts the surface - no gesture opens the menu.
         option :disabled, :boolean, default: false
+        # The menu's accessible name (localized fallback when omitted).
         option :label, :string
+        # Puts the surface in the tab order and advertises Shift+F10.
         option :focusable_surface, :boolean, default: false
+        # Writing-direction override (ltr/rtl) stamped on the root.
         option :dir, :symbol
+        # Which side of the pointer the menu opens toward; collisions may
+        # still flip it.
         option :side, :symbol, default: :right
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
@@ -226,19 +239,27 @@ module Poetry
                "--anchor-height" => "popper: the sub-trigger's measured height"
              }
 
+        # Enforces the required surface and at least one item.
+        # @api private
         def before_render
           raise ArgumentError, "ContextMenu requires with_trigger (the right-click surface)" unless trigger?
           raise ArgumentError, "ContextMenu requires at least one item" unless items?
         end
 
+        # The surface's id.
+        # @api private
         def trigger_id
           "#{instance_id}-trigger"
         end
 
+        # The menu panel's id - the surface's aria-controls target.
+        # @api private
         def content_id
           "#{instance_id}-content"
         end
 
+        # Attributes for the root wrapper.
+        # @api private
         def root_attributes
           root = { "data-slot" => "context-menu" }
           root["dir"] = dir.to_s if dir
@@ -247,6 +268,8 @@ module Poetry
           )
         end
 
+        # Attributes for the role=menu panel.
+        # @api private
         def content_attributes
           attrs = {
             "id" => content_id, "role" => "menu", "aria-orientation" => "vertical",
@@ -307,25 +330,29 @@ module Poetry
       # declares it and the registry walker recurses into the builder's own
       # call surface (with_sub yields a Sub with its own items).
       # REQUIRED_SLOTS states the same facts the before_render
-      # raises enforce, so poetry check flags the omission without
-      # rendering (the menu crash class).
+      # raises enforce, so static checks can flag omissions without
+      # rendering.
       module ItemSlots
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
       end
 
       class Component
+        # The required slots, stated statically for static checks.
         REQUIRED_SLOTS = { trigger: "the right-click surface", item: "at least one item" }.freeze
       end
 
       class Group
+        # The required slots, stated statically for static checks.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
       end
 
       class RadioGroup
+        # The required slots, stated statically for static checks.
         REQUIRED_SLOTS = { radio_item: "at least one radio item" }.freeze
       end
 
       class Sub
+        # The required slots, stated statically for static checks.
         REQUIRED_SLOTS = { trigger: "the sub-menu item", item: "at least one item" }.freeze
       end
     end
