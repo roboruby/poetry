@@ -7,6 +7,7 @@ module Poetry
       # Shared vocabularies, declared once at module level so the root
       # Component and the nested menu-level classes read the same lists.
       DIRS = %i[ltr rtl].freeze
+      # The closed vocabulary for the side axis.
       SIDES = %i[top right bottom left].freeze
 
       # The shared menus-family kernel wearing this family identity -
@@ -333,6 +334,7 @@ module Poetry
       # raises enforce, so static checks can flag omissions without
       # rendering.
       module ItemSlots
+        # Nested-slot recursion map for the registry projection.
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
       end
 

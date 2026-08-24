@@ -328,6 +328,7 @@ module Poetry
       # it and the registry walker recurses into the builder's own call
       # surface (with_sub yields a Sub with its own items).
       module ItemSlots
+        # Nested-slot recursion map for the registry projection.
         SLOT_BUILDERS = { sub: Sub, group: Group, radio_group: RadioGroup }.freeze
       end
 

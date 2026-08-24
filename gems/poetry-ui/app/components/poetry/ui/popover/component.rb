@@ -6,6 +6,7 @@ module Poetry
     module Popover
       # The placement vocabularies - the popper-consumer kit owns them.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
+      # The closed vocabulary for the align axis.
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # A click-opened role=dialog panel anchored to its trigger, for

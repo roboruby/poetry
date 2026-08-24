@@ -8,7 +8,9 @@ module Poetry
       # The placement vocabularies, declared ONCE at module level - shared
       # by the validations and the part-state declarations.
       SIDES = %i[top right bottom left].freeze
+      # The closed vocabulary for the align axis.
       ALIGNS = %i[start center end].freeze
+      # The closed vocabulary for the reading-direction axis.
       DIRS = %i[ltr rtl].freeze
 
       # The server-side option registry: collects every option in render

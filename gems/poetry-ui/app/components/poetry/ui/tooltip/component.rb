@@ -6,6 +6,7 @@ module Poetry
     module Tooltip
       # The placement vocabularies - the popper-consumer kit owns them.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
+      # The closed vocabulary for the align axis.
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # A hover/focus text hint. The bubble describes its trigger and

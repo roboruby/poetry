@@ -35,6 +35,7 @@ module Poetry
         # receives each row record (SLOT_BLOCK_YIELDS exempts it from the
         # yieldless contract), and a column cannot exist without one.
         SLOT_BLOCK_YIELDS = { column: "the row record" }.freeze
+        # Slots whose block content is required, with the hint the check surfaces.
         SLOT_REQUIRED_CONTENT = { column: "the cell renderer - { |row| ... }" }.freeze
 
         # The required slots, stated statically so static checks can flag

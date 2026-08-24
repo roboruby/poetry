@@ -6,6 +6,7 @@ module Poetry
     module HoverCard
       # The placement vocabularies - shared with every popup surface.
       SIDES = Poetry::Ui::PopperConsumer::SIDES
+      # The closed vocabulary for the align axis.
       ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # A rich preview that opens when a pointer hovers a LINK - for

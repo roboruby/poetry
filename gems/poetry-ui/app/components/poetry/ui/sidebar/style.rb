@@ -128,6 +128,7 @@ module Poetry
                                   "disabled:opacity-50 aria-disabled:pointer-events-none " \
                                   "aria-disabled:opacity-50 [&>svg]:shrink-0 [&>span:last-child]:truncate"
 
+        # The size-variant classes for a menu button.
         def self.menu_button_size(value)
           css(:"menu_button_#{value}")
         end
