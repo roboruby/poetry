@@ -8,10 +8,26 @@ module Poetry
     # the theme - the printed handoff goes through poetry:design:import,
     # where the AA gate stays the single door.
     module Runner
+      # Default output root; run! writes into <OUT_ROOT>/<domain>/.
       OUT_ROOT = "tmp/poetry/design_extract"
 
       module_function
 
+      # Extract a domain's design system: fetch the signals, compose
+      # DESIGN.md, derive the two token stylesheets, and write all three
+      # files under out_root. Prints the poetry:design:import handoff
+      # command - importing is deliberately left to the AA gate.
+      #
+      # @param domain [String] the domain to extract; a URL is normalized
+      #   down to its bare host
+      # @param out_root [String] directory the per-domain folder lands in
+      # @param signals [Signals, nil] pre-fetched signals (skips the fetch)
+      # @param composer [#design_md] the DESIGN.md composer
+      # @param io [IO] progress and handoff output
+      # @return [String] the written directory path
+      # @example
+      #   Poetry::Extract::Runner.run!("stripe.com")
+      #   # => "tmp/poetry/design_extract/stripe.com"
       def run!(domain, out_root: OUT_ROOT, signals: nil, composer: Compose, io: $stdout)
         normalized = normalize_domain(domain)
         raise Error, "#{domain.inspect} is not a valid domain" if normalized.empty?
@@ -35,6 +51,9 @@ module Poetry
         dir
       end
 
+      # Reduce a URL or bare domain to its lowercase host.
+      #
+      # @return [String]
       def normalize_domain(domain)
         domain.to_s.strip.downcase
               .sub(%r{\Ahttps?://}, "").delete_prefix("www.").sub(%r{/.*\z}m, "")

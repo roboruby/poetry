@@ -6,15 +6,22 @@ require "uri"
 
 module Poetry
   module Extract
-    # The one model call: compose DESIGN.md from the fetched signals.
-    # Prompt spec adapted from agentcn's design-md.ts (MIT; see
-    # THIRD_PARTY_NOTICES.md; https://github.com/shadcn-labs/agentcn). Direct Anthropic Messages API over Net::HTTP
-    # - no SDK dependency; the screenshot rides as a URL-source image block.
+    # The one model call: compose DESIGN.md from the fetched signals. The
+    # prompt spec is adapted from an MIT-licensed source (source and
+    # license in THIRD_PARTY_NOTICES.md). Direct Anthropic Messages API
+    # over Net::HTTP - no SDK dependency; the screenshot rides as a
+    # URL-source image block.
     module Compose
+      # The Messages API endpoint the compose call POSTs to.
       ANTHROPIC_URL = "https://api.anthropic.com/v1/messages"
+
+      # The pinned anthropic-version header value.
       ANTHROPIC_VERSION = "2023-06-01"
+
+      # The model used when POETRY_EXTRACT_MODEL is unset.
       DEFAULT_MODEL = "claude-sonnet-5"
 
+      # The DESIGN.md format summary embedded in every prompt.
       SPEC_SUMMARY = <<~SPEC.strip
         DESIGN.md is a self-contained plain-text representation of a design system. It contains optional YAML frontmatter with normative machine-readable tokens and a Markdown body with human-readable rationale.
 
@@ -39,11 +46,21 @@ module Poetry
         Recommended token names include colors primary, secondary, tertiary, neutral, surface, on-surface, error; typography headline-display, headline-lg, headline-md, body-lg, body-md, body-sm, label-lg, label-md, label-sm; rounded none, sm, md, lg, xl, full.
       SPEC
 
+      # The system prompt for the compose call.
       SYSTEM = "You are a senior design systems writer. Produce concise, implementation-grade " \
                "DESIGN.md files that follow the requested spec."
 
       module_function
 
+      # Compose the DESIGN.md document for a domain from its fetched
+      # signals in one model call; the screenshot, when present, is
+      # attached as an image block.
+      #
+      # @param domain [String] bare host the document is written for
+      # @param signals [Signals] the fetched evidence (nil members allowed)
+      # @param http [#call] the transport: request payload hash in, parsed
+      #   response hash out
+      # @return [String] the composed DESIGN.md content
       def design_md(domain:, signals:, http: method(:post_anthropic))
         prompt = build_prompt(domain: domain, signals: signals)
         content = [text_block(prompt)]
@@ -59,6 +76,8 @@ module Poetry
         extract_text(response).strip
       end
 
+      # Assemble the user prompt from the spec summary and the signals.
+      # @api private
       def build_prompt(domain:, signals:)
         markdown_excerpt = signals.markdown.to_s.empty? ? "No Markdown returned." : signals.markdown[0, 3000]
         styleguide_json = JSON.pretty_generate(signals.styleguide)[0, 18_000]
@@ -90,14 +109,23 @@ module Poetry
         PROMPT
       end
 
+      # A Messages API text content block.
+      # @api private
       def text_block(text) = { type: "text", text: text }
 
+      # A Messages API URL-source image content block.
+      # @api private
       def image_block(url) = { type: "image", source: { type: "url", url: url } }
 
+      # Join the response's text blocks into one string.
+      # @api private
       def extract_text(response)
         Array(response["content"]).filter_map { |block| block["text"] if block["type"] == "text" }.join
       end
 
+      # The default transport: POST the payload to the Messages API and
+      # parse the JSON response; a non-200 raises Error.
+      # @api private
       def post_anthropic(payload)
         key = ENV.fetch("ANTHROPIC_API_KEY") do
           raise Error, "ANTHROPIC_API_KEY is required to compose DESIGN.md"

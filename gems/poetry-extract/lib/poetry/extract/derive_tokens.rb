@@ -5,17 +5,21 @@ require "bigdecimal/util"
 module Poetry
   module Extract
     # Deterministic token derivation - a function-for-function Ruby port of
-    # agentcn's derive-tokens.ts (MIT; see THIRD_PARTY_NOTICES.md;
-    # https://github.com/shadcn-labs/agentcn), itself
-    # "verbatim from designmd-supply". Inputs are the context.dev styleguide
+    # an MIT-licensed token deriver (source and license in
+    # THIRD_PARTY_NOTICES.md). Inputs are the context.dev styleguide
     # and brand payloads as string-keyed hashes (parsed JSON); outputs are
     # the Tailwind v4 theme stylesheet and the vanilla CSS :root variables.
     #
-    # Parity doctrine: the upstream .ts is the ORACLE - test/fixtures/oracle
-    # runs it on canned inputs and this port must reproduce the outputs
-    # byte-for-byte. JS semantics are mirrored deliberately (parseFloat
-    # leniency via js_float, toFixed formatting via format_number); do not
-    # "clean up" behavior here without regenerating fixtures upstream-first.
+    # Parity doctrine: the ported source is the ORACLE - test/fixtures/oracle
+    # runs it on canned inputs and this port must reproduce its outputs
+    # byte-for-byte, so behavior must match it bit-for-bit. The source's JS
+    # semantics are mirrored deliberately (parseFloat leniency via js_float,
+    # toFixed formatting via format_number); do not "clean up" behavior here
+    # without regenerating the fixtures oracle-first.
+    #
+    # Every helper in here is that parity-port math; the gem's public
+    # surface is Runner.run!.
+    # @api private
     module DeriveTokens
       WHITE = { r: 255.0, g: 255.0, b: 255.0 }.freeze
       BLACK = { r: 0.0, g: 0.0, b: 0.0 }.freeze

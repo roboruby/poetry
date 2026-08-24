@@ -15,10 +15,21 @@ module Poetry
     # CONTEXT_DEV_API_KEY): a plain homepage fetch for the markdown signal,
     # nil for the rest - extraction still works, on less evidence.
     module Fetch
+      # Styleguide extraction is the slow call - allow it two minutes.
       STYLEGUIDE_TIMEOUT_MS = 120_000
 
       module_function
 
+      # Fetch the four design signals for a domain. Without a client
+      # (CONTEXT_DEV_API_KEY unset) it takes the degraded path: homepage
+      # markdown only, every other signal nil.
+      #
+      # @param domain [String] bare host, e.g. "stripe.com"
+      # @param client [Object, nil] the context.dev SDK client; nil selects
+      #   the degraded path
+      # @param homepage_fetcher [#call] degraded-path fetcher (domain in,
+      #   markdown string out)
+      # @return [Signals]
       def signals(domain, client: default_client, homepage_fetcher: method(:fetch_homepage))
         return degraded(domain, homepage_fetcher) unless client
 
@@ -37,11 +48,15 @@ module Poetry
         )
       end
 
+      # The no-client Signals shape: homepage markdown, nothing else.
+      # @api private
       def degraded(domain, homepage_fetcher)
         Signals.new(styleguide: nil, brand: nil, screenshot_url: nil,
                     markdown: homepage_fetcher.call(domain).to_s)
       end
 
+      # Build the context.dev SDK client when the API key is present.
+      # @api private
       def default_client
         return nil unless ENV["CONTEXT_DEV_API_KEY"]
 
@@ -51,6 +66,7 @@ module Poetry
 
       # SDK responses expose the payload as an accessor; plain-hash fakes
       # (tests, cassettes) work identically.
+      # @api private
       def value_of(response, key)
         return response[key.to_s] || response[key] if response.is_a?(Hash)
 
@@ -59,6 +75,7 @@ module Poetry
 
       # Deep-stringified plain data for the derivers, whatever the SDK's
       # model classes are.
+      # @api private
       def normalize(value)
         return nil if value.nil?
 
@@ -67,6 +84,7 @@ module Poetry
 
       # The degraded markdown signal: the homepage body with tags crudely
       # stripped - supporting evidence for the prompt, never token data.
+      # @api private
       def fetch_homepage(domain)
         response = Net::HTTP.get_response(URI("https://#{domain}/"))
         return "" unless response.is_a?(Net::HTTPSuccess)
