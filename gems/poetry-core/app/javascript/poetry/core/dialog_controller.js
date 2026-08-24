@@ -3,12 +3,17 @@ import { setState } from "@poetry/controllers/helpers/state"
 import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
+import { exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
 
 // The native-dialog primitive: borrow the PLATFORM overlay -
 // showModal() gives the focus trap, Esc handling, top-layer stacking, and
 // focus return for free; this controller adds what the platform doesn't:
 // the data-open/data-closed pair for CSS variants, backdrop-click
-// dismissal, and a body scroll-lock. Consumed by Dialog (and later AlertDialog / Sheet).
+// dismissal, a body scroll-lock, and the presence-hold close - exit flips
+// the pair to data-closed and HOLDS the dialog through its CSS exit
+// animation before the native close() (synchronous when no exit animation
+// applies, so reduced-motion and unthemed hosts close instantly).
+// Consumed by Dialog (and AlertDialog / CommandDialog / Sheet).
 export default class extends Controller {
   static targets = ["dialog"]
   static values = {
@@ -29,8 +34,14 @@ export default class extends Controller {
     this.#healRestoredSnapshot()
     // Close before Turbo snapshots: an open dialog serialized into the
     // cache restores as a de-modalized zombie over a frozen scroll lock.
+    // The close is animated now, so the exit it starts must settle in
+    // this same tick - flush regardless of listener order (the presence
+    // module's own before-cache flush may already have run).
     this.#unsubscribeBeforeCache = onBeforeCache(() => {
-      if (this.hasDialogTarget && this.dialogTarget.open) this.close()
+      if (this.hasDialogTarget && this.dialogTarget.open) {
+        this.close()
+        flushPendingExits()
+      }
     })
 
     if (this.hotkeyValue === "") return
@@ -100,9 +111,16 @@ export default class extends Controller {
 
   close(event) {
     if (event?.type === "cancel") event.preventDefault() // route Esc through close() so state stays in sync
-    this.dialogTarget.close()
-    setState(this.dialogTarget, "closed")
-    this.unlockScroll()
+    if (this.#closing || !this.dialogTarget.open) return
+
+    this.#closing = true
+    exitPresence(this.dialogTarget, {
+      onRemove: () => {
+        this.#closing = false
+        this.dialogTarget.close()
+        this.unlockScroll()
+      }
+    })
   }
 
   // A backdrop click targets the <dialog> element itself AND lands outside
@@ -144,4 +162,5 @@ export default class extends Controller {
   }
 
   #locked = false
+  #closing = false
 }

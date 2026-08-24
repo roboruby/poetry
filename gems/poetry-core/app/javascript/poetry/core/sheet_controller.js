@@ -1,35 +1,18 @@
 import DialogController from "@poetry/controllers/dialog_controller"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { enterPresence } from "@poetry/controllers/helpers/presence"
 
-// The Sheet: the dialog machinery + the presence-hold
-// close its dictionary was waiting on - the Drawer's animated
-// path minus the swipe. Everything hard about the overlay is inherited
-// (native <dialog> platform trap, backdrop-click discrimination, scroll
-// lock, hotkey); this subclass makes the close ANIMATED: exit flips the
-// pair to data-closed and HOLDS the dialog through the slide-out
-// (data-closed:animate-out in the Sheet dictionary) before the native
-// close(). Enter rides enterPresence so the data-starting-style hook
-// fires like every other presence consumer.
+// The Sheet: the dialog machinery, animated end to end. Everything hard
+// about the overlay is inherited (native <dialog> platform trap,
+// backdrop-click discrimination, scroll lock, hotkey) - including the
+// presence-hold close, which the base controller owns (exit flips the
+// pair to data-closed and holds the dialog through the slide-out before
+// the native close()). This subclass only upgrades the ENTER: open rides
+// enterPresence so the data-starting-style hook fires like every other
+// presence consumer.
 export default class SheetController extends DialogController {
-  #closing = false
-
   open() {
     this.dialogTarget.showModal()
     enterPresence(this.dialogTarget)
     this.lockScroll()
-  }
-
-  close(event) {
-    if (event?.type === "cancel") event.preventDefault() // route Esc through the animated path
-    if (this.#closing) return
-
-    this.#closing = true
-    exitPresence(this.dialogTarget, {
-      onRemove: () => {
-        this.#closing = false
-        this.dialogTarget.close()
-        this.unlockScroll()
-      }
-    })
   }
 }

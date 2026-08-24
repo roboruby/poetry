@@ -55,6 +55,44 @@ describe("poetry--core--dialog", () => {
     expect(document.body.style.overflow).toBe("")
   })
 
+  // The presence-hold close (the animated path the base controller now
+  // owns): the pair flips to data-closed BEFORE the native close(), so a
+  // themed exit animation has a frame to run against; jsdom reports no
+  // animations, so exitPresence settles synchronously here - the ordering
+  // is still observable through the native close() spy.
+  it("close() flips the pair to data-closed before the native close()", () => {
+    const dlg = document.getElementById("dlg")
+    let stateAtNativeClose = null
+    const nativeClose = dlg.close.bind(dlg)
+    dlg.close = () => {
+      stateAtNativeClose = dlg.hasAttribute("data-closed")
+      nativeClose()
+    }
+
+    document.getElementById("trigger").click()
+    document.getElementById("closer").click()
+
+    expect(stateAtNativeClose).toBe(true)
+  })
+
+  it("a second close() during the exit is swallowed (the closing guard)", () => {
+    const dlg = document.getElementById("dlg")
+    document.getElementById("trigger").click()
+
+    let nativeCloses = 0
+    const nativeClose = dlg.close.bind(dlg)
+    dlg.close = () => {
+      nativeCloses += 1
+      nativeClose()
+    }
+
+    document.getElementById("closer").click()
+    document.getElementById("closer").click()
+
+    expect(nativeCloses).toBe(1)
+    expect(dlg.open).toBe(false)
+  })
+
   // jsdom has no layout - give the dialog a real rect so the
   // backdrop-vs-padding coordinate discrimination is testable.
   const stubPanelRect = (dlg) => {
