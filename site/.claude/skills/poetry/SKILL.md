@@ -74,3 +74,10 @@ finishing audit live there. Component contracts alone do not make
 a composed page - and neither does guidance: start the page from
 `compose`'s block match and adapt, don't rebuild its advice from
 a blank file.
+
+## Authoring a component? Load poetry-component
+
+Building a component of your own - one this catalog doesn't
+cover? Load the `poetry-component` skill BEFORE writing the
+class: the canonical anatomy (section order), the documentation
+standard, and the audit checklist live there.

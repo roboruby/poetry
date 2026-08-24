@@ -31,6 +31,7 @@ Content block REQUIRED (the key text) - a blockless call raises.
 A styled navigational hyperlink.
 
 Class: Poetry::Ui::Link::Component - BEM block `poetry-ui-link`.
+Content block REQUIRED (the visible link text) - a blockless call raises.
 - `underline:` (symbol) - one of hover|always|none, default "hover"
 - `current:` (boolean) - default false
 - `external:` (boolean) - default false
@@ -46,6 +47,7 @@ In blocks: `section-card`, `top-nav` - for a screen, start from the block (MCP c
 A transcript divider or inline status marker for chat UIs.
 
 Class: Poetry::Ui::Marker::Component - BEM block `poetry-ui-marker`.
+Content block REQUIRED (the marker label) - a blockless call raises.
 - `variant:` (symbol) - one of default|separator|border, default "default", required
 - `announce:` (symbol) - one of none|status, default "none"
 - `tag:` (symbol) - default "div"

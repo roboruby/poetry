@@ -113,12 +113,15 @@ refresh the AGENTS.md pointer section alone, use `bin/rails g poetry:agents`.
   `rails g scaffold` to emit poetry-composed views (DataTable index
   with URL state, Field-composed forms) plus a matching controller -
   prefer scaffolding over hand-writing CRUD views.
-- Claude Code skills: `poetry` (component contracts by family) and
+- Claude Code skills: `poetry` (component contracts by family),
   `poetry-design` (theme / compose / audit / study / figma / paper -
-  the taste layer) live under `.claude/skills/` - load `poetry` whenever writing ERB,
-  and `poetry-design` whenever composing a page or screen, BEFORE
-  building (any page task is a design task, not only ones that
-  mention design). Install/refresh: `bin/rails g poetry:skill`.
+  the taste layer), and `poetry-component` (anatomy / documentation /
+  audit - the authoring layer) live under `.claude/skills/` - load
+  `poetry` whenever writing ERB, `poetry-design` whenever composing a
+  page or screen, BEFORE building (any page task is a design task,
+  not only ones that mention design), and `poetry-component` whenever
+  authoring or reviewing an app-owned component. Install/refresh:
+  `bin/rails g poetry:skill`.
 - Design interop: `bin/rails poetry:design:export` writes this app's
   DESIGN.md (tokens + treatment) for external design skills.
 - Overriding the theme: token-level restyling goes through

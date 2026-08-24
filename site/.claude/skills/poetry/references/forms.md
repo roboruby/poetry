@@ -151,6 +151,7 @@ A text input with an autocomplete popover for picking from a list.
 Class: Poetry::Ui::Combobox::Component - BEM block `poetry-ui-combobox`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "start"
+- `align_offset:` (integer) - default 0
 - `avoid_collisions:` (boolean) - default true
 - `dir:` (symbol) - one of ltr|rtl
 - `disabled:` (boolean) - default false
@@ -169,7 +170,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `side_offset:` (integer) - default 4
 - `value:` (string)
 - `width:` (string)
-Slots: trigger, empty, items (many; types item|group|separator - one with_<type> setter each, options as keywords).
+Slots: trigger, empty, loading, items (many; types item|group|separator - one with_<type> setter each, options as keywords).
 - PART `combobox` - Root wrapper carrying both controllers (combobox + popper) and the optional dir attribute
 - PART `combobox-native` - The visually-hidden native <select> - the serialization truth (Select's decision verbatim); plumbing, never styled or targeted
 - PART `combobox-trigger` - The role=combobox button (the demo's outline Button) the field label reaches - value display and chevrons ride inside | states: data-placeholder (no option is committed (bare; the controller toggles it on every commit)); data-popup-open (the popup is open (bare while open, absent while closed - the controller flips it with the open state))
@@ -187,12 +188,13 @@ Slots: trigger, empty, items (many; types item|group|separator - one with_<type>
 - PART `command-item` - One role=option div wearing BOTH meanings - a Command item (filtering + highlight) AND Select's committed-value surface | states: data-value (always - the option's committable value (the native <option> twin)); data-selected (the option is committed (bare; absent while unselected - the controller twin-writes it with aria-selected)); data-highlighted (the item holds the activedescendant highlight (the server seeds it; the engine moves it with the input's aria-activedescendant)); data-disabled (disabled: is set (aria-disabled rides along)); data-hidden (the filter scored the item zero (the engine pairs it with hidden; never rendered server-side))
 - PART `command-item-text` - The option's label span - the filter/typematch text source
 - PART `combobox-item-indicator` - The trailing committed-value check (ms-auto per the demo) - the parent item's data-selected absence hides it
-- PART `command-separator` - role=separator divider - hidden by the engine whenever the query is non-empty
+- PART `command-separator` - Decorative divider (aria-hidden) - hidden by the engine whenever the query is non-empty
+- PART `command-loading` - Pending affordance (role=status) - rendered hidden; the HOST unhides it around async refills
 - PART `command-status` - The engine's sr-only polite result-count live region | states: data-zero (always - the localized zero-results template); data-one (always - the localized one-result template); data-other (always - the localized many-results template (a literal count placeholder the controller interpolates))
 - PART `combobox-chips` - The chips FIELD frame (multiple: only) - the popper anchor replacing the trigger; chips + the inline input flex-wrap inside, and role=toolbar rides it only while it holds >=1 chip | states: data-placeholder (the selection is empty (bare; the controller flips it on every commit - the toolbar role departs with it)); data-disabled (disabled: is set - every chip mutation is gated); data-remove-label (always - the localized chip-remove template (a literal label placeholder the controller interpolates for client-built chips))
 - PART `combobox-chip` - One committed value (multiple: only) - a div taking REAL focus (tabindex=-1, styled by :focus-visible; chips NEVER wear data-highlighted), named by its value text, holding the remove button | states: data-value (always - the chip's committed value (the native <option> twin)); data-disabled (disabled: is set (chip focus is blocked entirely))
 - PART `combobox-chip-remove` - The chip's native remove button (tabindex=-1, labelled 'Remove <label>') - a press removes the value and is never a chips-area press
-- WIRING root: `poetry--core--combobox` registers; values open, value, modal, multiple (if multiple) | `poetry--core--command` (if multiple) registers; values filter, loop | `poetry--core--popper` registers; values side, align, side_offset, avoid_collisions
+- WIRING root: `poetry--core--combobox` registers; values open, value, modal, multiple (if multiple) | `poetry--core--command` (if multiple) registers; values filter, loop | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--combobox` actions toggle on click, triggerKeydown on keydown | `poetry--core--popper` targets anchor
 - WIRING chips: `poetry--core--combobox` actions chipsPointerdown on mousedown | `poetry--core--popper` targets anchor
 - WIRING inline_input: `poetry--core--command` actions filterInput on input, keydown on keydown | `poetry--core--combobox` actions inputKeydown on keydown
@@ -254,7 +256,7 @@ Class: Poetry::Ui::DatePicker::Component - BEM block `poetry-ui-date_picker`.
 - `placeholder:` (string) - default "Pick a date"
 - `variant:` (symbol) - default "button"
 - PART `date-picker` - Root wrapper - the glue controller (formats the trigger label, closes on pick) around the composed Popover + Calendar
-- WIRING root: `poetry--core--date-picker` registers; values placeholder, mode (if range?); actions picked on poetry--core--calendar:change
+- WIRING root: `poetry--core--date-picker` registers; values placeholder, mode (if range?); actions picked on poetry:calendar:change
 - WIRING label: `poetry--core--date-picker` targets label
 - WIRING input: `poetry--core--date-picker` actions inputChanged on input, inputKeydown on keydown; targets input
 - RULE: name: is REQUIRED - the chosen date posts as an ISO string (the Calendar's hidden input).
@@ -427,6 +429,7 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 A styled wrapper around the real native select control.
 
 Class: Poetry::Ui::NativeSelect::Component - BEM block `poetry-ui-native_select`.
+- `described_by:` (string)
 - `disabled:` (boolean) - default false
 - `id:` (string)
 - `invalid:` (boolean) - default false
@@ -597,6 +600,7 @@ Class: Poetry::Ui::Select::Component - BEM block `poetry-ui-select`.
 Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "start"
 - `align_item_with_trigger:` (boolean) - default false
+- `align_offset:` (integer) - default 0
 - `avoid_collisions:` (boolean) - default true
 - `dir:` (symbol) - one of ltr|rtl
 - `disabled:` (boolean) - default false
@@ -627,7 +631,7 @@ Slots: trigger, items (many; types item|group|separator - one with_<type> setter
 - PART `select-item-indicator` - The check gutter - server-rendered always; the parent item's data-selected absence hides it
 - PART `select-item-text` - The option's label span - the value display copies from it
 - PART `select-separator` - Decorative divider between options (aria-hidden)
-- WIRING root: `poetry--core--select` registers; values open, value, modal, loop, align_item_with_trigger | `poetry--core--popper` registers; values side, align, side_offset, avoid_collisions
+- WIRING root: `poetry--core--select` registers; values open, value, modal, loop, align_item_with_trigger | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--select` actions toggle on click, triggerKeydown on keydown | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--select` actions commit on click

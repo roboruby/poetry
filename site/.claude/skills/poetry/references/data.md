@@ -156,6 +156,7 @@ Class: Poetry::Ui::CodeBlock::Component - BEM block `poetry-ui-code_block`.
 An interactive element that expands and collapses a section of content.
 
 Class: Poetry::Ui::Collapsible::Component - BEM block `poetry-ui-collapsible`.
+Content block REQUIRED (the disclosed panel body) - a blockless call raises.
 Slot REQUIRED: with_trigger (the disclosure control) - a call without it raises.
 - `open:` (boolean) - default false
 Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write content directly).
@@ -165,7 +166,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - WIRING root: `poetry--core--state` registers
 - WIRING trigger: `poetry--core--state` actions toggle on click; targets trigger
 - WIRING content: `poetry--core--state` targets content
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: The trigger is with_trigger { "label" } - a real button, wired for you (aria-expanded/controls).
 - RULE: Server-render the initial state via open: - never toggle data-open/data-closed by hand.
 - RULE: Content stays in the DOM when closed (hidden) - do not conditionally render it.
@@ -238,7 +239,9 @@ Slots: media, title, description, actions, header, footer.
 - PART `item-content` - The center column collecting title, description, and loose content
 - PART `item-title` - The title row
 - PART `item-description` - The muted description line
+- PART `item-header` - Full-width row above the media/content columns
 - PART `item-actions` - The trailing actions cell
+- PART `item-footer` - Full-width row below the media/content columns
 - RULE: Rows live inside poetry_item_group (role=list) and each row passes role: "listitem" - a role=list parent with roleless children fails aria-required-children.
 - RULE: Separate grouped rows with poetry_item_separator.
 - RULE: Compose with the slots (media/title/description/actions); loose content lands in the content column after the description.
@@ -273,15 +276,15 @@ Class: Poetry::Ui::Meter::Component - BEM block `poetry-ui-meter`.
 - `min:` (integer) - default 0
 - `show_value:` (boolean) - default true
 - `value:` (integer) - required
-- `value_label:` (string)
+- `value_text:` (string)
 - PART `meter` - Root (role=meter, aria-value*, and the accessible name); label, readout, and track stack here
 - PART `meter-label` - The visible caption span (label:)
-- PART `meter-value` - The readout - value_label: verbatim, else the range percentage; renders unless show_value: false
+- PART `meter-value` - The readout - value_text: verbatim, else the range percentage; renders unless show_value: false
 - PART `meter-track` - The full-width rail (Progress's cn chrome)
 - PART `meter-indicator` - The filled bar - inline width percentage of the range
 - RULE: A quantity within a range is a Meter (disk, seats, strength); an operation's completion over time is Progress. There is NO indeterminate meter - unknown duration means Spinner.
 - RULE: label: is REQUIRED - the meter's accessible name and visible caption.
-- RULE: value_label: replaces the visible readout verbatim ("3 of 4 seats"); without it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 deprecated it on role=meter; aria-valuenow carries the value.
+- RULE: value_text: replaces the visible readout verbatim ("3 of 4 seats"); without it the readout shows the percentage of the RANGE. No aria-valuetext - ARIA 1.2 deprecated it on role=meter; aria-valuenow carries the value.
 
 ## stat (`poetry_stat`)
 
@@ -310,6 +313,7 @@ Slots: description, media.
 A semantic table for rows and columns of data.
 
 Class: Poetry::Ui::Table::Component - BEM block `poetry-ui-table`.
+Content block REQUIRED (the table sections (poetry_table_* helpers)) - a blockless call raises.
 - `container_class:` (string)
 - `scroll_label:` (string)
 - `sticky_header:` (boolean) - default false
@@ -333,6 +337,7 @@ In blocks: `data-index` - for a screen, start from the block (MCP compose/descri
 A set of removable chips or tokens.
 
 Class: Poetry::Ui::TagGroup::Component - BEM block `poetry-ui-tag_group`.
+- `described_by:` (string)
 - `label:` (string) - required
 - `name:` (string)
 Slots: tags (many; with_tag yields NOTHING to the block - no |param|, write content directly).

@@ -373,8 +373,8 @@ cn-context-menu-label
 cn-context-menu-radio-item
 cn-context-menu-separator
 cn-context-menu-shortcut
+cn-context-menu-sub-content
 cn-context-menu-sub-trigger
-cn-context-menu-subcontent
 cn-data-table-container
 cn-data-table-empty
 cn-data-table-footer

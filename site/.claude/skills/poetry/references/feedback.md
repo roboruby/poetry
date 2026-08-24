@@ -79,9 +79,9 @@ A brief, auto-dismissing notification message.
 Class: Poetry::Ui::Toast::Component - BEM block `poetry-ui-toast`.
 Slot REQUIRED: with_title (the message) - a call without it raises.
 - `variant:` (symbol) - one of default|success|info|warning|destructive|loading, default "default", required
-- `closable:` (boolean) - default true
 - `duration:` (integer)
 - `politeness:` (symbol) - one of polite|assertive, default "dynamic"
+- `show_close_button:` (boolean) - default true
 Slots: title, description, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly).
 - PART `toast` - The notification item itself (<li>, role=status) - variant, open state, and the toaster's stack facts all ride here | states: data-open (toast is showing (the server-rendered state; the dismiss exit flips the pair before removal)); data-closed (toast is animating out); data-variant=default|success|info|warning|destructive|loading (always - the resolved variant); data-queued (the toaster holds it hidden past the visible limit (timer paused until a slot frees up)) | vars: --poetry-toast-index (stack position written by the toaster's reflow (newest visible toast = 0))
 - PART `toast-icon` - The variant's icon well (aria-hidden; the default variant renders none)

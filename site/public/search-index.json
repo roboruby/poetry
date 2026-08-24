@@ -3030,10 +3030,10 @@
     "path": "/components/meter#default"
   },
   {
-    "title": "With value label",
+    "title": "With value text",
     "page": "Meter",
     "section": "components",
-    "path": "/components/meter#with-value-label"
+    "path": "/components/meter#with-value-text"
   },
   {
     "title": "Native Select",

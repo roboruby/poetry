@@ -13,6 +13,7 @@ Slot REQUIRED: with_description (the alertdialog must explain itself) - a call w
 Slot REQUIRED: with_action (the confirming choice) - a call without it raises.
 Slot REQUIRED: with_cancel (the safe way out) - a call without it raises.
 - `size:` (symbol) - one of default|sm, default "default", required
+- `content_class:` (string)
 Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTHING to the block - no |param|, write content directly), title, description, media, action (takes poetry_button props, not a block; with_action yields NOTHING to the block - no |param|, write content directly), cancel (takes poetry_button props, not a block; with_cancel yields NOTHING to the block - no |param|, write content directly).
 - PART `alert-dialog` - Root wrapper around the trigger and the <dialog> element
 - PART `alert-dialog-content` - The role=alertdialog <dialog> panel - sizing, animation, and the open state ride here | states: data-open (panel is open (the shared dialog controller flips the pair at runtime)); data-closed (panel is closed (the server-rendered state)); data-size=default|sm (always - the resolved size)
@@ -24,7 +25,7 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
 - WIRING trigger: `poetry--core--dialog` actions open
 - WIRING close: `poetry--core--dialog` actions close
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Destructive confirmations use AlertDialog with with_action(variant: :destructive) - never a bare Dialog, never data-turbo-confirm.
 - RULE: with_title AND with_description are REQUIRED (both raise).
 - RULE: The action must be an explicit user activation - agents NEVER auto-submit the action.
@@ -114,6 +115,7 @@ Slot REQUIRED: with_item (at least one item) - a call without it raises.
 - `focusable_surface:` (boolean) - default false
 - `label:` (string)
 - `long_press_delay:` (integer) - default 700
+- `loop:` (boolean) - default false
 - `modal:` (boolean) - default true
 - `open:` (boolean) - default false
 - `side:` (symbol) - one of top|right|bottom|left, default "right"
@@ -121,9 +123,10 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - PART `context-menu` - Root wrapper hosting the context-menu + menu + popper controllers around the surface and content
 - PART `context-menu-trigger` - The right-click/long-press SURFACE wrapping the logical object - not a widget: no role, no aria-haspopup | states: data-popup-open (the menu is open (absence is the closed state - no aria-expanded on a role-less surface)); data-disabled (the surface is inert (disabled: true))
 - PART `context-menu-content` - The role=menu popup panel - anchored at the pointer via popper's virtual-anchor mode; open state and animation ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (the side: option, default right; popper re-writes it after collision flips)); data-align=start|center|end (the alignment (forced start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the anchor rect's measured width); --anchor-height (popper: the anchor rect's measured height)
+- PART `context-menu-group` - role=group semantic grouping between separators
 - PART `context-menu-label` - Non-interactive heading for a run of items
 - PART `context-menu-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
-- PART `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
+- PART `context-menu-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
 - PART `context-menu-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
 - PART `context-menu-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
 - PART `context-menu-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
@@ -132,7 +135,7 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - PART `context-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
 - PART `context-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state)); data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `context-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
-- WIRING root: `poetry--core--context-menu` registers; values long_press_delay, disabled | `poetry--core--menu` registers; values open, modal | `poetry--core--popper` registers; values side, align, side_offset, avoid_collisions
+- WIRING root: `poetry--core--context-menu` registers; values long_press_delay, disabled | `poetry--core--menu` registers; values open, modal, loop | `poetry--core--popper` registers; values side, align, side_offset, avoid_collisions
 - WIRING trigger: `poetry--core--context-menu` actions open on contextmenu, pressStart on pointerdown, pressCancel on pointermove/pointerup/pointercancel | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--menu` actions activate on click
@@ -166,7 +169,7 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - WIRING content: `poetry--core--dialog` actions close on cancel, backdropClose on click; targets dialog
 - WIRING trigger: `poetry--core--dialog` actions open
 - WIRING close: `poetry--core--dialog` actions close
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Open dialogs with with_trigger(...) - never a hand-wired button.
 - RULE: with_title is REQUIRED (the accessible name); with_description when the purpose needs explaining.
 - RULE: Confirmations that must not be lost use dismissible: false (backdrop clicks stop closing).
@@ -236,14 +239,14 @@ Slots: items (many; types item|checkbox_item|radio_group|label|separator|group|s
 - PART `dropdown-menu-separator` - role=separator rule between groups
 - PART `dropdown-menu-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
 - PART `dropdown-menu-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
-- PART `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
+- PART `dropdown-menu-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state)); data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `dropdown-menu-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
 - WIRING root: `poetry--core--menu` registers; values open, modal, loop | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--menu` actions toggle on click, triggerKeydown on keydown | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - WIRING item: `poetry--core--menu` actions activate on click
 - WIRING sub_trigger: `poetry--core--menu` actions subEnter on pointerenter, subLeave on pointerleave, openSub on click | `poetry--core--popper` targets anchor
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_dropdown_menu - never hand-roll role=menu popups with Tailwind.
 - RULE: Items are ACTIONS. Choosing a form VALUE is a Select/Combobox - do not fake it with radio items.
 - RULE: Navigation items pass with_item(href:) (external: for a new tab); a form action (sign-out, a DELETE) passes with_item(submit:, method:). The item renders AS the anchor / submit button (role=menuitem on the <a> or <button>) - one interactive element - so NEVER nest a link_to or button_to inside an item.
@@ -278,7 +281,7 @@ Slots: trigger (with_trigger yields NOTHING to the block - no |param|, write con
 - WIRING root: `poetry--core--hover-card` registers; values open, open_delay, close_delay | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--hover-card` actions pointerEnter on pointerenter, pointerLeave on pointerleave, focusOpen on focus, blurClose on blur, touchGuard on touchstart | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_hover_card - never hand-roll hover-div previews.
 - RULE: THE REACHABLE-ELSEWHERE RULE (non-negotiable): every piece of information in a hover card MUST exist at the trigger link's destination (or another keyboard/touch-reachable surface). The card is pointer-only enrichment - keyboard and touch users never see inside it.
 - RULE: The trigger must be a REAL link with a real href - it is the fallback, the touch path, and the keyboard path all at once. For a button LOOK, pass variant:/size: (renders through Button, still an <a> via href:) - never swap the tag to :button.
@@ -302,15 +305,17 @@ Slots: menus (many; each with_menu REQUIRES with_trigger inside its block (the t
 - PART `menubar-menu` - One logical menu - a display:contents wrapper hosting the trigger + content pair's menu and popper controllers
 - PART `menubar-trigger` - The top-level menu button - a role=menuitem INSIDE the bar | states: data-value (the menu's value - the coordinator's open/close key); data-popup-open (its menu is open (written with aria-expanded; absence is the closed state)); data-disabled (trigger is disabled (written together with the disabled property))
 - PART `menubar-content` - The role=menu popup panel - positioning, animation, and the open state ride here | states: data-open (menu is open (presence flips the pair at runtime)); data-closed (menu is closed or animating out (the server-rendered state)); data-side=top|right|bottom|left (the placement side (bottom initially; popper re-writes it after collision flips)); data-align=start|center|end (the alignment against the trigger (start initially; popper re-resolves it)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the trigger's measured width); --anchor-height (popper: the trigger's measured height)
+- PART `menubar-group` - role=group semantic grouping between separators
+- PART `menubar-label` - Non-interactive heading for a run of items
 - PART `menubar-item` - One role=menuitem action row | states: data-variant (default or destructive (the danger treatment)); data-inset (indented to align with checkbox/radio item text (inset: true)); data-disabled (item is disabled (always written together with aria-disabled))
-- PART `menubar-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
+- PART `menubar-checkbox-item` - A role=menuitemcheckbox toggle row | states: data-checked (checked (the controller re-writes the pair with aria-checked on activation)); data-unchecked (unchecked); data-disabled (item is disabled (always written together with aria-disabled)); data-close-on-select (per-item override of the menu's close-on-select default ("false" keeps the menu open))
 - PART `menubar-radio-group` - role=group scoping one single-select value | states: data-value (the selected radio value (the controller re-writes it on change))
 - PART `menubar-radio-item` - A role=menuitemradio row inside a radio group | states: data-checked (the selected radio (the controller re-writes the pair with aria-checked)); data-unchecked (not selected); data-value (the radio's value)
 - PART `menubar-item-indicator` - The check/circle glyph slot inside checkbox and radio items - state rides the parent item; the glyph stays decorative
 - PART `menubar-separator` - role=separator rule between groups
 - PART `menubar-shortcut` - The trailing keybinding HINT - aria-hidden, never binds the key
 - PART `menubar-sub` - A submenu scope - hosts its own popper around the sub trigger/content pair
-- PART `menubar-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state))
+- PART `menubar-sub-trigger` - The role=menuitem row opening its submenu | states: data-popup-open (its submenu is open (written with aria-expanded; absence is the closed state)); data-inset (indented to align with checkbox/radio item text (inset: true))
 - PART `menubar-sub-content` - The nested role=menu panel - its own popper content on the same presence machinery | states: data-open (submenu is open (presence flips the pair at runtime)); data-closed (submenu is closed (the server-rendered state)); data-side=top|right|bottom|left (the placement side (right/left by direction; popper resolves it at runtime)); data-align=start|center|end (the alignment against the sub-trigger (popper resolves it at runtime)) | vars: --transform-origin (popper's anchor-facing animation origin); --available-width (popper: viewport space left for the panel (post-flip)); --available-height (popper: viewport space left for the panel (post-flip)); --anchor-width (popper: the sub-trigger's measured width); --anchor-height (popper: the sub-trigger's measured height)
 - WIRING root: `poetry--core--menubar` registers; values value, loop; actions slideAdjacent on poetry:menu:edge-navigate, onMenuClosed on poetry:menu:closed | `poetry--core--roving-focus` registers; values orientation, manage_tabindex, loop; actions keydown on keydown
 - WIRING menu_wrapper: `poetry--core--menu` registers; values open, modal | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
@@ -351,7 +356,7 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - WIRING trigger: `poetry--core--popover` actions toggle on click
 - WIRING anchor_part: `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_popover - never hand-roll an anchored role=dialog panel with Tailwind.
 - RULE: Popover content is INTERACTIVE - for text-only hover hints use Tooltip; for pointer-only previews use HoverCard.
 - RULE: Give the panel a name: use with_title (preferred) or label: - a role=dialog without a name fails the audit.
@@ -394,6 +399,8 @@ A floating label describing an element on hover or focus.
 Class: Poetry::Ui::Tooltip::Component - BEM block `poetry-ui-tooltip`.
 Slot REQUIRED: with_trigger (the described control) - a call without it raises.
 - `align:` (symbol) - one of start|center|end, default "center"
+- `align_offset:` (integer) - default 0
+- `avoid_collisions:` (boolean) - default true
 - `content_class:` (string)
 - `delay_duration:` (integer)
 - `disable_hoverable_content:` (boolean)
@@ -405,11 +412,11 @@ Slots: trigger (takes poetry_button props, not a block; with_trigger yields NOTH
 - PART `tooltip` - Root wrapper around the trigger and the bubble
 - PART `tooltip-content` - The role=tooltip bubble - positioning, animation, and the open state ride here | states: data-open (bubble is open (the controller flips the pair at runtime)); data-closed (bubble is closed (the server-rendered state; hidden rides along)); data-instant=delay|focus (the open skipped the delay - warm-grace/programmatic or keyboard focus (runtime-only; absent on a delayed open)); data-side=top|right|bottom|left (always - the side (initial placement, re-resolved live by popper after flip)); data-align=start|center|end (always - the alignment (re-resolved live by popper)) | vars: --transform-origin (the anchor-facing origin popper writes for scale-in animation); --available-width (viewport space left for the bubble (popper, post-flip)); --available-height (viewport space left for the bubble (popper, post-flip)); --anchor-width (the anchor's measured width (popper)); --anchor-height (the anchor's measured height (popper))
 - PART `tooltip-arrow` - The arrow wrapper (aria-hidden) - popper pins it to the bubble's anchor-facing edge and rotates it toward the anchor | states: data-side=top|right|bottom|left (written by popper alongside the content's - the resolved side, for per-side restyling)
-- WIRING root: `poetry--core--tooltip` registers; values open, delay_duration (unless), disable_hoverable_content (unless) | `poetry--core--popper` registers; values side, align, side_offset
+- WIRING root: `poetry--core--tooltip` registers; values open, delay_duration (unless), disable_hoverable_content (unless) | `poetry--core--popper` registers; values side, align, side_offset, align_offset, avoid_collisions
 - WIRING trigger: `poetry--core--tooltip` actions pointerMove on pointermove, pointerLeave on pointerleave, pointerDown on pointerdown, clickClose on click, focusOpen on focus, blurClose on blur | `poetry--core--popper` targets anchor
 - WIRING content: `poetry--core--popper` targets content
 - WIRING arrow: `poetry--core--popper` targets arrow
-- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the wiring (id/aria + data: with the overlay's trigger slot and Stimulus behavior) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
+- RULE: with_trigger(compose: true) { |wiring| ... } composes YOUR control as the trigger: the block is yielded the trigger wiring (the Stimulus behavior the overlay needs; poppers add id/aria and their trigger slot, modals hand only the open action) - splat it onto a wiring-free control (poetry_sidebar_menu_button, a plain tag); without compose: the classic composed Button renders.
 - RULE: Use poetry_tooltip - never hand-roll title-attribute replacements or hover divs.
 - RULE: Tooltip content is TEXT and never interactive/focusable - links, buttons, or inputs inside are a contract violation (use Popover).
 - RULE: Never put essential information only in a tooltip - touch users NEVER see it (no long-press path, by design).

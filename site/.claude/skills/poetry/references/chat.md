@@ -18,6 +18,7 @@ Slots: media (with_media yields NOTHING to the block - no |param|, write content
 - PART `attachment-title` - The file name line (title slot; user content, never html_safe)
 - PART `attachment-description` - Muted metadata / failure copy under the title
 - PART `attachment-actions` - Row of with_action poetry Buttons
+- PART `attachment-trigger` - The whole-chip control (with_trigger: a button or tag: :a anchor) - wraps the picker/download affordance
 - PART `attachment-status` - sr-only role=status announcement for the in-flight and error states (uploading/processing/error)
 - RULE: State is server-owned: render data-upload-state and flip it by Turbo Stream replace - never toggle it in JS.
 - RULE: with_media(variant: :image) wraps the caller's <img>; file names and URLs are user content - never render them html_safe.
@@ -30,6 +31,7 @@ Slots: media (with_media yields NOTHING to the block - no |param|, write content
 A chat message bubble aligned to its sender.
 
 Class: Poetry::Ui::Bubble::Component - BEM block `poetry-ui-bubble`.
+Content block REQUIRED (the message content) - a blockless call raises.
 - `variant:` (symbol) - one of default|secondary|muted|tinted|outline|ghost|destructive, default "default", required
 - `align:` (symbol) - one of start|end, default "start"
 - `href:` (string)
