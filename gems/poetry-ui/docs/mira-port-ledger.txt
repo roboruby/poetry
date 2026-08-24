@@ -256,7 +256,7 @@ cn-slider-range: identical
 cn-slider-thumb: mechanical (mira minus inline dups)
 cn-slider-track: judged
 cn-switch: mechanical (mira minus inline dups)
-cn-switch-thumb: poetry-idiom (kept default)
+cn-switch-thumb: default-size thumb size-3.5 (fidelity fix 2026-08-24 - the kept-default size-4 thumb overflowed mira's compact 16.6px root and overshot the checked edge by 4px)
 cn-table: mechanical (mira minus inline dups)
 cn-table-body: identical
 cn-table-caption: mechanical (mira minus inline dups)
@@ -378,6 +378,6 @@ cn-tooltip-arrow-logical: dropped: Base UI logical-side (side=inline-start/end) 
 cn-tooltip-content-logical: dropped: Base UI logical-side (side=inline-start/end) values poetry's floating controller never emits
 
 ## Roster pass (2026-07-06)
-cn-tabs-trigger: default-variant active shadow-sm DROPPED (panel discovery; settled-read receipt: only vega ships the pair upstream at d0fae528 - the earlier port panels never measured the 3px ramp).
+cn-tabs-trigger: default-variant active shadow-sm DROPPED (panel discovery; receipt corrected 2026-08-24: vega AND nova ship the pair upstream at d0fae528; this theme's upstream does not - drop stands - the earlier port panels never measured the 3px ramp).
 cn-drawer-content: scrim (native ::backdrop color+blur) moved from the inline dictionary to this fragment at upstream mira drawer-overlay values (backdrop:bg-black/80 supports-backdrop-filter:backdrop:backdrop-blur-xs). Swipe machinery (transition/opacity calc) stays structural in drawer/style.rb.
 cn-select-viewport: NEW poetry-only hook (dictionary 319->320); padding moved theme-side (p-1 scroll-my-1).

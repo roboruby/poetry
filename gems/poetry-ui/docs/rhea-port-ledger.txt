@@ -55,8 +55,8 @@ cn-bubble-variant-secondary: identical
 cn-bubble-variant-tinted: identical
 cn-button: mechanical (rhea minus inline dups)
 cn-button-group: mechanical (rhea minus inline dups)
-cn-button-group-orientation-horizontal: poetry-idiom (kept default)
-cn-button-group-orientation-vertical: poetry-idiom (kept default)
+cn-button-group-orientation-horizontal: themed trailing caps (rounded-2xl!) - fidelity fix 2026-08-24; kept-default md caps made groups asymmetric against the theme's own leading-corner radius
+cn-button-group-orientation-vertical: themed trailing caps (rounded-2xl!) - fidelity fix 2026-08-24; kept-default md caps made groups asymmetric against the theme's own leading-corner radius
 cn-button-group-separator: identical
 cn-button-group-text: mechanical (rhea minus inline dups)
 cn-button-size-default: judged
@@ -377,6 +377,6 @@ cn-tooltip-arrow-logical: dropped: Base UI logical-side (side=inline-start/end) 
 cn-tooltip-content-logical: dropped: Base UI logical-side (side=inline-start/end) values poetry's floating controller never emits
 
 ## Roster pass (2026-07-06)
-cn-tabs-trigger: default-variant active shadow-sm DROPPED (panel discovery; settled-read receipt: only vega ships the pair upstream at d0fae528 - the earlier port panels never measured the 3px ramp).
+cn-tabs-trigger: default-variant active shadow-sm DROPPED (panel discovery; receipt corrected 2026-08-24: vega AND nova ship the pair upstream at d0fae528; this theme's upstream does not - drop stands - the earlier port panels never measured the 3px ramp).
 cn-drawer-content: scrim (native ::backdrop color+blur) moved from the inline dictionary to this fragment at upstream rhea drawer-overlay values (backdrop:bg-black/30 supports-backdrop-filter:backdrop:backdrop-blur-sm). Swipe machinery (transition/opacity calc) stays structural in drawer/style.rb.
 cn-select-viewport: NEW poetry-only hook (dictionary 319->320); padding moved theme-side (p-1 scroll-my-1).

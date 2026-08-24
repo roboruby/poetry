@@ -17,7 +17,10 @@ module Poetry
         element :content, "cn-alert-dialog-content m-auto open:grid"
 
         element :header, "cn-alert-dialog-header grid grid-rows-[auto_1fr] place-items-center text-center"
-        element :header_with_media, "grid-rows-[auto_auto_1fr] gap-x-6"
+        # The with-media x-gap is theme-side (.cn-alert-dialog-header
+        # has-data-[slot=alert-dialog-media]:gap-x-*) - inline it and no
+        # theme could ever tighten it.
+        element :header_with_media, "grid-rows-[auto_auto_1fr]"
         # default size: centered on mobile, left from sm (sm size stays
         # centered at every breakpoint - source).
         element :header_size_default, "sm:place-items-start sm:text-left"

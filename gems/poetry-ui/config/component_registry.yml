@@ -283,7 +283,7 @@ components:
     - description
     - footer
     - footer_size_sm
-    capsule: e03c6466aa44
+    capsule: f7242a603af4
     controllers:
     - identifier: poetry--core--dialog
       targets:
