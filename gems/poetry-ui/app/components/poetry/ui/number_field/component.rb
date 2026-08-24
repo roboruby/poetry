@@ -25,6 +25,7 @@ module Poetry
       #   )
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
@@ -83,48 +84,33 @@ module Poetry
           end
         end
 
-        # The submitted field name - rides the hidden number input.
-        option :name, :string, required: true
-        # Initial value - a number; nil renders empty (null semantics).
-        option :value, ActiveModel::Type::Value.new
-        # The lower clamp for stepping and native validation.
-        option :min, :float
-        # The upper clamp for stepping and native validation.
-        option :max, :float
-        # The arrow-key / stepper increment.
-        option :step, :float, default: 1.0
-        # The Shift-arrow step size (the coarse jump).
-        option :large_step, :float, default: 10.0
-        # The Alt-arrow step size (the fine adjustment).
-        option :small_step, :float, default: 0.1
-        # Snaps stepped values to step multiples counted from min:.
-        option :snap, :boolean, default: false
-        # Opt-in wheel stepping while the input is focused.
-        option :wheel, :boolean, default: false
-        # Intl.NumberFormatOptions for the DISPLAY (submission stays raw).
-        option :format, ActiveModel::Type::Value.new
-        # Locale tag pinning the display and parsing separators; the page
-        # locale otherwise.
-        option :locale, :string
-        # Placeholder text for the empty input.
-        option :placeholder, :string
-        # Disables both inputs and the steppers; the group chrome dims.
-        option :disabled, :boolean, default: false
-        # Makes the visible input read-only (steppers and typing inert).
-        option :readonly, :boolean, default: false
-        # Requires a value - native validation rides the hidden input.
-        option :required, :boolean, default: false
-        # Marks the field invalid (aria-invalid on the visible input; the
-        # group wears the destructive ring).
-        option :invalid, :boolean, default: false
-        # The visible input's dom id - the seam a Label's for_id: points at.
-        option :id, :string
-        # Standalone accessible name -> aria-label on the visible input.
-        # Inside a form, the Field label wires ids instead - pass neither
-        # and pair with poetry_label/form.
-        option :label, :string
-        # aria-describedby wiring for Field hint/error pairing.
-        option :described_by, :string
+        option :name, :string, required: true, doc: "The submitted field name - rides the hidden number input."
+        option :value, ActiveModel::Type::Value.new,
+               doc: "Initial value - a number; nil renders empty (null semantics)."
+        option :min, :float, doc: "The lower clamp for stepping and native validation."
+        option :max, :float, doc: "The upper clamp for stepping and native validation."
+        option :step, :float, default: 1.0, doc: "The arrow-key / stepper increment."
+        option :large_step, :float, default: 10.0, doc: "The Shift-arrow step size (the coarse jump)."
+        option :small_step, :float, default: 0.1, doc: "The Alt-arrow step size (the fine adjustment)."
+        option :snap, :boolean, default: false, doc: "Snaps stepped values to step multiples counted from min:."
+        option :wheel, :boolean, default: false, doc: "Opt-in wheel stepping while the input is focused."
+        option :format, ActiveModel::Type::Value.new,
+               doc: "Intl.NumberFormatOptions for the DISPLAY (submission stays raw)."
+        option :locale, :string,
+               doc: "Locale tag pinning the display and parsing separators; the page locale otherwise."
+        option :placeholder, :string, doc: "Placeholder text for the empty input."
+        option :disabled, :boolean, default: false, doc: "Disables both inputs and the steppers; the group chrome dims."
+        option :readonly, :boolean, default: false,
+                                    doc: "Makes the visible input read-only (steppers and typing inert)."
+        option :required, :boolean, default: false, doc: "Requires a value - native validation rides the hidden input."
+        option :invalid, :boolean, default: false,
+                                   doc: "Marks the field invalid (aria-invalid on the visible input; the group wears " \
+                                        "the destructive ring)."
+        option :id, :string, doc: "The visible input's dom id - the seam a Label's for_id: points at."
+        option :label, :string,
+               doc: "Standalone accessible name -> aria-label on the visible input. Inside a form, the Field label " \
+                    "wires ids instead - pass neither and pair with poetry_label/form."
+        option :described_by, :string, doc: "aria-describedby wiring for Field hint/error pairing."
 
         validates :step, numericality: { greater_than: 0 }
 
@@ -269,6 +255,8 @@ module Poetry
         def large_step_number = number(large_step)
         def small_step_number = number(small_step)
         def format_json = format.to_json
+
+        private :root_attributes, :input_attributes, :hidden_attributes, :stepper, :stepper_icon
       end
     end
   end

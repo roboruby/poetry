@@ -38,8 +38,8 @@ module Poetry
         # callers get Button's full typed-slot contract statically.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The trigger is a poetry Button wired to open the dialog - agents
-        # pass Button props: with_trigger(variant: :outline) { "Open" }.
+        slot_doc :trigger, "The trigger is a poetry Button wired to open the dialog - agents pass Button props: " \
+                           "with_trigger(variant: :outline) { \"Open\" }."
         renders_one :trigger, lambda { |**options, &block|
           composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
             options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
@@ -48,11 +48,11 @@ module Poetry
             Button::Component.new(**options, &block)
           end
         }
-        # The heading - the dialog's accessible name; required.
+        slot_doc :title, "The heading - the dialog's accessible name; required."
         renders_one :title
-        # Muted copy under the title, wired to aria-describedby.
+        slot_doc :description, "Muted copy under the title, wired to aria-describedby."
         renders_one :description
-        # The action row at the bottom of the panel.
+        slot_doc :footer, "The action row at the bottom of the panel."
         renders_one :footer
 
         # Sheet and Drawer subclass this and REDECLARE both elements with
@@ -83,16 +83,15 @@ module Poetry
           end
         end
 
-        # Backdrop clicks close the dialog; false keeps confirmations
-        # from being dismissed accidentally (Esc still closes).
-        option :dismissible, :boolean, default: true
+        option :dismissible, :boolean, default: true,
+                                       doc: "Backdrop clicks close the dialog; false keeps confirmations from being " \
+                                            "dismissed accidentally (Esc still closes)."
 
-        # Renders the corner X; false forces a deliberate footer choice
-        # (footer actions and Esc remain). Sheet inherits this.
-        option :show_close_button, :boolean, default: true
-        # Extra classes merged onto the <dialog> panel (e.g.
-        # "max-h-[50vh]" caps a top/bottom sheet).
-        option :content_class, :string
+        option :show_close_button, :boolean, default: true,
+                                             doc: "Renders the corner X; false forces a deliberate footer choice " \
+                                                  "(footer actions and Esc remain). Sheet inherits this."
+        option :content_class, :string,
+               doc: "Extra classes merged onto the <dialog> panel (e.g. \"max-h-[50vh]\" caps a top/bottom sheet)."
 
         part "dialog", "Root wrapper around the trigger and the <dialog> element"
         part "dialog-content", "The <dialog> panel - positioning, animation, and the open " \
@@ -174,6 +173,8 @@ module Poetry
         def panel_stamps
           {}
         end
+
+        private :title_id, :description_id, :dialog_attributes, :close_action, :html_attributes
       end
     end
   end

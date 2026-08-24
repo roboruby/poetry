@@ -22,14 +22,14 @@ module Poetry
 
       # The provenance line template for ported treatments,
       # format-interpolated with the upstream style name.
-      PORTED = "ported from upstream style-%s.css (shadcn d0fae528)"
+      PORTED = "ported from the source style-%s.css at pin d0fae528"
 
       # Per-theme DESIGN.md metadata: the typography pairing and the
       # treatment provenance line.
       DETAILS = {
         "default" => {
           "typography" => { "pairing" => "system sans", "family" => SANS },
-          "treatment" => "the neutral shadcn-parity treatment (new-york-v4 baseline)"
+          "treatment" => "the neutral source-parity treatment (the ported baseline)"
         },
         "vega" => {
           "typography" => { "pairing" => "system sans", "family" => SANS },

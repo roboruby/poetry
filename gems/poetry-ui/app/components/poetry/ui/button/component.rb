@@ -43,28 +43,26 @@ module Poetry
             content: true, slots: %w[leading trailing], options: %w[loading] }
         ].freeze
 
-        # Optional leading visual, rendered inside the icon span.
+        slot_doc :leading, "Optional leading visual, rendered inside the icon span."
         renders_one :leading
-        # Optional trailing visual, rendered inside the icon span.
+        slot_doc :trailing, "Optional trailing visual, rendered inside the icon span."
         renders_one :trailing
 
-        # The visual intent axis; :destructive marks irreversible actions.
-        style :variant, default: :default, required: true, variants: VARIANTS
-        # The size axis; the icon* sizes are square icon-only forms (label: required).
-        style :size, default: :default, required: true, variants: SIZES
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The visual intent axis; :destructive marks irreversible actions."
+        style :size, default: :default, required: true, variants: SIZES,
+                     doc: "The size axis; the icon* sizes are square icon-only forms (label: required)."
 
-        # The native button type; ignored when the button renders as an anchor.
-        option :type, :symbol, default: :button
-        # Renders the same styling on an <a> when :a - navigation wearing button clothes.
-        option :tag, :symbol, default: :button
-        # Disables the control (native disabled; aria-disabled on the anchor form).
-        option :disabled, :boolean, default: false
-        # The no-JS loading state: aria-busy, a spinner, and the control disabled.
-        option :loading, :boolean, default: false
-        # The accessible name for icon-only usage - not visible text.
-        option :label, :string
-        # The link target; implies the anchor form.
-        option :href, :string
+        option :type, :symbol, default: :button,
+                               doc: "The native button type; ignored when the button renders as an anchor."
+        option :tag, :symbol, default: :button,
+                              doc: "Renders the same styling on an <a> when :a - navigation wearing button clothes."
+        option :disabled, :boolean, default: false,
+                                    doc: "Disables the control (native disabled; aria-disabled on the anchor form)."
+        option :loading, :boolean, default: false,
+                                   doc: "The no-JS loading state: aria-busy, a spinner, and the control disabled."
+        option :label, :string, doc: "The accessible name for icon-only usage - not visible text."
+        option :href, :string, doc: "The link target; implies the anchor form."
 
         validates :type, inclusion: { in: TYPES }
         validates :tag, inclusion: { in: %i[button a] }
@@ -162,6 +160,10 @@ module Poetry
           attrs["disabled"] = true if disabled || loading
           attrs
         end
+
+        private :icon_only?, :link_tag?, :root_tag, :root_attributes
+
+        private :icon_only?, :link_tag?, :root_tag, :root_attributes
       end
     end
   end

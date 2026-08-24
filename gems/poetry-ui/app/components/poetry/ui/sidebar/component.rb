@@ -54,9 +54,9 @@ module Poetry
         # so static checks can flag a missing nav without rendering.
         REQUIRED_SLOTS = { nav: "the sidebar column" }.freeze
 
-        # The sidebar column's content (required) - groups, menus, header/footer.
+        slot_doc :nav, "The sidebar column's content (required) - groups, menus, header/footer."
         renders_one :nav
-        # The page area beside the column - rendered as the <main> inset.
+        slot_doc :inset, "The page area beside the column - rendered as the <main> inset."
         renders_one :inset
 
         use_stimulus do
@@ -93,16 +93,15 @@ module Poetry
           end
         end
 
-        # The expanded/collapsed state at first paint - feed it from the
-        # persisted cookie so there is no collapse flash.
-        option :open, :boolean, default: true
-        # Which edge the column hangs on.
-        option :side, :symbol, default: :left
-        # The column treatment: flush column, floating card, or inset panel.
-        option :variant, :symbol, default: :sidebar
-        # What collapsing does: slide fully away, shrink to an icon rail,
-        # or :none for a static column.
-        option :collapsible, :symbol, default: :offcanvas
+        option :open, :boolean, default: true,
+                                doc: "The expanded/collapsed state at first paint - feed it from the persisted " \
+                                     "cookie so there is no collapse flash."
+        option :side, :symbol, default: :left, doc: "Which edge the column hangs on."
+        option :variant, :symbol, default: :sidebar,
+                                  doc: "The column treatment: flush column, floating card, or inset panel."
+        option :collapsible, :symbol, default: :offcanvas,
+                                      doc: "What collapsing does: slide fully away, shrink to an icon rail, or :none " \
+                                           "for a static column."
 
         validates :side, inclusion: { in: SIDES }
         validates :variant, inclusion: { in: VARIANTS }
@@ -138,7 +137,7 @@ module Poetry
                "data-closed" => "sheet is closed (the server-rendered state)",
                "data-mobile" => "always \"true\" - the mobile-mode marker",
                "data-side" => { condition: "which edge the sheet slides from", values: %w[left right] },
-               "data-sidebar" => "always \"sidebar\" - the upstream sub-part marker"
+               "data-sidebar" => "always \"sidebar\" - the suite-wide sub-part marker"
              },
              vars: {
                "--sidebar-width" => "overridden inline to the mobile sheet width (18rem)"
@@ -161,12 +160,12 @@ module Poetry
              }
         part "sidebar-menu-action", "The item-corner action button, absolutely positioned in the row",
              states: {
-               "data-sidebar" => "always \"menu-action\" - the upstream sub-part marker"
+               "data-sidebar" => "always \"menu-action\" - the suite-wide sub-part marker"
              }
         part "sidebar-menu-badge", "The trailing count/status chrome in the row corner - " \
                                    "pointer-transparent",
              states: {
-               "data-sidebar" => "always \"menu-badge\" - the upstream sub-part marker"
+               "data-sidebar" => "always \"menu-badge\" - the suite-wide sub-part marker"
              }
 
         # @api private
@@ -241,6 +240,9 @@ module Poetry
         def mobile_title_id
           @mobile_title_id ||= poetry_instance_id("poetry-sidebar-mobile")
         end
+
+        private :data_state, :data_collapsible, :inset_variant?, :root_attributes, :peer_attributes, :gap_classes
+        private :container_classes, :mobile_dialog_attributes, :mobile_title_id
       end
     end
   end

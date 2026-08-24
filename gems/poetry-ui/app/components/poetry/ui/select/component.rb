@@ -179,7 +179,7 @@ module Poetry
           "RadioGroup.",
           "The hidden native select is plumbing - never target it with styles, labels, or Capybara " \
           "selectors (drive the combobox like a user).",
-          "Positioning is popper-only: poetry Select drops below the trigger (shadcn's item-aligned overlay " \
+          "Positioning is popper-only: poetry Select drops below the trigger (the item-aligned overlay " \
           "mode is not ported - a documented parity delta)."
         ].freeze
 
@@ -192,16 +192,15 @@ module Poetry
         # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # Optional custom trigger content rendered BEFORE the value span
-        # (rare); the component owns role=combobox + the aria wiring + the
-        # chevron regardless, so composition cannot drop the contract.
+        slot_doc :trigger, "Optional custom trigger content rendered BEFORE the value span (rare); the component " \
+                           "owns role=combobox + the aria wiring + the chevron regardless, so composition cannot " \
+                           "drop the contract."
         renders_one :trigger
 
-        # The option UNION: item | group (label + items) | separator - one
-        # ordered collection (interleaving preserved; items and groups are
-        # part COMPONENTS so option registration follows render/DOM order).
-        # Scroll buttons, the viewport, and the native select are
-        # component-owned anatomy, never caller-placed.
+        slot_doc :items, "The option UNION: item | group (label + items) | separator - one ordered collection " \
+                         "(interleaving preserved; items and groups are part COMPONENTS so option registration " \
+                         "follows render/DOM order). Scroll buttons, the viewport, and the native select are " \
+                         "component-owned anatomy, never caller-placed."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           group: {
@@ -262,49 +261,39 @@ module Poetry
           end
         end
 
-        # The committed option value - the item whose value: matches renders
-        # as selected and its label fills the trigger.
-        option :value, :string
-        # The form field name, carried by the hidden native <select>.
-        option :name, :string
-        # Text shown in the trigger until an option is committed; also
-        # rendered as the blank native <option> (posts "" when untouched).
-        option :placeholder, :string
-        # The trigger's DOM id - what a Field label's for: must point at;
-        # giving one also satisfies the accessible-name requirement.
-        option :id, :string
-        # Server-renders the popup already open.
-        option :open, :boolean, default: false
-        # Marks the hidden native <select> required - native constraint
-        # validation blocks submission while unset.
-        option :required, :boolean, default: false
-        # Disables the trigger and the hidden native <select>.
-        option :disabled, :boolean, default: false
-        # While open, blocks pointer interaction outside the popup.
-        option :modal, :boolean, default: true
-        # Preferred popup side relative to the trigger.
-        option :side, :symbol, default: :bottom
-        # Popup alignment along the chosen side's edge.
-        option :align, :symbol, default: :start
-        # Gap in pixels between trigger and popup.
-        option :side_offset, :integer, default: 4
-        # Pixel shift along the alignment axis.
-        option :align_offset, :integer, default: 0
-        # Flips/shifts the popup to keep it inside the viewport.
-        option :avoid_collisions, :boolean, default: true
-        # Arrow-key navigation wraps from the last option back to the first.
-        option :loop, :boolean, default: false
-        # Opens the popup OVER the trigger with the selected item aligned on
-        # it (native-select feel); falls back to regular below-the-trigger
-        # positioning on touch, viewport-edge triggers, or squeezed heights.
-        option :align_item_with_trigger, :boolean, default: false
-        # Text direction for the select and its popup.
-        option :dir, :symbol
-        # The trigger size axis.
-        option :size, :symbol, default: :default
-        # Extra classes merged onto the trigger button (e.g. w-full over the
-        # base w-fit); class: styles the root wrapper instead.
-        option :trigger_class, :string
+        option :value, :string,
+               doc: "The committed option value - the item whose value: matches renders as selected and its label " \
+                    "fills the trigger."
+        option :name, :string, doc: "The form field name, carried by the hidden native <select>."
+        option :placeholder, :string,
+               doc: "Text shown in the trigger until an option is committed; also rendered as the blank native " \
+                    "<option> (posts \"\" when untouched)."
+        option :id, :string,
+               doc: "The trigger's DOM id - what a Field label's for: must point at; giving one also satisfies the " \
+                    "accessible-name requirement."
+        option :open, :boolean, default: false, doc: "Server-renders the popup already open."
+        option :required, :boolean, default: false,
+                                    doc: "Marks the hidden native <select> required - native constraint validation " \
+                                         "blocks submission while unset."
+        option :disabled, :boolean, default: false, doc: "Disables the trigger and the hidden native <select>."
+        option :modal, :boolean, default: true, doc: "While open, blocks pointer interaction outside the popup."
+        option :side, :symbol, default: :bottom, doc: "Preferred popup side relative to the trigger."
+        option :align, :symbol, default: :start, doc: "Popup alignment along the chosen side's edge."
+        option :side_offset, :integer, default: 4, doc: "Gap in pixels between trigger and popup."
+        option :align_offset, :integer, default: 0, doc: "Pixel shift along the alignment axis."
+        option :avoid_collisions, :boolean, default: true, doc: "Flips/shifts the popup to keep it inside the viewport."
+        option :loop, :boolean, default: false,
+                                doc: "Arrow-key navigation wraps from the last option back to the first."
+        option :align_item_with_trigger, :boolean, default: false,
+                                                   doc: "Opens the popup OVER the trigger with the selected item " \
+                                                        "aligned on it (native-select feel); falls back to regular " \
+                                                        "below-the-trigger positioning on touch, viewport-edge " \
+                                                        "triggers, or squeezed heights."
+        option :dir, :symbol, doc: "Text direction for the select and its popup."
+        option :size, :symbol, default: :default, doc: "The trigger size axis."
+        option :trigger_class, :string,
+               doc: "Extra classes merged onto the trigger button (e.g. w-full over the base w-fit); class: styles " \
+                    "the root wrapper instead."
 
         validates :size, inclusion: { in: SIZES }
         validates :side, inclusion: { in: SIDES }
@@ -581,6 +570,9 @@ module Poetry
         def item_wiring
           @item_wiring ||= stimulus_attributes_for(:item)
         end
+
+        private :trigger_id, :content_id, :native_id, :option_set, :selected_value, :selected_label, :root_attributes
+        private :native_select, :trigger_button, :content_attributes, :viewport_attributes, :scroll_button
       end
 
       # role=group with an optional heading label (aria-labelledby wired) -
@@ -595,7 +587,7 @@ module Poetry
 
         attr_reader :option_set, :selected_value, :item_wiring
 
-        # The same item | separator union as the root, one level down.
+        slot_doc :items, "The same item | separator union as the root, one level down."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }

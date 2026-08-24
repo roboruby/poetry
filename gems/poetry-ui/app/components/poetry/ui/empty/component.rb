@@ -24,18 +24,18 @@ module Poetry
           "media_variant: :icon gives the rounded muted icon tile; wrap a poetry_icon in with_media."
         ].freeze
 
-        # Optional leading visual above the title - an icon or illustration.
+        slot_doc :media, "Optional leading visual above the title - an icon or illustration."
         renders_one :media
-        # The headline, rendered as a real heading (see title_tag).
+        slot_doc :title, "The headline, rendered as a real heading (see title_tag)."
         renders_one :title
-        # Muted copy under the title.
+        slot_doc :description, "Muted copy under the title."
         renders_one :description
 
-        # The title's heading level - a real heading element, so set it
-        # to fit the page outline.
-        option :title_tag, :symbol, default: :h3
-        # The media slot's treatment; :icon gives the rounded muted icon tile.
-        option :media_variant, :symbol, default: :default
+        option :title_tag, :symbol, default: :h3,
+                                    doc: "The title's heading level - a real heading element, so set it to fit the " \
+                                         "page outline."
+        option :media_variant, :symbol, default: :default,
+                                        doc: "The media slot's treatment; :icon gives the rounded muted icon tile."
 
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
         validates :media_variant, inclusion: { in: %i[default icon] }
@@ -74,6 +74,8 @@ module Poetry
             { "data-slot" => "empty" }.merge(component_data_attributes)
           )
         end
+
+        private :header?, :media_classes, :root_attributes
       end
     end
   end

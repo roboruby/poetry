@@ -26,8 +26,7 @@ module Poetry
           "Set label: for the loading context ('Saving…'); the default is 'Loading'."
         ].freeze
 
-        # What assistive tech announces - name the loading context.
-        option :label, :string, default: "Loading"
+        option :label, :string, default: "Loading", doc: "What assistive tech announces - name the loading context."
 
         part "spinner", "The spinning <svg> itself (the lucide loader-circle) - announces " \
                         "as role=status with aria-label from label:"
@@ -51,6 +50,8 @@ module Poetry
         def glyph
           Poetry::Core::Icons.set(nil).fetch(GLYPH).html_safe
         end
+
+        private :root_attributes
       end
     end
   end

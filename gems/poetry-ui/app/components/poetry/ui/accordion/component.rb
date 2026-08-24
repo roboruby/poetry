@@ -37,8 +37,8 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # The accordion sections. Each takes value: (its open-state key), title:, and a block of
-        # panel content; disabled: true locks the section closed.
+        slot_doc :items, "The accordion sections. Each takes value: (its open-state key), title:, and a block of " \
+                         "panel content; disabled: true locks the section closed."
         renders_many :items, lambda { |value:, title:, disabled: false, **options, &block|
           open_item = open_values.include?(value.to_s)
           item_id = "#{instance_id}-#{value}"
@@ -70,14 +70,14 @@ module Poetry
           end
         end
 
-        # Whether one section (:single) or several (:multiple) may be open at once.
-        option :type, :symbol, default: :single
-        # With type: :single, allows the open section to be closed again.
-        option :collapsible, :boolean, default: false
-        # Value keys of the sections rendered expanded on load.
-        option :open, :list, default: -> { [] }
-        # The heading element wrapping each trigger; pick it to fit the page outline.
-        option :heading_level, :symbol, default: :h3
+        option :type, :symbol, default: :single,
+                               doc: "Whether one section (:single) or several (:multiple) may be open at once."
+        option :collapsible, :boolean, default: false,
+                                       doc: "With type: :single, allows the open section to be closed again."
+        option :open, :list, default: -> { [] }, doc: "Value keys of the sections rendered expanded on load."
+        option :heading_level, :symbol, default: :h3,
+                                        doc: "The heading element wrapping each trigger; pick it to fit the page " \
+                                             "outline."
 
         validates :type, inclusion: { in: TYPES }
         validates :heading_level, inclusion: { in: HEADINGS }
@@ -101,7 +101,7 @@ module Poetry
         part "accordion-trigger", "The toggle button inside the header - the chevron rotation rides " \
                                   "aria-expanded, not a data attribute",
              states: {
-               "data-panel-open" => "its panel is open (Base UI trigger parity, controller-written; " \
+               "data-panel-open" => "its panel is open (controller-written; " \
                                     "absent while closed)",
                "data-disabled" => "with_item(disabled: true) - stamped beside the native disabled " \
                                   "attribute; roving focus filters it out at query time"
@@ -185,6 +185,8 @@ module Poetry
         def chevron
           render(Icon::Component.new(name: :"chevron-down", class: css(:indicator)))
         end
+
+        private :open_values, :root_attributes
       end
     end
   end

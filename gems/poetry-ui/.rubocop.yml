@@ -23,6 +23,11 @@ Style/StringLiteralsInInterpolation:
 Layout/LineLength:
   Max: 120
 
+Metrics/ParameterLists:
+  # Keyword-only signatures are the house norm; counting keywords
+  # penalizes self-documenting APIs.
+  CountKeywordArgs: false
+
 Metrics/BlockLength:
   # use_stimulus declaration blocks are the component's wiring contract -
   # element-major and legitimately long on multi-element components.

@@ -17,6 +17,7 @@ module Poetry
       #   render Poetry::Ui::SearchField::Component.new(name: "q", label: "Search", placeholder: "Search...")
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
@@ -48,28 +49,19 @@ module Poetry
           end
         end
 
-        # The form field name on the search input.
-        option :name, :string, required: true
-        # The pre-filled query; presence unhides the clear affordance.
-        option :value, :string
-        # Hint text shown while the field is empty.
-        option :placeholder, :string
-        # The input's DOM id - what a Field label's for: must reference.
-        option :id, :string
-        # The accessible name (aria-label) for standalone use - or pair
-        # with a Label/Field instead.
-        option :label, :string
-        # aria-describedby on the input - Field hint/error wiring.
-        option :described_by, :string
-        # Disables the input and hides the clear affordance.
-        option :disabled, :boolean, default: false
-        # The query can be read but not edited; the clear affordance hides.
-        option :readonly, :boolean, default: false
-        # Marks the input required for native constraint validation.
-        option :required, :boolean, default: false
-        # aria-invalid on the input - set by Field/FormBuilder from model
-        # errors.
-        option :invalid, :boolean, default: false
+        option :name, :string, required: true, doc: "The form field name on the search input."
+        option :value, :string, doc: "The pre-filled query; presence unhides the clear affordance."
+        option :placeholder, :string, doc: "Hint text shown while the field is empty."
+        option :id, :string, doc: "The input's DOM id - what a Field label's for: must reference."
+        option :label, :string,
+               doc: "The accessible name (aria-label) for standalone use - or pair with a Label/Field instead."
+        option :described_by, :string, doc: "aria-describedby on the input - Field hint/error wiring."
+        option :disabled, :boolean, default: false, doc: "Disables the input and hides the clear affordance."
+        option :readonly, :boolean, default: false,
+                                    doc: "The query can be read but not edited; the clear affordance hides."
+        option :required, :boolean, default: false, doc: "Marks the input required for native constraint validation."
+        option :invalid, :boolean, default: false,
+                                   doc: "aria-invalid on the input - set by Field/FormBuilder from model errors."
 
         part "search-field", "Root - the controller and the emptiness state ride here",
              states: {
@@ -137,6 +129,8 @@ module Poetry
                             extra: { "hidden" => value.blank? || readonly || disabled ? "" : nil },
                             wiring: stimulus_attributes_for(:clear))
         end
+
+        private :root_attributes, :input_attributes, :clear_button
       end
     end
   end

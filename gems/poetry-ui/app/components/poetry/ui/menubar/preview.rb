@@ -158,7 +158,6 @@ module Poetry
             menu.with_item(inset: true) { "Add Profile..." }
           end
         end
-
       end
     end
   end

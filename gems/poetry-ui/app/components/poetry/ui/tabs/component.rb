@@ -42,8 +42,8 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { tab: "at least one tab" }.freeze
 
-        # Declares one tab: the title, its value:, and the panel as the block (defer: swaps in
-        # a lazy turbo-frame panel; panel: false declares a list-only tab). Omitting all three raises.
+        slot_doc :tabs, "Declares one tab: the title, its value:, and the panel as the block (defer: swaps in a lazy " \
+                        "turbo-frame panel; panel: false declares a list-only tab). Omitting all three raises."
         renders_many :tabs, lambda { |title, value:, disabled: false, defer: nil, panel: true, &block|
           unless block || defer || panel == false
             raise ArgumentError, "Tabs tab #{title.inspect} requires a panel block, defer:, or panel: false"
@@ -78,15 +78,15 @@ module Poetry
           end
         end
 
-        # The value of the server-rendered active tab; defaults to the
-        # first enabled tab. Raises when it matches no tab.
-        option :default, :string
-        # The tablist's accessible name - recommended when a page has several tab sets.
-        option :label, :string
-        # The tab axis; :vertical stacks the triggers and flips the arrow keys.
-        option :orientation, :symbol, default: :horizontal
-        # The list's visual treatment: :default a filled capsule, :line an underline indicator.
-        option :variant, :symbol, default: :default
+        option :default, :string,
+               doc: "The value of the server-rendered active tab; defaults to the first enabled tab. Raises when it " \
+                    "matches no tab."
+        option :label, :string, doc: "The tablist's accessible name - recommended when a page has several tab sets."
+        option :orientation, :symbol, default: :horizontal,
+                                      doc: "The tab axis; :vertical stacks the triggers and flips the arrow keys."
+        option :variant, :symbol, default: :default,
+                                  doc: "The list's visual treatment: :default a filled capsule, :line an underline " \
+                                       "indicator."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
         validates :variant, inclusion: { in: VARIANTS }
@@ -219,6 +219,9 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-tabs")
         end
+
+        private :tab_defs, :active_value, :active?, :trigger_id, :panel_id, :panel_body, :root_attributes
+        private :list_attributes, :trigger_attributes, :panel_attributes
       end
     end
   end

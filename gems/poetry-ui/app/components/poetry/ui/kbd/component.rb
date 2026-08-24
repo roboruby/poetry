@@ -39,6 +39,8 @@ module Poetry
             { "data-slot" => "kbd" }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

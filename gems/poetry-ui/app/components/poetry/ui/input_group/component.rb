@@ -61,6 +61,8 @@ module Poetry
             { "role" => "group", "data-slot" => "input-group" }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

@@ -19,15 +19,14 @@ module Poetry
           "external: true handles target/rel safely - never hand-write target=_blank."
         ].freeze
 
-        # When the underline appears; :none suits links styled by their container.
-        style :underline, default: :hover, variants: %i[hover always none]
+        style :underline, default: :hover, variants: %i[hover always none],
+                          doc: "When the underline appears; :none suits links styled by their container."
 
-        # The destination URL.
-        option :href, :string, required: true
-        # Opens in a new tab with rel="noopener noreferrer" - never hand-write target=_blank.
-        option :external, :boolean, default: false
-        # Marks this link as the current page via aria-current=page.
-        option :current, :boolean, default: false
+        option :href, :string, required: true, doc: "The destination URL."
+        option :external, :boolean, default: false,
+                                    doc: "Opens in a new tab with rel=\"noopener noreferrer\" - never hand-write " \
+                                         "target=_blank."
+        option :current, :boolean, default: false, doc: "Marks this link as the current page via aria-current=page."
 
         part "link", "The rendered <a> - the whole component; current: marks it aria-current=page"
 
@@ -55,6 +54,8 @@ module Poetry
           end
           html_attributes.merge_if_not_set(attrs)
         end
+
+        private :root_attributes
       end
     end
   end

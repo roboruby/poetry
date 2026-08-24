@@ -27,7 +27,7 @@ module Poetry
         AGENT_RULES = [
           "poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li> list.",
           "path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).",
-          "The current page is aria-current=page; current_variant: :outline (upstream parity, " \
+          "The current page is aria-current=page; current_variant: :outline (the " \
           "default) or :filled (the primary treatment - unambiguous active state); the rest are " \
           "ghost links.",
           "edges: :icons renders chevron-only Previous/Next (the table-footer posture); " \
@@ -40,28 +40,23 @@ module Poetry
           "around a paginator gem."
         ].freeze
 
-        # The current page number (1-based).
-        option :current, :integer, required: true
-        # The total page count.
-        option :total, :integer, required: true
-        # How many page links flank the current page before gaps elide to
-        # ellipses.
-        option :siblings, :integer, default: 1
-        # The Previous/Next treatment: :labeled (chevron + responsive text),
-        # :icons (chevron only - table footers), :none (no edge links).
-        option :edges, :symbol, default: :labeled
-        # Set false to drop the numbered links - the compact two-button
-        # pager (pair with edges: :icons).
-        option :pages, :boolean, default: true
-        # How the current page link renders: :outline, or :filled for the
-        # primary Button treatment (an unambiguous active state).
-        option :current_variant, :symbol, default: :outline
-        # The nav landmark's accessible name.
-        option :label, :string, default: "pagination"
-        # The Previous link's visible text (hidden on narrow viewports).
-        option :previous_label, :string, default: "Previous"
-        # The Next link's visible text (hidden on narrow viewports).
-        option :next_label, :string, default: "Next"
+        option :current, :integer, required: true, doc: "The current page number (1-based)."
+        option :total, :integer, required: true, doc: "The total page count."
+        option :siblings, :integer, default: 1,
+                                    doc: "How many page links flank the current page before gaps elide to ellipses."
+        option :edges, :symbol, default: :labeled,
+                                doc: "The Previous/Next treatment: :labeled (chevron + responsive text), :icons " \
+                                     "(chevron only - table footers), :none (no edge links)."
+        option :pages, :boolean, default: true,
+                                 doc: "Set false to drop the numbered links - the compact two-button pager (pair " \
+                                      "with edges: :icons)."
+        option :current_variant, :symbol, default: :outline,
+                                          doc: "How the current page link renders: :outline, or :filled for the " \
+                                               "primary Button treatment (an unambiguous active state)."
+        option :label, :string, default: "pagination", doc: "The nav landmark's accessible name."
+        option :previous_label, :string, default: "Previous",
+                                         doc: "The Previous link's visible text (hidden on narrow viewports)."
+        option :next_label, :string, default: "Next", doc: "The Next link's visible text (hidden on narrow viewports)."
 
         validates :current_variant, inclusion: { in: CURRENT_VARIANTS }
         validates :edges, inclusion: { in: EDGES }
@@ -178,6 +173,9 @@ module Poetry
             sequence << page
           end
         end
+
+        private :show_edges?, :icon_edges?, :current?, :path_for, :page_variant, :page_options, :edge_options
+        private :previous_options, :next_options, :root_attributes
       end
     end
   end

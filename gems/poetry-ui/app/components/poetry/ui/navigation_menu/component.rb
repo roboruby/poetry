@@ -40,9 +40,8 @@ module Poetry
         # @api private
         Entry = Data.define(:title, :value, :href, :panel)
 
-        # The bar entries. with_item(title, value:) { panel } declares a trigger
-        # + panel; with_item(title, href:) a top-level link (with_link is the
-        # shorthand).
+        slot_doc :items, "The bar entries. with_item(title, value:) { panel } declares a trigger + panel; " \
+                         "with_item(title, href:) a top-level link (with_link is the shorthand)."
         renders_many :items, lambda { |title, value: nil, href: nil, &panel|
           if href.nil? && panel.nil?
             raise ArgumentError, "NavigationMenu item #{title.inspect} needs href: (a link) or a panel block"
@@ -93,12 +92,12 @@ module Poetry
           end
         end
 
-        # The nav landmark's accessible name - a page may hold more than one nav.
-        option :label, :string, required: true
-        # Opts into the shared morphing viewport: panels adopt into one
-        # positioned card that morphs size and position between triggers.
-        # Off, each panel opens under its own item (also the no-JS shape).
-        option :viewport, :boolean, default: false
+        option :label, :string, required: true,
+                                doc: "The nav landmark's accessible name - a page may hold more than one nav."
+        option :viewport, :boolean, default: false,
+                                    doc: "Opts into the shared morphing viewport: panels adopt into one positioned " \
+                                         "card that morphs size and position between triggers. Off, each panel opens " \
+                                         "under its own item (also the no-JS shape)."
 
         part "navigation-menu", "The <nav> landmark around the whole disclosure bar",
              states: {
@@ -241,6 +240,9 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-nav")
         end
+
+        private :entries, :root_attributes, :item_attributes, :trigger_attributes, :panel_attributes
+        private :positioner_attributes, :panel_id
       end
     end
   end

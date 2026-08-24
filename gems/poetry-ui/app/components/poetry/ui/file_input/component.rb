@@ -65,28 +65,22 @@ module Poetry
           end
         end
 
-        # :input is the compact native control; :dropzone the drag-and-drop surface.
-        style :variant, default: :input, variants: %i[input dropzone]
+        style :variant, default: :input, variants: %i[input dropzone],
+                        doc: ":input is the compact native control; :dropzone the drag-and-drop surface."
 
-        # The native input's name - the submitted param (multiple: true
-        # wants a name ending in [] for Rails params).
-        option :name, :string
-        # The native input's id (Field/FormBuilder wire it to the label).
-        option :id, :string
-        # Allows selecting several files; forwarded to the native input.
-        option :multiple, :boolean, default: false
-        # The native accept filter (e.g. "image/*,.pdf").
-        option :accept, :string
-        # Disables the native input and dims the dropzone.
-        option :disabled, :boolean, default: false
-        # Marks the control aria-invalid (set by Field/FormBuilder from model errors).
-        option :invalid, :boolean, default: false
-        # Ids for the native input's aria-describedby (Field wires this).
-        option :described_by, :string
-        # The dropzone's instruction line - overrides the translated default.
-        option :prompt, :string
-        # Muted constraints copy under the prompt (formats, size limits).
-        option :hint, :string
+        option :name, :string,
+               doc: "The native input's name - the submitted param (multiple: true wants a name ending in [] for " \
+                    "Rails params)."
+        option :id, :string, doc: "The native input's id (Field/FormBuilder wire it to the label)."
+        option :multiple, :boolean, default: false,
+                                    doc: "Allows selecting several files; forwarded to the native input."
+        option :accept, :string, doc: "The native accept filter (e.g. \"image/*,.pdf\")."
+        option :disabled, :boolean, default: false, doc: "Disables the native input and dims the dropzone."
+        option :invalid, :boolean, default: false,
+                                   doc: "Marks the control aria-invalid (set by Field/FormBuilder from model errors)."
+        option :described_by, :string, doc: "Ids for the native input's aria-describedby (Field wires this)."
+        option :prompt, :string, doc: "The dropzone's instruction line - overrides the translated default."
+        option :hint, :string, doc: "Muted constraints copy under the prompt (formats, size limits)."
 
         part "file-input", "The dropzone root - wraps the zone, the selection list, and clear",
              states: {
@@ -185,6 +179,9 @@ module Poetry
             "class" => css(:clear) }
             .merge(stimulus_attributes_for(:clear))
         end
+
+        private :prompt_text, :input_variant_component, :control_attributes, :root_attributes, :dropzone_attributes
+        private :list_attributes, :clear_attributes
       end
     end
   end

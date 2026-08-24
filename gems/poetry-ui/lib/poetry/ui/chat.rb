@@ -270,15 +270,13 @@ module Poetry
         # @param sleep_ms [Integer] thinking time before the resolution
         # @param approval [Boolean] pause for a human decision after input
         # @param denied [Boolean] script the denied resolution
-        # @return [Writer] self, for chaining
-        # rubocop:disable Metrics/ParameterLists -- the writer vocabulary mirrors the tool part's options
+        # @return [Writer] self, for chaining # -- the writer vocabulary mirrors the tool part's options
         def tool(name, input:, output: nil, sleep_ms: 0, approval: false, denied: false)
           @parts << { kind: :tool, name: name, input: input, output: output,
                       sleep_ms: sleep_ms, approval: approval,
                       state: denied ? :denied : nil }
           self
         end
-        # rubocop:enable Metrics/ParameterLists
       end
     end
   end

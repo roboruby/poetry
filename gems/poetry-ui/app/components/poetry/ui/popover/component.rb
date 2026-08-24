@@ -55,11 +55,10 @@ module Poetry
         # Button, so callers get Button's full option contract.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The control that opens the panel - a composed Button. The slot
-        # owns the aria-haspopup/expanded/controls wiring regardless of the
-        # composed content, so composition cannot drop the aria;
-        # aria-controls renders even while closed (the stable id is the
-        # wiring's resolution seam).
+        slot_doc :trigger, "The control that opens the panel - a composed Button. The slot owns the " \
+                           "aria-haspopup/expanded/controls wiring regardless of the composed content, so " \
+                           "composition cannot drop the aria; aria-controls renders even while closed (the stable id " \
+                           "is the wiring's resolution seam)."
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "popover-trigger",
@@ -72,20 +71,18 @@ module Poetry
             Button::Component.new(**wiring, **options, &block)
         }
 
-        # Optional alternate anchor: when present, the panel positions
-        # against IT instead of the trigger (targets beat selectors in the
-        # positioning fallback chain).
+        slot_doc :anchor, "Optional alternate anchor: when present, the panel positions against IT instead of the " \
+                          "trigger (targets beat selectors in the positioning fallback chain)."
         renders_one :anchor, lambda { |**options, &block|
           attrs = { "data-slot" => "popover-anchor" }
                   .merge(stimulus_attributes_for(:anchor_part))
           content_tag(:div, attrs.merge(options)) { capture(&block) }
         }
 
-        # Panel heading - presence wires the content's aria-labelledby, so
-        # the title names the dialog.
+        slot_doc :title, "Panel heading - presence wires the content's aria-labelledby, so the title names the dialog."
         renders_one :title
 
-        # Supporting text - presence wires the content's aria-describedby.
+        slot_doc :description, "Supporting text - presence wires the content's aria-describedby."
         renders_one :description
 
         use_stimulus do
@@ -120,22 +117,19 @@ module Poetry
           end
         end
 
-        # Server-renders the panel open.
-        option :open, :boolean, default: false
-        # Reserves interaction for the panel while open; the default keeps
-        # the rest of the page interactive.
-        option :modal, :boolean, default: false
+        option :open, :boolean, default: false, doc: "Server-renders the panel open."
+        option :modal, :boolean, default: false,
+                                 doc: "Reserves interaction for the panel while open; the default keeps the rest of " \
+                                      "the page interactive."
         # The placement axes for the anchored panel (side, align, offsets).
         popper_placement_options(side: :bottom, side_offset: 4)
-        # role=dialog fallback name when no title part is present.
-        option :label, :string
-        # Class merge seam for the panel itself (e.g. widen the default
-        # with content_class: "w-80") - root-level class: styles the
-        # wrapper, not the panel.
-        option :content_class, :string
+        option :label, :string, doc: "role=dialog fallback name when no title part is present."
+        option :content_class, :string,
+               doc: "Class merge seam for the panel itself (e.g. widen the default with content_class: \"w-80\") - " \
+                    "root-level class: styles the wrapper, not the panel."
 
         part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
-        part "popover-anchor", "Optional alternate popper anchor (Radix PopoverAnchor) - when " \
+        part "popover-anchor", "Optional alternate popper anchor - when " \
                                "present the panel positions against it instead of the trigger"
         part "popover-content", "The role=dialog panel - positioning, animation, and the open " \
                                 "state ride here",
@@ -200,6 +194,8 @@ module Poetry
         private
 
         def trigger_anchor_selector = "##{trigger_id}"
+
+        private :title_id, :description_id, :content_attributes
       end
     end
   end

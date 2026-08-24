@@ -41,8 +41,8 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { button: "at least one control (with_button / with_input)" }.freeze
 
-        # The control slots: with_button (a real Button - tag: :a makes it a link),
-        # with_input (search/filter), with_separator (its orientation flips automatically).
+        slot_doc :items, "The control slots: with_button (a real Button - tag: :a makes it a link), with_input " \
+                         "(search/filter), with_separator (its orientation flips automatically)."
         renders_many :items, types: {
           button: {
             renders: ->(**options) { Poetry::Ui::Button::Component.new(**item_options(options)) },
@@ -63,13 +63,11 @@ module Poetry
           }
         }
 
-        # The strip's axis; :vertical stacks the controls and flips the arrow keys.
-        style :orientation, default: :horizontal, variants: %i[horizontal vertical]
+        style :orientation, default: :horizontal, variants: %i[horizontal vertical],
+                            doc: "The strip's axis; :vertical stacks the controls and flips the arrow keys."
 
-        # The toolbar's accessible name. Required.
-        option :label, :string, required: true
-        # Whether arrow navigation wraps at the ends.
-        option :loop, :boolean, default: true
+        option :label, :string, required: true, doc: "The toolbar's accessible name. Required."
+        option :loop, :boolean, default: true, doc: "Whether arrow navigation wraps at the ends."
 
         part "toolbar", "The role=toolbar root - one Tab stop; arrow keys rove across the " \
                         "slotted controls (roving-focus, with the caret guard protecting inputs)",
@@ -118,6 +116,8 @@ module Poetry
           roving.with_action(:keydown, on: :keydown)
           attrs.to_attributes
         end
+
+        private :root_attributes
       end
     end
   end

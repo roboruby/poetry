@@ -39,7 +39,7 @@ module Poetry
           "One with_item per question (name: is the param key); choices via item.with_choice, " \
           "an optional free-text answer via item.with_input.",
           "multiple: true renders checkboxes named <name>[] (Rails array params) - " \
-          "a recorded divergence from upstream's repeated bare names.",
+          "a recorded divergence from the ported source's repeated bare names.",
           "required: true gates Next/submit client-side; the server stays the truth on submit.",
           "shortcuts: :letters or :numbers labels each choice with a key (server-rendered) " \
           "and enables one-keystroke answering.",
@@ -49,11 +49,10 @@ module Poetry
           "and counters."
         ].freeze
 
-        # with_progress (bare) renders the auto "Question X of Y" text;
-        # with_progress { custom } replaces it (marked data-custom so the
-        # controller leaves it alone). class: merges onto the progress
-        # element (e.g. w-full for a full-width segment bar over the base
-        # w-fit).
+        slot_doc :progress, "with_progress (bare) renders the auto \"Question X of Y\" text; with_progress { custom " \
+                            "} replaces it (marked data-custom so the controller leaves it alone). class: merges " \
+                            "onto the progress element (e.g. w-full for a full-width segment bar over the base " \
+                            "w-fit)."
         renders_one :progress
         alias __vc_with_progress with_progress
 
@@ -106,26 +105,21 @@ module Poetry
           end
         end
 
-        # The form's submit URL - answers post here as ordinary params.
-        option :url, :string, required: true
-        # The form's HTTP verb. Named http_method (not method:) - an option
-        # named `method` would shadow Object#method.
-        option :http_method, :symbol, default: :post
-        # The root form's DOM id; item element ids derive from it.
-        option :id, :string
-        # nil (off), :letters (A, B, C...) or :numbers (1-9): server-
-        # rendered key labels + one-keystroke answering.
-        option :shortcuts, :symbol
-        # The initially active item by name; default is the first item.
-        option :default_item, :string
-        # The back-navigation button's text.
-        option :previous_label, :string, default: "Previous"
-        # The skip button's text (shown only while the active item is optional).
-        option :skip_label, :string, default: "Skip"
-        # The forward-navigation button's text.
-        option :next_label, :string, default: "Next"
-        # The final submit button's text (replaces Next on the last item).
-        option :submit_label, :string, default: "Submit"
+        option :url, :string, required: true, doc: "The form's submit URL - answers post here as ordinary params."
+        option :http_method, :symbol, default: :post,
+                                      doc: "The form's HTTP verb. Named http_method (not method:) - an option named " \
+                                           "`method` would shadow Object#method."
+        option :id, :string, doc: "The root form's DOM id; item element ids derive from it."
+        option :shortcuts, :symbol,
+               doc: "nil (off), :letters (A, B, C...) or :numbers (1-9): server- rendered key labels + one-keystroke " \
+                    "answering."
+        option :default_item, :string, doc: "The initially active item by name; default is the first item."
+        option :previous_label, :string, default: "Previous", doc: "The back-navigation button's text."
+        option :skip_label, :string, default: "Skip",
+                                     doc: "The skip button's text (shown only while the active item is optional)."
+        option :next_label, :string, default: "Next", doc: "The forward-navigation button's text."
+        option :submit_label, :string, default: "Submit",
+                                       doc: "The final submit button's text (replaces Next on the last item)."
 
         validates :shortcuts, inclusion: { in: SHORTCUT_MODES }, allow_nil: true
 

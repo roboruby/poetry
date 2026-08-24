@@ -190,8 +190,8 @@ module Poetry
 
         attr_reader :option_set, :selected_value
 
-        # The group's members: with_item options and with_separator
-        # dividers, interleaved in declaration order.
+        slot_doc :items, "The group's members: with_item options and with_separator dividers, interleaved in " \
+                         "declaration order."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
@@ -286,7 +286,7 @@ module Poetry
           "staying open, and chips replace the trigger - never fake multi with hidden inputs.",
           "Do not put interactive elements inside options (an option IS the interactive unit).",
           "Deselection in single mode is include_blank (a visible blank option) or show_clear: (the " \
-          "trigger-side X, Base UI's showClear - single mode only), never a re-click toggle - " \
+          "trigger-side X - single mode only), never a re-click toggle - " \
           "committing the already-selected value closes without change. In multiple, re-committing " \
           "IS the deselect gesture (chip-remove is its pointer twin)."
         ].freeze
@@ -295,21 +295,20 @@ module Poetry
         # a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # Optional custom trigger content rendered BEFORE the value span
-        # (rare); the component owns role=combobox + the aria wiring + the
-        # chevrons regardless, so composition cannot drop the contract.
+        slot_doc :trigger, "Optional custom trigger content rendered BEFORE the value span (rare); the component " \
+                           "owns role=combobox + the aria wiring + the chevrons regardless, so composition cannot " \
+                           "drop the contract."
         renders_one :trigger
 
-        # Custom zero-results content (defaults to t('poetry.combobox.empty')).
+        slot_doc :empty, "Custom zero-results content (defaults to t('poetry.combobox.empty'))."
         renders_one :empty
-        # Custom pending content (a spinner); the HOST toggles visibility
-        # (Turbo frame events) - the part renders hidden (Command parity).
+        slot_doc :loading, "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame events) - " \
+                           "the part renders hidden (Command parity)."
         renders_one :loading
 
-        # The option UNION forwarded to the embedded command list: item |
-        # group (heading + items) | separator - one ordered collection
-        # (interleaving preserved; items and groups are part COMPONENTS so
-        # option registration follows render/DOM order).
+        slot_doc :items, "The option UNION forwarded to the embedded command list: item | group (heading + items) | " \
+                         "separator - one ordered collection (interleaving preserved; items and groups are part " \
+                         "COMPONENTS so option registration follows render/DOM order)."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           group: {
@@ -404,58 +403,41 @@ module Poetry
           end
         end
 
-        # The committed value; with multiple:, an array of values.
-        option :value, :string
-        # The form field name on the native <select>; multiple: appends
-        # [] for you.
-        option :name, :string
-        # Shown in the value display (multiple: in the inline input)
-        # while nothing is committed.
-        option :placeholder, :string
-        # Placeholder for the popup's filter input (single mode).
-        option :search_placeholder, :string
-        # The trigger's DOM id - the Field label target; every other part
-        # id derives from it.
-        option :id, :string
-        # Server-renders the popup open.
-        option :open, :boolean, default: false
-        # Forwards to the native <select> for constraint validation.
-        option :required, :boolean, default: false
-        # Disables the trigger, the filter input, and the native select.
-        option :disabled, :boolean, default: false
-        # Multi-select mode: value: becomes LIST-capable (single stays
-        # the scalar), the trigger is replaced by the chips field, the
-        # native <select multiple> posts name[], selection toggles
-        # without closing.
-        option :multiple, :boolean, default: false
-        # DEFAULT FALSE - popover semantics (Tab-out closes, no scrim).
-        # true restores the focus-scope trap for dialog-critical pickers.
-        option :modal, :boolean, default: false
-        # Single mode only: the trigger-side deselection X - swaps in
-        # over the chevrons while a value is committed and commits the
-        # blank value, so the cleared state serializes as "".
-        option :show_clear, :boolean, default: false
-        # Forwarded to the embedded engine: false = server-driven options
-        # (the async Turbo-frame recipe).
-        option :filter, :boolean, default: true
-        # Wraps arrow-key highlight movement past either end of the list.
-        option :loop, :boolean, default: false
-        # The popup's preferred side of the trigger; collisions may flip it.
-        option :side, :symbol, default: :bottom
-        # The popup's alignment along the trigger's edge.
-        option :align, :symbol, default: :start
-        # Gap in px between the trigger and the popup.
-        option :side_offset, :integer, default: 4
-        # Skid in px along the aligned edge.
-        option :align_offset, :integer, default: 0
-        # Flips/shifts the popup to stay inside the viewport.
-        option :avoid_collisions, :boolean, default: true
-        # Writing-direction override (ltr/rtl) stamped on the root.
-        option :dir, :symbol
-        # The trigger width utility class; the popup ALWAYS tracks the
-        # trigger's measured width, so one knob sizes both surfaces.
-        # nil resolves to the dictionary's default (w-50).
-        option :width, :string
+        option :value, :string, doc: "The committed value; with multiple:, an array of values."
+        option :name, :string, doc: "The form field name on the native <select>; multiple: appends [] for you."
+        option :placeholder, :string,
+               doc: "Shown in the value display (multiple: in the inline input) while nothing is committed."
+        option :search_placeholder, :string, doc: "Placeholder for the popup's filter input (single mode)."
+        option :id, :string, doc: "The trigger's DOM id - the Field label target; every other part id derives from it."
+        option :open, :boolean, default: false, doc: "Server-renders the popup open."
+        option :required, :boolean, default: false, doc: "Forwards to the native <select> for constraint validation."
+        option :disabled, :boolean, default: false,
+                                    doc: "Disables the trigger, the filter input, and the native select."
+        option :multiple, :boolean, default: false,
+                                    doc: "Multi-select mode: value: becomes LIST-capable (single stays the scalar), " \
+                                         "the trigger is replaced by the chips field, the native <select multiple> " \
+                                         "posts name[], selection toggles without closing."
+        option :modal, :boolean, default: false,
+                                 doc: "DEFAULT FALSE - popover semantics (Tab-out closes, no scrim). true restores " \
+                                      "the focus-scope trap for dialog-critical pickers."
+        option :show_clear, :boolean, default: false,
+                                      doc: "Single mode only: the trigger-side deselection X - swaps in over the " \
+                                           "chevrons while a value is committed and commits the blank value, so the " \
+                                           "cleared state serializes as \"\"."
+        option :filter, :boolean, default: true,
+                                  doc: "Forwarded to the embedded engine: false = server-driven options (the async " \
+                                       "Turbo-frame recipe)."
+        option :loop, :boolean, default: false, doc: "Wraps arrow-key highlight movement past either end of the list."
+        option :side, :symbol, default: :bottom,
+                               doc: "The popup's preferred side of the trigger; collisions may flip it."
+        option :align, :symbol, default: :start, doc: "The popup's alignment along the trigger's edge."
+        option :side_offset, :integer, default: 4, doc: "Gap in px between the trigger and the popup."
+        option :align_offset, :integer, default: 0, doc: "Skid in px along the aligned edge."
+        option :avoid_collisions, :boolean, default: true, doc: "Flips/shifts the popup to stay inside the viewport."
+        option :dir, :symbol, doc: "Writing-direction override (ltr/rtl) stamped on the root."
+        option :width, :string,
+               doc: "The trigger width utility class; the popup ALWAYS tracks the trigger's measured width, so one " \
+                    "knob sizes both surfaces. nil resolves to the dictionary's default (w-50)."
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
@@ -509,7 +491,7 @@ module Poetry
         part "command-search-icon", "Decorative search glyph beside the input"
         part "command-input", "The filter input (role=combobox) - the typing session and " \
                               "aria-activedescendant live here. Single: in the popup with its own " \
-                              "accessible name; multiple: INLINE in the chips frame (Base UI's " \
+                              "accessible name; multiple: INLINE in the chips frame (the " \
                               "input-inside layout), where the field label reaches it",
              states: {
                "data-popup-open" => "multiple: the popup is open (bare while open, absent while " \
@@ -1051,6 +1033,11 @@ module Poetry
         def trigger_stimulus_attributes
           stimulus_attributes_for(:trigger)
         end
+
+        private :trigger_id, :content_id, :list_id, :native_id, :input_id, :option_set
+        private :selected_label, :root_attributes, :native_select, :width_classes, :trigger_button
+        private :leading_content, :chips_frame, :content_attributes, :value_payload, :command_attributes
+        private :input_attributes, :list_attributes, :empty_part, :loading_part, :status_part
       end
     end
   end

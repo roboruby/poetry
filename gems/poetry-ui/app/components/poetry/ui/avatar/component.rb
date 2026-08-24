@@ -28,16 +28,14 @@ module Poetry
           "Stack avatars with poetry_avatar_group; the overflow count is poetry_avatar_group_count."
         ].freeze
 
-        # Decorative presence dot, bottom-right; keep the status meaning in label:.
+        slot_doc :badge, "Decorative presence dot, bottom-right; keep the status meaning in label:."
         renders_one :badge
 
-        # The image URL; without it only the initials fallback shows.
-        option :src, :string
-        # The person's name - the avatar's accessible name (blank raises). The required
-        # flag also carries the fact to the registry so static checks see it.
-        option :label, :string, required: true
-        # The diameter axis.
-        option :size, :symbol, default: :default
+        option :src, :string, doc: "The image URL; without it only the initials fallback shows."
+        option :label, :string, required: true,
+                                doc: "The person's name - the avatar's accessible name (blank raises). The required " \
+                                     "flag also carries the fact to the registry so static checks see it."
+        option :size, :symbol, default: :default, doc: "The diameter axis."
 
         validates :size, inclusion: { in: SIZES }
 
@@ -98,6 +96,8 @@ module Poetry
 
           content_tag(:span, badge, "data-slot" => "avatar-badge", "aria-hidden" => "true", class: css(:badge))
         end
+
+        private :root_attributes
       end
     end
   end

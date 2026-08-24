@@ -22,9 +22,9 @@ module Poetry
           "The child fills the box itself (size-full object-cover on an image)."
         ].freeze
 
-        # A CSS <ratio>: "16/9", "1", "1.5" - kept a string so the fraction
-        # survives verbatim into the --ratio custom property.
-        option :ratio, :string, required: true
+        option :ratio, :string, required: true,
+                                doc: "A CSS <ratio>: \"16/9\", \"1\", \"1.5\" - kept a string so the fraction " \
+                                     "survives verbatim into the --ratio custom property."
 
         part "aspect-ratio", "The ratio-locked box - the content block fills it",
              vars: {
@@ -55,6 +55,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

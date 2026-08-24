@@ -52,24 +52,20 @@ module Poetry
           end
         end
 
-        # The form field name - required; the chosen date posts as ISO.
-        option :name, :string, required: true
-        # :single or :range (two-date selection; the trigger shows the
-        # joined pair).
-        option :mode, :symbol, default: :single
-        # Trigger text while nothing is chosen.
-        option :placeholder, :string, default: "Pick a date"
-        # The trigger's accessible name (aria-label).
-        option :label, :string # the trigger's accessible name (aria-label)
-        # :button (the default trigger) or :input - a text field that
-        # accepts a typed date (parseable text re-selects the calendar)
-        # with a calendar icon-button opening the popover. Single mode
-        # only.
-        option :variant, :symbol, default: :button
-        # Forwarded to the wrapped Calendar: :dropdown swaps the caption for
-        # month + year selects (the date-of-birth recipe - min:/max: bound
-        # the year list).
-        option :caption_layout, :symbol, default: :label
+        option :name, :string, required: true, doc: "The form field name - required; the chosen date posts as ISO."
+        option :mode, :symbol, default: :single,
+                               doc: ":single or :range (two-date selection; the trigger shows the joined pair)."
+        option :placeholder, :string, default: "Pick a date", doc: "Trigger text while nothing is chosen."
+        option :label, :string,
+               doc: "The trigger's accessible name (aria-label)."
+        option :variant, :symbol, default: :button,
+                                  doc: ":button (the default trigger) or :input - a text field that accepts a typed " \
+                                       "date (parseable text re-selects the calendar) with a calendar icon-button " \
+                                       "opening the popover. Single mode only."
+        option :caption_layout, :symbol, default: :label,
+                                         doc: "Forwarded to the wrapped Calendar: :dropdown swaps the caption for " \
+                                              "month + year selects (the date-of-birth recipe - min:/max: bound the " \
+                                              "year list)."
 
         # ONE owned part: DatePicker is composition - the Popover owns the
         # overlay, the Calendar owns the grid + the form value, the trigger
@@ -208,6 +204,9 @@ module Poetry
             [to_date(value), nil]
           end
         end
+
+        private :range?, :input_variant?, :formatted, :calendar_options, :root_attributes, :trigger_options
+        private :label_target_attributes, :input_attributes, :input_trigger_options
       end
     end
   end

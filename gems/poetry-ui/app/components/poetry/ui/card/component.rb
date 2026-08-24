@@ -25,32 +25,30 @@ module Poetry
           "The title renders as a real heading (h3 default) - set title_tag: to fit the page outline."
         ].freeze
 
-        # The heading line, rendered as a real heading element (title_tag:).
+        slot_doc :title, "The heading line, rendered as a real heading element (title_tag:)."
         renders_one :title
-        # Muted one-liner under the title.
+        slot_doc :description, "Muted one-liner under the title."
         renders_one :description
-        # The header's trailing corner control (a button, menu, or link).
+        slot_doc :action, "The header's trailing corner control (a button, menu, or link)."
         renders_one :action
-        # The bottom row (actions/meta). class: merges into the footer div
-        # (a border-t divider is the canonical use); every other option
-        # (id:, data:, ...) rides onto the footer div verbatim.
+        slot_doc :footer, "The bottom row (actions/meta). class: merges into the footer div (a border-t divider is " \
+                          "the canonical use); every other option (id:, data:, ...) rides onto the footer div " \
+                          "verbatim."
         renders_one :footer, lambda { |**options, &block|
           @footer_options = options
           @footer_block = block
           nil
         }
 
-        # The heading element for the title - pick it to fit the page outline.
-        option :title_tag, :symbol, default: :h3
+        option :title_tag, :symbol, default: :h3,
+                                    doc: "The heading element for the title - pick it to fit the page outline."
 
-        # Extra classes merged into the body cell (caller classes win). A
-        # chat-in-a-card layout passes min-h-0 flex-1 p-0 so the transcript
-        # can flex and scroll.
-        option :content_class, :string
+        option :content_class, :string,
+               doc: "Extra classes merged into the body cell (caller classes win). A chat-in-a-card layout passes " \
+                    "min-h-0 flex-1 p-0 so the transcript can flex and scroll."
 
-        # Extra classes merged into the header row - border-b rules the
-        # title off from the body.
-        option :header_class, :string
+        option :header_class, :string,
+               doc: "Extra classes merged into the header row - border-b rules the title off from the body."
 
         validates :title_tag, inclusion: { in: %i[h1 h2 h3 h4 h5 h6] }
 
@@ -86,6 +84,8 @@ module Poetry
             { "data-slot" => "card" }.merge(component_data_attributes)
           )
         end
+
+        private :footer_attributes, :header?, :root_attributes
       end
     end
   end

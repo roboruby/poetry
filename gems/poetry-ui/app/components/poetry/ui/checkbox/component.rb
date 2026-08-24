@@ -77,24 +77,21 @@ module Poetry
           end
         end
 
-        # The state as ONE tri-valued option (true, false, or
-        # :indeterminate) - there is no separate indeterminate: flag.
-        option :checked, CheckedState.new, default: false
-        # Form participation: present renders the hidden native input
-        # pair; absent leaves the checkbox visual-only (controlled UI).
-        option :name, :string
-        # The value submitted when checked (the Rails check_box "1").
-        option :value, :string, default: "1"
-        # The paired hidden input's value submitted when unchecked; nil
-        # suppresses the pair (the checkbox-array idiom).
-        option :unchecked_value, :string, default: "0"
-        # Disables the visual button and the hidden input together.
-        option :disabled, :boolean, default: false
-        # aria-required ONLY, never native required - native required on the
-        # hidden input would make an unfocusable control invalid.
-        option :required, :boolean, default: false
-        # aria-label fallback when no <label for>/Field association exists.
-        option :label, :string
+        option :checked, CheckedState.new, default: false,
+                                           doc: "The state as ONE tri-valued option (true, false, or :indeterminate) " \
+                                                "- there is no separate indeterminate: flag."
+        option :name, :string,
+               doc: "Form participation: present renders the hidden native input pair; absent leaves the checkbox " \
+                    "visual-only (controlled UI)."
+        option :value, :string, default: "1", doc: "The value submitted when checked (the Rails check_box \"1\")."
+        option :unchecked_value, :string, default: "0",
+                                          doc: "The paired hidden input's value submitted when unchecked; nil " \
+                                               "suppresses the pair (the checkbox-array idiom)."
+        option :disabled, :boolean, default: false, doc: "Disables the visual button and the hidden input together."
+        option :required, :boolean, default: false,
+                                    doc: "aria-required ONLY, never native required - native required on the hidden " \
+                                         "input would make an unfocusable control invalid."
+        option :label, :string, doc: "aria-label fallback when no <label for>/Field association exists."
 
         part "checkbox", "The visual button[role=checkbox] - reflects the hidden input via " \
                          "aria-checked plus the checked triple",
@@ -173,6 +170,9 @@ module Poetry
             attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
+
+        private :indeterminate?, :checked?, :state, :aria_checked, :control_id, :input_id, :form_participant?
+        private :root_attributes
       end
     end
   end

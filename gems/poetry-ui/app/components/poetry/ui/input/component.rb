@@ -26,22 +26,16 @@ module Poetry
           "submits; read data-raw for the bare value."
         ].freeze
 
-        # The native type attribute (text, email, password, file, ...).
-        option :type, :string, default: "text"
-        # The submitted param name.
-        option :name, :string
-        # The current value.
-        option :value, :string
-        # Native placeholder text - not a substitute for a Label.
-        option :placeholder, :string
-        # Disables the native input.
-        option :disabled, :boolean, default: false
-        # Marks the input aria-invalid - the error skin keys on the attribute.
-        option :invalid, :boolean, default: false
-        # Format-as-you-type mask descriptor ('(999) 999-9999'). Extra
-        # knobs (slot char, always-show, auto-clear) ride Stimulus values
-        # via data: - one declarative option covers the common case.
-        option :mask, :string
+        option :type, :string, default: "text", doc: "The native type attribute (text, email, password, file, ...)."
+        option :name, :string, doc: "The submitted param name."
+        option :value, :string, doc: "The current value."
+        option :placeholder, :string, doc: "Native placeholder text - not a substitute for a Label."
+        option :disabled, :boolean, default: false, doc: "Disables the native input."
+        option :invalid, :boolean, default: false,
+                                   doc: "Marks the input aria-invalid - the error skin keys on the attribute."
+        option :mask, :string,
+               doc: "Format-as-you-type mask descriptor ('(999) 999-9999'). Extra knobs (slot char, always-show, " \
+                    "auto-clear) ride Stimulus values via data: - one declarative option covers the common case."
 
         part "input", "The <input> element itself - no inner anatomy; error state is " \
                       "aria-invalid (set by Field/FormBuilder), never a parallel class",
@@ -78,6 +72,8 @@ module Poetry
           masked.with_value(:mask, mask)
           attrs.to_attributes
         end
+
+        private :root_attributes
       end
     end
   end

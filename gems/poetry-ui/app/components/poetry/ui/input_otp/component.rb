@@ -73,29 +73,26 @@ module Poetry
           end
         end
 
-        # The ONE input serializes params[name] = the code string.
-        option :name, :string, required: true
-        # Code length = slot count = maxlength.
-        option :length, :integer, required: true
-        # Current code (server-rendered into the input AND the cells).
-        # The FormBuilder deliberately never round-trips it (a rejected
-        # code is dead).
-        option :value, :string
-        # Cell clustering, e.g. [3, 3] -> two groups with a separator.
-        option :groups, ActiveModel::Type::Value.new
-        # :digits (numeric keypad) | :alphanumeric | a custom Regexp -
-        # the per-char filter + the native pattern attribute + inputmode.
-        option :pattern, ActiveModel::Type::Value.new, default: :digits
-        # Disables the native input (the whole row dims).
-        option :disabled, :boolean, default: false
-        # aria-required on the input - never native required (the Field
-        # rule: required rides server-side validation + aria).
-        option :required, :boolean, default: false
-        # aria-invalid on the input; the cells mirror the destructive
-        # treatment (set by Field/FormBuilder from the failed verify).
-        option :invalid, :boolean, default: false
-        # role=separator dash between groups (meaningful with 2+ groups).
-        option :separator, :boolean, default: true
+        option :name, :string, required: true, doc: "The ONE input serializes params[name] = the code string."
+        option :length, :integer, required: true, doc: "Code length = slot count = maxlength."
+        option :value, :string,
+               doc: "Current code (server-rendered into the input AND the cells). The FormBuilder deliberately never " \
+                    "round-trips it (a rejected code is dead)."
+        option :groups, ActiveModel::Type::Value.new,
+               doc: "Cell clustering, e.g. [3, 3] -> two groups with a separator."
+        option :pattern, ActiveModel::Type::Value.new, default: :digits,
+                                                       doc: ":digits (numeric keypad) | :alphanumeric | a custom " \
+                                                            "Regexp - the per-char filter + the native pattern " \
+                                                            "attribute + inputmode."
+        option :disabled, :boolean, default: false, doc: "Disables the native input (the whole row dims)."
+        option :required, :boolean, default: false,
+                                    doc: "aria-required on the input - never native required (the Field rule: " \
+                                         "required rides server-side validation + aria)."
+        option :invalid, :boolean, default: false,
+                                   doc: "aria-invalid on the input; the cells mirror the destructive treatment (set " \
+                                        "by Field/FormBuilder from the failed verify)."
+        option :separator, :boolean, default: true,
+                                     doc: "role=separator dash between groups (meaningful with 2+ groups)."
 
         part "input-otp-container", "Root row (forced dir=ltr - slot order equals string index " \
                                     "order even on RTL pages) wrapping the real input and the " \
@@ -244,6 +241,9 @@ module Poetry
         end
 
         def pattern_js = pattern_spec[:js]
+
+        private :group_sizes, :display_value, :char_at, :input_id, :complete?, :root_attributes, :input_attributes
+        private :slot_attributes
       end
     end
   end

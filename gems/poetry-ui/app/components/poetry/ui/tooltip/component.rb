@@ -57,12 +57,11 @@ module Poetry
         # The component behind the forwarding slot: with_trigger renders a Button.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The described control - commonly a poetry Button
-        # (with_trigger(variant: :outline) { "Hover" }). The slot owns the
-        # state + timing wiring regardless of the composed content.
-        # NO aria-haspopup/expanded/controls - the tooltip is invisible as
-        # a popup; aria-describedby is written by the controller on open
-        # (and server-rendered only when open: true).
+        slot_doc :trigger, "The described control - commonly a poetry Button (with_trigger(variant: :outline) { " \
+                           "\"Hover\" }). The slot owns the state + timing wiring regardless of the composed " \
+                           "content. NO aria-haspopup/expanded/controls - the tooltip is invisible as a popup; " \
+                           "aria-describedby is written by the controller on open (and server-rendered only when " \
+                           "open: true)."
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "tooltip-trigger"
@@ -120,20 +119,17 @@ module Poetry
           end
         end
 
-        # Server-renders the tooltip open.
-        option :open, :boolean, default: false
-        # The hover-open delay in ms; nil inherits the provider's (default 0).
-        option :delay_duration, :integer
-        # When true the bubble closes as the pointer leaves the trigger -
-        # it cannot be hovered into; nil inherits the provider.
-        option :disable_hoverable_content, :boolean
+        option :open, :boolean, default: false, doc: "Server-renders the tooltip open."
+        option :delay_duration, :integer, doc: "The hover-open delay in ms; nil inherits the provider's (default 0)."
+        option :disable_hoverable_content, :boolean,
+               doc: "When true the bubble closes as the pointer leaves the trigger - it cannot be hovered into; nil " \
+                    "inherits the provider."
         # Placement defaults: :top with side_offset 0 (the arrow supplies the gap).
         popper_placement_options(side: :top, side_offset: 0)
-        # Plain-text announcement override for rich content (the visual
-        # children stay; the announced body becomes this text).
-        option :label, :string
-        # The bubble's class merge seam (caller classes win on conflicts).
-        option :content_class, :string
+        option :label, :string,
+               doc: "Plain-text announcement override for rich content (the visual children stay; the announced body " \
+                    "becomes this text)."
+        option :content_class, :string, doc: "The bubble's class merge seam (caller classes win on conflicts)."
 
         part "tooltip", "Root wrapper around the trigger and the bubble"
         part "tooltip-content", "The role=tooltip bubble - positioning, animation, and the open " \
@@ -181,6 +177,7 @@ module Poetry
           attrs
         end
 
+        private :content_attributes
       end
     end
   end

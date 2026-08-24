@@ -36,17 +36,17 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # The crumbs, in declaration order. A label with href: renders a link; without one,
-        # the current page. A block makes the <li>'s content caller-owned (a dropdown crumb,
-        # a custom-rendered link).
+        slot_doc :items, "The crumbs, in declaration order. A label with href: renders a link; without one, the " \
+                         "current page. A block makes the <li>'s content caller-owned (a dropdown crumb, a " \
+                         "custom-rendered link)."
         renders_many :items, lambda { |label = nil, href: nil, ellipsis: false, &block|
           entries << Entry.new(label: label, href: href, ellipsis: ellipsis, block: block)
           nil
         }
 
-        # Replaces the separator glyph in EVERY gap: an icon name, or a block for
-        # arbitrary content. Absent, the default chevron renders (with its RTL
-        # flip - a custom glyph is used as given).
+        slot_doc :separator, "Replaces the separator glyph in EVERY gap: an icon name, or a block for arbitrary " \
+                             "content. Absent, the default chevron renders (with its RTL flip - a custom glyph is " \
+                             "used as given)."
         renders_one :separator, lambda { |icon: nil, &block|
           @separator_block = icon ? proc { render Icon::Component.new(name: icon) } : block
           nil
@@ -92,6 +92,8 @@ module Poetry
         # One declared crumb.
         # @api private
         Entry = Data.define(:label, :href, :ellipsis, :block)
+
+        private :entries, :root_attributes
       end
     end
   end

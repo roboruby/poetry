@@ -48,11 +48,9 @@ module Poetry
           end
         end
 
-        # The URL to fetch - required; rendering without it raises.
-        option :src, :string, required: true
-        # :lazy fetches when the frame becomes visible; :eager fetches
-        # right after paint.
-        option :loading, :symbol, default: :lazy
+        option :src, :string, required: true, doc: "The URL to fetch - required; rendering without it raises."
+        option :loading, :symbol, default: :lazy,
+                                  doc: ":lazy fetches when the frame becomes visible; :eager fetches right after paint."
 
         part "deferred", "The <turbo-frame> root - src is armed at connect(); failure is " \
                          "a state reflected here, never silent blankness",
@@ -84,6 +82,8 @@ module Poetry
             }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

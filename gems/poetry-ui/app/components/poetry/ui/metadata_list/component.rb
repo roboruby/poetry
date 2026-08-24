@@ -30,8 +30,8 @@ module Poetry
         # Slots the component cannot render without; static checks read this without rendering.
         REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
 
-        # The facts. Each takes label: (the fact's name, the <dt>) and the
-        # value as its block (the <dd>).
+        slot_doc :items, "The facts. Each takes label: (the fact's name, the <dt>) and the value as its block (the " \
+                         "<dd>)."
         renders_many :items, lambda { |label:, **options, &block|
           # class: merges through the dictionary (caller classes win on
           # conflicts) - a plain hash merge would REPLACE css(:item).
@@ -44,11 +44,10 @@ module Poetry
           end
         }
 
-        # Label placement - above the value, or beside it for the classic
-        # key/value sheet.
-        style :orientation, default: :vertical, variants: %i[vertical horizontal]
-        # How many columns the facts spread across on wide viewports.
-        style :columns, default: :one, variants: %i[one two three]
+        style :orientation, default: :vertical, variants: %i[vertical horizontal],
+                            doc: "Label placement - above the value, or beside it for the classic key/value sheet."
+        style :columns, default: :one, variants: %i[one two three],
+                        doc: "How many columns the facts spread across on wide viewports."
 
         part "metadata-list", "The <dl> root - the record's fact sheet",
              states: {
@@ -79,6 +78,8 @@ module Poetry
               "data-columns" => columns }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

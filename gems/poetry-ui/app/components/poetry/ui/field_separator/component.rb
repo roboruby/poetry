@@ -62,6 +62,8 @@ module Poetry
           content_tag(:span, content, "data-slot" => "field-separator-content",
                                       "class" => css(:content))
         end
+
+        private :root_attributes
       end
     end
   end

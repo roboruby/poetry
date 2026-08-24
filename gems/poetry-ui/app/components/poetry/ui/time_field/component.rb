@@ -42,10 +42,8 @@ module Poetry
           end
         end
 
-        # Adds the seconds segment; the wire format becomes HH:MM:SS.
-        option :seconds, :boolean, default: false
-        # Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.
-        option :hour_cycle, :string
+        option :seconds, :boolean, default: false, doc: "Adds the seconds segment; the wire format becomes HH:MM:SS."
+        option :hour_cycle, :string, doc: "Pins the hour cycle (h12/h23/h11/h24) instead of the locale's."
 
         part "time-field", "Root - the controller and the enhanced/disabled surface ride " \
                            "here (segments inside share the date-field-* vocabulary)",

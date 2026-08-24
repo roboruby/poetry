@@ -39,8 +39,8 @@ module Poetry
         # so static checks can flag too few panels without rendering.
         REQUIRED_SLOTS = { panel: "at least two panels" }.freeze
 
-        # One panel per call: default_size/min_size/max_size are
-        # percentages of the group; the content block is required.
+        slot_doc :panels, "One panel per call: default_size/min_size/max_size are percentages of the group; the " \
+                          "content block is required."
         renders_many :panels, lambda { |default_size: nil, min_size: nil, max_size: nil, classes: nil, &block|
           raise ArgumentError, "Resizable with_panel requires a content block (the panel content)" unless block
 
@@ -68,11 +68,9 @@ module Poetry
           end
         end
 
-        # The group axis: :horizontal lays panels side by side, :vertical
-        # stacks them.
-        option :direction, :symbol, default: :horizontal
-        # Renders the grip dots on each handle.
-        option :grip, :boolean, default: false
+        option :direction, :symbol, default: :horizontal,
+                                    doc: "The group axis: :horizontal lays panels side by side, :vertical stacks them."
+        option :grip, :boolean, default: false, doc: "Renders the grip dots on each handle."
 
         validates :direction, inclusion: { in: DIRECTIONS }
 
@@ -168,6 +166,8 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-resizable")
         end
+
+        private :panel_defs, :size_of, :root_attributes, :panel_attributes, :handle_attributes, :panel_id
       end
     end
   end

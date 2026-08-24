@@ -35,29 +35,27 @@ module Poetry
           "A clickable row is tag: :a with href: - never wrap an Item in a bare <a>."
         ].freeze
 
-        # The leading media cell - a glyph or thumbnail (see media_variant).
+        slot_doc :media, "The leading media cell - a glyph or thumbnail (see media_variant)."
         renders_one :media
-        # The title row.
+        slot_doc :title, "The title row."
         renders_one :title
-        # The muted description line (clamps to two lines).
+        slot_doc :description, "The muted description line (clamps to two lines)."
         renders_one :description
-        # The trailing actions cell - buttons, a menu, a switch.
+        slot_doc :actions, "The trailing actions cell - buttons, a menu, a switch."
         renders_one :actions
-        # Full-width row above the media/content columns.
+        slot_doc :header, "Full-width row above the media/content columns."
         renders_one :header
-        # Full-width row below the media/content columns.
+        slot_doc :footer, "Full-width row below the media/content columns."
         renders_one :footer
 
-        # The row's visual treatment - :outline boxes it, :muted recedes.
-        style :variant, default: :default, required: true, variants: VARIANTS
-        # The row's density.
-        style :size, default: :default, required: true, variants: SIZES
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The row's visual treatment - :outline boxes it, :muted recedes."
+        style :size, default: :default, required: true, variants: SIZES, doc: "The row's density."
 
-        # The root element - tag: :a (href via passthrough) makes the
-        # whole row clickable.
-        option :tag, :symbol, default: :div
-        # The media treatment - :icon for a glyph, :image for a thumbnail.
-        option :media_variant, :symbol, default: :default
+        option :tag, :symbol, default: :div,
+                              doc: "The root element - tag: :a (href via passthrough) makes the whole row clickable."
+        option :media_variant, :symbol, default: :default,
+                                        doc: "The media treatment - :icon for a glyph, :image for a thumbnail."
 
         validates :media_variant, inclusion: { in: MEDIA_VARIANTS }
 
@@ -99,6 +97,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :content_column?, :media_classes, :root_attributes
       end
     end
   end

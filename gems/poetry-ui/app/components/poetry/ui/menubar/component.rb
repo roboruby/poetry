@@ -15,14 +15,14 @@ module Poetry
       # @api private
       module Helpers
         include Poetry::Ui::Menus::Helpers
-      
+
         private
-      
+
         def indicator_extra_class(kind)
           "cn-menubar-#{kind}-item-indicator"
         end
       end
-      
+
       # The shared menus-family item slots wearing this family's identity -
       # SLOT_BUILDERS (reopened at the bottom, once the classes exist) keeps
       # the registry recursion on the family classes.
@@ -70,9 +70,9 @@ module Poetry
           "family contract."
         ].freeze
 
-        # The top-level menus. Each takes with_trigger (the menu button) plus
-        # the family item slots (with_item, with_checkbox_item, with_radio_group,
-        # with_sub, with_separator, ...); value: defaults to the menu's position.
+        slot_doc :menus, "The top-level menus. Each takes with_trigger (the menu button) plus the family item slots " \
+                         "(with_item, with_checkbox_item, with_radio_group, with_sub, with_separator, ...); value: " \
+                         "defaults to the menu's position."
         renders_many :menus, ->(**options) { Menu.new(bar: self, dir: dir, **options) }
 
         use_stimulus do
@@ -138,15 +138,12 @@ module Poetry
           end
         end
 
-        # The bar's accessible name - a page may hold more than one menubar.
-        option :label, :string, required: true
-        # Wraps arrow-key movement past either end of the bar.
-        option :loop, :boolean, default: false
-        # Server-renders the menu with this value open (values default to
-        # "menu-<position>").
-        option :value, :string
-        # The reading direction; :rtl flips arrow-key movement and submenu sides.
-        option :dir, :symbol
+        option :label, :string, required: true,
+                                doc: "The bar's accessible name - a page may hold more than one menubar."
+        option :loop, :boolean, default: false, doc: "Wraps arrow-key movement past either end of the bar."
+        option :value, :string,
+               doc: "Server-renders the menu with this value open (values default to \"menu-<position>\")."
+        option :dir, :symbol, doc: "The reading direction; :rtl flips arrow-key movement and submenu sides."
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
 
@@ -298,6 +295,8 @@ module Poetry
           menu_parts.find { |menu| open_menu?(menu.value) && !menu.disabled } ||
             menu_parts.find { |menu| !menu.disabled } || menu_parts.first
         end
+
+        private :value_string, :root_attributes
       end
 
       # One logical menu: the trigger + content pair, hosted on a
@@ -313,9 +312,8 @@ module Poetry
 
         attr_reader :value, :disabled
 
-        # The top-level menu button: a real button that is role=menuitem
-        # INSIDE role=menubar, wired to the bar coordinator (toggle /
-        # gated hover-slide / keyboard open).
+        slot_doc :trigger, "The top-level menu button: a real button that is role=menuitem INSIDE role=menubar, " \
+                           "wired to the bar coordinator (toggle / gated hover-slide / keyboard open)."
         renders_one :trigger, lambda { |**options, &block|
           attrs = {
             "type" => "button", "id" => trigger_id, "data-slot" => "menubar-trigger",
@@ -427,7 +425,6 @@ module Poetry
       class Group < Poetry::Ui::Menus::Group
         include ItemSlots
       end
-      
 
       # role=group scoping the single-select value for its radio items -
       # the shared menus-family anatomy wearing this family's identity.
@@ -436,7 +433,6 @@ module Poetry
       class RadioGroup < Poetry::Ui::Menus::RadioGroup
         include Helpers
       end
-      
 
       # A submenu scope (the full item vocabulary again, on its own
       # positioned panel) - the shared menus-family anatomy wearing this
@@ -446,7 +442,6 @@ module Poetry
       class Sub < Poetry::Ui::Menus::Sub
         include ItemSlots
       end
-      
 
       # The builder classes behind lambda-wrapped slots: a lambda
       # hides its return class from introspection, so the owners declare

@@ -37,37 +37,34 @@ module Poetry
           "recipe (it needs that FieldGroup ancestor to measure against)."
         ].freeze
 
-        # The layout axis. :horizontal is the boolean-control pattern: the
-        # control lands in the first grid column, label + hint/error stack
-        # in the second, and the control row-centers against the label line.
-        style :orientation, default: :vertical, required: true, variants: ORIENTATIONS
+        style :orientation, default: :vertical, required: true, variants: ORIENTATIONS,
+                            doc: "The layout axis. :horizontal is the boolean-control pattern: the control lands in " \
+                                 "the first grid column, label + hint/error stack in the second, and the control " \
+                                 "row-centers against the label line."
 
-        # The control's DOM id - the hint/error/label ids derive from it.
-        option :id, :string, required: true
-        # The visible label text, associated with the control via for=.
-        option :label_text, :string
-        # Plain-text guidance under the control (escaped wholesale); use
-        # with_hint for authored markup.
-        option :hint, :string
-        # Where the hint renders relative to the control - :above puts
-        # guidance before a tall control. aria-describedby is identical
-        # either way; this is visual order only.
-        option :hint_position, :symbol, default: :below
-        # The error line (typically from model errors) - presence flips
-        # the invalid skin and leads the control's aria-describedby.
-        option :error, :string
-        # Flips the invalid skin (data-invalid + aria-invalid) WITHOUT an
-        # error line. error: implies it; use invalid: alone when the hint
-        # copy IS the requirement.
-        option :invalid, :boolean, default: false
-        # Marks the control required via aria-required only - never the
-        # native required attribute.
-        option :required, :boolean, default: false
-        # group: the control is a role-bearing <div> (RadioGroup, Slider) -
-        # label[for] would be inert (Chrome flags it), so the label drops
-        # for=, carries label_id, and control_attributes names the group
-        # via aria-labelledby (the visible label, i18n-proof).
-        option :group, :boolean, default: false
+        option :id, :string, required: true, doc: "The control's DOM id - the hint/error/label ids derive from it."
+        option :label_text, :string, doc: "The visible label text, associated with the control via for=."
+        option :hint, :string,
+               doc: "Plain-text guidance under the control (escaped wholesale); use with_hint for authored markup."
+        option :hint_position, :symbol, default: :below,
+                                        doc: "Where the hint renders relative to the control - :above puts guidance " \
+                                             "before a tall control. aria-describedby is identical either way; this " \
+                                             "is visual order only."
+        option :error, :string,
+               doc: "The error line (typically from model errors) - presence flips the invalid skin and leads the " \
+                    "control's aria-describedby."
+        option :invalid, :boolean, default: false,
+                                   doc: "Flips the invalid skin (data-invalid + aria-invalid) WITHOUT an error line. " \
+                                        "error: implies it; use invalid: alone when the hint copy IS the " \
+                                        "requirement."
+        option :required, :boolean, default: false,
+                                    doc: "Marks the control required via aria-required only - never the native " \
+                                         "required attribute."
+        option :group, :boolean, default: false,
+                                 doc: "group: the control is a role-bearing <div> (RadioGroup, Slider) - label[for] " \
+                                      "would be inert (Chrome flags it), so the label drops for=, carries label_id, " \
+                                      "and control_attributes names the group via aria-labelledby (the visible " \
+                                      "label, i18n-proof)."
 
         part "field", "The quartet's grid root - label, control, hint, and error stack inside",
              states: {
@@ -176,6 +173,8 @@ module Poetry
               "data-orientation" => orientation }.merge(component_data_attributes)
           )
         end
+
+        private :hint_present?, :root_attributes
       end
     end
   end

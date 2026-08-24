@@ -56,8 +56,7 @@ module Poetry
           end
         end
 
-        # The tree's accessible name. Required.
-        option :label, :string, required: true
+        option :label, :string, required: true, doc: "The tree's accessible name. Required."
 
         part "tree", "The treegrid container (role=treegrid, the accessible name) - roving " \
                      "focus, expansion keys, and typeahead ride here; rows are FLAT siblings"
@@ -226,6 +225,9 @@ module Poetry
             [row] + flatten(item.children, level: level + 1, hidden: hidden || !expanded)
           end
         end
+
+        private :root_items, :rows, :root_attributes, :row_attributes, :toggle_attributes, :row_id, :tree_id
+        private :first_visible_index
       end
     end
   end

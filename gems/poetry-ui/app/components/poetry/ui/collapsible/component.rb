@@ -31,8 +31,8 @@ module Poetry
         # a missing trigger without rendering.
         REQUIRED_SLOTS = { trigger: "the disclosure control" }.freeze
 
-        # The disclosure control - a real button, wired for you
-        # (aria-expanded, aria-controls); options merge onto it.
+        slot_doc :trigger, "The disclosure control - a real button, wired for you (aria-expanded, aria-controls); " \
+                           "options merge onto it."
         renders_one :trigger, lambda { |**options, &block|
           attrs = {
             type: "button", "data-slot" => "collapsible-trigger",
@@ -57,9 +57,8 @@ module Poetry
           end
         end
 
-        # The server-rendered initial state; the trigger toggles it
-        # client-side.
-        option :open, :boolean, default: false
+        option :open, :boolean, default: false,
+                                doc: "The server-rendered initial state; the trigger toggles it client-side."
 
         part "collapsible", "The disclosure root - the state controller flips the pair here",
              states: {
@@ -68,7 +67,7 @@ module Poetry
              }
         part "collapsible-trigger", "The disclosure button - mirrors aria-expanded",
              states: {
-               "data-panel-open" => "its content is open (Base UI trigger parity, controller-written; " \
+               "data-panel-open" => "its content is open (controller-written; " \
                                     "absent while closed)"
              }
         part "collapsible-content", "The disclosure panel - stays in the DOM when closed (hidden) " \
@@ -85,6 +84,7 @@ module Poetry
         # @api private
         def before_render
           raise ArgumentError, "Collapsible requires with_trigger (the disclosure control)" unless trigger?
+
           ensure_content!
         end
 
@@ -125,6 +125,8 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-collapsible")
         end
+
+        private :state, :content_id, :root_attributes, :content_attributes
       end
     end
   end

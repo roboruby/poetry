@@ -31,9 +31,9 @@ module Poetry
           "use MessageScroller for chat transcripts."
         ].freeze
 
-        # The region's accessible name (role=region + aria-label) -
-        # required, because a focusable region must be named.
-        option :label, :string, required: true
+        option :label, :string, required: true,
+                                doc: "The region's accessible name (role=region + aria-label) - required, because a " \
+                                     "focusable region must be named."
 
         part "scroll-area", "The bounding wrapper - size it with classes; content decides the overflow"
         part "scroll-area-viewport", "The focusable native scroll region (role=region + tabindex=0) " \
@@ -68,6 +68,8 @@ module Poetry
             "class" => css(:viewport)
           }
         end
+
+        private :root_attributes, :viewport_attributes
       end
     end
   end

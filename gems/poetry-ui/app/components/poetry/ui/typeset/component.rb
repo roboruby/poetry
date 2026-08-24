@@ -32,9 +32,9 @@ module Poetry
           "scroll horizontally instead of compressing."
         ].freeze
 
-        # Appends typeset-<preset> - a tiny class in the app's own CSS
-        # retuning the rhythm variables (e.g. "docs").
-        option :preset, :string
+        option :preset, :string,
+               doc: "Appends typeset-<preset> - a tiny class in the app's own CSS retuning the rhythm variables " \
+                    "(e.g. \"docs\")."
 
         part "typeset", "The prose container - every bare element inside is styled by the " \
                         "app-owned typeset.css; not-typeset (class or data attribute) opts a " \
@@ -65,6 +65,8 @@ module Poetry
 
           classnames(super, ("typeset-#{preset}" if preset.present?))
         end
+
+        private :root_attributes, :css
       end
     end
   end

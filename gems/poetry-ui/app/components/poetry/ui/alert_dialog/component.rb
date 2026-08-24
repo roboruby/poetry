@@ -49,7 +49,7 @@ module Poetry
         # Slots that render a Button; slot keywords are forwarded as Button props.
         SLOT_RENDERS = { trigger: Button::Component, action: Button::Component, cancel: Button::Component }.freeze
 
-        # The button that opens the dialog; keywords are forwarded as Button props.
+        slot_doc :trigger, "The button that opens the dialog; keywords are forwarded as Button props."
         renders_one :trigger, lambda { |**options, &block|
           composed_trigger({ "data-action" => stimulus_action(:open) }, options, &block) || begin
             options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {}) do |key, wired, caller|
@@ -58,20 +58,20 @@ module Poetry
             Button::Component.new(**options, &block)
           end
         }
-        # The heading - the dialog's accessible name (required).
+        slot_doc :title, "The heading - the dialog's accessible name (required)."
         renders_one :title
-        # The explanation read alongside the title by assistive tech (required).
+        slot_doc :description, "The explanation read alongside the title by assistive tech (required)."
         renders_one :description
-        # Optional icon/illustration well above the title.
+        slot_doc :media, "Optional icon/illustration well above the title."
         renders_one :media
-        # The confirming choice (required) - a Button; pass variant: :destructive for deletes.
-        # Activating it also closes the dialog (a caller-supplied data-action opts out).
+        slot_doc :action, "The confirming choice (required) - a Button; pass variant: :destructive for deletes. " \
+                          "Activating it also closes the dialog (a caller-supplied data-action opts out)."
         renders_one :action, lambda { |**options, &block|
           options[:data] = { slot: "alert-dialog-action", action: stimulus_action(:close) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
         }
-        # The safe way out (required) - an outline Button that takes initial focus
-        # and closes the dialog on activation.
+        slot_doc :cancel, "The safe way out (required) - an outline Button that takes initial focus and closes the " \
+                          "dialog on activation."
         renders_one :cancel, lambda { |**options, &block|
           wired_data = { slot: "alert-dialog-cancel", action: stimulus_action(:close) }
           options[:data] = wired_data.merge(options[:data] || {}) do |key, wired, caller|
@@ -108,11 +108,10 @@ module Poetry
           end
         end
 
-        # The panel size; :sm compacts the layout and switches the footer to a two-column grid.
-        style :size, default: :default, required: true, variants: SIZES
+        style :size, default: :default, required: true, variants: SIZES,
+                     doc: "The panel size; :sm compacts the layout and switches the footer to a two-column grid."
 
-        # Extra classes merged onto the panel element.
-        option :content_class, :string
+        option :content_class, :string, doc: "Extra classes merged onto the panel element."
 
         part "alert-dialog", "Root wrapper around the trigger and the <dialog> element"
         part "alert-dialog-content", "The role=alertdialog <dialog> panel - sizing, animation, " \
@@ -152,7 +151,6 @@ module Poetry
         def description_id
           "#{instance_id}-description"
         end
-
 
         # @api private
         def dialog_attributes
@@ -196,6 +194,8 @@ module Poetry
           css(:footer, class: (css(:footer_size_sm) if size == :sm))
         end
 
+        private :title_id, :description_id, :dialog_attributes, :header_classes, :media_classes, :title_classes
+        private :footer_classes
       end
     end
   end

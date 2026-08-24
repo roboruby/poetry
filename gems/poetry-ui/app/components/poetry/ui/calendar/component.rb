@@ -93,19 +93,19 @@ module Poetry
           end
         end
 
-        # Makes the calendar a form control: the pick posts as an ISO string in a
-        # hidden input; range mode posts name[start] + name[end].
-        option :name, :string
-        # Picks one date (:single) or a span (:range). Range selection completes on
-        # the second click; a click before the start swaps, a re-click clears.
-        option :mode, :symbol, default: :single
-        # The first weekday column (0 = Sunday .. 6 = Saturday).
-        option :week_start, :integer, default: 0 # 0 = Sunday
-        # :label shows the month text; :dropdown swaps it for month + year selects
-        # (jump navigation).
-        option :caption_layout, :symbol, default: :label
-        # Adds the ISO week-number column (each row's Thursday decides the number).
-        option :week_numbers, :boolean, default: false
+        option :name, :string,
+               doc: "Makes the calendar a form control: the pick posts as an ISO string in a hidden input; range " \
+                    "mode posts name[start] + name[end]."
+        option :mode, :symbol, default: :single,
+                               doc: "Picks one date (:single) or a span (:range). Range selection completes on the " \
+                                    "second click; a click before the start swaps, a re-click clears."
+        option :week_start, :integer, default: 0,
+                                      doc: "The first weekday column (0 = Sunday .. 6 = Saturday)."
+        option :caption_layout, :symbol, default: :label,
+                                         doc: ":label shows the month text; :dropdown swaps it for month + year " \
+                                              "selects (jump navigation)."
+        option :week_numbers, :boolean, default: false,
+                                        doc: "Adds the ISO week-number column (each row's Thursday decides the number)."
 
         part "calendar", "Root wrapper - the calendar controller (navigation, selection, roving " \
                          "arrow keys) rides here"
@@ -118,7 +118,7 @@ module Poetry
                                      "plus one muted rowheader number per week; non-interactive"
         part "calendar-dropdown", "One caption dropdown unit (caption_layout: :dropdown) - the " \
                                   "visible label with the real <select> stretched invisibly over " \
-                                  "it (the upstream overlay pattern)",
+                                  "it (the invisible-overlay pattern)",
              states: {
                "data-calendar-unit" => { condition: "always - which unit this select drives",
                                          values: %w[month year] }
@@ -152,7 +152,7 @@ module Poetry
         # each accepts a Date or an ISO string; selected: in range mode also takes
         # a Date..Date Range, an [start, end] pair, or a {start:, end:} hash.
         # @api private
-        def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **) # rubocop:disable Metrics/ParameterLists
+        def initialize(month: nil, selected: nil, min: nil, max: nil, today: nil, **)
           super(**)
           raise ArgumentError, "unknown mode #{mode.inspect} (one of #{MODES.join(", ")})" unless MODES.include?(mode)
           unless CAPTION_LAYOUTS.include?(caption_layout)
@@ -351,6 +351,10 @@ module Poetry
         def min_iso = @min&.iso8601 || ""
         def max_iso = @max&.iso8601 || ""
         def month_names_list = I18n.t("date.month_names").drop(1)
+
+        private :range?, :range_complete?, :in_span?, :cells, :weekday_labels, :in_month?, :selected?, :today?
+        private :disabled?, :caption, :dropdown_caption?, :month_options, :year_options, :iso_week, :tab_stop
+        private :root_attributes, :cell_attributes, :day_attributes, :previous_options, :next_options
       end
     end
   end

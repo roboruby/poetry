@@ -37,7 +37,9 @@ module Poetry
       ].freeze
 
       # One-line summaries of the builder methods, projected into the
-      # registry's form_builder section (keys group related methods).
+      # registry's form_builder section (keys group related methods). The
+      # docblocks carry the fuller human reference for the same methods;
+      # FormBuilderDocsTest gates the pair against drifting apart.
       METHOD_SUMMARIES = {
         "input" => "the inferred entrypoint: type from as:/attachments/enums/column/name",
         "association" => "reflection-derived: belongs_to -> Combobox(fk), has_many -> checkbox group(_ids)",
@@ -755,7 +757,7 @@ module Poetry
                        .transform_keys(&:to_sym)
       end
 
-      # rubocop:disable Metrics/ParameterLists -- one keyword per Field surface
+      # -- one keyword per Field surface
       # label: false suppresses the Field label entirely - for controls that
       # render their own accessible name (TagGroup's caption span).
       def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil, label: nil)
@@ -770,7 +772,6 @@ module Poetry
           **extras
         )
       end
-      # rubocop:enable Metrics/ParameterLists
 
       # Shared derivation for the toggle-family builder methods: everything
       # from the object, never hand-wired. required maps to aria-required

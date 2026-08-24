@@ -182,7 +182,11 @@ module Poetry
           assert_equal Component::VARIANTS, variant[:variants]
           assert_equal 8, props[:styles].find { |style| style[:name] == :size }[:variants].size
           assert_includes props[:options].map { |option| option[:name] }, :label
-          assert_equal [{ name: :leading, many: false }, { name: :trailing, many: false }], props[:slots]
+          assert_equal [{ name: :leading, many: false,
+                          description: "Optional leading visual, rendered inside the icon span." },
+                        { name: :trailing, many: false,
+                          description: "Optional trailing visual, rendered inside the icon span." }],
+                       props[:slots]
         end
 
         def test_bem_ir_emits_the_stable_contract

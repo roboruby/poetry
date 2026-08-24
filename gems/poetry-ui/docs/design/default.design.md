@@ -100,7 +100,7 @@ poetry:
     3xl: calc(var(--radius) * 2.2)
     4xl: calc(var(--radius) * 2.6)
   typography_pairing: system sans
-  treatment: the neutral shadcn-parity treatment (new-york-v4 baseline)
+  treatment: the neutral source-parity treatment (the ported baseline)
   components_count: 87
   components_pointer: "/poetry/llms.txt"
   contrast_policy:
@@ -124,7 +124,7 @@ poetry default - semantic role tokens (shared across every poetry theme) under t
 ## Overview
 
 - design system: poetry - server-rendered Rails components (ViewComponent + Stimulus + Tailwind v4)
-- theme: default - the neutral shadcn-parity treatment (new-york-v4 baseline)
+- theme: default - the neutral source-parity treatment (the ported baseline)
 - token source: one DTCG file shared by every poetry theme (`tokens/tokens.dtcg.json`);
   themes are component-treatment layers, not palettes
 - dark mode: the `.dark` class - both modes ship in this file

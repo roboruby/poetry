@@ -31,8 +31,8 @@ module Poetry
           "A visual divider between members is poetry_button_group_separator, not a styled border."
         ].freeze
 
-        # The join axis - a horizontal row or a vertical stack.
-        style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
+        style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS,
+                            doc: "The join axis - a horizontal row or a vertical stack."
 
         part "button-group", "The role=group root - its selectors join ANY data-slot children into " \
                              "the segmented unit",
@@ -62,6 +62,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

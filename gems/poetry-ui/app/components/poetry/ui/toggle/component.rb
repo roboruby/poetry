@@ -51,18 +51,15 @@ module Poetry
           end
         end
 
-        # The visual treatment; :outline adds a border for standalone use.
-        style :variant, default: :default, required: true, variants: VARIANTS
-        # The control's size axis.
-        style :size, default: :default, required: true, variants: SIZES
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The visual treatment; :outline adds a border for standalone use."
+        style :size, default: :default, required: true, variants: SIZES, doc: "The control's size axis."
 
-        # The server-rendered pressed state.
-        option :pressed, :boolean, default: false
-        # Disables the control and forwards to the native button.
-        option :disabled, :boolean, default: false
-        # REQUIRED when icon-only; must be state-INVARIANT (APG: aria-pressed
-        # carries the state - a flipping name makes SRs announce nonsense).
-        option :label, :string
+        option :pressed, :boolean, default: false, doc: "The server-rendered pressed state."
+        option :disabled, :boolean, default: false, doc: "Disables the control and forwards to the native button."
+        option :label, :string,
+               doc: "REQUIRED when icon-only; must be state-INVARIANT (APG: aria-pressed carries the state - a " \
+                    "flipping name makes SRs announce nonsense)."
 
         part "toggle", "The pressed-state <button> - the whole component; aria-pressed carries the " \
                        "state and the controller flips both together",
@@ -115,6 +112,8 @@ module Poetry
         def visible_text?
           content? && content.to_s.gsub(/<[^>]+>/, " ").strip.present?
         end
+
+        private :root_attributes
       end
     end
   end

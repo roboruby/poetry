@@ -18,11 +18,10 @@ module Poetry
           "Set decorative: false only when the divide is semantically meaningful (role=separator)."
         ].freeze
 
-        # The divider's axis.
-        option :orientation, :symbol, default: :horizontal
-        # Whether the divide is purely visual (aria-hidden) or a semantic
-        # boundary (role=separator).
-        option :decorative, :boolean, default: true
+        option :orientation, :symbol, default: :horizontal, doc: "The divider's axis."
+        option :decorative, :boolean, default: true,
+                                      doc: "Whether the divide is purely visual (aria-hidden) or a semantic boundary " \
+                                           "(role=separator)."
 
         validates :orientation, inclusion: { in: %i[horizontal vertical] }
 
@@ -50,6 +49,8 @@ module Poetry
           end
           html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
         end
+
+        private :root_attributes
       end
     end
   end

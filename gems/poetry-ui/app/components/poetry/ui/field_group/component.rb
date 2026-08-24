@@ -28,13 +28,13 @@ module Poetry
           "Stack Fields (and Fieldsets) with poetry_field_group - the theme owns the rhythm; " \
           "never hand-space a form column with gap utilities.",
           "variant: :choices packs a run of horizontal checkbox/switch fields tighter (the " \
-          "upstream checkbox-group form).",
+          "choice-group form).",
           "Field's orientation: :responsive is container-driven: it needs a FieldGroup " \
           "ancestor to measure against - without one it stays stacked."
         ].freeze
 
-        # :choices packs a run of horizontal checkbox/switch fields tighter.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: ":choices packs a run of horizontal checkbox/switch fields tighter."
 
         part "field-group", "The stacking container - fields, fieldsets, and separators " \
                             "render as direct children; also the @container responsive " \
@@ -53,6 +53,8 @@ module Poetry
             { "data-slot" => "field-group" }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

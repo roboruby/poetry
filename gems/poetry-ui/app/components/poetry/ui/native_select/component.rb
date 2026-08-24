@@ -27,23 +27,17 @@ module Poetry
           "The fast path is options: [[label, value], ...] + selected:; a content block overrides it."
         ].freeze
 
-        # The submitted field name, forwarded to the native select.
-        option :name, :string
-        # The select's dom id - the seam a Label's for_id: points at.
-        option :id, :string
-        # The accessible name for label-less placements (a visible Label
-        # paired via id:/for_id: is still the default pattern).
-        option :label, :string
-        # The control size axis; :sm suits dense toolbars and table rows.
-        option :size, :symbol, default: :default
-        # Disables the native select; the wrapper dims the whole pair.
-        option :disabled, :boolean, default: false
-        # Marks the select invalid (aria-invalid on the element itself).
-        option :invalid, :boolean, default: false
-        # Space-separated hint/error ids wired to the SELECT itself - a raw
-        # aria-describedby in html_attributes would land on the wrapper div,
-        # unassociated for assistive technology.
-        option :described_by, :string
+        option :name, :string, doc: "The submitted field name, forwarded to the native select."
+        option :id, :string, doc: "The select's dom id - the seam a Label's for_id: points at."
+        option :label, :string,
+               doc: "The accessible name for label-less placements (a visible Label paired via id:/for_id: is still " \
+                    "the default pattern)."
+        option :size, :symbol, default: :default, doc: "The control size axis; :sm suits dense toolbars and table rows."
+        option :disabled, :boolean, default: false, doc: "Disables the native select; the wrapper dims the whole pair."
+        option :invalid, :boolean, default: false, doc: "Marks the select invalid (aria-invalid on the element itself)."
+        option :described_by, :string,
+               doc: "Space-separated hint/error ids wired to the SELECT itself - a raw aria-describedby in " \
+                    "html_attributes would land on the wrapper div, unassociated for assistive technology."
 
         validates :size, inclusion: { in: SIZES }
 
@@ -122,6 +116,8 @@ module Poetry
             render(Poetry::Ui::Icon::Component.new(name: :"chevron-down"))
           end
         end
+
+        private :wrapper_attributes, :select_attributes
       end
     end
   end

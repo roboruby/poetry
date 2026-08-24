@@ -34,8 +34,8 @@ module Poetry
           "the action should dismiss the palette."
         ].freeze
 
-        # The trigger is a poetry Button wired to open - the Dialog
-        # pattern: with_trigger(variant: :outline) { "Open palette" }.
+        slot_doc :trigger, "The trigger is a poetry Button wired to open - the Dialog pattern: with_trigger(variant: " \
+                           ":outline) { \"Open palette\" }."
         renders_one :trigger, lambda { |**options, &block|
           options[:data] = { action: stimulus_action(:open) }.merge(options[:data] || {})
           Button::Component.new(**options, &block)
@@ -65,31 +65,22 @@ module Poetry
           end
         end
 
-        # The dialog's sr-only accessible name (localized default) -
-        # override rather than remove.
-        option :title, :string, default: -> { I18n.t("poetry.command.dialog_title") }
-        # The sr-only description wired to aria-describedby (localized
-        # default).
-        option :description, :string, default: -> { I18n.t("poetry.command.dialog_description") }
-        # A global shortcut ("meta+k") that toggles the palette from
-        # anywhere; an accelerator, not the only way in.
-        option :hotkey, :string
-        # Renders the corner X (Esc always closes regardless).
-        option :show_close_button, :boolean, default: true
-        # Backdrop clicks close the palette; false keeps it open.
-        option :dismissible, :boolean, default: true
-        # Passed through to the embedded Command: client-side filtering.
-        option :filter, :boolean, default: true
-        # Passed through: wraps arrow-key highlight movement at the ends.
-        option :loop, :boolean, default: false
-        # Passed through: the filter input's placeholder text.
-        option :placeholder, :string
-        # Passed through: the listbox's accessible name.
-        option :list_label, :string
-        # Passed through: seats the initial highlight on this item value.
-        option :value, :string
-        # Passed through: the embedded palette's base DOM id.
-        option :id, :string
+        option :title, :string, default: -> { I18n.t("poetry.command.dialog_title") },
+                                doc: "The dialog's sr-only accessible name (localized default) - override rather " \
+                                     "than remove."
+        option :description, :string, default: -> { I18n.t("poetry.command.dialog_description") },
+                                      doc: "The sr-only description wired to aria-describedby (localized default)."
+        option :hotkey, :string,
+               doc: "A global shortcut (\"meta+k\") that toggles the palette from anywhere; an accelerator, not the " \
+                    "only way in."
+        option :show_close_button, :boolean, default: true, doc: "Renders the corner X (Esc always closes regardless)."
+        option :dismissible, :boolean, default: true, doc: "Backdrop clicks close the palette; false keeps it open."
+        option :filter, :boolean, default: true, doc: "Passed through to the embedded Command: client-side filtering."
+        option :loop, :boolean, default: false, doc: "Passed through: wraps arrow-key highlight movement at the ends."
+        option :placeholder, :string, doc: "Passed through: the filter input's placeholder text."
+        option :list_label, :string, doc: "Passed through: the listbox's accessible name."
+        option :value, :string, doc: "Passed through: seats the initial highlight on this item value."
+        option :id, :string, doc: "Passed through: the embedded palette's base DOM id."
 
         part "command-dialog", "Root wrapper around the trigger and the <dialog> - the " \
                                "palette's own chrome; the embedded Command inside carries its " \
@@ -184,6 +175,8 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-command-dialog")
         end
+
+        private :command, :title_id, :description_id, :root_attributes, :dialog_attributes, :close_action
       end
     end
   end

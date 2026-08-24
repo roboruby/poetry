@@ -57,14 +57,11 @@ module Poetry
           end
         end
 
-        # The stack's corner - set here, not per toast; each toast's slide
-        # direction follows it.
-        style :position, default: :"bottom-right", required: true, variants: POSITIONS
+        style :position, default: :"bottom-right", required: true, variants: POSITIONS,
+                         doc: "The stack's corner - set here, not per toast; each toast's slide direction follows it."
 
-        # The keyboard shortcut that focuses the most recent toast.
-        option :hotkey, :string, default: "F8"
-        # The maximum visible toasts; overflow queues hidden with timers held.
-        option :limit, :integer, default: 3
+        option :hotkey, :string, default: "F8", doc: "The keyboard shortcut that focuses the most recent toast."
+        option :limit, :integer, default: 3, doc: "The maximum visible toasts; overflow queues hidden with timers held."
 
         part "toaster", "The toast viewport itself (<ol>, role=region, data-turbo-permanent) - " \
                         "the corner geometry and the Turbo Stream append target ride here",
@@ -94,6 +91,8 @@ module Poetry
             }.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

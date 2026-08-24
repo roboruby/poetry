@@ -40,20 +40,17 @@ module Poetry
           "A Stat is not a chart: a trend over time goes in the media slot (or use poetry-charts)."
         ].freeze
 
-        # Muted supporting copy rendered under the value.
+        slot_doc :description, "Muted supporting copy rendered under the value."
         renders_one :description
-        # The trend-visual slot (sparkline, chart, glyph) below the text stack.
+        slot_doc :media, "The trend-visual slot (sparkline, chart, glyph) below the text stack."
         renders_one :media
 
-        # The metric's name, shown muted above the value.
-        option :label, :string, required: true
-        # The change text shown in the pill beside the value ("+12.5%").
-        option :delta, :string
-        # The arrow direction; also derives the default sentiment.
-        option :trend, :symbol, default: :up
-        # Overrides the trend-derived sentiment - color follows sentiment,
-        # never the arrow (set :positive when DOWN is the good direction).
-        option :sentiment, :symbol
+        option :label, :string, required: true, doc: "The metric's name, shown muted above the value."
+        option :delta, :string, doc: "The change text shown in the pill beside the value (\"+12.5%\")."
+        option :trend, :symbol, default: :up, doc: "The arrow direction; also derives the default sentiment."
+        option :sentiment, :symbol,
+               doc: "Overrides the trend-derived sentiment - color follows sentiment, never the arrow (set :positive " \
+                    "when DOWN is the good direction)."
 
         validates :trend, inclusion: { in: TRENDS }
         validates :sentiment, inclusion: { in: SENTIMENTS }, allow_nil: true
@@ -99,6 +96,8 @@ module Poetry
             { "data-slot" => "stat" }.merge(component_data_attributes)
           )
         end
+
+        private :resolved_sentiment, :delta_classes, :trend_icon, :root_attributes
       end
     end
   end

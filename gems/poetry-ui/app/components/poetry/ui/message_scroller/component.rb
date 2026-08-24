@@ -61,24 +61,25 @@ module Poetry
           end
         end
 
-        # The transcript's stable identifier - the content element renders
-        # dom id "<id>-messages" for Turbo Streams to target.
-        option :id, :string, required: true
-        # Follows the newest message while the reader sits at the bottom;
-        # scrolling up releases the follow.
-        option :auto_scroll, :boolean, default: true
-        # Where the viewport lands on connect: the newest message (:end),
-        # the oldest (:start), or the last anchor: true row (:"last-anchor").
-        option :default_scroll_position, :symbol, default: :end
-        # Keeps the reading position stable when history prepends into the
-        # content element.
-        option :preserve_scroll_on_prepend, :boolean, default: true
-        # Opt-in observation of which rows are on screen - emits a
-        # visibility event as the visible set changes.
-        option :track_visibility, :boolean, default: false
-        # Renders the floating jump-to-latest button (shown once the reader
-        # leaves the bottom).
-        option :jump_button, :boolean, default: true
+        option :id, :string, required: true,
+                             doc: "The transcript's stable identifier - the content element renders dom id " \
+                                  "\"<id>-messages\" for Turbo Streams to target."
+        option :auto_scroll, :boolean, default: true,
+                                       doc: "Follows the newest message while the reader sits at the bottom; " \
+                                            "scrolling up releases the follow."
+        option :default_scroll_position, :symbol, default: :end,
+                                                  doc: "Where the viewport lands on connect: the newest message " \
+                                                       "(:end), the oldest (:start), or the last anchor: true row " \
+                                                       "(:\"last-anchor\")."
+        option :preserve_scroll_on_prepend, :boolean, default: true,
+                                                      doc: "Keeps the reading position stable when history prepends " \
+                                                           "into the content element."
+        option :track_visibility, :boolean, default: false,
+                                            doc: "Opt-in observation of which rows are on screen - emits a " \
+                                                 "visibility event as the visible set changes."
+        option :jump_button, :boolean, default: true,
+                                       doc: "Renders the floating jump-to-latest button (shown once the reader " \
+                                            "leaves the bottom)."
 
         validates :default_scroll_position, inclusion: { in: SCROLL_POSITIONS }
 
@@ -154,6 +155,8 @@ module Poetry
             tabindex: "-1"
           }.merge(stimulus_attributes_for(:jump_button))
         end
+
+        private :root_attributes, :viewport_attributes, :content_attributes, :spacer_attributes, :button_attributes
       end
     end
   end

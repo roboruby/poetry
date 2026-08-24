@@ -45,6 +45,8 @@ module Poetry
       def instance_id
         @instance_id ||= poetry_instance_id("poetry-#{family_slot_prefix}")
       end
+
+      private :root_attributes
     end
   end
 end

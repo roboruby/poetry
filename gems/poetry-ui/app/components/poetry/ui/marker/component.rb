@@ -28,25 +28,23 @@ module Poetry
           "Use variant: :separator for date/section breaks; :border under pinned headers."
         ].freeze
 
-        # Optional leading visual: name: renders an icon glyph; a block
-        # carries other media (a Spinner mid-run). Either way it sits in an
-        # aria-hidden cell and stays decorative - the marker root does the
-        # announcing.
+        slot_doc :icon, "Optional leading visual: name: renders an icon glyph; a block carries other media (a " \
+                        "Spinner mid-run). Either way it sits in an aria-hidden cell and stays decorative - the " \
+                        "marker root does the announcing."
         renders_one :icon, lambda { |name: nil, **options, &block|
           next Poetry::Ui::Icon::Component.new(name: name, **options) if name
 
           content_tag(:span, &block)
         }
 
-        # The divider treatment - :separator for date/section breaks, :border
-        # for a full-width rule under pinned headers.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The divider treatment - :separator for date/section breaks, :border for a full-width " \
+                             "rule under pinned headers."
 
-        # The root element's tag.
-        option :tag, :symbol, default: :div
-        # Makes the marker a live status region (role=status) for the one
-        # in-flight marker; static dividers never announce.
-        option :announce, :symbol, default: :none
+        option :tag, :symbol, default: :div, doc: "The root element's tag."
+        option :announce, :symbol, default: :none,
+                                   doc: "Makes the marker a live status region (role=status) for the one in-flight " \
+                                        "marker; static dividers never announce."
 
         validates :announce, inclusion: { in: ANNOUNCE }
 
@@ -74,6 +72,8 @@ module Poetry
           attrs["role"] = "status" if announce == :status
           html_attributes.merge_if_not_set(attrs)
         end
+
+        private :root_attributes
       end
     end
   end

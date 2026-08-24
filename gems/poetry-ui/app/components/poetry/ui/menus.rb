@@ -83,19 +83,13 @@ module Poetry
         include Helpers
 
         included do
-          # The menu composition API: one ordered items collection
-          # accepting seven kinds, interleaved in call order -
-          #   with_item          an action row (href: renders it as a real
-          #                      link; submit: as a real submit button)
-          #   with_checkbox_item a toggleable checked/unchecked row
-          #   with_radio_group   a single-select scope; add rows inside it
-          #                      via with_radio_item(value:)
-          #   with_label         a non-interactive heading for a run of items
-          #   with_separator     a horizontal rule between runs
-          #   with_group         semantic grouping around the same union,
-          #                      one level down
-          #   with_sub           a nested submenu: its own with_trigger plus
-          #                      the same union, recursively
+          slot_doc :items, "The menu composition API: one ordered items collection accepting seven kinds, " \
+                           "interleaved in call order - with_item an action row (href: renders it as a real link; " \
+                           "submit: as a real submit button) with_checkbox_item a toggleable checked/unchecked row " \
+                           "with_radio_group a single-select scope; add rows inside it via with_radio_item(value:) " \
+                           "with_label a non-interactive heading for a run of items with_separator a horizontal rule " \
+                           "between runs with_group semantic grouping around the same union, one level down with_sub " \
+                           "a nested submenu: its own with_trigger plus the same union, recursively"
           renders_many :items, types: {
             item: { renders: ->(**options, &block) { item_part(**options, &block) }, as: :item },
             checkbox_item: {
@@ -244,7 +238,7 @@ module Poetry
 
         attr_reader :group_value
 
-        # One role=menuitemradio row; value: must be unique within the group.
+        slot_doc :radio_items, "One role=menuitemradio row; value: must be unique within the group."
         renders_many :radio_items, lambda { |value:, disabled: false, text_value: nil,
                                             close_on_select: nil, shortcut: nil, **options, &block|
           key = value.to_s
@@ -292,9 +286,8 @@ module Poetry
         internal_component!
         include ItemSlots
 
-        # role=menuitem in the PARENT's collection + aria wiring to its own
-        # sub-content; the trailing chevron ships built in (flips via
-        # logical ml-auto under RTL).
+        slot_doc :trigger, "role=menuitem in the PARENT's collection + aria wiring to its own sub-content; the " \
+                           "trailing chevron ships built in (flips via logical ml-auto under RTL)."
         renders_one :trigger, lambda { |inset: false, disabled: false, text_value: nil, **options, &block|
           attrs = {
             "id" => trigger_id, "data-slot" => "#{family_slot_prefix}-sub-trigger", "role" => "menuitem",

@@ -694,6 +694,7 @@ module Poetry
                               model: model)
 
         invalid_inputs = html.scan(/<input[^>]*aria-invalid="true"[^>]*>/)
+
         assert_operator invalid_inputs.length, :>=, 2,
                         "both controls carry aria-invalid from model errors (the destructive ring hook)"
       end
@@ -702,6 +703,7 @@ module Poetry
         html = render_snippet("<%= form.native_select(:country, [[\"USA\", \"us\"]], hint: \"Pick one.\") %>")
 
         select_tag = html[/<select[^>]*>/]
+
         assert_match(/aria-describedby="[^"]*-hint"/, select_tag,
                      "the hint association belongs on the <select>, not the wrapper div")
       end
@@ -711,9 +713,11 @@ module Poetry
                               model: RosterProfile.new(topics: %w[ruby]))
 
         label_ids = html.scan(/id="([^"]*-label)"/).flatten
+
         assert_equal label_ids.uniq.length, label_ids.length, "no duplicated label id"
         assert_equal 1, html.scan(">Topics<").length, "the caption span is the single visible label"
         grid = html[/<div[^>]*data-slot="tag-group-grid"[^>]*>/]
+
         assert_match(/aria-describedby="[^"]*-hint"/, grid, "the hint association rides the labelled grid")
       end
 

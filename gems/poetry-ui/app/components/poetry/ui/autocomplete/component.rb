@@ -64,22 +64,15 @@ module Poetry
           end
         end
 
-        # The form param key; the input's text submits under it as-is.
-        option :name, :string, required: true
-        # The initial input text.
-        option :value, :string
-        # Stable DOM id token for the root and list ids.
-        option :id, :string
-        # Placeholder text shown while the input is empty.
-        option :placeholder, :string
-        # The accessible name (or wire aria-labelledby via html attrs).
-        option :label, :string
-        # The no-matches message; hidden while anything matches.
-        option :empty_text, :string, default: "No results."
-        # Server-renders the suggestion popup open.
-        option :open, :boolean, default: false
-        # Opens the suggestions on focus; false waits for typing.
-        option :open_on_focus, :boolean, default: true
+        option :name, :string, required: true, doc: "The form param key; the input's text submits under it as-is."
+        option :value, :string, doc: "The initial input text."
+        option :id, :string, doc: "Stable DOM id token for the root and list ids."
+        option :placeholder, :string, doc: "Placeholder text shown while the input is empty."
+        option :label, :string, doc: "The accessible name (or wire aria-labelledby via html attrs)."
+        option :empty_text, :string, default: "No results.",
+                                     doc: "The no-matches message; hidden while anything matches."
+        option :open, :boolean, default: false, doc: "Server-renders the suggestion popup open."
+        option :open_on_focus, :boolean, default: true, doc: "Opens the suggestions on focus; false waits for typing."
 
         part "autocomplete", "Root wrapper carrying the controller + popper pair"
         part "autocomplete-input", "The REAL text input - role=combobox with aria-expanded " \
@@ -191,6 +184,9 @@ module Poetry
         # One suggestion's plain data model, collected by with_item.
         # @api private
         Item = Struct.new(:label, :value, :disabled, :highlighted, keyword_init: true)
+
+        private :item_models, :autocomplete_id, :list_id, :root_attributes, :input_attributes, :content_attributes
+        private :item_attributes
       end
     end
   end

@@ -42,7 +42,7 @@ module Poetry
           "error state needs a with_description explaining the failure - the tint alone is not the message."
         ].freeze
 
-        # Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>.
+        slot_doc :media, "Leading visual: :icon (default) boxes an icon tile, :image wraps the caller's <img>."
         renders_one :media, lambda { |variant: :icon, &block|
           raise ArgumentError, "media variant must be :icon or :image" unless MEDIA_VARIANTS.include?(variant)
 
@@ -51,11 +51,13 @@ module Poetry
                                                          "cn-attachment-media-variant-image"
                                                        end)), &block)
         }
-        # The file name line. User content - never mark it html_safe.
+        slot_doc :title, "The file name line. User content - never mark it html_safe."
         renders_one :title
-        # Muted metadata under the title (size, type); in the error state, the failure explanation.
+        slot_doc :description, "Muted metadata under the title (size, type); in the error state, the failure " \
+                               "explanation."
         renders_one :description
-        # Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires label:.
+        slot_doc :actions, "Trailing icon actions - each renders a Button (ghost, icon-xs defaults) and requires " \
+                           "label:."
         renders_many :actions, lambda { |label:, **options, &block|
           # Caller data: augments the slot marker instead of replacing it
           # at the kwargs splat.
@@ -64,8 +66,8 @@ module Poetry
                                 size: options.delete(:size) || :"icon-xs",
                                 label: label, data: data, **options, &block)
         }
-        # Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:)
-        # layered under the actions. Don't also wrap the chip in a link.
+        slot_doc :trigger, "Makes the whole chip the control - a stretched button (or anchor via tag: :a, href:) " \
+                           "layered under the actions. Don't also wrap the chip in a link."
         renders_one :trigger, lambda { |tag: :button, href: nil, **options, &block|
           attrs = Poetry::Core::HTML::Attributes.merged(
             { class: css(:trigger), "data-slot" => "attachment-trigger" }, options
@@ -75,13 +77,13 @@ module Poetry
           content_tag(tag, attrs, &block)
         }
 
-        # The chip density axis.
-        style :size, default: :default, required: true, variants: SIZES
-        # Row (:horizontal) or stacked thumbnail-card (:vertical) layout.
-        style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS
+        style :size, default: :default, required: true, variants: SIZES, doc: "The chip density axis."
+        style :orientation, default: :horizontal, required: true, variants: ORIENTATIONS,
+                            doc: "Row (:horizontal) or stacked thumbnail-card (:vertical) layout."
 
-        # The upload lifecycle state; flip it by re-render or Turbo Stream replace, never in JS.
-        option :state, :symbol, default: :done
+        option :state, :symbol, default: :done,
+                                doc: "The upload lifecycle state; flip it by re-render or Turbo Stream replace, " \
+                                     "never in JS."
 
         validates :state, inclusion: { in: STATES }
 
@@ -106,7 +108,7 @@ module Poetry
         part "attachment-description", "Muted metadata / failure copy under the title"
         part "attachment-actions", "Row of with_action poetry Buttons"
         part "attachment-trigger", "The whole-chip control (with_trigger: a button or tag: :a " \
-                                    "anchor) - wraps the picker/download affordance"
+                                   "anchor) - wraps the picker/download affordance"
         part "attachment-status", "sr-only role=status announcement for the in-flight and " \
                                   "error states (uploading/processing/error)"
 
@@ -125,6 +127,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :announced?, :root_attributes
       end
     end
   end

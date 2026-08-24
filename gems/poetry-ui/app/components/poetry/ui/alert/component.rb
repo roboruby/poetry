@@ -24,15 +24,15 @@ module Poetry
           "destructive announces assertively (role=alert) - reserve it for errors, not emphasis."
         ].freeze
 
-        # Optional leading icon; pass icon props (e.g. name: :"triangle-alert"), not a block.
+        slot_doc :icon, "Optional leading icon; pass icon props (e.g. name: :\"triangle-alert\"), not a block."
         renders_one :icon, Poetry::Ui::Icon::Component
-        # The heading line of the callout.
+        slot_doc :title, "The heading line of the callout."
         renders_one :title
-        # Optional corner action (a dismiss button or link), pinned to the top-right.
+        slot_doc :action, "Optional corner action (a dismiss button or link), pinned to the top-right."
         renders_one :action
 
-        # The intent axis; :destructive marks errors and announces assertively.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The intent axis; :destructive marks errors and announces assertively."
 
         part "alert", "The callout root - role rides the variant (destructive announces " \
                       "assertively via role=alert; default is a polite role=status)",
@@ -55,6 +55,8 @@ module Poetry
             }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

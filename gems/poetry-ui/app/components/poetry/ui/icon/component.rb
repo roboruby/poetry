@@ -22,16 +22,15 @@ module Poetry
           "Never inline raw <svg> markup where an icon exists - use poetry_icon."
         ].freeze
 
-        # The icon's name in the active set. format: :"icon-name" is the
-        # machine-readable value contract: the registry carries it, and
-        # literal names are validated against the icon set statically -
-        # a misspelled name is caught before it can crash a render.
-        option :name, :symbol, required: true, format: :"icon-name"
-        # The accessible name - given, the icon is standalone (role=img);
-        # absent, it is decorative (aria-hidden).
-        option :label, :string
-        # Per-render icon set override (defaults to config.icon_library).
-        option :library, :symbol
+        option :name, :symbol, required: true, format: :"icon-name",
+                               doc: "The icon's name in the active set. format: :\"icon-name\" is the " \
+                                    "machine-readable value contract: the registry carries it, and literal names are " \
+                                    "validated against the icon set statically - a misspelled name is caught before " \
+                                    "it can crash a render."
+        option :label, :string,
+               doc: "The accessible name - given, the icon is standalone (role=img); absent, it is decorative " \
+                    "(aria-hidden)."
+        option :library, :symbol, doc: "Per-render icon set override (defaults to config.icon_library)."
 
         validate :icon_must_exist
 

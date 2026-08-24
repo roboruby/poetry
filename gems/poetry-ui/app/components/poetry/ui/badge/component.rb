@@ -34,12 +34,12 @@ module Poetry
           "solid destructive pill inside a soft status column (design lint flags the mix)."
         ].freeze
 
-        # The intent axis; success/warning/info are the soft record-status treatments.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The intent axis; success/warning/info are the soft record-status treatments."
 
-        # Renders the pill as a real <a> - a navigational chip; the theme's
-        # link hover treatments activate on exactly this element.
-        option :href, :string
+        option :href, :string,
+               doc: "Renders the pill as a real <a> - a navigational chip; the theme's link hover treatments " \
+                    "activate on exactly this element."
 
         part "badge", "The status pill itself (a <span>; a real <a> when href: is given) - " \
                       "the whole component is this one element",
@@ -65,6 +65,8 @@ module Poetry
           attrs["href"] = href if href.present?
           html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
         end
+
+        private :root_attributes
       end
     end
   end

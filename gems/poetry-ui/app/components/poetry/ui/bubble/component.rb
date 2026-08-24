@@ -30,8 +30,8 @@ module Poetry
           "Inside a Message, alignment follows the Message's align - do not set both."
         ].freeze
 
-        # The reactions pill overlaid on an edge; label: names the cluster for
-        # assistive tech, side:/align: place it (default bottom end).
+        slot_doc :reactions, "The reactions pill overlaid on an edge; label: names the cluster for assistive tech, " \
+                             "side:/align: place it (default bottom end)."
         renders_one :reactions, lambda { |label:, side: :bottom, align: :end, &block|
           content_tag(:div,
                       class: css(:reactions), "data-slot" => "bubble-reactions",
@@ -42,15 +42,14 @@ module Poetry
         # The content block IS the message; an empty bubble is an empty pill.
         requires_content "the message content"
 
-        # The intent axis; :ghost is for tool output / system text flowing full-width.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The intent axis; :ghost is for tool output / system text flowing full-width."
 
-        # Which side the bubble hugs; inside a Message, set the Message's align instead.
-        option :align, :symbol, default: :start
-        # The content element: :div (default), or :button/:a for a quick reply.
-        option :tag, :symbol, default: :div
-        # Renders the content as a real anchor; implies tag: :a.
-        option :href, :string
+        option :align, :symbol, default: :start,
+                                doc: "Which side the bubble hugs; inside a Message, set the Message's align instead."
+        option :tag, :symbol, default: :div,
+                              doc: "The content element: :div (default), or :button/:a for a quick reply."
+        option :href, :string, doc: "Renders the content as a real anchor; implies tag: :a."
 
         validates :align, inclusion: { in: ALIGNS }
         validates :tag, inclusion: { in: CONTENT_TAGS }
@@ -98,6 +97,8 @@ module Poetry
           attrs[:type] = "button" if content_tag_name == :button
           attrs
         end
+
+        private :root_attributes, :content_tag_name, :content_attributes
       end
     end
   end

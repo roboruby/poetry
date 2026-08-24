@@ -55,11 +55,10 @@ module Poetry
         # so static checks can flag a missing item without rendering.
         REQUIRED_SLOTS = { item: "at least one radio item" }.freeze
 
-        # One item per option: a real button[role=radio] carrying its own
-        # hidden native radio; label: renders the dot beside a paired
-        # Label. variant: :card renders the choice-card row instead - title
-        # (+ optional description:) inside a selectable bordered label,
-        # the radio pinned to the right.
+        slot_doc :items, "One item per option: a real button[role=radio] carrying its own hidden native radio; " \
+                         "label: renders the dot beside a paired Label. variant: :card renders the choice-card row " \
+                         "instead - title (+ optional description:) inside a selectable bordered label, the radio " \
+                         "pinned to the right."
         renders_many :items, lambda { |value:, label: nil, id: nil, disabled: false,
                                        description: nil, variant: :default, **options|
           unless ITEM_VARIANTS.include?(variant)
@@ -116,29 +115,23 @@ module Poetry
           end
         end
 
-        # The shared form name for every hidden radio (FormBuilder derives
-        # object[method]).
-        option :name, :string, required: true
-        # The checked item's value; nil = nothing checked (pre-selection).
-        option :value, :string
-        # aria-required on the ROOT only - never native required on the
-        # hidden inputs (constraint-validation focus would land on an
-        # aria-hidden input).
-        option :required, :boolean, default: false
-        # Disables every item (root-level).
-        option :disabled, :boolean, default: false
-        # Arrow-key navigation wraps at the ends.
-        option :loop, :boolean, default: true
-        # Keyboard axis: :both allows all four arrows (the standard radio
-        # pattern); :vertical/:horizontal restrict the axis. No visual
-        # effect.
-        option :orientation, :symbol, default: :both
-        # aria-invalid on the items (the destructive ring) - set by
-        # Field/FormBuilder from model errors.
-        option :invalid, :boolean, default: false
-        # The group accessible name -> aria-label (or wire aria-labelledby
-        # yourself) - REQUIRED: an unlabelled radiogroup fails the audit.
-        option :label, :string
+        option :name, :string, required: true,
+                               doc: "The shared form name for every hidden radio (FormBuilder derives object[method])."
+        option :value, :string, doc: "The checked item's value; nil = nothing checked (pre-selection)."
+        option :required, :boolean, default: false,
+                                    doc: "aria-required on the ROOT only - never native required on the hidden " \
+                                         "inputs (constraint-validation focus would land on an aria-hidden input)."
+        option :disabled, :boolean, default: false, doc: "Disables every item (root-level)."
+        option :loop, :boolean, default: true, doc: "Arrow-key navigation wraps at the ends."
+        option :orientation, :symbol, default: :both,
+                                      doc: "Keyboard axis: :both allows all four arrows (the standard radio " \
+                                           "pattern); :vertical/:horizontal restrict the axis. No visual effect."
+        option :invalid, :boolean, default: false,
+                                   doc: "aria-invalid on the items (the destructive ring) - set by Field/FormBuilder " \
+                                        "from model errors."
+        option :label, :string,
+               doc: "The group accessible name -> aria-label (or wire aria-labelledby yourself) - REQUIRED: an " \
+                    "unlabelled radiogroup fails the audit."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
@@ -321,6 +314,8 @@ module Poetry
 
         def value_string = value.to_s
         def value? = value.present?
+
+        private :checked?, :control_id, :root_attributes
       end
     end
   end

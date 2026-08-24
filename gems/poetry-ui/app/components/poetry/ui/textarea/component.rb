@@ -25,20 +25,16 @@ module Poetry
           "Do not set native required - required flows as aria-required via Field."
         ].freeze
 
-        # The submitted field name.
-        option :name, :string
-        # The initial text, rendered as the element's content.
-        option :value, :string
-        # Hint text shown while empty - never a substitute for a label.
-        option :placeholder, :string
-        # The initial visual rows - the minimum height under CSS
-        # auto-grow, and the fixed size in browsers without it.
-        option :rows, :integer
-        # Disables the control and forwards to the native element.
-        option :disabled, :boolean, default: false
-        # Marks the field errored (aria-invalid + the destructive ring);
-        # set by Field/FormBuilder from model errors.
-        option :invalid, :boolean, default: false
+        option :name, :string, doc: "The submitted field name."
+        option :value, :string, doc: "The initial text, rendered as the element's content."
+        option :placeholder, :string, doc: "Hint text shown while empty - never a substitute for a label."
+        option :rows, :integer,
+               doc: "The initial visual rows - the minimum height under CSS auto-grow, and the fixed size in " \
+                    "browsers without it."
+        option :disabled, :boolean, default: false, doc: "Disables the control and forwards to the native element."
+        option :invalid, :boolean, default: false,
+                                   doc: "Marks the field errored (aria-invalid + the destructive ring); set by " \
+                                        "Field/FormBuilder from model errors."
 
         part "textarea", "The <textarea> element itself - value renders as content; " \
                          "auto-grow is the field-sizing-content CSS property, zero JS"
@@ -60,6 +56,8 @@ module Poetry
           attrs["aria-invalid"] = true if invalid
           html_attributes.merge_if_not_set(attrs)
         end
+
+        private :root_attributes
       end
     end
   end

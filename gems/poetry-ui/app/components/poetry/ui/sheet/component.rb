@@ -60,9 +60,8 @@ module Poetry
           end
         end
 
-        # The edge the sheet slides in from - a physical direction (right
-        # stays right in RTL).
-        style :side, default: :right, required: true, variants: SIDES
+        style :side, default: :right, required: true, variants: SIDES,
+                     doc: "The edge the sheet slides in from - a physical direction (right stays right in RTL)."
 
         part "sheet", "Root wrapper around the trigger and the <dialog> element"
         part "sheet-content", "The <dialog> panel, anchored to a screen edge - the slide " \

@@ -54,13 +54,11 @@ module Poetry
           "Do not nest a ContextMenu trigger surface inside another ContextMenu trigger surface."
         ].freeze
 
-        # The right-click/long-press SURFACE: wraps arbitrary
-        # content (a card, a row, a region); polymorphic tag: (default
-        # :span, set tag: :div to wrap block content). NOT a button: no
-        # role, no aria-haspopup, no tabindex by default. The inline
-        # -webkit-touch-callout suppresses the iOS callout so long-press
-        # can run (iOS never fires contextmenu; the timer is the only
-        # touch path there).
+        slot_doc :trigger, "The right-click/long-press SURFACE: wraps arbitrary content (a card, a row, a region); " \
+                           "polymorphic tag: (default :span, set tag: :div to wrap block content). NOT a button: no " \
+                           "role, no aria-haspopup, no tabindex by default. The inline -webkit-touch-callout " \
+                           "suppresses the iOS callout so long-press can run (iOS never fires contextmenu; the timer " \
+                           "is the only touch path there)."
         renders_one :trigger, lambda { |**options, &block|
           tag_name = options.delete(:tag) || :span
           attrs = {
@@ -129,26 +127,19 @@ module Poetry
           end
         end
 
-        # Server-renders the menu open (rare - context menus normally
-        # open from the gesture).
-        option :open, :boolean, default: false
-        # Traps focus in the open menu; false keeps the page interactive.
-        option :modal, :boolean, default: true
-        # Wraps arrow-key movement past either end of the menu.
-        option :loop, :boolean, default: false
-        # Touch long-press duration in ms before the menu opens.
-        option :long_press_delay, :integer, default: 700
-        # Inerts the surface - no gesture opens the menu.
-        option :disabled, :boolean, default: false
-        # The menu's accessible name (localized fallback when omitted).
-        option :label, :string
-        # Puts the surface in the tab order and advertises Shift+F10.
-        option :focusable_surface, :boolean, default: false
-        # Writing-direction override (ltr/rtl) stamped on the root.
-        option :dir, :symbol
-        # Which side of the pointer the menu opens toward; collisions may
-        # still flip it.
-        option :side, :symbol, default: :right
+        option :open, :boolean, default: false,
+                                doc: "Server-renders the menu open (rare - context menus normally open from the " \
+                                     "gesture)."
+        option :modal, :boolean, default: true, doc: "Traps focus in the open menu; false keeps the page interactive."
+        option :loop, :boolean, default: false, doc: "Wraps arrow-key movement past either end of the menu."
+        option :long_press_delay, :integer, default: 700, doc: "Touch long-press duration in ms before the menu opens."
+        option :disabled, :boolean, default: false, doc: "Inerts the surface - no gesture opens the menu."
+        option :label, :string, doc: "The menu's accessible name (localized fallback when omitted)."
+        option :focusable_surface, :boolean, default: false,
+                                             doc: "Puts the surface in the tab order and advertises Shift+F10."
+        option :dir, :symbol, doc: "Writing-direction override (ltr/rtl) stamped on the root."
+        option :side, :symbol, default: :right,
+                               doc: "Which side of the pointer the menu opens toward; collisions may still flip it."
 
         validates :dir, inclusion: { in: DIRS }, allow_nil: true
         validates :side, inclusion: { in: SIDES }
@@ -298,6 +289,8 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-context-menu")
         end
+
+        private :trigger_id, :content_id, :root_attributes, :content_attributes
       end
 
       # role=group semantic grouping between separators - the shared kernel
@@ -307,7 +300,6 @@ module Poetry
       class Group < Poetry::Ui::Menus::Group
         include ItemSlots
       end
-      
 
       # role=group scoping the single-select value for its radio items -
       # the shared kernel anatomy wearing this family identity.
@@ -315,7 +307,6 @@ module Poetry
       # @api private
       class RadioGroup < Poetry::Ui::Menus::RadioGroup
       end
-      
 
       # A submenu scope (recursive item union on its own popper) - the
       # shared kernel anatomy wearing this family identity.
@@ -324,7 +315,6 @@ module Poetry
       class Sub < Poetry::Ui::Menus::Sub
         include ItemSlots
       end
-      
 
       # The builder classes behind lambda-wrapped slot types: a
       # lambda hides its return class from introspection, so the owner

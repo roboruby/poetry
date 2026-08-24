@@ -54,6 +54,8 @@ module Poetry
           "aria-controls" => control_id
         }.compact.merge(wiring))
       end
+
+      private :control_id, :group_attributes, :addon_attributes
     end
   end
 end

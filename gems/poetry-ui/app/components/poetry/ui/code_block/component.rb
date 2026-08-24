@@ -45,21 +45,19 @@ module Poetry
           end
         end
 
-        # The source text to highlight - required.
-        option :code, :string, required: true
-        # The lexer name ("ruby", "js", ...); unknown languages fall back
-        # to plain text.
-        option :language, :string, default: "text"
-        # The scroll region's accessible name; defaults to the localized
-        # "Code" (a focusable scrollable region must be named - axe).
-        option :label, :string
-        # Renders CSS-counter line numbers - never part of selection or
-        # copied text.
-        option :line_numbers, :boolean, default: false
-        # 1-based line numbers to tint via the theme's highlight hook.
-        option :highlight_lines, ActiveModel::Type::Value.new
-        # Renders the copy button in the panel's corner.
-        option :copy, :boolean, default: true
+        option :code, :string, required: true, doc: "The source text to highlight - required."
+        option :language, :string, default: "text",
+                                   doc: "The lexer name (\"ruby\", \"js\", ...); unknown languages fall back to " \
+                                        "plain text."
+        option :label, :string,
+               doc: "The scroll region's accessible name; defaults to the localized \"Code\" (a focusable scrollable " \
+                    "region must be named - axe)."
+        option :line_numbers, :boolean, default: false,
+                                        doc: "Renders CSS-counter line numbers - never part of selection or copied " \
+                                             "text."
+        option :highlight_lines, ActiveModel::Type::Value.new,
+               doc: "1-based line numbers to tint via the theme's highlight hook."
+        option :copy, :boolean, default: true, doc: "Renders the copy button in the panel's corner."
 
         part "code-block", "Root - the syntax-palette surface (cn-code-block)",
              states: {
@@ -135,6 +133,8 @@ module Poetry
         private
 
         def copied_message_text = t("poetry.clipboard_text.copied")
+
+        private :highlighted, :root_attributes, :pre_attributes, :code_attributes, :copy_button
       end
     end
   end

@@ -11,6 +11,7 @@ components:
     - name: collapsible
       type: boolean
       default: false
+      description: 'With type: :single, allows the open section to be closed again.'
     - name: heading_level
       type: symbol
       variants:
@@ -20,18 +21,25 @@ components:
       - h5
       - h6
       default: h3
+      description: The heading element wrapping each trigger; pick it to fit the page
+        outline.
     - name: open
       type: list
       default: dynamic
+      description: Value keys of the sections rendered expanded on load.
     - name: type
       type: symbol
       variants:
       - single
       - multiple
       default: single
+      description: Whether one section (:single) or several (:multiple) may be open
+        at once.
     slots:
     - name: items
       many: true
+      description: 'The accordion sections. Each takes value: (its open-state key),
+        title:, and a block of panel content; disabled: true locks the section closed.'
       setter_args:
         item: 0
       yieldless:
@@ -110,8 +118,7 @@ components:
         aria-expanded, not a data attribute
       states:
       - attr: data-panel-open
-        condition: its panel is open (Base UI trigger parity, controller-written;
-          absent while closed)
+        condition: its panel is open (controller-written; absent while closed)
       - attr: data-disabled
         condition: 'with_item(disabled: true) - stamped beside the native disabled
           attribute; roving focus filters it out at query time'
@@ -161,17 +168,23 @@ components:
       - destructive
       default: default
       required: true
+      description: The intent axis; :destructive marks errors and announces assertively.
     options: []
     slots:
     - name: icon
       many: false
+      description: 'Optional leading icon; pass icon props (e.g. name: :"triangle-alert"),
+        not a block.'
       component: poetry/ui/icon
       setter_args:
         icon: 1
     - name: title
       many: false
+      description: The heading line of the callout.
     - name: action
       many: false
+      description: Optional corner action (a dismiss button or link), pinned to the
+        top-right.
     description: A callout that highlights an important inline message.
     elements:
     - title
@@ -212,12 +225,17 @@ components:
       - sm
       default: default
       required: true
+      description: The panel size; :sm compacts the layout and switches the footer
+        to a two-column grid.
     options:
     - name: content_class
       type: string
+      description: Extra classes merged onto the panel element.
     slots:
     - name: trigger
       many: false
+      description: The button that opens the dialog; keywords are forwarded as Button
+        props.
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -225,12 +243,18 @@ components:
       - trigger
     - name: title
       many: false
+      description: The heading - the dialog's accessible name (required).
     - name: description
       many: false
+      description: The explanation read alongside the title by assistive tech (required).
     - name: media
       many: false
+      description: Optional icon/illustration well above the title.
     - name: action
       many: false
+      description: 'The confirming choice (required) - a Button; pass variant: :destructive
+        for deletes. Activating it also closes the dialog (a caller-supplied data-action
+        opts out).'
       component: poetry/ui/button
       setter_args:
         action: 0
@@ -238,6 +262,8 @@ components:
       - action
     - name: cancel
       many: false
+      description: The safe way out (required) - an outline Button that takes initial
+        focus and closes the dialog on activation.
       component: poetry/ui/button
       setter_args:
         cancel: 0
@@ -352,6 +378,8 @@ components:
     - name: ratio
       type: string
       required: true
+      description: 'A CSS <ratio>: "16/9", "1", "1.5" - kept a string so the fraction
+        survives verbatim into the --ratio custom property.'
     slots: []
     description: Locks its content to a fixed width-to-height ratio.
     elements: []
@@ -379,6 +407,7 @@ components:
       - vertical
       default: horizontal
       required: true
+      description: Row (:horizontal) or stacked thumbnail-card (:vertical) layout.
     - name: size
       type: symbol
       variants:
@@ -387,6 +416,7 @@ components:
       - xs
       default: default
       required: true
+      description: The chip density axis.
     options:
     - name: state
       type: symbol
@@ -397,9 +427,13 @@ components:
       - error
       - done
       default: done
+      description: The upload lifecycle state; flip it by re-render or Turbo Stream
+        replace, never in JS.
     slots:
     - name: media
       many: false
+      description: 'Leading visual: :icon (default) boxes an icon tile, :image wraps
+        the caller''s <img>.'
       setter_args:
         media: 0
       setter_kwargs:
@@ -409,16 +443,24 @@ components:
       - media
     - name: title
       many: false
+      description: The file name line. User content - never mark it html_safe.
     - name: description
       many: false
+      description: Muted metadata under the title (size, type); in the error state,
+        the failure explanation.
     - name: actions
       many: true
+      description: Trailing icon actions - each renders a Button (ghost, icon-xs defaults)
+        and requires label:.
       setter_args:
         action: 0
       yieldless:
       - action
     - name: trigger
       many: false
+      description: 'Makes the whole chip the control - a stretched button (or anchor
+        via tag: :a, href:) layered under the actions. Don''t also wrap the chip in
+        a link.'
       setter_args:
         trigger: 0
       yieldless:
@@ -500,23 +542,31 @@ components:
     - name: empty_text
       type: string
       default: No results.
+      description: The no-matches message; hidden while anything matches.
     - name: id
       type: string
+      description: Stable DOM id token for the root and list ids.
     - name: label
       type: string
+      description: The accessible name (or wire aria-labelledby via html attrs).
     - name: name
       type: string
       required: true
+      description: The form param key; the input's text submits under it as-is.
     - name: open
       type: boolean
       default: false
+      description: Server-renders the suggestion popup open.
     - name: open_on_focus
       type: boolean
       default: true
+      description: Opens the suggestions on focus; false waits for typing.
     - name: placeholder
       type: string
+      description: Placeholder text shown while the input is empty.
     - name: value
       type: string
+      description: The initial input text.
     slots: []
     description: An input that suggests options as you type - the text itself is the
       value.
@@ -669,6 +719,9 @@ components:
     - name: label
       type: string
       required: true
+      description: The person's name - the avatar's accessible name (blank raises).
+        The required flag also carries the fact to the registry so static checks see
+        it.
     - name: size
       type: symbol
       variants:
@@ -676,11 +729,15 @@ components:
       - sm
       - lg
       default: default
+      description: The diameter axis.
     - name: src
       type: string
+      description: The image URL; without it only the initials fallback shows.
     slots:
     - name: badge
       many: false
+      description: Decorative presence dot, bottom-right; keep the status meaning
+        in label:.
     description: A user's image with an initials fallback.
     elements:
     - image
@@ -736,9 +793,13 @@ components:
       - info
       default: default
       required: true
+      description: The intent axis; success/warning/info are the soft record-status
+        treatments.
     options:
     - name: href
       type: string
+      description: Renders the pill as a real <a> - a navigational chip; the theme's
+        link hover treatments activate on exactly this element.
     slots: []
     description: A small count or status descriptor.
     elements: []
@@ -782,12 +843,18 @@ components:
     slots:
     - name: items
       many: true
+      description: 'The crumbs, in declaration order. A label with href: renders a
+        link; without one, the current page. A block makes the <li>''s content caller-owned
+        (a dropdown crumb, a custom-rendered link).'
       setter_args:
         item: 1
       yieldless:
       - item
     - name: separator
       many: false
+      description: 'Replaces the separator glyph in EVERY gap: an icon name, or a
+        block for arbitrary content. Absent, the default chevron renders (with its
+        RTL flip - a custom glyph is used as given).'
       setter_args:
         separator: 0
       setter_kwargs:
@@ -854,6 +921,8 @@ components:
       - destructive
       default: default
       required: true
+      description: The intent axis; :ghost is for tool output / system text flowing
+        full-width.
     options:
     - name: align
       type: symbol
@@ -861,8 +930,11 @@ components:
       - start
       - end
       default: start
+      description: Which side the bubble hugs; inside a Message, set the Message's
+        align instead.
     - name: href
       type: string
+      description: 'Renders the content as a real anchor; implies tag: :a.'
     - name: tag
       type: symbol
       variants:
@@ -870,9 +942,13 @@ components:
       - button
       - a
       default: div
+      description: 'The content element: :div (default), or :button/:a for a quick
+        reply.'
     slots:
     - name: reactions
       many: false
+      description: 'The reactions pill overlaid on an edge; label: names the cluster
+        for assistive tech, side:/align: place it (default bottom end).'
       setter_args:
         reactions: 0
       setter_kwargs:
@@ -943,6 +1019,8 @@ components:
       - icon-lg
       default: default
       required: true
+      description: 'The size axis; the icon* sizes are square icon-only forms (label:
+        required).'
     - name: variant
       type: symbol
       variants:
@@ -954,23 +1032,32 @@ components:
       - link
       default: default
       required: true
+      description: The visual intent axis; :destructive marks irreversible actions.
     options:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the control (native disabled; aria-disabled on the anchor
+        form).
     - name: href
       type: string
+      description: The link target; implies the anchor form.
     - name: label
       type: string
+      description: The accessible name for icon-only usage - not visible text.
     - name: loading
       type: boolean
       default: false
+      description: 'The no-JS loading state: aria-busy, a spinner, and the control
+        disabled.'
     - name: tag
       type: symbol
       variants:
       - button
       - a
       default: button
+      description: Renders the same styling on an <a> when :a - navigation wearing
+        button clothes.
     - name: type
       type: symbol
       variants:
@@ -978,11 +1065,14 @@ components:
       - submit
       - reset
       default: button
+      description: The native button type; ignored when the button renders as an anchor.
     slots:
     - name: leading
       many: false
+      description: Optional leading visual, rendered inside the icon span.
     - name: trailing
       many: false
+      description: Optional trailing visual, rendered inside the icon span.
     description: Triggers an action or event, such as submitting a form or opening
       a dialog.
     elements: []
@@ -1053,6 +1143,7 @@ components:
       - vertical
       default: horizontal
       required: true
+      description: The join axis - a horizontal row or a vertical stack.
     options: []
     slots: []
     description: Visually joins adjacent buttons and controls into one group.
@@ -1090,17 +1181,26 @@ components:
     - name: caption_layout
       type: symbol
       default: label
+      description: ":label shows the month text; :dropdown swaps it for month + year
+        selects (jump navigation)."
     - name: mode
       type: symbol
       default: single
+      description: Picks one date (:single) or a span (:range). Range selection completes
+        on the second click; a click before the start swaps, a re-click clears.
     - name: name
       type: string
+      description: 'Makes the calendar a form control: the pick posts as an ISO string
+        in a hidden input; range mode posts name[start] + name[end].'
     - name: week_numbers
       type: boolean
       default: false
+      description: Adds the ISO week-number column (each row's Thursday decides the
+        number).
     - name: week_start
       type: integer
       default: 0
+      description: The first weekday column (0 = Sunday .. 6 = Saturday).
     slots: []
     description: A month grid for selecting single dates or ranges.
     elements:
@@ -1180,7 +1280,7 @@ components:
         one muted rowheader number per week; non-interactive
     - name: calendar-dropdown
       description: 'One caption dropdown unit (caption_layout: :dropdown) - the visible
-        label with the real <select> stretched invisibly over it (the upstream overlay
+        label with the real <select> stretched invisibly over it (the invisible-overlay
         pattern)'
       states:
       - attr: data-calendar-unit
@@ -1305,8 +1405,13 @@ components:
     options:
     - name: content_class
       type: string
+      description: Extra classes merged into the body cell (caller classes win). A
+        chat-in-a-card layout passes min-h-0 flex-1 p-0 so the transcript can flex
+        and scroll.
     - name: header_class
       type: string
+      description: Extra classes merged into the header row - border-b rules the title
+        off from the body.
     - name: title_tag
       type: symbol
       variants:
@@ -1317,15 +1422,22 @@ components:
       - h5
       - h6
       default: h3
+      description: The heading element for the title - pick it to fit the page outline.
     slots:
     - name: title
       many: false
+      description: The heading line, rendered as a real heading element (title_tag:).
     - name: description
       many: false
+      description: Muted one-liner under the title.
     - name: action
       many: false
+      description: The header's trailing corner control (a button, menu, or link).
     - name: footer
       many: false
+      description: 'The bottom row (actions/meta). class: merges into the footer div
+        (a border-t divider is the canonical use); every other option (id:, data:,
+        ...) rides onto the footer div verbatim.'
       setter_args:
         footer: 0
       yieldless:
@@ -1370,20 +1482,29 @@ components:
     - name: label
       type: string
       required: true
+      description: The carousel region's accessible name - required; rendering without
+        it raises.
     - name: orientation
       type: symbol
       variants:
       - horizontal
       - vertical
       default: horizontal
+      description: The scroll axis; snapping, controls, and arrow keys follow it.
     - name: show_controls
       type: boolean
       default: true
+      description: Renders the prev/next buttons; slides stay reachable by swipe,
+        wheel, and keyboard without them.
     - name: track_classes
       type: string
+      description: 'Utility classes for the slide track - change spacing as a trio:
+        track_classes: "-ml-1" pairs with item classes "pl-1 -scroll-ml-1".'
     slots:
     - name: items
       many: true
+      description: 'Declares one slide. The content block is required; classes: sizes
+        the slide (basis-full default).'
       setter_args:
         item: 0
       setter_kwargs:
@@ -1496,22 +1617,33 @@ components:
     - name: checked
       type: checked_state
       default: false
+      description: 'The state as ONE tri-valued option (true, false, or :indeterminate)
+        - there is no separate indeterminate: flag.'
     - name: disabled
       type: boolean
       default: false
+      description: Disables the visual button and the hidden input together.
     - name: label
       type: string
+      description: aria-label fallback when no <label for>/Field association exists.
     - name: name
       type: string
+      description: 'Form participation: present renders the hidden native input pair;
+        absent leaves the checkbox visual-only (controlled UI).'
     - name: required
       type: boolean
       default: false
+      description: aria-required ONLY, never native required - native required on
+        the hidden input would make an unfocusable control invalid.
     - name: unchecked_value
       type: string
       default: '0'
+      description: The paired hidden input's value submitted when unchecked; nil suppresses
+        the pair (the checkbox-array idiom).
     - name: value
       type: string
       default: '1'
+      description: The value submitted when checked (the Rails check_box "1").
     slots: []
     description: A control for toggling a single value on or off.
     elements:
@@ -1600,18 +1732,28 @@ components:
     options:
     - name: described_by
       type: string
+      description: Ids for the input's aria-describedby (hint or error text).
     - name: disabled
       type: boolean
       default: false
+      description: Disables the input and the copy button together.
     - name: id
       type: string
+      description: The readonly input's DOM id (auto-generated when omitted) - the
+        Field/Label for= target.
     - name: label
       type: string
+      description: The readonly input's accessible name when no Label/Field association
+        exists.
     - name: text_to_copy
       type: string
+      description: 'Overrides what lands on the clipboard when the displayed value
+        truncates: display short, copy full.'
     - name: value
       type: string
       required: true
+      description: 'The displayed text - also what copies, unless text_to_copy: overrides
+        it.'
     slots: []
     description: A read-only value with a button to copy it to the clipboard.
     elements:
@@ -1689,19 +1831,28 @@ components:
     - name: code
       type: string
       required: true
+      description: The source text to highlight - required.
     - name: copy
       type: boolean
       default: true
+      description: Renders the copy button in the panel's corner.
     - name: highlight_lines
       type:
+      description: 1-based line numbers to tint via the theme's highlight hook.
     - name: label
       type: string
+      description: The scroll region's accessible name; defaults to the localized
+        "Code" (a focusable scrollable region must be named - axe).
     - name: language
       type: string
       default: text
+      description: The lexer name ("ruby", "js", ...); unknown languages fall back
+        to plain text.
     - name: line_numbers
       type: boolean
       default: false
+      description: Renders CSS-counter line numbers - never part of selection or copied
+        text.
     slots: []
     description: A syntax-highlighted code panel with a copy button and optional line
       numbers.
@@ -1779,9 +1930,12 @@ components:
     - name: open
       type: boolean
       default: false
+      description: The server-rendered initial state; the trigger toggles it client-side.
     slots:
     - name: trigger
       many: false
+      description: The disclosure control - a real button, wired for you (aria-expanded,
+        aria-controls); options merge onto it.
       setter_args:
         trigger: 0
       yieldless:
@@ -1828,8 +1982,7 @@ components:
       description: The disclosure button - mirrors aria-expanded
       states:
       - attr: data-panel-open
-        condition: its content is open (Base UI trigger parity, controller-written;
-          absent while closed)
+        condition: its content is open (controller-written; absent while closed)
     - name: collapsible-content
       description: The disclosure panel - stays in the DOM when closed (hidden) and
         rides the presence helper on exit
@@ -1870,49 +2023,74 @@ components:
       - center
       - end
       default: start
+      description: The popup's alignment along the trigger's edge.
     - name: align_offset
       type: integer
       default: 0
+      description: Skid in px along the aligned edge.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips/shifts the popup to stay inside the viewport.
     - name: dir
       type: symbol
       variants:
       - ltr
       - rtl
+      description: Writing-direction override (ltr/rtl) stamped on the root.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the trigger, the filter input, and the native select.
     - name: filter
       type: boolean
       default: true
+      description: 'Forwarded to the embedded engine: false = server-driven options
+        (the async Turbo-frame recipe).'
     - name: id
       type: string
+      description: The trigger's DOM id - the Field label target; every other part
+        id derives from it.
     - name: loop
       type: boolean
       default: false
+      description: Wraps arrow-key highlight movement past either end of the list.
     - name: modal
       type: boolean
       default: false
+      description: DEFAULT FALSE - popover semantics (Tab-out closes, no scrim). true
+        restores the focus-scope trap for dialog-critical pickers.
     - name: multiple
       type: boolean
       default: false
+      description: 'Multi-select mode: value: becomes LIST-capable (single stays the
+        scalar), the trigger is replaced by the chips field, the native <select multiple>
+        posts name[], selection toggles without closing.'
     - name: name
       type: string
+      description: 'The form field name on the native <select>; multiple: appends
+        [] for you.'
     - name: open
       type: boolean
       default: false
+      description: Server-renders the popup open.
     - name: placeholder
       type: string
+      description: 'Shown in the value display (multiple: in the inline input) while
+        nothing is committed.'
     - name: required
       type: boolean
       default: false
+      description: Forwards to the native <select> for constraint validation.
     - name: search_placeholder
       type: string
+      description: Placeholder for the popup's filter input (single mode).
     - name: show_clear
       type: boolean
       default: false
+      description: 'Single mode only: the trigger-side deselection X - swaps in over
+        the chevrons while a value is committed and commits the blank value, so the
+        cleared state serializes as "".'
     - name: side
       type: symbol
       variants:
@@ -1921,22 +2099,39 @@ components:
       - bottom
       - left
       default: bottom
+      description: The popup's preferred side of the trigger; collisions may flip
+        it.
     - name: side_offset
       type: integer
       default: 4
+      description: Gap in px between the trigger and the popup.
     - name: value
       type: string
+      description: The committed value; with multiple:, an array of values.
     - name: width
       type: string
+      description: The trigger width utility class; the popup ALWAYS tracks the trigger's
+        measured width, so one knob sizes both surfaces. nil resolves to the dictionary's
+        default (w-50).
     slots:
     - name: trigger
       many: false
+      description: Optional custom trigger content rendered BEFORE the value span
+        (rare); the component owns role=combobox + the aria wiring + the chevrons
+        regardless, so composition cannot drop the contract.
     - name: empty
       many: false
+      description: Custom zero-results content (defaults to t('poetry.combobox.empty')).
     - name: loading
       many: false
+      description: Custom pending content (a spinner); the HOST toggles visibility
+        (Turbo frame events) - the part renders hidden (Command parity).
     - name: items
       many: true
+      description: 'The option UNION forwarded to the embedded command list: item
+        | group (heading + items) | separator - one ordered collection (interleaving
+        preserved; items and groups are part COMPONENTS so option registration follows
+        render/DOM order).'
       types:
       - item
       - group
@@ -2054,9 +2249,9 @@ components:
     - Do not put interactive elements inside options (an option IS the interactive
       unit).
     - 'Deselection in single mode is include_blank (a visible blank option) or show_clear:
-      (the trigger-side X, Base UI''s showClear - single mode only), never a re-click
-      toggle - committing the already-selected value closes without change. In multiple,
-      re-committing IS the deselect gesture (chip-remove is its pointer twin).'
+      (the trigger-side X - single mode only), never a re-click toggle - committing
+      the already-selected value closes without change. In multiple, re-committing
+      IS the deselect gesture (chip-remove is its pointer twin).'
     required_slots:
       item: at least one item
     parts:
@@ -2133,8 +2328,8 @@ components:
     - name: command-input
       description: 'The filter input (role=combobox) - the typing session and aria-activedescendant
         live here. Single: in the popup with its own accessible name; multiple: INLINE
-        in the chips frame (Base UI''s input-inside layout), where the field label
-        reaches it'
+        in the chips frame (the input-inside layout), where the field label reaches
+        it'
       states:
       - attr: data-popup-open
         condition: 'multiple: the popup is open (bare while open, absent while closed
@@ -2331,28 +2526,41 @@ components:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the filter input.
     - name: filter
       type: boolean
       default: true
+      description: Client-side filtering; false leaves the list server-driven.
     - name: id
       type: string
+      description: The base DOM id; the input, list, and item ids derive from it.
     - name: list_label
       type: string
       default: dynamic
+      description: The listbox's accessible name.
     - name: loop
       type: boolean
       default: false
+      description: Wraps arrow-key highlight movement past either end of the list.
     - name: placeholder
       type: string
+      description: The filter input's placeholder text.
     - name: value
       type: string
+      description: Seats the initial highlight on the item with this value.
     slots:
     - name: empty
       many: false
+      description: Custom zero-results content (defaults to t('poetry.command.empty')).
     - name: loading
       many: false
+      description: Custom pending content (a spinner); the HOST toggles visibility
+        (Turbo frame events) - Command renders the part, never sets it.
     - name: items
       many: true
+      description: 'The item UNION: item | group (heading + items) | separator - one
+        ordered collection (interleaving preserved; items and groups are part COMPONENTS
+        so id assignment follows render/DOM order).'
       types:
       - item
       - group
@@ -2524,34 +2732,49 @@ components:
     - name: description
       type: string
       default: dynamic
+      description: The sr-only description wired to aria-describedby (localized default).
     - name: dismissible
       type: boolean
       default: true
+      description: Backdrop clicks close the palette; false keeps it open.
     - name: filter
       type: boolean
       default: true
+      description: 'Passed through to the embedded Command: client-side filtering.'
     - name: hotkey
       type: string
+      description: A global shortcut ("meta+k") that toggles the palette from anywhere;
+        an accelerator, not the only way in.
     - name: id
       type: string
+      description: 'Passed through: the embedded palette''s base DOM id.'
     - name: list_label
       type: string
+      description: 'Passed through: the listbox''s accessible name.'
     - name: loop
       type: boolean
       default: false
+      description: 'Passed through: wraps arrow-key highlight movement at the ends.'
     - name: placeholder
       type: string
+      description: 'Passed through: the filter input''s placeholder text.'
     - name: show_close_button
       type: boolean
       default: true
+      description: Renders the corner X (Esc always closes regardless).
     - name: title
       type: string
       default: dynamic
+      description: The dialog's sr-only accessible name (localized default) - override
+        rather than remove.
     - name: value
       type: string
+      description: 'Passed through: seats the initial highlight on this item value.'
     slots:
     - name: trigger
       many: false
+      description: 'The trigger is a poetry Button wired to open - the Dialog pattern:
+        with_trigger(variant: :outline) { "Open palette" }.'
       setter_args:
         trigger: 0
       yieldless:
@@ -2647,26 +2870,35 @@ components:
       variants:
       - ltr
       - rtl
+      description: Writing-direction override (ltr/rtl) stamped on the root.
     - name: disabled
       type: boolean
       default: false
+      description: Inerts the surface - no gesture opens the menu.
     - name: focusable_surface
       type: boolean
       default: false
+      description: Puts the surface in the tab order and advertises Shift+F10.
     - name: label
       type: string
+      description: The menu's accessible name (localized fallback when omitted).
     - name: long_press_delay
       type: integer
       default: 700
+      description: Touch long-press duration in ms before the menu opens.
     - name: loop
       type: boolean
       default: false
+      description: Wraps arrow-key movement past either end of the menu.
     - name: modal
       type: boolean
       default: true
+      description: Traps focus in the open menu; false keeps the page interactive.
     - name: open
       type: boolean
       default: false
+      description: Server-renders the menu open (rare - context menus normally open
+        from the gesture).
     - name: side
       type: symbol
       variants:
@@ -2675,9 +2907,19 @@ components:
       - bottom
       - left
       default: right
+      description: Which side of the pointer the menu opens toward; collisions may
+        still flip it.
     slots:
     - name: items
       many: true
+      description: 'The menu composition API: one ordered items collection accepting
+        seven kinds, interleaved in call order - with_item an action row (href: renders
+        it as a real link; submit: as a real submit button) with_checkbox_item a toggleable
+        checked/unchecked row with_radio_group a single-select scope; add rows inside
+        it via with_radio_item(value:) with_label a non-interactive heading for a
+        run of items with_separator a horizontal rule between runs with_group semantic
+        grouping around the same union, one level down with_sub a nested submenu:
+        its own with_trigger plus the same union, recursively'
       types:
       - item
       - checkbox_item
@@ -2703,6 +2945,8 @@ components:
           slots:
           - name: radio_items
             many: true
+            description: 'One role=menuitemradio row; value: must be unique within
+              the group.'
             setter_args:
               radio_item: 0
             yieldless:
@@ -2713,6 +2957,15 @@ components:
           slots:
           - name: items
             many: true
+            description: 'The menu composition API: one ordered items collection accepting
+              seven kinds, interleaved in call order - with_item an action row (href:
+              renders it as a real link; submit: as a real submit button) with_checkbox_item
+              a toggleable checked/unchecked row with_radio_group a single-select
+              scope; add rows inside it via with_radio_item(value:) with_label a non-interactive
+              heading for a run of items with_separator a horizontal rule between
+              runs with_group semantic grouping around the same union, one level down
+              with_sub a nested submenu: its own with_trigger plus the same union,
+              recursively'
             types:
             - item
             - checkbox_item
@@ -2738,6 +2991,8 @@ components:
                 slots:
                 - name: radio_items
                   many: true
+                  description: 'One role=menuitemradio row; value: must be unique
+                    within the group.'
                   setter_args:
                     radio_item: 0
                   yieldless:
@@ -2748,6 +3003,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -2773,6 +3038,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -2781,6 +3048,9 @@ components:
                         radio_item: at least one radio item
                 - name: trigger
                   many: false
+                  description: role=menuitem in the PARENT's collection + aria wiring
+                    to its own sub-content; the trailing chevron ships built in (flips
+                    via logical ml-auto under RTL).
                   setter_args:
                     trigger: 0
                   yieldless:
@@ -2794,6 +3064,15 @@ components:
           slots:
           - name: items
             many: true
+            description: 'The menu composition API: one ordered items collection accepting
+              seven kinds, interleaved in call order - with_item an action row (href:
+              renders it as a real link; submit: as a real submit button) with_checkbox_item
+              a toggleable checked/unchecked row with_radio_group a single-select
+              scope; add rows inside it via with_radio_item(value:) with_label a non-interactive
+              heading for a run of items with_separator a horizontal rule between
+              runs with_group semantic grouping around the same union, one level down
+              with_sub a nested submenu: its own with_trigger plus the same union,
+              recursively'
             types:
             - item
             - checkbox_item
@@ -2819,6 +3098,8 @@ components:
                 slots:
                 - name: radio_items
                   many: true
+                  description: 'One role=menuitemradio row; value: must be unique
+                    within the group.'
                   setter_args:
                     radio_item: 0
                   yieldless:
@@ -2829,6 +3110,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -2854,6 +3145,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -2864,6 +3157,9 @@ components:
                   item: at least one item
           - name: trigger
             many: false
+            description: role=menuitem in the PARENT's collection + aria wiring to
+              its own sub-content; the trailing chevron ships built in (flips via
+              logical ml-auto under RTL).
             setter_args:
               trigger: 0
             yieldless:
@@ -2873,6 +3169,12 @@ components:
             item: at least one item
     - name: trigger
       many: false
+      description: 'The right-click/long-press SURFACE: wraps arbitrary content (a
+        card, a row, a region); polymorphic tag: (default :span, set tag: :div to
+        wrap block content). NOT a button: no role, no aria-haspopup, no tabindex
+        by default. The inline -webkit-touch-callout suppresses the iOS callout so
+        long-press can run (iOS never fires contextmenu; the timer is the only touch
+        path there).'
       setter_args:
         trigger: 0
       yieldless:
@@ -3179,38 +3481,65 @@ components:
     options:
     - name: caption
       type: string
+      description: The table's accessible purpose, rendered as its <caption>.
     - name: container_class
       type: string
+      description: Caps the scroll container's height (e.g. "max-h-96") - without
+        a cap the sticky header has nothing to stick inside.
     - name: empty_text
       type: string
       default: No results.
+      description: Shown in a full-width row when rows are empty.
     - name: filter
       type: boolean
       default: true
+      description: Renders the filter form; false drops the toolbar row.
     - name: filter_label
       type: string
       default: Filter
+      description: The filter input's accessible label.
     - name: filter_name
       type: string
       default: q
+      description: The query-param key the filter submits under.
     - name: filter_placeholder
       type: string
       default: Filter…
+      description: The filter input's placeholder text.
     - name: frame
       type: string
+      description: Wrap in a <turbo-frame data-turbo-action="advance"> so hosts with
+        Turbo scope the round trip to the table while the URL still advances. The
+        host response must render the same frame id.
     - name: scroll_label
       type: string
+      description: Accessible name for the sticky scroll region; falls back to caption:.
     - name: selectable
       type:
+      description: 'Row selection: a lambda mapping each row to its id turns the feature
+        ON - a leading checkbox column (select-all with a real indeterminate middle
+        state, shift ranges, count announcements) whose checkboxes ARE the form value
+        (selection_name[], plain checkboxes with no JS). Pair with the action-bar
+        block for bulk actions.'
     - name: selection_name
       type: string
       default: selected_ids
+      description: The checkbox field name; selected row ids post as selection_name[].
     - name: sticky_header
       type: boolean
       default: false
+      description: 'Forwarded to the inner Table: sticky_header pins the thead while
+        the table''s scroll container scrolls; container_class caps that container''s
+        height ("max-h-96") - without a cap nothing sticks. The sticky scroll region
+        needs an accessible name (the ScrollArea rule); scroll_label: falls back to
+        caption:.'
     slots:
     - name: columns
       many: true
+      description: 'Columns are DECLARED here and rendered per row by the template.
+        A sortable column''s key must be in the state''s whitelist - catching drift
+        between the view''s columns and the controller''s sortable: list at render,
+        not as a silently unsortable header.'
       setter_args:
         column: 1
       required_content:
@@ -3297,35 +3626,53 @@ components:
     options:
     - name: described_by
       type: string
+      description: Ids for aria-describedby (hint or error text).
     - name: disabled
       type: boolean
       default: false
+      description: Disables the field; the segment group dims and goes inert.
     - name: id
       type: string
+      description: The native input's DOM id - the Field label target.
     - name: invalid
       type: boolean
       default: false
+      description: Paints the destructive border/ring and sets aria-invalid.
     - name: label
       type: string
+      description: Standalone accessible name; inside a form the Field label wires
+        ids instead. Segments announce it themselves.
     - name: locale
       type: string
+      description: Pins the field to a locale other than the page's.
     - name: max
       type:
+      description: The latest allowed date (Date or ISO string) - rides native constraint
+        validation.
     - name: min
       type:
+      description: The earliest allowed date (Date or ISO string) - rides native constraint
+        validation.
     - name: name
       type: string
       required: true
+      description: The form field name - required; the value posts as ISO yyyy-mm-dd
+        with or without JS.
     - name: placeholder_value
       type:
+      description: What the first arrow press on an empty segment lands on; defaults
+        to today.
     - name: readonly
       type: boolean
       default: false
+      description: The value shows but cannot be edited.
     - name: required
       type: boolean
       default: false
+      description: Marks the native input required.
     - name: value
       type:
+      description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
     slots: []
     description: A segmented input for typing a date one part at a time.
     elements:
@@ -3417,20 +3764,31 @@ components:
     - name: caption_layout
       type: symbol
       default: label
+      description: 'Forwarded to the wrapped Calendar: :dropdown swaps the caption
+        for month + year selects (the date-of-birth recipe - min:/max: bound the year
+        list).'
     - name: label
       type: string
+      description: The trigger's accessible name (aria-label).
     - name: mode
       type: symbol
       default: single
+      description: ":single or :range (two-date selection; the trigger shows the joined
+        pair)."
     - name: name
       type: string
       required: true
+      description: The form field name - required; the chosen date posts as ISO.
     - name: placeholder
       type: string
       default: Pick a date
+      description: Trigger text while nothing is chosen.
     - name: variant
       type: symbol
       default: button
+      description: ":button (the default trigger) or :input - a text field that accepts
+        a typed date (parseable text re-selects the calendar) with a calendar icon-button
+        opening the popover. Single mode only."
     slots: []
     description: A date field that opens a calendar popover for selection.
     elements:
@@ -3504,9 +3862,12 @@ components:
     - name: loading
       type: symbol
       default: lazy
+      description: ":lazy fetches when the frame becomes visible; :eager fetches right
+        after paint."
     - name: src
       type: string
       required: true
+      description: The URL to fetch - required; rendering without it raises.
     slots: []
     description: A region that lazily loads its content on visibility, with skeleton
       and error states.
@@ -3571,15 +3932,23 @@ components:
     options:
     - name: content_class
       type: string
+      description: Extra classes merged onto the <dialog> panel (e.g. "max-h-[50vh]"
+        caps a top/bottom sheet).
     - name: dismissible
       type: boolean
       default: true
+      description: Backdrop clicks close the dialog; false keeps confirmations from
+        being dismissed accidentally (Esc still closes).
     - name: show_close_button
       type: boolean
       default: true
+      description: Renders the corner X; false forces a deliberate footer choice (footer
+        actions and Esc remain). Sheet inherits this.
     slots:
     - name: trigger
       many: false
+      description: 'The trigger is a poetry Button wired to open the dialog - agents
+        pass Button props: with_trigger(variant: :outline) { "Open" }.'
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -3587,10 +3956,13 @@ components:
       - trigger
     - name: title
       many: false
+      description: The heading - the dialog's accessible name; required.
     - name: description
       many: false
+      description: Muted copy under the title, wired to aria-describedby.
     - name: footer
       many: false
+      description: The action row at the bottom of the panel.
     description: A window overlaid on the page for content that requires attention.
     elements:
     - content
@@ -3691,23 +4063,40 @@ components:
       - right
       default: down
       required: true
+      description: The dismiss direction - :down is the mobile bottom sheet; the edge
+        chrome and swipe axis derive from it.
     options:
     - name: content_class
       type: string
+      description: Extra classes merged onto the <dialog> panel (e.g. "max-h-[50vh]"
+        caps a top/bottom sheet).
     - name: dismissible
       type: boolean
       default: true
+      description: Backdrop clicks close the dialog; false keeps confirmations from
+        being dismissed accidentally (Esc still closes).
     - name: modal
       type: boolean
       default: true
+      description: Non-modal (false) opens with show() - no top layer, no scrim, no
+        focus trap, no scroll lock; the page behind stays interactive. Esc (while
+        focus is inside), the swipe, and any wired close button still exit; there
+        is no backdrop to click, so pointer dismissal is off by nature.
     - name: show_swipe_handle
       type: boolean
       default: false
+      description: Renders the grab pill so the swipe gesture is discoverable.
     - name: snap_points
       type:
+      description: 'Preset resting heights for a bottom sheet, ascending: fractions
+        of the full height (0..1] or CSS px/rem lengths (["31rem", 1]). The popup
+        runs full-height and opens at the first point; drags move between points,
+        below the first dismisses. direction: :down only.'
     slots:
     - name: trigger
       many: false
+      description: 'The trigger is a poetry Button wired to open the dialog - agents
+        pass Button props: with_trigger(variant: :outline) { "Open" }.'
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -3715,10 +4104,13 @@ components:
       - trigger
     - name: title
       many: false
+      description: The heading - the dialog's accessible name; required.
     - name: description
       many: false
+      description: Muted copy under the title, wired to aria-describedby.
     - name: footer
       many: false
+      description: The action row at the bottom of the panel.
     description: A gesture-driven panel that slides in from a screen edge.
     elements:
     - content
@@ -3876,29 +4268,38 @@ components:
       - center
       - end
       default: center
+      description: The menu's alignment against the trigger's edge.
     - name: align_offset
       type: integer
       default: 0
+      description: Pixel shift along the alignment edge.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips/shifts placement to keep the menu inside the viewport.
     - name: dir
       type: symbol
       variants:
       - ltr
       - rtl
+      description: Reading direction; :rtl flips submenu sides and indicators.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the menu trigger button.
     - name: loop
       type: boolean
       default: false
+      description: Arrow-key navigation wraps from the last item back to the first.
     - name: modal
       type: boolean
       default: true
+      description: While open, pointer interaction outside the menu is blocked; false
+        keeps the rest of the page interactive.
     - name: open
       type: boolean
       default: false
+      description: Renders the menu already open on page load.
     - name: side
       type: symbol
       variants:
@@ -3907,12 +4308,22 @@ components:
       - bottom
       - left
       default: bottom
+      description: Which side of the trigger the menu opens on (flips on collision).
     - name: side_offset
       type: integer
       default: 4
+      description: Gap in pixels between the trigger and the menu.
     slots:
     - name: items
       many: true
+      description: 'The menu composition API: one ordered items collection accepting
+        seven kinds, interleaved in call order - with_item an action row (href: renders
+        it as a real link; submit: as a real submit button) with_checkbox_item a toggleable
+        checked/unchecked row with_radio_group a single-select scope; add rows inside
+        it via with_radio_item(value:) with_label a non-interactive heading for a
+        run of items with_separator a horizontal rule between runs with_group semantic
+        grouping around the same union, one level down with_sub a nested submenu:
+        its own with_trigger plus the same union, recursively'
       types:
       - item
       - checkbox_item
@@ -3938,6 +4349,8 @@ components:
           slots:
           - name: radio_items
             many: true
+            description: 'One role=menuitemradio row; value: must be unique within
+              the group.'
             setter_args:
               radio_item: 0
             yieldless:
@@ -3948,6 +4361,15 @@ components:
           slots:
           - name: items
             many: true
+            description: 'The menu composition API: one ordered items collection accepting
+              seven kinds, interleaved in call order - with_item an action row (href:
+              renders it as a real link; submit: as a real submit button) with_checkbox_item
+              a toggleable checked/unchecked row with_radio_group a single-select
+              scope; add rows inside it via with_radio_item(value:) with_label a non-interactive
+              heading for a run of items with_separator a horizontal rule between
+              runs with_group semantic grouping around the same union, one level down
+              with_sub a nested submenu: its own with_trigger plus the same union,
+              recursively'
             types:
             - item
             - checkbox_item
@@ -3973,6 +4395,8 @@ components:
                 slots:
                 - name: radio_items
                   many: true
+                  description: 'One role=menuitemradio row; value: must be unique
+                    within the group.'
                   setter_args:
                     radio_item: 0
                   yieldless:
@@ -3983,6 +4407,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -4008,6 +4442,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -4016,6 +4452,9 @@ components:
                         radio_item: at least one radio item
                 - name: trigger
                   many: false
+                  description: role=menuitem in the PARENT's collection + aria wiring
+                    to its own sub-content; the trailing chevron ships built in (flips
+                    via logical ml-auto under RTL).
                   setter_args:
                     trigger: 0
                   yieldless:
@@ -4029,6 +4468,15 @@ components:
           slots:
           - name: items
             many: true
+            description: 'The menu composition API: one ordered items collection accepting
+              seven kinds, interleaved in call order - with_item an action row (href:
+              renders it as a real link; submit: as a real submit button) with_checkbox_item
+              a toggleable checked/unchecked row with_radio_group a single-select
+              scope; add rows inside it via with_radio_item(value:) with_label a non-interactive
+              heading for a run of items with_separator a horizontal rule between
+              runs with_group semantic grouping around the same union, one level down
+              with_sub a nested submenu: its own with_trigger plus the same union,
+              recursively'
             types:
             - item
             - checkbox_item
@@ -4054,6 +4502,8 @@ components:
                 slots:
                 - name: radio_items
                   many: true
+                  description: 'One role=menuitemradio row; value: must be unique
+                    within the group.'
                   setter_args:
                     radio_item: 0
                   yieldless:
@@ -4064,6 +4514,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -4089,6 +4549,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -4099,6 +4561,9 @@ components:
                   item: at least one item
           - name: trigger
             many: false
+            description: role=menuitem in the PARENT's collection + aria wiring to
+              its own sub-content; the trailing chevron ships built in (flips via
+              logical ml-auto under RTL).
             setter_args:
               trigger: 0
             yieldless:
@@ -4108,6 +4573,9 @@ components:
             item: at least one item
     - name: trigger
       many: false
+      description: 'The menu button - a poetry Button (options forward to it, e.g.
+        variant: :outline). The slot owns the aria-haspopup/expanded/ controls wiring
+        regardless of the composed content, so composition cannot drop the aria.'
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -4402,6 +4870,8 @@ components:
       - default
       - icon
       default: default
+      description: The media slot's treatment; :icon gives the rounded muted icon
+        tile.
     - name: title_tag
       type: symbol
       variants:
@@ -4412,13 +4882,18 @@ components:
       - h5
       - h6
       default: h3
+      description: The title's heading level - a real heading element, so set it to
+        fit the page outline.
     slots:
     - name: media
       many: false
+      description: Optional leading visual above the title - an icon or illustration.
     - name: title
       many: false
+      description: The headline, rendered as a real heading (see title_tag).
     - name: description
       many: false
+      description: Muted copy under the title.
     description: An empty-state placeholder with an icon, message, and actions.
     elements:
     - header
@@ -4474,28 +4949,49 @@ components:
       - responsive
       default: vertical
       required: true
+      description: 'The layout axis. :horizontal is the boolean-control pattern: the
+        control lands in the first grid column, label + hint/error stack in the second,
+        and the control row-centers against the label line.'
     options:
     - name: error
       type: string
+      description: The error line (typically from model errors) - presence flips the
+        invalid skin and leads the control's aria-describedby.
     - name: group
       type: boolean
       default: false
+      description: 'group: the control is a role-bearing <div> (RadioGroup, Slider)
+        - label[for] would be inert (Chrome flags it), so the label drops for=, carries
+        label_id, and control_attributes names the group via aria-labelledby (the
+        visible label, i18n-proof).'
     - name: hint
       type: string
+      description: Plain-text guidance under the control (escaped wholesale); use
+        with_hint for authored markup.
     - name: hint_position
       type: symbol
       default: below
+      description: Where the hint renders relative to the control - :above puts guidance
+        before a tall control. aria-describedby is identical either way; this is visual
+        order only.
     - name: id
       type: string
       required: true
+      description: The control's DOM id - the hint/error/label ids derive from it.
     - name: invalid
       type: boolean
       default: false
+      description: 'Flips the invalid skin (data-invalid + aria-invalid) WITHOUT an
+        error line. error: implies it; use invalid: alone when the hint copy IS the
+        requirement.'
     - name: label_text
       type: string
+      description: The visible label text, associated with the control via for=.
     - name: required
       type: boolean
       default: false
+      description: Marks the control required via aria-required only - never the native
+        required attribute.
     slots: []
     description: Wraps a form control with its label, hint, and validation message.
     slot_extras:
@@ -4558,6 +5054,7 @@ components:
       - choices
       default: default
       required: true
+      description: ":choices packs a run of horizontal checkbox/switch fields tighter."
     options: []
     slots: []
     elements: []
@@ -4566,7 +5063,7 @@ components:
     - Stack Fields (and Fieldsets) with poetry_field_group - the theme owns the rhythm;
       never hand-space a form column with gap utilities.
     - 'variant: :choices packs a run of horizontal checkbox/switch fields tighter
-      (the upstream checkbox-group form).'
+      (the choice-group form).'
     - 'Field''s orientation: :responsive is container-driven: it needs a FieldGroup
       ancestor to measure against - without one it stays stacked.'
     parts:
@@ -4609,15 +5106,20 @@ components:
     options:
     - name: hint
       type: string
+      description: Muted description under the legend; per-field hints stay on the
+        fields.
     - name: legend
       type: string
       required: true
+      description: The group's accessible name - renders as the real <legend>.
     - name: legend_variant
       type: symbol
       variants:
       - legend
       - label
       default: legend
+      description: ":label renders the legend at label size - for a group that is
+        one setting explained by its rows (checkbox/switch runs)."
     slots: []
     elements:
     - legend
@@ -4655,28 +5157,41 @@ components:
       - input
       - dropzone
       default: input
+      description: ":input is the compact native control; :dropzone the drag-and-drop
+        surface."
     options:
     - name: accept
       type: string
+      description: The native accept filter (e.g. "image/*,.pdf").
     - name: described_by
       type: string
+      description: Ids for the native input's aria-describedby (Field wires this).
     - name: disabled
       type: boolean
       default: false
+      description: Disables the native input and dims the dropzone.
     - name: hint
       type: string
+      description: Muted constraints copy under the prompt (formats, size limits).
     - name: id
       type: string
+      description: The native input's id (Field/FormBuilder wire it to the label).
     - name: invalid
       type: boolean
       default: false
+      description: Marks the control aria-invalid (set by Field/FormBuilder from model
+        errors).
     - name: multiple
       type: boolean
       default: false
+      description: Allows selecting several files; forwarded to the native input.
     - name: name
       type: string
+      description: 'The native input''s name - the submitted param (multiple: true
+        wants a name ending in [] for Rails params).'
     - name: prompt
       type: string
+      description: The dropzone's instruction line - overrides the translated default.
     slots: []
     description: A control for selecting, previewing, and removing files to upload.
     elements:
@@ -4798,25 +5313,36 @@ components:
       - center
       - end
       default: center
+      description: Panel alignment along the chosen side.
     - name: align_offset
       type: integer
       default: 0
+      description: Shift in pixels along the alignment axis.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips and shifts the panel to stay inside the viewport.
     - name: close_delay
       type: integer
       default: 300
+      description: Close-grace window in ms over the trigger+content pair.
     - name: content_class
       type: string
+      description: 'The panel''s class merge seam - e.g. content_class: "w-80" widens
+        the card.'
     - name: defer
       type: string
+      description: Defer the card body to a lazy turbo-frame. The panel is hidden
+        until hover, so the fetch fires on first open for free; the component block
+        (if any) becomes the frame's placeholder.
     - name: open
       type: boolean
       default: false
+      description: Renders the card already open on page load.
     - name: open_delay
       type: integer
       default: 600
+      description: Hover-intent delay in ms before the card opens.
     - name: side
       type: symbol
       variants:
@@ -4825,12 +5351,21 @@ components:
       - bottom
       - left
       default: bottom
+      description: Which side of the anchor the panel opens on.
     - name: side_offset
       type: integer
       default: 4
+      description: Gap in pixels between the anchor and the panel.
     slots:
     - name: trigger
       many: false
+      description: 'The enriched LINK: a real navigable <a> - THE no-JS fallback.
+        tag: passthrough exists but change it knowingly (an <a> is the contract''s
+        fallback story). NO aria-haspopup/expanded/describedby - the card is invisible
+        to the accessibility tree on purpose. Built as a lazy anatomy part (rendered
+        at render time, not at with_trigger time). variant:/size: route through Button::Component
+        - Button''s href-implies-anchor keeps the trigger a REAL <a> wearing button
+        styling, so the reachable-elsewhere contract holds.'
       setter_args:
         trigger: 0
       yieldless:
@@ -4894,7 +5429,7 @@ components:
     - NO interactive elements inside the card - they get tabindex=-1 stripped and
       become pointer-only traps. Actions belong in a Popover or at the destination.
     - Don't add aria-expanded/haspopup to the trigger - advertising an unreachable
-      surface is worse than silence (Radix-aligned).
+      surface is worse than silence.
     - Never use HoverCard for hints (Tooltip) or for content users act on (Popover).
     - 'Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first
       open.'
@@ -4908,7 +5443,8 @@ components:
         touch path, and the keyboard path
       states:
       - attr: data-popup-open
-        condition: bare while the card is open; absent while closed (Base UI absence-is-the-state)
+        condition: bare while the card is open; absent while closed (absence IS the
+          closed state)
     - name: hover-card-content
       description: The role-less preview panel (invisible to AT on purpose) - positioning,
         animation, and the open state ride here
@@ -4989,12 +5525,19 @@ components:
     options:
     - name: label
       type: string
+      description: The accessible name - given, the icon is standalone (role=img);
+        absent, it is decorative (aria-hidden).
     - name: library
       type: symbol
+      description: Per-render icon set override (defaults to config.icon_library).
     - name: name
       type: symbol
       required: true
       format: icon-name
+      description: 'The icon''s name in the active set. format: :"icon-name" is the
+        machine-readable value contract: the registry carries it, and literal names
+        are validated against the icon set statically - a misspelled name is caught
+        before it can crash a render.'
     slots: []
     description: Renders an inline SVG icon from the icon set.
     agent_rules:
@@ -5014,20 +5557,29 @@ components:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the native input.
     - name: invalid
       type: boolean
       default: false
+      description: Marks the input aria-invalid - the error skin keys on the attribute.
     - name: mask
       type: string
+      description: 'Format-as-you-type mask descriptor (''(999) 999-9999''). Extra
+        knobs (slot char, always-show, auto-clear) ride Stimulus values via data:
+        - one declarative option covers the common case.'
     - name: name
       type: string
+      description: The submitted param name.
     - name: placeholder
       type: string
+      description: Native placeholder text - not a substitute for a Label.
     - name: type
       type: string
       default: text
+      description: The native type attribute (text, email, password, file, ...).
     - name: value
       type: string
+      description: The current value.
     slots: []
     description: A form control for entering a single line of text.
     elements: []
@@ -5119,28 +5671,41 @@ components:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the native input (the whole row dims).
     - name: groups
       type:
+      description: Cell clustering, e.g. [3, 3] -> two groups with a separator.
     - name: invalid
       type: boolean
       default: false
+      description: aria-invalid on the input; the cells mirror the destructive treatment
+        (set by Field/FormBuilder from the failed verify).
     - name: length
       type: integer
       required: true
+      description: Code length = slot count = maxlength.
     - name: name
       type: string
       required: true
+      description: The ONE input serializes params[name] = the code string.
     - name: pattern
       type:
       default: digits
+      description: ":digits (numeric keypad) | :alphanumeric | a custom Regexp - the
+        per-char filter + the native pattern attribute + inputmode."
     - name: required
       type: boolean
       default: false
+      description: 'aria-required on the input - never native required (the Field
+        rule: required rides server-side validation + aria).'
     - name: separator
       type: boolean
       default: true
+      description: role=separator dash between groups (meaningful with 2+ groups).
     - name: value
       type: string
+      description: Current code (server-rendered into the input AND the cells). The
+        FormBuilder deliberately never round-trips it (a rejected code is dead).
     slots: []
     description: A fixed-length, segmented input for one-time passcodes.
     elements:
@@ -5243,6 +5808,7 @@ components:
       - xs
       default: default
       required: true
+      description: The row's density.
     - name: variant
       type: symbol
       variants:
@@ -5251,6 +5817,7 @@ components:
       - muted
       default: default
       required: true
+      description: The row's visual treatment - :outline boxes it, :muted recedes.
     options:
     - name: media_variant
       type: symbol
@@ -5259,22 +5826,31 @@ components:
       - icon
       - image
       default: default
+      description: The media treatment - :icon for a glyph, :image for a thumbnail.
     - name: tag
       type: symbol
       default: div
+      description: 'The root element - tag: :a (href via passthrough) makes the whole
+        row clickable.'
     slots:
     - name: media
       many: false
+      description: The leading media cell - a glyph or thumbnail (see media_variant).
     - name: title
       many: false
+      description: The title row.
     - name: description
       many: false
+      description: The muted description line (clamps to two lines).
     - name: actions
       many: false
+      description: The trailing actions cell - buttons, a menu, a switch.
     - name: header
       many: false
+      description: Full-width row above the media/content columns.
     - name: footer
       many: false
+      description: Full-width row below the media/content columns.
     description: A generic list row with media, content, and actions.
     elements:
     - media
@@ -5361,6 +5937,8 @@ components:
     options:
     - name: for_id
       type: string
+      description: The id of the control this label names; omit it for a group label
+        (the group then points at this label via aria-labelledby).
     slots: []
     description: An accessible caption bound to a form control.
     elements: []
@@ -5384,16 +5962,21 @@ components:
       - always
       - none
       default: hover
+      description: When the underline appears; :none suits links styled by their container.
     options:
     - name: current
       type: boolean
       default: false
+      description: Marks this link as the current page via aria-current=page.
     - name: external
       type: boolean
       default: false
+      description: Opens in a new tab with rel="noopener noreferrer" - never hand-write
+        target=_blank.
     - name: href
       type: string
       required: true
+      description: The destination URL.
     slots: []
     description: A styled navigational hyperlink.
     elements: []
@@ -5421,6 +6004,8 @@ components:
       - border
       default: default
       required: true
+      description: The divider treatment - :separator for date/section breaks, :border
+        for a full-width rule under pinned headers.
     options:
     - name: announce
       type: symbol
@@ -5428,12 +6013,18 @@ components:
       - none
       - status
       default: none
+      description: Makes the marker a live status region (role=status) for the one
+        in-flight marker; static dividers never announce.
     - name: tag
       type: symbol
       default: div
+      description: The root element's tag.
     slots:
     - name: icon
       many: false
+      description: 'Optional leading visual: name: renders an icon glyph; a block
+        carries other media (a Spinner mid-run). Either way it sits in an aria-hidden
+        cell and stays decorative - the marker root does the announcing.'
       setter_args:
         icon: 0
       yieldless:
@@ -5477,17 +6068,26 @@ components:
       variants:
       - ltr
       - rtl
+      description: The reading direction; :rtl flips arrow-key movement and submenu
+        sides.
     - name: label
       type: string
       required: true
+      description: The bar's accessible name - a page may hold more than one menubar.
     - name: loop
       type: boolean
       default: false
+      description: Wraps arrow-key movement past either end of the bar.
     - name: value
       type: string
+      description: Server-renders the menu with this value open (values default to
+        "menu-<position>").
     slots:
     - name: menus
       many: true
+      description: 'The top-level menus. Each takes with_trigger (the menu button)
+        plus the family item slots (with_item, with_checkbox_item, with_radio_group,
+        with_sub, with_separator, ...); value: defaults to the menu''s position.'
       setter_args:
         menu: 0
       builders:
@@ -5495,6 +6095,15 @@ components:
           slots:
           - name: items
             many: true
+            description: 'The menu composition API: one ordered items collection accepting
+              seven kinds, interleaved in call order - with_item an action row (href:
+              renders it as a real link; submit: as a real submit button) with_checkbox_item
+              a toggleable checked/unchecked row with_radio_group a single-select
+              scope; add rows inside it via with_radio_item(value:) with_label a non-interactive
+              heading for a run of items with_separator a horizontal rule between
+              runs with_group semantic grouping around the same union, one level down
+              with_sub a nested submenu: its own with_trigger plus the same union,
+              recursively'
             types:
             - item
             - checkbox_item
@@ -5520,6 +6129,8 @@ components:
                 slots:
                 - name: radio_items
                   many: true
+                  description: 'One role=menuitemradio row; value: must be unique
+                    within the group.'
                   setter_args:
                     radio_item: 0
                   yieldless:
@@ -5530,6 +6141,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -5555,6 +6176,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -5565,6 +6188,16 @@ components:
                       slots:
                       - name: items
                         many: true
+                        description: 'The menu composition API: one ordered items
+                          collection accepting seven kinds, interleaved in call order
+                          - with_item an action row (href: renders it as a real link;
+                          submit: as a real submit button) with_checkbox_item a toggleable
+                          checked/unchecked row with_radio_group a single-select scope;
+                          add rows inside it via with_radio_item(value:) with_label
+                          a non-interactive heading for a run of items with_separator
+                          a horizontal rule between runs with_group semantic grouping
+                          around the same union, one level down with_sub a nested
+                          submenu: its own with_trigger plus the same union, recursively'
                         types:
                         - item
                         - checkbox_item
@@ -5590,6 +6223,8 @@ components:
                             slots:
                             - name: radio_items
                               many: true
+                              description: 'One role=menuitemradio row; value: must
+                                be unique within the group.'
                               setter_args:
                                 radio_item: 0
                               yieldless:
@@ -5598,6 +6233,9 @@ components:
                               radio_item: at least one radio item
                       - name: trigger
                         many: false
+                        description: role=menuitem in the PARENT's collection + aria
+                          wiring to its own sub-content; the trailing chevron ships
+                          built in (flips via logical ml-auto under RTL).
                         setter_args:
                           trigger: 0
                         yieldless:
@@ -5611,6 +6249,16 @@ components:
                 slots:
                 - name: items
                   many: true
+                  description: 'The menu composition API: one ordered items collection
+                    accepting seven kinds, interleaved in call order - with_item an
+                    action row (href: renders it as a real link; submit: as a real
+                    submit button) with_checkbox_item a toggleable checked/unchecked
+                    row with_radio_group a single-select scope; add rows inside it
+                    via with_radio_item(value:) with_label a non-interactive heading
+                    for a run of items with_separator a horizontal rule between runs
+                    with_group semantic grouping around the same union, one level
+                    down with_sub a nested submenu: its own with_trigger plus the
+                    same union, recursively'
                   types:
                   - item
                   - checkbox_item
@@ -5636,6 +6284,8 @@ components:
                       slots:
                       - name: radio_items
                         many: true
+                        description: 'One role=menuitemradio row; value: must be unique
+                          within the group.'
                         setter_args:
                           radio_item: 0
                         yieldless:
@@ -5646,6 +6296,16 @@ components:
                       slots:
                       - name: items
                         many: true
+                        description: 'The menu composition API: one ordered items
+                          collection accepting seven kinds, interleaved in call order
+                          - with_item an action row (href: renders it as a real link;
+                          submit: as a real submit button) with_checkbox_item a toggleable
+                          checked/unchecked row with_radio_group a single-select scope;
+                          add rows inside it via with_radio_item(value:) with_label
+                          a non-interactive heading for a run of items with_separator
+                          a horizontal rule between runs with_group semantic grouping
+                          around the same union, one level down with_sub a nested
+                          submenu: its own with_trigger plus the same union, recursively'
                         types:
                         - item
                         - checkbox_item
@@ -5671,6 +6331,8 @@ components:
                             slots:
                             - name: radio_items
                               many: true
+                              description: 'One role=menuitemradio row; value: must
+                                be unique within the group.'
                               setter_args:
                                 radio_item: 0
                               yieldless:
@@ -5681,6 +6343,9 @@ components:
                         item: at least one item
                 - name: trigger
                   many: false
+                  description: role=menuitem in the PARENT's collection + aria wiring
+                    to its own sub-content; the trailing chevron ships built in (flips
+                    via logical ml-auto under RTL).
                   setter_args:
                     trigger: 0
                   yieldless:
@@ -5690,6 +6355,9 @@ components:
                   item: at least one item
           - name: trigger
             many: false
+            description: 'The top-level menu button: a real button that is role=menuitem
+              INSIDE role=menubar, wired to the bar coordinator (toggle / gated hover-slide
+              / keyboard open).'
             setter_args:
               trigger: 0
             yieldless:
@@ -6035,13 +6703,19 @@ components:
       - start
       - end
       default: start
+      description: Which side the row sits on; :end mirrors it for the local user's
+        side.
     slots:
     - name: avatar
       many: false
+      description: The sender's avatar, kept beside the content column - decorative
+        context; put meaningful sender identity in the header.
     - name: header
       many: false
+      description: The sender identity line above the bubbles.
     - name: footer
       many: false
+      description: Timestamps / delivery state below the bubbles.
     description: A chat row pairing an author and avatar with message content.
     elements:
     - group
@@ -6087,6 +6761,8 @@ components:
     - name: auto_scroll
       type: boolean
       default: true
+      description: Follows the newest message while the reader sits at the bottom;
+        scrolling up releases the follow.
     - name: default_scroll_position
       type: symbol
       variants:
@@ -6094,18 +6770,28 @@ components:
       - end
       - last-anchor
       default: end
+      description: 'Where the viewport lands on connect: the newest message (:end),
+        the oldest (:start), or the last anchor: true row (:"last-anchor").'
     - name: id
       type: string
       required: true
+      description: The transcript's stable identifier - the content element renders
+        dom id "<id>-messages" for Turbo Streams to target.
     - name: jump_button
       type: boolean
       default: true
+      description: Renders the floating jump-to-latest button (shown once the reader
+        leaves the bottom).
     - name: preserve_scroll_on_prepend
       type: boolean
       default: true
+      description: Keeps the reading position stable when history prepends into the
+        content element.
     - name: track_visibility
       type: boolean
       default: false
+      description: Opt-in observation of which rows are on screen - emits a visibility
+        event as the visible set changes.
     slots: []
     description: A streaming-aware transcript that keeps the latest message in view.
     elements:
@@ -6238,16 +6924,21 @@ components:
       - two
       - three
       default: one
+      description: How many columns the facts spread across on wide viewports.
     - name: orientation
       type: symbol
       variants:
       - vertical
       - horizontal
       default: vertical
+      description: Label placement - above the value, or beside it for the classic
+        key/value sheet.
     options: []
     slots:
     - name: items
       many: true
+      description: 'The facts. Each takes label: (the fact''s name, the <dt>) and
+        the value as its block (the <dd>).'
       setter_args:
         item: 0
       yieldless:
@@ -6299,20 +6990,28 @@ components:
     - name: label
       type: string
       required: true
+      description: The meter's accessible name and visible caption.
     - name: max
       type: integer
       default: 100
+      description: The range's upper bound - must exceed min:.
     - name: min
       type: integer
       default: 0
+      description: The range's lower bound.
     - name: show_value
       type: boolean
       default: true
+      description: Set false to hide the visible readout.
     - name: value
       type: integer
       required: true
+      description: The measured quantity, clamped into min:..max:.
     - name: value_text
       type: string
+      description: Verbatim human-readable value ("3 of 4 seats") replacing the percentage
+        readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on role=meter,
+        so aria-valuenow carries the value.
     slots: []
     description: A gauge that shows a quantity within a known range.
     elements: []
@@ -6346,24 +7045,34 @@ components:
     options:
     - name: described_by
       type: string
+      description: Space-separated hint/error ids wired to the SELECT itself - a raw
+        aria-describedby in html_attributes would land on the wrapper div, unassociated
+        for assistive technology.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the native select; the wrapper dims the whole pair.
     - name: id
       type: string
+      description: 'The select''s dom id - the seam a Label''s for_id: points at.'
     - name: invalid
       type: boolean
       default: false
+      description: Marks the select invalid (aria-invalid on the element itself).
     - name: label
       type: string
+      description: 'The accessible name for label-less placements (a visible Label
+        paired via id:/for_id: is still the default pattern).'
     - name: name
       type: string
+      description: The submitted field name, forwarded to the native select.
     - name: size
       type: symbol
       variants:
       - default
       - sm
       default: default
+      description: The control size axis; :sm suits dense toolbars and table rows.
     slots: []
     description: A styled wrapper around the real native select control.
     elements:
@@ -6412,12 +7121,20 @@ components:
     - name: label
       type: string
       required: true
+      description: The nav landmark's accessible name - a page may hold more than
+        one nav.
     - name: viewport
       type: boolean
       default: false
+      description: 'Opts into the shared morphing viewport: panels adopt into one
+        positioned card that morphs size and position between triggers. Off, each
+        panel opens under its own item (also the no-JS shape).'
     slots:
     - name: items
       many: true
+      description: The bar entries. with_item(title, value:) { panel } declares a
+        trigger + panel; with_item(title, href:) a top-level link (with_link is the
+        shorthand).
       setter_args:
         item: 1
       yieldless:
@@ -6606,52 +7323,76 @@ components:
     options:
     - name: described_by
       type: string
+      description: aria-describedby wiring for Field hint/error pairing.
     - name: disabled
       type: boolean
       default: false
+      description: Disables both inputs and the steppers; the group chrome dims.
     - name: format
       type:
+      description: Intl.NumberFormatOptions for the DISPLAY (submission stays raw).
     - name: id
       type: string
+      description: 'The visible input''s dom id - the seam a Label''s for_id: points
+        at.'
     - name: invalid
       type: boolean
       default: false
+      description: Marks the field invalid (aria-invalid on the visible input; the
+        group wears the destructive ring).
     - name: label
       type: string
+      description: Standalone accessible name -> aria-label on the visible input.
+        Inside a form, the Field label wires ids instead - pass neither and pair with
+        poetry_label/form.
     - name: large_step
       type: float
       default: 10.0
+      description: The Shift-arrow step size (the coarse jump).
     - name: locale
       type: string
+      description: Locale tag pinning the display and parsing separators; the page
+        locale otherwise.
     - name: max
       type: float
+      description: The upper clamp for stepping and native validation.
     - name: min
       type: float
+      description: The lower clamp for stepping and native validation.
     - name: name
       type: string
       required: true
+      description: The submitted field name - rides the hidden number input.
     - name: placeholder
       type: string
+      description: Placeholder text for the empty input.
     - name: readonly
       type: boolean
       default: false
+      description: Makes the visible input read-only (steppers and typing inert).
     - name: required
       type: boolean
       default: false
+      description: Requires a value - native validation rides the hidden input.
     - name: small_step
       type: float
       default: 0.1
+      description: The Alt-arrow step size (the fine adjustment).
     - name: snap
       type: boolean
       default: false
+      description: Snaps stepped values to step multiples counted from min:.
     - name: step
       type: float
       default: 1.0
+      description: The arrow-key / stepper increment.
     - name: value
       type:
+      description: Initial value - a number; nil renders empty (null semantics).
     - name: wheel
       type: boolean
       default: false
+      description: Opt-in wheel stepping while the input is focused.
     slots: []
     description: A numeric input with increment and decrement steppers.
     elements: []
@@ -6799,12 +7540,15 @@ components:
     - name: current
       type: integer
       required: true
+      description: The current page number (1-based).
     - name: current_variant
       type: symbol
       variants:
       - outline
       - filled
       default: outline
+      description: 'How the current page link renders: :outline, or :filled for the
+        primary Button treatment (an unambiguous active state).'
     - name: edges
       type: symbol
       variants:
@@ -6812,24 +7556,34 @@ components:
       - icons
       - none
       default: labeled
+      description: 'The Previous/Next treatment: :labeled (chevron + responsive text),
+        :icons (chevron only - table footers), :none (no edge links).'
     - name: label
       type: string
       default: pagination
+      description: The nav landmark's accessible name.
     - name: next_label
       type: string
       default: Next
+      description: The Next link's visible text (hidden on narrow viewports).
     - name: pages
       type: boolean
       default: true
+      description: 'Set false to drop the numbered links - the compact two-button
+        pager (pair with edges: :icons).'
     - name: previous_label
       type: string
       default: Previous
+      description: The Previous link's visible text (hidden on narrow viewports).
     - name: siblings
       type: integer
       default: 1
+      description: How many page links flank the current page before gaps elide to
+        ellipses.
     - name: total
       type: integer
       required: true
+      description: The total page count.
     slots: []
     description: Navigation for moving between pages of content.
     elements:
@@ -6843,9 +7597,9 @@ components:
     - poetry_pagination(current:, total:, path:) - never hand-build the <nav>/<ul>/<li>
       list.
     - 'path: is a callable ->(page) { url } (e.g. ->(p) { products_path(page: p) }).'
-    - 'The current page is aria-current=page; current_variant: :outline (upstream
-      parity, default) or :filled (the primary treatment - unambiguous active state);
-      the rest are ghost links.'
+    - 'The current page is aria-current=page; current_variant: :outline (the default)
+      or :filled (the primary treatment - unambiguous active state); the rest are
+      ghost links.'
     - 'edges: :icons renders chevron-only Previous/Next (the table-footer posture);
       :none drops them for a bare page list; pages: false drops the numbers (pair
       with edges: :icons for the compact pager).'
@@ -6877,22 +7631,32 @@ components:
       - center
       - end
       default: center
+      description: Panel alignment along the chosen side.
     - name: align_offset
       type: integer
       default: 0
+      description: Shift in pixels along the alignment axis.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips and shifts the panel to stay inside the viewport.
     - name: content_class
       type: string
+      description: 'Class merge seam for the panel itself (e.g. widen the default
+        with content_class: "w-80") - root-level class: styles the wrapper, not the
+        panel.'
     - name: label
       type: string
+      description: role=dialog fallback name when no title part is present.
     - name: modal
       type: boolean
       default: false
+      description: Reserves interaction for the panel while open; the default keeps
+        the rest of the page interactive.
     - name: open
       type: boolean
       default: false
+      description: Server-renders the panel open.
     - name: side
       type: symbol
       variants:
@@ -6901,12 +7665,18 @@ components:
       - bottom
       - left
       default: bottom
+      description: Which side of the anchor the panel opens on.
     - name: side_offset
       type: integer
       default: 4
+      description: Gap in pixels between the anchor and the panel.
     slots:
     - name: trigger
       many: false
+      description: The control that opens the panel - a composed Button. The slot
+        owns the aria-haspopup/expanded/controls wiring regardless of the composed
+        content, so composition cannot drop the aria; aria-controls renders even while
+        closed (the stable id is the wiring's resolution seam).
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -6914,14 +7684,20 @@ components:
       - trigger
     - name: anchor
       many: false
+      description: 'Optional alternate anchor: when present, the panel positions against
+        IT instead of the trigger (targets beat selectors in the positioning fallback
+        chain).'
       setter_args:
         anchor: 0
       yieldless:
       - anchor
     - name: title
       many: false
+      description: Panel heading - presence wires the content's aria-labelledby, so
+        the title names the dialog.
     - name: description
       many: false
+      description: Supporting text - presence wires the content's aria-describedby.
     description: Rich floating content anchored to a trigger.
     elements:
     - content
@@ -6990,8 +7766,8 @@ components:
     - name: popover
       description: Root wrapper around the trigger, the optional anchor, and the panel
     - name: popover-anchor
-      description: Optional alternate popper anchor (Radix PopoverAnchor) - when present
-        the panel positions against it instead of the trigger
+      description: Optional alternate popper anchor - when present the panel positions
+        against it instead of the trigger
     - name: popover-content
       description: The role=dialog panel - positioning, animation, and the open state
         ride here
@@ -7075,15 +7851,19 @@ components:
     - name: label
       type: string
       required: true
+      description: The progressbar's accessible name and visible caption.
     - name: max
       type: integer
       default: 100
+      description: The completion value.
     - name: show_value
       type: boolean
       default: true
+      description: Set false to hide the percent readout.
     - name: value
       type: integer
       required: true
+      description: The current progress, clamped into 0..max:.
     slots: []
     description: A determinate progress bar toward task completion.
     elements:
@@ -7119,34 +7899,49 @@ components:
     options:
     - name: default_item
       type: string
+      description: The initially active item by name; default is the first item.
     - name: http_method
       type: symbol
       default: post
+      description: The form's HTTP verb. Named http_method (not method:) - an option
+        named `method` would shadow Object#method.
     - name: id
       type: string
+      description: The root form's DOM id; item element ids derive from it.
     - name: next_label
       type: string
       default: Next
+      description: The forward-navigation button's text.
     - name: previous_label
       type: string
       default: Previous
+      description: The back-navigation button's text.
     - name: shortcuts
       type: symbol
       variants:
       - letters
       - numbers
+      description: 'nil (off), :letters (A, B, C...) or :numbers (1-9): server- rendered
+        key labels + one-keystroke answering.'
     - name: skip_label
       type: string
       default: Skip
+      description: The skip button's text (shown only while the active item is optional).
     - name: submit_label
       type: string
       default: Submit
+      description: The final submit button's text (replaces Next on the last item).
     - name: url
       type: string
       required: true
+      description: The form's submit URL - answers post here as ordinary params.
     slots:
     - name: progress
       many: false
+      description: 'with_progress (bare) renders the auto "Question X of Y" text;
+        with_progress { custom } replaces it (marked data-custom so the controller
+        leaves it alone). class: merges onto the progress element (e.g. w-full for
+        a full-width segment bar over the base w-fit).'
     description: A one-question-at-a-time survey flow with choices, free answers,
       and validation.
     slot_extras:
@@ -7202,7 +7997,7 @@ components:
     - 'One with_item per question (name: is the param key); choices via item.with_choice,
       an optional free-text answer via item.with_input.'
     - 'multiple: true renders checkboxes named <name>[] (Rails array params) - a recorded
-      divergence from upstream''s repeated bare names.'
+      divergence from the ported source''s repeated bare names.'
     - 'required: true gates Next/submit client-side; the server stays the truth on
       submit.'
     - 'shortcuts: :letters or :numbers labels each choice with a key (server-rendered)
@@ -7368,17 +8163,25 @@ components:
     - name: disabled
       type: boolean
       default: false
+      description: Disables every item (root-level).
     - name: invalid
       type: boolean
       default: false
+      description: aria-invalid on the items (the destructive ring) - set by Field/FormBuilder
+        from model errors.
     - name: label
       type: string
+      description: 'The group accessible name -> aria-label (or wire aria-labelledby
+        yourself) - REQUIRED: an unlabelled radiogroup fails the audit.'
     - name: loop
       type: boolean
       default: true
+      description: Arrow-key navigation wraps at the ends.
     - name: name
       type: string
       required: true
+      description: The shared form name for every hidden radio (FormBuilder derives
+        object[method]).
     - name: orientation
       type: symbol
       variants:
@@ -7386,14 +8189,23 @@ components:
       - vertical
       - horizontal
       default: both
+      description: 'Keyboard axis: :both allows all four arrows (the standard radio
+        pattern); :vertical/:horizontal restrict the axis. No visual effect.'
     - name: required
       type: boolean
       default: false
+      description: aria-required on the ROOT only - never native required on the hidden
+        inputs (constraint-validation focus would land on an aria-hidden input).
     - name: value
       type: string
+      description: The checked item's value; nil = nothing checked (pre-selection).
     slots:
     - name: items
       many: true
+      description: 'One item per option: a real button[role=radio] carrying its own
+        hidden native radio; label: renders the dot beside a paired Label. variant:
+        :card renders the choice-card row instead - title (+ optional description:)
+        inside a selectable bordered label, the radio pinned to the right.'
       setter_args:
         item: 0
     description: A set of options where only one can be selected at a time.
@@ -7527,12 +8339,17 @@ components:
       - horizontal
       - vertical
       default: horizontal
+      description: 'The group axis: :horizontal lays panels side by side, :vertical
+        stacks them.'
     - name: grip
       type: boolean
       default: false
+      description: Renders the grip dots on each handle.
     slots:
     - name: panels
       many: true
+      description: 'One panel per call: default_size/min_size/max_size are percentages
+        of the group; the content block is required.'
       setter_args:
         panel: 0
       setter_kwargs:
@@ -7622,6 +8439,8 @@ components:
     - name: label
       type: string
       required: true
+      description: The region's accessible name (role=region + aria-label) - required,
+        because a focusable region must be named.
     slots: []
     description: A bounded, keyboard-reachable scroll region with styled scrollbars.
     elements:
@@ -7650,29 +8469,41 @@ components:
     options:
     - name: described_by
       type: string
+      description: aria-describedby on the input - Field hint/error wiring.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the input and hides the clear affordance.
     - name: id
       type: string
+      description: 'The input''s DOM id - what a Field label''s for: must reference.'
     - name: invalid
       type: boolean
       default: false
+      description: aria-invalid on the input - set by Field/FormBuilder from model
+        errors.
     - name: label
       type: string
+      description: The accessible name (aria-label) for standalone use - or pair with
+        a Label/Field instead.
     - name: name
       type: string
       required: true
+      description: The form field name on the search input.
     - name: placeholder
       type: string
+      description: Hint text shown while the field is empty.
     - name: readonly
       type: boolean
       default: false
+      description: The query can be read but not edited; the clear affordance hides.
     - name: required
       type: boolean
       default: false
+      description: Marks the input required for native constraint validation.
     - name: value
       type: string
+      description: The pre-filled query; presence unhides the clear affordance.
     slots: []
     description: A search input with clear and search affordances.
     elements:
@@ -7757,41 +8588,59 @@ components:
       - center
       - end
       default: start
+      description: Popup alignment along the chosen side's edge.
     - name: align_item_with_trigger
       type: boolean
       default: false
+      description: Opens the popup OVER the trigger with the selected item aligned
+        on it (native-select feel); falls back to regular below-the-trigger positioning
+        on touch, viewport-edge triggers, or squeezed heights.
     - name: align_offset
       type: integer
       default: 0
+      description: Pixel shift along the alignment axis.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips/shifts the popup to keep it inside the viewport.
     - name: dir
       type: symbol
       variants:
       - ltr
       - rtl
+      description: Text direction for the select and its popup.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the trigger and the hidden native <select>.
     - name: id
       type: string
+      description: 'The trigger''s DOM id - what a Field label''s for: must point
+        at; giving one also satisfies the accessible-name requirement.'
     - name: loop
       type: boolean
       default: false
+      description: Arrow-key navigation wraps from the last option back to the first.
     - name: modal
       type: boolean
       default: true
+      description: While open, blocks pointer interaction outside the popup.
     - name: name
       type: string
+      description: The form field name, carried by the hidden native <select>.
     - name: open
       type: boolean
       default: false
+      description: Server-renders the popup already open.
     - name: placeholder
       type: string
+      description: Text shown in the trigger until an option is committed; also rendered
+        as the blank native <option> (posts "" when untouched).
     - name: required
       type: boolean
       default: false
+      description: Marks the hidden native <select> required - native constraint validation
+        blocks submission while unset.
     - name: side
       type: symbol
       variants:
@@ -7800,24 +8649,38 @@ components:
       - bottom
       - left
       default: bottom
+      description: Preferred popup side relative to the trigger.
     - name: side_offset
       type: integer
       default: 4
+      description: Gap in pixels between trigger and popup.
     - name: size
       type: symbol
       variants:
       - sm
       - default
       default: default
+      description: The trigger size axis.
     - name: trigger_class
       type: string
+      description: 'Extra classes merged onto the trigger button (e.g. w-full over
+        the base w-fit); class: styles the root wrapper instead.'
     - name: value
       type: string
+      description: 'The committed option value - the item whose value: matches renders
+        as selected and its label fills the trigger.'
     slots:
     - name: trigger
       many: false
+      description: Optional custom trigger content rendered BEFORE the value span
+        (rare); the component owns role=combobox + the aria wiring + the chevron regardless,
+        so composition cannot drop the contract.
     - name: items
       many: true
+      description: 'The option UNION: item | group (label + items) | separator - one
+        ordered collection (interleaving preserved; items and groups are part COMPONENTS
+        so option registration follows render/DOM order). Scroll buttons, the viewport,
+        and the native select are component-owned anatomy, never caller-placed.'
       types:
       - item
       - group
@@ -7911,8 +8774,8 @@ components:
       2-4 options -> RadioGroup.
     - The hidden native select is plumbing - never target it with styles, labels,
       or Capybara selectors (drive the combobox like a user).
-    - 'Positioning is popper-only: poetry Select drops below the trigger (shadcn''s
-      item-aligned overlay mode is not ported - a documented parity delta).'
+    - 'Positioning is popper-only: poetry Select drops below the trigger (the item-aligned
+      overlay mode is not ported - a documented parity delta).'
     required_slots:
       item: at least one item
     parts:
@@ -8086,31 +8949,45 @@ components:
     - name: copy
       type: boolean
       default: false
+      description: Adds the copy-without-revealing button in the trailing cell.
     - name: described_by
       type: string
+      description: aria-describedby on the input - Field hint/error wiring.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the input and drops the masked group's tab stop.
     - name: id
       type: string
+      description: 'The input''s DOM id - what a Field label''s for: must reference.'
     - name: invalid
       type: boolean
       default: false
+      description: aria-invalid on the input - set by Field/FormBuilder from model
+        errors.
     - name: label
       type: string
+      description: The accessible name - feeds the input's aria-label and the masked
+        announcement ("{label}, masked."); pair with a visible Label/Field caption.
     - name: name
       type: string
       required: true
+      description: The form field name on the real input.
     - name: placeholder
       type: string
+      description: Hint text shown while the field is empty.
     - name: readonly
       type: boolean
       default: false
+      description: The value can be revealed and copied but not edited.
     - name: required
       type: boolean
       default: false
+      description: Marks the real input required.
     - name: value
       type: string
+      description: The secret's current value; present = first paint is masked, blank
+        = the empty state.
     slots: []
     description: A masked secret field with a reveal toggle and a copy button.
     elements:
@@ -8272,12 +9149,15 @@ components:
     - name: decorative
       type: boolean
       default: true
+      description: Whether the divide is purely visual (aria-hidden) or a semantic
+        boundary (role=separator).
     - name: orientation
       type: symbol
       variants:
       - horizontal
       - vertical
       default: horizontal
+      description: The divider's axis.
     slots: []
     description: A thin divider between content, decorative or semantic.
     elements: []
@@ -8309,18 +9189,28 @@ components:
       - left
       default: right
       required: true
+      description: The edge the sheet slides in from - a physical direction (right
+        stays right in RTL).
     options:
     - name: content_class
       type: string
+      description: Extra classes merged onto the <dialog> panel (e.g. "max-h-[50vh]"
+        caps a top/bottom sheet).
     - name: dismissible
       type: boolean
       default: true
+      description: Backdrop clicks close the dialog; false keeps confirmations from
+        being dismissed accidentally (Esc still closes).
     - name: show_close_button
       type: boolean
       default: true
+      description: Renders the corner X; false forces a deliberate footer choice (footer
+        actions and Esc remain). Sheet inherits this.
     slots:
     - name: trigger
       many: false
+      description: 'The trigger is a poetry Button wired to open the dialog - agents
+        pass Button props: with_trigger(variant: :outline) { "Open" }.'
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -8328,10 +9218,13 @@ components:
       - trigger
     - name: title
       many: false
+      description: The heading - the dialog's accessible name; required.
     - name: description
       many: false
+      description: Muted copy under the title, wired to aria-describedby.
     - name: footer
       many: false
+      description: The action row at the bottom of the panel.
     description: A dialog that slides in from a screen edge.
     elements:
     - content
@@ -8431,15 +9324,20 @@ components:
       - icon
       - none
       default: offcanvas
+      description: 'What collapsing does: slide fully away, shrink to an icon rail,
+        or :none for a static column.'
     - name: open
       type: boolean
       default: true
+      description: The expanded/collapsed state at first paint - feed it from the
+        persisted cookie so there is no collapse flash.
     - name: side
       type: symbol
       variants:
       - left
       - right
       default: left
+      description: Which edge the column hangs on.
     - name: variant
       type: symbol
       variants:
@@ -8447,11 +9345,14 @@ components:
       - floating
       - inset
       default: sidebar
+      description: 'The column treatment: flush column, floating card, or inset panel.'
     slots:
     - name: nav
       many: false
+      description: The sidebar column's content (required) - groups, menus, header/footer.
     - name: inset
       many: false
+      description: The page area beside the column - rendered as the <main> inset.
     description: A collapsible app-shell navigation column.
     elements:
     - wrapper
@@ -8590,7 +9491,7 @@ components:
         - left
         - right
       - attr: data-sidebar
-        condition: always "sidebar" - the upstream sub-part marker
+        condition: always "sidebar" - the suite-wide sub-part marker
       vars:
       - name: "--sidebar-width"
         description: overridden inline to the mobile sheet width (18rem)
@@ -8630,12 +9531,12 @@ components:
       description: The item-corner action button, absolutely positioned in the row
       states:
       - attr: data-sidebar
-        condition: always "menu-action" - the upstream sub-part marker
+        condition: always "menu-action" - the suite-wide sub-part marker
     - name: sidebar-menu-badge
       description: The trailing count/status chrome in the row corner - pointer-transparent
       states:
       - attr: data-sidebar
-        condition: always "menu-badge" - the upstream sub-part marker
+        condition: always "menu-badge" - the suite-wide sub-part marker
     stimulus:
     - element: root
       controllers:
@@ -8702,43 +9603,66 @@ components:
     options:
     - name: described_by
       type: string
+      description: Field hint/error wiring -> aria-describedby on EACH thumb.
     - name: disabled
       type: boolean
       default: false
+      description: Renders the control inert; the hidden inputs still submit the server
+        value.
     - name: inverted
       type: boolean
       default: false
+      description: Flips the value direction along the axis; composes with RTL (both
+        = ltr math).
     - name: label
       type:
+      description: Per-thumb accessible names -> aria-label; range REQUIRES two. Alternatively
+        labelled_by (external wiring). Enforced.
     - name: labelled_by
       type: string
+      description: aria-labelledby for the thumb(s) - the Field-wrapped single slider
+        derives its name from the field label this way.
     - name: max
       type: float
       default: 100.0
+      description: The track's upper bound; must exceed min:.
     - name: min
       type: float
       default: 0.0
+      description: The track's lower bound.
     - name: min_steps_between_thumbs
       type: integer
       default: 0
+      description: 'Range-mode minimum gap in STEPS: high - low >= n*step; thumbs
+        can never cross.'
     - name: name
       type: string
       required: true
+      description: Form name; single thumb -> name; range -> name + "[]" per input
+        (the Rails array-param convention).
     - name: orientation
       type: symbol
       variants:
       - horizontal
       - vertical
       default: horizontal
+      description: The track axis.
     - name: step
       type: float
       default: 1.0
+      description: Snap increment; decimal steps supported (precision-aware rounding
+        lives in the controller's math core).
     - name: value
       type:
+      description: Single-thumb value. ArgumentError if given with values:.
     - name: value_text
       type:
+      description: 'aria-valuetext formatter: a proc (v -> "$200") or an i18n key
+        with %{value}; optional - falls back to the bare number.'
     - name: values
       type:
+      description: 'Range mode: [low, high] -> two thumbs, sorted. ArgumentError if
+        given with value:, unsorted, or length != 2.'
     slots: []
     description: An input for selecting a value or range along a track.
     elements:
@@ -8897,6 +9821,7 @@ components:
     - name: label
       type: string
       default: Loading
+      description: What assistive tech announces - name the loading context.
     slots: []
     description: An indeterminate loading indicator that announces itself.
     elements: []
@@ -8917,15 +9842,19 @@ components:
     options:
     - name: delta
       type: string
+      description: The change text shown in the pill beside the value ("+12.5%").
     - name: label
       type: string
       required: true
+      description: The metric's name, shown muted above the value.
     - name: sentiment
       type: symbol
       variants:
       - positive
       - negative
       - neutral
+      description: Overrides the trend-derived sentiment - color follows sentiment,
+        never the arrow (set :positive when DOWN is the good direction).
     - name: trend
       type: symbol
       variants:
@@ -8933,11 +9862,15 @@ components:
       - down
       - flat
       default: up
+      description: The arrow direction; also derives the default sentiment.
     slots:
     - name: description
       many: false
+      description: Muted supporting copy rendered under the value.
     - name: media
       many: false
+      description: The trend-visual slot (sparkline, chart, glyph) below the text
+        stack.
     description: 'A single KPI: a muted label over a large metric value.'
     elements:
     - label
@@ -9001,26 +9934,36 @@ components:
       - sm
       default: default
       required: true
+      description: The control's size axis; the thumb scales to match.
     options:
     - name: checked
       type: boolean
       default: false
+      description: The server-rendered on/off state.
     - name: disabled
       type: boolean
       default: false
+      description: Disables the control and its hidden input - a disabled switch neither
+        toggles nor submits.
     - name: label
       type: string
+      description: The accessible name, rendered as aria-label - not visible text.
     - name: name
       type: string
+      description: Names the hidden input, making the switch a form participant.
     - name: required
       type: boolean
       default: false
+      description: Marks the switch required via aria-required (never the native attribute).
     - name: unchecked_value
       type: string
       default: '0'
+      description: Submitted when the switch is off, so the field always posts. Ignored
+        without name:.
     - name: value
       type: string
       default: '1'
+      description: Submitted when the switch is on. Ignored without name:.
     slots: []
     description: A toggle for turning a setting on or off.
     elements:
@@ -9096,11 +10039,18 @@ components:
     options:
     - name: container_class
       type: string
+      description: Extra classes for the scroll container - e.g. "max-h-96" to cap
+        its height.
     - name: scroll_label
       type: string
+      description: 'The scroll region''s accessible name, required with sticky_header:
+        a scrollable region a keyboard can''t reach fails WCAG (axe scrollable-region-focusable),
+        and a focusable region needs a name.'
     - name: sticky_header
       type: boolean
       default: false
+      description: Pins the <thead> while the container scrolls; needs a height cap
+        (container_class:) to take effect, and requires scroll_label:.
     slots: []
     description: A semantic table for rows and columns of data.
     elements:
@@ -9157,23 +10107,34 @@ components:
     options:
     - name: default
       type: string
+      description: The value of the server-rendered active tab; defaults to the first
+        enabled tab. Raises when it matches no tab.
     - name: label
       type: string
+      description: The tablist's accessible name - recommended when a page has several
+        tab sets.
     - name: orientation
       type: symbol
       variants:
       - horizontal
       - vertical
       default: horizontal
+      description: The tab axis; :vertical stacks the triggers and flips the arrow
+        keys.
     - name: variant
       type: symbol
       variants:
       - default
       - line
       default: default
+      description: 'The list''s visual treatment: :default a filled capsule, :line
+        an underline indicator.'
     slots:
     - name: tabs
       many: true
+      description: 'Declares one tab: the title, its value:, and the panel as the
+        block (defer: swaps in a lazy turbo-frame panel; panel: false declares a list-only
+        tab). Omitting all three raises.'
       setter_args:
         tab: 1
       yieldless:
@@ -9287,14 +10248,23 @@ components:
     options:
     - name: described_by
       type: string
+      description: Space-separated hint/error ids for the GRID (the labelled element)
+        - a raw aria-describedby in html_attributes would land on the outer wrapper
+        div, unassociated for AT.
     - name: label
       type: string
       required: true
+      description: The grid's accessible name, rendered as a caption span. Required.
     - name: name
       type: string
+      description: 'Makes the group a form value: one hidden <name>[] input submits
+        per tag.'
     slots:
     - name: tags
       many: true
+      description: 'Declares one chip. value: is its identity (and form value); label:
+        is the accessible name and the visible text when no block is given; removable:
+        false drops the remove button.'
       setter_args:
         tag: 0
       yieldless:
@@ -9391,17 +10361,25 @@ components:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the control and forwards to the native element.
     - name: invalid
       type: boolean
       default: false
+      description: Marks the field errored (aria-invalid + the destructive ring);
+        set by Field/FormBuilder from model errors.
     - name: name
       type: string
+      description: The submitted field name.
     - name: placeholder
       type: string
+      description: Hint text shown while empty - never a substitute for a label.
     - name: rows
       type: integer
+      description: The initial visual rows - the minimum height under CSS auto-grow,
+        and the fixed size in browsers without it.
     - name: value
       type: string
+      description: The initial text, rendered as the element's content.
     slots: []
     description: A form control for entering multiple lines of text.
     elements: []
@@ -9425,40 +10403,60 @@ components:
     options:
     - name: described_by
       type: string
+      description: Ids for aria-describedby (hint or error text).
     - name: disabled
       type: boolean
       default: false
+      description: Disables the field; the segment group dims and goes inert.
     - name: hour_cycle
       type: string
+      description: Pins the hour cycle (h12/h23/h11/h24) instead of the locale's.
     - name: id
       type: string
+      description: The native input's DOM id - the Field label target.
     - name: invalid
       type: boolean
       default: false
+      description: Paints the destructive border/ring and sets aria-invalid.
     - name: label
       type: string
+      description: Standalone accessible name; inside a form the Field label wires
+        ids instead. Segments announce it themselves.
     - name: locale
       type: string
+      description: Pins the field to a locale other than the page's.
     - name: max
       type:
+      description: The latest allowed date (Date or ISO string) - rides native constraint
+        validation.
     - name: min
       type:
+      description: The earliest allowed date (Date or ISO string) - rides native constraint
+        validation.
     - name: name
       type: string
       required: true
+      description: The form field name - required; the value posts as ISO yyyy-mm-dd
+        with or without JS.
     - name: placeholder_value
       type:
+      description: What the first arrow press on an empty segment lands on; defaults
+        to today.
     - name: readonly
       type: boolean
       default: false
+      description: The value shows but cannot be edited.
     - name: required
       type: boolean
       default: false
+      description: Marks the native input required.
     - name: seconds
       type: boolean
       default: false
+      description: Adds the seconds segment; the wire format becomes HH:MM:SS.
     - name: value
       type:
+      description: Date, or an ISO yyyy-mm-dd string; nil renders empty.
     slots: []
     description: A segmented input for typing a time one part at a time.
     elements:
@@ -9555,10 +10553,15 @@ components:
       - vertical
       - horizontal
       default: vertical
+      description: 'The layout axis: :vertical reads as a feed, :horizontal as a step
+        tracker.'
     options: []
     slots:
     - name: items
       many: true
+      description: 'Declares one event: title:, optional time: (renders a <time>),
+        optional icon: (replaces the dot), completed: for progress - the description
+        is the block.'
       setter_args:
         item: 0
       yieldless:
@@ -9633,25 +10636,36 @@ components:
       - loading
       default: default
       required: true
+      description: 'The intent axis: it picks the icon, and :destructive announces
+        assertively while :loading defaults to persistent.'
     options:
     - name: duration
       type: integer
+      description: 'nil = derived: 5000ms, or PERSISTENT when an action slot is present
+        (the missable-undo guard). <= 0 = persistent.'
     - name: politeness
       type: symbol
       variants:
       - polite
       - assertive
       default: dynamic
+      description: 'Derived from the variant: destructive announces assertively.'
     - name: show_close_button
       type: boolean
       default: true
+      description: The corner dismiss button - named as the dialog family names it.
     slots:
     - name: title
       many: false
+      description: The message (REQUIRED - the announced payload's first line).
     - name: description
       many: false
+      description: Supporting copy under the title.
     - name: action
       many: false
+      description: 'Typed Button slot (undo / view / retry): clicking it dismisses
+        the toast with reason "action". Its presence makes the toast persistent by
+        default.'
       component: poetry/ui/button
       setter_args:
         action: 0
@@ -9768,14 +10782,20 @@ components:
     - name: size
       type: symbol
       default: default
+      description: The Button size the trigger renders at.
     - name: template
       type: string
       required: true
+      description: The id of the <template> element holding the rendered toast to
+        stamp.
     - name: toaster
       type: string
+      description: Scopes the stamp to one toaster region id on multi-toaster pages;
+        omit for the page's toaster.
     - name: variant
       type: symbol
       default: outline
+      description: The Button variant the trigger renders at.
     slots: []
     controllers:
     - identifier: poetry--core--toast-trigger
@@ -9835,13 +10855,18 @@ components:
       - bottom-right
       default: bottom-right
       required: true
+      description: The stack's corner - set here, not per toast; each toast's slide
+        direction follows it.
     options:
     - name: hotkey
       type: string
       default: F8
+      description: The keyboard shortcut that focuses the most recent toast.
     - name: limit
       type: integer
       default: 3
+      description: The maximum visible toasts; overflow queues hidden with timers
+        held.
     slots: []
     description: The region that stacks and manages toast notifications.
     elements: []
@@ -9907,6 +10932,7 @@ components:
       - lg
       default: default
       required: true
+      description: The control's size axis.
     - name: variant
       type: symbol
       variants:
@@ -9914,15 +10940,20 @@ components:
       - outline
       default: default
       required: true
+      description: The visual treatment; :outline adds a border for standalone use.
     options:
     - name: disabled
       type: boolean
       default: false
+      description: Disables the control and forwards to the native button.
     - name: label
       type: string
+      description: 'REQUIRED when icon-only; must be state-INVARIANT (APG: aria-pressed
+        carries the state - a flipping name makes SRs announce nonsense).'
     - name: pressed
       type: boolean
       default: false
+      description: The server-rendered pressed state.
     slots: []
     description: A two-state button that can be pressed on or off.
     elements: []
@@ -9990,6 +11021,8 @@ components:
       - lg
       default: default
       required: true
+      description: The shared Toggle size axis, cascaded from the root to every item
+        (root wins).
     - name: variant
       type: symbol
       variants:
@@ -9997,32 +11030,48 @@ components:
       - outline
       default: default
       required: true
+      description: The shared Toggle variant axis, cascaded from the root to every
+        item (root wins).
     options:
     - name: disabled
       type: boolean
       default: false
+      description: Disables every item in the group.
     - name: label
       type: string
+      description: The group's accessible name (aria-label) - a nameless radiogroup/toolbar
+        logs a lint warning.
     - name: orientation
       type: symbol
       variants:
       - horizontal
       - vertical
       default: horizontal
+      description: The roving axis; :vertical stacks the items and flips the arrow
+        keys.
     - name: spacing
       type: integer
       default: 2
+      description: 0 = the classic segmented control (joined corners, collapsed outline
+        borders); >0 = free-standing items separated by that gap step.
     - name: type
       type: symbol
       default: single
+      description: ":single keeps at most one item pressed; :multiple toggles items
+        independently."
     - name: value
       type: string
+      description: 'single: the pressed item''s value. ArgumentError with :multiple.'
     - name: values
       type: list
       default: dynamic
+      description: 'multiple: the pressed items'' values. ArgumentError with :single.'
     slots:
     - name: items
       many: true
+      description: 'Declares one item: value: (unique - duplicates raise), label:
+        (required when icon-only), disabled:; the block is the content. Pressed state
+        comes from value:/values:.'
       setter_args:
         item: 0
       yieldless:
@@ -10064,7 +11113,7 @@ components:
       not a single ToggleGroup.
     - 'Never mix vocabularies: single items carry aria-checked, multiple carry aria-pressed
       - the controller enforces it; agents patching DOM must too.'
-    - single deselects to empty by re-press (Radix-exact) - if your UI needs always-one-selected,
+    - single deselects to empty by re-press - if your UI needs always-one-selected,
       handle the empty change in the host.
     required_slots:
       item: at least one item
@@ -10154,16 +11203,23 @@ components:
       - horizontal
       - vertical
       default: horizontal
+      description: The strip's axis; :vertical stacks the controls and flips the arrow
+        keys.
     options:
     - name: label
       type: string
       required: true
+      description: The toolbar's accessible name. Required.
     - name: loop
       type: boolean
       default: true
+      description: Whether arrow navigation wraps at the ends.
     slots:
     - name: items
       many: true
+      description: 'The control slots: with_button (a real Button - tag: :a makes
+        it a link), with_input (search/filter), with_separator (its orientation flips
+        automatically).'
       types:
       - button
       - input
@@ -10222,23 +11278,34 @@ components:
       - center
       - end
       default: center
+      description: Panel alignment along the chosen side.
     - name: align_offset
       type: integer
       default: 0
+      description: Shift in pixels along the alignment axis.
     - name: avoid_collisions
       type: boolean
       default: true
+      description: Flips and shifts the panel to stay inside the viewport.
     - name: content_class
       type: string
+      description: The bubble's class merge seam (caller classes win on conflicts).
     - name: delay_duration
       type: integer
+      description: The hover-open delay in ms; nil inherits the provider's (default
+        0).
     - name: disable_hoverable_content
       type: boolean
+      description: When true the bubble closes as the pointer leaves the trigger -
+        it cannot be hovered into; nil inherits the provider.
     - name: label
       type: string
+      description: Plain-text announcement override for rich content (the visual children
+        stay; the announced body becomes this text).
     - name: open
       type: boolean
       default: false
+      description: Server-renders the tooltip open.
     - name: side
       type: symbol
       variants:
@@ -10247,12 +11314,19 @@ components:
       - bottom
       - left
       default: top
+      description: Which side of the anchor the panel opens on.
     - name: side_offset
       type: integer
       default: 0
+      description: Gap in pixels between the anchor and the panel.
     slots:
     - name: trigger
       many: false
+      description: 'The described control - commonly a poetry Button (with_trigger(variant:
+        :outline) { "Hover" }). The slot owns the state + timing wiring regardless
+        of the composed content. NO aria-haspopup/expanded/controls - the tooltip
+        is invisible as a popup; aria-describedby is written by the controller on
+        open (and server-rendered only when open: true).'
       component: poetry/ui/button
       setter_args:
         trigger: 0
@@ -10432,6 +11506,7 @@ components:
     - name: label
       type: string
       required: true
+      description: The tree's accessible name. Required.
     slots: []
     description: A hierarchical list of expandable, selectable nodes.
     slot_extras:
@@ -10526,6 +11601,8 @@ components:
     options:
     - name: preset
       type: string
+      description: Appends typeset-<preset> - a tiny class in the app's own CSS retuning
+        the rhythm variables (e.g. "docs").
     slots: []
     description: Prose styling for long-form and rendered-markdown content.
     elements: []

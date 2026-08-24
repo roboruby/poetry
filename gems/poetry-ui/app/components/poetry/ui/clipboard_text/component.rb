@@ -42,22 +42,16 @@ module Poetry
           end
         end
 
-        # The displayed text - also what copies, unless text_to_copy:
-        # overrides it.
-        option :value, :string, required: true
-        # Overrides what lands on the clipboard when the displayed value
-        # truncates: display short, copy full.
-        option :text_to_copy, :string
-        # The readonly input's DOM id (auto-generated when omitted) - the
-        # Field/Label for= target.
-        option :id, :string
-        # The readonly input's accessible name when no Label/Field
-        # association exists.
-        option :label, :string
-        # Ids for the input's aria-describedby (hint or error text).
-        option :described_by, :string
-        # Disables the input and the copy button together.
-        option :disabled, :boolean, default: false
+        option :value, :string, required: true,
+                                doc: "The displayed text - also what copies, unless text_to_copy: overrides it."
+        option :text_to_copy, :string,
+               doc: "Overrides what lands on the clipboard when the displayed value truncates: display short, copy " \
+                    "full."
+        option :id, :string,
+               doc: "The readonly input's DOM id (auto-generated when omitted) - the Field/Label for= target."
+        option :label, :string, doc: "The readonly input's accessible name when no Label/Field association exists."
+        option :described_by, :string, doc: "Ids for the input's aria-describedby (hint or error text)."
+        option :disabled, :boolean, default: false, doc: "Disables the input and the copy button together."
 
         part "clipboard-text", "Root - the controller rides here",
              states: {
@@ -152,6 +146,8 @@ module Poetry
         private
 
         def copied_message_text = t("poetry.clipboard_text.copied")
+
+        private :control_id, :root_attributes, :group_attributes, :addon_attributes, :input_attributes, :copy_button
       end
     end
   end

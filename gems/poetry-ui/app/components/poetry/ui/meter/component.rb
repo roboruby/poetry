@@ -25,20 +25,15 @@ module Poetry
           "deprecated it on role=meter; aria-valuenow carries the value."
         ].freeze
 
-        # The measured quantity, clamped into min:..max:.
-        option :value, :integer, required: true
-        # The range's lower bound.
-        option :min, :integer, default: 0
-        # The range's upper bound - must exceed min:.
-        option :max, :integer, default: 100
-        # The meter's accessible name and visible caption.
-        option :label, :string, required: true
-        # Verbatim human-readable value ("3 of 4 seats") replacing the percentage
-        # readout. Visible readout only - ARIA 1.2 deprecated aria-valuetext on
-        # role=meter, so aria-valuenow carries the value.
-        option :value_text, :string
-        # Set false to hide the visible readout.
-        option :show_value, :boolean, default: true
+        option :value, :integer, required: true, doc: "The measured quantity, clamped into min:..max:."
+        option :min, :integer, default: 0, doc: "The range's lower bound."
+        option :max, :integer, default: 100, doc: "The range's upper bound - must exceed min:."
+        option :label, :string, required: true, doc: "The meter's accessible name and visible caption."
+        option :value_text, :string,
+               doc: "Verbatim human-readable value (\"3 of 4 seats\") replacing the percentage readout. Visible " \
+                    "readout only - ARIA 1.2 deprecated aria-valuetext on role=meter, so aria-valuenow carries the " \
+                    "value."
+        option :show_value, :boolean, default: true, doc: "Set false to hide the visible readout."
 
         part "meter", "Root (role=meter, aria-value*, and the accessible name); label, " \
                       "readout, and track stack here"
@@ -114,6 +109,8 @@ module Poetry
                                    style: "width: #{percent.round(4)}%")
           end
         end
+
+        private :percent, :readout, :root_attributes
       end
     end
   end

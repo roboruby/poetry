@@ -31,13 +31,11 @@ module Poetry
           "Stack the fields inside with poetry_field_group - never hand-spaced flex columns."
         ].freeze
 
-        # The group's accessible name - renders as the real <legend>.
-        option :legend, :string, required: true
-        # :label renders the legend at label size - for a group that is
-        # one setting explained by its rows (checkbox/switch runs).
-        option :legend_variant, :symbol, default: :legend
-        # Muted description under the legend; per-field hints stay on the fields.
-        option :hint, :string
+        option :legend, :string, required: true, doc: "The group's accessible name - renders as the real <legend>."
+        option :legend_variant, :symbol, default: :legend,
+                                         doc: ":label renders the legend at label size - for a group that is one " \
+                                              "setting explained by its rows (checkbox/switch runs)."
+        option :hint, :string, doc: "Muted description under the legend; per-field hints stay on the fields."
 
         validates :legend_variant, inclusion: { in: LEGEND_VARIANTS }
 
@@ -84,6 +82,8 @@ module Poetry
 
           content_tag(:p, hint, "data-slot" => "field-set-hint", "class" => css(:hint))
         end
+
+        private :root_attributes
       end
     end
   end

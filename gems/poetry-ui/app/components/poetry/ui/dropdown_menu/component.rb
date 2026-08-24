@@ -64,10 +64,9 @@ module Poetry
         # get Button's full option and slot contract on the trigger.
         SLOT_RENDERS = { trigger: Button::Component }.freeze
 
-        # The menu button - a poetry Button (options forward to it, e.g.
-        # variant: :outline). The slot owns the aria-haspopup/expanded/
-        # controls wiring regardless of the composed content, so
-        # composition cannot drop the aria.
+        slot_doc :trigger, "The menu button - a poetry Button (options forward to it, e.g. variant: :outline). The " \
+                           "slot owns the aria-haspopup/expanded/ controls wiring regardless of the composed " \
+                           "content, so composition cannot drop the aria."
         renders_one :trigger, lambda { |**options, &block|
           wiring = {
             "id" => trigger_id, "data-slot" => "dropdown-menu-trigger",
@@ -129,27 +128,20 @@ module Poetry
           end
         end
 
-        # Renders the menu already open on page load.
-        option :open, :boolean, default: false
-        # While open, pointer interaction outside the menu is blocked;
-        # false keeps the rest of the page interactive.
-        option :modal, :boolean, default: true
-        # Which side of the trigger the menu opens on (flips on collision).
-        option :side, :symbol, default: :bottom
-        # The menu's alignment against the trigger's edge.
-        option :align, :symbol, default: :center
-        # Gap in pixels between the trigger and the menu.
-        option :side_offset, :integer, default: 4
-        # Pixel shift along the alignment edge.
-        option :align_offset, :integer, default: 0
-        # Flips/shifts placement to keep the menu inside the viewport.
-        option :avoid_collisions, :boolean, default: true
-        # Arrow-key navigation wraps from the last item back to the first.
-        option :loop, :boolean, default: false
-        # Reading direction; :rtl flips submenu sides and indicators.
-        option :dir, :symbol
-        # Disables the menu trigger button.
-        option :disabled, :boolean, default: false
+        option :open, :boolean, default: false, doc: "Renders the menu already open on page load."
+        option :modal, :boolean, default: true,
+                                 doc: "While open, pointer interaction outside the menu is blocked; false keeps the " \
+                                      "rest of the page interactive."
+        option :side, :symbol, default: :bottom,
+                               doc: "Which side of the trigger the menu opens on (flips on collision)."
+        option :align, :symbol, default: :center, doc: "The menu's alignment against the trigger's edge."
+        option :side_offset, :integer, default: 4, doc: "Gap in pixels between the trigger and the menu."
+        option :align_offset, :integer, default: 0, doc: "Pixel shift along the alignment edge."
+        option :avoid_collisions, :boolean, default: true,
+                                            doc: "Flips/shifts placement to keep the menu inside the viewport."
+        option :loop, :boolean, default: false, doc: "Arrow-key navigation wraps from the last item back to the first."
+        option :dir, :symbol, doc: "Reading direction; :rtl flips submenu sides and indicators."
+        option :disabled, :boolean, default: false, doc: "Disables the menu trigger button."
 
         validates :side, inclusion: { in: SIDES }
         validates :align, inclusion: { in: ALIGNS }
@@ -295,6 +287,8 @@ module Poetry
         def instance_id
           @instance_id ||= poetry_instance_id("poetry-dropdown-menu")
         end
+
+        private :trigger_id, :content_id, :root_attributes, :content_attributes
       end
 
       # role=group semantic grouping between separators - the shared kernel
@@ -304,7 +298,6 @@ module Poetry
       class Group < Poetry::Ui::Menus::Group
         include ItemSlots
       end
-      
 
       # role=group scoping the single-select value for its radio items -
       # the shared kernel anatomy wearing this family identity.
@@ -312,7 +305,6 @@ module Poetry
       # @api private
       class RadioGroup < Poetry::Ui::Menus::RadioGroup
       end
-      
 
       # A submenu scope (recursive item union on its own popper) - the
       # shared kernel anatomy wearing this family identity.
@@ -321,7 +313,6 @@ module Poetry
       class Sub < Poetry::Ui::Menus::Sub
         include ItemSlots
       end
-      
 
       # The builder classes behind lambda-wrapped slot types: a lambda
       # hides its return class from introspection, so the owner declares

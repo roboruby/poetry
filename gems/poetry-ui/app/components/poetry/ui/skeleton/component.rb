@@ -31,6 +31,8 @@ module Poetry
             { "data-slot" => "skeleton" }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

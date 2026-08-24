@@ -42,10 +42,9 @@ module Poetry
         # a missing column without rendering.
         REQUIRED_SLOTS = { column: "at least one column" }.freeze
 
-        # Columns are DECLARED here and rendered per row by the template. A
-        # sortable column's key must be in the state's whitelist - catching
-        # drift between the view's columns and the controller's sortable:
-        # list at render, not as a silently unsortable header.
+        slot_doc :columns, "Columns are DECLARED here and rendered per row by the template. A sortable column's key " \
+                           "must be in the state's whitelist - catching drift between the view's columns and the " \
+                           "controller's sortable: list at render, not as a silently unsortable header."
         renders_many :columns, lambda { |label, key: nil, sortable: false, classes: nil, &cell|
           raise ArgumentError, "DataTable column #{label.inspect}: sortable: true requires a key:" if sortable && !key
           if sortable && !state.sortable?(key)
@@ -81,44 +80,32 @@ module Poetry
           end
         end
 
-        # The table's accessible purpose, rendered as its <caption>.
-        option :caption, :string
-        # Shown in a full-width row when rows are empty.
-        option :empty_text, :string, default: "No results."
-        # Renders the filter form; false drops the toolbar row.
-        option :filter, :boolean, default: true
-        # The filter input's accessible label.
-        option :filter_label, :string, default: "Filter"
-        # The filter input's placeholder text.
-        option :filter_placeholder, :string, default: "Filter…"
-        # The query-param key the filter submits under.
-        option :filter_name, :string, default: "q"
-        # Wrap in a <turbo-frame data-turbo-action="advance"> so hosts with
-        # Turbo scope the round trip to the table while the URL still
-        # advances. The host response must render the same frame id.
-        option :frame, :string
-        # Forwarded to the inner Table: sticky_header pins the
-        # thead while the table's scroll container scrolls; container_class
-        # caps that container's height ("max-h-96") - without a cap nothing
-        # sticks. The sticky scroll region needs an accessible name (the
-        # ScrollArea rule); scroll_label: falls back to caption:.
-        option :sticky_header, :boolean, default: false
-        # Caps the scroll container's height (e.g. "max-h-96") - without
-        # a cap the sticky header has nothing to stick inside.
-        option :container_class, :string
-        # Accessible name for the sticky scroll region; falls back to
-        # caption:.
-        option :scroll_label, :string
-        # Row selection: a lambda mapping each row to its id turns
-        # the feature ON - a leading checkbox column (select-all with a
-        # real indeterminate middle state, shift ranges, count
-        # announcements) whose checkboxes ARE the form value
-        # (selection_name[], plain checkboxes with no JS). Pair with the
-        # action-bar block for bulk actions.
-        option :selectable, ActiveModel::Type::Value.new
-        # The checkbox field name; selected row ids post as
-        # selection_name[].
-        option :selection_name, :string, default: "selected_ids"
+        option :caption, :string, doc: "The table's accessible purpose, rendered as its <caption>."
+        option :empty_text, :string, default: "No results.", doc: "Shown in a full-width row when rows are empty."
+        option :filter, :boolean, default: true, doc: "Renders the filter form; false drops the toolbar row."
+        option :filter_label, :string, default: "Filter", doc: "The filter input's accessible label."
+        option :filter_placeholder, :string, default: "Filter…", doc: "The filter input's placeholder text."
+        option :filter_name, :string, default: "q", doc: "The query-param key the filter submits under."
+        option :frame, :string,
+               doc: "Wrap in a <turbo-frame data-turbo-action=\"advance\"> so hosts with Turbo scope the round trip " \
+                    "to the table while the URL still advances. The host response must render the same frame id."
+        option :sticky_header, :boolean, default: false,
+                                         doc: "Forwarded to the inner Table: sticky_header pins the thead while the " \
+                                              "table's scroll container scrolls; container_class caps that " \
+                                              "container's height (\"max-h-96\") - without a cap nothing sticks. The " \
+                                              "sticky scroll region needs an accessible name (the ScrollArea rule); " \
+                                              "scroll_label: falls back to caption:."
+        option :container_class, :string,
+               doc: "Caps the scroll container's height (e.g. \"max-h-96\") - without a cap the sticky header has " \
+                    "nothing to stick inside."
+        option :scroll_label, :string, doc: "Accessible name for the sticky scroll region; falls back to caption:."
+        option :selectable, ActiveModel::Type::Value.new,
+               doc: "Row selection: a lambda mapping each row to its id turns the feature ON - a leading checkbox " \
+                    "column (select-all with a real indeterminate middle state, shift ranges, count announcements) " \
+                    "whose checkboxes ARE the form value (selection_name[], plain checkboxes with no JS). Pair with " \
+                    "the action-bar block for bulk actions."
+        option :selection_name, :string, default: "selected_ids",
+                                         doc: "The checkbox field name; selected row ids post as selection_name[]."
 
         part "data-table", "Root surface - toolbar, table, and pagination footer stack here"
         part "data-table-toolbar", "The row above the table holding the filter form - " \
@@ -275,6 +262,10 @@ module Poetry
         def merge_classes(*values)
           values.compact.join(" ")
         end
+
+        private :column_defs, :root_attributes, :selectable?, :select_all_attributes, :select_row_attributes
+        private :selected_count_label, :path_for, :head_attributes, :cell_attributes, :sort_link_options, :sort_icon
+        private :filter_id, :filter_form_action, :pagination?
       end
     end
   end

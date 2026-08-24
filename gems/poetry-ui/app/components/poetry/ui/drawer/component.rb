@@ -80,26 +80,23 @@ module Poetry
           on :close
         end
 
-        # The dismiss direction - :down is the mobile bottom sheet; the
-        # edge chrome and swipe axis derive from it.
-        style :direction, default: :down, required: true, variants: DIRECTIONS
+        style :direction, default: :down, required: true, variants: DIRECTIONS,
+                          doc: "The dismiss direction - :down is the mobile bottom sheet; the edge chrome and swipe " \
+                               "axis derive from it."
 
-        # Renders the grab pill so the swipe gesture is discoverable.
-        option :show_swipe_handle, :boolean, default: false
+        option :show_swipe_handle, :boolean, default: false,
+                                             doc: "Renders the grab pill so the swipe gesture is discoverable."
 
-        # Non-modal (false) opens with show() - no top layer, no scrim,
-        # no focus trap, no scroll lock; the page behind stays
-        # interactive. Esc (while focus is inside), the swipe, and any
-        # wired close button still exit; there is no backdrop to click,
-        # so pointer dismissal is off by nature.
-        option :modal, :boolean, default: true
+        option :modal, :boolean, default: true,
+                                 doc: "Non-modal (false) opens with show() - no top layer, no scrim, no focus trap, " \
+                                      "no scroll lock; the page behind stays interactive. Esc (while focus is " \
+                                      "inside), the swipe, and any wired close button still exit; there is no " \
+                                      "backdrop to click, so pointer dismissal is off by nature."
 
-        # Preset resting heights for a bottom sheet, ascending: fractions
-        # of the full height (0..1] or CSS px/rem lengths (["31rem", 1]).
-        # The popup runs full-height and opens at the first point; drags
-        # move between points, below the first dismisses. direction:
-        # :down only.
-        option :snap_points, ActiveModel::Type::Value.new
+        option :snap_points, ActiveModel::Type::Value.new,
+               doc: "Preset resting heights for a bottom sheet, ascending: fractions of the full height (0..1] or " \
+                    "CSS px/rem lengths ([\"31rem\", 1]). The popup runs full-height and opens at the first point; " \
+                    "drags move between points, below the first dismisses. direction: :down only."
 
         part "drawer", "Root wrapper around the trigger and the <dialog> element"
         part "drawer-content", "The <dialog> popup - the edge chrome, presence animation, and " \
@@ -202,6 +199,8 @@ module Poetry
         end
 
         def snap_points_json = snap_points.to_json
+
+        private :dialog_attributes
       end
     end
   end

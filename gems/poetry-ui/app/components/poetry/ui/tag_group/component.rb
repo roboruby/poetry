@@ -36,8 +36,8 @@ module Poetry
           "a TagGroup holds items that exist until removed."
         ].freeze
 
-        # Declares one chip. value: is its identity (and form value); label: is the accessible
-        # name and the visible text when no block is given; removable: false drops the remove button.
+        slot_doc :tags, "Declares one chip. value: is its identity (and form value); label: is the accessible name " \
+                        "and the visible text when no block is given; removable: false drops the remove button."
         renders_many :tags, lambda { |value:, label: nil, disabled: false, removable: true, **options, &block|
           tag_row(value: value, label: label, disabled: disabled, removable: removable, **options, &block)
         }
@@ -63,14 +63,11 @@ module Poetry
           end
         end
 
-        # Makes the group a form value: one hidden <name>[] input submits per tag.
-        option :name, :string
-        # The grid's accessible name, rendered as a caption span. Required.
-        option :label, :string, required: true
-        # Space-separated hint/error ids for the GRID (the labelled element) -
-        # a raw aria-describedby in html_attributes would land on the outer
-        # wrapper div, unassociated for AT.
-        option :described_by, :string
+        option :name, :string, doc: "Makes the group a form value: one hidden <name>[] input submits per tag."
+        option :label, :string, required: true, doc: "The grid's accessible name, rendered as a caption span. Required."
+        option :described_by, :string,
+               doc: "Space-separated hint/error ids for the GRID (the labelled element) - a raw aria-describedby in " \
+                    "html_attributes would land on the outer wrapper div, unassociated for AT."
 
         part "tag-group", "The labelled wrapper - caption span + grid stack here"
         part "tag-group-label", "The caption span (label:), wired via aria-labelledby (a grid " \
@@ -196,6 +193,8 @@ module Poetry
         def hidden_input(value)
           tag.input(type: "hidden", name: "#{name}[]", value: value)
         end
+
+        private :instance_id, :label_id, :root_attributes, :grid_attributes, :tag_row
       end
     end
   end

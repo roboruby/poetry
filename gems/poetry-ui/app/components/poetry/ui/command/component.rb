@@ -163,8 +163,8 @@ module Poetry
 
         attr_reader :item_set, :item_wiring
 
-        # The group's members: with_item actions and with_separator
-        # dividers, interleaved in declaration order.
+        slot_doc :items, "The group's members: with_item actions and with_separator dividers, interleaved in " \
+                         "declaration order."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           separator: { renders: ->(**options) { separator_part(**options) }, as: :separator }
@@ -264,15 +264,15 @@ module Poetry
             options: %w[id aria-label aria-labelledby aria] }
         ].freeze
 
-        # Custom zero-results content (defaults to t('poetry.command.empty')).
+        slot_doc :empty, "Custom zero-results content (defaults to t('poetry.command.empty'))."
         renders_one :empty
-        # Custom pending content (a spinner); the HOST toggles visibility
-        # (Turbo frame events) - Command renders the part, never sets it.
+        slot_doc :loading, "Custom pending content (a spinner); the HOST toggles visibility (Turbo frame events) - " \
+                           "Command renders the part, never sets it."
         renders_one :loading
 
-        # The item UNION: item | group (heading + items) | separator - one
-        # ordered collection (interleaving preserved; items and groups are
-        # part COMPONENTS so id assignment follows render/DOM order).
+        slot_doc :items, "The item UNION: item | group (heading + items) | separator - one ordered collection " \
+                         "(interleaving preserved; items and groups are part COMPONENTS so id assignment follows " \
+                         "render/DOM order)."
         renders_many :items, types: {
           item: { renders: ->(**options) { item_component(**options) }, as: :item },
           group: { renders: lambda { |**options|
@@ -305,20 +305,14 @@ module Poetry
           end
         end
 
-        # Client-side filtering; false leaves the list server-driven.
-        option :filter, :boolean, default: true
-        # Wraps arrow-key highlight movement past either end of the list.
-        option :loop, :boolean, default: false
-        # The filter input's placeholder text.
-        option :placeholder, :string
-        # The listbox's accessible name.
-        option :list_label, :string, default: -> { I18n.t("poetry.command.list_label") }
-        # Seats the initial highlight on the item with this value.
-        option :value, :string
-        # Disables the filter input.
-        option :disabled, :boolean, default: false
-        # The base DOM id; the input, list, and item ids derive from it.
-        option :id, :string
+        option :filter, :boolean, default: true, doc: "Client-side filtering; false leaves the list server-driven."
+        option :loop, :boolean, default: false, doc: "Wraps arrow-key highlight movement past either end of the list."
+        option :placeholder, :string, doc: "The filter input's placeholder text."
+        option :list_label, :string, default: -> { I18n.t("poetry.command.list_label") },
+                                     doc: "The listbox's accessible name."
+        option :value, :string, doc: "Seats the initial highlight on the item with this value."
+        option :disabled, :boolean, default: false, doc: "Disables the filter input."
+        option :id, :string, doc: "The base DOM id; the input, list, and item ids derive from it."
 
         part "command", "Root of the palette - the input row over the listbox, carrying the " \
                         "engine controller"
@@ -509,6 +503,9 @@ module Poetry
         def item_wiring
           @item_wiring ||= stimulus_attributes_for(:item)
         end
+
+        private :base_id, :input_id, :list_id, :item_set, :root_attributes, :input_attributes, :list_attributes
+        private :empty_part, :loading_part, :status_part
       end
     end
   end

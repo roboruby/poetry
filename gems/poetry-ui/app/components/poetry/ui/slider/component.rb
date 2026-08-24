@@ -74,43 +74,39 @@ module Poetry
           end
         end
 
-        # Form name; single thumb -> name; range -> name + "[]" per input
-        # (the Rails array-param convention).
-        option :name, :string, required: true
-        # Single-thumb value. ArgumentError if given with values:.
-        option :value, ActiveModel::Type::Value.new
-        # Range mode: [low, high] -> two thumbs, sorted. ArgumentError if
-        # given with value:, unsorted, or length != 2.
-        option :values, ActiveModel::Type::Value.new
-        # The track's lower bound.
-        option :min, :float, default: 0.0
-        # The track's upper bound; must exceed min:.
-        option :max, :float, default: 100.0
-        # Snap increment; decimal steps supported (precision-aware
-        # rounding lives in the controller's math core).
-        option :step, :float, default: 1.0
-        # Range-mode minimum gap in STEPS: high - low >= n*step; thumbs
-        # can never cross.
-        option :min_steps_between_thumbs, :integer, default: 0
-        # The track axis.
-        option :orientation, :symbol, default: :horizontal
-        # Flips the value direction along the axis; composes with RTL
-        # (both = ltr math).
-        option :inverted, :boolean, default: false
-        # Renders the control inert; the hidden inputs still submit the
-        # server value.
-        option :disabled, :boolean, default: false
-        # Per-thumb accessible names -> aria-label; range REQUIRES two.
-        # Alternatively labelled_by (external wiring). Enforced.
-        option :label, ActiveModel::Type::Value.new
-        # aria-labelledby for the thumb(s) - the Field-wrapped single
-        # slider derives its name from the field label this way.
-        option :labelled_by, :string
-        # aria-valuetext formatter: a proc (v -> "$200") or an i18n key
-        # with %{value}; optional - falls back to the bare number.
-        option :value_text, ActiveModel::Type::Value.new
-        # Field hint/error wiring -> aria-describedby on EACH thumb.
-        option :described_by, :string
+        option :name, :string, required: true,
+                               doc: "Form name; single thumb -> name; range -> name + \"[]\" per input (the Rails " \
+                                    "array-param convention)."
+        option :value, ActiveModel::Type::Value.new, doc: "Single-thumb value. ArgumentError if given with values:."
+        option :values, ActiveModel::Type::Value.new,
+               doc: "Range mode: [low, high] -> two thumbs, sorted. ArgumentError if given with value:, unsorted, or " \
+                    "length != 2."
+        option :min, :float, default: 0.0, doc: "The track's lower bound."
+        option :max, :float, default: 100.0, doc: "The track's upper bound; must exceed min:."
+        option :step, :float, default: 1.0,
+                              doc: "Snap increment; decimal steps supported (precision-aware rounding lives in the " \
+                                   "controller's math core)."
+        option :min_steps_between_thumbs, :integer, default: 0,
+                                                    doc: "Range-mode minimum gap in STEPS: high - low >= n*step; " \
+                                                         "thumbs can never cross."
+        option :orientation, :symbol, default: :horizontal, doc: "The track axis."
+        option :inverted, :boolean, default: false,
+                                    doc: "Flips the value direction along the axis; composes with RTL (both = ltr " \
+                                         "math)."
+        option :disabled, :boolean, default: false,
+                                    doc: "Renders the control inert; the hidden inputs still submit the server value."
+        option :label, ActiveModel::Type::Value.new,
+               doc: "Per-thumb accessible names -> aria-label; range REQUIRES two. Alternatively labelled_by " \
+                    "(external wiring). Enforced."
+        option :labelled_by, :string,
+               doc: "aria-labelledby for the thumb(s) - the Field-wrapped single slider derives its name from the " \
+                    "field label this way."
+        # rubocop:disable Style/FormatStringToken -- %{value} names the i18n token itself
+        option :value_text, ActiveModel::Type::Value.new,
+               doc: "aria-valuetext formatter: a proc (v -> \"$200\") or an i18n key with %{value}; optional - falls " \
+                    "back to the bare number."
+        # rubocop:enable Style/FormatStringToken
+        option :described_by, :string, doc: "Field hint/error wiring -> aria-describedby on EACH thumb."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
@@ -356,6 +352,10 @@ module Poetry
         def max_number = number(max)
         def step_number = number(step)
         def value_numbers = thumb_values.map { |item| number(item) }
+
+        private :thumb_values, :range?, :input_name, :control_id, :thumb_id, :thumb_min, :thumb_max, :thumb_label
+        private :thumb_text, :root_attributes, :track_attributes, :range_attributes, :anchor_attributes
+        private :thumb_attributes, :input_attributes, :number
       end
     end
   end

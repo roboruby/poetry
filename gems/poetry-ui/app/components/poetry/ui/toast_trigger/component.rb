@@ -44,15 +44,12 @@ module Poetry
           end
         end
 
-        # The id of the <template> element holding the rendered toast to stamp.
-        option :template, :string, required: true
-        # Scopes the stamp to one toaster region id on multi-toaster pages;
-        # omit for the page's toaster.
-        option :toaster, :string
-        # The Button variant the trigger renders at.
-        option :variant, :symbol, default: :outline
-        # The Button size the trigger renders at.
-        option :size, :symbol, default: :default
+        option :template, :string, required: true,
+                                   doc: "The id of the <template> element holding the rendered toast to stamp."
+        option :toaster, :string,
+               doc: "Scopes the stamp to one toaster region id on multi-toaster pages; omit for the page's toaster."
+        option :variant, :symbol, default: :outline, doc: "The Button variant the trigger renders at."
+        option :size, :symbol, default: :default, doc: "The Button size the trigger renders at."
 
         part "toast-trigger", "The stamping button - press clones the template's toast " \
                               "into the toaster region",
@@ -77,6 +74,8 @@ module Poetry
             .merge(Poetry::Core::HTML::Attributes.merged(wiring, html_attributes))
             .symbolize_keys
         end
+
+        private :button_options
       end
     end
   end

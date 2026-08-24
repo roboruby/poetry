@@ -20,9 +20,9 @@ module Poetry
           "Every control gets a Label wired via for_id - placeholder text is never the label."
         ].freeze
 
-        # The id of the control this label names; omit it for a group label
-        # (the group then points at this label via aria-labelledby).
-        option :for_id, :string
+        option :for_id, :string,
+               doc: "The id of the control this label names; omit it for a group label (the group then points at " \
+                    "this label via aria-labelledby)."
 
         part "label", "The <label> element itself - for= rides it (dropped in group mode, " \
                       "where the group names itself via aria-labelledby at this label's id)"
@@ -38,6 +38,8 @@ module Poetry
           attrs["for"] = for_id if for_id.present?
           html_attributes.merge_if_not_set(attrs.merge(component_data_attributes))
         end
+
+        private :root_attributes
       end
     end
   end

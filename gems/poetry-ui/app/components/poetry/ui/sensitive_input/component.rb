@@ -21,6 +21,7 @@ module Poetry
       #                                                    value: token, copy: true)
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare " \
@@ -82,32 +83,21 @@ module Poetry
           end
         end
 
-        # The form field name on the real input.
-        option :name, :string, required: true
-        # The secret's current value; present = first paint is masked,
-        # blank = the empty state.
-        option :value, :string
-        # The input's DOM id - what a Field label's for: must reference.
-        option :id, :string
-        # The accessible name - feeds the input's aria-label and the
-        # masked announcement ("{label}, masked."); pair with a visible
-        # Label/Field caption.
-        option :label, :string
-        # Hint text shown while the field is empty.
-        option :placeholder, :string
-        # aria-describedby on the input - Field hint/error wiring.
-        option :described_by, :string
-        # Adds the copy-without-revealing button in the trailing cell.
-        option :copy, :boolean, default: false
-        # Disables the input and drops the masked group's tab stop.
-        option :disabled, :boolean, default: false
-        # The value can be revealed and copied but not edited.
-        option :readonly, :boolean, default: false
-        # Marks the real input required.
-        option :required, :boolean, default: false
-        # aria-invalid on the input - set by Field/FormBuilder from model
-        # errors.
-        option :invalid, :boolean, default: false
+        option :name, :string, required: true, doc: "The form field name on the real input."
+        option :value, :string,
+               doc: "The secret's current value; present = first paint is masked, blank = the empty state."
+        option :id, :string, doc: "The input's DOM id - what a Field label's for: must reference."
+        option :label, :string,
+               doc: "The accessible name - feeds the input's aria-label and the masked announcement (\"{label}, " \
+                    "masked.\"); pair with a visible Label/Field caption."
+        option :placeholder, :string, doc: "Hint text shown while the field is empty."
+        option :described_by, :string, doc: "aria-describedby on the input - Field hint/error wiring."
+        option :copy, :boolean, default: false, doc: "Adds the copy-without-revealing button in the trailing cell."
+        option :disabled, :boolean, default: false, doc: "Disables the input and drops the masked group's tab stop."
+        option :readonly, :boolean, default: false, doc: "The value can be revealed and copied but not edited."
+        option :required, :boolean, default: false, doc: "Marks the real input required."
+        option :invalid, :boolean, default: false,
+                                   doc: "aria-invalid on the input - set by Field/FormBuilder from model errors."
 
         part "sensitive-input", "Root - the state machine rides here",
              states: {
@@ -275,6 +265,9 @@ module Poetry
 
         def hidden_message_text = t("poetry.sensitive_input.hidden")
         def copied_message_text = t("poetry.clipboard_text.copied")
+
+        private :hint_id, :state, :masked?, :root_attributes, :group_attributes, :addon_attributes, :mask_attributes
+        private :input_attributes, :toggle_button, :copy_button, :masked_label, :hint_attributes
       end
     end
   end

@@ -36,15 +36,15 @@ module Poetry
           "(tabindex=0 + role=region) and a keyboard-reachable region needs a name (the ScrollArea rule)."
         ].freeze
 
-        # Pins the <thead> while the container scrolls; needs a height cap
-        # (container_class:) to take effect, and requires scroll_label:.
-        option :sticky_header, :boolean, default: false
-        # Extra classes for the scroll container - e.g. "max-h-96" to cap its height.
-        option :container_class, :string
-        # The scroll region's accessible name, required with sticky_header:
-        # a scrollable region a keyboard can't reach fails WCAG (axe
-        # scrollable-region-focusable), and a focusable region needs a name.
-        option :scroll_label, :string
+        option :sticky_header, :boolean, default: false,
+                                         doc: "Pins the <thead> while the container scrolls; needs a height cap " \
+                                              "(container_class:) to take effect, and requires scroll_label:."
+        option :container_class, :string,
+               doc: "Extra classes for the scroll container - e.g. \"max-h-96\" to cap its height."
+        option :scroll_label, :string,
+               doc: "The scroll region's accessible name, required with sticky_header: a scrollable region a " \
+                    "keyboard can't reach fails WCAG (axe scrollable-region-focusable), and a focusable region needs " \
+                    "a name."
 
         part "table", "The semantic <table> element itself - the root the part helpers compose into"
         part "table-caption", "The <caption> (poetry_table_caption) - the table's accessible purpose"
@@ -85,6 +85,8 @@ module Poetry
             { "data-slot" => "table" }.merge(component_data_attributes)
           )
         end
+
+        private :container_attributes, :root_attributes
       end
     end
   end

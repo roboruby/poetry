@@ -41,8 +41,8 @@ module Poetry
         # a missing slide without rendering.
         REQUIRED_SLOTS = { item: "at least one slide" }.freeze
 
-        # Declares one slide. The content block is required; classes: sizes
-        # the slide (basis-full default).
+        slot_doc :items, "Declares one slide. The content block is required; classes: sizes the slide (basis-full " \
+                         "default)."
         renders_many :items, lambda { |classes: nil, &block|
           raise ArgumentError, "Carousel with_item requires a content block (the slide)" unless block
 
@@ -80,17 +80,16 @@ module Poetry
           end
         end
 
-        # The carousel region's accessible name - required; rendering
-        # without it raises.
-        option :label, :string, required: true
-        # The scroll axis; snapping, controls, and arrow keys follow it.
-        option :orientation, :symbol, default: :horizontal
-        # Renders the prev/next buttons; slides stay reachable by swipe,
-        # wheel, and keyboard without them.
-        option :show_controls, :boolean, default: true
-        # Utility classes for the slide track - change spacing as a trio:
-        # track_classes: "-ml-1" pairs with item classes "pl-1 -scroll-ml-1".
-        option :track_classes, :string
+        option :label, :string, required: true,
+                                doc: "The carousel region's accessible name - required; rendering without it raises."
+        option :orientation, :symbol, default: :horizontal,
+                                      doc: "The scroll axis; snapping, controls, and arrow keys follow it."
+        option :show_controls, :boolean, default: true,
+                                         doc: "Renders the prev/next buttons; slides stay reachable by swipe, wheel, " \
+                                              "and keyboard without them."
+        option :track_classes, :string,
+               doc: "Utility classes for the slide track - change spacing as a trio: track_classes: \"-ml-1\" pairs " \
+                    "with item classes \"pl-1 -scroll-ml-1\"."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
@@ -171,6 +170,8 @@ module Poetry
         # One declared slide: its extra classes and content block.
         # @api private
         Slide = Data.define(:classes, :block)
+
+        private :slides, :vertical?, :root_attributes, :viewport_attributes, :item_attributes, :control_options
       end
     end
   end

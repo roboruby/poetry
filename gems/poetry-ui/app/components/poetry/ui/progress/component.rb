@@ -21,14 +21,10 @@ module Poetry
           "For an UNKNOWN duration use Spinner, not Progress - this bar is determinate."
         ].freeze
 
-        # The current progress, clamped into 0..max:.
-        option :value, :integer, required: true
-        # The completion value.
-        option :max, :integer, default: 100
-        # The progressbar's accessible name and visible caption.
-        option :label, :string, required: true
-        # Set false to hide the percent readout.
-        option :show_value, :boolean, default: true
+        option :value, :integer, required: true, doc: "The current progress, clamped into 0..max:."
+        option :max, :integer, default: 100, doc: "The completion value."
+        option :label, :string, required: true, doc: "The progressbar's accessible name and visible caption."
+        option :show_value, :boolean, default: true, doc: "Set false to hide the percent readout."
 
         part "progress", "Root (role=progressbar, aria-value* and the accessible name) - " \
                          "label, value readout, and track stack here"
@@ -91,6 +87,8 @@ module Poetry
                                    style: "width: #{percent.round(4)}%")
           end
         end
+
+        private :percent, :percent_text, :root_attributes
       end
     end
   end

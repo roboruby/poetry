@@ -40,8 +40,8 @@ module Poetry
         # statically: poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item (title:, with the description as its block)" }.freeze
 
-        # Declares one event: title:, optional time: (renders a <time>), optional icon:
-        # (replaces the dot), completed: for progress - the description is the block.
+        slot_doc :items, "Declares one event: title:, optional time: (renders a <time>), optional icon: (replaces " \
+                         "the dot), completed: for progress - the description is the block."
         renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
                                        **options, &block|
           # class: merges through the dictionary (caller classes win on
@@ -58,8 +58,8 @@ module Poetry
           end
         }
 
-        # The layout axis: :vertical reads as a feed, :horizontal as a step tracker.
-        style :orientation, default: :vertical, variants: %i[vertical horizontal]
+        style :orientation, default: :vertical, variants: %i[vertical horizontal],
+                            doc: "The layout axis: :vertical reads as a feed, :horizontal as a step tracker."
 
         part "timeline", "The <ol> root - the event sequence",
              states: {
@@ -125,6 +125,8 @@ module Poetry
             safe_join(parts)
           end
         end
+
+        private :root_attributes
       end
     end
   end

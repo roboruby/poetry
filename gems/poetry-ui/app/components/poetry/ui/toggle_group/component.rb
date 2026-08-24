@@ -40,7 +40,7 @@ module Poetry
           "single ToggleGroup.",
           "Never mix vocabularies: single items carry aria-checked, multiple carry aria-pressed - the " \
           "controller enforces it; agents patching DOM must too.",
-          "single deselects to empty by re-press (Radix-exact) - if your UI needs always-one-selected, " \
+          "single deselects to empty by re-press - if your UI needs always-one-selected, " \
           "handle the empty change in the host."
         ].freeze
 
@@ -48,8 +48,8 @@ module Poetry
         # poetry check flags the omission without rendering.
         REQUIRED_SLOTS = { item: "at least one item" }.freeze
 
-        # Declares one item: value: (unique - duplicates raise), label: (required
-        # when icon-only), disabled:; the block is the content. Pressed state comes from value:/values:.
+        slot_doc :items, "Declares one item: value: (unique - duplicates raise), label: (required when icon-only), " \
+                         "disabled:; the block is the content. Pressed state comes from value:/values:."
         renders_many :items, lambda { |value:, label: nil, disabled: false, **options, &block|
           item_value = register_item_value!(value)
           content = capture(&block)
@@ -104,27 +104,24 @@ module Poetry
           end
         end
 
-        # The shared Toggle variant axis, cascaded from the root to every item (root wins).
-        style :variant, default: :default, required: true, variants: Toggle::Component::VARIANTS
-        # The shared Toggle size axis, cascaded from the root to every item (root wins).
-        style :size, default: :default, required: true, variants: Toggle::Component::SIZES
+        style :variant, default: :default, required: true, variants: Toggle::Component::VARIANTS,
+                        doc: "The shared Toggle variant axis, cascaded from the root to every item (root wins)."
+        style :size, default: :default, required: true, variants: Toggle::Component::SIZES,
+                     doc: "The shared Toggle size axis, cascaded from the root to every item (root wins)."
 
-        # :single keeps at most one item pressed; :multiple toggles items independently.
-        option :type, :symbol, default: :single
-        # single: the pressed item's value. ArgumentError with :multiple.
-        option :value, :string
-        # multiple: the pressed items' values. ArgumentError with :single.
-        option :values, :list, default: -> { [] }
-        # 0 = the classic segmented control (joined corners, collapsed
-        # outline borders); >0 = free-standing items separated by that gap step.
-        option :spacing, :integer, default: 2
-        # The roving axis; :vertical stacks the items and flips the arrow keys.
-        option :orientation, :symbol, default: :horizontal
-        # Disables every item in the group.
-        option :disabled, :boolean, default: false
-        # The group's accessible name (aria-label) - a nameless
-        # radiogroup/toolbar logs a lint warning.
-        option :label, :string
+        option :type, :symbol, default: :single,
+                               doc: ":single keeps at most one item pressed; :multiple toggles items independently."
+        option :value, :string, doc: "single: the pressed item's value. ArgumentError with :multiple."
+        option :values, :list, default: -> { [] },
+                               doc: "multiple: the pressed items' values. ArgumentError with :single."
+        option :spacing, :integer, default: 2,
+                                   doc: "0 = the classic segmented control (joined corners, collapsed outline " \
+                                        "borders); >0 = free-standing items separated by that gap step."
+        option :orientation, :symbol, default: :horizontal,
+                                      doc: "The roving axis; :vertical stacks the items and flips the arrow keys."
+        option :disabled, :boolean, default: false, doc: "Disables every item in the group."
+        option :label, :string,
+               doc: "The group's accessible name (aria-label) - a nameless radiogroup/toolbar logs a lint warning."
 
         validates :orientation, inclusion: { in: ORIENTATIONS }
 
@@ -246,6 +243,8 @@ module Poetry
         def item_classes(extra)
           classnames(Toggle::Style.css(variant: variant, size: size), css(:item), extra)
         end
+
+        private :single?, :pressed_values, :root_attributes
       end
     end
   end

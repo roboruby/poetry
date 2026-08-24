@@ -50,23 +50,21 @@ module Poetry
           end
         end
 
-        # The control's size axis; the thumb scales to match.
-        style :size, default: :default, required: true, variants: SIZES
+        style :size, default: :default, required: true, variants: SIZES,
+                     doc: "The control's size axis; the thumb scales to match."
 
-        # The server-rendered on/off state.
-        option :checked, :boolean, default: false
-        # Names the hidden input, making the switch a form participant.
-        option :name, :string
-        # Submitted when the switch is on. Ignored without name:.
-        option :value, :string, default: "1"
-        # Submitted when the switch is off, so the field always posts. Ignored without name:.
-        option :unchecked_value, :string, default: "0"
-        # Disables the control and its hidden input - a disabled switch neither toggles nor submits.
-        option :disabled, :boolean, default: false
-        # Marks the switch required via aria-required (never the native attribute).
-        option :required, :boolean, default: false
-        # The accessible name, rendered as aria-label - not visible text.
-        option :label, :string
+        option :checked, :boolean, default: false, doc: "The server-rendered on/off state."
+        option :name, :string, doc: "Names the hidden input, making the switch a form participant."
+        option :value, :string, default: "1", doc: "Submitted when the switch is on. Ignored without name:."
+        option :unchecked_value, :string, default: "0",
+                                          doc: "Submitted when the switch is off, so the field always posts. Ignored " \
+                                               "without name:."
+        option :disabled, :boolean, default: false,
+                                    doc: "Disables the control and its hidden input - a disabled switch neither " \
+                                         "toggles nor submits."
+        option :required, :boolean, default: false,
+                                    doc: "Marks the switch required via aria-required (never the native attribute)."
+        option :label, :string, doc: "The accessible name, rendered as aria-label - not visible text."
 
         part "switch", "The visual button[role=switch] - reflects the hidden input via " \
                        "aria-checked plus the checked pair (never indeterminate)",
@@ -130,6 +128,8 @@ module Poetry
             attrs.merge(stimulus_attributes_for(:root)).merge(component_data_attributes)
           )
         end
+
+        private :state, :control_id, :input_id, :form_participant?, :root_attributes
       end
     end
   end

@@ -43,7 +43,7 @@ module Poetry
           "NO interactive elements inside the card - they get tabindex=-1 stripped and become " \
           "pointer-only traps. Actions belong in a Popover or at the destination.",
           "Don't add aria-expanded/haspopup to the trigger - advertising an unreachable surface is " \
-          "worse than silence (Radix-aligned).",
+          "worse than silence.",
           "Never use HoverCard for hints (Tooltip) or for content users act on (Popover).",
           "Prefer defer: for expensive previews - a lazy turbo-frame that fetches on first open."
         ].freeze
@@ -51,17 +51,13 @@ module Poetry
         # The slots before_render enforces, stated statically for render-free checks.
         REQUIRED_SLOTS = { trigger: "the enriched link" }.freeze
 
-        # The enriched LINK: a real navigable <a> -
-        # THE no-JS fallback. tag: passthrough exists but change it
-        # knowingly (an <a> is the contract's fallback story). NO
-        # aria-haspopup/expanded/describedby - the card is invisible to
-        # the accessibility tree on purpose. Built as a lazy anatomy part
-        # (rendered at render time, not at with_trigger time).
-        #
-        # variant:/size: route through Button::Component -
-        # Button's href-implies-anchor keeps the trigger a
-        # REAL <a> wearing button styling, so the reachable-elsewhere
-        # contract holds.
+        slot_doc :trigger, "The enriched LINK: a real navigable <a> - THE no-JS fallback. tag: passthrough exists " \
+                           "but change it knowingly (an <a> is the contract's fallback story). NO " \
+                           "aria-haspopup/expanded/describedby - the card is invisible to the accessibility tree on " \
+                           "purpose. Built as a lazy anatomy part (rendered at render time, not at with_trigger " \
+                           "time). variant:/size: route through Button::Component - Button's href-implies-anchor " \
+                           "keeps the trigger a REAL <a> wearing button styling, so the reachable-elsewhere contract " \
+                           "holds."
         renders_one :trigger, lambda { |href: nil, tag: :a, **options, &block|
           @trigger_href = href
           attrs = {
@@ -114,27 +110,24 @@ module Poetry
           end
         end
 
-        # Renders the card already open on page load.
-        option :open, :boolean, default: false
-        # Defer the card body to a lazy turbo-frame. The panel is
-        # hidden until hover, so the fetch fires on first open for free;
-        # the component block (if any) becomes the frame's placeholder.
-        option :defer, :string
-        # Hover-intent delay in ms before the card opens.
-        option :open_delay, :integer, default: 600
-        option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
+        option :open, :boolean, default: false, doc: "Renders the card already open on page load."
+        option :defer, :string,
+               doc: "Defer the card body to a lazy turbo-frame. The panel is hidden until hover, so the fetch fires " \
+                    "on first open for free; the component block (if any) becomes the frame's placeholder."
+        option :open_delay, :integer, default: 600, doc: "Hover-intent delay in ms before the card opens."
+        option :close_delay, :integer, default: 300,
+                                       doc: "Close-grace window in ms over the trigger+content pair."
         # Placement defaults: bottom / center, 4px side offset.
         popper_placement_options(side: :bottom, side_offset: 4)
-        # The panel's class merge seam - e.g. content_class: "w-80" widens
-        # the card.
-        option :content_class, :string
+        option :content_class, :string,
+               doc: "The panel's class merge seam - e.g. content_class: \"w-80\" widens the card."
 
         part "hover-card", "Root wrapper around the trigger link and the panel"
         part "hover-card-trigger", "The enriched link itself - simultaneously the no-JS " \
                                    "fallback, the touch path, and the keyboard path",
              states: {
                "data-popup-open" => "bare while the card is open; absent while closed " \
-                                    "(Base UI absence-is-the-state)"
+                                    "(absence IS the closed state)"
              }
         part "hover-card-content", "The role-less preview panel (invisible to AT on purpose) - " \
                                    "positioning, animation, and the open state ride here",
@@ -179,6 +172,7 @@ module Poetry
           attrs
         end
 
+        private :content_attributes
       end
 
       # The trigger anatomy part - renders the chosen tag carrying

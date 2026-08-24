@@ -27,16 +27,16 @@ module Poetry
           "Timestamps and delivery state belong in the footer slot (it lifts the avatar automatically)."
         ].freeze
 
-        # The sender's avatar, kept beside the content column - decorative
-        # context; put meaningful sender identity in the header.
+        slot_doc :avatar, "The sender's avatar, kept beside the content column - decorative context; put meaningful " \
+                          "sender identity in the header."
         renders_one :avatar
-        # The sender identity line above the bubbles.
+        slot_doc :header, "The sender identity line above the bubbles."
         renders_one :header
-        # Timestamps / delivery state below the bubbles.
+        slot_doc :footer, "Timestamps / delivery state below the bubbles."
         renders_one :footer
 
-        # Which side the row sits on; :end mirrors it for the local user's side.
-        option :align, :symbol, default: :start
+        option :align, :symbol, default: :start,
+                                doc: "Which side the row sits on; :end mirrors it for the local user's side."
 
         validates :align, inclusion: { in: ALIGNS }
 
@@ -59,6 +59,8 @@ module Poetry
             { "data-slot" => "message", "data-align" => align }.merge(component_data_attributes)
           )
         end
+
+        private :root_attributes
       end
     end
   end

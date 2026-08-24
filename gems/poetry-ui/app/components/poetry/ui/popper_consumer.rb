@@ -22,11 +22,14 @@ module Poetry
         # validations on the including component - each family passes its
         # own defaults.
         def popper_placement_options(side:, side_offset:, align: :center, align_offset: 0)
-          option :side, :symbol, default: side
-          option :align, :symbol, default: align
-          option :side_offset, :integer, default: side_offset
-          option :align_offset, :integer, default: align_offset
-          option :avoid_collisions, :boolean, default: true
+          option :side, :symbol, default: side, doc: "Which side of the anchor the panel opens on."
+          option :align, :symbol, default: align, doc: "Panel alignment along the chosen side."
+          option :side_offset, :integer, default: side_offset,
+                                         doc: "Gap in pixels between the anchor and the panel."
+          option :align_offset, :integer, default: align_offset,
+                                          doc: "Shift in pixels along the alignment axis."
+          option :avoid_collisions, :boolean, default: true,
+                                              doc: "Flips and shifts the panel to stay inside the viewport."
           validates :side, inclusion: { in: SIDES }
           validates :align, inclusion: { in: ALIGNS }
         end
@@ -59,6 +62,8 @@ module Poetry
       def content_id
         "#{instance_id}-content"
       end
+
+      private :trigger_id, :content_id
     end
   end
 end

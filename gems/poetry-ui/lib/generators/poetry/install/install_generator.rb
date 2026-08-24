@@ -79,7 +79,7 @@ module Poetry
     # only flips the components. Seeded once,
     # user-owned - re-install never overwrites.
     BASE_CSS = <<~CSS
-      /* poetry base layer (shadcn-parity defaults) - yours to edit. */
+      /* poetry base layer (source-parity defaults) - yours to edit. */
       @layer base {
         * {
           border-color: var(--border);

@@ -53,14 +53,14 @@ module Poetry
         # The component behind the forwarding slot: with_action renders a Button.
         SLOT_RENDERS = { action: Button::Component }.freeze
 
-        # The message (REQUIRED - the announced payload's first line).
+        slot_doc :title, "The message (REQUIRED - the announced payload's first line)."
         renders_one :title
 
-        # Supporting copy under the title.
+        slot_doc :description, "Supporting copy under the title."
         renders_one :description
 
-        # Typed Button slot (undo / view / retry): clicking it dismisses the
-        # toast with reason "action". Its presence makes the toast persistent by default.
+        slot_doc :action, "Typed Button slot (undo / view / retry): clicking it dismisses the toast with reason " \
+                          "\"action\". Its presence makes the toast persistent by default."
         renders_one :action, lambda { |**options, &block|
           wiring = { "data-slot" => "toast-action" }.merge(stimulus_attributes_for(:action))
           # Caller attribute keys merge WITH the wiring (stimulus concat)
@@ -98,17 +98,17 @@ module Poetry
           end
         end
 
-        # The intent axis: it picks the icon, and :destructive announces
-        # assertively while :loading defaults to persistent.
-        style :variant, default: :default, required: true, variants: VARIANTS
+        style :variant, default: :default, required: true, variants: VARIANTS,
+                        doc: "The intent axis: it picks the icon, and :destructive announces assertively while " \
+                             ":loading defaults to persistent."
 
-        # nil = derived: 5000ms, or PERSISTENT when an action slot is
-        # present (the missable-undo guard). <= 0 = persistent.
-        option :duration, :integer
-        # Derived from the variant: destructive announces assertively.
-        option :politeness, :symbol, default: -> { variant == :destructive ? :assertive : :polite }
-        # The corner dismiss button - named as the dialog family names it.
-        option :show_close_button, :boolean, default: true
+        option :duration, :integer,
+               doc: "nil = derived: 5000ms, or PERSISTENT when an action slot is present (the missable-undo guard). " \
+                    "<= 0 = persistent."
+        option :politeness, :symbol, default: -> { variant == :destructive ? :assertive : :polite },
+                                     doc: "Derived from the variant: destructive announces assertively."
+        option :show_close_button, :boolean, default: true,
+                                             doc: "The corner dismiss button - named as the dialog family names it."
 
         validates :politeness, inclusion: { in: POLITENESS }
 
@@ -171,6 +171,8 @@ module Poetry
         def close_button_attributes
           stimulus_attributes_for(:close).merge("data-slot" => "toast-close")
         end
+
+        private :effective_duration, :variant_icon, :root_attributes, :close_button_attributes
       end
     end
   end

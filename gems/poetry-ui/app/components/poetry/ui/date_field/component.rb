@@ -18,6 +18,7 @@ module Poetry
       #   render Poetry::Ui::DateField::Component.new(name: "event[on]", label: "Event date")
       class Component < Poetry::Core::Component
         include Poetry::Ui::InputGroupField
+
         # Projected into the registry, llms.txt, and the agent surface.
         AGENT_RULES = [
           "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
@@ -54,37 +55,26 @@ module Poetry
           end
         end
 
-        # The form field name - required; the value posts as ISO
-        # yyyy-mm-dd with or without JS.
-        option :name, :string, required: true
-        # Date, or an ISO yyyy-mm-dd string; nil renders empty.
-        option :value, ActiveModel::Type::Value.new
-        # The earliest allowed date (Date or ISO string) - rides native
-        # constraint validation.
-        option :min, ActiveModel::Type::Value.new
-        # The latest allowed date (Date or ISO string) - rides native
-        # constraint validation.
-        option :max, ActiveModel::Type::Value.new
-        # Marks the native input required.
-        option :required, :boolean, default: false
-        # Disables the field; the segment group dims and goes inert.
-        option :disabled, :boolean, default: false
-        # The value shows but cannot be edited.
-        option :readonly, :boolean, default: false
-        # Paints the destructive border/ring and sets aria-invalid.
-        option :invalid, :boolean, default: false
-        # The native input's DOM id - the Field label target.
-        option :id, :string
-        # Standalone accessible name; inside a form the Field label wires
-        # ids instead. Segments announce it themselves.
-        option :label, :string
-        # Ids for aria-describedby (hint or error text).
-        option :described_by, :string
-        # Pins the field to a locale other than the page's.
-        option :locale, :string
-        # What the first arrow press on an empty segment lands on;
-        # defaults to today.
-        option :placeholder_value, ActiveModel::Type::Value.new
+        option :name, :string, required: true,
+                               doc: "The form field name - required; the value posts as ISO yyyy-mm-dd with or " \
+                                    "without JS."
+        option :value, ActiveModel::Type::Value.new, doc: "Date, or an ISO yyyy-mm-dd string; nil renders empty."
+        option :min, ActiveModel::Type::Value.new,
+               doc: "The earliest allowed date (Date or ISO string) - rides native constraint validation."
+        option :max, ActiveModel::Type::Value.new,
+               doc: "The latest allowed date (Date or ISO string) - rides native constraint validation."
+        option :required, :boolean, default: false, doc: "Marks the native input required."
+        option :disabled, :boolean, default: false, doc: "Disables the field; the segment group dims and goes inert."
+        option :readonly, :boolean, default: false, doc: "The value shows but cannot be edited."
+        option :invalid, :boolean, default: false, doc: "Paints the destructive border/ring and sets aria-invalid."
+        option :id, :string, doc: "The native input's DOM id - the Field label target."
+        option :label, :string,
+               doc: "Standalone accessible name; inside a form the Field label wires ids instead. Segments announce " \
+                    "it themselves."
+        option :described_by, :string, doc: "Ids for aria-describedby (hint or error text)."
+        option :locale, :string, doc: "Pins the field to a locale other than the page's."
+        option :placeholder_value, ActiveModel::Type::Value.new,
+               doc: "What the first arrow press on an empty segment lands on; defaults to today."
 
         part "date-field", "Root - the controller and the enhanced/disabled surface ride here",
              states: {
@@ -211,6 +201,8 @@ module Poetry
 
         def segment_labels_json = segment_labels.to_json
         def segment_placeholders_json = segment_placeholders.to_json
+
+        private :root_attributes, :group_attributes, :input_attributes
       end
     end
   end
