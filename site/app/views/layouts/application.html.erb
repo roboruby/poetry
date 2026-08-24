@@ -59,13 +59,13 @@
               <% end %>
             <% end %>
           <% end %>
-          <%# The nav sections: disclosure groups closed by default, the
-              current page's section open. In the icon rail each section
-              shows as its icon (text, chevron, and item list hidden);
-              clicking one expands the sidebar (the controller's open is a
-              no-op while expanded, so normal disclosure clicks are
-              unaffected). Get Started matches by its entries' exact paths
-              (top-level slugs); the galleries match by path prefix. %>
+          <%# The nav sections, one per group, in two mode-gated forms: the
+              expanded sidebar gets a disclosure (closed by default, the
+              current page's section open); the icon rail swaps it for a
+              HoverCard - hovering the icon flies the section's links out
+              beside the rail, clicking it expands the sidebar. Get Started
+              matches by its entries' exact paths (top-level slugs); the
+              galleries match by path prefix. %>
           <% [["Get Started", :rocket, nil, DocsCatalog.docs],
               ["Components", :component, "/components", DocsCatalog.components],
               ["Charts", :"chart-area", "/charts", DocsCatalog.charts],
@@ -74,23 +74,39 @@
               ["API", :braces, "/api/", DocsCatalog.apis]].each do |title, icon, prefix, entries| %>
             <%= poetry_sidebar_group(class: "py-1") do %>
               <% section_active = prefix ? request.path.start_with?(prefix) : entries.any? { |e| e.path == request.path } %>
-              <%= poetry_collapsible(open: section_active, class: "group/collapsible") do |section| %>
+              <div class="hidden group-data-[collapsible=icon]:block">
+                <%= poetry_hover_card(side: :right, align: :start, side_offset: 8, open_delay: 150,
+                                      content_class: "w-60 max-h-[70vh] overflow-y-auto p-2") do |card| %>
+                  <% card.with_trigger(tag: :button, type: "button", "aria-label": title, title: title,
+                                       class: "flex size-8 items-center justify-center rounded-md " \
+                                              "text-sidebar-foreground/70 transition-colors " \
+                                              "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                       data: { action: "click->poetry--core--sidebar#open" }) do %>
+                    <%= poetry_icon(name: icon, class: "size-4") %>
+                  <% end %>
+                  <div class="px-2 py-1.5 text-xs font-medium text-muted-foreground"><%= title %></div>
+                  <nav class="flex flex-col gap-0.5" aria-label="<%= title %>">
+                    <% entries.each do |entry| %>
+                      <%= link_to entry.title, entry.path,
+                                  class: "rounded-md px-2 py-1.5 text-sm transition-colors " \
+                                         "hover:bg-accent hover:text-accent-foreground " \
+                                         "#{"bg-accent text-accent-foreground" if current_page?(entry.path)}" %>
+                    <% end %>
+                  </nav>
+                <% end %>
+              </div>
+              <%= poetry_collapsible(open: section_active,
+                                     class: "group/collapsible group-data-[collapsible=icon]:hidden") do |section| %>
                 <% section.with_trigger(class: "flex w-full items-center gap-2 rounded-md px-2 py-1.5 " \
                                                "text-xs font-medium text-sidebar-foreground/70 transition-colors " \
-                                               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground " \
-                                               "group-data-[collapsible=icon]:size-8 " \
-                                               "group-data-[collapsible=icon]:justify-center " \
-                                               "group-data-[collapsible=icon]:p-2",
-                                        title: title,
-                                        data: { action: "click->poetry--core--sidebar#open" }) do %>
+                                               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground") do %>
                   <%= poetry_icon(name: icon, class: "size-4 shrink-0") %>
-                  <span class="group-data-[collapsible=icon]:hidden"><%= title %></span>
+                  <span><%= title %></span>
                   <%= poetry_icon(name: :"chevron-right",
                                   class: "ml-auto size-3.5 shrink-0 transition-transform duration-200 " \
-                                         "group-data-[open]/collapsible:rotate-90 " \
-                                         "group-data-[collapsible=icon]:hidden") %>
+                                         "group-data-[open]/collapsible:rotate-90") %>
                 <% end %>
-                <%= poetry_sidebar_group_content(class: "pt-1 group-data-[collapsible=icon]:hidden") do %>
+                <%= poetry_sidebar_group_content(class: "pt-1") do %>
                   <%= poetry_sidebar_menu do %>
                     <% entries.each do |entry| %>
                       <%= poetry_sidebar_menu_item do %>
