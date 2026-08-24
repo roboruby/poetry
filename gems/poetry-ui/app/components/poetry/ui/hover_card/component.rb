@@ -3,11 +3,9 @@
 module Poetry
   module Ui
     module HoverCard
-      # The controller identifiers, declared ONCE - every data attribute
-      # derives from them through the Stimulus Builder, validated against
-      # the controllers manifest (no hand-written wiring strings).
-      SIDES = %i[top right bottom left].freeze
-      ALIGNS = %i[start center end].freeze
+      # The placement vocabularies - the popper-consumer kit owns them.
+      SIDES = Poetry::Ui::PopperConsumer::SIDES
+      ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # The popper-consumer trio's pointer-only member: a rich preview
       # behind a LINK, for sighted pointer users, BY DESIGN not an
@@ -33,6 +31,7 @@ module Poetry
       #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
+        include Poetry::Ui::PopperConsumer
 
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
@@ -126,17 +125,11 @@ module Poetry
         option :defer, :string
         option :open_delay, :integer, default: 600 # Base UI PreviewCard OPEN_DELAY
         option :close_delay, :integer, default: 300 # the grace window over the trigger+content pair
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :center # shadcn Content default
-        option :side_offset, :integer, default: 4 # shadcn Content default
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
+        # Placement: shadcn Content defaults (bottom / center / 4 / 0).
+        popper_placement_options(side: :bottom, side_offset: 4)
         # The panel's class merge seam (demo parity: content_class: "w-80"
         # overrides the source w-64).
         option :content_class, :string
-
-        validates :side, inclusion: { in: SIDES }
-        validates :align, inclusion: { in: ALIGNS }
 
         part "hover-card", "Root wrapper around the trigger link and the panel"
         part "hover-card-trigger", "The enriched link itself - simultaneously the no-JS " \
@@ -156,14 +149,7 @@ module Poetry
                "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
                                  values: ALIGNS.map(&:to_s) }
              },
-             vars: {
-               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
-                                       "animation",
-               "--available-width" => "viewport space left for the panel (popper, post-flip)",
-               "--available-height" => "viewport space left for the panel (popper, post-flip)",
-               "--anchor-width" => "the anchor's measured width (popper)",
-               "--anchor-height" => "the anchor's measured height (popper)"
-             }
+             vars: Poetry::Ui::PopperConsumer.content_vars
 
         def before_render
           raise ArgumentError, "HoverCard requires with_trigger (the enriched link)" unless trigger?
@@ -179,25 +165,6 @@ module Poetry
           )
         end
 
-        def trigger_id
-          "#{instance_id}-trigger"
-        end
-
-        # The id pair exists for STRUCTURAL resolution only ("-trigger" ->
-        # "-content") - deliberately NOT wired to aria-controls/describedby
-        # (no AT contract to express).
-        def content_id
-          "#{instance_id}-content"
-        end
-
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "hover-card" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
-        end
-
         def content_attributes
           attrs = {
             "id" => content_id,
@@ -210,11 +177,6 @@ module Poetry
           attrs
         end
 
-        private
-
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-hover-card")
-        end
       end
 
       # The trigger anatomy part. Plain ViewComponent::Base ON PURPOSE:

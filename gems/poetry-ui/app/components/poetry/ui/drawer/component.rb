@@ -135,8 +135,7 @@ module Poetry
         part "drawer-footer", "Action row pinned to the bottom of the popup"
 
         def before_render
-          raise ArgumentError, "Drawer requires with_title (the accessible name)" unless title?
-
+          super
           validate_snap_points! if snap_points.present?
         end
 
@@ -147,14 +146,6 @@ module Poetry
         # a contract lie.
         def self.option_attributes
           super - %i[show_close_button]
-        end
-
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "drawer" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
         end
 
         # The <dialog> IS the drawer popup: the chrome + swipe wiring land

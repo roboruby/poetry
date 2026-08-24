@@ -27,6 +27,7 @@ module Poetry
       #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
+        include Poetry::Ui::FamilyIdentity
 
         SIZES = %i[default sm].freeze
 
@@ -156,13 +157,6 @@ module Poetry
           "#{instance_id}-description"
         end
 
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "alert-dialog" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
-        end
 
         def dialog_attributes
           {
@@ -201,12 +195,6 @@ module Poetry
           css(:footer, class: (css(:footer_size_sm) if size == :sm))
         end
 
-        private
-
-        # Server-stable unique id for the aria wiring.
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-alert-dialog")
-        end
       end
     end
   end

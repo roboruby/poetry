@@ -3,10 +3,9 @@
 module Poetry
   module Ui
     module Popover
-      # The placement vocabularies, declared ONCE at module level - shared
-      # by the validations and the part-state declarations.
-      SIDES = %i[top right bottom left].freeze
-      ALIGNS = %i[start center end].freeze
+      # The placement vocabularies - the popper-consumer kit owns them.
+      SIDES = Poetry::Ui::PopperConsumer::SIDES
+      ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # The popper-consumer trio's click-open member: a role=dialog panel
       # anchored to its trigger - the APG
@@ -31,6 +30,7 @@ module Poetry
       #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
+        include Poetry::Ui::PopperConsumer
 
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
@@ -129,20 +129,14 @@ module Poetry
         # Radix Popover default FALSE - the deliberate contrast with the
         # menu family's modal: true (documented in both contracts).
         option :modal, :boolean, default: false
-        option :side, :symbol, default: :bottom
-        option :align, :symbol, default: :center # shadcn Content default
-        option :side_offset, :integer, default: 4 # shadcn Content default
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
+        # Placement: shadcn Content defaults (bottom / center / 4 / 0).
+        popper_placement_options(side: :bottom, side_offset: 4)
         # role=dialog fallback name when no title part is present.
         option :label, :string
         # The panel's class merge seam (shadcn demo parity: the caller
         # overrides the w-72 default with content_class: "w-80"; root-level
         # class: styles the wrapper, not the panel).
         option :content_class, :string
-
-        validates :side, inclusion: { in: SIDES }
-        validates :align, inclusion: { in: ALIGNS }
 
         part "popover", "Root wrapper around the trigger, the optional anchor, and the panel"
         part "popover-anchor", "Optional alternate popper anchor (Radix PopoverAnchor) - when " \
@@ -158,14 +152,7 @@ module Poetry
                "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
                                  values: ALIGNS.map(&:to_s) }
              },
-             vars: {
-               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
-                                       "animation",
-               "--available-width" => "viewport space left for the panel (popper, post-flip)",
-               "--available-height" => "viewport space left for the panel (popper, post-flip)",
-               "--anchor-width" => "the anchor's measured width (popper)",
-               "--anchor-height" => "the anchor's measured height (popper)"
-             }
+             vars: Poetry::Ui::PopperConsumer.content_vars
         part "popover-header", "Title block wrapping the title and description (renders only " \
                                "when either is present)"
         part "popover-title", "The heading - the panel's accessible name via aria-labelledby"
@@ -183,28 +170,12 @@ module Poetry
           )
         end
 
-        def trigger_id
-          "#{instance_id}-trigger"
-        end
-
-        def content_id
-          "#{instance_id}-content"
-        end
-
         def title_id
           "#{instance_id}-title"
         end
 
         def description_id
           "#{instance_id}-description"
-        end
-
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "popover" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
         end
 
         def content_attributes
@@ -226,13 +197,6 @@ module Poetry
         end
 
         private
-
-        # Server-stable unique id pair for the aria wiring (two popovers on
-        # one page must not share ids); portal-safe (the controller resolves
-        # content via aria-controls, not a Stimulus target).
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-popover")
-        end
 
         def trigger_anchor_selector = "##{trigger_id}"
       end

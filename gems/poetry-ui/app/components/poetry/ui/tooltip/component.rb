@@ -3,9 +3,9 @@
 module Poetry
   module Ui
     module Tooltip
-      # Shared placement vocabularies, declared once at module level.
-      SIDES = %i[top right bottom left].freeze
-      ALIGNS = %i[start center end].freeze
+      # The placement vocabularies - the popper-consumer kit owns them.
+      SIDES = Poetry::Ui::PopperConsumer::SIDES
+      ALIGNS = Poetry::Ui::PopperConsumer::ALIGNS
 
       # The popper-consumer trio's timing machine: the
       # hover/focus text hint that must never receive
@@ -33,6 +33,7 @@ module Poetry
       #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
+        include Poetry::Ui::PopperConsumer
 
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
@@ -128,19 +129,14 @@ module Poetry
         # nil = inherit the provider (the controller checks attribute
         # PRESENCE, so an unset value must render no attribute at all).
         option :disable_hoverable_content, :boolean
-        option :side, :symbol, default: :top # Radix Tooltip default - the trio's odd one out
-        option :align, :symbol, default: :center
-        option :side_offset, :integer, default: 0 # shadcn Content default (the arrow supplies the gap)
-        option :align_offset, :integer, default: 0
-        option :avoid_collisions, :boolean, default: true
+        # Placement: Radix Tooltip defaults - top (the trio's odd one out)
+        # with side_offset 0 (the arrow supplies the gap).
+        popper_placement_options(side: :top, side_offset: 0)
         # Plain-text announcement override for rich content (the visual
         # children stay; the announced body becomes this text).
         option :label, :string
         # The bubble's class merge seam (caller classes win on conflicts).
         option :content_class, :string
-
-        validates :side, inclusion: { in: SIDES }
-        validates :align, inclusion: { in: ALIGNS }
 
         part "tooltip", "Root wrapper around the trigger and the bubble"
         part "tooltip-content", "The role=tooltip bubble - positioning, animation, and the open " \
@@ -158,14 +154,7 @@ module Poetry
                "data-align" => { condition: "always - the alignment (re-resolved live by popper)",
                                  values: ALIGNS.map(&:to_s) }
              },
-             vars: {
-               "--transform-origin" => "the anchor-facing origin popper writes for scale-in " \
-                                       "animation",
-               "--available-width" => "viewport space left for the bubble (popper, post-flip)",
-               "--available-height" => "viewport space left for the bubble (popper, post-flip)",
-               "--anchor-width" => "the anchor's measured width (popper)",
-               "--anchor-height" => "the anchor's measured height (popper)"
-             }
+             vars: Poetry::Ui::PopperConsumer.content_vars("bubble")
         part "tooltip-arrow", "The arrow wrapper (aria-hidden) - popper pins it to the bubble's " \
                               "anchor-facing edge and rotates it toward the anchor",
              states: {
@@ -176,24 +165,6 @@ module Poetry
 
         def before_render
           raise ArgumentError, "Tooltip requires with_trigger (the described control)" unless trigger?
-        end
-
-        def trigger_id
-          "#{instance_id}-trigger"
-        end
-
-        # The controller resolves content by the id pair ("-trigger" ->
-        # "-content"), portal-safe - no Stimulus target.
-        def content_id
-          "#{instance_id}-content"
-        end
-
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "tooltip" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
         end
 
         def content_attributes
@@ -212,11 +183,6 @@ module Poetry
           attrs
         end
 
-        private
-
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-tooltip")
-        end
       end
     end
   end

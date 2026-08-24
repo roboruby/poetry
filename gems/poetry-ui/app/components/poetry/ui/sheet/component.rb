@@ -78,40 +78,18 @@ module Poetry
         part "sheet-description", "Muted copy under the title, wired to aria-describedby"
         part "sheet-footer", "Action row pinned to the bottom of the panel"
 
-        def before_render
-          raise ArgumentError, "Sheet requires with_title (the accessible name)" unless title?
-        end
-
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "sheet" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
-        end
-
-        # The parent's <dialog> wiring with the Sheet deltas: the slot
-        # rename, the data-side stamp, and the side's edge classes (the
-        # resolver applies variants only at the dictionary root; the
-        # Sheet's visual root IS the :content element, so the side branch
-        # merges in here).
-        def dialog_attributes
-          attrs = {
-            "class" => css(:content, class: [Style.side(side), content_class]),
-            "data-slot" => "sheet-content",
-            "data-side" => side,
-            "data-closed" => "",
-            "aria-labelledby" => title_id
-          }.merge(stimulus_attributes_for(:content))
-          attrs["aria-describedby"] = description_id if description?
-          attrs
-        end
-
         private
 
-        # Sheet-scoped label ids (two overlays on a page never collide).
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-sheet")
+        # The Sheet deltas on the inherited panel: the side's edge classes
+        # (the resolver applies variants only at the dictionary root; the
+        # Sheet's visual root IS the :content element, so the side branch
+        # merges in here) and the data-side stamp.
+        def panel_classes
+          [Style.side(side), content_class]
+        end
+
+        def panel_stamps
+          { "data-side" => side }
         end
       end
     end

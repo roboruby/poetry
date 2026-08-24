@@ -19,25 +19,9 @@ module Poetry
       # RadioGroup parts) so the whole family renders the same anatomy
       # through the same Builder.
       module Helpers
+        include FamilyIdentity
+
         private
-
-        # Family identity, derived from the includer's namespace
-        # (Poetry::Ui::ContextMenu::Sub -> ContextMenu).
-        def family_namespace
-          self.class.module_parent
-        end
-
-        def family_name
-          @family_name ||= family_namespace.name.demodulize
-        end
-
-        def family_slot_prefix
-          @family_slot_prefix ||= family_name.underscore.dasherize
-        end
-
-        def family_style
-          family_namespace::Style
-        end
 
         # menu items are role=menuitem DIVs (APG-exact) - no native
         # disabled, so aria-disabled and data-disabled are written TOGETHER

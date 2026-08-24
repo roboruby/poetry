@@ -18,6 +18,7 @@ module Poetry
       #   end
       class Component < Poetry::Core::Component
         include Poetry::Ui::ComposableTrigger
+        include Poetry::Ui::FamilyIdentity
 
         AGENT_RULES = [
           ComposableTrigger::AGENT_RULE,
@@ -103,7 +104,7 @@ module Poetry
         part "dialog-footer", "Action row at the bottom of the panel"
 
         def before_render
-          raise ArgumentError, "Dialog requires with_title (the accessible name)" unless title?
+          raise ArgumentError, "#{family_name} requires with_title (the accessible name)" unless title?
         end
 
         def title_id
@@ -114,18 +115,11 @@ module Poetry
           "#{instance_id}-description"
         end
 
-        def root_attributes
-          html_attributes.merge_if_not_set(
-            { "data-slot" => "dialog" }
-              .merge(stimulus_attributes_for(:root))
-              .merge(component_data_attributes)
-          )
-        end
-
         def dialog_attributes
           attrs = {
-            "class" => css(:content, class: content_class),
-            "data-slot" => "dialog-content",
+            "class" => css(:content, class: panel_classes),
+            "data-slot" => "#{family_slot_prefix}-content",
+            **panel_stamps,
             "data-closed" => "",
             "aria-labelledby" => title_id
           }.merge(stimulus_attributes_for(:content))
@@ -157,10 +151,15 @@ module Poetry
 
         private
 
-        # Server-stable unique id for the aria wiring (two dialogs on one
-        # page must not share label ids).
-        def instance_id
-          @instance_id ||= poetry_instance_id("poetry-dialog")
+        # Subclass seams for the panel: extra class values and the family
+        # stamps between data-slot and data-closed (Sheet stamps its side,
+        # Drawer its swipe direction).
+        def panel_classes
+          content_class
+        end
+
+        def panel_stamps
+          {}
         end
       end
     end
