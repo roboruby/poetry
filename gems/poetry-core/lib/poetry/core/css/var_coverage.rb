@@ -4,8 +4,8 @@ module Poetry
   module Core
     module CSS
       # The custom-property contract: every `var(--x)` READ in a
-      # compiled build must resolve to a DEFINITION - a declaration or
-      # @property registration in the compiled CSS, or a runtime assignment
+      # compiled build must resolve to a DEFINITION - a declaration or a
+      # CSS `@property` registration in the compiled CSS, or a runtime assignment
       # (JS setProperty, inline style attributes) that the caller passes in,
       # since runtime assignments never appear in the build output.
       #
@@ -51,7 +51,7 @@ module Poetry
         end
 
         # Reads that resolve to nothing: not declared in the build, not
-        # @property-registered, not runtime-assigned. Each one is a rule
+        # registered via CSS `@property`, not runtime-assigned. Each one is a rule
         # silently falling back (or to nothing at all) - a class of bug
         # once dug out by hand as a dozen dead reads of renamed vars.
         def dead_reads

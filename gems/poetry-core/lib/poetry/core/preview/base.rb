@@ -157,6 +157,18 @@ module Poetry
           end
         end
 
+        # Renders a NESTED component inside a slot/content block. Plain
+        # render() there resolves to the preview DSL's own render (a
+        # declaration returning a hash) and the nested component silently
+        # vanishes - button icons, card actions, dialog footer buttons were
+        # all missing from every preview until the a11y preview rig caught it.
+        #
+        # @param component [ViewComponent::Base] the component instance to render
+        # @return [String] the rendered HTML
+        def embed(component, &)
+          ApplicationController.new.view_context.render(component, &)
+        end
+
         # Renders the preview with custom template locals.
         #
         # This is a convenience method that wraps render_with_template, making it easier
@@ -168,15 +180,6 @@ module Poetry
         #   def default
         #     render_with(title: "Hello", message: "World")
         #   end
-        # Renders a NESTED component inside a slot/content block. Plain
-        # render() there resolves to the preview DSL's own render (a
-        # declaration returning a hash) and the nested component silently
-        # vanishes - button icons, card actions, dialog footer buttons were
-        # all missing from every preview until the N2 a11y rig caught it.
-        def embed(component, &)
-          ApplicationController.new.view_context.render(component, &)
-        end
-
         def render_with(**locals)
           render_with_template(locals: locals)
         end

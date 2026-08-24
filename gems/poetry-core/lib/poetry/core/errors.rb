@@ -56,9 +56,6 @@ module Poetry
     # that does not exist in any of the searched paths. It provides detailed information
     # about what was searched and where, making it easier to debug icon loading issues.
     #
-    # @source https://github.com/lab2023/heroicons-rails/blob/develop/lib/heroicons/errors.rb
-    #   Based on the IconNotFound error from heroicons-rails gem by lab2023.
-    #
     # @example Handling missing icon
     #   begin
     #     load_icon('star', 'solid')

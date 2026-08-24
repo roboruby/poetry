@@ -111,7 +111,6 @@ module Poetry
           # @!attribute [w] default_preview_template
           #   Sets the default template path for this preview class.
           #
-          #   @param template_path [String] the path to the default template
           #   @return [String] the configured template path
           #
           #   @example
