@@ -1,6 +1,8 @@
 --markup markdown
 --no-private
+--hide-api private
 --readme README.md
+--exclude (^|/)preview\.rb$
 lib/**/*.rb
 app/**/*.rb
 -
