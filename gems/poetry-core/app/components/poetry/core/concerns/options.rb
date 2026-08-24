@@ -124,6 +124,14 @@ module Poetry
             declared_attributes(:option)
           end
 
+          # The doc: strings declared on this component's options,
+          # hierarchy-wide (nearest declaration wins).
+          #
+          # @return [Hash{Symbol => String}]
+          def option_docs
+            declared_docs(:option)
+          end
+
           # Checks if the given name is a defined option attribute.
           #
           # @param name [Symbol, String] the attribute name to check

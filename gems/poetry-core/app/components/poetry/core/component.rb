@@ -57,6 +57,11 @@ module Poetry
       class << self
         # Marks this class (and its descendants) as an implementation
         # detail - full machinery, no registry entry.
+        #
+        # @example An inner class of a component family
+        #   class DropdownMenu::Item::Component < Poetry::Core::Component
+        #     internal_component!
+        #   end
         def internal_component!
           self.internal_component = true
         end
@@ -116,9 +121,14 @@ module Poetry
         # fallback"). ONE declaration feeds both enforcement layers: the
         # component raises via #ensure_content! at render, and the registry
         # emits `requires_content` so poetry check flags the omission
-        # statically (the floating crash class).
+        # statically.
         #
         # @param hint [String] what the content block is, for the error message
+        # @return [void]
+        # @example
+        #   class Avatar::Component < Poetry::Core::Component
+        #     requires_content "the initials fallback"
+        #   end
         def requires_content(hint)
           @required_content = hint
         end
@@ -155,6 +165,10 @@ module Poetry
       # Enforces the class-level requires_content declaration - call from
       # before_render. The message is built from the declaration so the
       # runtime raise and the registry's static contract can never disagree.
+      #
+      # @return [void]
+      # @raise [ArgumentError] when the component was called without a
+      #   content block
       def ensure_content!
         return if content?
 
@@ -270,6 +284,8 @@ module Poetry
       end
 
       # The caller-supplied semantic identity (key:), if any.
+      #
+      # @return [Object, nil]
       attr_reader :stable_key
 
       # The instance-id ladder: an explicit caller root id wins; a key:

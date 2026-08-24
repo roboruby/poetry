@@ -41,6 +41,7 @@ components:
       - rose
       default: indigo
       required: true
+      description: The stroke color family.
     - name: mode
       type: symbol
       variants:
@@ -48,6 +49,7 @@ components:
       - dark
       default: light
       required: true
+      description: The color-scheme axis the compound dark strokes key on.
     - name: shape
       type: symbol
       variants:
@@ -55,6 +57,7 @@ components:
       - round
       default: square
       required: true
+      description: The outline shape (visual no-op in the shipped dictionary).
     - name: size
       type: symbol
       variants:
@@ -63,6 +66,7 @@ components:
       - large
       default: medium
       required: true
+      description: The rendered glyph size.
     options: []
     slots: []
     elements: []

@@ -2,6 +2,7 @@
 
 module Poetry
   module Core
+    # Namespace of the conditional-wrapper component.
     module Wrapper
       # Wraps any component with custom HTML.
       # The whole wrapper is only rendered when the child component's #render? returns true,
@@ -13,6 +14,8 @@ module Poetry
       #     tag.div(class: "mt-2") { wrapper.component }
       #   end
       class Component < ViewComponent::Base
+        # Raised when the block calls #component more than once - each
+        # wrapper renders its child exactly one time.
         class DoubleRenderError < StandardError
           def initialize(component)
             super("A child component could only be rendered once within a wrapper: #{component}")

@@ -229,7 +229,8 @@ module Poetry
           details << "default #{prop["default"].inspect}" if prop.key?("default")
           details << "required" if prop["required"]
           details << "format: #{prop["format"]}" if prop["format"]
-          "- `#{prop["name"]}:` (#{prop["type"]})#{" - #{details.join(", ")}" if details.any?}"
+          line = "- `#{prop["name"]}:` (#{prop["type"]})#{" - #{details.join(", ")}" if details.any?}"
+          prop["description"] ? "#{line} - #{prop["description"]}" : line
         end
       end
 
@@ -245,6 +246,7 @@ module Poetry
       # setters that cannot omit their content block.
       def slot_summary(slot)
         qualifiers = []
+        qualifiers << slot["description"] if slot["description"]
         qualifiers << "many" if slot["many"]
         if slot["types"]
           convention = kwargs_only_setters?(slot) ? " - one with_<type> setter each, options as keywords" : ""

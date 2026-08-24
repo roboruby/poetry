@@ -843,10 +843,12 @@ module Poetry
             facets << "required" if prop["required"] && !prop.key?("default")
             facets << "format: #{prop["format"]}" if prop["format"]
             suffix = facets.any? ? " (#{facets.join("; ")})" : ""
-            lines << "- #{prop["name"]}: #{prop["type"]}#{suffix}"
+            description = prop["description"] ? " - #{prop["description"]}" : ""
+            lines << "- #{prop["name"]}: #{prop["type"]}#{suffix}#{description}"
           end
           slots = (entry["slots"] || []).map do |slot|
             facets = []
+            facets << slot["description"] if slot["description"]
             if slot["types"]
               args = slot["setter_args"]
               convention = args && slot["types"].all? { |type| args[type]&.zero? } ? " - options as keywords" : ""

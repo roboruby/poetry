@@ -14,4 +14,4 @@ require "rubocop/rake_task"
 
 RuboCop::RakeTask.new
 
-task default: %i[test rubocop tokens:verify registry:verify]
+task default: %i[test rubocop tokens:verify registry:verify yard:verify yard:coverage]

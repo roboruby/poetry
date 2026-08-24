@@ -79,3 +79,7 @@ Naming/PredicatePrefix:
 # Comprehensive, multi-assertion unit tests are intentional.
 Minitest/MultipleAssertions:
   Enabled: false
+
+Style/OneClassPerFile:
+  Exclude:
+    - "yard/poetry_yard.rb" # the doc-build handler kit is one deliberate file

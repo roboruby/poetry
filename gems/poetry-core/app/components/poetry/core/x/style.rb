@@ -3,6 +3,8 @@
 module Poetry
   module Core
     module X
+      # The X demo component's style dictionary: stroke color x mode x
+      # size x shape.
       class Style < Poetry::Core::Style
         base "shrink-0"
 

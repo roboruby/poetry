@@ -28,8 +28,8 @@ module Poetry
         # is the default; a delta is only taken when the locked AA floor
         # demands it, and it must be recorded here.
         PARITY_DELTAS = [
-          "light muted-foreground: oklch(0.545 0 0) vs shadcn's 0.556 - darkened to clear the locked WCAG AA " \
-          "floor (4.54:1 on muted, 4.96:1 on background; shadcn's own value is 4.34:1 on muted, sub-AA)."
+          "light muted-foreground: oklch(0.545 0 0) vs the source's 0.556 - darkened to clear the locked WCAG AA " \
+          "floor (4.54:1 on muted, 4.96:1 on background; the source value is 4.34:1 on muted, sub-AA)."
         ].freeze
 
         # The reference theme's distributed radius scale (@theme inline), in the

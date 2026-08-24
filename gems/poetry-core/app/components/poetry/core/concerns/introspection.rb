@@ -12,18 +12,51 @@ module Poetry
       module Introspection
         extend ActiveSupport::Concern
 
+        # The registry's marker for a proc default (its value depends on
+        # other attributes and is unknowable statically).
         DYNAMIC_DEFAULT = :dynamic
+        # The parameter kinds counted toward positional arity.
         POSITIONAL_KINDS = %i[req opt].freeze
         # Parameter kinds that make a keyword surface open or unknowable
         # (**rest accepts anything; a positional can swallow a braceless
         # hash), and the kinds that ARE the keyword surface.
         OPEN_PARAMETER_KINDS = %i[keyrest rest req opt].freeze
+        # The parameter kinds that ARE the keyword surface.
         KEYWORD_PARAMETER_KINDS = %i[key keyreq].freeze
 
         class_methods do
           # The component's full prop surface.
           #
           # @return [Hash] { styles: [...], options: [...], slots: [...] }
+          # Documents a slot declared with renders_one/renders_many. The
+          # string travels the same road as option/style doc: params - the
+          # registry, the agent surface, and the generated API docs. Write
+          # it directly above the renders_* declaration it describes.
+          #
+          # @param name [Symbol] the slot name as declared (plural for
+          #   renders_many)
+          # @param text [String] one reference-register sentence
+          # @return [void]
+          #
+          # @example
+          #   slot_doc :trigger, "The button that opens the dialog."
+          #   renders_one :trigger, lambda { |**options, &block| ... }
+          def slot_doc(name, text)
+            declared_ivar_hash(:@_slot_docs)[name.to_sym] = text
+          end
+
+          # The slot_doc strings, hierarchy-wide (nearest wins).
+          #
+          # @return [Hash{Symbol => String}]
+          def slot_docs
+            collect_declared_map(:@_slot_docs)
+          end
+
+          # The component's full declared surface - styles, options, slots
+          # (with descriptions), required slots, and requires_any groups -
+          # as the registry generator serializes it.
+          #
+          # @return [Hash{Symbol => Object}]
           def prop_definitions
             slots = slot_definitions
             {
@@ -45,6 +78,8 @@ module Poetry
             definition.merge!(default_definition(name, style_attributes_with_static_defaults,
                                                  style_attributes_with_proc_defaults))
             definition[:required] = true if required_attribute?(name)
+            doc = style_docs[name.to_sym]
+            definition[:description] = doc if doc
             definition
           end
 
@@ -63,6 +98,8 @@ module Poetry
             definition[:required] = true if required_attribute?(name)
             format = option_format(name)
             definition[:format] = format if format
+            doc = option_docs[name.to_sym]
+            definition[:description] = doc if doc
             definition
           end
 
@@ -70,8 +107,8 @@ module Poetry
           # -> many (ViewComponent registers the plural name with collection).
           # A typed slot (renders_one :icon, Icon::Component) also carries the
           # slot component's registry path - the machine-readable form of "this
-          # slot takes that component's props, not a render block" (the
-          # alert crash class: an agent can only honor a contract a surface
+          # slot takes that component's props, not a render block" (an
+          # agent can only honor a contract a surface
           # states). Recursion, setter arities, and builder surfaces come from
           # the module-level walker.
           def slot_definitions
@@ -111,7 +148,7 @@ module Poetry
         # - types: a polymorphic slot's with_<type> setters
         # - setter_args: max POSITIONAL arity per setter, introspected from
         #   the slot lambda / renderable class (a kwargs-only lambda is 0 -
-        #   the menu crash class: `with_item(:item, ...)` guessed a
+        #   forecloses `with_item(:item, ...)`, a
         #   type-as-argument convention no setter has)
         # - builders: a class cannot be seen through a wrapping lambda
         #   (`->(**o) { Menu.new(bar: self, **o) }`), so a slot-owning class
@@ -121,14 +158,14 @@ module Poetry
         # - yieldless: a slot lambda that declares &block consumes the
         #   consumer's block itself (poetry convention: capture(&block) with
         #   no arguments), so a block param at the call site is nil at render
-        #   (the menu crash: `menu.with_item do |item|`). A lambda that
+        #   (e.g. `menu.with_item do |item|`). A lambda that
         #   stores the block and calls it WITH arguments later (DataTable's
         #   per-row cell renderer) is indistinguishable by signature, so such
         #   a class declares SLOT_BLOCK_YIELDS = { setter => what the block
         #   receives } and the walker exempts those setters
         # - setter_kwargs: the accepted keyword names of a closed-signature
         #   slot lambda (`|classes: nil, &block|`) - any other keyword is an
-        #   ArgumentError at render (the artwork_carousel crash:
+        #   ArgumentError at render (e.g.
         #   `with_item(class:)`). Open signatures (**rest), positional-hash
         #   signatures, and class renderables (kwargs ride the attributes
         #   hash) are unknowable-or-open and stay unemitted.
@@ -137,8 +174,8 @@ module Poetry
         #   declares SLOT_REQUIRED_CONTENT = { setter => hint } (the
         #   SLOT_BUILDERS pattern) and the registry states the requirement
         # - required_slots: a before_render raise ("Menubar menu requires
-        #   with_trigger" - the menu crash rendered FOUR truthful
-        #   checks silent) cannot be introspected, so a slot-owning class
+        #   with_trigger" - an omission every other
+        #   check passes silently) cannot be introspected, so a slot-owning class
         #   declares REQUIRED_SLOTS = { setter => hint } and the registry
         #   states which setters a call cannot omit. Keys must resolve to a
         #   declared setter (name / singular / type) - an unresolvable key
@@ -148,8 +185,8 @@ module Poetry
         #   hand-rolled alias (NavigationMenu's with_item-or-with_link)
         #   stays undeclared - a false "missing slot" on a legitimate
         #   template is worse than a silent gap.
-        # - requires_any: the conditional any-of contracts (the two
-        #   crash classes that survived every single-fact tier: Button's
+        # - requires_any: the conditional any-of contracts no
+        #   single-fact rule can state (Button's
         #   "content OR icon slot OR loading:", Command's "id OR
         #   aria-label"). A class declares REQUIRES_ANY = [{ hint:,
         #   content: true, slots: [...], options: [...] }, ...] mirroring
@@ -166,6 +203,12 @@ module Poetry
         #   forwarders - a lambda that intercepts caller keys would make
         #   the projected contract a lie.
         class << self
+          # The registry-shaped slot contracts of one slot-owning class -
+          # see the walker notes above for every emitted key.
+          #
+          # @param klass [Class] a component or builder class
+          # @param seen [Array<Class>] the recursion guard
+          # @return [Array<Hash>]
           def slot_surface(klass, seen: [])
             return [] unless klass.respond_to?(:registered_slots)
 
@@ -173,8 +216,11 @@ module Poetry
             required_content = declared_required_content(klass)
             block_yields = declared_constant(klass, :SLOT_BLOCK_YIELDS)
             renders = declared_constant(klass, :SLOT_RENDERS)
+            slot_docs = klass.respond_to?(:slot_docs) ? klass.slot_docs : {}
             klass.registered_slots.map do |slot_name, config|
               definition = { name: slot_name, many: config[:collection] == true }
+              doc = slot_docs[slot_name.to_sym]
+              definition[:description] = doc if doc
               renderable = config[:renderable]
               definition[:component] = renderable.component_path if renderable.respond_to?(:component_path)
               # A declared pure-forwarding lambda (SLOT_RENDERS) restores

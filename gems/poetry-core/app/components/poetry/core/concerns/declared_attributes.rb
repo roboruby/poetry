@@ -16,6 +16,8 @@ module Poetry
       module DeclaredAttributes
         extend ActiveSupport::Concern
 
+        # Where ancestor walks stop: declarations above the base component
+        # class are nobody's.
         BASE_COMPONENT_CLASS = Poetry::Core::Component
 
         class_methods do
@@ -25,17 +27,33 @@ module Poetry
           # collections. Runs before any option extraction so the presence
           # of :default (static or proc) is still observable.
           #
+          # The :doc string is documentation, not an ActiveModel option - it
+          # is lifted out here (before `attribute` ever sees the hash) into
+          # the per-kind docs map that the registry and doc build project.
+          #
           # @param kind [Symbol] :style or :option
           # @param name [Symbol, String] the attribute name
           # @param options [Hash] the attribute options
           def register_declared_attribute(kind, name, options)
             declared_ivar_set(:"@_#{kind}_attributes") << name.to_sym
 
+            doc = options.delete(:doc)
+            declared_ivar_hash(:"@_#{kind}_docs")[name.to_sym] = doc if doc
+
             declared_ivar_set(:"@_#{kind}_attributes_with_defaults") << name.to_sym if options.key?(:default)
 
             return unless options[:default].is_a?(Proc)
 
             declared_ivar_hash(:"@_#{kind}_proc_defaults")[name.to_sym] = options[:default]
+          end
+
+          # The declaration docs for a kind, hierarchy-wide (nearest
+          # declaration wins).
+          #
+          # @param kind [Symbol] :style or :option
+          # @return [Hash{Symbol => String}]
+          def declared_docs(kind)
+            collect_declared_map(:"@_#{kind}_docs")
           end
 
           # Extracts the shared :default/:required options. A proc default

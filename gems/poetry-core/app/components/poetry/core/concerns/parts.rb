@@ -30,7 +30,9 @@ module Poetry
       module Parts
         extend ActiveSupport::Concern
 
+        # The kebab-case shape a declared part name (data-slot value) must match.
         PART_NAME = /\A[a-z][a-z0-9-]*\z/
+        # The data-* shape a declared state attribute must match.
         STATE_ATTRIBUTE = /\Adata-[a-z][a-z0-9-]*\z/
         # A trailing * declares a dynamic family (charts' per-series
         # --color-*), matched by prefix at verify time.
@@ -66,6 +68,10 @@ module Poetry
         end
 
         class << self
+          # Validates one `part` declaration and returns its registry-shaped
+          # hash.
+          #
+          # @api private
           def build(klass, name, description, states:, vars:)
             validate_name!(klass, name)
             unless description.is_a?(String) && !description.strip.empty?

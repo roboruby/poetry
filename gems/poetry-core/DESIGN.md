@@ -99,8 +99,8 @@ contrast_policy:
 parity:
   base: shadcn/ui v4 neutral (cssVarsV4 drop-in var set)
   deltas:
-  - 'light muted-foreground: oklch(0.545 0 0) vs shadcn''s 0.556 - darkened to clear
-    the locked WCAG AA floor (4.54:1 on muted, 4.96:1 on background; shadcn''s own
+  - 'light muted-foreground: oklch(0.545 0 0) vs the source''s 0.556 - darkened to
+    clear the locked WCAG AA floor (4.54:1 on muted, 4.96:1 on background; the source
     value is 4.34:1 on muted, sub-AA).'
 ---
 

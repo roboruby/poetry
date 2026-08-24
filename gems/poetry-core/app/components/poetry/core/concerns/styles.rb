@@ -2,6 +2,8 @@
 
 module Poetry
   module Core
+    # The concerns composed into {Poetry::Core::Component}: styles, options,
+    # slots, Stimulus wiring, introspection, and part declarations.
     module Concerns
       # The Styles concern provides a powerful DSL for defining style attributes in components.
       # It extends the basic attribute functionality with support for variants, proc defaults,
@@ -46,6 +48,8 @@ module Poetry
         extend ActiveSupport::Concern
         include DeclaredAttributes
 
+        # The naming convention joining a component to its sidecar style
+        # dictionary (Dot::Component -> Dot::Style).
         STYLE_CLASS_SUFFIX = "::Style"
 
         included do
@@ -114,6 +118,14 @@ module Poetry
           # @return [Array<Symbol>] sorted array of all style attribute names
           def style_attributes
             declared_attributes(:style)
+          end
+
+          # The doc: strings declared on this component's styles,
+          # hierarchy-wide (nearest declaration wins).
+          #
+          # @return [Hash{Symbol => String}]
+          def style_docs
+            declared_docs(:style)
           end
 
           # Checks if the given name is a defined style attribute.

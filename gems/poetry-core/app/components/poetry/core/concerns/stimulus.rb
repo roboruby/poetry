@@ -102,6 +102,9 @@ module Poetry
             stimulus_elements.values.flat_map { |element| element.wirings.map(&:identifier) }.uniq
           end
 
+          # Resolves a declaration-style identifier (Symbol suffix, String,
+          # or Array) to its full manifest identifier - see
+          # {Poetry::Core::Stimulus::Declarations.resolve_identifier}.
           def resolve_stimulus_identifier(identifier)
             Poetry::Core::Stimulus::Declarations.resolve_identifier(identifier)
           end
@@ -127,6 +130,9 @@ module Poetry
                                            .action(method, on: on, at: at)
           end
 
+          # A validated event-name string for listening markup;
+          # stimulus_event(:change) resolves across the declared
+          # controllers, stimulus_event(:controller, :change) pins one.
           def stimulus_event(*args)
             controller, name = unpack_stimulus_descriptor_args(args, :event)
             identifier = resolve_stimulus_descriptor(controller, name, kind: :event)
@@ -251,6 +257,9 @@ module Poetry
           self.class.stimulus_event(*)
         end
 
+        # Replays one declared Entry onto the element's attribute builder.
+        #
+        # @api private
         def apply_stimulus_entry(builder, entry)
           case entry.kind
           when :register then builder.register_controller
@@ -260,6 +269,10 @@ module Poetry
           end
         end
 
+        # The rendered value of a declared value entry: the literal, or the
+        # named/implicit method's return.
+        #
+        # @api private
         def stimulus_value_for(entry)
           source = entry.source
           case source[:type]
@@ -281,9 +294,14 @@ module Poetry
           true
         end
 
+        # Evaluates one if:/unless: condition in instance context.
+        #
+        # @api private
         def evaluate_stimulus_condition(condition)
           condition.is_a?(Proc) ? instance_exec(&condition) : send(condition)
         end
+
+        private :apply_stimulus_entry, :stimulus_value_for, :evaluate_stimulus_condition
       end
     end
   end
