@@ -1,7 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
 import { watchMobile } from "@poetry/controllers/helpers/breakpoint"
+import { matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { lockScroll, unlockScroll } from "@poetry/controllers/helpers/scroll_lock"
 import { setState } from "@poetry/controllers/helpers/state"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // The Sidebar state machine (desktop plus the mobile mode): expand/collapse
 // coordination for the app shell. The COLLAPSE itself is pure CSS - the
@@ -38,12 +41,14 @@ export default class SidebarController extends Controller {
 
   #onKeydown = null
   #unwatchMobile = null
+  #unsubscribeBeforeCache = null
   #isMobile = false
   #mobileOpen = false
   #closingMobile = false
-  #previousOverflow
+  #locked = false
 
   connect() {
+    this.#healRestoredSnapshot()
     // Reflect the server value to the DOM once. We do NOT drive reflection
     // off openValueChanged - Stimulus fires value callbacks asynchronously
     // (MutationObserver), so a click's DOM update would lag a frame; the
@@ -52,9 +57,22 @@ export default class SidebarController extends Controller {
 
     this.#unwatchMobile = watchMobile((mobile) => this.#mobileChanged(mobile))
 
+    // Close before Turbo snapshots (instantly - the page is being torn
+    // down anyway): an open mobile sheet serialized into the cache
+    // restores as a de-modalized zombie holding the nav children hostage
+    // over a frozen scroll lock.
+    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+      if (!this.#mobileOpen) return
+      this.#closingMobile = false
+      this.mobileDialogTarget.removeAttribute("data-ending-style")
+      setState(this.mobileDialogTarget, "closed")
+      this.#restoreMobile()
+    })
+
     this.#onKeydown = (event) => {
-      if (event.key !== this.shortcutValue) return
-      if (!(event.metaKey || event.ctrlKey)) return
+      // The full descriptor grammar (the dialog idiom): a bare metaKey||
+      // ctrlKey check also fires on stray-modifier chords (Cmd+Shift+B).
+      if (event.defaultPrevented || !matchesHotkey(event, `meta+${this.shortcutValue}`)) return
 
       event.preventDefault()
       this.toggle()
@@ -67,6 +85,9 @@ export default class SidebarController extends Controller {
     this.#onKeydown = null
     this.#unwatchMobile?.()
     this.#unwatchMobile = null
+    this.#unsubscribeBeforeCache?.()
+    this.#unsubscribeBeforeCache = null
+    this.#unlock()
   }
 
   // Action: click->poetry--core--sidebar#toggle (the trigger + the rail).
@@ -118,8 +139,7 @@ export default class SidebarController extends Controller {
     while (this.innerTarget.firstChild) this.mobileInnerTarget.appendChild(this.innerTarget.firstChild)
     this.mobileDialogTarget.showModal()
     enterPresence(this.mobileDialogTarget)
-    this.#previousOverflow = document.body.style.overflow
-    document.body.style.overflow = "hidden"
+    this.#lock()
     this.#mobileOpen = true
     this.dispatch("mobile-toggle", { detail: { open: true } })
   }
@@ -128,10 +148,7 @@ export default class SidebarController extends Controller {
   #restoreMobile() {
     this.mobileDialogTarget.close()
     while (this.mobileInnerTarget.firstChild) this.innerTarget.appendChild(this.mobileInnerTarget.firstChild)
-    if (this.#previousOverflow !== undefined) {
-      document.body.style.overflow = this.#previousOverflow
-      this.#previousOverflow = undefined
-    }
+    this.#unlock()
     this.#mobileOpen = false
     this.dispatch("mobile-toggle", { detail: { open: false } })
   }
@@ -180,5 +197,49 @@ export default class SidebarController extends Controller {
 
     document.cookie =
       `${this.cookieNameValue}=${this.openValue}; path=/; max-age=${this.cookieMaxAgeValue}; samesite=lax`
+  }
+
+  // A mobile sheet restored from a PRE-FIX cached snapshot: the open
+  // attribute survived serialization (the nav children with it), and the
+  // body's inline lock styles came back with no refcount behind them.
+  // Normalize to closed, move the children home, and clear the orphaned
+  // lock styles directly (the refcounted helper is at zero on a fresh
+  // page and must not be decremented).
+  #healRestoredSnapshot() {
+    if (!this.hasMobileDialogTarget || !this.mobileDialogTarget.open) return
+    // A genuinely modal dialog only reconnects mid-flight when its subtree
+    // is MOVED while open - leave those alone (the dialog heal's rule).
+    let modal = false
+    try {
+      modal = this.mobileDialogTarget.matches(":modal")
+    } catch {
+      modal = false
+    }
+    if (modal) return
+
+    this.mobileDialogTarget.close()
+    setState(this.mobileDialogTarget, "closed")
+    if (this.hasMobileInnerTarget && this.hasInnerTarget) {
+      while (this.mobileInnerTarget.firstChild) this.innerTarget.appendChild(this.mobileInnerTarget.firstChild)
+    }
+    document.body.style.overflow = ""
+    document.body.style.paddingRight = ""
+  }
+
+  // Shared refcounted lock with scrollbar-gutter compensation (the dialog
+  // idiom) - the instance flag keeps double-unlocks (before-cache close,
+  // then disconnect) balanced.
+  #lock() {
+    if (this.#locked) return
+
+    this.#locked = true
+    lockScroll()
+  }
+
+  #unlock() {
+    if (!this.#locked) return
+
+    this.#locked = false
+    unlockScroll()
   }
 }

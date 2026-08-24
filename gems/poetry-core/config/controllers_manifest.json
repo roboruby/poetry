@@ -202,7 +202,9 @@
       "uncheck"
     ],
     "events": [
-      "poetry--core--checked:change"
+      "poetry:checkbox:change",
+      "poetry:checked:change",
+      "poetry:switch:change"
     ]
   },
   "poetry--core--clipboard-text": {
@@ -785,6 +787,7 @@
     "classes": [],
     "methods": [
       "cancelClose",
+      "connect",
       "disconnect",
       "focusLeft",
       "keydown",

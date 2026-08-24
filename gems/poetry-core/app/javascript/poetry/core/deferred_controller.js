@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // Error isolation for deferred turbo-frames. Turbo owns the
 // loading physics (loading="lazy" fetches on visibility, "eager" after
@@ -36,6 +37,11 @@ export default class DeferredController extends Controller {
     this.element.addEventListener("turbo:frame-missing", this.#failed)
     this.element.addEventListener("turbo:fetch-request-error", this.#failed)
 
+    // Reset before Turbo snapshots: a stamped error message serialized
+    // into the cache restores as a permanent failure - the placeholder
+    // posture retries the (transient) fetch on the restoration visit.
+    this.#unsubscribeBeforeCache = onBeforeCache(() => this.#reset())
+
     if (!this.element.getAttribute("src")) this.element.setAttribute("src", this.srcValue)
   }
 
@@ -43,13 +49,12 @@ export default class DeferredController extends Controller {
     this.element.removeEventListener("turbo:before-fetch-response", this.#onResponse)
     this.element.removeEventListener("turbo:frame-missing", this.#failed)
     this.element.removeEventListener("turbo:fetch-request-error", this.#failed)
+    this.#unsubscribeBeforeCache?.()
+    this.#unsubscribeBeforeCache = null
   }
 
   retry() {
-    this.#stamped?.remove()
-    this.#stamped = null
-    this.element.removeAttribute("data-error")
-    if (this.hasPlaceholderTarget) this.placeholderTarget.hidden = false
+    this.#reset()
 
     if (typeof this.element.reload === "function") {
       this.element.reload()
@@ -81,5 +86,15 @@ export default class DeferredController extends Controller {
     }
   }
 
+  // Back to the placeholder posture (shared by retry and the
+  // before-cache teardown).
+  #reset() {
+    this.#stamped?.remove()
+    this.#stamped = null
+    this.element.removeAttribute("data-error")
+    if (this.hasPlaceholderTarget) this.placeholderTarget.hidden = false
+  }
+
   #stamped = null
+  #unsubscribeBeforeCache = null
 }

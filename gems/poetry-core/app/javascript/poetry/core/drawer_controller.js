@@ -1,4 +1,5 @@
 import DialogController from "@poetry/controllers/dialog_controller"
+import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
 
 // The Drawer: the dialog machinery + the swipe-to-dismiss gesture.
@@ -74,7 +75,8 @@ export default class DrawerController extends DialogController {
   // while focus is inside; modal drawers ride the native cancel.
   escapeClose(event) {
     if (this.modalValue) return
-    if (event.key !== "Escape" || event.defaultPrevented) return
+    // isImeKeydown: an Escape canceling IME composition must never dismiss.
+    if (event.key !== "Escape" || event.defaultPrevented || isImeKeydown(event)) return
 
     event.preventDefault()
     this.close()

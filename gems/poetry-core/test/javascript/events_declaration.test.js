@@ -20,13 +20,27 @@ const scanDispatches = (source, eventPrefix, identifier) => {
   const found = new Set()
   let count = 0
   lines.forEach((line, index) => {
+    // Hand-built window dispatches (toast_trigger's stamp) count too -
+    // they are the same manifest surface as this.dispatch.
+    for (const match of line.matchAll(/window\.dispatchEvent\(new CustomEvent\(\s*"([\w:-]+)"/g)) {
+      count += 1
+      found.add(match[1])
+    }
     for (const match of line.matchAll(/this\.dispatch\(\s*"([\w:-]+)"/g)) {
       count += 1
       const window = lines.slice(index, index + 8).join("\n")
-      const prefix = window.match(/prefix:\s*(EVENT_PREFIX|"[^"]*"|false)/)?.[1]
+      const prefix = window.match(/prefix:\s*(EVENT_PREFIX|`[^`]*`|"[^"]*"|false)/)?.[1]
       if (prefix === "EVENT_PREFIX") found.add(`${eventPrefix}:${match[1]}`)
       else if (prefix === "false") found.add(match[1])
-      else if (prefix) {
+      else if (prefix?.startsWith("`")) {
+        // A dynamic (template-literal) prefix must enumerate its real
+        // names in a module-level EVENT_PREFIXES const - the declaration,
+        // the manifest, and the portal bridge all render those.
+        const list = source.match(/const EVENT_PREFIXES = \[([^\]]*)\]/)?.[1] ?? ""
+        const prefixes = [...list.matchAll(/"([^"]+)"/g)].map((entry) => entry[1])
+        if (prefixes.length === 0) found.add(`<dynamic prefix without EVENT_PREFIXES>:${match[1]}`)
+        prefixes.forEach((dynamic) => found.add(`${dynamic}:${match[1]}`))
+      } else if (prefix) {
         const literal = prefix.slice(1, -1)
         found.add(literal ? `${literal}:${match[1]}` : match[1])
       } else found.add(`${identifier}:${match[1]}`)
@@ -45,7 +59,8 @@ describe("events declarations", () => {
       const eventPrefix = source.match(/const EVENT_PREFIX = "([^"]+)"/)?.[1]
       const scanned = scanDispatches(source, eventPrefix, identifier)
 
-      const total = (source.match(/this\.dispatch\(/g) ?? []).length
+      const total = (source.match(/this\.dispatch\(/g) ?? []).length +
+        (source.match(/window\.dispatchEvent\(new CustomEvent\(/g) ?? []).length
       expect(scanned.count, "dispatch with a non-literal event name").toBe(total)
 
       const declared = Object.hasOwn(controller, "events") ? [...controller.events].sort() : []

@@ -46,10 +46,14 @@ describe("poetry--core--sidebar", () => {
 
   beforeEach(() => {
     return async () => {
-      application?.stop()
+      // Clear the DOM while the application still OBSERVES: stop() first
+      // halts the mutation observer, so controllers never disconnect and
+      // their window listeners leak into the next test (masked before the
+      // shortcut gained the first-claim-wins defaultPrevented gate).
       document.body.replaceChildren()
-      clearCookie()
       await nextFrame()
+      application?.stop()
+      clearCookie()
     }
   })
 

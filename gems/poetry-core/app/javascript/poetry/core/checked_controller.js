@@ -24,10 +24,16 @@ import { setState, stateOf } from "@poetry/controllers/helpers/state"
 //
 // No inputId value -> pure visual mode: state lives on the button's
 // checked attributes alone (controlled-UI cases like DataTable row selection).
+// The component-flavored prefixes the dynamic dispatch below emits under
+// (data-component on the host: checkbox / switch, with the bare fallback) -
+// the events declaration, the portal bridge, and the manifest enumerate
+// these REAL names; the identifier-default name never fires here.
+const EVENT_PREFIXES = ["poetry:checkbox", "poetry:switch", "poetry:checked"]
+
 export default class CheckedController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
-  static events = ["poetry--core--checked:change"]
+  static events = EVENT_PREFIXES.map((prefix) => `${prefix}:change`)
 
   static values = {
     inputId: { type: String, default: "" }

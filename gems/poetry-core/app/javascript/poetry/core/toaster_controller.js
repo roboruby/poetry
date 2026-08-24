@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { acquire, release } from "@poetry/controllers/helpers/announce"
+import { isEditingTarget, matchesHotkey } from "@poetry/controllers/helpers/hotkey"
 import { stateOf } from "@poetry/controllers/helpers/state"
 
 // The toast viewport (one per page): the labeled role=region <ol> that is
@@ -82,7 +83,11 @@ export default class ToasterController extends Controller {
   // focus is remembered for the dismiss return.
   focusRegion(event) {
     if (event instanceof KeyboardEvent) {
-      if (event.key !== this.hotkeyValue) return
+      // The full descriptor grammar + the editing-target rule (the hotkey
+      // controller's idiom): a bare key comparison fires on stray-modifier
+      // chords and while the user types in a field.
+      if (event.defaultPrevented || !matchesHotkey(event, this.hotkeyValue)) return
+      if (isEditingTarget(event) && !(event.metaKey || event.ctrlKey || event.altKey)) return
 
       event.preventDefault()
     }

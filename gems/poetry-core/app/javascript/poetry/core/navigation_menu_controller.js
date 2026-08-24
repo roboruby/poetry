@@ -1,7 +1,8 @@
 import { Controller } from "@hotwired/stimulus"
 import { isImeKeydown } from "@poetry/controllers/helpers/escape"
 import { setState } from "@poetry/controllers/helpers/state"
-import { enterPresence, exitPresence } from "@poetry/controllers/helpers/presence"
+import { enterPresence, exitPresence, flushPendingExits } from "@poetry/controllers/helpers/presence"
+import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
 // The NavigationMenu coordinator (the viewport=false mode): a
 // DISCLOSURE BAR, not a menu - Tab moves through triggers and links
@@ -42,11 +43,28 @@ export default class NavigationMenuController extends Controller {
   #timer = null
   #cancelExit = new Map() // value -> abandon-this-panel's-exit (per panel, not global)
   #onOutsidePress = null
+  #unsubscribeBeforeCache = null
   #sizeGeneration = 0
+
+  connect() {
+    // Close before Turbo snapshots: an open panel serialized into the
+    // cache restores with data-open (viewport-mode panels also serialize
+    // adopted into the shared viewport). The explicit flush completes the
+    // exit THIS close just started, regardless of listener order (the
+    // dismissable layer's pattern).
+    this.#unsubscribeBeforeCache = onBeforeCache(() => {
+      if (this.#openValue === null) return
+      this.#clearTimer()
+      this.#close()
+      flushPendingExits()
+    })
+  }
 
   disconnect() {
     this.#clearTimer()
     this.#unbindOutsidePress()
+    this.#unsubscribeBeforeCache?.()
+    this.#unsubscribeBeforeCache = null
   }
 
   // Action: click->...#toggle on each trigger - immediate, cancels intent.
@@ -334,7 +352,14 @@ export default class NavigationMenuController extends Controller {
     if (this.#onOutsidePress) return
 
     this.#onOutsidePress = (event) => {
-      if (event.target instanceof Element && this.element.contains(event.target)) return
+      // The dismissable layer's press rules: a disconnected target says
+      // nothing about WHERE the press landed (the false-dismiss class);
+      // composedPath is fixed at dispatch, so a press on a node an inner
+      // handler removed still counts as inside; and the top layer
+      // (toasts) sits above every dismissal surface by fiat.
+      if (!(event.target instanceof Element) || !event.target.isConnected) return
+      if (event.composedPath().includes(this.element)) return
+      if (event.target.closest("[data-poetry-top-layer]")) return
 
       this.#clearTimer()
       this.#close()
