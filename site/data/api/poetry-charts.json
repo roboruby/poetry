@@ -117,7 +117,7 @@
       "path": "Poetry::Charts::AdapterChart::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "The BYO-engine mount: `poetry_chart :bar, engine:\n\"chartjs\", ...` renders the Container frame (theming intact), a\nmount element, and the FROZEN chart-spec v1 - the registered\nadapter draws whatever it likes inside. The seam is deliberately\nwhole-chart coarse: the compositional slot grammar belongs to the\ndefault engine; adapters consume the closed spec via series:/axes:\narguments.",
+      "docstring": "The BYO-engine mount: `poetry_chart :bar, engine:\n\"chartjs\", ...` renders the Container frame (theming intact), a\nmount element, and the FROZEN chart-spec v1 - the registered\nadapter draws whatever it likes inside. The seam is deliberately\nwhole-chart coarse: the compositional slot grammar belongs to the\ndefault engine; adapters consume the closed spec via series:/axes:\narguments.\n\n**Anatomy** (`data-slot` parts):\n\n- `chart-adapter-mount` - The engine's drawing surface (role=img carrying the accessible label) - the registered adapter renders into it\n- `chart-spec` - The frozen chart-spec v1, served as JSON in an application/json script for the adapter to consume",
       "examples": [
         {
           "title": "",
@@ -131,7 +131,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The axis config ({ x:, y: } hashes), also spec-carried.\n\nConstructor option `axes:`.",
+          "docstring": "Constructor option `axes:`.",
           "params": [],
           "return": {
             "types": [
@@ -141,52 +141,18 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 60
+          "line": 56
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 55
-        },
-        {
-          "name": "data",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "The rows to plot, serialized into the spec.\n\nConstructor option `data:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Object"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 52
-        },
-        {
-          "name": "engine",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "The registered adapter's name; the controller hands it the\nmount and the spec.\n\nConstructor option `engine:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "String"
             ],
             "text": ""
           },
@@ -195,45 +161,11 @@
           "line": 50
         },
         {
-          "name": "id",
+          "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "String"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 63
-        },
-        {
-          "name": "label",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "Accessible name for the mount; defaults to one built from the\ntype and engine.\n\nConstructor option `label:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "String"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 66
-        },
-        {
-          "name": "series",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "The series list ({ data_key:, ... } hashes) - the closed spec's\nreplacement for slots.\n\nConstructor option `series:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -243,14 +175,82 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 58
+          "line": 49
+        },
+        {
+          "name": "engine",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `engine:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/adapter_chart/component.rb",
+          "line": 47
+        },
+        {
+          "name": "id",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `id:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/adapter_chart/component.rb",
+          "line": 57
+        },
+        {
+          "name": "label",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `label:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/adapter_chart/component.rb",
+          "line": 59
+        },
+        {
+          "name": "series",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `series:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/adapter_chart/component.rb",
+          "line": 53
         },
         {
           "name": "type",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The chart type carried in the spec (see Spec::TYPES).\n\nConstructor option `type:`.",
+          "docstring": "Constructor option `type:`.",
           "params": [],
           "return": {
             "types": [
@@ -260,7 +260,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
-          "line": 47
+          "line": 46
         }
       ],
       "constants": [
@@ -295,7 +295,7 @@
       "path": "Poetry::Charts::AreaChart::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "Renders an area chart - filled trends over an ordered axis,\noptionally stacked - as server-computed SVG through the Cartesian\npipeline: the finished chart is in the initial HTML. Slots\ncompose the whole chart declaratively: grid, axes, series,\nlegend, tooltip.\n\nSeries colors ride var(--color-<key>) (the Container emission);\nper-x pixel coordinates are embedded for the tooltip controller.\n\n**Anatomy** (`data-slot` parts):\n\n- `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches\n- `chart-motion-reveal` - The entrance clipPath rect (recharts' area reveal) - the motion stylesheet scales it 0 -> 1; only when animate\n- `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot\n- `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)\n- `chart-areas` - The area-mark group - a fill path plus top-curve stroke per series, clipped by the reveal rect while animating\n- `chart-area` - One series' fill path (var(--color-<key>) or its gradient)\n- `chart-area-stroke` - One series' top-curve stroke path (recharts strokes the curve, never the area outline)\n- `chart-active-dots` - The hover-marker group (with_tooltip) - pre-rendered hidden circles for every series x index\n- `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot\n- `chart-x-axis` - The x-axis tick-label group (with_x_axis)\n- `chart-y-axis` - The y-axis tick-label group (with_y_axis)\n- `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser",
+      "docstring": "Renders an area chart - filled trends over an ordered axis,\noptionally stacked - as server-computed SVG through the Cartesian\npipeline: the finished chart is in the initial HTML. Slots\ncompose the whole chart declaratively: grid, axes, series,\nlegend, tooltip.\n\nSeries colors ride var(--color-<key>) (the Container emission);\nper-x pixel coordinates are embedded for the tooltip controller.\n\n**Anatomy** (`data-slot` parts):\n\n- `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches\n- `chart-motion-reveal` - The entrance clipPath rect (the ported area reveal) - the motion stylesheet scales it 0 -> 1; only when animate\n- `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot\n- `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)\n- `chart-areas` - The area-mark group - a fill path plus top-curve stroke per series, clipped by the reveal rect while animating\n- `chart-area` - One series' fill path (var(--color-<key>) or its gradient)\n- `chart-area-stroke` - One series' top-curve stroke path (the source strokes the curve, never the area outline)\n- `chart-active-dots` - The hover-marker group (with_tooltip) - pre-rendered hidden circles for every series x index\n- `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot\n- `chart-x-axis` - The x-axis tick-label group (with_x_axis)\n- `chart-y-axis` - The y-axis tick-label group (with_y_axis)\n- `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser",
       "examples": [
         {
           "title": "Two stacked series with a formatted month axis",
@@ -309,7 +309,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "An area series bound to data_key:. Areas sharing a stack: id\npile up; gradient: true fades the fill; curve: picks the\ninterpolation.\n\nSlot collection: the rendered `areas` set.",
+          "docstring": "An area series bound to data_key:. Areas sharing a stack: id pile up; gradient: true fades the fill; curve: picks the interpolation.\n\nSlot collection: the rendered `areas` set.",
           "params": [],
           "return": {
             "types": [
@@ -319,14 +319,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 120
+          "line": 113
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -336,14 +336,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 49
+          "line": 47
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -353,14 +353,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 46
+          "line": 45
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -370,14 +370,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 57
+          "line": 54
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -387,14 +387,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 52
+          "line": 50
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -404,14 +404,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 66
+          "line": 59
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }),\nmerged over the defaults.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -421,14 +421,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 60
+          "line": 55
         },
         {
           "name": "offset",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Stack baseline mode - :expand normalizes each stack to\npercentages.\n\nConstructor option `offset:`.",
+          "docstring": "Constructor option `offset:`.",
           "params": [],
           "return": {
             "types": [
@@ -438,14 +438,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 63
+          "line": 57
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -455,14 +455,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 55
+          "line": 52
         },
         {
           "name": "with_area",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "An area series bound to data_key:. Areas sharing a stack: id\npile up; gradient: true fades the fill; curve: picks the\ninterpolation.\n\nSlot writer for the `areas` slot (repeatable).",
+          "docstring": "An area series bound to data_key:. Areas sharing a stack: id pile up; gradient: true fades the fill; curve: picks the interpolation.\n\nSlot writer for the `areas` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -472,7 +472,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
-          "line": 120
+          "line": 113
         }
       ],
       "constants": [
@@ -743,14 +743,14 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 145
+          "line": 137
         },
         {
           "name": "bar_category_gap",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Band trim on each side: a percent string of the band width, or\na bare pixel number.\n\nConstructor option `bar_category_gap:`.",
+          "docstring": "Constructor option `bar_category_gap:`.",
           "params": [],
           "return": {
             "types": [
@@ -760,14 +760,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 78
+          "line": 69
         },
         {
           "name": "bar_gap",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Pixels between side-by-side bars inside one category band.\n\nConstructor option `bar_gap:`.",
+          "docstring": "Constructor option `bar_gap:`.",
           "params": [],
           "return": {
             "types": [
@@ -777,14 +777,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 75
+          "line": 68
         },
         {
           "name": "bars",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A bar series bound to data_key:. Bars sharing a stack: id pile\nup; radius: rounds corners; labels:/label_key: stamp values;\ncolor_key:/cell_fill: color per cell; active_index: highlights\none bar; error_key: adds whiskers.\n\nSlot collection: the rendered `bars` set.",
+          "docstring": "A bar series bound to data_key:. Bars sharing a stack: id pile up; radius: rounds corners; labels:/label_key: stamp values; color_key:/cell_fill: color per cell; active_index: highlights one bar; error_key: adds whiskers.\n\nSlot collection: the rendered `bars` set.",
           "params": [],
           "return": {
             "types": [
@@ -794,14 +794,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 132
+          "line": 124
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -811,14 +811,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 53
+          "line": 51
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one per category.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -828,14 +828,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 50
+          "line": 49
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -845,14 +845,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 61
+          "line": 58
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -862,14 +862,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 56
+          "line": 54
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -879,69 +879,18 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 70
+          "line": 63
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }),\nmerged over the defaults.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 64
-        },
-        {
-          "name": "offset",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "Stack baseline mode - :expand normalizes each stack to\npercentages.\n\nConstructor option `offset:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 67
-        },
-        {
-          "name": "orientation",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": ":vertical = columns (the default); :horizontal = bars growing\nrightward - the category axis moves to the Y side\n(with_y_axis data_key:) and the numeric axis hides.\n\nConstructor option `orientation:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Symbol"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 82
-        },
-        {
-          "name": "width",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Integer"
             ],
             "text": ""
           },
@@ -950,11 +899,62 @@
           "line": 59
         },
         {
+          "name": "offset",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `offset:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/bar_chart/component.rb",
+          "line": 61
+        },
+        {
+          "name": "orientation",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `orientation:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Symbol"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/bar_chart/component.rb",
+          "line": 72
+        },
+        {
+          "name": "width",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `width:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Integer"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/bar_chart/component.rb",
+          "line": 56
+        },
+        {
           "name": "with_bar",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A bar series bound to data_key:. Bars sharing a stack: id pile\nup; radius: rounds corners; labels:/label_key: stamp values;\ncolor_key:/cell_fill: color per cell; active_index: highlights\none bar; error_key: adds whiskers.\n\nSlot writer for the `bars` slot (repeatable).",
+          "docstring": "A bar series bound to data_key:. Bars sharing a stack: id pile up; radius: rounds corners; labels:/label_key: stamp values; color_key:/cell_fill: color per cell; active_index: highlights one bar; error_key: adds whiskers.\n\nSlot writer for the `bars` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -964,7 +964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
-          "line": 132
+          "line": 124
         }
       ],
       "constants": [
@@ -1945,7 +1945,7 @@
       "path": "Poetry::Charts::ComposedChart::Component",
       "type": "class",
       "superclass": "Poetry::Core::Component",
-      "docstring": "Renders a composed chart: area, bar, and line marks on ONE\nshared cartesian. All mark slots push into a single accumulator,\nso slot declaration order IS paint order. The x scale is always a\nband (bars need one; lines and areas ride the band centers), the\ny domain is shared across every mark, and stack ids are\nnamespaced per mark type so an area stack can never co-stack\nwith a bar stack by accident.\n\n**Anatomy** (`data-slot` parts):\n\n- `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches\n- `chart-motion-reveal` - The entrance clipPath rect (recharts' area reveal) - the motion stylesheet scales it 0 -> 1; only when animate\n- `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot\n- `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)\n- `chart-areas` - The area-mark group - a fill path plus top-curve stroke per series, clipped by the reveal rect while animating\n- `chart-area` - One series' fill path (var(--color-<key>) or its gradient)\n- `chart-area-stroke` - One series' top-curve stroke path (recharts strokes the curve, never the area outline)\n- `chart-bar-series` - One series' bar group\n- `chart-bar` - One bar cell (a per-corner rounded-rect path)\n- `chart-lines` - The line-mark group - each series' curve plus its companion marks\n- `chart-line` - One series' stroked curve - pathLength=1 when animating so the dash draw-in needs no measurement\n- `chart-dots` - One series' point-dot group (dots: true)\n- `chart-dot` - One point dot (<circle>)\n- `chart-active-dots` - The hover-marker group (with_tooltip) - pre-rendered hidden circles for every series x index\n- `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot\n- `chart-x-axis` - The x-axis tick-label group (with_x_axis)\n- `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser",
+      "docstring": "Renders a composed chart: area, bar, and line marks on ONE\nshared cartesian. All mark slots push into a single accumulator,\nso slot declaration order IS paint order. The x scale is always a\nband (bars need one; lines and areas ride the band centers), the\ny domain is shared across every mark, and stack ids are\nnamespaced per mark type so an area stack can never co-stack\nwith a bar stack by accident.\n\n**Anatomy** (`data-slot` parts):\n\n- `chart-svg` - The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; role=img, or the focusable role=application accessibilityLayer when the tooltip attaches\n- `chart-motion-reveal` - The entrance clipPath rect (the ported area reveal) - the motion stylesheet scales it 0 -> 1; only when animate\n- `chart-grid` - The gridline group (with_grid) - horizontal and/or vertical rules across the plot\n- `chart-cursor` - The hover cursor, hidden until the tooltip controller positions and reveals it at the active index - a vertical rule or a translucent band rect (bar charts)\n- `chart-areas` - The area-mark group - a fill path plus top-curve stroke per series, clipped by the reveal rect while animating\n- `chart-area` - One series' fill path (var(--color-<key>) or its gradient)\n- `chart-area-stroke` - One series' top-curve stroke path (the source strokes the curve, never the area outline)\n- `chart-bar-series` - One series' bar group\n- `chart-bar` - One bar cell (a per-corner rounded-rect path)\n- `chart-lines` - The line-mark group - each series' curve plus its companion marks\n- `chart-line` - One series' stroked curve - pathLength=1 when animating so the dash draw-in needs no measurement\n- `chart-dots` - One series' point-dot group (dots: true)\n- `chart-dot` - One point dot (<circle>)\n- `chart-active-dots` - The hover-marker group (with_tooltip) - pre-rendered hidden circles for every series x index\n- `chart-active-dot` - One hover marker - display=none until the tooltip controller reveals the active index's dot\n- `chart-x-axis` - The x-axis tick-label group (with_x_axis)\n- `chart-coordinates` - The embedded per-index geometry payload (<script type=application/json>) the tooltip controller reads - zero chart math in the browser",
       "examples": [
         {
           "title": "Bars with a trend line on one plot",
@@ -1959,7 +1959,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "An area mark bound to data_key:; areas sharing a stack: id pile\nup (area stacks never join bar stacks).\n\nSlot collection: the rendered `areas` set.",
+          "docstring": "An area mark bound to data_key:; areas sharing a stack: id pile up (area stacks never join bar stacks).\n\nSlot collection: the rendered `areas` set.",
           "params": [],
           "return": {
             "types": [
@@ -1969,14 +1969,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 136
+          "line": 130
         },
         {
           "name": "bar_category_gap",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Band trim on each side: a percent string of the band width, or\na bare pixel number.\n\nConstructor option `bar_category_gap:`.",
+          "docstring": "Constructor option `bar_category_gap:`.",
           "params": [],
           "return": {
             "types": [
@@ -1986,14 +1986,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 71
+          "line": 63
         },
         {
           "name": "bar_gap",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Pixels between side-by-side bars inside one category band.\n\nConstructor option `bar_gap:`.",
+          "docstring": "Constructor option `bar_gap:`.",
           "params": [],
           "return": {
             "types": [
@@ -2003,14 +2003,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 68
+          "line": 62
         },
         {
           "name": "bars",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A bar mark bound to data_key:; radius: rounds corners; bars\nsharing a stack: id pile up within the bar marks.\n\nSlot collection: the rendered `bars` set.",
+          "docstring": "A bar mark bound to data_key:; radius: rounds corners; bars sharing a stack: id pile up within the bar marks.\n\nSlot collection: the rendered `bars` set.",
           "params": [],
           "return": {
             "types": [
@@ -2020,14 +2020,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 144
+          "line": 138
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -2037,14 +2037,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 50
+          "line": 48
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -2054,14 +2054,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 47
+          "line": 46
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -2071,14 +2071,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 58
+          "line": 55
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -2088,14 +2088,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 53
+          "line": 51
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -2105,7 +2105,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 64
+          "line": 58
         },
         {
           "name": "lines",
@@ -2122,14 +2122,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 149
+          "line": 143
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }),\nmerged over the defaults.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -2139,14 +2139,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 61
+          "line": 56
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -2156,14 +2156,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 56
+          "line": 53
         },
         {
           "name": "with_area",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "An area mark bound to data_key:; areas sharing a stack: id pile\nup (area stacks never join bar stacks).\n\nSlot writer for the `areas` slot (repeatable).",
+          "docstring": "An area mark bound to data_key:; areas sharing a stack: id pile up (area stacks never join bar stacks).\n\nSlot writer for the `areas` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -2173,14 +2173,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 136
+          "line": 130
         },
         {
           "name": "with_bar",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A bar mark bound to data_key:; radius: rounds corners; bars\nsharing a stack: id pile up within the bar marks.\n\nSlot writer for the `bars` slot (repeatable).",
+          "docstring": "A bar mark bound to data_key:; radius: rounds corners; bars sharing a stack: id pile up within the bar marks.\n\nSlot writer for the `bars` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -2190,7 +2190,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 144
+          "line": 138
         },
         {
           "name": "with_line",
@@ -2207,7 +2207,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
-          "line": 149
+          "line": 143
         }
       ],
       "constants": [
@@ -2792,7 +2792,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - driving the\nper-series color emission.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -2802,14 +2802,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/container/component.rb",
-          "line": 29
+          "line": 27
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nframe gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -2819,7 +2819,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/container/component.rb",
-          "line": 32
+          "line": 30
         }
       ],
       "constants": [
@@ -4149,7 +4149,7 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Which chart edge the legend sits on: :top pads below it,\n:bottom (the default) pads above. A style axis, not an option -\noptions silently drop the dictionary's variant classes.\n\nStyle axis `align:`.",
+          "docstring": "Style axis `align:`.",
           "params": [],
           "return": {
             "types": [
@@ -4159,14 +4159,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
-          "line": 24
+          "line": 21
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - the default\nitem source.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -4176,35 +4176,18 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
-          "line": 28
+          "line": 26
         },
         {
           "name": "hide_icon",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Hides the color swatches, leaving labels only.\n\nConstructor option `hide_icon:`.",
+          "docstring": "Constructor option `hide_icon:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/legend_content/component.rb",
-          "line": 33
-        },
-        {
-          "name": "items",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "Explicit entries ([{ key:, name:, color: }]) overriding the\nconfig-derived list.\n\nConstructor option `items:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Object"
             ],
             "text": ""
           },
@@ -4213,11 +4196,28 @@
           "line": 31
         },
         {
+          "name": "items",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `items:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/legend_content/component.rb",
+          "line": 29
+        },
+        {
           "name": "toggle",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Interactive legend: items render as buttons that toggle\ntheir series through the live controller (the host chart guards\nthat live: is on).\n\nConstructor option `toggle:`.",
+          "docstring": "Constructor option `toggle:`.",
           "params": [],
           "return": {
             "types": [
@@ -4227,7 +4227,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
-          "line": 37
+          "line": 32
         }
       ],
       "constants": [
@@ -4276,7 +4276,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -4286,14 +4286,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 49
+          "line": 47
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -4303,14 +4303,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 46
+          "line": 45
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -4320,14 +4320,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 57
+          "line": 54
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -4337,14 +4337,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 52
+          "line": 50
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -4354,14 +4354,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 63
+          "line": 57
         },
         {
           "name": "lines",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A line series bound to data_key:. dots: marks each point;\ndot_color_key: reads per-point dot colors from the row;\nlabels: stamps each value above its point; error_key: adds\nerror whiskers.\n\nSlot collection: the rendered `lines` set.",
+          "docstring": "A line series bound to data_key:. dots: marks each point; dot_color_key: reads per-point dot colors from the row; labels: stamps each value above its point; error_key: adds error whiskers.\n\nSlot collection: the rendered `lines` set.",
           "params": [],
           "return": {
             "types": [
@@ -4371,14 +4371,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 120
+          "line": 114
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }),\nmerged over the defaults.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -4388,14 +4388,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 60
+          "line": 55
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -4405,14 +4405,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 55
+          "line": 52
         },
         {
           "name": "with_line",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A line series bound to data_key:. dots: marks each point;\ndot_color_key: reads per-point dot colors from the row;\nlabels: stamps each value above its point; error_key: adds\nerror whiskers.\n\nSlot writer for the `lines` slot (repeatable).",
+          "docstring": "A line series bound to data_key:. dots: marks each point; dot_color_key: reads per-point dot colors from the row; labels: stamps each value above its point; error_key: adds error whiskers.\n\nSlot writer for the `lines` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -4422,13 +4422,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
-          "line": 120
+          "line": 114
         }
       ],
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.\",\n  \"Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.\",\n  \"d",
+          "value": "[\n  \"Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.\",\n  \"Lines default to stroke-width 2 and NO dots (the ported block look); dots: true adds them.\",\n  \"d",
           "docstring": "Projected into the registry and agent surface."
         },
         {
@@ -4742,7 +4742,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/motion.rb",
-          "line": 84
+          "line": 81
         }
       ],
       "constants": [
@@ -4819,31 +4819,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 119
+          "line": 113
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - name => { label:, color: } - naming and\ncoloring the slices.\n\nConstructor option `config:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Object"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 48
-        },
-        {
-          "name": "data",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "Default rows for pies that don't bring their own data: - one\nhash per slice.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -4856,11 +4839,28 @@
           "line": 45
         },
         {
+          "name": "data",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `data:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/pie_chart/component.rb",
+          "line": 43
+        },
+        {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -4870,14 +4870,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 56
+          "line": 52
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -4887,14 +4887,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 51
+          "line": 48
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -4904,7 +4904,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 62
+          "line": 55
         },
         {
           "name": "legend",
@@ -4921,14 +4921,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 125
+          "line": 119
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged\nover the slim polar default.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -4938,14 +4938,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 59
+          "line": 53
         },
         {
           "name": "pies",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "One ring of slices reading data_key: values and name_key: slice\nnames. inner_radius: makes the donut; padding_angle: spaces the\nslices; active_index: pops one out by active_grow: pixels.\n\nSlot collection: the rendered `pies` set.",
+          "docstring": "One ring of slices reading data_key: values and name_key: slice names. inner_radius: makes the donut; padding_angle: spaces the slices; active_index: pops one out by active_grow: pixels.\n\nSlot collection: the rendered `pies` set.",
           "params": [],
           "return": {
             "types": [
@@ -4955,14 +4955,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 104
+          "line": 98
         },
         {
           "name": "tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip; the slice name carries the label, so\nhide_label defaults on.\n\nSlot: the rendered `tooltip` content.",
+          "docstring": "The hover tooltip; the slice name carries the label, so hide_label defaults on.\n\nSlot: the rendered `tooltip` content.",
           "params": [],
           "return": {
             "types": [
@@ -4972,14 +4972,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 132
+          "line": 125
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -4989,7 +4989,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 54
+          "line": 50
         },
         {
           "name": "with_center_label",
@@ -5006,7 +5006,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 119
+          "line": 113
         },
         {
           "name": "with_legend",
@@ -5023,14 +5023,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 125
+          "line": 119
         },
         {
           "name": "with_pie",
           "scope": "instance",
           "group": null,
           "signature": "",
-          "docstring": "One ring of slices reading data_key: values and name_key: slice\nnames. inner_radius: makes the donut; padding_angle: spaces the\nslices; active_index: pops one out by active_grow: pixels.\n\nSlot writer for the `pies` slot (repeatable).\nActiveSupport singularizes \"pies\" to \"py\" - give the grammar its\nreal name.",
+          "docstring": "One ring of slices reading data_key: values and name_key: slice names. inner_radius: makes the donut; padding_angle: spaces the slices; active_index: pops one out by active_grow: pixels.\n\nSlot writer for the `pies` slot (repeatable).\nActiveSupport singularizes \"pies\" to \"py\" - give the grammar its\nreal name.",
           "params": [],
           "return": {
             "types": [
@@ -5040,14 +5040,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 116
+          "line": 110
         },
         {
           "name": "with_py",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "One ring of slices reading data_key: values and name_key: slice\nnames. inner_radius: makes the donut; padding_angle: spaces the\nslices; active_index: pops one out by active_grow: pixels.\n\nSlot writer for the `pies` slot (repeatable).",
+          "docstring": "One ring of slices reading data_key: values and name_key: slice names. inner_radius: makes the donut; padding_angle: spaces the slices; active_index: pops one out by active_grow: pixels.\n\nSlot writer for the `pies` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -5057,14 +5057,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 104
+          "line": 98
         },
         {
           "name": "with_tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip; the slice name carries the label, so\nhide_label defaults on.\n\nSlot writer for the `tooltip` slot.",
+          "docstring": "The hover tooltip; the slice name carries the label, so hide_label defaults on.\n\nSlot writer for the `tooltip` slot.",
           "params": [],
           "return": {
             "types": [
@@ -5074,7 +5074,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 132
+          "line": 125
         }
       ],
       "constants": [
@@ -5343,7 +5343,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "fill",
@@ -5360,7 +5360,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "index",
@@ -5377,7 +5377,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "inner",
@@ -5394,7 +5394,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "label_point",
@@ -5411,7 +5411,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "mid_angle",
@@ -5428,7 +5428,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "middle_radius",
@@ -5445,7 +5445,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "name",
@@ -5462,7 +5462,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "outer",
@@ -5479,7 +5479,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "path",
@@ -5496,7 +5496,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "start_angle",
@@ -5513,7 +5513,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         },
         {
           "name": "value",
@@ -5530,7 +5530,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
-          "line": 171
+          "line": 164
         }
       ],
       "constants": []
@@ -5735,7 +5735,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The category labels around the rim: data_key: names the field;\ntick_formatter: reshapes each label.\n\nSlot: the rendered `angle_axis` content.",
+          "docstring": "The category labels around the rim: data_key: names the field; tick_formatter: reshapes each label.\n\nSlot: the rendered `angle_axis` content.",
           "params": [],
           "return": {
             "types": [
@@ -5745,14 +5745,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 118
+          "line": 114
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -5762,14 +5762,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 51
+          "line": 49
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one per category.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -5779,14 +5779,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 48
+          "line": 47
         },
         {
           "name": "grid",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The polar grid: type: :circle swaps polygons for circles;\nradial_lines: false drops the spokes; fill: tints every ring\nwith a series color at opacity:.\n\nSlot: the rendered `grid` content.",
+          "docstring": "The polar grid: type: :circle swaps polygons for circles; radial_lines: false drops the spokes; fill: tints every ring with a series color at opacity:.\n\nSlot: the rendered `grid` content.",
           "params": [],
           "return": {
             "types": [
@@ -5796,14 +5796,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 126
+          "line": 121
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -5813,14 +5813,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 59
+          "line": 56
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -5830,14 +5830,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 54
+          "line": 52
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -5847,7 +5847,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 65
+          "line": 59
         },
         {
           "name": "legend",
@@ -5864,14 +5864,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 132
+          "line": 127
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged\nover the slim polar default.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -5881,14 +5881,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 62
+          "line": 57
         },
         {
           "name": "outer_radius",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rim radius: a percent string of the max radius, or pixels.\n\nConstructor option `outer_radius:`.",
+          "docstring": "Constructor option `outer_radius:`.",
           "params": [],
           "return": {
             "types": [
@@ -5898,14 +5898,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 69
+          "line": 63
         },
         {
           "name": "radars",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A radar series bound to data_key:. fill_opacity: 0 with\nstroke_width: 2 draws lines only; dots: marks every vertex.\n\nSlot collection: the rendered `radars` set.",
+          "docstring": "A radar series bound to data_key:. fill_opacity: 0 with stroke_width: 2 draws lines only; dots: marks every vertex.\n\nSlot collection: the rendered `radars` set.",
           "params": [],
           "return": {
             "types": [
@@ -5915,7 +5915,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 110
+          "line": 106
         },
         {
           "name": "tooltip",
@@ -5932,14 +5932,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 138
+          "line": 133
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -5949,14 +5949,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 57
+          "line": 54
         },
         {
           "name": "with_angle_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The category labels around the rim: data_key: names the field;\ntick_formatter: reshapes each label.\n\nSlot writer for the `angle_axis` slot.",
+          "docstring": "The category labels around the rim: data_key: names the field; tick_formatter: reshapes each label.\n\nSlot writer for the `angle_axis` slot.",
           "params": [],
           "return": {
             "types": [
@@ -5966,14 +5966,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 118
+          "line": 114
         },
         {
           "name": "with_grid",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The polar grid: type: :circle swaps polygons for circles;\nradial_lines: false drops the spokes; fill: tints every ring\nwith a series color at opacity:.\n\nSlot writer for the `grid` slot.",
+          "docstring": "The polar grid: type: :circle swaps polygons for circles; radial_lines: false drops the spokes; fill: tints every ring with a series color at opacity:.\n\nSlot writer for the `grid` slot.",
           "params": [],
           "return": {
             "types": [
@@ -5983,7 +5983,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 126
+          "line": 121
         },
         {
           "name": "with_legend",
@@ -6000,14 +6000,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 132
+          "line": 127
         },
         {
           "name": "with_radar",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A radar series bound to data_key:. fill_opacity: 0 with\nstroke_width: 2 draws lines only; dots: marks every vertex.\n\nSlot writer for the `radars` slot (repeatable).",
+          "docstring": "A radar series bound to data_key:. fill_opacity: 0 with stroke_width: 2 draws lines only; dots: marks every vertex.\n\nSlot writer for the `radars` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -6017,7 +6017,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 110
+          "line": 106
         },
         {
           "name": "with_tooltip",
@@ -6034,7 +6034,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
-          "line": 138
+          "line": 133
         }
       ],
       "constants": [
@@ -6290,7 +6290,7 @@
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The center text: a title line plus an optional subtitle. The\ndefault is the full gauge's big centered number; compact:\nshrinks it and sits it just above a half gauge's flat baseline.\n\nSlot: the rendered `center_label` content.",
+          "docstring": "The center text: a title line plus an optional subtitle. The default is the full gauge's big centered number; compact: shrinks it and sits it just above a half gauge's flat baseline.\n\nSlot: the rendered `center_label` content.",
           "params": [],
           "return": {
             "types": [
@@ -6300,14 +6300,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 147
+          "line": 136
         },
         {
           "name": "config",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - name => { label:, color: } - naming and\ncoloring the rings.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -6317,14 +6317,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 48
+          "line": 46
         },
         {
           "name": "data",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows to plot: an array of hashes, one ring per row.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -6334,14 +6334,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 45
+          "line": 44
         },
         {
           "name": "end_angle",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Where the sweep ends - 180 makes a half gauge.\n\nConstructor option `end_angle:`.",
+          "docstring": "Constructor option `end_angle:`.",
           "params": [],
           "return": {
             "types": [
@@ -6351,14 +6351,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 70
+          "line": 62
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -6368,14 +6368,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 56
+          "line": 53
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -6385,14 +6385,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 51
+          "line": 49
         },
         {
           "name": "inner_radius",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The innermost ring edge: a percent string of the max radius, or\npixels.\n\nConstructor option `inner_radius:`.",
+          "docstring": "Constructor option `inner_radius:`.",
           "params": [],
           "return": {
             "types": [
@@ -6402,14 +6402,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 73
+          "line": 63
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -6419,7 +6419,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 62
+          "line": 56
         },
         {
           "name": "legend",
@@ -6436,14 +6436,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 153
+          "line": 142
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged\nover the slim polar default.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -6453,14 +6453,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 59
+          "line": 54
         },
         {
           "name": "max_value",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The angle-axis maximum: nil = the largest single value, so the\nlargest ring closes the full sweep EXACTLY (nicing it would\nleave a notch); stacked gauges pass the stack total when the\nsegments should fill the span.\n\nConstructor option `max_value:`.",
+          "docstring": "Constructor option `max_value:`.",
           "params": [],
           "return": {
             "types": [
@@ -6470,14 +6470,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 81
+          "line": 69
         },
         {
           "name": "name_key",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The row key naming each ring.\n\nConstructor option `name_key:`.",
+          "docstring": "Constructor option `name_key:`.",
           "params": [],
           "return": {
             "types": [
@@ -6487,14 +6487,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 66
+          "line": 60
         },
         {
           "name": "outer_radius",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The outermost ring edge: a percent string of the max radius, or\npixels.\n\nConstructor option `outer_radius:`.",
+          "docstring": "Constructor option `outer_radius:`.",
           "params": [],
           "return": {
             "types": [
@@ -6504,14 +6504,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 76
+          "line": 66
         },
         {
           "name": "polar_grid",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The disc track behind the rings: radii: places the circles\n(default: each ring's centerline), fills: tints them, and\nradial_lines: draws the faint value spokes that show through\nring gaps and the open wedge (on by default; gauges turn them\noff).\n\nSlot: the rendered `polar_grid` content.",
+          "docstring": "The disc track behind the rings: radii: places the circles (default: each ring's centerline), fills: tints them, and radial_lines: draws the faint value spokes that show through ring gaps and the open wedge (on by default; gauges turn them off).\n\nSlot: the rendered `polar_grid` content.",
           "params": [],
           "return": {
             "types": [
@@ -6521,14 +6521,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 139
+          "line": 128
         },
         {
           "name": "radial_bars",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A radial series reading data_key: values. background: draws the\nmuted track ring; bars sharing a stack: id share the ring and\nstack by angle; corner_radius: rounds the arc ends.\n\nSlot collection: the rendered `radial_bars` set.",
+          "docstring": "A radial series reading data_key: values. background: draws the muted track ring; bars sharing a stack: id share the ring and stack by angle; corner_radius: rounds the arc ends.\n\nSlot collection: the rendered `radial_bars` set.",
           "params": [],
           "return": {
             "types": [
@@ -6538,14 +6538,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 126
+          "line": 117
         },
         {
           "name": "start_angle",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Where the sweep starts, in degrees.\n\nConstructor option `start_angle:`.",
+          "docstring": "Constructor option `start_angle:`.",
           "params": [],
           "return": {
             "types": [
@@ -6555,14 +6555,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 68
+          "line": 61
         },
         {
           "name": "tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip; the ring name carries the label, so\nhide_label defaults on.\n\nSlot: the rendered `tooltip` content.",
+          "docstring": "The hover tooltip; the ring name carries the label, so hide_label defaults on.\n\nSlot: the rendered `tooltip` content.",
           "params": [],
           "return": {
             "types": [
@@ -6572,14 +6572,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 160
+          "line": 148
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -6589,14 +6589,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 54
+          "line": 51
         },
         {
           "name": "with_center_label",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The center text: a title line plus an optional subtitle. The\ndefault is the full gauge's big centered number; compact:\nshrinks it and sits it just above a half gauge's flat baseline.\n\nSlot writer for the `center_label` slot.",
+          "docstring": "The center text: a title line plus an optional subtitle. The default is the full gauge's big centered number; compact: shrinks it and sits it just above a half gauge's flat baseline.\n\nSlot writer for the `center_label` slot.",
           "params": [],
           "return": {
             "types": [
@@ -6606,7 +6606,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 147
+          "line": 136
         },
         {
           "name": "with_legend",
@@ -6623,14 +6623,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 153
+          "line": 142
         },
         {
           "name": "with_polar_grid",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The disc track behind the rings: radii: places the circles\n(default: each ring's centerline), fills: tints them, and\nradial_lines: draws the faint value spokes that show through\nring gaps and the open wedge (on by default; gauges turn them\noff).\n\nSlot writer for the `polar_grid` slot.",
+          "docstring": "The disc track behind the rings: radii: places the circles (default: each ring's centerline), fills: tints them, and radial_lines: draws the faint value spokes that show through ring gaps and the open wedge (on by default; gauges turn them off).\n\nSlot writer for the `polar_grid` slot.",
           "params": [],
           "return": {
             "types": [
@@ -6640,14 +6640,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 139
+          "line": 128
         },
         {
           "name": "with_radial_bar",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A radial series reading data_key: values. background: draws the\nmuted track ring; bars sharing a stack: id share the ring and\nstack by angle; corner_radius: rounds the arc ends.\n\nSlot writer for the `radial_bars` slot (repeatable).",
+          "docstring": "A radial series reading data_key: values. background: draws the muted track ring; bars sharing a stack: id share the ring and stack by angle; corner_radius: rounds the arc ends.\n\nSlot writer for the `radial_bars` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -6657,14 +6657,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 126
+          "line": 117
         },
         {
           "name": "with_tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip; the ring name carries the label, so\nhide_label defaults on.\n\nSlot writer for the `tooltip` slot.",
+          "docstring": "The hover tooltip; the ring name carries the label, so hide_label defaults on.\n\nSlot writer for the `tooltip` slot.",
           "params": [],
           "return": {
             "types": [
@@ -6674,7 +6674,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 160
+          "line": 148
         }
       ],
       "constants": [
@@ -6743,7 +6743,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "index",
@@ -6760,7 +6760,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "name",
@@ -6777,7 +6777,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "path",
@@ -6794,7 +6794,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "ring_inner",
@@ -6811,7 +6811,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "ring_outer",
@@ -6828,7 +6828,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "seg_end",
@@ -6845,7 +6845,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "seg_start",
@@ -6862,7 +6862,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         },
         {
           "name": "value",
@@ -6879,7 +6879,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
-          "line": 267
+          "line": 255
         }
       ],
       "constants": []
@@ -7075,24 +7075,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - naming and\ncoloring every series.\n\nConstructor option `config:`.",
-          "params": [],
-          "return": {
-            "types": [
-              "Object"
-            ],
-            "text": ""
-          },
-          "examples": [],
-          "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 52
-        },
-        {
-          "name": "data",
-          "scope": "instance",
-          "group": "Options",
-          "signature": "",
-          "docstring": "Default rows for series that don't bring their own data: - one\nhash per point.\n\nConstructor option `data:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -7103,6 +7086,23 @@
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
           "line": 49
+        },
+        {
+          "name": "data",
+          "scope": "instance",
+          "group": "Options",
+          "signature": "",
+          "docstring": "Constructor option `data:`.",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/charts/scatter_chart/component.rb",
+          "line": 47
         },
         {
           "name": "grid",
@@ -7119,14 +7119,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 136
+          "line": 128
         },
         {
           "name": "height",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
+          "docstring": "Constructor option `height:`.",
           "params": [],
           "return": {
             "types": [
@@ -7136,14 +7136,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 60
+          "line": 56
         },
         {
           "name": "id",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Explicit DOM id token, stable across renders; otherwise the\nchart gets a unique per-render id.\n\nConstructor option `id:`.",
+          "docstring": "Constructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -7153,14 +7153,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 55
+          "line": 52
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Accessible name for the chart SVG; defaults to one built from\nthe configured series.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -7170,7 +7170,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 66
+          "line": 59
         },
         {
           "name": "legend",
@@ -7187,14 +7187,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 142
+          "line": 134
         },
         {
           "name": "margin",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }),\nmerged over the defaults.\n\nConstructor option `margin:`.",
+          "docstring": "Constructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -7204,14 +7204,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 63
+          "line": 57
         },
         {
           "name": "scatters",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A point series colored by key:. data: gives it its own rows;\nerror_key: adds error whiskers.\n\nSlot collection: the rendered `scatters` set.",
+          "docstring": "A point series colored by key:. data: gives it its own rows; error_key: adds error whiskers.\n\nSlot collection: the rendered `scatters` set.",
           "params": [],
           "return": {
             "types": [
@@ -7221,14 +7221,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 108
+          "line": 102
         },
         {
           "name": "tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip - per-point x/y(/z) rows under the series\nname.\n\nSlot: the rendered `tooltip` content.",
+          "docstring": "The hover tooltip - per-point x/y(/z) rows under the series name.\n\nSlot: the rendered `tooltip` content.",
           "params": [],
           "return": {
             "types": [
@@ -7238,14 +7238,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 149
+          "line": 140
         },
         {
           "name": "width",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "ViewBox width in pixels; the rendered chart scales to its\ncontainer.\n\nConstructor option `width:`.",
+          "docstring": "Constructor option `width:`.",
           "params": [],
           "return": {
             "types": [
@@ -7255,7 +7255,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 58
+          "line": 54
         },
         {
           "name": "with_grid",
@@ -7272,7 +7272,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 136
+          "line": 128
         },
         {
           "name": "with_legend",
@@ -7289,14 +7289,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 142
+          "line": 134
         },
         {
           "name": "with_scatter",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A point series colored by key:. data: gives it its own rows;\nerror_key: adds error whiskers.\n\nSlot writer for the `scatters` slot (repeatable).",
+          "docstring": "A point series colored by key:. data: gives it its own rows; error_key: adds error whiskers.\n\nSlot writer for the `scatters` slot (repeatable).",
           "params": [],
           "return": {
             "types": [
@@ -7306,14 +7306,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 108
+          "line": 102
         },
         {
           "name": "with_tooltip",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The hover tooltip - per-point x/y(/z) rows under the series\nname.\n\nSlot writer for the `tooltip` slot.",
+          "docstring": "The hover tooltip - per-point x/y(/z) rows under the series name.\n\nSlot writer for the `tooltip` slot.",
           "params": [],
           "return": {
             "types": [
@@ -7323,14 +7323,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 149
+          "line": 140
         },
         {
           "name": "with_x_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The numeric x axis: data_key: names the row key to plot;\nname: labels its tooltip row.\n\nSlot writer for the `x_axis` slot.",
+          "docstring": "The numeric x axis: data_key: names the row key to plot; name: labels its tooltip row.\n\nSlot writer for the `x_axis` slot.",
           "params": [],
           "return": {
             "types": [
@@ -7340,14 +7340,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 116
+          "line": 109
         },
         {
           "name": "with_y_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The numeric y axis: data_key: names the row key to plot;\nname: labels its tooltip row.\n\nSlot writer for the `y_axis` slot.",
+          "docstring": "The numeric y axis: data_key: names the row key to plot; name: labels its tooltip row.\n\nSlot writer for the `y_axis` slot.",
           "params": [],
           "return": {
             "types": [
@@ -7357,14 +7357,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 123
+          "line": 115
         },
         {
           "name": "with_z_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A third dimension sizing the markers: range: is marker AREA in\npx2 mapped linearly from the data_key: values.\n\nSlot writer for the `z_axis` slot.",
+          "docstring": "A third dimension sizing the markers: range: is marker AREA in px2 mapped linearly from the data_key: values.\n\nSlot writer for the `z_axis` slot.",
           "params": [],
           "return": {
             "types": [
@@ -7374,14 +7374,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 130
+          "line": 122
         },
         {
           "name": "x_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The numeric x axis: data_key: names the row key to plot;\nname: labels its tooltip row.\n\nSlot: the rendered `x_axis` content.",
+          "docstring": "The numeric x axis: data_key: names the row key to plot; name: labels its tooltip row.\n\nSlot: the rendered `x_axis` content.",
           "params": [],
           "return": {
             "types": [
@@ -7391,14 +7391,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 116
+          "line": 109
         },
         {
           "name": "y_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "The numeric y axis: data_key: names the row key to plot;\nname: labels its tooltip row.\n\nSlot: the rendered `y_axis` content.",
+          "docstring": "The numeric y axis: data_key: names the row key to plot; name: labels its tooltip row.\n\nSlot: the rendered `y_axis` content.",
           "params": [],
           "return": {
             "types": [
@@ -7408,14 +7408,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 123
+          "line": 115
         },
         {
           "name": "z_axis",
           "scope": "instance",
           "group": "Slots",
           "signature": "",
-          "docstring": "A third dimension sizing the markers: range: is marker AREA in\npx2 mapped linearly from the data_key: values.\n\nSlot: the rendered `z_axis` content.",
+          "docstring": "A third dimension sizing the markers: range: is marker AREA in px2 mapped linearly from the data_key: values.\n\nSlot: the rendered `z_axis` content.",
           "params": [],
           "return": {
             "types": [
@@ -7425,7 +7425,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 130
+          "line": 122
         }
       ],
       "constants": [
@@ -7563,7 +7563,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         },
         {
           "name": "cy",
@@ -7580,7 +7580,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         },
         {
           "name": "index",
@@ -7597,7 +7597,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         },
         {
           "name": "key",
@@ -7614,7 +7614,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         },
         {
           "name": "r",
@@ -7631,7 +7631,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         },
         {
           "name": "row",
@@ -7648,7 +7648,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
-          "line": 294
+          "line": 285
         }
       ],
       "constants": []
@@ -8030,7 +8030,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The series config - key => { label:, color: } - resolving row\nnames and colors.\n\nConstructor option `config:`.",
+          "docstring": "Constructor option `config:`.",
           "params": [],
           "return": {
             "types": [
@@ -8040,14 +8040,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 32
+          "line": 30
         },
         {
           "name": "hide_indicator",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Hides the row swatches.\n\nConstructor option `hide_indicator:`.",
+          "docstring": "Constructor option `hide_indicator:`.",
           "params": [],
           "return": {
             "types": [
@@ -8057,14 +8057,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 43
+          "line": 39
         },
         {
           "name": "hide_label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Hides the category label.\n\nConstructor option `hide_label:`.",
+          "docstring": "Constructor option `hide_label:`.",
           "params": [],
           "return": {
             "types": [
@@ -8074,14 +8074,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 41
+          "line": 38
         },
         {
           "name": "indicator",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The row swatch shape.\n\nConstructor option `indicator:`.",
+          "docstring": "Constructor option `indicator:`.",
           "params": [],
           "return": {
             "types": [
@@ -8091,14 +8091,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 37
+          "line": 36
         },
         {
           "name": "items",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The rows: [{ key:, name:, value:, color: }] hashes, one per\nseries.\n\nConstructor option `items:`.",
+          "docstring": "Constructor option `items:`.",
           "params": [],
           "return": {
             "types": [
@@ -8108,14 +8108,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 35
+          "line": 33
         },
         {
           "name": "label",
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "The category label above the rows, resolved through the config.\n\nConstructor option `label:`.",
+          "docstring": "Constructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -8125,13 +8125,13 @@
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
-          "line": 39
+          "line": 37
         }
       ],
       "constants": [
         {
           "name": "AGENT_RULES",
-          "value": "[\n  \"Tooltip rows resolve names/colors through the chart config - pass key:, not a display string.\",\n  \"indicator: :dot (default) | :line | :dashed matches the shadcn variants.\",\n  \"Numeric values ren",
+          "value": "[\n  \"Tooltip rows resolve names/colors through the chart config - pass key:, not a display string.\",\n  \"indicator: :dot (default) | :line | :dashed matches the ported variants.\",\n  \"Numeric values ren",
           "docstring": "Projected into the registry and agent surface."
         }
       ]

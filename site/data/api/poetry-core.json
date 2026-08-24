@@ -830,24 +830,24 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 263
+          "line": 299
         },
         {
           "name": "prop_definitions",
           "scope": "class",
           "group": null,
           "signature": "prop_definitions",
-          "docstring": "The component's full prop surface.",
+          "docstring": "The component's full declared surface - styles, options, slots\n(with descriptions), required slots, and requires_any groups -\nas the registry generator serializes it.",
           "params": [],
           "return": {
             "types": [
-              "Hash"
+              "Hash{Symbol => Object}"
             ],
-            "text": "{ styles: [...], options: [...], slots: [...] }"
+            "text": ""
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 31
+          "line": 60
         },
         {
           "name": "required_slots_surface",
@@ -859,7 +859,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 221
+          "line": 257
         },
         {
           "name": "requires_any_surface",
@@ -871,7 +871,61 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 236
+          "line": 272
+        },
+        {
+          "name": "slot_doc",
+          "scope": "class",
+          "group": null,
+          "signature": "slot_doc(name, text)",
+          "docstring": "The component's full prop surface.\n\nDocuments a slot declared with renders_one/renders_many. The\nstring travels the same road as option/style doc: params - the\nregistry, the agent surface, and the generated API docs. Write\nit directly above the renders_* declaration it describes.",
+          "params": [
+            {
+              "name": "name",
+              "types": [
+                "Symbol"
+              ],
+              "text": "the slot name as declared (plural for\nrenders_many)"
+            },
+            {
+              "name": "text",
+              "types": [
+                "String"
+              ],
+              "text": "one reference-register sentence"
+            }
+          ],
+          "return": {
+            "types": [
+              "Hash"
+            ],
+            "text": "{ styles: [...], options: [...], slots: [...] }"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "slot_doc :trigger, \"The button that opens the dialog.\"\nrenders_one :trigger, lambda { |**options, &block| ... }"
+            }
+          ],
+          "file": "app/components/poetry/core/concerns/introspection.rb",
+          "line": 44
+        },
+        {
+          "name": "slot_docs",
+          "scope": "class",
+          "group": null,
+          "signature": "slot_docs",
+          "docstring": "The slot_doc strings, hierarchy-wide (nearest wins).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/introspection.rb",
+          "line": 51
         },
         {
           "name": "slot_surface",
@@ -903,7 +957,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/introspection.rb",
-          "line": 179
+          "line": 212
         }
       ],
       "constants": [
@@ -978,7 +1032,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 131
+          "line": 139
         },
         {
           "name": "option",
@@ -1105,6 +1159,23 @@
           "line": 108
         },
         {
+          "name": "option_docs",
+          "scope": "class",
+          "group": null,
+          "signature": "option_docs",
+          "docstring": "The doc: strings declared on this component's options,\nhierarchy-wide (nearest declaration wins).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/options.rb",
+          "line": 131
+        },
+        {
           "name": "option_format",
           "scope": "class",
           "group": null,
@@ -1129,7 +1200,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 150
+          "line": 158
         },
         {
           "name": "option_type",
@@ -1156,7 +1227,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 139
+          "line": 147
         },
         {
           "name": "initialized_option_attributes",
@@ -1173,7 +1244,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 221
+          "line": 229
         },
         {
           "name": "option_attribute?",
@@ -1199,7 +1270,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 207
+          "line": 215
         },
         {
           "name": "option_attribute_initialized?",
@@ -1225,7 +1296,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 229
+          "line": 237
         },
         {
           "name": "option_attributes",
@@ -1242,7 +1313,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 214
+          "line": 222
         },
         {
           "name": "option_attributes_status",
@@ -1259,7 +1330,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 236
+          "line": 244
         },
         {
           "name": "options",
@@ -1276,7 +1347,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/options.rb",
-          "line": 245
+          "line": 253
         }
       ],
       "constants": [
@@ -1593,7 +1664,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 127
+          "line": 135
         },
         {
           "name": "style",
@@ -1724,7 +1795,24 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 135
+          "line": 143
+        },
+        {
+          "name": "style_docs",
+          "scope": "class",
+          "group": null,
+          "signature": "style_docs",
+          "docstring": "The doc: strings declared on this component's styles,\nhierarchy-wide (nearest declaration wins).",
+          "params": [],
+          "return": {
+            "types": [
+              "Hash{Symbol => String}"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "app/components/poetry/core/concerns/styles.rb",
+          "line": 127
         },
         {
           "name": "bem",
@@ -1757,7 +1845,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 299
+          "line": 307
         },
         {
           "name": "bem_block",
@@ -1774,7 +1862,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 287
+          "line": 295
         },
         {
           "name": "css",
@@ -1807,7 +1895,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 264
+          "line": 272
         },
         {
           "name": "initialized_style_attributes",
@@ -1824,7 +1912,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 214
+          "line": 222
         },
         {
           "name": "style_attribute?",
@@ -1850,7 +1938,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 200
+          "line": 208
         },
         {
           "name": "style_attribute_initialized?",
@@ -1876,7 +1964,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 222
+          "line": 230
         },
         {
           "name": "style_attributes",
@@ -1893,7 +1981,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 207
+          "line": 215
         },
         {
           "name": "style_attributes_status",
@@ -1910,7 +1998,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 229
+          "line": 237
         },
         {
           "name": "styler",
@@ -1928,7 +2016,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 247
+          "line": 255
         },
         {
           "name": "styles",
@@ -1945,7 +2033,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/concerns/styles.rb",
-          "line": 238
+          "line": 246
         }
       ],
       "constants": [
@@ -6540,14 +6628,14 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 64
+          "line": 60
         },
         {
           "name": "color",
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "The stroke color family.\n\nStyle axis `color:`.",
+          "docstring": "Style axis `color:`.",
           "params": [],
           "return": {
             "types": [
@@ -6557,14 +6645,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 23
+          "line": 21
         },
         {
           "name": "mode",
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "The color-scheme axis the compound dark strokes key on.\n\nStyle axis `mode:`.",
+          "docstring": "Style axis `mode:`.",
           "params": [],
           "return": {
             "types": [
@@ -6574,14 +6662,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 17
+          "line": 16
         },
         {
           "name": "shape",
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "The outline shape (visual no-op in the shipped dictionary).\n\nStyle axis `shape:`.",
+          "docstring": "Style axis `shape:`.",
           "params": [],
           "return": {
             "types": [
@@ -6591,14 +6679,14 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 56
+          "line": 52
         },
         {
           "name": "size",
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "The rendered glyph size.\n\nStyle axis `size:`.",
+          "docstring": "Style axis `size:`.",
           "params": [],
           "return": {
             "types": [
@@ -6608,7 +6696,7 @@
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 49
+          "line": 46
         },
         {
           "name": "svg_attributes",
@@ -6620,7 +6708,7 @@
           "return": null,
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
-          "line": 72
+          "line": 68
         }
       ],
       "constants": []

@@ -4680,6 +4680,12 @@
     "path": "/charts/adapter#default"
   },
   {
+    "title": "Wiring",
+    "page": "Adapter Chart",
+    "section": "charts",
+    "path": "/charts/adapter#wiring"
+  },
+  {
     "title": "Area Chart",
     "page": "Area Chart",
     "section": "charts",
