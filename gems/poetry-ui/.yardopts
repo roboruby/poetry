@@ -1,6 +1,11 @@
 --markup markdown
 --no-private
+--hide-api private
 --readme README.md
+--exclude (^|/)preview\.rb$
+--exclude dialog_preview\.rb$
+--exclude lib/generators/poetry/pagination/templates/
+--exclude lib/generators/poetry/recipes/
 lib/**/*.rb
 app/**/*.rb
 -

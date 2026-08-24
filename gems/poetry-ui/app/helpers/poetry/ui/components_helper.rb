@@ -640,8 +640,8 @@ module Poetry
         render(Poetry::Ui::Fieldset::Component.new(**), &)
       end
 
-      # Stacks fields/fieldsets with the theme's rhythm; also the
-      # @container scope Field's orientation: :responsive measures against.
+      # Stacks fields/fieldsets with the theme's rhythm; also the CSS
+      # `@container` scope Field's orientation: :responsive measures against.
       def poetry_field_group(**, &)
         render(Poetry::Ui::FieldGroup::Component.new(**), &)
       end

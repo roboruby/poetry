@@ -6,7 +6,7 @@ module Poetry
       # The FieldGroup - the Field family's stacking container (upstream
       # FieldGroup): fields, fieldsets, and separators stack with the
       # theme's rhythm instead of hand-spaced flex columns. It is also the
-      # @container scope responsive fields key on - Field's
+      # CSS `@container` scope responsive fields key on - Field's
       # orientation: :responsive flips to a row only once ITS field-group
       # container passes the md mark.
       #
