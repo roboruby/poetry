@@ -7,6 +7,11 @@ module Poetry
       # It extends the basic attribute functionality with support for variants, proc defaults,
       # and tracking of which attributes have been explicitly set vs using defaults.
       #
+      # The registration, tracking, and hierarchy machinery lives in
+      # DeclaredAttributes (shared with Options); this concern owns the
+      # style-specific surface: variants, inclusion validation, and CSS
+      # emission.
+      #
       # @example Basic usage with variants
       #   class MyComponent < Poetry::Core::Component
       #     style :color, default: :primary, variants: [:primary, :secondary, :success]
@@ -39,9 +44,9 @@ module Poetry
       #   end
       module Styles
         extend ActiveSupport::Concern
+        include DeclaredAttributes
 
         STYLE_CLASS_SUFFIX = "::Style"
-        BASE_COMPONENT_CLASS = Poetry::Core::Component
 
         included do
           class_attribute :registered_styles,
@@ -71,14 +76,14 @@ module Poetry
           # @example Boolean attribute
           #   style :outlined, variants: :boolean, default: false
           def style(name, **options)
-            register_style_attribute(name, options)
+            register_declared_attribute(:style, name, options)
 
             variants, required, default_value = extract_style_options(options)
             type = determine_attribute_type(variants)
 
-            define_style_attribute(name, type, options)
+            attribute(name, type, **options)
             add_style_validations(name, type, variants, required)
-            setup_style_tracking(name, default_value)
+            setup_declared_tracking(:style, name, default_value)
             define_variants_getter(name, variants)
           end
 
@@ -86,21 +91,14 @@ module Poetry
           #
           # @return [Array<Symbol>] sorted array of attribute names with defaults
           def style_attributes_with_defaults
-            collect_from_hierarchy(:@_style_attributes_with_defaults)
+            declared_attributes_with_defaults(:style)
           end
 
           # Returns style attributes that have static (non-proc) default values.
           #
           # @return [Array<Symbol>] sorted array of attribute names with static defaults
           def style_attributes_with_static_defaults
-            collect_from_hierarchy(:@_style_attributes_with_defaults) do |attributes_set, defaults, klass|
-              next unless defaults
-
-              proc_defaults = klass.instance_variable_get(:@_style_proc_defaults)
-              defaults.each do |attr|
-                attributes_set << attr unless proc_defaults&.key?(attr)
-              end
-            end
+            declared_attributes_with_static_defaults(:style)
           end
 
           # Returns style attributes that have proc default values.
@@ -108,16 +106,14 @@ module Poetry
           #
           # @return [Array<Symbol>] sorted array of attribute names with proc defaults
           def style_attributes_with_proc_defaults
-            collect_from_hierarchy(:@_style_proc_defaults) do |attributes_set, proc_defaults, _klass|
-              attributes_set.merge(proc_defaults.keys) if proc_defaults
-            end
+            declared_attributes_with_proc_defaults(:style)
           end
 
           # Returns all style attributes defined on this component and its ancestors.
           #
           # @return [Array<Symbol>] sorted array of all style attribute names
           def style_attributes
-            collect_from_hierarchy(:@_style_attributes)
+            declared_attributes(:style)
           end
 
           # Checks if the given name is a defined style attribute.
@@ -142,30 +138,13 @@ module Poetry
 
           private
 
-          # Registers a style attribute and tracks it in the appropriate collections.
-          #
-          # @param name [Symbol, String] the attribute name
-          # @param options [Hash] the attribute options
-          def register_style_attribute(name, options)
-            (@_style_attributes ||= Set.new) << name.to_sym
-
-            (@_style_attributes_with_defaults ||= Set.new) << name.to_sym if options.key?(:default)
-
-            return unless options[:default].is_a?(Proc)
-
-            (@_style_proc_defaults ||= {})[name.to_sym] = options[:default]
-          end
-
           # Extracts and processes style-specific options from the options hash.
           #
           # @param options [Hash] the original options hash
           # @return [Array<(Object, Boolean, Object)>] variants, required, and default_value
           def extract_style_options(options)
-            default_value = options[:default]
-            options.delete(:default) if default_value.is_a?(Proc)
-
-            required = options.delete(:required) || false
             variants = options.delete(:variants)
+            required, default_value = extract_declared_defaults(options)
 
             [variants, required, default_value]
           end
@@ -176,15 +155,6 @@ module Poetry
           # @return [Symbol] :boolean or :symbol
           def determine_attribute_type(variants)
             variants == :boolean ? :boolean : :symbol
-          end
-
-          # Defines the attribute using the base attribute method.
-          #
-          # @param name [Symbol] the attribute name
-          # @param type [Symbol] the attribute type
-          # @param options [Hash] remaining options to pass to attribute
-          def define_style_attribute(name, type, options)
-            attribute(name, type, **options)
           end
 
           # Adds validations for the style attribute.
@@ -202,77 +172,12 @@ module Poetry
             validates name, presence: true if required
           end
 
-          # Sets up tracking for style attribute initialization.
-          #
-          # @param name [Symbol] the attribute name
-          # @param default_value [Object] the default value (may be a Proc)
-          def setup_style_tracking(name, default_value)
-            override_setter_for_tracking(name)
-            override_getter_for_proc_default(name, default_value) if default_value.is_a?(Proc)
-          end
-
-          # Overrides the setter to track when the attribute is initialized.
-          #
-          # @param name [Symbol] the attribute name
-          def override_setter_for_tracking(name)
-            original_setter = instance_method("#{name}=")
-            define_method("#{name}=") do |value|
-              self.registered_styles ||= Set.new
-              registered_styles << name.to_sym
-              original_setter.bind_call(self, value)
-            end
-          end
-
-          # Overrides the getter to handle proc defaults dynamically.
-          #
-          # @param name [Symbol] the attribute name
-          # @param default_value [Proc] the proc that provides the default value
-          def override_getter_for_proc_default(name, default_value)
-            original_getter = instance_method(name)
-
-            define_method(name) do
-              if style_attribute_initialized?(name)
-                original_getter.bind_call(self)
-              else
-                value = instance_exec(&default_value)
-                @attributes.write_from_user(name.to_s, value)
-                value
-              end
-            end
-          end
-
           # Defines a singleton method to access the variants for this attribute.
           #
           # @param name [Symbol] the attribute name
           # @param variants [Object] the variants value
           def define_variants_getter(name, variants)
             define_singleton_method("#{name}_variants") { variants }
-          end
-
-          # Collects attributes from the class hierarchy.
-          # This method walks up the inheritance chain and collects instance variables.
-          #
-          # @param ivar_name [Symbol] the instance variable name to collect
-          # @yield [attributes_set, values, klass] optional block for custom collection logic
-          # @return [Array<Symbol>] sorted array of collected attributes
-          def collect_from_hierarchy(ivar_name)
-            attributes_set = Set.new
-            klass = self
-
-            while klass&.respond_to?(:instance_variable_get)
-              values = klass.instance_variable_get(ivar_name)
-
-              if block_given?
-                yield(attributes_set, values, klass)
-              elsif values
-                attributes_set.merge(values)
-              end
-
-              klass = klass.superclass
-              break if klass == BASE_COMPONENT_CLASS || !klass.ancestors.include?(BASE_COMPONENT_CLASS)
-            end
-
-            attributes_set.to_a.sort
           end
 
           # Logs when a style class cannot be found.
@@ -303,7 +208,7 @@ module Poetry
         #
         # @return [Array<Symbol>] sorted array of initialized attribute names
         def initialized_style_attributes
-          registered_styles.sort
+          initialized_declared_attributes(registered_styles)
         end
 
         # Checks if a style attribute has been explicitly initialized.
@@ -311,7 +216,7 @@ module Poetry
         # @param name [Symbol, String] the attribute name to check
         # @return [Boolean] true if the attribute was explicitly set
         def style_attribute_initialized?(name)
-          registered_styles.include?(name.to_sym)
+          declared_attribute_registered?(registered_styles, name)
         end
 
         # Returns all style attributes with their initialization status.

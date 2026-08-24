@@ -7,6 +7,10 @@ module Poetry
       # It extends the basic attribute functionality with support for ActiveModel types,
       # proc defaults, and tracking of which attributes have been explicitly set vs using defaults.
       #
+      # The registration, tracking, and hierarchy machinery lives in
+      # DeclaredAttributes (shared with Styles); this concern owns the
+      # option-specific surface: ActiveModel types and value formats.
+      #
       # Unlike Styles, Options:
       # - Do not have variants
       # - Do not generate CSS
@@ -47,8 +51,7 @@ module Poetry
       #   end
       module Options
         extend ActiveSupport::Concern
-
-        BASE_COMPONENT_CLASS = Poetry::Core::Component
+        include DeclaredAttributes
 
         included do
           class_attribute :registered_options,
@@ -81,14 +84,14 @@ module Poetry
           # @example Value format (machine-checkable value contract)
           #   option :name, :symbol, required: true, format: :"icon-name"
           def option(name, type, **options)
-            register_option_attribute(name, options)
+            register_declared_attribute(:option, name, options)
 
-            required, default_value = extract_option_options(options)
+            required, default_value = extract_declared_defaults(options)
             register_option_format(name, options.delete(:format))
 
-            define_option_attribute(name, type, options)
+            attribute(name, type, **options)
             add_option_validations(name, type, required)
-            setup_option_tracking(name, default_value)
+            setup_declared_tracking(:option, name, default_value)
             define_type_getter(name, type)
           end
 
@@ -96,22 +99,14 @@ module Poetry
           #
           # @return [Array<Symbol>] sorted array of attribute names with defaults
           def option_attributes_with_defaults
-            collect_option_attributes_from_hierarchy(:@_option_attributes_with_defaults)
+            declared_attributes_with_defaults(:option)
           end
 
           # Returns option attributes that have static (non-proc) default values.
           #
           # @return [Array<Symbol>] sorted array of attribute names with static defaults
           def option_attributes_with_static_defaults
-            ivar = :@_option_attributes_with_defaults
-            collect_option_attributes_from_hierarchy(ivar) do |attributes_set, defaults, klass|
-              next unless defaults
-
-              proc_defaults = klass.instance_variable_get(:@_option_proc_defaults)
-              defaults.each do |attr|
-                attributes_set << attr unless proc_defaults&.key?(attr)
-              end
-            end
+            declared_attributes_with_static_defaults(:option)
           end
 
           # Returns option attributes that have proc default values.
@@ -119,16 +114,14 @@ module Poetry
           #
           # @return [Array<Symbol>] sorted array of attribute names with proc defaults
           def option_attributes_with_proc_defaults
-            collect_option_attributes_from_hierarchy(:@_option_proc_defaults) do |attributes_set, proc_defaults, _klass|
-              attributes_set.merge(proc_defaults.keys) if proc_defaults
-            end
+            declared_attributes_with_proc_defaults(:option)
           end
 
           # Returns all option attributes defined on this component and its ancestors.
           #
           # @return [Array<Symbol>] sorted array of all option attribute names
           def option_attributes
-            collect_option_attributes_from_hierarchy(:@_option_attributes)
+            declared_attributes(:option)
           end
 
           # Checks if the given name is a defined option attribute.
@@ -155,52 +148,25 @@ module Poetry
           # @param name [Symbol, String] the attribute name
           # @return [Symbol, nil] the declared format
           def option_format(name)
-            formats = {}
-            klass = self
-
-            while klass&.respond_to?(:instance_variable_get)
-              klass_formats = klass.instance_variable_get(:@_option_formats)
-              formats = klass_formats.merge(formats) if klass_formats
-
-              klass = klass.superclass
-              break if klass == BASE_COMPONENT_CLASS || !klass.ancestors.include?(BASE_COMPONENT_CLASS)
-            end
-
-            formats[name.to_sym]
+            collect_declared_map(:@_option_formats)[name.to_sym]
           end
 
           private
 
-          # Collects option types from the class hierarchy.
+          # Collects option types from the class hierarchy. An ancestor's
+          # declaration wins on redeclaration (formats resolve the other
+          # way, nearest wins).
           #
           # @return [Hash{Symbol => Symbol}] map of attribute names to types
           def collect_option_types_from_hierarchy
             types = {}
-            klass = self
 
-            while klass&.respond_to?(:instance_variable_get)
+            declared_hierarchy do |klass|
               klass_types = klass.instance_variable_get(:@_option_types)
               types.merge!(klass_types) if klass_types
-
-              klass = klass.superclass
-              break if klass == BASE_COMPONENT_CLASS || !klass.ancestors.include?(BASE_COMPONENT_CLASS)
             end
 
             types
-          end
-
-          # Registers an option attribute and tracks it in the appropriate collections.
-          #
-          # @param name [Symbol, String] the attribute name
-          # @param options [Hash] the attribute options
-          def register_option_attribute(name, options)
-            (@_option_attributes ||= Set.new) << name.to_sym
-
-            (@_option_attributes_with_defaults ||= Set.new) << name.to_sym if options.key?(:default)
-
-            return unless options[:default].is_a?(Proc)
-
-            (@_option_proc_defaults ||= {})[name.to_sym] = options[:default]
           end
 
           # Records a declared value format so option_format can surface it
@@ -214,28 +180,6 @@ module Poetry
             (@_option_formats ||= {})[name.to_sym] = format.to_sym
           end
 
-          # Extracts and processes option-specific options from the options hash.
-          #
-          # @param options [Hash] the original options hash
-          # @return [Array<(Boolean, Object)>] required and default_value
-          def extract_option_options(options)
-            default_value = options[:default]
-            options.delete(:default) if default_value.is_a?(Proc)
-
-            required = options.delete(:required) || false
-
-            [required, default_value]
-          end
-
-          # Defines the attribute using the base attribute method.
-          #
-          # @param name [Symbol] the attribute name
-          # @param type [Symbol] the attribute type
-          # @param options [Hash] remaining options to pass to attribute
-          def define_option_attribute(name, type, options)
-            attribute(name, type, **options)
-          end
-
           # Adds validations for the option attribute.
           #
           # @param name [Symbol] the attribute name
@@ -246,45 +190,6 @@ module Poetry
             validates name, presence: true if required
           end
 
-          # Sets up tracking for option attribute initialization.
-          #
-          # @param name [Symbol] the attribute name
-          # @param default_value [Object] the default value (may be a Proc)
-          def setup_option_tracking(name, default_value)
-            override_option_setter_for_tracking(name)
-            override_option_getter_for_proc_default(name, default_value) if default_value.is_a?(Proc)
-          end
-
-          # Overrides the setter to track when the attribute is initialized.
-          #
-          # @param name [Symbol] the attribute name
-          def override_option_setter_for_tracking(name)
-            original_setter = instance_method("#{name}=")
-            define_method("#{name}=") do |value|
-              self.registered_options ||= Set.new
-              registered_options << name.to_sym
-              original_setter.bind_call(self, value)
-            end
-          end
-
-          # Overrides the getter to handle proc defaults dynamically.
-          #
-          # @param name [Symbol] the attribute name
-          # @param default_value [Proc] the proc that provides the default value
-          def override_option_getter_for_proc_default(name, default_value)
-            original_getter = instance_method(name)
-
-            define_method(name) do
-              if option_attribute_initialized?(name)
-                original_getter.bind_call(self)
-              else
-                value = instance_exec(&default_value)
-                @attributes.write_from_user(name.to_s, value)
-                value
-              end
-            end
-          end
-
           # Defines a singleton method to access the type for this attribute.
           #
           # @param name [Symbol] the attribute name
@@ -292,32 +197,6 @@ module Poetry
           def define_type_getter(name, type)
             (@_option_types ||= {})[name.to_sym] = type
             define_singleton_method("#{name}_type") { type }
-          end
-
-          # Collects attributes from the class hierarchy.
-          # This method walks up the inheritance chain and collects instance variables.
-          #
-          # @param ivar_name [Symbol] the instance variable name to collect
-          # @yield [attributes_set, values, klass] optional block for custom collection logic
-          # @return [Array<Symbol>] sorted array of collected attributes
-          def collect_option_attributes_from_hierarchy(ivar_name)
-            attributes_set = Set.new
-            klass = self
-
-            while klass&.respond_to?(:instance_variable_get)
-              values = klass.instance_variable_get(ivar_name)
-
-              if block_given?
-                yield(attributes_set, values, klass)
-              elsif values
-                attributes_set.merge(values)
-              end
-
-              klass = klass.superclass
-              break if klass == BASE_COMPONENT_CLASS || !klass.ancestors.include?(BASE_COMPONENT_CLASS)
-            end
-
-            attributes_set.to_a.sort
           end
         end
 
@@ -340,9 +219,7 @@ module Poetry
         #
         # @return [Array<Symbol>] sorted array of initialized attribute names
         def initialized_option_attributes
-          return [] if registered_options.nil?
-
-          registered_options.to_a.sort
+          initialized_declared_attributes(registered_options)
         end
 
         # Checks if an option attribute has been explicitly initialized.
@@ -350,9 +227,7 @@ module Poetry
         # @param name [Symbol, String] the attribute name to check
         # @return [Boolean] true if the attribute was explicitly set
         def option_attribute_initialized?(name)
-          return false if registered_options.nil?
-
-          registered_options.include?(name.to_sym)
+          declared_attribute_registered?(registered_options, name)
         end
 
         # Returns all option attributes with their initialization status.
