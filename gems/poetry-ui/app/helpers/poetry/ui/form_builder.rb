@@ -444,6 +444,7 @@ module Poetry
           @template.render SearchField::Component.new(
             name: field_name(method),
             value: object.public_send(method).presence&.to_s,
+            invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
             **(describedby ? { described_by: describedby } : {}),
             **options.transform_keys(&:to_sym)
@@ -460,6 +461,7 @@ module Poetry
           @template.render SensitiveInput::Component.new(
             name: field_name(method),
             value: object.public_send(method).presence&.to_s,
+            invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
             **(describedby ? { described_by: describedby } : {}),
             **options.transform_keys(&:to_sym)
@@ -505,7 +507,7 @@ module Poetry
             selected: object.public_send(method).presence&.to_s,
             invalid: field_component.invalid?,
             id: field_component.control_attributes["id"],
-            **(describedby ? { "aria-describedby": describedby } : {}),
+            **(describedby ? { described_by: describedby } : {}),
             **options.transform_keys(&:to_sym)
           )
         end
@@ -515,14 +517,20 @@ module Poetry
       # attribute: one hidden name[] per tag, plus the leading empty
       # hidden (Rails array convention: removing every tag still clears).
       def tag_group(method, hint: nil, **options)
-        field_component = field_for(method, hint: hint, group: true)
+        # The Field renders NO label here: TagGroup's own caption span is the
+        # grid's accessible name - a Field label too would render the text
+        # twice under one duplicated DOM id.
+        caption = options.delete(:label) || object.class.human_attribute_name(method)
+        field_component = field_for(method, hint: hint, group: true, label: false)
+        describedby = field_component.control_attributes["aria-describedby"]
         values = Array(object.public_send(method)).map(&:to_s)
         @template.hidden_field_tag(field_name(method, multiple: true), "", id: nil) +
           @template.render(field_component) do
             @template.render(TagGroup::Component.new(
                                name: field_name(method),
-                               label: field_component.label_text,
-                               **group_control_attributes(field_component).except(:"aria-labelledby"),
+                               label: caption,
+                               id: field_component.control_attributes["id"],
+                               **(describedby ? { described_by: describedby } : {}),
                                **options.transform_keys(&:to_sym)
                              )) do |group|
               values.each { |value| group.with_tag(value: value, text: value) }
@@ -542,7 +550,7 @@ module Poetry
           @template.render(field_component) do
             @template.poetry_checkbox_group(
               class: "flex flex-col gap-2",
-              **group_control_attributes(field_component).slice(:id, :"aria-labelledby"),
+              **group_control_attributes(field_component).slice(:id, :"aria-labelledby", :"aria-describedby"),
               **options.transform_keys(&:to_sym)
             ) do
               rows = []
@@ -576,7 +584,9 @@ module Poetry
         @template.render(field_component) do
           @template.render Calendar::Component.new(
             name: field_name(method),
-            value: value.is_a?(Array) ? value.map(&:to_s) : value.presence&.to_s,
+            # Calendar's keyword is selected:, not value: - value: would fall
+            # into html_attributes and the model's date silently never lands.
+            selected: value.is_a?(Array) ? value.map(&:to_s) : value.presence&.to_s,
             **group_control_attributes(field_component).slice(:id, :"aria-describedby"),
             **options.transform_keys(&:to_sym)
           )
@@ -692,11 +702,13 @@ module Poetry
       end
 
       # rubocop:disable Metrics/ParameterLists -- one keyword per Field surface
+      # label: false suppresses the Field label entirely - for controls that
+      # render their own accessible name (TagGroup's caption span).
       def field_for(method, hint: nil, group: false, orientation: nil, hint_position: nil, label: nil)
         extras = { orientation: orientation, hint_position: hint_position }.compact
         Field::Component.new(
           id: field_id(method),
-          label_text: label || object.class.human_attribute_name(method),
+          label_text: label == false ? nil : (label || object.class.human_attribute_name(method)),
           hint: hint,
           error: error_for(method),
           required: required?(method),

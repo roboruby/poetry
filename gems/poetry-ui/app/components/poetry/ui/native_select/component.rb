@@ -32,6 +32,10 @@ module Poetry
         option :size, :symbol, default: :default
         option :disabled, :boolean, default: false
         option :invalid, :boolean, default: false
+        # Space-separated hint/error ids for the SELECT itself (the Field
+        # quartet's aria-describedby) - a raw aria-describedby in
+        # html_attributes would land on the wrapper div, unassociated for AT.
+        option :described_by, :string
 
         validates :size, inclusion: { in: SIZES }
 
@@ -72,6 +76,7 @@ module Poetry
           attrs["name"] = name if name.present?
           attrs["id"] = id if id.present?
           attrs["aria-label"] = label if label.present?
+          attrs["aria-describedby"] = described_by if described_by.present?
           attrs["disabled"] = true if disabled
           attrs["aria-invalid"] = true if invalid
           attrs

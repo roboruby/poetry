@@ -296,7 +296,10 @@ module Poetry
           assert_equal "group", group["role"]
           assert_equal heading["id"], group["aria-labelledby"]
           assert_equal "Frameworks", heading.text
-          assert_equal "separator", separator["role"]
+          # Decorative, never role=separator: inside role=listbox that role
+          # is flagged (the select/command axe rule).
+          assert_equal "true", separator["aria-hidden"]
+          assert_nil separator["role"]
           # Grouped options still land in the shared native select, in DOM order.
           assert_equal(%w[rails other],
                        fragment.css('[data-slot="combobox-native"] option:not([value=""])').map { |o| o["value"] })

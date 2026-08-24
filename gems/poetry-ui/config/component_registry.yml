@@ -1523,7 +1523,9 @@ components:
       - toggle
       - uncheck
       events:
-      - poetry--core--checked:change
+      - poetry:checkbox:change
+      - poetry:checked:change
+      - poetry:switch:change
     agent_rules:
     - A select-all run rides poetry_checkbox_group (wrapper) + poetry_checkbox_group_all
       (the mixed-state parent) + poetry_checkbox_group_item per member - toggles fan
@@ -2157,8 +2159,8 @@ components:
       description: The trailing committed-value check (ms-auto per the demo) - the
         parent item's data-selected absence hides it
     - name: command-separator
-      description: role=separator divider - hidden by the engine whenever the query
-        is non-empty
+      description: Decorative divider (aria-hidden) - hidden by the engine whenever
+        the query is non-empty
     - name: command-status
       description: The engine's sr-only polite result-count live region
       states:
@@ -6297,6 +6299,8 @@ components:
     bem_block: poetry-ui-native_select
     styles: []
     options:
+    - name: described_by
+      type: string
     - name: disabled
       type: boolean
       default: false
@@ -8984,7 +8988,9 @@ components:
       - toggle
       - uncheck
       events:
-      - poetry--core--checked:change
+      - poetry:checkbox:change
+      - poetry:checked:change
+      - poetry:switch:change
     agent_rules:
     - Use poetry_switch - never a styled checkbox pretending to be a switch (role=switch
       announces on/off; that's the point).
@@ -9228,6 +9234,8 @@ components:
     bem_block: poetry-ui-tag_group
     styles: []
     options:
+    - name: described_by
+      type: string
     - name: label
       type: string
       required: true

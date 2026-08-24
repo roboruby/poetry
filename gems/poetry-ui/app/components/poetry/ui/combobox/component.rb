@@ -76,7 +76,9 @@ module Poetry
         # the controller whenever the query is non-empty (upstream parity).
         def separator_part(**options)
           attrs = {
-            "data-slot" => "command-separator", "role" => "separator",
+            # aria-hidden, never role=separator: inside role=listbox a
+            # separator role is flagged (the select/command axe rule).
+            "data-slot" => "command-separator", "aria-hidden" => "true",
             "class" => Command::Style.css(:separator, class: options.delete(:class))
           }
           content_tag(:div, nil, attrs.merge(options))
@@ -524,8 +526,8 @@ module Poetry
         part "command-item-text", "The option's label span - the filter/typematch text source"
         part "combobox-item-indicator", "The trailing committed-value check (ms-auto per the " \
                                         "demo) - the parent item's data-selected absence hides it"
-        part "command-separator", "role=separator divider - hidden by the engine whenever the " \
-                                  "query is non-empty"
+        part "command-separator", "Decorative divider (aria-hidden) - hidden by the engine " \
+                                  "whenever the query is non-empty"
         part "command-status", "The engine's sr-only polite result-count live region",
              states: {
                "data-zero" => "always - the localized zero-results template",

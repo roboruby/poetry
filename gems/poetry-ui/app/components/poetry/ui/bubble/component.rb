@@ -62,10 +62,17 @@ module Poetry
           )
         end
 
+        # href: implies the anchor (the Button doctrine) - an href on the
+        # default :div would otherwise be silently dropped, the dead-control
+        # bug class the suite memorializes on Button.
+        def content_tag_name
+          href.present? ? :a : tag
+        end
+
         def content_attributes
           attrs = { class: css(:content), "data-slot" => "bubble-content" }
-          attrs[:href] = href if tag == :a
-          attrs[:type] = "button" if tag == :button
+          attrs[:href] = href if content_tag_name == :a
+          attrs[:type] = "button" if content_tag_name == :button
           attrs
         end
       end

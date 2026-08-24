@@ -25,9 +25,10 @@ module Poetry
         renders_one :description
         renders_one :action
         # class: merges into the footer div (upstream CardFooter className -
-        # the border-t divider variant is the canonical use).
+        # the border-t divider variant is the canonical use); every other
+        # option (id:, data:, ...) rides onto the footer div verbatim.
         renders_one :footer, lambda { |**options, &block|
-          @footer_class = options[:class]
+          @footer_options = options
           @footer_block = block
           nil
         }
@@ -59,7 +60,13 @@ module Poetry
         part "card-content", "The body - the content block renders here"
         part "card-footer", "The bottom row (actions/meta)"
 
-        attr_reader :footer_class, :footer_block
+        attr_reader :footer_block
+
+        def footer_attributes
+          options = (@footer_options || {}).dup
+          { "data-slot" => "card-footer",
+            class: css(:footer, class: options.delete(:class)) }.merge(options)
+        end
 
         def header?
           title? || description? || action?

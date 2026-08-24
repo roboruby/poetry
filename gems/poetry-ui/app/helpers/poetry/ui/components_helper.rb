@@ -668,7 +668,9 @@ module Poetry
       # item toggles re-derive it (all -> checked, none -> unchecked,
       # some -> indeterminate).
       def poetry_checkbox_group(**attrs, &block)
-        wiring = { class: attrs.delete(:class),
+        # role=group makes the aria-labelledby/-describedby the FormBuilder
+        # routes here real for AT - on a bare div they announce nothing.
+        wiring = { role: "group", class: attrs.delete(:class),
                    data: { slot: "checkbox-group", controller: "poetry--core--checkbox-group",
                            action: "poetry:checkbox:change->poetry--core--checkbox-group#changed" } }
         content_tag(:div, (capture(&block) if block),

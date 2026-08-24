@@ -64,6 +64,10 @@ module Poetry
 
         option :name, :string
         option :label, :string, required: true
+        # Space-separated hint/error ids for the GRID (the labelled element) -
+        # a raw aria-describedby in html_attributes would land on the outer
+        # wrapper div, unassociated for AT.
+        option :described_by, :string
 
         part "tag-group", "The labelled wrapper - caption span + grid stack here"
         part "tag-group-label", "The caption span (label:), wired via aria-labelledby (a grid " \
@@ -112,6 +116,7 @@ module Poetry
             "data-slot" => "tag-group-grid",
             "class" => css(:grid),
             "aria-labelledby" => label_id,
+            **(described_by.present? ? { "aria-describedby" => described_by } : {}),
             # Polite only while focus is within (controller-flipped): SRs
             # hear tags added mid-work without spam from elsewhere.
             "aria-live" => "off",

@@ -38,7 +38,9 @@ module Poetry
 
         renders_many :items, lambda { |title:, time: nil, icon: nil, completed: false,
                                        **options, &block|
-          attrs = { "data-slot" => "timeline-item", class: css(:item) }
+          # class: merges through the dictionary (caller classes win on
+          # conflicts) - a plain hash merge would REPLACE css(:item).
+          attrs = { "data-slot" => "timeline-item", class: css(:item, class: options.delete(:class)) }
           attrs["data-completed"] = "" if completed
           content_tag(:li, attrs.merge(options)) do
             body = [item_indicator(icon), item_separator, item_header(title, time)]

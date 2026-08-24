@@ -674,6 +674,49 @@ module Poetry
         assert_includes html, "2026-06-12"
       end
 
+      def test_calendar_receives_the_model_date_as_selected
+        html = render_snippet("<%= form.calendar(:starts_on) %>",
+                              model: RosterProfile.new(starts_on: "2026-06-12"))
+
+        assert_match(/<input type="hidden" name="[^"]*\[starts_on\]" value="2026-06-12"/, html,
+                     "the model date lands in the calendar's hidden input")
+        assert_includes html, "data-selected", "the picked day is stamped"
+        refute_match(/<div[^>]*\svalue="2026-06-12"/, html,
+                     "value: must never leak onto the root as a literal attribute")
+      end
+
+      def test_search_and_sensitive_fields_reflect_model_errors_as_aria_invalid
+        model = RosterProfile.new(query: "x", api_key: "sk")
+        model.errors.add(:query, :invalid)
+        model.errors.add(:api_key, :invalid)
+
+        html = render_snippet("<%= form.search_field(:query) %><%= form.sensitive_input(:api_key) %>",
+                              model: model)
+
+        invalid_inputs = html.scan(/<input[^>]*aria-invalid="true"[^>]*>/)
+        assert_operator invalid_inputs.length, :>=, 2,
+                        "both controls carry aria-invalid from model errors (the destructive ring hook)"
+      end
+
+      def test_native_select_describedby_lands_on_the_select_itself
+        html = render_snippet("<%= form.native_select(:country, [[\"USA\", \"us\"]], hint: \"Pick one.\") %>")
+
+        select_tag = html[/<select[^>]*>/]
+        assert_match(/aria-describedby="[^"]*-hint"/, select_tag,
+                     "the hint association belongs on the <select>, not the wrapper div")
+      end
+
+      def test_tag_group_renders_one_label_with_describedby_on_the_grid
+        html = render_snippet("<%= form.tag_group(:topics, hint: \"Comma adds.\") %>",
+                              model: RosterProfile.new(topics: %w[ruby]))
+
+        label_ids = html.scan(/id="([^"]*-label)"/).flatten
+        assert_equal label_ids.uniq.length, label_ids.length, "no duplicated label id"
+        assert_equal 1, html.scan(">Topics<").length, "the caption span is the single visible label"
+        grid = html[/<div[^>]*data-slot="tag-group-grid"[^>]*>/]
+        assert_match(/aria-describedby="[^"]*-hint"/, grid, "the hint association rides the labelled grid")
+      end
+
       def test_rails_arity_select_and_collection_adapters
         struct = Struct.new(:id, :label_name)
         rows = [struct.new(1, "One"), struct.new(2, "Two")]

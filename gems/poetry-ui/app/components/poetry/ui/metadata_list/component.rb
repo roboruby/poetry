@@ -33,7 +33,10 @@ module Poetry
         REQUIRED_SLOTS = { item: "at least one item (label: plus the value block)" }.freeze
 
         renders_many :items, lambda { |label:, **options, &block|
-          content_tag(:div, { "data-slot" => "metadata-list-item", class: css(:item) }.merge(options)) do
+          # class: merges through the dictionary (caller classes win on
+          # conflicts) - a plain hash merge would REPLACE css(:item).
+          item_class = css(:item, class: options.delete(:class))
+          content_tag(:div, { "data-slot" => "metadata-list-item", class: item_class }.merge(options)) do
             safe_join([
                         content_tag(:dt, label, "data-slot" => "metadata-list-label", class: css(:label)),
                         content_tag(:dd, { "data-slot" => "metadata-list-value", class: css(:value) }, &block)

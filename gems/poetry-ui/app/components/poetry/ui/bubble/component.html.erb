@@ -1,4 +1,4 @@
 <%= content_tag(:div, **root_attributes.to_attributes) do %>
-  <%= content_tag(tag, content, **content_attributes) %>
+  <%= content_tag(content_tag_name, content, **content_attributes) %>
   <%= reactions %>
 <% end %>
