@@ -36,12 +36,15 @@
       <p class="text-sm text-muted-foreground">
         The component registry, agent rules,
         <%= link_to "llms.txt", "/poetry/llms.txt", class: "underline underline-offset-4" %>,
-        an MCP server, and three installable Claude Code skills (component
+        an MCP server, a generated
+        <%= link_to "API reference", "/api", class: "underline underline-offset-4" %>,
+        and three installable Claude Code skills (component
         usage, the poetry-design taste layer, and the poetry-component
         authoring layer, via
         <code class="font-mono">bin/rails g poetry:skill</code>) are part of
         the library, not an afterthought. This site's nav is generated from
-        the same registry the gems' CI verifies.
+        the same registry the gems' CI verifies, and every page serves a
+        markdown mirror — append <code class="font-mono">.md</code> to any URL.
       </p>
     <% end %>
   </div>
@@ -49,6 +52,6 @@
   <p class="text-sm text-muted-foreground">
     This site is built from poetry's own components — the sidebar, the ⌘K
     palette, the top navigation's morphing viewport, the tabs on every
-    example. The gallery is the dogfood.
+    example.
   </p>
 </div>
