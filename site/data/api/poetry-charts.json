@@ -131,7 +131,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `axes:`.",
+          "docstring": "The axis config ({ x:, y: } hashes), also spec-carried.\n\nConstructor option `axes:`.",
           "params": [],
           "return": {
             "types": [
@@ -148,13 +148,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
@@ -165,13 +165,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot, serialized into the spec.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
@@ -182,13 +182,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `engine:`.",
+          "docstring": "The registered adapter's name; the controller hands it the mount and the spec.\n\nConstructor option `engine:`.",
           "params": [],
           "return": {
             "types": [
               "String"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
@@ -199,7 +199,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -216,7 +216,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the mount; defaults to one built from the type and engine.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -233,13 +233,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `series:`.",
+          "docstring": "The series list ({ data_key:, ... } hashes) - the closed spec's replacement for slots.\n\nConstructor option `series:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
@@ -250,13 +250,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `type:`.",
+          "docstring": "The chart type carried in the spec (see Spec::TYPES).\n\nConstructor option `type:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `area, bar, line, pie, radar, radial`; required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/adapter_chart/component.rb",
@@ -326,13 +326,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
@@ -343,13 +343,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
@@ -360,13 +360,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
@@ -377,7 +377,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -394,7 +394,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -411,7 +411,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -428,13 +428,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `offset:`.",
+          "docstring": "Stack baseline mode - :expand normalizes each stack to percentages.\n\nConstructor option `offset:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `none, expand`; defaults to `:none`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
@@ -445,13 +445,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `640`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/area_chart/component.rb",
@@ -750,13 +750,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `bar_category_gap:`.",
+          "docstring": "Band trim on each side: a percent string of the band width, or a bare pixel number.\n\nConstructor option `bar_category_gap:`.",
           "params": [],
           "return": {
             "types": [
               "String"
             ],
-            "text": ""
+            "text": "defaults to `\"10%\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -767,13 +767,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `bar_gap:`.",
+          "docstring": "Pixels between side-by-side bars inside one category band.\n\nConstructor option `bar_gap:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `4`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -801,13 +801,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -818,13 +818,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one per category.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -835,13 +835,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -852,7 +852,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -869,7 +869,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -886,7 +886,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -903,13 +903,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `offset:`.",
+          "docstring": "Stack baseline mode - :expand normalizes each stack to percentages.\n\nConstructor option `offset:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `none, expand`; defaults to `:none`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -920,13 +920,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `orientation:`.",
+          "docstring": ":vertical = columns (the default); :horizontal = bars growing rightward - the category axis moves to the Y side (with_y_axis data_key:) and the numeric axis hides.\n\nConstructor option `orientation:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `vertical, horizontal`; defaults to `:vertical`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -937,13 +937,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `640`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/bar_chart/component.rb",
@@ -1976,13 +1976,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `bar_category_gap:`.",
+          "docstring": "Band trim on each side: a percent string of the band width, or a bare pixel number.\n\nConstructor option `bar_category_gap:`.",
           "params": [],
           "return": {
             "types": [
               "String"
             ],
-            "text": ""
+            "text": "defaults to `\"10%\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -1993,13 +1993,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `bar_gap:`.",
+          "docstring": "Pixels between side-by-side bars inside one category band.\n\nConstructor option `bar_gap:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `4`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -2027,13 +2027,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -2044,13 +2044,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -2061,13 +2061,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -2078,7 +2078,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -2095,7 +2095,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -2129,7 +2129,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -2146,13 +2146,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `640`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/composed_chart/component.rb",
@@ -2792,13 +2792,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - driving the per-series color emission.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/container/component.rb",
@@ -2809,7 +2809,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the frame gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -4149,13 +4149,13 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Style axis `align:`.",
+          "docstring": "Which chart edge the legend sits on: :top pads below it, :bottom (the default) pads above. A style axis, not an option - options silently drop the dictionary's variant classes.\n\nStyle axis `align:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `top, bottom`; defaults to `:bottom`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
@@ -4166,13 +4166,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - the default item source.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
@@ -4183,13 +4183,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `hide_icon:`.",
+          "docstring": "Hides the color swatches, leaving labels only.\n\nConstructor option `hide_icon:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": ""
+            "text": "defaults to `false`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
@@ -4200,7 +4200,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `items:`.",
+          "docstring": "Explicit entries ([{ key:, name:, color: }]) overriding the config-derived list.\n\nConstructor option `items:`.",
           "params": [],
           "return": {
             "types": [
@@ -4217,13 +4217,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `toggle:`.",
+          "docstring": "Interactive legend: items render as buttons that toggle their series through the live controller (the host chart guards that live: is on).\n\nConstructor option `toggle:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": ""
+            "text": "defaults to `false`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/legend_content/component.rb",
@@ -4276,13 +4276,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
@@ -4293,13 +4293,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one per x category.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
@@ -4310,13 +4310,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
@@ -4327,7 +4327,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -4344,7 +4344,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -4378,7 +4378,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -4395,13 +4395,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `640`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/line_chart/component.rb",
@@ -4826,13 +4826,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - name => { label:, color: } - naming and coloring the slices.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
@@ -4843,7 +4843,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "Default rows for pies that don't bring their own data: - one hash per slice.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -4860,13 +4860,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
@@ -4877,7 +4877,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -4894,7 +4894,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -4928,7 +4928,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -4979,13 +4979,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/pie_chart/component.rb",
@@ -5752,13 +5752,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
@@ -5769,13 +5769,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one per category.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
@@ -5803,13 +5803,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
@@ -5820,7 +5820,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -5837,7 +5837,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -5871,7 +5871,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -5888,13 +5888,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `outer_radius:`.",
+          "docstring": "The rim radius: a percent string of the max radius, or pixels.\n\nConstructor option `outer_radius:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "defaults to `\"80%\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
@@ -5939,13 +5939,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radar_chart/component.rb",
@@ -6307,13 +6307,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - name => { label:, color: } - naming and coloring the rings.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6324,13 +6324,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "The rows to plot: an array of hashes, one ring per row.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6341,13 +6341,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `end_angle:`.",
+          "docstring": "Where the sweep ends - 180 makes a half gauge.\n\nConstructor option `end_angle:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6358,13 +6358,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6375,7 +6375,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -6392,13 +6392,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `inner_radius:`.",
+          "docstring": "The innermost ring edge: a percent string of the max radius, or pixels.\n\nConstructor option `inner_radius:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "defaults to `\"20%\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6409,7 +6409,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -6443,7 +6443,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Margin overrides ({ top:, right:, bottom:, left: }), merged over the slim polar default.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -6460,7 +6460,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `max_value:`.",
+          "docstring": "The angle-axis maximum: nil = the largest single value, so the largest ring closes the full sweep EXACTLY (nicing it would leave a notch); stacked gauges pass the stack total when the segments should fill the span.\n\nConstructor option `max_value:`.",
           "params": [],
           "return": {
             "types": [
@@ -6477,13 +6477,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `name_key:`.",
+          "docstring": "The row key naming each ring.\n\nConstructor option `name_key:`.",
           "params": [],
           "return": {
             "types": [
               "String"
             ],
-            "text": ""
+            "text": "defaults to `\"name\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6494,13 +6494,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `outer_radius:`.",
+          "docstring": "The outermost ring edge: a percent string of the max radius, or pixels.\n\nConstructor option `outer_radius:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "defaults to `\"80%\"`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6545,13 +6545,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `start_angle:`.",
+          "docstring": "Where the sweep starts, in degrees.\n\nConstructor option `start_angle:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `0`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -6579,13 +6579,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `250`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/radial_bar_chart/component.rb",
@@ -7075,13 +7075,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - naming and coloring every series.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
@@ -7092,7 +7092,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `data:`.",
+          "docstring": "Default rows for series that don't bring their own data: - one hash per point.\n\nConstructor option `data:`.",
           "params": [],
           "return": {
             "types": [
@@ -7126,13 +7126,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `height:`.",
+          "docstring": "ViewBox height in pixels.\n\nConstructor option `height:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `360`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
@@ -7143,7 +7143,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `id:`.",
+          "docstring": "Explicit DOM id token, stable across renders; otherwise the chart gets a unique per-render id.\n\nConstructor option `id:`.",
           "params": [],
           "return": {
             "types": [
@@ -7160,7 +7160,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "Accessible name for the chart SVG; defaults to one built from the configured series.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [
@@ -7194,7 +7194,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `margin:`.",
+          "docstring": "Plot margin overrides ({ top:, right:, bottom:, left: }), merged over the defaults.\n\nConstructor option `margin:`.",
           "params": [],
           "return": {
             "types": [
@@ -7245,13 +7245,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `width:`.",
+          "docstring": "ViewBox width in pixels; the rendered chart scales to its container.\n\nConstructor option `width:`.",
           "params": [],
           "return": {
             "types": [
               "Integer"
             ],
-            "text": ""
+            "text": "defaults to `640`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/scatter_chart/component.rb",
@@ -8030,13 +8030,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `config:`.",
+          "docstring": "The series config - key => { label:, color: } - resolving row names and colors.\n\nConstructor option `config:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
@@ -8047,13 +8047,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `hide_indicator:`.",
+          "docstring": "Hides the row swatches.\n\nConstructor option `hide_indicator:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": ""
+            "text": "defaults to `false`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
@@ -8064,13 +8064,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `hide_label:`.",
+          "docstring": "Hides the category label.\n\nConstructor option `hide_label:`.",
           "params": [],
           "return": {
             "types": [
               "Boolean"
             ],
-            "text": ""
+            "text": "defaults to `false`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
@@ -8081,13 +8081,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `indicator:`.",
+          "docstring": "The row swatch shape.\n\nConstructor option `indicator:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `dot, line, dashed`; defaults to `:dot`"
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
@@ -8098,13 +8098,13 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `items:`.",
+          "docstring": "The rows: [{ key:, name:, value:, color: }] hashes, one per series.\n\nConstructor option `items:`.",
           "params": [],
           "return": {
             "types": [
               "Object"
             ],
-            "text": ""
+            "text": "required"
           },
           "examples": [],
           "file": "app/components/poetry/charts/tooltip_content/component.rb",
@@ -8115,7 +8115,7 @@
           "scope": "instance",
           "group": "Options",
           "signature": "",
-          "docstring": "Constructor option `label:`.",
+          "docstring": "The category label above the rows, resolved through the config.\n\nConstructor option `label:`.",
           "params": [],
           "return": {
             "types": [

@@ -6635,13 +6635,13 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Style axis `color:`.",
+          "docstring": "The stroke color family.\n\nStyle axis `color:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `slate, gray, zinc, neutral, stone, red, orange, amber, yellow, lime, green, emerald, teal, cyan, sky, blue, indigo, violet, purple, fuchsia, pink, rose`; defaults to `:indigo`"
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
@@ -6652,13 +6652,13 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Style axis `mode:`.",
+          "docstring": "The color-scheme axis the compound dark strokes key on.\n\nStyle axis `mode:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `light, dark`; defaults to `:light`"
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
@@ -6669,13 +6669,13 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Style axis `shape:`.",
+          "docstring": "The outline shape (visual no-op in the shipped dictionary).\n\nStyle axis `shape:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `square, round`; defaults to `:square`"
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
@@ -6686,13 +6686,13 @@
           "scope": "instance",
           "group": "Style axes",
           "signature": "",
-          "docstring": "Style axis `size:`.",
+          "docstring": "The rendered glyph size.\n\nStyle axis `size:`.",
           "params": [],
           "return": {
             "types": [
               "Symbol"
             ],
-            "text": ""
+            "text": "one of: `small, medium, large`; defaults to `:medium`"
           },
           "examples": [],
           "file": "app/components/poetry/core/x/component.rb",
