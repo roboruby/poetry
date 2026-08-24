@@ -3,24 +3,27 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-shape stack() (src/stack.js + offset/{none,expand,diverging}.js,
-      # order none): rows x series keys -> per-series [base, top] pairs.
-      # Missing values behave as JS +undefined = NaN (the offsets carry the
-      # exact NaN fallbacks). :expand normalizes each row to sum 1;
-      # :diverging routes negatives below the axis - the beyond-shadcn
-      # offsets are ~20 lines here, cheap to carry for the chart families
-      # that need them.
+      # The stack layout (declaration order): rows x series keys ->
+      # per-series [base, top] pairs. Missing values behave as
+      # JS +undefined = NaN (the offsets carry the exact NaN fallbacks).
+      # :expand normalizes each row to sum 1; :diverging routes negatives
+      # below the axis.
       #
       # @example Stack two series over shared rows
       #   Poetry::Charts::Geometry::Stack.new(keys: %w[a b]).series(rows)
       class Stack
+        # The stack baseline modes.
         OFFSETS = %i[none expand diverging].freeze
 
+        # One stacked series: its key, order index, and [base, top]
+        # points.
         Series = ::Struct.new(:key, :index, :points) do
+          # The [base, top] pair at one row index.
           def [](index)
             points[index]
           end
 
+          # The number of rows stacked.
           def length
             points.length
           end
@@ -34,6 +37,10 @@ module Poetry
           @offset = offset.to_sym
         end
 
+        # The stacked series for the rows, offsets applied.
+        #
+        # @param data [Enumerable] the rows
+        # @return [Array<Series>]
         def series(data)
           data = data.to_a
           sz = @keys.map { |key| Series.new(key, nil, []) }

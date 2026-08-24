@@ -4,8 +4,8 @@ module Poetry
   module Charts
     module AreaChart
       # The cartesian chart chrome, riding the SHARED cn-chart-* theme
-      # rules - poetry's equivalent of upstream's [&_.recharts-*]
-      # container overrides, landed on parts poetry owns. Series
+      # rules - what would otherwise be container-level descendant
+      # overrides lands as direct classes on parts poetry owns. Series
       # fill/stroke are var(--color-<key>) ATTRIBUTES, never classes.
       class Style < Poetry::Core::Style
         base ""

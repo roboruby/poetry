@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module RadialBarChart
-      # The radial family, mirroring the shadcn blocks: simple (rings +
+      # The radial family across its variants: simple (rings +
       # muted tracks), grid (disc boundaries), inside-start labels, the
       # gauge shapes (disc tracks + center text), and the angle-stacked
       # half gauge.
@@ -73,9 +73,9 @@ module Poetry
 
         def stacked
           data = [{ month: "january", desktop: 1260, mobile: 570 }]
-          # No max_value: recharts maps the stack through [0, dataMax] over
-          # the raw values (1260), so mobile fills 570/1260 = 81deg and
-          # desktop stacks on and clips at the 180deg end.
+          # No max_value: the stack maps through [0, max] over the raw
+          # values (1260), so mobile fills 570/1260 = 81deg and desktop
+          # stacks on and clips at the 180deg end.
           render_component(data: data, config: CONFIG, id: "radial-stacked", name_key: :month,
                            end_angle: 180, inner_radius: 80, outer_radius: 110) do |chart|
             chart.with_radial_bar(data_key: :mobile, stack: :a, corner_radius: 5)

@@ -14,6 +14,7 @@ module Poetry
     # formatters and label slots raise a teaching error - format data
     # host-side (pre-formatted category strings) instead.
     module Live
+      # The live controller's full-string identifier.
       CONTROLLER = "poetry--charts--live"
 
       def self.included(base)
@@ -74,12 +75,20 @@ module Poetry
                                         "recomputes geometry from"
       end
 
+      # The class-level macro families call to opt into live mode.
       module ClassMethods
+        # Declares the live-mode surface: the live: and zoom: options plus
+        # the with_brush slot.
         def live_option
+          # Embeds the {spec, frame} payload so the client renderer can
+          # recompute geometry when data changes without a server
+          # round-trip.
           option :live, :boolean, default: false
-          # The window features: both slice the data client-side, so
-          # both need the live renderer.
+          # Drag-to-zoom on the plot; slices the data client-side, so it
+          # needs live: true.
           option :zoom, :boolean, default: false
+          # The brush strip below the x axis - drag its window to slice
+          # the visible range; needs live: true.
           renders_one :brush, lambda { |height: 30|
             @brush_config = { height: height.to_f }
             nil
@@ -87,13 +96,20 @@ module Poetry
         end
       end
 
+      # The live: option cast to a strict boolean.
+      # @api private
       def live?
         !!live
       end
 
+      # The window controller's full-string identifier.
       WINDOW_CONTROLLER = "poetry--charts--window"
+      # Pixels between the plot's bottom margin and the brush strip.
       BRUSH_GAP = 8
 
+      # The brush slot's captured config, guarded: the window recomputes
+      # client-side, so a brush without live: true raises.
+      # @api private
       def brush_config
         brush?
         if @brush_config && !live?
@@ -103,18 +119,23 @@ module Poetry
         @brush_config
       end
 
+      # The zoom: option, guarded the same way as the brush.
+      # @api private
       def zoom?
         raise ArgumentError, "zoom: true needs live: true - the window recomputes client-side" if zoom && !live?
 
         !!zoom
       end
 
+      # Whether any windowing feature (brush or zoom) is active.
+      # @api private
       def window_features?
         !!brush_config || zoom?
       end
 
       # The brush strip reserves space below the x axis by growing the
       # bottom margin the cartesian sees.
+      # @api private
       def live_margin
         base = (margin || {}).to_h.symbolize_keys
         return base unless brush_config
@@ -123,6 +144,9 @@ module Poetry
         base.merge(bottom: bottom + brush_config[:height] + BRUSH_GAP)
       end
 
+      # The brush strip's y position - below the plot, above the reserved
+      # margin.
+      # @api private
       def brush_top
         original_bottom = (margin || {}).to_h.symbolize_keys.fetch(:bottom, Cartesian::DEFAULT_MARGIN[:bottom]).to_f
         height - original_bottom - brush_config[:height]
@@ -130,6 +154,7 @@ module Poetry
 
       # The strip: track + window + two handles, all server-rendered; the
       # window controller drags them and repaints on window changes.
+      # @api private
       def brush_svg
         config = brush_config
         return unless config
@@ -159,6 +184,7 @@ module Poetry
       end
 
       # The zoom drag-selection overlay (hidden until a drag starts).
+      # @api private
       def zoom_selection_svg
         return unless zoom?
 
@@ -171,15 +197,21 @@ module Poetry
       # Value readers for the window controller's declared frame wiring:
       # the plot rect and the brush strip rect, server-computed (the
       # controller's only layout math is fractions of these).
+      # @api private
       def window_plot_json
         [cartesian.plot_left, cartesian.plot_right, cartesian.plot_top, cartesian.plot_bottom].to_json
       end
 
+      # The brush strip rect for the window controller, server-computed.
+      # @api private
       def window_brush_json
         [cartesian.plot_left, brush_top, cartesian.plot_right - cartesian.plot_left,
          brush_config[:height]].to_json
       end
 
+      # The embedded {spec, frame} payload the live renderer recomputes
+      # geometry from, validated for serializability first.
+      # @api private
       def live_payload
         ensure_live_compatible!
         {
@@ -189,16 +221,21 @@ module Poetry
         }
       end
 
+      # The payload serialized for the embedded <script> tag.
+      # @api private
       def live_payload_json
         live_payload.to_json
       end
 
+      # The chart reduced to the closed spec (type, data, series, axes).
+      # @api private
       def live_spec
         Spec.new(type: live_type, data: data, series: live_series, axes: live_axes)
       end
 
       # The geometry-affecting knobs shared by the cartesian trio; families
       # merge their extras (bar gaps/radii) via live_frame_extras.
+      # @api private
       def live_frame
         {
           "width" => width,
@@ -219,11 +256,15 @@ module Poetry
         }.merge(live_frame_extras).compact
       end
 
+      # Hook: families merge extra geometry-affecting knobs into the frame
+      # envelope.
+      # @api private
       def live_frame_extras
         {}
       end
 
       # Lambdas cannot ride a JSON payload - fail at render, with the fix.
+      # @api private
       def ensure_live_compatible!
         if x_axis_config&.tick_formatter || y_axis_config&.tick_formatter
           raise ArgumentError, "live: charts cannot serialize tick_formatter lambdas - " \
@@ -242,6 +283,8 @@ module Poetry
                              "drop labels: or render without live:"
       end
 
+      # Whether any series slot asked for value labels.
+      # @api private
       def live_labels_configured?
         series_entries.any? { |entry| entry.respond_to?(:labels) && entry.labels }
       end

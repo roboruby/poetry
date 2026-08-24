@@ -3,11 +3,11 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-shape area() (src/area.js): the filled band between a top line
-      # (x/x1, y1) and a baseline (x0, y0), walked forward along the top and
-      # BACKWARD along the buffered baseline per defined-segment - the exact
-      # d3 loop, including the x0z/y0z buffers. Stacked areas feed y0/y1
-      # from Stack series; simple areas use a constant y0 (the axis line).
+      # The area generator: the filled band between a top line (x/x1, y1)
+      # and a baseline (x0, y0), walked forward along the top and
+      # BACKWARD along the buffered baseline per defined-segment (the
+      # x0z/y0z buffers). Stacked areas feed y0/y1 from Stack series;
+      # simple areas use a constant y0 (the axis line).
       #
       # @example A simple area over a constant baseline
       #   Poetry::Charts::Geometry::Area.new(y0: 250.0).path(points)
@@ -22,6 +22,10 @@ module Poetry
           @defined = Line::Accessor.wrap(defined) { |_d, _i| true }
         end
 
+        # The SVG path for the data (nil when nothing was defined).
+        #
+        # @param data [Enumerable]
+        # @return [String, nil]
         def path(data)
           data = data.to_a
           n = data.length

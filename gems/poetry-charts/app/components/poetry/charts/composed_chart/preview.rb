@@ -3,8 +3,8 @@
 module Poetry
   module Charts
     module ComposedChart
-      # The composed family (beyond the shadcn surface):
-      # bars with a trend line, and the full area + bar + line mix.
+      # The composed family: bars with a trend line, and the full
+      # area + bar + line mix.
       class Preview < Poetry::Core::Preview::Base
         DATA = [
           { month: "January", visitors: 320, revenue: 214, trend: 240 },
@@ -43,9 +43,9 @@ module Poetry
           end
         end
 
-        # A sync group member (recharts syncId): charts sharing sync:
-        # broadcast/receive the active index - the sync value the stimulus
-        # contract holds to the DOM.
+        # A sync group member: charts sharing sync: broadcast/receive
+        # the active index - the sync value the stimulus contract holds
+        # to the DOM.
         def synced
           render_component(data: DATA, config: CONFIG, id: "composed-synced",
                            sync: "composed-demo") do |chart|

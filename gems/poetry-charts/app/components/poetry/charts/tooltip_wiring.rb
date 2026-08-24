@@ -8,17 +8,17 @@ module Poetry
     # categories), and the hidden chrome pre-renders per-series rows the
     # controller text-swaps - zero chart math in the browser.
     module TooltipWiring
+      # Full-string controller identifier - the bare :tooltip shorthand
+      # would be ambiguous with the core tooltip controller.
       CONTROLLER = "poetry--charts--tooltip"
 
-      # Every chart with a tooltip can join a sync group (recharts
-      # syncId): charts sharing a sync: broadcast/receive the active index.
-      #
       # The wiring is declared, not hand-built: the frame carries the
       # controller + sync value, the SVG carries the target and the
       # pointer/keyboard actions (the accessibilityLayer floor), and the
       # coordinates <script> is the data target the controller reads.
-      # Full-string identifier - :tooltip is ambiguous with core's.
       def self.included(base)
+        # Sync-group id: charts sharing the same sync: broadcast and
+        # receive each other's active index.
         base.option :sync, :string
 
         base.use_stimulus do
@@ -54,6 +54,8 @@ module Poetry
         end
       end
 
+      # The tooltip slot's captured options, forcing lazy slot evaluation.
+      # @api private
       def tooltip_config
         tooltip?
         @tooltip_config || {}
@@ -61,6 +63,7 @@ module Poetry
 
       # The legend slot's options, guarded: toggle needs the live renderer
       # (hiding a series recomputes the domain client-side).
+      # @api private
       def legend_config
         legend?
         config = @legend_config || {}
@@ -71,16 +74,22 @@ module Poetry
         config
       end
 
+      # The with_legend options forwarded to the LegendContent child.
       LEGEND_OPTIONS = %i[align items hide_icon toggle].freeze
 
+      # The LegendContent child built from the chart's config and legend
+      # options.
+      # @api private
       def legend_component
         LegendContent::Component.new(config: chart_config, **legend_config.slice(*LEGEND_OPTIONS))
       end
 
-      # The hover cursor (recharts Tooltip cursor, default on): bars get a
-      # translucent band rect, line/area/composed a vertical rule - hidden
-      # until the tooltip controller positions it at the active index.
-      # Renders UNDER the series (after the grid), recharts' paint order.
+      # The hover cursor, on by default when a tooltip attaches: bars get
+      # a translucent band rect, line/area/composed a vertical rule -
+      # hidden until the tooltip controller positions it at the active
+      # index. Renders UNDER the series (after the grid) so marks stay
+      # on top.
+      # @api private
       def cursor_svg(kind)
         return unless tooltip? && tooltip_config.fetch(:cursor, true)
 
@@ -111,20 +120,25 @@ module Poetry
       # self-identification: the frame is the chart type's own root (the
       # Container wrapper self-ids as "container", so without this the
       # SVG anatomy would have no owner in the part contract).
+      # @api private
       def frame_attributes
         { "data-component" => self.class.component_title }.merge(stimulus_attributes_for(:frame))
       end
 
-      # role=img for static charts; the accessibilityLayer contract when
-      # the tooltip attaches (recharts: role=application + focusable).
-      # Motion rides the same tag: data-animate + the
-      # --poetry-motion-* knobs.
+      # role=img for static charts; when the tooltip attaches the SVG
+      # becomes the focusable accessibility layer (role=application +
+      # tabindex) so arrow keys walk the categories. Motion rides the
+      # same tag: data-animate + the --poetry-motion-* knobs.
+      # @api private
       def svg_interaction_attributes
         base = tooltip? ? { "role" => "application", "tabindex" => "0" } : { "role" => "img" }
         base.merge!(stimulus_attributes_for(:svg))
         respond_to?(:motion_svg_attributes) ? base.merge(motion_svg_attributes) : base
       end
 
+      # The TooltipLayer child built from the chart's config and tooltip
+      # options.
+      # @api private
       def tooltip_layer_component
         TooltipLayer::Component.new(
           config: chart_config,
@@ -137,6 +151,7 @@ module Poetry
 
       # The hover markers lines/areas show at the active index -
       # server-rendered hidden circles the controller toggles.
+      # @api private
       def active_dot_markers(entry)
         cartesian.points(entry).each_with_index.filter_map do |point, i|
           next if point[:value].nan?

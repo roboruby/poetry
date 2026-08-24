@@ -3,8 +3,8 @@
 module Poetry
   module Charts
     module TooltipContent
-      # The tooltip chrome across its three indicator variants - the 9
-      # shadcn tooltip blocks compose from exactly these pieces.
+      # The tooltip chrome across its three indicator variants - every
+      # chart tooltip composes from exactly these pieces.
       class Preview < Poetry::Core::Preview::Base
         CONFIG = {
           desktop: { label: "Desktop", color: "var(--chart-1)" },

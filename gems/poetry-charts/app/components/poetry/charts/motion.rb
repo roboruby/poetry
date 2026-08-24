@@ -3,15 +3,16 @@
 module Poetry
   module Charts
     # Shared animation surface for the chart families: chart-level
-    # options mirroring recharts' animation props (isAnimationActive /
-    # animationDuration / animationEasing / animationBegin, defaults read
-    # from the recharts v3 source per family), emitted as data-animate plus
+    # options (animate / animation_duration / animation_easing /
+    # animation_begin, defaults set per family), emitted as data-animate plus
     # --poetry-motion-* custom properties on the SVG. The animations
     # themselves are CSS (the motion stylesheet) and the motion controller -
     # the server computes all geometry; the client only interpolates
     # between server-computed states.
     module Motion
+      # The allowed animation_easing keywords.
       EASINGS = %i[ease linear ease_in ease_out ease_in_out].freeze
+      # The motion controller's full-string identifier.
       CONTROLLER = "poetry--charts--motion"
 
       def self.included(base)
@@ -27,18 +28,27 @@ module Poetry
         end
       end
 
+      # The class-level macro families call to declare their animation
+      # options.
       module ClassMethods
-        # Declares the animation options with the family's recharts
-        # defaults (Bar 400ms, Pie begin 400ms, Scatter 400ms linear,
-        # everything else 0/1500/ease).
+        # Declares the animation options with the family's defaults
+        # (bar 400ms, pie delayed 400ms, scatter 400ms linear,
+        # everything else 1500ms ease with no delay).
         def motion_options(duration: 1500, delay: 0, easing: :ease)
+          # Entrance animation switch - reduced-motion users always get
+          # the finished chart regardless.
           option :animate, :boolean, default: true
+          # Entrance/morph duration in milliseconds.
           option :animation_duration, :integer, default: duration
+          # Animation easing keyword (see EASINGS).
           option :animation_easing, :symbol, default: easing
+          # Pre-animation hold in milliseconds.
           option :animation_begin, :integer, default: delay
         end
       end
 
+      # The animate: option cast to a strict boolean.
+      # @api private
       def animate?
         !!animate
       end
@@ -46,12 +56,16 @@ module Poetry
       # Merged into the SVG tag by TooltipWiring#svg_interaction_attributes.
       # Duration/begin are :integer-typed and easing is enum-validated, so
       # nothing user-controlled reaches the style attribute unguarded.
+      # @api private
       def motion_svg_attributes
         return {} unless animate?
 
         { "data-animate" => "", "style" => motion_style }
       end
 
+      # The --poetry-motion-* custom-property declarations for the SVG's
+      # style attribute.
+      # @api private
       def motion_style
         easing = animation_easing.to_sym
         raise ArgumentError, "unknown easing #{animation_easing.inspect}" unless EASINGS.include?(easing)
@@ -65,6 +79,8 @@ module Poetry
 
       # Hook: families append extra custom properties (radar ships the
       # polar center so CSS can scale from it).
+      #
+      # @return [String, nil]
       def motion_style_extras
         nil
       end
@@ -72,6 +88,7 @@ module Poetry
       # data-motion-sector: the server-computed sector params the
       # fan-out sweep reads (4-decimal formatting, matching sector_path's
       # own fmt so mid-sweep client paths stay byte-compatible).
+      # @api private
       def motion_sector_value(cx, cy, inner, outer, start_angle, end_angle)
         [cx, cy, inner, outer, start_angle, end_angle]
           .map { |v| Geometry.js_number((v.to_f * 10_000).round / 10_000.0) }

@@ -10,19 +10,23 @@ module Poetry
     # declared; a pass-through options bag would tie call sites to one
     # engine and the spec could never close.
     #
-    # Key naming follows recharts (dataKey, stackId) so the mechanical
-    # shadcn-block translation reads across both sides of the seam.
+    # Keys ride the wire camelCased (dataKey, stackId) - one vocabulary
+    # on both sides of the seam.
     #
     # @example Compile a spec and serialize it for an adapter
     #   Poetry::Charts::Spec.new(
     #     type: :bar, data: rows, series: [{ data_key: :revenue }]
     #   ).to_json
     class Spec
+      # The spec schema version stamped into every payload.
       VERSION = 1
 
+      # The chart types the spec can describe.
       TYPES = %i[area bar line pie radar radial].freeze
 
+      # The closed key set a series entry may carry.
       SERIES_KEYS = %i[key data_key name_key stack curve].freeze
+      # The closed key set an axis entry may carry.
       AXIS_KEYS = %i[data_key hide tick_count format].freeze
 
       attr_reader :type, :data, :series, :axes, :config
@@ -45,6 +49,10 @@ module Poetry
         @config = Config.wrap(config)
       end
 
+      # The wire form: string keys, camelCased entry keys, the version
+      # stamped in.
+      #
+      # @return [Hash]
       def to_h
         {
           "version" => VERSION,
@@ -56,6 +64,9 @@ module Poetry
         }
       end
 
+      # The wire form serialized - what the spec <script> embeds.
+      #
+      # @return [String]
       def to_json(...)
         to_h.to_json(...)
       end
@@ -84,9 +95,9 @@ module Poetry
         end
       end
 
-      # snake_case Ruby -> camelCase wire (dataKey, stackId-style), matching
-      # the recharts vocabulary the shadcn blocks already speak. Symbol
-      # values (data keys, curve names) become strings on the wire.
+      # snake_case Ruby -> camelCase wire (dataKey, stackId-style).
+      # Symbol values (data keys, curve names) become strings on the
+      # wire.
       def camelize_keys(hash)
         hash.to_h do |key, value|
           [key.to_s.camelize(:lower), value.is_a?(Symbol) ? value.to_s : value]

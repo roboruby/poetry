@@ -2,7 +2,7 @@
 
 module Poetry
   module Charts
-    # The chart config - poetry's port of shadcn's ChartConfig contract:
+    # The chart config contract:
     # series key -> { label:, icon:, color: } or { label:, icon:, theme:
     # { light:, dark: } }. The config is the SINGLE place series get their
     # human labels and colors; the container's <style> emission, the tooltip
@@ -24,14 +24,18 @@ module Poetry
       # everything that could terminate a declaration or escape the block.
       COLOR = /\A[^{};<>&"']+\z/
 
+      # The theme map's allowed modes.
       THEMES = %i[light dark].freeze
 
+      # One validated config entry: a series key with its label, icon,
+      # and flat or themed color.
       Entry = Data.define(:key, :label, :icon, :color, :theme) do
         # The per-theme color: the flat color, or the theme map's value.
         def color_for(theme_name)
           theme ? theme[theme_name] : color
         end
 
+        # Whether the entry carries any color (flat or themed).
         def colored?
           !!(color || theme)
         end
@@ -49,17 +53,28 @@ module Poetry
 
       attr_reader :entries
 
+      # Builds and validates entries from a Hash keyed by series name;
+      # a CSS-unsafe key or color raises here, at wrap time.
+      #
+      # @param hash [Hash]
       def initialize(hash)
         raise ArgumentError, "chart config must be a Hash, got #{hash.class}" unless hash.is_a?(Hash)
 
         @entries = hash.map { |key, value| build_entry(key, value || {}) }
       end
 
+      # The entry for a series key.
+      #
+      # @param key [String, Symbol]
+      # @return [Entry, nil]
       def [](key)
         key = key.to_s
         entries.find { |entry| entry.key == key }
       end
 
+      # Every series key, in config order.
+      #
+      # @return [Array<String>]
       def keys
         entries.map(&:key)
       end
@@ -71,7 +86,7 @@ module Poetry
       end
 
       # The label for a series key, falling back to the key itself - the
-      # tooltip/legend resolution rule (shadcn: config[key]?.label ?? name).
+      # tooltip/legend resolution rule.
       #
       # @param key [String, Symbol] the series key
       # @param fallback [String, nil] preferred over the key when no label is set
@@ -80,6 +95,10 @@ module Poetry
         self[key]&.label || fallback || key.to_s
       end
 
+      # The config back as a plain Hash (label/color/theme per key),
+      # compacted.
+      #
+      # @return [Hash]
       def to_h
         entries.to_h do |entry|
           value = { label: entry.label }.compact

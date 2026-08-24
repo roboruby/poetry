@@ -3,8 +3,7 @@
 module Poetry
   module Charts
     module ScatterChart
-      # The scatter family (beyond the shadcn surface):
-      # simple, two series, and z-sized bubbles.
+      # The scatter family: simple, two series, and z-sized bubbles.
       class Preview < Poetry::Core::Preview::Base
         SAMPLE = [
           { height: 161, weight: 51, bmi: 19.7 },

@@ -2,13 +2,12 @@
 
 module Poetry
   module Charts
-    # Reference marks: recharts' ReferenceLine / ReferenceArea
-    # / ReferenceDot for every cartesian family. Values speak the chart's
-    # own axes - categories on the category axis (the band/point center),
-    # numbers on the value axis (scatter overrides both to numeric) - and
-    # render as a single group painted ABOVE the series (recharts'
-    # declare-after-series convention). Labels are strings (the live rule:
-    # no lambdas).
+    # Reference marks - annotation lines, areas, and dots - for every
+    # cartesian family. Values speak the chart's own axes - categories on
+    # the category axis (the band/point center), numbers on the value
+    # axis (scatter overrides both to numeric) - and render as a single
+    # group painted ABOVE the series so annotations stay readable over
+    # the marks. Labels are strings (the live rule: no lambdas).
     #
     # Hosts provide ref_x_pixel/ref_y_pixel (the concern's defaults speak
     # cartesian), plot edges via cartesian, css(:reference_line/:reference_area/:tick),
@@ -16,12 +15,16 @@ module Poetry
     # declared limit).
     module ReferenceMarks
       def self.included(base)
+        # A dashed rule across the plot: x: (a category) draws it
+        # vertical, y: (a value) horizontal; label: annotates it.
         base.renders_many :reference_lines, lambda { |x: nil, y: nil, label: nil, stroke_dasharray: "3 3"|
           (@reference_marks ||= []) << { kind: :line, x: x, y: y, label: label,
                                          dasharray: stroke_dasharray.to_s }
           nil
         }
 
+        # A shaded band: any subset of x1/x2/y1/y2 - missing edges extend
+        # to the plot's edge.
         base.renders_many :reference_areas, lambda { |x1: nil, x2: nil, y1: nil, y2: nil,
                                                       label: nil, fill_opacity: 0.15|
           (@reference_marks ||= []) << { kind: :area, x1: x1, x2: x2, y1: y1, y2: y2,
@@ -29,12 +32,16 @@ module Poetry
           nil
         }
 
+        # A marker circle at (x category, y value); r: sets its radius.
         base.renders_many :reference_dots, lambda { |x:, y:, r: 8, label: nil|
           (@reference_marks ||= []) << { kind: :dot, x: x, y: y, r: r.to_f, label: label }
           nil
         }
       end
 
+      # Every declared mark in declaration order, forcing lazy slot
+      # evaluation.
+      # @api private
       def reference_marks
         reference_lines?
         reference_areas?
@@ -44,6 +51,7 @@ module Poetry
 
       # Category-axis values resolve through the category list (teaching
       # error on an unknown category); scatter overrides to numeric.
+      # @api private
       def ref_x_pixel(value)
         index = cartesian.categories.index(value)
         unless index
@@ -53,15 +61,21 @@ module Poetry
         cartesian.x_centers[index]
       end
 
+      # Value-axis values map through the y scale.
+      # @api private
       def ref_y_pixel(value)
         cartesian.y_scale.call(value.to_f)
       end
 
+      # The plot rect's edges, keyed for the mark painters.
+      # @api private
       def ref_plot
         { left: cartesian.plot_left, right: cartesian.plot_right,
           top: cartesian.plot_top, bottom: cartesian.plot_bottom }
       end
 
+      # The single annotation group, painted above the series.
+      # @api private
       def reference_marks_svg
         marks = reference_marks
         return if marks.empty?
@@ -84,7 +98,7 @@ module Poetry
       end
 
       # x: -> a vertical rule at the category; y: -> a horizontal rule at
-      # the value (recharts ReferenceLine).
+      # the value.
       def reference_line_svg(mark)
         plot = ref_plot
         points = if mark[:y]
@@ -106,8 +120,8 @@ module Poetry
         safe_join([line, label])
       end
 
-      # Any subset of x1/x2/y1/y2; missing edges default to the plot rect
-      # (recharts ReferenceArea).
+      # Any subset of x1/x2/y1/y2; missing edges default to the plot
+      # rect.
       def reference_area_svg(mark)
         plot = ref_plot
         x1 = mark[:x1] ? ref_x_pixel(mark[:x1]) : plot[:left]

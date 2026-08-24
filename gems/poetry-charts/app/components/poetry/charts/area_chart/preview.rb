@@ -3,9 +3,9 @@
 module Poetry
   module Charts
     module AreaChart
-      # The area family, mirroring the shadcn blocks: default (natural),
+      # The area family across its variants: default (natural),
       # linear, step, stacked, percent-stacked, gradient, legend, and the
-      # visible-axes variant. Same data as upstream (visitors by month).
+      # visible-axes variant. Shared sample data (visitors by month).
       class Preview < Poetry::Core::Preview::Base
         DATA = [
           { month: "January", desktop: 186, mobile: 80 },

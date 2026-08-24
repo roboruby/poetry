@@ -2,8 +2,8 @@
 
 module Poetry
   module Charts
-    # poetry's port of shadcn's ChartStyle: turns a chart's Config into the
-    # scoped per-series custom properties, one block per theme -
+    # Turns a chart's Config into the scoped per-series custom
+    # properties, one block per theme -
     #
     #   [data-chart=chart-revenue] { --color-desktop: var(--chart-1); }
     #   .dark [data-chart=chart-revenue] { --color-desktop: oklch(...); }
@@ -26,8 +26,8 @@ module Poetry
         @config = Config.wrap(config)
       end
 
-      # The stylesheet text, or nil when no entry carries a color (shadcn
-      # renders no <style> at all in that case - so do we).
+      # The stylesheet text, or nil when no entry carries a color - a
+      # colorless config renders no <style> element at all.
       #
       # @return [String, nil]
       def css

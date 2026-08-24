@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module RadarChart
-      # The radar family, mirroring the shadcn blocks: default, dots,
+      # The radar family across its variants: default, dots,
       # lines-only, multiple series, circle grid, tinted grid disc,
       # gridless, and legend.
       class Preview < Poetry::Core::Preview::Base
@@ -19,8 +19,8 @@ module Poetry
           simple(id: "radar-dots", dots: true)
         end
 
-        # Upstream draws BOTH series as strokes and turns the grid's radial
-        # spokes off (PolarGrid radialLines={false}).
+        # BOTH series draw as strokes only, and the grid's radial
+        # spokes turn off.
         def lines_only
           render_component(data: DATA, config: TWO, id: "radar-lines-only") do |chart|
             chart.with_angle_axis(data_key: :month)
@@ -30,7 +30,7 @@ module Poetry
           end
         end
 
-        # Only the FIRST series is translucent upstream (fillOpacity 0.6);
+        # Only the FIRST series is translucent (fill_opacity 0.6);
         # the second keeps the opaque default and covers the overlap.
         def multiple
           render_component(data: DATA, config: TWO, id: "radar-multiple") do |chart|

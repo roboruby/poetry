@@ -3,11 +3,11 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-shape line() (src/line.js): data -> SVG path string through a
-      # curve state machine, with defined-gaps starting new subpaths (the
-      # single toggle loop, transcribed). Accessors are lambdas (d, i),
-      # symbols/strings (hash key lookup), or numeric constants; x/y default
-      # to the [x, y] pair convention.
+      # The line generator: data -> SVG path string through a curve state
+      # machine, with defined-gaps starting new subpaths (a single toggle
+      # loop). Accessors are lambdas (d, i), symbols/strings (hash key
+      # lookup), or numeric constants; x/y default to the [x, y] pair
+      # convention.
       #
       # @example
       #   Poetry::Charts::Geometry::Line.new(curve: :monotone_x).path(points)
@@ -20,6 +20,10 @@ module Poetry
           @digits = digits
         end
 
+        # The SVG path for the data (nil when nothing was defined).
+        #
+        # @param data [Enumerable]
+        # @return [String, nil]
         def path(data)
           data = data.to_a
           n = data.length
@@ -43,6 +47,7 @@ module Poetry
         module Accessor
           module_function
 
+          # A (d, i) lambda from a lambda, key, constant, or the default.
           def wrap(value, &default)
             case value
             when nil then default

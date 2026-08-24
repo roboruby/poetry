@@ -10,31 +10,34 @@ require_relative "charts/geometry"
 require_relative "charts/cartesian"
 require_relative "charts/polar"
 
+# The poetry component family's shared root namespace.
 module Poetry
-  # poetry's chart tier: the shadcn chart surface as server-rendered
-  # SVG. Ruby runs the whole geometry pipeline - data -> domains -> scales ->
-  # ticks -> points -> paths (d3-scale/d3-shape semantics, recharts'
-  # decimal-exact nice ticks) - and the finished chart ships in the initial
-  # HTML: no-JS/print/email valid, themed by CSS variables (--chart-1..5 +
-  # per-chart --color-<key>), dark mode with zero re-render. Stimulus chrome
-  # adds tooltip/legend/active interactivity by reading SERVER-EMBEDDED
-  # coordinates - no chart math in the browser.
+  # poetry's chart tier: charts as server-rendered SVG. Ruby runs the
+  # whole geometry pipeline - data -> domains -> scales -> ticks ->
+  # points -> paths, with decimal-exact nice ticks - and the finished
+  # chart ships in the initial HTML: no-JS/print/email valid, themed by
+  # CSS variables (--chart-1..5 + per-chart --color-<key>), dark mode
+  # with zero re-render. Stimulus chrome adds tooltip/legend/active
+  # interactivity by reading SERVER-EMBEDDED coordinates - no chart math
+  # in the browser.
   #
   # Engines stay swappable (three doors): the container contract is
   # engine-agnostic; every chart also compiles to a closed, VERSIONED
   # chart-spec consumed by duck-typed adapters (render/update/destroy -
-  # Chart.js ships as the reference adapter); React chart libraries remain
-  # reachable through a Stimulus-mounted island.
+  # a canvas adapter ships as the reference); client-rendered chart
+  # libraries remain reachable through a Stimulus-mounted island.
   #
   # @example Render a chart through the dispatcher helper
   #   poetry_chart :bar, data: rows, series: [{ data_key: :revenue }]
   module Charts
-    # The cartesian slot grammar's shared value types: the curve whitelist
-    # and the axis/grid capture shapes the family slots accumulate into.
-    # Scatter carries its own AxisConfig (both axes numeric - different
-    # fields); radar carries its own GridConfig (polygon/circle rings).
+    # The curve interpolation whitelist every series slot validates
+    # against.
     CURVES = %i[natural linear step step_before step_after monotone_x].freeze
+    # The axis capture shape the cartesian family slots accumulate into
+    # (scatter carries its own - both axes numeric, different fields).
     AxisConfig = Data.define(:data_key, :tick_formatter, :tick_margin, :tick_count)
+    # The grid capture shape - which rule directions render (radar
+    # carries its own, with polygon/circle rings).
     GridConfig = Data.define(:vertical, :horizontal)
 
     class << self
@@ -69,7 +72,7 @@ module Poetry
         path.exist? ? YAML.safe_load_file(path) : nil
       end
 
-      # The shadcn-interop item projection, boot-free from the COMMITTED
+      # The installable-item projection, boot-free from the COMMITTED
       # registry - the docs site aggregates this with poetry-ui's for
       # /r/*.json.
       def registry_items
@@ -79,8 +82,12 @@ module Poetry
         )
       end
 
+      # Parameter kinds that count toward a helper's positional arity.
       POSITIONAL_PARAM_KINDS = %i[req opt].freeze
 
+      # Each poetry_* helper's max positional arity, read from its real
+      # signature.
+      # @api private
       def registry_helper_args
         require root.join("app/helpers/poetry/charts/components_helper.rb")
         ComponentsHelper.public_instance_methods(false).grep(/\Apoetry_/).sort.filter_map do |name|

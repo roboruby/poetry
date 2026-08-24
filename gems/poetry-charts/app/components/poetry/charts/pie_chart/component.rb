@@ -2,19 +2,19 @@
 
 module Poetry
   module Charts
+    # The pie chart family.
     module PieChart
-      # The Pie chart family (shadcn PieChart, 11 blocks): recharts' own
-      # polar math (Polar module), server-rendered sectors. Slices color
-      # from their row's fill key (the upstream data convention), the donut
-      # hole comes from inner_radius, stacked pies nest two rings with their
-      # own data, and the center label (donut-text) is plain SVG text.
-      # The 250x250 viewBox mirrors the shadcn blocks' aspect-square
-      # max-h-[250px] canvas, so recharts' absolute-px radii (innerRadius
-      # 60, outerRadius+10 pop-outs) mean the identical proportion here.
-      # Slices meet flush by default (the current recharts render);
-      # stroke_width: N opts back into var(--background) separators -
-      # recharts' #fff would break in dark mode.
+      # Renders a pie or donut chart as server-computed polar sectors.
+      # Slices color from their row's fill key, the donut hole comes from
+      # inner_radius, stacked pies nest two rings with their own data,
+      # and the center label is plain SVG text. The 250x250 viewBox pairs
+      # with a square, max-height-capped container, so absolute-pixel
+      # radii (inner_radius: 60, active pop-outs of +10) keep the same
+      # proportion everywhere. Slices meet flush by default;
+      # stroke_width: N opts into var(--background) separators, which
+      # hold up in dark mode where a hard-coded white would not.
       #
+      # @example A donut with a tooltip
       #   <%= poetry_chart :pie, data: browsers, config: config do |c| %>
       #     <% c.with_pie data_key: :visitors, name_key: :browser, inner_radius: 60 %>
       #     <% c.with_tooltip %>
@@ -24,6 +24,7 @@ module Poetry
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Rows carry their slice color in a fill key (var(--color-<name>)); the config maps names to labels.",
           "inner_radius: 60 makes the donut; with_center_label(title:, subtitle:) fills the hole.",
@@ -34,16 +35,30 @@ module Poetry
           "Reduced-motion users always get the finished chart."
         ].freeze
 
+        # One with_pie call's captured series config.
         Series = Data.define(:data, :data_key, :name_key, :inner_radius, :outer_radius,
                              :padding_angle, :stroke_width, :color_key, :labels, :label_key,
                              :active_index, :active_grow)
 
+        # Default rows for pies that don't bring their own data: - one
+        # hash per slice.
         option :data, ActiveModel::Type::Value.new
+        # The series config - name => { label:, color: } - naming and
+        # coloring the slices.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 250
+        # ViewBox height in pixels.
         option :height, :integer, default: 250
+        # Margin overrides ({ top:, right:, bottom:, left: }), merged
+        # over the slim polar default.
         option :margin, ActiveModel::Type::Value.new
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options(delay: 400)
@@ -83,6 +98,9 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
+        # One ring of slices reading data_key: values and name_key: slice
+        # names. inner_radius: makes the donut; padding_angle: spaces the
+        # slices; active_index: pops one out by active_grow: pixels.
         renders_many :pies, lambda { |data_key:, data: nil, name_key: :name, inner_radius: 0,
                                       outer_radius: "80%", padding_angle: 0, stroke_width: 0,
                                       color_key: :fill, labels: nil, label_key: nil,
@@ -97,16 +115,20 @@ module Poetry
         # real name.
         alias with_pie with_py
 
+        # The donut-hole text: a title line plus an optional subtitle.
         renders_one :center_label, lambda { |title:, subtitle: nil|
           @center_label_config = { title: title, subtitle: subtitle }
           nil
         }
 
+        # The legend row: align:, items:, and hide_icon:.
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
+        # The hover tooltip; the slice name carries the label, so
+        # hide_label defaults on.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = { hide_label: true }.merge(options)
           nil
@@ -118,11 +140,16 @@ module Poetry
         include Poetry::Charts::PolarFamily
         include Poetry::Charts::PolarFamily::SingleSeriesTooltip
 
+        # The captured Series configs, forcing lazy slot evaluation.
+        # @api private
         def series_entries
           pies? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
+        # The center-label slot's captured config, forcing lazy slot
+        # evaluation.
+        # @api private
         def center_label_config
           center_label?
           @center_label_config
@@ -133,16 +160,20 @@ module Poetry
         # Memoized per SLOT (object identity), never per data_key: two rings
         # may share a data_key with different data:, and a key-keyed memo
         # would silently render the first ring's rows twice.
+        # @api private
         def rows(entry)
           @rows ||= {}
           @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
+        # One computed slice: its sector geometry plus name, value, and
+        # fill.
         Slice = Data.define(:index, :name, :value, :fill, :path, :mid_angle, :middle_radius, :label_point,
                             :inner, :outer, :start_angle, :end_angle)
 
         # Slot-identity memo, matching rows (a shared data_key must not
         # collapse two rings into one geometry).
+        # @api private
         def slices(entry)
           @slices ||= {}
           @slices[entry.object_id] ||= begin
@@ -176,6 +207,9 @@ module Poetry
           end
         end
 
+        # A slice's fill: the color_key row value (CSS-validated), else
+        # the config color for its name, else the series color var.
+        # @api private
         def slice_fill(entry, row)
           color = row[entry.color_key].to_s if entry.color_key
           if color.present?
@@ -188,9 +222,9 @@ module Poetry
           end
         end
 
-        # Named labels resolve through the config (raw "chrome" -> "Chrome"),
-        # the same lookup the tooltip and legend already do - upstream's
-        # LabelList formatter in one place.
+        # Named labels resolve through the config (raw "chrome" ->
+        # "Chrome"), the same lookup the tooltip and legend already do.
+        # @api private
         def slice_label(entry, slice)
           return slice.value.to_i.to_s unless entry.label_key
 
@@ -201,13 +235,19 @@ module Poetry
         # -- the tooltip payload (polar shape) ---------------------------------
 
         # The SingleSeriesTooltip hooks: the FIRST pie's slices are the
-        # items (stacked pies: document), anchored at their label points;
-        # values read that pie's own rows.
+        # items, anchored at their label points; values read that pie's
+        # own rows.
+        # @api private
         def polar_items(entry) = slices(entry)
+        # Where the tooltip anchors on one slice.
+        # @api private
         def polar_anchor(slice) = slice.label_point
+        # The rows the tooltip values read from.
+        # @api private
         def polar_value_rows(entry) = rows(entry)
 
         # ChartFamily#svg_label's chart-type lead-in.
+        # @api private
         def svg_label_prefix = "Pie chart"
       end
     end

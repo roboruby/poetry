@@ -3,20 +3,26 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-array ticks/tickIncrement/tickStep (src/ticks.js, v3), ported
-      # line-for-line. The 1-2-5-10 step selection against sqrt thresholds
-      # and the inverted-increment encoding (negative inc = divisor) are
-      # d3's exact trick for float-exact tick values.
+      # Float-exact tick generation: ticks / tick_increment / tick_step.
+      # The 1-2-5-10 step selection runs against square-root thresholds,
+      # and the inverted-increment encoding (negative inc = divisor)
+      # keeps tick values float-exact - a sub-1 step divides by an
+      # integer instead of multiplying by a fraction.
       #
       # @example
       #   Poetry::Charts::Geometry::Ticks.ticks(0, 10, 5) # => [0, 2, 4, 6, 8, 10]
       module Ticks
+        # The step-10 selection threshold: sqrt(50).
         E10 = Math.sqrt(50)
+        # The step-5 selection threshold: sqrt(10).
         E5 = Math.sqrt(10)
+        # The step-2 selection threshold: sqrt(2).
         E2 = Math.sqrt(2)
 
         module_function
 
+        # The [first index, last index, increment] spec for a tick run.
+        # @api private
         def tick_spec(start, stop, count)
           step = (stop - start) / [0, count].max.to_f
           # JS runs degenerate inputs (zero span) through its float arithmetic
@@ -54,6 +60,10 @@ module Poetry
           [i1, i2, inc]
         end
 
+        # About `count` evenly stepped, float-exact values covering
+        # [start, stop].
+        #
+        # @return [Array<Numeric>]
         def ticks(start, stop, count)
           start = start.to_f
           stop = stop.to_f
@@ -72,10 +82,13 @@ module Poetry
           end
         end
 
+        # The raw increment for the run - negative encodes a divisor.
         def tick_increment(start, stop, count)
           tick_spec(start.to_f, stop.to_f, count.to_f)[2]
         end
 
+        # The absolute step size for the run (the increment decoded,
+        # signed by direction).
         def tick_step(start, stop, count)
           start = start.to_f
           stop = stop.to_f

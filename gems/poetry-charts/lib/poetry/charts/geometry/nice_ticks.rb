@@ -5,25 +5,26 @@ require "bigdecimal"
 module Poetry
   module Charts
     module Geometry
-      # recharts' nice-ticks algorithm (src/util/scale/getNiceTickValues.ts +
-      # util/arithmetic.ts, v3.9.2), ported to BigDecimal so the ticks stay
-      # decimal-exact. decimal.js-light maps as: new Decimal(x)
-      # -> BigDecimal(x.to_s) (both construct from the double's shortest
-      # string), mod -> #remainder (truncated, sign of dividend), div ->
-      # #div(x, 20) (decimal.js-light's default 20 significant digits),
-      # log(10)-based digit counts -> BigDecimal#exponent (exact).
+      # The nice-ticks algorithm on BigDecimal, so the tick values stay
+      # decimal-exact. Every operation is decimal, not binary: values
+      # construct from the double's shortest decimal string, remainders
+      # truncate with the dividend's sign (#remainder), division carries
+      # 20 significant digits (PRECISION), and digit counts come from
+      # BigDecimal#exponent (exactly floor(log10) + 1).
       #
-      # Oracle: the translated cases from recharts' own
-      # test/util/scale/getNiceTickValues.spec.ts.
+      # Oracle: translated spec cases pin the expected tick values.
       #
       # @example Nice a raw domain into tick values
       #   Poetry::Charts::Geometry::NiceTicks.nice_ticks([0, 97], 5)
       module NiceTicks
+        # Significant digits carried through every division.
         PRECISION = 20
+        # The step multiples the :snap125 mode snaps to.
         SNAP_STEPS = [1r, 2r, 2.5r, 5r].map { |step| BigDecimal(step, 10) }.freeze
 
         module_function
 
+        # Coerce to BigDecimal via the double's shortest decimal string.
         def dec(value)
           value.is_a?(BigDecimal) ? value : BigDecimal(value.to_f.to_s)
         end
@@ -36,7 +37,7 @@ module Poetry
           dec(value).exponent
         end
 
-        # [start, end) with a fixed decimal step (recharts rangeStep).
+        # [start, end) with a fixed decimal step.
         def range_step(start, stop, step)
           num = start
           result = []
@@ -49,6 +50,7 @@ module Poetry
           result
         end
 
+        # The interval sorted ascending.
         def valid_interval(min, max)
           min > max ? [max, min] : [min, max]
         end
@@ -96,6 +98,7 @@ module Poetry
           allow_decimals ? format_step : BigDecimal(format_step.to_f.ceil)
         end
 
+        # The step function a mode selects.
         def step_function(mode)
           mode == :snap125 ? method(:snap125_step) : method(:adaptive_step)
         end
@@ -160,8 +163,8 @@ module Poetry
           }
         end
 
-        # Nice ticks for [min, max] - ticks may run OUTSIDE the interval to
-        # stay round (recharts getNiceTickValues).
+        # Nice ticks for [min, max] - ticks may run OUTSIDE the interval
+        # to stay round.
         def nice_ticks(domain, tick_count = 6, allow_decimals: true, mode: :auto)
           min, max = domain
           count = [tick_count, 2].max
@@ -186,8 +189,8 @@ module Poetry
           min > max ? values.reverse : values
         end
 
-        # Nice-stepped ticks CONSTRAINED to [min, max] (recharts
-        # getTickValuesFixedDomain) - the domain boundary always closes the list.
+        # Nice-stepped ticks CONSTRAINED to [min, max] - the domain
+        # boundary always closes the list.
         def fixed_domain_ticks(domain, tick_count, allow_decimals: true, mode: :auto)
           min, max = domain
           cormin, cormax = valid_interval(min, max)

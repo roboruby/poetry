@@ -2,17 +2,17 @@
 
 module Poetry
   module Charts
+    # The scatter chart family.
     module ScatterChart
-      # The Scatter family (beyond the shadcn surface): BOTH
-      # axes numeric - two recharts-niced linear scales - with per-point
-      # marks. Each with_scatter series brings its own rows (or shares the
-      # chart data); z sizing ports recharts' ZAxis semantics exactly (the
-      # range is marker AREA in px2, default [64, 64]; r = sqrt(area/pi)).
-      # The tooltip hits per POINT (data-index + pointerover, the pie
-      # pattern) and the chrome shows the x/y(/z) rows with the point's
-      # series name and color retinting per index - the polar wire shape,
-      # zero controller changes.
+      # Renders a scatter chart: BOTH axes numeric - two auto-niced
+      # linear scales - with per-point marks. Each with_scatter series
+      # brings its own rows (or shares the chart data); the z axis sizes
+      # markers by AREA in px2 (default range [64, 64]; r =
+      # sqrt(area/pi)). The tooltip hits per POINT (data-index +
+      # pointerover) and the chrome shows the x/y(/z) rows with the
+      # point's series name and color retinting per index.
       #
+      # @example Points over two named numeric axes
       #   <%= poetry_chart :scatter, data: points, config: config do |c| %>
       #     <% c.with_grid %>
       #     <% c.with_x_axis data_key: :height, name: "Height" %>
@@ -27,6 +27,7 @@ module Poetry
         include Poetry::Charts::ReferenceMarks
         include Poetry::Charts::ErrorBars
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Both axes are numeric: with_x_axis(data_key:) / with_y_axis(data_key:) name the row keys to plot.",
           "with_scatter(key:) colors points var(--color-<key>); data: gives a series its own rows.",
@@ -36,16 +37,32 @@ module Poetry
           "Entrance animation is on by default (recharts Scatter: 400ms linear); animate: false for a static chart."
         ].freeze
 
+        # One with_scatter call's captured series config.
         Series = Data.define(:key, :data, :error_key, :error_width)
+        # One numeric axis slot's captured config.
         AxisConfig = Data.define(:data_key, :tick_count, :tick_margin, :name)
+        # The marker AREA range (px2) when no z axis sizes the points.
         DEFAULT_Z_RANGE = [64, 64].freeze
 
+        # Default rows for series that don't bring their own data: - one
+        # hash per point.
         option :data, ActiveModel::Type::Value.new
+        # The series config - key => { label:, color: } - naming and
+        # coloring every series.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 640
+        # ViewBox height in pixels.
         option :height, :integer, default: 360
+        # Plot margin overrides ({ top:, right:, bottom:, left: }),
+        # merged over the defaults.
         option :margin, ActiveModel::Type::Value.new
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options(duration: 400, easing: :linear)
@@ -86,37 +103,49 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
+        # A point series colored by key:. data: gives it its own rows;
+        # error_key: adds error whiskers.
         renders_many :scatters, lambda { |key:, data: nil, error_key: nil, error_width: 5|
           (@series_entries ||= []) << Series.new(key: key.to_s, data: data,
                                                  error_key: error_key&.to_s, error_width:)
           nil
         }
 
+        # The numeric x axis: data_key: names the row key to plot;
+        # name: labels its tooltip row.
         renders_one :x_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
           @x_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
           nil
         }
 
+        # The numeric y axis: data_key: names the row key to plot;
+        # name: labels its tooltip row.
         renders_one :y_axis, lambda { |data_key:, tick_count: 5, tick_margin: 8, name: nil|
           @y_axis_config = AxisConfig.new(data_key: data_key.to_s, tick_count:, tick_margin:, name:)
           nil
         }
 
+        # A third dimension sizing the markers: range: is marker AREA in
+        # px2 mapped linearly from the data_key: values.
         renders_one :z_axis, lambda { |data_key:, range: DEFAULT_Z_RANGE|
           @z_axis_config = { data_key: data_key.to_s, range: range }
           nil
         }
 
+        # The gridlines: both directions by default.
         renders_one :grid, lambda { |vertical: true, horizontal: true|
           @grid_config = GridConfig.new(vertical:, horizontal:)
           nil
         }
 
+        # The legend row: align:, items:, and hide_icon:.
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
+        # The hover tooltip - per-point x/y(/z) rows under the series
+        # name.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = options
           nil
@@ -130,83 +159,117 @@ module Poetry
           end
         end
 
+        # The captured Series configs, forcing lazy slot evaluation.
+        # @api private
         def series_entries
           scatters? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
+        # The x-axis slot's captured config, forcing lazy slot evaluation.
+        # @api private
         def x_axis_config
           x_axis?
           @x_axis_config
         end
 
+        # The y-axis slot's captured config, forcing lazy slot evaluation.
+        # @api private
         def y_axis_config
           y_axis?
           @y_axis_config
         end
 
+        # The z-axis slot's captured config, forcing lazy slot evaluation.
+        # @api private
         def z_axis_config
           z_axis?
           @z_axis_config
         end
 
+        # The grid slot's captured config, forcing lazy slot evaluation.
+        # @api private
         def grid_config
           grid?
           @grid_config
         end
 
-        # -- geometry: two recharts-niced linear scales -----------------------
+        # -- geometry: two auto-niced linear scales ---------------------------
 
+        # The default margin - a slim, even inset on all sides.
         MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
 
+        # The margin option merged over the defaults.
+        # @api private
         def margins
           @margins ||= MARGIN.merge((margin || {}).to_h.symbolize_keys)
         end
 
+        # The plot rect's left edge, inset for the y axis when present.
+        # @api private
         def plot_left = margins[:left].to_f + (y_axis? ? Cartesian::Y_AXIS_WIDTH : 0)
+        # The plot rect's right edge.
+        # @api private
         def plot_right = width - margins[:right]
+        # The plot rect's top edge.
+        # @api private
         def plot_top = margins[:top].to_f
+        # The plot rect's bottom edge, inset for the x axis when present.
+        # @api private
         def plot_bottom = height - margins[:bottom] - (x_axis? ? Cartesian::X_AXIS_HEIGHT : 0)
 
         # Memoized per SLOT (object identity), never per key: two series may
         # share a key with different data:, and a key-keyed memo would
         # silently render the first series' rows twice.
+        # @api private
         def rows(entry)
           @rows ||= {}
           @rows[entry.object_id] ||= (entry.data || data || []).map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
+        # Every series' values for one row key, flattened.
+        # @api private
         def axis_values(key)
           series_entries.flat_map { |entry| rows(entry).map { |row| row[key].to_f } }
         end
 
-        # Both axes ride the recharts nice-ticks over [0, auto], the same
+        # Both axes ride the shared nice-ticks over [0, auto], the same
         # convention as every numeric axis in the engine.
+        # @api private
         def x_ticks
           @x_ticks ||= nice_ticks(axis_values(x_axis_config.data_key), x_axis_config.tick_count)
         end
 
+        # The y axis's niced tick values.
+        # @api private
         def y_ticks
           @y_ticks ||= nice_ticks(axis_values(y_axis_config.data_key), y_axis_config.tick_count)
         end
 
+        # Niced ticks over the values' [min-or-0, max] domain.
+        # @api private
         def nice_ticks(values, count)
           max = values.max || 1
           Geometry::NiceTicks.nice_ticks([[0, values.min || 0].min, max], count)
         end
 
+        # The x scale from the tick domain onto the plot width.
+        # @api private
         def x_scale
           @x_scale ||= Geometry::Scale::Linear.new(domain: [x_ticks.first, x_ticks.last],
                                                    range: [plot_left, plot_right])
         end
 
+        # The y scale from the tick domain onto the plot height.
+        # @api private
         def y_scale
           @y_scale ||= Geometry::Scale::Linear.new(domain: [y_ticks.first, y_ticks.last],
                                                    range: [plot_bottom, plot_top])
         end
 
-        # recharts ZAxis: a linear scale from the z data domain onto the
-        # AREA range; the circle radius is sqrt(area / pi).
+        # The z axis: a linear scale from the z data domain onto the AREA
+        # range; the circle radius is sqrt(area / pi).
+        # @api private
         def z_scale
           @z_scale ||= begin
             values = axis_values(z_axis_config[:data_key])
@@ -215,6 +278,8 @@ module Poetry
           end
         end
 
+        # A point's radius from its z value (or the default area).
+        # @api private
         def point_radius(row)
           area = if z_axis_config
                    value = row[z_axis_config[:data_key]].to_f
@@ -225,10 +290,12 @@ module Poetry
           Math.sqrt(area / Math::PI)
         end
 
+        # One computed point: its position, radius, series key, and row.
         Point = Data.define(:index, :key, :cx, :cy, :r, :row)
 
         # All series flattened with a GLOBAL index - the tooltip's per-point
         # hit space.
+        # @api private
         def points
           @points ||= begin
             index = -1
@@ -246,10 +313,15 @@ module Poetry
 
         # -- the tooltip payload (the per-index anchors wire) ------------------
 
+        # An axis's tooltip-row label: its name:, else the fallback.
+        # @api private
         def axis_label(axis_config, fallback)
           (axis_config.respond_to?(:name) && axis_config.name.presence) || fallback
         end
 
+        # The embedded per-point geometry payload the tooltip controller
+        # reads.
+        # @api private
         def coordinates_json
           value_rows = { "x" => x_axis_config, "y" => y_axis_config }
           # No "names": the x/y rows keep their axis labels; the point's
@@ -272,6 +344,7 @@ module Poetry
 
         # The chrome rows are the axis DIMENSIONS (x/y/z), labeled from the
         # axis name: (or its data key); the indicator retints per point.
+        # @api private
         def tooltip_layer_component
           entries = {
             x: { label: axis_label(x_axis_config, x_axis_config.data_key) },
@@ -289,6 +362,7 @@ module Poetry
 
         # The whole-name override of ChartFamily#svg_label: scatter's
         # series read from the config by key, not from its entries.
+        # @api private
         def svg_label
           label.presence ||
             "Scatter chart: #{series_entries.map { |e| chart_config[e.key]&.label || e.key }.join(", ")}"
@@ -296,13 +370,20 @@ module Poetry
 
         # Reference marks speak numbers on BOTH axes here (the concern's
         # defaults are categorical).
+        # @api private
         def ref_x_pixel(value) = x_scale.call(value.to_f)
+        # Reference y values map through the y scale.
+        # @api private
         def ref_y_pixel(value) = y_scale.call(value.to_f)
 
+        # The plot rect's edges, keyed for the mark painters.
+        # @api private
         def ref_plot
           { left: plot_left, right: plot_right, top: plot_top, bottom: plot_bottom }
         end
 
+        # A tick's label, integers shown bare.
+        # @api private
         def tick_label(tick)
           Geometry.js_number(tick.to_f)
         end

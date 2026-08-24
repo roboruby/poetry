@@ -2,12 +2,14 @@
 
 module Poetry
   module Charts
+    # The line chart family.
     module LineChart
-      # The Line chart family (shadcn LineChart, 10 blocks): the cartesian
-      # pipeline drawing stroked curves only - no fills. Adds the dots
-      # variants (solid series-colored dots; per-point colors from a data
-      # key) and point labels (the LabelList position=top look).
+      # Renders a line chart - one stroked curve per series, no fills -
+      # through the cartesian pipeline. Adds dot variants (solid
+      # series-colored dots, or per-point colors read from a data key),
+      # value labels stamped above the points, and error whiskers.
       #
+      # @example Two series over a formatted month axis
       #   <%= poetry_chart :line, data:, config:, margin: { left: 12, right: 12 } do |c| %>
       #     <% c.with_grid %>
       #     <% c.with_x_axis data_key: :month, tick_formatter: ->(v) { v[0, 3] } %>
@@ -22,6 +24,7 @@ module Poetry
         include Poetry::Charts::ReferenceMarks
         include Poetry::Charts::ErrorBars
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_line(data_key:) / with_legend.",
           "Lines default to stroke-width 2 and NO dots (the shadcn block look); dots: true adds them.",
@@ -32,18 +35,31 @@ module Poetry
           "Reduced-motion users always get the finished chart."
         ].freeze
 
+        # One with_line call's captured series config.
         Series = Data.define(:key, :curve, :stroke_width, :dots, :dot_radius, :dot_color_key, :labels,
                              :error_key, :error_width) do
           # The cartesian pipeline contract (lines never stack).
           def stack = nil
         end
 
+        # The rows to plot: an array of hashes, one per x category.
         option :data, ActiveModel::Type::Value.new, required: true
+        # The series config - key => { label:, color: } - naming and
+        # coloring every series.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 640
+        # ViewBox height in pixels.
         option :height, :integer, default: 360
+        # Plot margin overrides ({ top:, right:, bottom:, left: }),
+        # merged over the defaults.
         option :margin, ActiveModel::Type::Value.new
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options
@@ -97,6 +113,10 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
+        # A line series bound to data_key:. dots: marks each point;
+        # dot_color_key: reads per-point dot colors from the row;
+        # labels: stamps each value above its point; error_key: adds
+        # error whiskers.
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2, dots: false,
                                        dot_radius: 3, dot_color_key: nil, labels: false, error_key: nil, error_width: 5|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
@@ -109,11 +129,15 @@ module Poetry
 
         include Poetry::Charts::CartesianFamily
 
+        # The captured Series configs, forcing lazy slot evaluation.
+        # @api private
         def series_entries
           lines? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
+        # The chart's cartesian geometry, built once per render.
+        # @api private
         def cartesian
           @cartesian ||= Cartesian.new(
             data: data,
@@ -128,6 +152,8 @@ module Poetry
           )
         end
 
+        # One series' stroked curve path.
+        # @api private
         def series_path(entry)
           points = cartesian.points(entry)
           Geometry::Line.new(
@@ -139,6 +165,7 @@ module Poetry
         end
 
         # The visible points for dots/labels (NaN values render nothing).
+        # @api private
         def markers(entry)
           cartesian.points(entry).each_with_index.filter_map do |point, i|
             next if point[:value].nan?
@@ -149,6 +176,7 @@ module Poetry
 
         # Per-point dot color: the dot_color_key row value (CSS-validated),
         # else the series color.
+        # @api private
         def dot_fill(entry, marker)
           if entry.dot_color_key
             color = marker[:row].to_h.transform_keys(&:to_s)[entry.dot_color_key].to_s
@@ -160,36 +188,52 @@ module Poetry
           end
         end
 
+        # One x tick's label, through the slot's formatter when given.
+        # @api private
         def x_tick_label(category)
           formatter = x_axis_config&.tick_formatter
           formatter ? formatter.call(category).to_s : category.to_s
         end
 
+        # One y tick's label, through the slot's formatter when given.
+        # @api private
         def y_tick_label(tick)
           formatter = y_axis_config&.tick_formatter
           formatter ? formatter.call(tick).to_s : Geometry.js_number(tick.to_f)
         end
 
+        # A point's value label, integers shown bare.
+        # @api private
         def marker_label(marker)
           value = marker[:value]
           value == value.to_i ? value.to_i.to_s : value.to_s
         end
 
         # ChartFamily#svg_label's chart-type lead-in.
+        # @api private
         def svg_label_prefix = "Line chart"
 
+        # The embedded per-index geometry payload the tooltip controller
+        # reads.
+        # @api private
         def coordinates_json
           cartesian.coordinates.to_json
         end
 
         # -- live mode ---------------------------------------------------
 
+        # The chart type in the live spec.
+        # @api private
         def live_type = :line
 
+        # The series list serialized into the live spec.
+        # @api private
         def live_series
           series_entries.map { |e| { data_key: e.key, curve: e.curve } }
         end
 
+        # The axis config serialized into the live spec.
+        # @api private
         def live_axes
           axes = {}
           axes[:x] = { data_key: x_axis_config.data_key } if x_axis_config&.data_key
@@ -197,7 +241,11 @@ module Poetry
           axes
         end
 
+        # The x scale kind the live renderer rebuilds.
+        # @api private
         def live_x_scale_type = :point
+        # Whether the live frame renders a category axis.
+        # @api private
         def live_category_axis? = x_axis?
       end
     end

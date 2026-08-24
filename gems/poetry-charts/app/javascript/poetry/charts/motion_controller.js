@@ -10,8 +10,8 @@ import { captureGeometry, matchJobs, applyJobs, finishJobs } from "@poetry/chart
 // data-motion lifecycle attribute ("entrance" / "morph" -> "settled") on
 // the SVG so tests and hosts can observe the engine.
 //
-// ENTRANCE. The fan-out is recharts' Pie stepData accumulator
-// (Pie.tsx): every sector's angular width interpolates 0 -> final
+// ENTRANCE. The fan-out is a step accumulator: every sector's
+// angular width interpolates 0 -> final
 // simultaneously, re-accumulated end-to-end each frame from the group's
 // first startAngle, with the FINAL-geometry gaps preserved as constant
 // padding. Sectors carry their server-computed params in
@@ -26,8 +26,8 @@ import { captureGeometry, matchJobs, applyJobs, finishJobs } from "@poetry/chart
 // Frames / Streams / morph), the new render starts FROM the old geometry
 // and tweens to its own via the shared FLIP machinery (motion/flip.js -
 // the live tier rides the same module). Any structure change
-// aborts the morph and the normal entrance replays instead
-// (recharts-faithful for added or removed data).
+// aborts the morph and the normal entrance replays instead - added or
+// removed data never morphs.
 //
 // prefers-reduced-motion (or animate: false) settles immediately - the
 // server-rendered chart is already the finished state.
@@ -143,8 +143,8 @@ export default class ChartMotionController extends Controller {
       groups.get(key).push({ el, cx, cy, inner, outer, start, end, final: el.getAttribute("d") })
     }
 
-    // Hold the entrance state through animation_begin (recharts renders
-    // the delay at the entrance state, not the finished chart).
+    // Hold the entrance state through animation_begin - the delay
+    // shows the entrance state, not the finished chart.
     this.svg.setAttribute("data-motion", "entrance")
     const frame = (eased) => {
       for (const sectors of groups.values()) {

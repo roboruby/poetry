@@ -2,6 +2,7 @@
 
 module Poetry
   module Charts
+    # The bring-your-own-engine chart mount.
     module AdapterChart
       # The BYO-engine mount: `poetry_chart :bar, engine:
       # "chartjs", ...` renders the Container frame (theming intact), a
@@ -15,6 +16,7 @@ module Poetry
       #   <%= poetry_chart :bar, engine: "chartjs", data: data, config: config,
       #                    series: [{ data_key: :desktop }], axes: { x: { data_key: :month } } %>
       class Component < Poetry::Core::Component
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "The adapter path takes series:/axes: ARGUMENTS (the closed spec), not slots.",
           "The host must register the engine first: registerChartAdapter(name, adapter) - " \
@@ -41,13 +43,26 @@ module Poetry
           end
         end
 
+        # The chart type carried in the spec (see Spec::TYPES).
         option :type, :symbol, required: true
+        # The registered adapter's name; the controller hands it the
+        # mount and the spec.
         option :engine, :string, required: true
+        # The rows to plot, serialized into the spec.
         option :data, ActiveModel::Type::Value.new, required: true
+        # The series config - key => { label:, color: } - naming and
+        # coloring every series.
         option :config, ActiveModel::Type::Value.new, required: true
+        # The series list ({ data_key:, ... } hashes) - the closed spec's
+        # replacement for slots.
         option :series, ActiveModel::Type::Value.new, required: true
+        # The axis config ({ x:, y: } hashes), also spec-carried.
         option :axes, ActiveModel::Type::Value.new
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # Accessible name for the mount; defaults to one built from the
+        # type and engine.
         option :label, :string
 
         validates :type, inclusion: { in: Spec::TYPES }
@@ -59,18 +74,27 @@ module Poetry
 
         # Built (and validated) server-side - a bad series/axis key raises
         # at render, never in the browser.
+        # @api private
         def spec
           @spec ||= Spec.new(type: type, data: data, series: series, axes: axes || {}, config: config)
         end
 
+        # The config: option wrapped as a {Poetry::Charts::Config}.
+        # @api private
         def chart_config
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
+        # The data-chart scope: explicit id when given, else unique per
+        # render.
+        # @api private
         def chart_id
           @chart_id ||= (dom_id_token(id) ? "chart-#{dom_id_token(id)}" : poetry_instance_id("chart"))
         end
 
+        # The mount's accessible name: explicit label: or a type+engine
+        # default.
+        # @api private
         def mount_label
           label.presence || "#{type.to_s.capitalize} chart (#{engine})"
         end

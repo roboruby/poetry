@@ -35,10 +35,11 @@
       </g>
     <% end %>
     <% if center_label? %>
-      <%# Full gauge (shape/text): text-4xl centered on cy, dy=0.355em
-          (recharts dominantBaseline=middle), caption 24 below. Compact
-          (stacked half-gauge): text-2xl baseline at cy-16, caption at
-          cy+4 - upstream's smaller number above the flat baseline. %>
+      <%# Full gauge: text-4xl centered on cy, dy=0.355em (the
+          dominant-baseline: middle offset, stated inline), caption 24
+          below. Compact (stacked half-gauge): text-2xl baseline at
+          cy-16, caption at cy+4 - the smaller number sits just above
+          the flat baseline. %>
       <% compact = center_label_config[:compact] %>
       <text data-slot="chart-center-label" x="<%= fnum(cx) %>" y="<%= fnum(cy) %>" text-anchor="middle">
         <% if compact %>

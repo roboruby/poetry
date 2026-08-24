@@ -2,13 +2,14 @@
 
 module Poetry
   module Charts
-    # Error bars: recharts ErrorBar for line, bar, and
-    # scatter series. A series slot takes error_key: naming a row key
-    # holding either a symmetric offset (err) or [low, high] offsets from
-    # the value; the whisker renders cap - stem - cap in the foreground
-    # color (recharts' neutral default - visible over same-colored marks),
-    # width 5 like recharts.
+    # Error bars for line, bar, and scatter series. A series slot takes
+    # error_key: naming a row key holding either a symmetric offset (err)
+    # or [low, high] offsets from the value; the whisker renders
+    # cap - stem - cap in the foreground color (a neutral that stays
+    # visible over same-colored marks), width 5.
+    # @api private
     module ErrorBars
+      # Whisker cap width in pixels.
       DEFAULT_WIDTH = 5
 
       # [low_value, high_value] in DATA units, or nil when the row has no

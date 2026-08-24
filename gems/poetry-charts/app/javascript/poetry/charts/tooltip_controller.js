@@ -5,9 +5,9 @@ import { Controller } from "@hotwired/stimulus"
 // extents, and PRE-FORMATTED value strings in a JSON script; this
 // controller bisects the pointer against those numbers, swaps text into
 // the server-rendered TooltipContent chrome, positions the box, and
-// reflects data-active onto the marked cells/dots. Keyboard access is the
-// recharts accessibilityLayer floor: the SVG is focusable, arrows walk
-// the categories, Escape dismisses.
+// reflects data-active onto the marked cells/dots. Keyboard access is
+// the accessibility-layer floor: the SVG is focusable, arrows walk the
+// categories, Escape dismisses.
 export default class ChartTooltipController extends Controller {
   // The events this controller dispatches (manifest surface;
   // events_declaration.test.js enforces the list stays honest).
@@ -32,8 +32,8 @@ export default class ChartTooltipController extends Controller {
     this.band = payload.band ?? null
     this.activeIndex = null
 
-    // Synced charts (recharts syncId): same-group tooltips follow
-    // each other's active index over a window event.
+    // Synced charts: same-group tooltips follow each other's active
+    // index over a window event.
     if (this.syncValue && !this.onSync) {
       this.onSync = (event) => this.#applySync(event)
       window.addEventListener("poetry-chart:sync", this.onSync)
@@ -167,7 +167,7 @@ export default class ChartTooltipController extends Controller {
     this.#broadcastSync(index)
   }
 
-  // The hover cursor (recharts Tooltip cursor): the server pre-renders a
+  // The hover cursor: the server pre-renders a
   // hidden band rect (bars) or vertical rule (line/area/composed); this
   // positions it at the active index from embedded geometry.
   #cursor(index) {
@@ -236,7 +236,7 @@ export default class ChartTooltipController extends Controller {
     let left
     let top
     if (this.anchors) {
-      // Polar: the server embedded the recharts tooltipPosition (the
+      // Polar: the server embedded each sector's tooltip anchor (the
       // mid-angle point at the middle radius).
       left = this.anchors[index][0] * scaleX + 12
       top = this.anchors[index][1] * scaleY
@@ -262,7 +262,7 @@ export default class ChartTooltipController extends Controller {
   }
 
   // data-active rides every [data-index] mark (bars) and the pre-rendered
-  // hidden active dots (lines/areas) - the Base UI presence vocabulary.
+  // hidden active dots (lines/areas) - the shared presence vocabulary.
   #reflect(index) {
     for (const marked of this.element.querySelectorAll("[data-index]")) {
       if (index != null && Number(marked.dataset.index) === index) marked.setAttribute("data-active", "")

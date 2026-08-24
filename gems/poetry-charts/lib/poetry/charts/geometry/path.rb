@@ -3,13 +3,13 @@
 module Poetry
   module Charts
     module Geometry
-      # d3-path Path (d3-path src/path.js), the subset the shape generators
-      # need: moveTo/lineTo/bezierCurveTo/quadraticCurveTo/closePath. Numbers
-      # are rounded to `digits` decimals with JS Math.round semantics and
-      # stringified as JS does (d3-shape v3 defaults digits to 3) - the
-      # contract that makes poetry's path strings byte-equal to d3's.
-      # Internal cursor state keeps FULL precision (rounding is
-      # output-formatting only, exactly as d3's appendRound).
+      # The path buffer the shape generators write into: move_to /
+      # line_to / bezier_curve_to / quadratic_curve_to / close_path.
+      # Numbers are rounded to `digits` decimals with JS Math.round
+      # semantics and stringified as JS does (digits defaults to 3) - the
+      # contract that keeps poetry's path strings byte-equal to the
+      # geometry fixtures. Internal cursor state keeps FULL precision
+      # (rounding is output-formatting only).
       #
       # The arc/sector verbs are deliberately absent - polar sector paths
       # are built by Polar, not through this class.
@@ -28,6 +28,7 @@ module Poetry
           @scale = digits.nil? ? nil : 10**digits
         end
 
+        # Starts a new subpath at (x, y).
         def move_to(x, y)
           x = x.to_f
           y = y.to_f
@@ -36,6 +37,7 @@ module Poetry
           @data << "M#{fmt(x)},#{fmt(y)}"
         end
 
+        # A straight segment to (x, y).
         def line_to(x, y)
           x = x.to_f
           y = y.to_f
@@ -44,6 +46,7 @@ module Poetry
           @data << "L#{fmt(x)},#{fmt(y)}"
         end
 
+        # A quadratic curve to (x, y) with one control point.
         def quadratic_curve_to(cpx, cpy, x, y)
           x = x.to_f
           y = y.to_f
@@ -52,6 +55,7 @@ module Poetry
           @data << "Q#{fmt(cpx.to_f)},#{fmt(cpy.to_f)},#{fmt(x)},#{fmt(y)}"
         end
 
+        # A cubic curve to (x, y) with two control points.
         def bezier_curve_to(cp1x, cp1y, cp2x, cp2y, x, y)
           x = x.to_f
           y = y.to_f
@@ -60,6 +64,8 @@ module Poetry
           @data << "C#{fmt(cp1x.to_f)},#{fmt(cp1y.to_f)},#{fmt(cp2x.to_f)},#{fmt(cp2y.to_f)},#{fmt(x)},#{fmt(y)}"
         end
 
+        # Closes the current subpath back to its start (a no-op before
+        # any move).
         def close_path
           return if @x1.nil?
 
@@ -68,10 +74,12 @@ module Poetry
           @data << "Z"
         end
 
+        # The accumulated SVG path data.
         def to_s
           @data
         end
 
+        # Whether nothing has been written yet.
         def empty?
           @data.empty?
         end

@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module BarChart
-      # The bar family (vertical), mirroring the shadcn blocks: default
+      # The bar family (vertical) across its variants: default
       # (radius 8), multiple, stacked (outer-edge radius arrays), negative
       # (sign-colored cells + month labels), value labels, the active
       # highlight, and the horizontal + mixed layouts.

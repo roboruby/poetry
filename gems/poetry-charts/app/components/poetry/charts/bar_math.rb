@@ -2,13 +2,16 @@
 
 module Poetry
   module Charts
-    # The bar geometry shared by BarChart and ComposedChart:
-    # recharts' combineAllBarPositions slot math (no explicit
-    # barSize - stacked bars share a slot, groups sit side by side inside
-    # the band), the per-corner rounded rect path (Rectangle), and the
-    # entrance origin. Hosts provide cartesian, data, horizontal?, fnum,
-    # bar_gap, and bar_category_gap.
+    # The bar geometry shared by BarChart and ComposedChart: the slot
+    # math dividing each category band (no explicit bar size - stacked
+    # bars share a slot, groups sit side by side inside the band), the
+    # per-corner rounded rect path, and the entrance origin. Hosts
+    # provide cartesian, data, horizontal?, fnum, bar_gap, and
+    # bar_category_gap.
+    # @api private
     module BarMath
+      # One {offset, size} slot per stack group, laid out inside the
+      # category band.
       def bar_slots_for(entries)
         groups = entries.map(&:stack_or_self).uniq
         band = cartesian.band_width
@@ -49,8 +52,8 @@ module Poetry
       end
 
       # The zero edge the entrance animation grows from: sign x
-      # orientation (stacked segments grow from their own zero-side edge,
-      # matching recharts' per-rect baseline interpolation).
+      # orientation - stacked segments grow from their own zero-side
+      # edge, not the axis baseline.
       def motion_origin(cell)
         if horizontal?
           cell[:value].negative? ? "right" : "left"
@@ -60,7 +63,7 @@ module Poetry
       end
 
       # radius: Integer (all corners) or [tl, tr, br, bl] (the stacked
-      # blocks). Clamped to half the rect like recharts' Rectangle.
+      # blocks). Clamped to half the rect so corners never cross.
       def bar_path_for(radius, cell)
         radii = radius.is_a?(Array) ? radius.map(&:to_f) : Array.new(4, radius.to_f)
         max = [cell[:width] / 2.0, cell[:height] / 2.0].min
@@ -81,7 +84,8 @@ module Poetry
           "#{"A#{f.call(bl)},#{f.call(bl)},0,0,1,#{f.call(x)},#{f.call(y + h - bl)}" if bl.positive?}Z"
       end
 
-      # recharts getPercentValue: "10%" of the band, or a plain px number.
+      # Percent-or-pixels: "10%" resolves against the total, a bare
+      # number is pixels.
       def bar_percent_value(value, total)
         text = value.to_s
         text.end_with?("%") ? total * (text.to_f / 100.0) : text.to_f

@@ -3,17 +3,16 @@
 module Poetry
   module Charts
     # The server-side cartesian layout pipeline: data + series ->
-    # plot rectangle, scales, ticks, and per-series pixel points - computed
-    # top-down in one pass. This is the knowledge recharts reconstructs
-    # through its per-chart store; a server renderer starts with it.
+    # plot rectangle, scales, ticks, and per-series pixel points -
+    # computed top-down in one pass, everything a renderer needs before
+    # writing a path.
     #
-    # Layout follows recharts' conventions so the shadcn blocks translate
-    # 1:1: default margin 5 on every side, x-axis strip height 30 at the
-    # bottom when shown, category x positions from a zero-padding point
-    # scale (first/last categories AT the plot edges - the reason blocks
-    # add left/right margin 12), numeric y domain [0, auto] niced by the
-    # recharts algorithm (implicit tickCount 5), stacking per stack id
-    # with d3's offsets.
+    # Layout conventions: default margin 5 on every side, x-axis strip
+    # height 30 at the bottom when shown, category x positions from a
+    # zero-padding point scale (first/last categories AT the plot
+    # edges - add left/right margin 12 when edge labels need room),
+    # numeric y domain [0, auto] niced decimal-exactly (implicit tick
+    # count 5), stacking per stack id with :none/:expand offsets.
     #
     # @example Lay out a plot and read one series' pixel points
     #   plot = Poetry::Charts::Cartesian.new(
@@ -21,13 +20,17 @@ module Poetry
     #   )
     #   plot.points(series.first) # => [{x:, y0:, y1:, value:}, ...]
     class Cartesian
+      # The default plot margin - a slim, even inset on all sides.
       DEFAULT_MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
+      # The bottom strip reserved for the category axis when shown.
       X_AXIS_HEIGHT = 30
-      # recharts implicit YAxis width - the left strip the horizontal
-      # layout's category labels live in.
+      # The reserved left strip - where a visible value axis's labels
+      # (or the horizontal layout's category labels) live.
       Y_AXIS_WIDTH = 60
 
+      # The stack baseline modes: raw values, or 100%-normalized.
       OFFSETS = %i[none expand].freeze
+      # The chart orientations: :vertical columns, or :horizontal bars.
       LAYOUTS = %i[vertical horizontal].freeze
 
       attr_reader :width, :height, :margin, :y_tick_count, :offset, :layout
@@ -64,43 +67,49 @@ module Poetry
         @offset = offset.to_sym
       end
 
+      # Whether categories run down the Y side (bars growing rightward).
       def horizontal?
         layout == :horizontal
       end
 
       # -- the plot rectangle ---------------------------------------------------
       # The category-axis strip sits at the bottom (vertical layout, height
-      # 30) or the left (horizontal layout, the implicit YAxis width 60).
-      # A VISIBLE value axis in the vertical layout reserves the same left
-      # strip (recharts YAxis width 60 - without the reserved strip, shown
-      # y labels clipped at the plot edge).
+      # 30) or the left (horizontal layout, width 60). A VISIBLE value
+      # axis in the vertical layout reserves the same left strip - without
+      # it, shown y labels would clip at the plot edge.
 
+      # The plot rect's left edge, inset for a reserved left strip.
       def plot_left
         reserved = (horizontal? && @category_axis) || (!horizontal? && @value_axis)
         margin[:left].to_f + (reserved ? Y_AXIS_WIDTH : 0)
       end
 
+      # The plot rect's right edge.
       def plot_right = width - margin[:right]
+      # The plot rect's top edge.
       def plot_top = margin[:top].to_f
 
+      # The plot rect's bottom edge, inset for the category axis strip.
       def plot_bottom
         height - margin[:bottom] - (!horizontal? && @category_axis ? X_AXIS_HEIGHT : 0)
       end
 
       # -- x: categories on a point scale ---------------------------------------
 
+      # The category values: the x_key column, else bare row indexes.
       def categories
         @categories ||= @x_key ? @data.map { |row| row[@x_key] } : (0...@data.length).to_a
       end
 
       # Point for line/area (categories AT the edges); band for bars
-      # (recharts' zero-padding band - the bar gaps come from
-      # barCategoryGap/barGap math inside the band, not scale padding).
-      # Horizontal layout runs the category scale down the Y side.
+      # (a zero-padding band - the bar gaps come from the gap math inside
+      # the band, not scale padding). Horizontal layout runs the category
+      # scale down the Y side.
       def category_range
         horizontal? ? [plot_top, plot_bottom] : [plot_left, plot_right]
       end
 
+      # The category scale over the category range (point or band).
       def x_scale
         @x_scale ||= if @x_scale_type == :band
                        Geometry::Scale::Band.new(domain: categories, range: category_range)
@@ -109,10 +118,12 @@ module Poetry
                      end
       end
 
+      # Each category's scale position (a band's leading edge).
       def x_positions
         x_scale.positions
       end
 
+      # One category band's width (0 on a point scale).
       def band_width
         x_scale.bandwidth
       end
@@ -128,8 +139,9 @@ module Poetry
                        end
       end
 
-      # -- y: numeric domain, recharts-niced -------------------------------------
+      # -- y: numeric domain, auto-niced -----------------------------------------
 
+      # The niced value ticks ([0, 1] when 100%-stacked).
       def y_ticks
         @y_ticks ||= if offset == :expand
                        Geometry::NiceTicks.nice_ticks([0, 1], y_tick_count)
@@ -138,6 +150,7 @@ module Poetry
                      end
       end
 
+      # The niced value domain - the first and last tick.
       def y_domain
         [y_ticks.first, y_ticks.last]
       end
@@ -151,8 +164,8 @@ module Poetry
         )
       end
 
-      # The area baseline: the y pixel of 0, clamped into the domain
-      # (recharts' Area baseline semantics).
+      # The area baseline: the y pixel of 0, clamped into the domain so
+      # an all-positive domain pins the baseline at its bottom edge.
       def baseline
         y_scale.call(0.0.clamp(y_domain.first, y_domain.last))
       end
@@ -160,7 +173,7 @@ module Poetry
       # -- per-series points -----------------------------------------------------
 
       # [{x:, y0:, y1:, value:}] for one series entry - stacked entries ride
-      # their stack group's d3 offsets; independent entries base on the
+      # their stack group's offsets; independent entries base on the
       # baseline. NaN values (missing data) flow through as NaN, which the
       # generators' defined-gap machinery turns into path gaps.
       #
@@ -227,7 +240,7 @@ module Poetry
         Poetry::Charts.display_value(value)
       end
 
-      # d3 stacks per stack id, memoized: { key => [[lo, hi], ...] }.
+      # Stack bands per stack id, memoized: { key => [[lo, hi], ...] }.
       def stacked_bands(stack_id)
         @stacked_bands ||= {}
         @stacked_bands[stack_id] ||= begin
@@ -238,8 +251,8 @@ module Poetry
       end
 
       # The raw numeric domain before nicing: [min(0, data), max(data)] -
-      # recharts' default [0, 'auto'] domain, stacked series contributing
-      # their cumulative tops.
+      # the default [0, auto] domain, stacked series contributing their
+      # cumulative tops.
       def raw_domain
         values = []
         @series.each do |entry|

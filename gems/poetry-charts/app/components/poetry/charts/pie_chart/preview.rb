@@ -3,7 +3,7 @@
 module Poetry
   module Charts
     module PieChart
-      # The pie family, mirroring the shadcn blocks: simple, donut,
+      # The pie family across its variants: simple, donut,
       # donut-with-center-text, label-list (names inside slices), legend,
       # stacked (two nested rings), and the popped active slice.
       class Preview < Poetry::Core::Preview::Base

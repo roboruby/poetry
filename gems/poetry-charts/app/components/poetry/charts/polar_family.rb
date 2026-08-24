@@ -8,7 +8,16 @@ module Poetry
     # the svg gains the enter action after TooltipWiring's pointer/
     # keyboard set (include order is emission order - include this after
     # TooltipWiring).
+    #
+    # @example Adding the polar chassis to a family
+    #   class GaugeChart::Component < Poetry::Core::Component
+    #     include Poetry::Charts::ChartFamily
+    #     include Poetry::Charts::TooltipWiring
+    #     include Poetry::Charts::PolarFamily
+    #     include Poetry::Charts::PolarFamily::SingleSeriesTooltip
+    #   end
     module PolarFamily
+      # The default polar margin - a slim, even inset on all sides.
       MARGIN = { top: 5, right: 5, bottom: 5, left: 5 }.freeze
 
       def self.included(base)
@@ -19,6 +28,8 @@ module Poetry
         end
       end
 
+      # The margin-inset plot rect the polar geometry centers in.
+      # @api private
       def plot
         @plot ||= begin
           m = MARGIN.merge((margin || {}).to_h.symbolize_keys)
@@ -27,7 +38,11 @@ module Poetry
         end
       end
 
+      # The polar center's x coordinate.
+      # @api private
       def cx = plot[:left] + (plot[:width] / 2.0)
+      # The polar center's y coordinate.
+      # @api private
       def cy = plot[:top] + (plot[:height] / 2.0)
 
       # The single-series polar tooltip (pie/radial): the FIRST series
@@ -38,6 +53,9 @@ module Poetry
       # multi-series chrome and its own payload, so it includes
       # PolarFamily alone.
       module SingleSeriesTooltip
+        # The embedded per-sector geometry payload the tooltip controller
+        # reads: polar layout, anchors, and per-index names/colors/values.
+        # @api private
         def coordinates_json
           entry = series_entries.first
           return "{}" unless entry
@@ -55,6 +73,9 @@ module Poetry
           }.to_json
         end
 
+        # The TooltipLayer child scoped to the first series, label hidden
+        # by default (the per-index name carries it).
+        # @api private
         def tooltip_layer_component
           TooltipLayer::Component.new(
             config: chart_config,

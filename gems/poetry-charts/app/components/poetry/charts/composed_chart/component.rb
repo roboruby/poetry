@@ -2,16 +2,17 @@
 
 module Poetry
   module Charts
+    # The composed chart family.
     module ComposedChart
-      # The Composed family (beyond the shadcn surface):
-      # area, bar, and line marks on ONE shared cartesian - recharts
-      # ComposedChart. All mark slots push into a single accumulator, so
-      # slot declaration order IS paint order (recharts' children order).
-      # The x scale is always a band (bars need one; lines and areas ride
-      # the band centers), the y domain is shared across every mark, and
-      # stack ids are namespaced per mark type so an area stack can never
-      # co-stack with a bar stack by accident.
+      # Renders a composed chart: area, bar, and line marks on ONE
+      # shared cartesian. All mark slots push into a single accumulator,
+      # so slot declaration order IS paint order. The x scale is always a
+      # band (bars need one; lines and areas ride the band centers), the
+      # y domain is shared across every mark, and stack ids are
+      # namespaced per mark type so an area stack can never co-stack
+      # with a bar stack by accident.
       #
+      # @example Bars with a trend line on one plot
       #   <%= poetry_chart :composed, data: data, config: config do |c| %>
       #     <% c.with_grid %>
       #     <% c.with_x_axis data_key: :month %>
@@ -26,6 +27,7 @@ module Poetry
         include Poetry::Charts::BarMath
         include Poetry::Charts::ReferenceMarks
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Mix marks freely: with_area / with_bar / with_line - declaration order is paint order.",
           "All marks share the x band and ONE y domain; lines and areas ride the band centers.",
@@ -34,21 +36,38 @@ module Poetry
           "Entrance animation is on by default; each mark uses its own recharts mechanism."
         ].freeze
 
+        # One mark slot's captured series config, tagged by mark type.
         Series = Data.define(:mark, :key, :stack, :curve, :fill_opacity, :gradient,
                              :stroke_width, :dots, :dot_radius, :radius) do
+          # The band-slot group id: the stack, else the series' own key.
           def stack_or_self = stack || key
         end
 
+        # The rows to plot: an array of hashes, one per x category.
         option :data, ActiveModel::Type::Value.new, required: true
+        # The series config - key => { label:, color: } - naming and
+        # coloring every series.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 640
+        # ViewBox height in pixels.
         option :height, :integer, default: 360
+        # Plot margin overrides ({ top:, right:, bottom:, left: }),
+        # merged over the defaults.
         option :margin, ActiveModel::Type::Value.new
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options
+        # Pixels between side-by-side bars inside one category band.
         option :bar_gap, :integer, default: 4
+        # Band trim on each side: a percent string of the band width, or
+        # a bare pixel number.
         option :bar_category_gap, :string, default: "10%"
 
         part "chart-svg", "The chart canvas (<svg>) - server-computed geometry in a fixed viewBox; " \
@@ -112,16 +131,21 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
+        # An area mark bound to data_key:; areas sharing a stack: id pile
+        # up (area stacks never join bar stacks).
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           push_series(:area, key: data_key, stack: stack && "area-#{stack}",
                              curve: curve.to_sym, fill_opacity:, gradient:, stroke_width:)
         }
 
+        # A bar mark bound to data_key:; radius: rounds corners; bars
+        # sharing a stack: id pile up within the bar marks.
         renders_many :bars, lambda { |data_key:, stack: nil, radius: 0|
           push_series(:bar, key: data_key, stack: stack && "bar-#{stack}", radius: radius)
         }
 
+        # A line mark bound to data_key:; dots: marks each point.
         renders_many :lines, lambda { |data_key:, curve: :natural, stroke_width: 2,
                                        dots: false, dot_radius: 4|
           push_series(:line, key: data_key, curve: curve.to_sym, stroke_width:,
@@ -130,6 +154,9 @@ module Poetry
 
         include Poetry::Charts::CartesianFamily
 
+        # The captured Series configs in declaration order across every
+        # mark type.
+        # @api private
         def series_entries
           # Force every mark slot (slots evaluate lazily); the shared
           # accumulator preserves declaration order across slot types.
@@ -139,10 +166,16 @@ module Poetry
           @series_entries ||= []
         end
 
+        # Just the bar-mark series, for the band slot math.
+        # @api private
         def bar_entries = series_entries.select { |e| e.mark == :bar }
 
+        # The BarMath host contract: composed charts are vertical only.
+        # @api private
         def horizontal? = false
 
+        # The chart's cartesian geometry, built once per render.
+        # @api private
         def cartesian
           @cartesian ||= Cartesian.new(
             data: data,
@@ -160,6 +193,8 @@ module Poetry
 
         # -- per-mark geometry -------------------------------------------------
 
+        # One area mark's fill path.
+        # @api private
         def area_path(entry)
           points = cartesian.points(entry)
           Geometry::Area.new(
@@ -168,6 +203,8 @@ module Poetry
           ).path(points)
         end
 
+        # A mark's top-curve stroke path (line marks, and area strokes).
+        # @api private
         def top_line_path(entry)
           points = cartesian.points(entry)
           Geometry::Line.new(
@@ -176,18 +213,26 @@ module Poetry
           ).path(points)
         end
 
+        # The per-group band slots for the bar marks.
+        # @api private
         def bar_slots
           @bar_slots ||= bar_slots_for(bar_entries)
         end
 
+        # One bar series' rects, positioned in its band slot.
+        # @api private
         def cells(entry)
           bar_cells(entry, bar_slots.fetch(entry.stack_or_self))
         end
 
+        # One bar cell's rounded-rect path.
+        # @api private
         def bar_path(entry, cell)
           bar_path_for(entry.radius, cell)
         end
 
+        # The visible points for a line mark's dots (NaN renders nothing).
+        # @api private
         def line_markers(entry)
           cartesian.points(entry).each_with_index.filter_map do |point, i|
             next if point[:value].nan?
@@ -196,32 +241,46 @@ module Poetry
           end
         end
 
+        # One x tick's label, through the slot's formatter when given.
+        # @api private
         def x_tick_label(category)
           formatter = x_axis_config&.tick_formatter
           formatter ? formatter.call(category).to_s : category.to_s
         end
 
+        # One y tick's label, through the slot's formatter when given.
+        # @api private
         def y_tick_label(tick)
           formatter = y_axis_config&.tick_formatter
           formatter ? formatter.call(tick).to_s : Geometry.js_number(tick.to_f)
         end
 
+        # The per-series gradient def's id, scoped by the chart id.
+        # @api private
         def gradient_id(entry)
           "#{chart_id}-fill-#{entry.key}"
         end
 
+        # An area mark's fill: its gradient url when gradient:, else its
+        # config color var.
+        # @api private
         def area_fill(entry)
           entry.gradient ? "url(##{gradient_id(entry)})" : "var(--color-#{entry.key})"
         end
 
         # ChartFamily#svg_label's chart-type lead-in.
+        # @api private
         def svg_label_prefix = "Composed chart"
 
+        # The embedded per-index geometry payload the tooltip controller
+        # reads.
+        # @api private
         def coordinates_json
           cartesian.coordinates.to_json
         end
 
         # Line and area marks show hover dots; bars reflect via data-index.
+        # @api private
         def active_dot_markers(entry)
           return [] if entry.mark == :bar
 

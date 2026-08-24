@@ -3,9 +3,9 @@
 module Poetry
   module Charts
     module LineChart
-      # The line family, mirroring the shadcn blocks: default (natural),
+      # The line family across its variants: default (natural),
       # linear, step, multiple series, dots, per-point dot colors, and
-      # point labels. Same data as upstream.
+      # point labels. Shared sample data.
       class Preview < Poetry::Core::Preview::Base
         DATA = AreaChart::Preview::DATA
         ONE = AreaChart::Preview::ONE

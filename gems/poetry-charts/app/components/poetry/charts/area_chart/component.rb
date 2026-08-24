@@ -2,12 +2,15 @@
 
 module Poetry
   module Charts
+    # The area chart family.
     module AreaChart
-      # The Area chart family (shadcn AreaChart, 10 blocks): server-rendered
-      # SVG through the Cartesian pipeline - the finished chart is in the
-      # initial HTML. Slots mirror the recharts grammar one-to-one so any
-      # shadcn block translates mechanically:
+      # Renders an area chart - filled trends over an ordered axis,
+      # optionally stacked - as server-computed SVG through the Cartesian
+      # pipeline: the finished chart is in the initial HTML. Slots
+      # compose the whole chart declaratively: grid, axes, series,
+      # legend, tooltip.
       #
+      # @example Two stacked series with a formatted month axis
       #   <%= poetry_area_chart(data:, config:, margin: { left: 12, right: 12 }) do |c| %>
       #     <% c.with_grid %>
       #     <% c.with_x_axis data_key: :month, tick_formatter: ->(v) { v[0, 3] } %>
@@ -25,6 +28,7 @@ module Poetry
         include Poetry::Charts::Live
         include Poetry::Charts::ReferenceMarks
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "Compose from slots: with_grid / with_x_axis(data_key:) / with_area(data_key:) / with_legend.",
           "Stack areas by giving them the same stack: id; offset: :expand makes the stack percent-based.",
@@ -35,15 +39,30 @@ module Poetry
           "Reduced-motion users always get the finished chart."
         ].freeze
 
+        # One with_area call's captured series config.
         Series = Data.define(:key, :stack, :curve, :fill_opacity, :gradient, :stroke_width)
 
+        # The rows to plot: an array of hashes, one per x category.
         option :data, ActiveModel::Type::Value.new, required: true
+        # The series config - key => { label:, color: } - naming and
+        # coloring every series.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 640
+        # ViewBox height in pixels.
         option :height, :integer, default: 360
+        # Plot margin overrides ({ top:, right:, bottom:, left: }),
+        # merged over the defaults.
         option :margin, ActiveModel::Type::Value.new
+        # Stack baseline mode - :expand normalizes each stack to
+        # percentages.
         option :offset, :symbol, default: :none
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options
@@ -95,10 +114,9 @@ module Poetry
                                   "(<script type=application/json>) the tooltip controller " \
                                   "reads - zero chart math in the browser"
 
-        # Lambda slots accumulate config into ivars and return nil (the
-        # breadcrumb pattern - slot wrappers do not delegate to lambda
-        # return values); readers force evaluation via the slot predicate
-        # (slots evaluate lazily).
+        # An area series bound to data_key:. Areas sharing a stack: id
+        # pile up; gradient: true fades the fill; curve: picks the
+        # interpolation.
         renders_many :areas, lambda { |data_key:, stack: nil, curve: :natural, fill_opacity: 0.4,
                                        gradient: false, stroke_width: 1|
           raise ArgumentError, "unknown curve #{curve.inspect}" unless CURVES.include?(curve.to_sym)
@@ -110,11 +128,15 @@ module Poetry
 
         include Poetry::Charts::CartesianFamily
 
+        # The captured Series configs, forcing lazy slot evaluation.
+        # @api private
         def series_entries
           areas? # force slot evaluation
           @series_entries ||= []
         end
 
+        # The chart's cartesian geometry, built once per render.
+        # @api private
         def cartesian
           @cartesian ||= Cartesian.new(
             data: data,
@@ -125,13 +147,16 @@ module Poetry
             margin: live_margin,
             category_axis: x_axis?,
             value_axis: y_axis?,
-            # The Y axis strip: the axes block shows ticks with tickCount 3;
-            # the implicit hidden axis uses 5 (recharts implicitYAxis).
+            # The hidden implicit Y axis still drives the scale: default
+            # tick count 5; an explicit with_y_axis supplies its own.
             y_tick_count: y_axis_config&.tick_count || 5,
             offset: offset
           )
         end
 
+        # One series' fill path (the area between its baseline and top
+        # curve).
+        # @api private
         def series_path(entry)
           points = cartesian.points(entry)
           Geometry::Area.new(
@@ -144,8 +169,9 @@ module Poetry
         end
 
         # The stroke rides a SEPARATE path along the top curve only -
-        # recharts renders Area as fill path + curve path; stroking the
-        # area outline (left/right/baseline edges) is not the shadcn look.
+        # stroking the fill path's outline would also draw the left,
+        # right, and baseline edges.
+        # @api private
         def series_stroke_path(entry)
           points = cartesian.points(entry)
           Geometry::Line.new(
@@ -156,39 +182,58 @@ module Poetry
           ).path(points)
         end
 
+        # One x tick's label, through the slot's formatter when given.
+        # @api private
         def x_tick_label(category)
           formatter = x_axis_config&.tick_formatter
           formatter ? formatter.call(category).to_s : category.to_s
         end
 
+        # One y tick's label, through the slot's formatter when given.
+        # @api private
         def y_tick_label(tick)
           formatter = y_axis_config&.tick_formatter
           formatter ? formatter.call(tick).to_s : Geometry.js_number(tick.to_f)
         end
 
+        # The per-series gradient def's id, scoped by the chart id.
+        # @api private
         def gradient_id(entry)
           "#{chart_id}-fill-#{entry.key}"
         end
 
+        # The series fill: its gradient url when gradient:, else its
+        # config color var.
+        # @api private
         def fill_for(entry)
           entry.gradient ? "url(##{gradient_id(entry)})" : "var(--color-#{entry.key})"
         end
 
         # ChartFamily#svg_label's chart-type lead-in.
+        # @api private
         def svg_label_prefix = "Area chart"
 
+        # The embedded per-index geometry payload the tooltip controller
+        # reads.
+        # @api private
         def coordinates_json
           cartesian.coordinates.to_json
         end
 
         # -- live mode ---------------------------------------------------
 
+        # The chart type in the live spec.
+        # @api private
         def live_type = :area
 
+        # The series list serialized into the live spec.
+        # @api private
         def live_series
           series_entries.map { |e| { data_key: e.key, stack: e.stack, curve: e.curve }.compact }
         end
 
+        # The axis config serialized into the live spec.
+        # @api private
         def live_axes
           axes = {}
           axes[:x] = { data_key: x_axis_config.data_key } if x_axis_config&.data_key
@@ -196,7 +241,11 @@ module Poetry
           axes
         end
 
+        # The x scale kind the live renderer rebuilds.
+        # @api private
         def live_x_scale_type = :point
+        # Whether the live frame renders a category axis.
+        # @api private
         def live_category_axis? = x_axis?
       end
     end

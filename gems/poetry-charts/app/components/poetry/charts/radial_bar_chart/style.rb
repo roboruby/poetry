@@ -5,9 +5,9 @@ module Poetry
     module RadialBarChart
       # The radial chrome on the cn-chart-* theme rules: the muted
       # track ring, the disc track fills (the first:fill-muted /
-      # last:fill-background hack, still explicit), the insideStart label,
-      # and the per-family center typography (4xl gauge / 2xl compact;
-      # pie keeps 3xl - per upstream).
+      # last:fill-background hack, still explicit), the inside-start
+      # label, and the per-family center typography (4xl gauge /
+      # 2xl compact; pie keeps 3xl).
       class Style < Poetry::Core::Style
         base ""
 

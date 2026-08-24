@@ -3,16 +3,16 @@
 module Poetry
   module Charts
     module Geometry
-      # The d3-shape curve state machines (src/curve/{linear,step,natural,
-      # monotone}.js), transcribed exactly - including the `_line`
+      # The curve state machines - including the `_line`
       # undefined/0/1/NaN dance that decides where subpaths close (JS
-      # truthiness via Geometry.js_truthy?; `1 - undefined` becomes NaN via
-      # js_flip). The shadcn blocks use exactly this set: linear, step
-      # (+before/after), natural, and monotoneX (recharts' "monotone").
+      # truthiness via Geometry.js_truthy?; `1 - undefined` becomes NaN
+      # via js_flip). The set matches the families' curve: whitelist:
+      # linear, step (+before/after), natural, and monotone_x.
       #
       # @example Build a curve writing into a fresh path buffer
       #   Poetry::Charts::Geometry::Curve.build(:natural, Path.new)
       module Curve
+        # Curve name -> builder for its state machine.
         REGISTRY = {
           linear: ->(context) { Linear.new(context) },
           step: ->(context) { Step.new(context, 0.5) },
@@ -24,6 +24,7 @@ module Poetry
 
         module_function
 
+        # A curve state machine writing into the given path context.
         def build(name, context)
           builder = REGISTRY[name.to_sym] or
             raise ArgumentError, "unknown curve #{name.inspect} (one of #{REGISTRY.keys.join(", ")})"
@@ -38,6 +39,7 @@ module Poetry
         end
 
         # Shared area/line bookkeeping (identical across all four curves).
+        # @api private
         module LineState
           def area_start
             @line = 0
@@ -63,6 +65,8 @@ module Poetry
           end
         end
 
+        # Straight segments between points.
+        # @api private
         class Linear
           include LineState
 
@@ -94,6 +98,9 @@ module Poetry
           end
         end
 
+        # Right-angle steps between points; t places the riser (0 before,
+        # 0.5 midway, 1 after).
+        # @api private
         class Step
           include LineState
 
@@ -141,6 +148,8 @@ module Poetry
           end
         end
 
+        # A natural cubic spline through every point.
+        # @api private
         class Natural
           include LineState
 
@@ -218,6 +227,9 @@ module Poetry
           end
         end
 
+        # A cubic that preserves monotonicity in x - no overshoot between
+        # points.
+        # @api private
         class MonotoneX
           include LineState
 

@@ -12,11 +12,11 @@ import {
 // focus state, and host listeners survive every tick.
 //
 // This is lib/poetry/charts/cartesian.rb (+ the bar component's slot and
-// path math) transcribed conventions-and-formatting exact: the kernel IS
-// the d3 that generated the Ruby port's oracle fixtures, nice ticks are
-// recharts' own getNiceTickValues, fnum mirrors Ruby's 2-decimal
+// path math) transcribed conventions-and-formatting exact: the vendored
+// kernel generated the Ruby port's oracle fixtures, nice ticks are the
+// same getNiceTickValues the server ports, fnum mirrors Ruby's 2-decimal
 // half-away-from-zero rounding with native JS stringification, and paths
-// come from d3-shape's default 3-digit output - so a kernel render of
+// keep the kernel's default 3-digit output - so a kernel render of
 // dataset X is byte-equal to the server rendering dataset X (proven by
 // the live_fixtures parity suite).
 //
@@ -69,7 +69,7 @@ export function computeCartesian(payload) {
     ? spec.data.slice(frame.window[0], frame.window[1] + 1)
     : spec.data
   // Hidden series (the legend toggle) leave the domain and the
-  // stacks entirely - recharts' rescale-on-hide semantics.
+  // stacks entirely - the chart rescales on hide.
   const hidden = new Set(frame.hidden ?? [])
   const series = spec.series.filter((entry) => !hidden.has(entry.key))
   const horizontal = frame.layout === "horizontal"
@@ -111,7 +111,7 @@ export function computeCartesian(payload) {
     stackBands[id] = Object.fromEntries(stacked.map((s) => [s.key, s.map((p) => [p[0], p[1]])]))
   }
 
-  // The raw numeric domain before nicing: recharts' [0, 'auto'].
+  // The raw numeric domain before nicing: the default [0, auto].
   const values = []
   for (const entry of series) {
     if (entry.stack != null) {
@@ -210,7 +210,7 @@ function percentValue(value, total) {
   return text.endsWith("%") ? (total * parseFloat(text)) / 100 : parseFloat(text)
 }
 
-// bar_path, per-corner radii clamped to half the rect (recharts Rectangle).
+// bar_path, per-corner radii clamped to half the rect.
 function barPath(radius, cell) {
   const radii = Array.isArray(radius) ? radius.map(Number) : Array(4).fill(Number(radius))
   const max = Math.min(cell.width / 2, cell.height / 2)

@@ -16,9 +16,9 @@
       <% end %>
     <% end %>
     <% if center_label? %>
-      <%# dy=0.355em centers each line's midline on its y (recharts'
-          dominantBaseline=middle); the subtitle sits 24 below the title,
-          both absolute - the upstream donut-text tspan geometry. %>
+      <%# dy=0.355em centers each line's midline on its y (the
+          dominant-baseline: middle offset, stated inline); the subtitle
+          sits 24 below the title, both absolute. %>
       <text data-slot="chart-center-label" x="<%= fnum(cx) %>" y="<%= fnum(cy) %>" text-anchor="middle">
         <tspan class="<%= css(:center_title) %>" x="<%= fnum(cx) %>" y="<%= fnum(cy) %>" dy="0.355em"><%= center_label_config[:title] %></tspan>
         <% if center_label_config[:subtitle] %>

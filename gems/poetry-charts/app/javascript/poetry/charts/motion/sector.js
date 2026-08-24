@@ -1,5 +1,5 @@
-// getSectorPath, ported from lib/poetry/charts/polar.rb - which is itself
-// the byte-exact port of recharts' Sector.tsx. Angles are degrees
+// The sector path, ported from lib/poetry/charts/polar.rb so both
+// sides emit identical path strings. Angles are degrees
 // counterclockwise from 3 o'clock, negated into SVG's y-down plane; the
 // delta clamps at 359.999 so a full circle's endpoints never coincide.
 // 4-decimal formatting matches the Ruby fmt (native JS stringification IS

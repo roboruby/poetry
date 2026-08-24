@@ -2,23 +2,34 @@
 
 module Poetry
   module Charts
+    # The chart legend chrome.
     module LegendContent
-      # The legend chrome (shadcn ChartLegendContent): a centered row of
-      # swatch + label pairs. Items default to the config's colored entries
-      # (the common case - every configured series, in config order); pass
-      # items: [{ key:, color: }] to override, e.g. per-slice pie legends.
+      # The legend chrome: a centered row of swatch + label pairs. Items
+      # default to the config's colored entries (the common case - every
+      # configured series, in config order); pass items: [{ key:, color: }]
+      # to override, e.g. per-slice pie legends.
+      #
+      # @example
+      #   <%= poetry_chart_legend_content(config: config) %>
       class Component < Poetry::Core::Component
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "The legend derives from the chart config by default - omit items: unless slices differ from series.",
           "align: :top pads below (pb-3), :bottom (default) pads above (pt-3) - matching the chart edge it sits on."
         ].freeze
 
-        # A style axis, not an option - options silently drop the
-        # dictionary's variant classes.
+        # Which chart edge the legend sits on: :top pads below it,
+        # :bottom (the default) pads above. A style axis, not an option -
+        # options silently drop the dictionary's variant classes.
         style :align, default: :bottom, required: true, variants: %i[top bottom]
 
+        # The series config - key => { label:, color: } - the default
+        # item source.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit entries ([{ key:, name:, color: }]) overriding the
+        # config-derived list.
         option :items, ActiveModel::Type::Value.new
+        # Hides the color swatches, leaving labels only.
         option :hide_icon, :boolean, default: false
         # Interactive legend: items render as buttons that toggle
         # their series through the live controller (the host chart guards
@@ -35,10 +46,15 @@ module Poetry
         part "chart-legend-swatch", "The color swatch (<div>) - inline background-color carries " \
                                     "the entry's color; omitted with hide_icon or colorless entries"
 
+        # The config: option wrapped as a {Poetry::Charts::Config}.
+        # @api private
         def chart_config
           @chart_config ||= Poetry::Charts::Config.wrap(config)
         end
 
+        # The resolved entries: explicit items:, else the config's
+        # colored entries in config order.
+        # @api private
         def rows
           @rows ||= if items.present?
                       Array(items).map { |item| resolve(item.symbolize_keys) }
@@ -52,6 +68,7 @@ module Poetry
 
         # The toggle buttons speak straight to the live controller on the
         # chart frame (Stimulus action params carry the series key).
+        # @api private
         def toggle_attributes(row)
           {
             type: "button",
@@ -65,12 +82,17 @@ module Poetry
           }
         end
 
+        # The legend row's attributes with the part self-identification.
+        # @api private
         def root_attributes
           html_attributes.merge_if_not_set(
             { "data-slot" => "chart-legend-content" }.merge(component_data_attributes)
           )
         end
 
+        # A swatch's guarded inline background (colors reaching a style
+        # attribute must be CSS-safe).
+        # @api private
         def swatch_style(color)
           return nil unless color
           raise ArgumentError, "legend color #{color.inspect} is not CSS-safe" unless color.match?(Config::COLOR)

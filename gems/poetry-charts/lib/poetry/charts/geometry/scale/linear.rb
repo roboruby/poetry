@@ -4,12 +4,11 @@ module Poetry
   module Charts
     module Geometry
       module Scale
-        # d3-scale scaleLinear (src/linear.js + continuous.js), reduced to
-        # the closed poetry surface: a two-point numeric domain/range with
-        # bimap normalization (descending domains supported), ticks via
-        # Geometry::Ticks, and the linearish nice() domain extension.
-        # Degenerate domains map every input to the range midpoint (the d3
-        # normalize() contract).
+        # A linear scale reduced to the closed poetry surface: a
+        # two-point numeric domain/range with bimap normalization
+        # (descending domains supported), ticks via Geometry::Ticks, and
+        # the nice() domain extension. Degenerate domains map every
+        # input to the range midpoint.
         #
         # @example Map a value into an inverted pixel range
         #   Poetry::Charts::Geometry::Scale::Linear
@@ -17,11 +16,17 @@ module Poetry
         class Linear
           attr_reader :domain, :range
 
+          # @param domain [Array<Numeric>] the two-point input interval
+          # @param range [Array<Numeric>] the two-point output interval
           def initialize(domain: [0.0, 1.0], range: [0.0, 1.0])
             @domain = domain.map(&:to_f)
             @range = range.map(&:to_f)
           end
 
+          # The range value for a domain value.
+          #
+          # @param value [Numeric]
+          # @return [Float]
           def call(value)
             value = value.to_f
             d0, d1 = domain
@@ -38,6 +43,10 @@ module Poetry
           end
           alias [] call
 
+          # The domain value for a range value - the inverse map.
+          #
+          # @param value [Numeric]
+          # @return [Float]
           def invert(value)
             value = value.to_f
             d0, d1 = domain
@@ -52,13 +61,18 @@ module Poetry
             d0 + ((d1 - d0) * t)
           end
 
+          # Float-exact ticks across the domain.
+          #
+          # @return [Array<Numeric>]
           def ticks(count = 10)
             Ticks.ticks(domain.first, domain.last, count)
           end
 
-          # linearish nice() (d3-scale src/linear.js): extend the domain to
-          # tick-increment boundaries, iterating until the increment is
-          # stable. Returns a NEW scale (poetry immutability).
+          # Extends the domain to tick-increment boundaries, iterating
+          # until the increment is stable. Returns a NEW scale (poetry
+          # immutability).
+          #
+          # @return [Linear]
           def nice(count = 10)
             d = domain.dup
             i0 = 0
@@ -99,7 +113,7 @@ module Poetry
 
           private
 
-          # d3 normalize(): a degenerate domain maps everything to t = 0.5.
+          # A degenerate (zero-span) interval maps everything to t = 0.5.
           def normalize(value, from, to)
             span = to - from
             return span.nan? ? Float::NAN : 0.5 if span.zero?

@@ -3,12 +3,13 @@
 module Poetry
   module Charts
     module Geometry
+      # The scale namespace: Linear, Band, and Point.
       module Scale
-        # d3-scale scaleBand (src/band.js), ported: categorical domain ->
-        # evenly stepped positions with inner/outer padding and alignment.
-        # Point (d3 scalePoint) is band with paddingInner = 1 (bandwidth 0),
-        # where padding: drives the outer padding - the axis shape line/area
-        # charts position categories with.
+        # A band scale: categorical domain -> evenly stepped positions
+        # with inner/outer padding and alignment. Point is band with
+        # padding_inner = 1 (bandwidth 0), where padding: drives the
+        # outer padding - the axis shape line/area charts position
+        # categories with.
         #
         # @example
         #   Poetry::Charts::Geometry::Scale::Band
@@ -26,12 +27,14 @@ module Poetry
             rescale
           end
 
-          # Convenience for the common single padding: knob (d3
-          # band.padding(p) sets inner AND outer).
+          # Convenience for the common single padding: knob - one value
+          # sets inner AND outer padding.
           def self.padded(domain:, range:, padding: 0.0, align: 0.5, round: false)
             new(domain:, range:, padding_inner: padding, padding_outer: padding, align:, round:)
           end
 
+          # The band's leading-edge position for a category (nil when the
+          # category is unknown).
           def call(value)
             index = domain.index(value)
             index && @positions[index]
@@ -60,8 +63,9 @@ module Poetry
           end
         end
 
-        # d3 scalePoint: band with paddingInner pinned to 1 - every category
-        # is a zero-width position, padding: is the outer padding.
+        # A point scale: a band with padding_inner pinned to 1 - every
+        # category is a zero-width position, padding: is the outer
+        # padding.
         #
         # @example
         #   Poetry::Charts::Geometry::Scale::Point

@@ -4,8 +4,8 @@
     <% if grid? %>
       <g data-slot="chart-polar-grid" aria-hidden="true">
         <%# Linework FIRST (rings + spokes), so the tinted fills below can
-            wash over it - recharts paints the grid, then stacks the
-            translucent ring fills on top, leaving the strokes near-invisible. %>
+            wash over it - the translucent ring fills stack on top of the
+            grid strokes, leaving them near-invisible. %>
         <% grid_radii.each do |radius| %>
           <% if grid_config.type == :circle %>
             <circle class="<%= css(:grid_line) %>" cx="<%= fnum(cx) %>" cy="<%= fnum(cy) %>" r="<%= fnum(radius) %>"/>
@@ -19,10 +19,10 @@
             <line class="<%= css(:grid_line) %>" x1="<%= fnum(cx) %>" y1="<%= fnum(cy) %>" x2="<%= fnum(x) %>" y2="<%= fnum(y) %>"/>
           <% end %>
         <% end %>
-        <%# The tinted fills (grid-fill block): EVERY ring fills at the low
-            opacity, painted OVER the linework, overlaps compounding toward
-            the center - upstream puts fill+opacity on the whole PolarGrid.
-            Inline style, because grid_line sets fill-none and a fill
+        <%# The tinted fills: EVERY ring fills at the low opacity,
+            painted OVER the linework, overlaps compounding toward the
+            center - one fill+opacity across the whole grid. Inline
+            style, because grid_line sets fill-none and a fill
             ATTRIBUTE loses to that CSS. %>
         <% if grid_fill_attribute %>
           <% grid_radii.each do |radius| %>

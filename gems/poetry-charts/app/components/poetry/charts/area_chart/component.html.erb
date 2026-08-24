@@ -10,7 +10,7 @@
           </linearGradient>
         <% end %>
         <% if animate? %>
-          <%# The entrance reveal (recharts AreaRevealShape): the motion stylesheet scales this rect 0->1. %>
+          <%# The entrance reveal: the motion stylesheet scales this rect 0->1. %>
           <clipPath id="<%= chart_id %>-reveal"><rect data-slot="chart-motion-reveal" x="0" y="0" width="<%= width %>" height="<%= height %>"/></clipPath>
         <% end %>
       </defs>

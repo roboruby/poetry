@@ -2,17 +2,19 @@
 
 module Poetry
   module Charts
+    # The radial bar chart family.
     module RadialBarChart
-      # The RadialBar family (shadcn RadialBarChart, 6 blocks): one angular
-      # bar per data row on concentric rings between inner_radius and
-      # outer_radius, sweep proportional to value over the angle span.
-      # Rings divide the radial band with the SAME math as vertical bars
-      # (10% trim, 4px gaps); stacked radial bars share the ring and stack
-      # along the ANGLE; corner_radius rounds arc ends with recharts'
-      # tangent-circle construction; `background: true` draws the muted
-      # track ring; polar-grid discs (the shape/text blocks' gauge look)
-      # and the donut-style center label round out the family.
+      # Renders a radial bar chart: one angular bar per data row on
+      # concentric rings between inner_radius and outer_radius, sweep
+      # proportional to value over the angle span. Rings divide the
+      # radial band with the SAME math as vertical bars (10% trim, 4px
+      # gaps); stacked radial bars share the ring and stack along the
+      # ANGLE; corner_radius rounds arc ends with tangent circles;
+      # `background: true` draws the muted track ring; polar-grid discs
+      # (the gauge look) and the donut-style center label round out the
+      # family.
       #
+      # @example Rings with track backgrounds and a tooltip
       #   <%= poetry_chart :radial, data: browsers, config: config,
       #                    inner_radius: 30, outer_radius: 110 do |c| %>
       #     <% c.with_radial_bar data_key: :visitors, background: true %>
@@ -23,6 +25,7 @@ module Poetry
         include Poetry::Charts::TooltipWiring
         include Poetry::Charts::Motion
 
+        # Projected into the registry and agent surface.
         AGENT_RULES = [
           "One ring per data row; rows carry their color in a fill key (var(--color-<name>)).",
           "background: true draws the muted track ring behind each bar (the gauge look).",
@@ -34,27 +37,47 @@ module Poetry
           "Reduced-motion users always get the finished chart."
         ].freeze
 
+        # One with_radial_bar call's captured series config.
         Series = Data.define(:data_key, :stack, :background, :corner_radius, :color_key,
                              :labels, :label_key)
 
+        # The rows to plot: an array of hashes, one ring per row.
         option :data, ActiveModel::Type::Value.new, required: true
+        # The series config - name => { label:, color: } - naming and
+        # coloring the rings.
         option :config, ActiveModel::Type::Value.new, required: true
+        # Explicit DOM id token, stable across renders; otherwise the
+        # chart gets a unique per-render id.
         option :id, :string
+        # ViewBox width in pixels; the rendered chart scales to its
+        # container.
         option :width, :integer, default: 250
+        # ViewBox height in pixels.
         option :height, :integer, default: 250
+        # Margin overrides ({ top:, right:, bottom:, left: }), merged
+        # over the slim polar default.
         option :margin, ActiveModel::Type::Value.new
+        # Accessible name for the chart SVG; defaults to one built from
+        # the configured series.
         option :label, :string
 
         motion_options
+        # The row key naming each ring.
         option :name_key, :string, default: "name"
+        # Where the sweep starts, in degrees.
         option :start_angle, :integer, default: 0
+        # Where the sweep ends - 180 makes a half gauge.
         option :end_angle, :integer, default: 360
+        # The innermost ring edge: a percent string of the max radius, or
+        # pixels.
         option :inner_radius, ActiveModel::Type::Value.new, default: "20%"
+        # The outermost ring edge: a percent string of the max radius, or
+        # pixels.
         option :outer_radius, ActiveModel::Type::Value.new, default: "80%"
-        # The angle-axis maximum: nil = recharts' [0, dataMax] domain - the
-        # largest ring closes the full sweep EXACTLY (nicing it would leave
-        # a notch); stacked gauges pass the stack total when the segments
-        # should fill the span (the stacked block's full half-ring).
+        # The angle-axis maximum: nil = the largest single value, so the
+        # largest ring closes the full sweep EXACTLY (nicing it would
+        # leave a notch); stacked gauges pass the stack total when the
+        # segments should fill the span.
         option :max_value, ActiveModel::Type::Value.new
 
         part "chart-svg", "The chart canvas (<svg>) - the aria-label surface, the tooltip's " \
@@ -97,6 +120,9 @@ module Poetry
                                   "reads - per-category anchors and pre-formatted values, zero " \
                                   "chart math in the browser"
 
+        # A radial series reading data_key: values. background: draws the
+        # muted track ring; bars sharing a stack: id share the ring and
+        # stack by angle; corner_radius: rounds the arc ends.
         renders_many :radial_bars, lambda { |data_key:, stack: nil, background: false, corner_radius: 0,
                                             color_key: :fill, labels: nil, label_key: nil|
           (@series_entries ||= []) << Series.new(data_key: data_key.to_s, stack:, background:,
@@ -105,27 +131,32 @@ module Poetry
           nil
         }
 
-        # radial_lines defaults ON (recharts PolarGrid) - the faint value
-        # spokes that show through ring gaps and the open wedge; the gauge
-        # blocks (shape/text) turn them off explicitly, as upstream does.
+        # The disc track behind the rings: radii: places the circles
+        # (default: each ring's centerline), fills: tints them, and
+        # radial_lines: draws the faint value spokes that show through
+        # ring gaps and the open wedge (on by default; gauges turn them
+        # off).
         renders_one :polar_grid, lambda { |radii: nil, fills: nil, radial_lines: true|
           @polar_grid_config = { radii: radii, fills: Array(fills), radial_lines: radial_lines }
           nil
         }
 
-        # compact: the stacked half-gauge's smaller number sitting just
-        # above the flat baseline (text-2xl at cy-16 / caption at cy+4);
-        # the default is the full gauge's big centered number (text-4xl).
+        # The center text: a title line plus an optional subtitle. The
+        # default is the full gauge's big centered number; compact:
+        # shrinks it and sits it just above a half gauge's flat baseline.
         renders_one :center_label, lambda { |title:, subtitle: nil, compact: false|
           @center_label_config = { title: title, subtitle: subtitle, compact: compact }
           nil
         }
 
+        # The legend row: align:, items:, and hide_icon:.
         renders_one :legend, lambda { |**options|
           @legend_config = options
           nil
         }
 
+        # The hover tooltip; the ring name carries the label, so
+        # hide_label defaults on.
         renders_one :tooltip, lambda { |**options|
           @tooltip_config = { hide_label: true }.merge(options)
           nil
@@ -137,16 +168,24 @@ module Poetry
         include Poetry::Charts::PolarFamily
         include Poetry::Charts::PolarFamily::SingleSeriesTooltip
 
+        # The captured Series configs, forcing lazy slot evaluation.
+        # @api private
         def series_entries
           radial_bars? # force slot evaluation (slots evaluate lazily)
           @series_entries ||= []
         end
 
+        # The polar-grid slot's captured config, forcing lazy slot
+        # evaluation.
+        # @api private
         def polar_grid_config
           polar_grid?
           @polar_grid_config
         end
 
+        # The center-label slot's captured config, forcing lazy slot
+        # evaluation.
+        # @api private
         def center_label_config
           center_label?
           @center_label_config
@@ -154,13 +193,19 @@ module Poetry
 
         # -- geometry ---------------------------------------------------------
 
+        # Band trim on each side of a ring, as a fraction of the band.
         TRIM = 0.1
+        # Pixels between rings.
         GAP = 4.0
 
+        # The data rows with stringified keys.
+        # @api private
         def rows
           @rows ||= data.map { |row| row.to_h.transform_keys(&:to_s) }
         end
 
+        # The [inner, outer] radial band edges resolved to pixels.
+        # @api private
         def radii
           @radii ||= begin
             max = Polar.max_radius(plot[:width], plot[:height])
@@ -171,6 +216,7 @@ module Poetry
 
         # The radial band: one ring per ROW, the vertical-bar math rotated
         # onto the radius axis (10% trim each side, 4px between rings).
+        # @api private
         def ring(index)
           inner, outer = radii
           band = (outer - inner) / rows.length
@@ -180,17 +226,20 @@ module Poetry
           [ring_inner, ring_inner + thickness]
         end
 
+        # Whether any series declared a stack.
+        # @api private
         def stacked?
           series_entries.any?(&:stack)
         end
 
-        # recharts' PolarAngleAxis default domain is [0, dataMax] over the
-        # RAW cell values, NOT the stacked totals - so a stacked ring maps
-        # each segment through the max single value and the overflow past
-        # end_angle is clipped (the stacked half-gauge: mobile 570 of
-        # dataMax 1260 = 81deg, desktop stacks on and clips at 180deg).
-        # An explicit max_value: overrides (a caller who wants the stack
-        # total to fill the span exactly passes it).
+        # The default angle domain is [0, max] over the RAW cell values,
+        # NOT the stacked totals - so a stacked ring maps each segment
+        # through the max single value and the overflow past end_angle is
+        # clipped (a half gauge: 570 of max 1260 = 81deg; the next
+        # segment stacks on and clips at 180deg). An explicit max_value:
+        # overrides (a caller who wants the stack total to fill the span
+        # exactly passes it).
+        # @api private
         def angle_max
           @angle_max ||= if max_value
                            max_value.to_f
@@ -200,21 +249,27 @@ module Poetry
                          end
         end
 
+        # A value's angular sweep across the span.
+        # @api private
         def sweep(value)
           (value.to_f / angle_max) * (end_angle - start_angle)
         end
 
-        # Clip a stacked segment's end at end_angle (recharts clips the
-        # overflow when the stack runs past the domain max).
+        # Clip a stacked segment's end at end_angle - a stack running
+        # past the domain max never sweeps beyond the span.
+        # @api private
         def clip_angle(angle)
           Polar.sign(end_angle - start_angle).positive? ? [angle, end_angle.to_f].min : [angle, end_angle.to_f].max
         end
 
+        # One computed arc: its ring and sweep geometry plus name, value,
+        # and fill.
         Segment = Data.define(:index, :name, :value, :fill, :path, :ring_inner, :ring_outer,
                               :seg_start, :seg_end)
 
         # Per-series segments: unstacked series sweep from start_angle;
         # stacked series continue from the previous series' end.
+        # @api private
         def segments(entry)
           @segments ||= {}
           # Slot-identity memo, never data_key: two series may share a
@@ -247,12 +302,17 @@ module Poetry
           end
         end
 
+        # The muted full-span track ring behind one bar.
+        # @api private
         def background_path(segment)
           Polar.sector_path(cx: cx, cy: cy, inner_radius: segment.ring_inner,
                             outer_radius: segment.ring_outer,
                             start_angle: start_angle, end_angle: end_angle)
         end
 
+        # A ring's fill: the color_key row value (CSS-validated), else
+        # the config color for the series, else the series color var.
+        # @api private
         def segment_fill(entry, row)
           color = row[entry.color_key].to_s if entry.color_key
           if color.present?
@@ -264,18 +324,20 @@ module Poetry
           end
         end
 
-        # insideStart labels: a FIXED ARC LENGTH into the sweep (not a fixed
-        # angle), so an inner ring - where the same ~9px arc spans a larger
-        # angle - tilts more, tapering to near-flat on the outer rings, the
-        # recharts insideStart look. Rotated onto the arc's TANGENT pointing
-        # into the sweep: SVG rotate() is clockwise-positive in the y-down
-        # plane, so the tangent at chart angle t is (-sin t, -cos t) for a
-        # CCW sweep. (90 - angle reads plausibly but points the text the
+        # Inside-start labels sit a FIXED ARC LENGTH into the sweep (not
+        # a fixed angle), so an inner ring - where the same ~9px arc
+        # spans a larger angle - tilts more, tapering to near-flat on the
+        # outer rings. Rotated onto the arc's TANGENT pointing into the
+        # sweep: SVG rotate() is clockwise-positive in the y-down plane,
+        # so the tangent at chart angle t is (-sin t, -cos t) for a CCW
+        # sweep. (90 - angle reads plausibly but points the text the
         # OPPOSITE way: mirrored and upside down.) When the tangent would
-        # still leave the text inverted, flip it 180 and anchor the END at
-        # the start edge - recharts' readability flip.
+        # still leave the text inverted, flip it 180 and anchor the END
+        # at the start edge so the label stays readable.
         LABEL_ARC = 9.0
 
+        # One segment's label position, rotation, and anchor.
+        # @api private
         def label_placement(segment)
           direction = Polar.sign(end_angle - start_angle)
           radius = (segment.ring_inner + segment.ring_outer) / 2.0
@@ -291,18 +353,20 @@ module Poetry
           { x: x, y: y, rotate: rotate, anchor: anchor }
         end
 
+        # The grid circles' radii: the slot's radii:, else auto.
+        # @api private
         def grid_radii
           config_radii = polar_grid_config[:radii]
           return config_radii if config_radii
 
-          # Auto: circles through each ring's CENTERLINE (recharts' radius
-          # band ticks) - each circle continues a bar's track through the
-          # uncovered wedge.
+          # Auto: circles through each ring's CENTERLINE - each circle
+          # continues a bar's track through the uncovered wedge.
           (0...rows.length).map { |i| ring(i).sum / 2.0 }
         end
 
-        # d3.ticks over the value domain (count 10) - recharts' implicit
-        # PolarAngleAxis, where the grid's radial spokes sit.
+        # Standard 1-2-5 ticks over the value domain (count 10) - the
+        # implicit angle axis, where the grid's radial spokes sit.
+        # @api private
         def angle_tick_values
           max = angle_max.to_f
           return [] unless max.positive?
@@ -320,12 +384,15 @@ module Poetry
 
         # A grid spoke at one value tick, spanning the chart's radial band
         # (template helper - bare Polar does not resolve from compiled ERB).
+        # @api private
         def spoke_points(tick)
           inner, outer = radii
           angle = start_angle + sweep(tick)
           Polar.polar_to_cartesian(cx, cy, inner, angle) + Polar.polar_to_cartesian(cx, cy, outer, angle)
         end
 
+        # One grid circle's class: its fills: tint, else the plain ring.
+        # @api private
         def grid_fill_class(index)
           token = polar_grid_config[:fills][index]
           token ? css(:"grid_fill_#{token}") : css(:grid_circle)
@@ -336,16 +403,22 @@ module Poetry
         # The SingleSeriesTooltip hooks: the first series' segments are
         # the items, anchored mid-ring / mid-sweep; values read the chart
         # rows.
+        # @api private
         def polar_items(entry) = segments(entry)
 
+        # Where the tooltip anchors on one segment.
+        # @api private
         def polar_anchor(segment)
           Polar.polar_to_cartesian(cx, cy, (segment.ring_inner + segment.ring_outer) / 2.0,
                                    (segment.seg_start + segment.seg_end) / 2.0)
         end
 
+        # The rows the tooltip values read from.
+        # @api private
         def polar_value_rows(_entry) = rows
 
         # ChartFamily#svg_label's chart-type lead-in.
+        # @api private
         def svg_label_prefix = "Radial bar chart"
       end
     end

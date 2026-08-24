@@ -2,35 +2,38 @@
 
 module Poetry
   module Charts
-    # The polar geometry: recharts' OWN math, ported from source -
-    # this is the part that is NOT d3 (src/util/PolarUtils.ts,
-    # src/shape/Sector.tsx getSectorPath, src/polar/Pie.tsx sector
-    # accumulation). Angles are degrees COUNTERCLOCKWISE from 3 o'clock,
-    # negated into SVG's y-down plane by polar_to_cartesian; pies start at
-    # startAngle 0 and sweep to endAngle 360.
+    # The polar geometry: pie-sector accumulation, tangent-circle corner
+    # rounding, and wedge/ring paths. Angles are degrees COUNTERCLOCKWISE
+    # from 3 o'clock, negated into SVG's y-down plane by
+    # polar_to_cartesian; pies start at angle 0 and sweep to 360.
     #
     # @example Slice values into pie sector angles
     #   Poetry::Charts::Polar.pie_sectors([3, 1], padding_angle: 2)
     module Polar
+      # Degrees-to-radians factor.
       RADIAN = Math::PI / 180
 
       module_function
 
+      # -1, 0, or 1 by the value's sign.
       def sign(value)
         return 0 if value.zero?
 
         value.negative? ? -1 : 1
       end
 
+      # The [x, y] point at (radius, angle) from the center, in SVG's
+      # y-down plane.
       def polar_to_cartesian(cx, cy, radius, angle)
         [cx + (Math.cos(-RADIAN * angle) * radius), cy + (Math.sin(-RADIAN * angle) * radius)]
       end
 
+      # The largest radius fitting the plot: half the shorter side.
       def max_radius(width, height)
         [width, height].min / 2.0
       end
 
-      # "80%" of the max radius, or a plain number (recharts getPercentValue).
+      # "80%" of the max radius, or a plain number.
       def percent_value(value, total, default = 0)
         return default if value.nil?
 
@@ -38,9 +41,10 @@ module Poetry
         text.end_with?("%") ? total * (text.to_f / 100.0) : text.to_f
       end
 
-      # The Pie accumulation (Pie.tsx): values -> per-slice angles. Zero
-      # values collapse (and skip padding); paddings live BETWEEN non-zero
-      # slices (full circles pad after the last slice too, closing the ring).
+      # The pie accumulation: values -> per-slice angles. Zero values
+      # collapse (and skip padding); paddings live BETWEEN non-zero
+      # slices (full circles pad after the last slice too, closing the
+      # ring).
       def pie_sectors(values, start_angle: 0, end_angle: 360, padding_angle: 0, min_angle: 0)
         numeric = values.map { |value| value.is_a?(Numeric) ? value.to_f : 0.0 }
         sum = numeric.sum
@@ -79,9 +83,9 @@ module Poetry
         end
       end
 
-      # getTangentCircle (Sector.tsx): the corner circle tangent to an arc
-      # (at `radius`) and a radial edge (at `angle`) - the rounded-corner
-      # primitive for RadialBar's cornerRadius.
+      # The corner circle tangent to an arc (at `radius`) and a radial
+      # edge (at `angle`) - the rounded-corner primitive for the radial
+      # bar's corner_radius.
       def tangent_circle(cx:, cy:, radius:, angle:, sign:, corner_radius:, external: false)
         center_radius = (corner_radius * (external ? 1 : -1)) + radius
         theta = Math.asin(corner_radius / center_radius) / RADIAN
@@ -93,9 +97,9 @@ module Poetry
         }
       end
 
-      # getSectorWithCorner (Sector.tsx): the ring segment with all four
-      # corners rounded by tangent circles. Falls back to the plain path
-      # when the sweep is too small to fit the corners (recharts' guard).
+      # The ring segment with all four corners rounded by tangent
+      # circles. Falls back to the plain path when the sweep is too small
+      # to fit the corners.
       def sector_path_with_corners(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:,
                                    corner_radius:, fmt: nil)
         fmt ||= ->(v) { Geometry.js_number((v * 10_000).round / 10_000.0) }
@@ -140,8 +144,8 @@ module Poetry
         path
       end
 
-      # getSectorPath (Sector.tsx): the wedge/ring path. The delta clamps at
-      # 359.999 so a full circle's endpoints never coincide.
+      # The wedge/ring path. The delta clamps at 359.999 so a full
+      # circle's endpoints never coincide.
       def sector_path(cx:, cy:, inner_radius:, outer_radius:, start_angle:, end_angle:, fmt: nil)
         # 4-decimal precision: a full circle's 359.999-degree endpoints
         # differ only past the 2nd decimal - rounding coarser would collapse
