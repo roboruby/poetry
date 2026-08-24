@@ -19,6 +19,10 @@
 
 require "active_support/core_ext/string/inflections"
 
+# The kit can be --load'ed more than once per invocation; a second load
+# would only re-define everything.
+return if defined?(PoetryYard)
+
 module PoetryYard
   TYPE_MAP = {
     "string" => "String", "symbol" => "Symbol", "boolean" => "Boolean",
@@ -69,8 +73,16 @@ module PoetryYard
   end
 
   # The trailing keyword arguments of a method_call, as label => value-node.
+  # Depending on the parser generation they arrive as a :bare_assoc_hash or
+  # as a plain :list of :assoc nodes.
   def kwargs(statement)
-    hash = statement.parameters.find { |n| n.respond_to?(:type) && n.type == :bare_assoc_hash }
+    hash = statement.parameters.find do |n|
+      next false unless n.respond_to?(:type)
+      next true if n.type == :bare_assoc_hash
+
+      n.type == :list && n.children.any? &&
+        n.children.all? { |c| c.respond_to?(:type) && c.type == :assoc }
+    end
     return {} unless hash
 
     hash.children.each_with_object({}) do |assoc, out|
