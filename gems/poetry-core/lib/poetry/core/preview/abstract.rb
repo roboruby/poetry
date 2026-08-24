@@ -2,7 +2,6 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/preview/abstract.rb
     module Preview
       # Provides functionality to mark preview classes as abstract and exclude them from the preview index.
       #

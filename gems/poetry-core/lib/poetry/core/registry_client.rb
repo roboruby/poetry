@@ -7,14 +7,16 @@ require "uri"
 module Poetry
   module Core
     # Fetches and validates registry items for the add generator.
-    # Security posture - the shadcn CLI's defenses plus poetry's
-    # tightenings: https only (plain http allowed for localhost work), a
+    # Security posture - the registry ecosystem's standard defenses plus
+    # poetry's tightenings: https only (plain http allowed for localhost work), a
     # response size cap, a redirect limit, env-only auth (${VAR}
     # placeholders expanded from ENV at fetch time, so secrets never live in
     # config files), schema validation before anything downstream touches an
     # item, and NEVER any script execution. Namespaces resolve from the
     # registries: section of config/poetry_components.yml first, then from
     # the public registries.json directory when one is configured.
+    #
+    # @api private
     class RegistryClient
       class Error < Poetry::Core::Error; end
 

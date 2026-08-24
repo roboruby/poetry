@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/preview/base.rb
+    # The preview stack: base class, template resolution, and gallery glue.
     module Preview
       # First, enable abstract classes (if not already extended)
       unless ViewComponent::Preview.singleton_class.is_a?(Preview::Abstract)
@@ -59,6 +59,8 @@ module Poetry
 
         include Poetry::Core::Preview::Template
 
+        # The container class previews render inside when neither the
+        # preview class nor an ancestor sets one.
         DEFAULT_CONTAINER_CLASS = ""
 
         class << self

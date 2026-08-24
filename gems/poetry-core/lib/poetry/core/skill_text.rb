@@ -12,6 +12,8 @@ module Poetry
     #
     # @example The installable skill file map
     #   Poetry::Core::SkillText.new(registry: registry, families: families).files
+    #
+    # @api private
     class SkillText < LlmsText
       def initialize(registry:, families:, charts_registry: nil)
         super(registry: registry)

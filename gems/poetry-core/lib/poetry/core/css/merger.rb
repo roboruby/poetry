@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/jefawks3/fox_tail/blob/main/lib/fox_tail/classname_merger.rb
+    # The CSS tooling namespace: class-name merging and the compiled-build gates.
     module CSS
       # Intelligently merges Tailwind CSS class names by resolving conflicts and removing duplicates.
       #
@@ -26,6 +26,8 @@ module Poetry
       # @example Working with symbols
       #   merger.merge(:rounded, :'text-center')
       #   # => 'rounded text-center' (symbols converted to strings)
+      #
+      # @api private
       class Merger
         # Bounded FIFO cache over merge results: components render the same
         # class combinations over and over, so tailwind_merge runs once per

@@ -26,6 +26,8 @@ module Poetry
       #     extra_definitions: ["--anchor-width"] # assigned from JS at runtime
       #   )
       #   coverage.ok? || coverage.dead_reads # => ["--never-defined"]
+      #
+      # @api private
       class VarCoverage
         # `--x:` declarations; the lookbehind keeps Stimulus event tokens
         # (`poetry--core--calendar:change`) and BEM-ish substrings out.

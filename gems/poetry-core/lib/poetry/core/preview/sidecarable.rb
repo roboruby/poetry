@@ -2,7 +2,6 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/preview/sidecarable.rb
     module Preview
       # Provides sidecar file loading and naming utilities for preview classes.
       #

@@ -21,7 +21,7 @@ module Poetry
     # funnel through `load`):
     #
     #   .json -> figma    : a DTCG / Figma-variables export (plugin shapes vary)
-    #   .css  -> css_vars : a Paper "Copy theme" or shadcn CSS custom-property block
+    #   .css  -> css_vars : a Paper "Copy theme" or drop-in CSS custom-property theme block
     #   .md   -> DesignMd.parse : the existing DESIGN.md path
     #
     # Tolerant like DesignMd.parse: whatever cannot be resolved to a poetry role
@@ -31,13 +31,16 @@ module Poetry
     # @example
     #   doc = Poetry::Core::TokenImport.load("figma-variables.json")
     #   Poetry::Core::DesignMd::Import.new.plan(doc) # the same gated pipeline
+    #
+    # @api private
     module TokenImport
       # Path segments (from Figma collections/modes or CSS selectors) that name
       # a color mode. Anything else defaults to light; poetry then PINS dark
       # from its shipped defaults for light-only imports (DesignMd::Import).
-      # ("default" is deliberately NOT here -- it collides with the shadcn
-      # `primary/DEFAULT` group-leaf convention, which is far more common than
-      # a Figma mode literally named "Default"; light is the fallback anyway.)
+      # ("default" is deliberately NOT here -- it collides with the
+      # `primary/DEFAULT` group-leaf convention common in token exports, far
+      # likelier than a Figma mode literally named "Default"; light is the
+      # fallback anyway.)
       MODES = { "light" => "light", "day" => "light",
                 "dark" => "dark", "night" => "dark" }.freeze
 
@@ -99,7 +102,7 @@ module Poetry
           build_doc(name: name, light: light, dark: dark, unknown: unknown, radius: radius)
         end
 
-        # A CSS custom-property theme (Paper "Copy theme", shadcn drop-in, or a
+        # A CSS custom-property theme (Paper "Copy theme", a drop-in theme block, or a
         # Tailwind v4 `@theme` block) -> doc. `:root`/`@theme`/`html`/`:host`
         # blocks are light; a `.dark` (or dark data-attr) block is dark. `var()`
         # references are resolved within their own mode; concrete hex/oklch/rgb

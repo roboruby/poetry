@@ -11,10 +11,32 @@ module Poetry
       # guards emission for wiring built outside declarations.
       #
       # Element-major by design: every controller wired to one element
-      # builds into ONE HTML::Attributes instance at render, so the
-      # Accordion lesson (a plain Hash#merge of two builds clobbers
-      # data-controller) holds by construction, not by convention.
+      # builds into ONE HTML::Attributes instance at render, so a plain
+      # Hash#merge of two builds can never clobber data-controller -
+      # correct by construction, not by convention.
+      #
+      # See {Poetry::Core::Concerns::Stimulus} for the component-facing
+      # contract and a full declaration example.
+      #
+      # @example A use_stimulus declaration (class body of a component)
+      #   use_stimulus do
+      #     on :root do
+      #       controller :hover_card do
+      #         register
+      #         value :open
+      #       end
+      #     end
+      #     on :trigger do
+      #       controller :hover_card do
+      #         action :pointer_enter, on: :pointerenter
+      #       end
+      #       controller :popper do
+      #         target :anchor
+      #       end
+      #     end
+      #   end
       module Declarations
+        # The condition keywords every DSL call accepts.
         CONDITION_KEYS = %i[if unless].freeze
 
         # kind: :register | :value | :action | :target. Values carry
@@ -24,8 +46,12 @@ module Poetry
         # :entries shadows Enumerable#entries, which Wiring never uses - the
         # member is literally a list of Entry structs, so the natural name wins.
         Wiring = Struct.new(:identifier, :conditions, :entries, keyword_init: true) # rubocop:disable Lint/StructNewOverride
+        # One declared element (:root or a named part) and the per-controller
+        # wirings attached to it.
         Element = Struct.new(:name, :extend_inherited, :conditions, :wirings, keyword_init: true)
 
+        # Raised at class load for an invalid or manifest-unknown
+        # declaration.
         class DeclarationError < Poetry::Core::Error; end
 
         module_function
@@ -60,6 +86,13 @@ module Poetry
         # resolved to the manifest's REAL emitted name ("poetry:calendar:change";
         # layer controllers keep the identifier prefix) - ends the hand-written
         # string seam between dispatching and listening controllers.
+        #
+        # @param controller [Symbol, String] the dispatching controller
+        # @param name [Symbol, String] the event's short name (the suffix
+        #   after the final colon)
+        # @return [String] the full emitted event name
+        # @example
+        #   event(:calendar, :change) # => "poetry:calendar:change"
         def event_name(controller, name)
           identifier = resolve_identifier(controller)
           known = Manifest.definition(identifier)&.fetch("events", nil)
@@ -77,6 +110,9 @@ module Poetry
                 "unknown event #{name.inspect} for #{identifier} - known: #{known.sort.join(", ")}"
         end
 
+        # Validates and returns the if:/unless: conditions of a DSL call.
+        #
+        # @api private
         def extract_conditions!(context, options)
           return nil if options.empty?
 
@@ -96,18 +132,23 @@ module Poetry
 
         # Name validations mirror the Builder's render-time checks, moved
         # to declaration time. A nil definition (host controller) skips.
+        #
+        # @api private
         def validate_value!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("values", {})&.keys, name, "value")
         end
 
+        # @api private
         def validate_target!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("targets", []), name, "target")
         end
 
+        # @api private
         def validate_action!(identifier, definition, name)
           validate_name!(identifier, definition&.fetch("methods", []), name, "action method")
         end
 
+        # @api private
         def validate_name!(identifier, known, name, kind)
           return if known.nil?
 
@@ -119,6 +160,9 @@ module Poetry
                 "known #{kind}s: #{known.sort.join(", ")}"
         end
 
+        # The declared Ruby name in its JS (lowerCamel) spelling.
+        #
+        # @api private
         def camelize(name)
           name.to_s.camelize(:lower)
         end
@@ -128,6 +172,8 @@ module Poetry
         # consumers read: the registry, skill text, and the docs wiring
         # tables. Conditions serialize as possibility-space: the predicate
         # name for symbols, "conditional" for procs.
+        #
+        # @api private
         def serialize_element(element)
           definition = { "element" => element.name.to_s }
           if (label = condition_label(element.conditions))
@@ -137,6 +183,7 @@ module Poetry
           definition
         end
 
+        # @api private
         def serialize_wiring(wiring)
           serialized = { "identifier" => wiring.identifier }
           if (label = condition_label(wiring.conditions))
@@ -160,6 +207,7 @@ module Poetry
           serialized
         end
 
+        # @api private
         def serialize_entry(entry, base)
           if (label = condition_label(entry.conditions))
             base["conditional"] = label
@@ -167,10 +215,15 @@ module Poetry
           base
         end
 
+        # @api private
         def serialize_on(on)
           on.is_a?(Array) ? on.map(&:to_s) : on.to_s
         end
 
+        # The serialized label of a conditions hash, or nil when
+        # unconditional.
+        #
+        # @api private
         def condition_label(conditions)
           return nil if conditions.nil? || conditions.empty?
 
@@ -179,7 +232,9 @@ module Poetry
           end.join(", ").presence || "conditional"
         end
 
-        # Evaluates one use_stimulus block; #elements is the harvest.
+        # Evaluates one use_stimulus block; #elements is the harvest. The
+        # block's vocabulary is {#on} (declare an element) and {#event}
+        # (build a validated event name).
         class RootDSL
           attr_reader :elements
 
@@ -188,6 +243,23 @@ module Poetry
             @elements = []
           end
 
+          # Declares the wiring of one element of the component's anatomy.
+          # `:root` is the component root; other names match the element
+          # keys templates read back through `stimulus_attributes_for`.
+          # Redeclaring an element in a subclass replaces it wholesale
+          # unless `extend: true` merges into the inherited wiring.
+          #
+          # @param name [Symbol, String] the element to wire (:root, :trigger, ...)
+          # @param extend [Boolean] merge into the inherited element instead
+          #   of replacing it
+          # @param options [Hash] if:/unless: conditions (Symbol predicate or Proc)
+          # @yield evaluates the block as an {ElementDSL} for this element
+          # @example
+          #   on :trigger do
+          #     controller :popper do
+          #       target :anchor
+          #     end
+          #   end
           def on(name, extend: false, **options, &block)
             name = name.to_sym
             conditions = Declarations.extract_conditions!("#{@declaring} element #{name.inspect}", options)
@@ -197,16 +269,26 @@ module Poetry
             @elements << element
           end
 
+          # A validated cross-controller event name - see
+          # {Declarations.event_name}.
           def event(controller, name) = Declarations.event_name(controller, name)
         end
 
-        # Inside `on :element do ... end`.
+        # Inside `on :element do ... end`: {#controller} attaches one
+        # controller's wiring to the element.
         class ElementDSL
           def initialize(declaring, element)
             @declaring = declaring
             @element = element
           end
 
+          # Wires one Stimulus controller to this element.
+          #
+          # @param identifier [Symbol, String, Array] a Symbol resolves
+          #   against the controllers manifest by unique suffix
+          #   (:hover_card); pass a String for a host-app controller
+          # @param options [Hash] if:/unless: conditions (Symbol predicate or Proc)
+          # @yield evaluates the block as a {WiringDSL} for this controller
           def controller(identifier, **options, &block)
             resolved = Declarations.resolve_identifier(identifier)
             conditions = Declarations.extract_conditions!(
@@ -217,10 +299,16 @@ module Poetry
             @element.wirings << wiring
           end
 
+          # A validated cross-controller event name - see
+          # {Declarations.event_name}.
           def event(controller, name) = Declarations.event_name(controller, name)
         end
 
-        # Inside `controller :name do ... end`.
+        # Inside `controller :name do ... end`: the wiring vocabulary.
+        # {#register} boots the controller on the element; {#value},
+        # {#action}, and {#target} declare the data attributes the render
+        # emits - each name validated against the controllers manifest at
+        # class load.
         class WiringDSL
           def initialize(declaring, wiring)
             @declaring = declaring
@@ -228,6 +316,11 @@ module Poetry
             @definition = Manifest.definition(wiring.identifier)
           end
 
+          # Emits the controller's identifier into this element's
+          # data-controller - a controller instance boots here. Value,
+          # action, and target entries alone never register a controller.
+          #
+          # @param options [Hash] if:/unless: conditions (Symbol predicate or Proc)
           def register(**options)
             push(kind: :register, options: options)
           end
@@ -259,11 +352,18 @@ module Poetry
             push(kind: :action, name: method.to_sym, on: on, at: at, options: options)
           end
 
+          # Marks this element as one of the controller's named targets.
+          #
+          # @param name [Symbol] the target name (validated against the
+          #   controllers manifest; declared snake_case, emitted lowerCamel)
+          # @param options [Hash] if:/unless: conditions (Symbol predicate or Proc)
           def target(name, **options)
             Declarations.validate_target!(@wiring.identifier, @definition, name)
             push(kind: :target, name: name.to_sym, options: options)
           end
 
+          # A validated cross-controller event name - see
+          # {Declarations.event_name}.
           def event(controller, name) = Declarations.event_name(controller, name)
 
           private

@@ -18,8 +18,12 @@ module Poetry
     # v1 is the read/verify surface. The heavier roadmap - verify_screen
     # running the eval gate array, component:// artifact resources, tag
     # browsing, StreamableHTTP - is maturity-gated and NOT in this cut.
+    #
+    # @api private
     module Agent
+      # The MCP protocol revision this server negotiates.
       PROTOCOL_VERSION = "2025-06-18"
+      # The serverInfo payload returned by the initialize handshake.
       SERVER_INFO = { "name" => "poetry-agent", "version" => Poetry::Core::VERSION }.freeze
 
       TOOLS = [

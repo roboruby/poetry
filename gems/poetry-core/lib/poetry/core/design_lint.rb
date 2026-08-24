@@ -25,6 +25,8 @@ module Poetry
     # Every rule is a warning: this is the taste tier, `poetry check`'s
     # mechanical errors stay the hard gate. rake design:lint (poetry-ui)
     # exits non-zero on any finding - the dogfood surfaces stay clean.
+    #
+    # @api private
     module DesignLint
       # id => [tier, rationale] - the design discipline each rule enforces.
       RULES = {
@@ -90,6 +92,8 @@ module Poetry
       # The lint tree: HTML elements plus poetry_* call blocks as
       # pseudo-nodes, so "Card inside Card" is checkable whether the card is
       # a helper call (consumer ERB) or rendered markup (eval arms).
+      #
+      # @api private
       Node = Struct.new(:kind, :tag, :classes, :attrs, :helper, :line, :children, :parent, :texts,
                         keyword_init: true) do
         def element? = kind == :element

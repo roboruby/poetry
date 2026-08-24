@@ -15,12 +15,13 @@ module Poetry
     #   tokens.color("light", "primary").css # => "oklch(0.205 0 0)"
     #   tokens.radius_css                    # => "0.625rem"
     class Tokens
+      # Where the canonical DTCG token file lives, relative to the gem root.
       DEFAULT_RELATIVE_PATH = "tokens/tokens.dtcg.json"
 
-      # The exact CSS custom-property set of the shadcn/ui v4 distributed
-      # theme (cssVarsV4, plus --radius). This is the drop-in contract: any
-      # shadcn v4 theme block defines exactly these names, so it can replace
-      # poetry's tokens.css wholesale.
+      # The exact CSS custom-property set of the widely-distributed v4
+      # theme convention (cssVarsV4, plus --radius). This is the drop-in
+      # contract: any theme block written to that convention defines exactly
+      # these names, so it can replace poetry's tokens.css wholesale.
       SHADCN_V4_COMPAT_VARS = %w[
         background foreground
         card card-foreground
@@ -38,18 +39,27 @@ module Poetry
         sidebar-border sidebar-ring
       ].freeze
 
-      # Poetry-original extensions BEYOND the shadcn v4 set: the soft
-      # status vocabulary the shadcn set lacks. Kept separate so the
-      # drop-in contract stays sharp: a shadcn theme block replaces the
+      # Poetry-original extensions BEYOND the compat set: the soft
+      # status vocabulary that set lacks. Kept separate so the
+      # drop-in contract stays sharp: a drop-in theme block replaces the
       # compat set wholesale, and these keep their poetry defaults unless
       # the theme chooses to override.
       POETRY_STATUS_VARS = %w[success warning info].freeze
 
       class << self
+        # The gem's canonical token file path ({DEFAULT_RELATIVE_PATH}
+        # under the gem root).
+        #
+        # @return [Pathname]
         def default_path
           Poetry::Core.root.join(DEFAULT_RELATIVE_PATH)
         end
 
+        # Loads a DTCG token file into a Tokens instance.
+        #
+        # @param path [String, Pathname] a DTCG JSON file; defaults to the
+        #   gem's canonical tokens
+        # @return [Tokens]
         def load(path = default_path)
           new(JSON.parse(File.read(path)))
         end
@@ -67,10 +77,20 @@ module Poetry
         data.fetch("color").keys.reject { |k| k.start_with?("$") }
       end
 
+      # The semantic color-role names of one mode, in file order.
+      #
+      # @param mode [String] "light" or "dark"
+      # @return [Array<String>] role names ("primary", "muted-foreground", ...)
       def color_names(mode)
         data.fetch("color").fetch(mode).keys.reject { |k| k.start_with?("$") }
       end
 
+      # The color of one semantic role in one mode.
+      #
+      # @param mode [String] "light" or "dark"
+      # @param name [String] the role name ("primary", "destructive", ...)
+      # @return [Color]
+      # @raise [KeyError] when the mode has no such role
       def color(mode, name)
         @colors[[mode, name]] ||= begin
           token = data.fetch("color").fetch(mode).fetch(name) do

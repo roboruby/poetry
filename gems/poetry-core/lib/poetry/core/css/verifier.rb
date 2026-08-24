@@ -19,6 +19,8 @@ module Poetry
       #   verifier = Poetry::Core::CSS::Verifier.new(compiled_css: File.read("builds/tailwind.css"))
       #   verifier.unknown(["inline-flex", "text-red-510"]).map(&:to_s)
       #   # => ["text-red-510 (did you mean \"text-red-500\"?)"]
+      #
+      # @api private
       class Verifier
         Unknown = Struct.new(:class_name, :suggestion) do
           def to_s

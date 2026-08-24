@@ -4,17 +4,22 @@ require "yaml"
 
 module Poetry
   module Core
-    # The shadcn-interop projection of a gem's registry:
+    # The interop projection of a gem's registry:
     # every component and block as a registry-item hash matching the
-    # shadcn registry-item.json schema - name / type / title / files[]
+    # published registry-item.json schema ({ITEM_SCHEMA}) - name / type /
+    # title / files[]
     # ({path, content, type, target}) / registryDependencies / meta - plus
     # index summaries for registry.json. Built BOOT-FREE from the committed
     # component_registry.yml + the source tree, so the docs site serves
-    # GET /r/:name.json live and any shadcn-compatible tool can consume a
+    # GET /r/:name.json live and any tool speaking that schema can consume a
     # poetry item. Names are kebab-case with the gem prefix stripped
     # (poetry/ui/command/dialog -> command-dialog), matching the block
     # catalog's existing naming.
+    #
+    # @api private
     class RegistryItems
+      # The published registry-item JSON schema every emitted item validates
+      # against.
       ITEM_SCHEMA = "https://ui.shadcn.com/schema/registry-item.json"
 
       # The same header strip the block generator applies: the poetry:block
@@ -37,7 +42,7 @@ module Poetry
       end
 
       # Every item name (components + blocks), collision-checked: one flat
-      # kebab namespace per gem, like shadcn's.
+      # kebab namespace per gem, the registry-schema convention.
       def names
         @names ||= begin
           all = component_paths.keys + blocks.keys
@@ -56,8 +61,8 @@ module Poetry
         end
       end
 
-      # Index entries: the full item minus file content (shadcn's
-      # registry.json shape - paths and targets stay, bytes don't).
+      # Index entries: the full item minus file content (the
+      # registry.json index shape - paths and targets stay, bytes don't).
       def summaries
         names.map do |name|
           full = item(name)

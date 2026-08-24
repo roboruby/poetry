@@ -13,9 +13,11 @@ module Poetry
     # fetches recursively via the sibling convention), validate every write
     # target against a traversal-safe allowlist, and collect the report-only
     # side effects (Gemfile additions are PRINTED, never executed - no
-    # lifecycle scripts, ever; the shadcn trust gap poetry does not copy).
+    # lifecycle scripts, ever: a fetched item can never run code on install).
     # The add generator executes the plan with its idempotent primitives;
     # this class never touches the filesystem it plans for.
+    #
+    # @api private
     class RegistryInstaller
       class Error < Poetry::Core::Error; end
 
@@ -106,8 +108,8 @@ module Poetry
         end
       end
 
-      # Bare names and @poetry/* check the installed gems first - the poetry
-      # twist on shadcn's DAG: core components are runtime-provided, so a
+      # Bare names and @poetry/* check the installed gems first - poetry's
+      # twist on the dependency walk: core components are runtime-provided, so a
       # community item that composes Button needs no Button copy.
       def local_candidate?(address)
         address.kind == :bare || (address.kind == :namespace && address.namespace == "@poetry")
@@ -197,7 +199,7 @@ module Poetry
         %(@import "./poetry/community/#{item["name"]}.css";)
       end
 
-      # cssVars follow shadcn's three sections (theme/light/dark); css
+      # cssVars carry the item schema's three sections (theme/light/dark); css
       # passes through verbatim. One file per item, imported from the host's
       # Tailwind entry like every other poetry fragment.
       def css_content(item)

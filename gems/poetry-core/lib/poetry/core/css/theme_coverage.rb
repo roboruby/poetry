@@ -25,6 +25,8 @@ module Poetry
       #     style_classes: [MyApp::Button::Style]
       #   )
       #   coverage.ok? || [coverage.missing, coverage.orphans]
+      #
+      # @api private
       class ThemeCoverage
         SELECTOR_LINE = /^[^@\s{}][^{]*\{/
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/

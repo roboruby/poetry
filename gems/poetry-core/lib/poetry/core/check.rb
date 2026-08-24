@@ -11,16 +11,20 @@ module Poetry
     # Stimulus controllers/actions/targets (the Ruby<->JS seam, now at
     # consumer-markup level), plus raw-color classes (the off-system color
     # path, extended from CSS to markup). The mechanical gate an agent
-    # self-corrects against before the LLM judge ever runs (eval integration).
+    # self-corrects against before any deeper review runs.
     #
     # @example Lint one template string
     #   findings = Poetry::Core::Check.lint(erb_source, catalog: catalog)
     #   findings.reject { |finding| finding.severity == :warning }
+    #
+    # @api private
     module Check
       SEVERITIES = %i[error warning].freeze
 
       # A single lint result. file is attached by the Runner; line is
       # 1-based into that file. suggestion is a did-you-mean fix or nil.
+      #
+      # @api private
       Finding = Struct.new(:rule, :severity, :message, :line, :suggestion, :file, keyword_init: true) do
         def to_h
           { rule: rule, severity: severity, message: message,
@@ -36,6 +40,8 @@ module Poetry
 
       # Query wrapper over the committed registry hash + the controllers
       # manifest. Language-agnostic data in, poetry semantics out.
+      #
+      # @api private
       class Catalog
         PASSTHROUGH = %w[class id key data aria role style if unless].freeze
         COLOR_FAMILIES = %w[
@@ -196,8 +202,8 @@ module Poetry
           @components.dig(path, "requires_content")
         end
 
-        # Setters an owner's call cannot omit (the menu crash class:
-        # Menubar's menu without with_trigger raises at render) - setter
+        # Setters an owner's call cannot omit (Menubar's menu without
+        # with_trigger raises at render) - setter
         # name => hint, at every depth the slot queries work at.
         def required_slots(owner)
           (owner.is_a?(Hash) ? owner["required_slots"] : @components.dig(owner, "required_slots")) || {}
@@ -231,6 +237,8 @@ module Poetry
       # Lints one ERB source string. Rules split cleanly: the Ruby-call rules
       # (component/option/variant) walk Prism ASTs of the ERB chunks; the
       # markup rules (wiring/color) walk herb's HTML attribute nodes.
+      #
+      # @api private
       class Linter
         ACTION_TOKEN = /(?:[\w.:@-]+->)?(?<identifier>poetry--[\w-]+)#(?<method>\w+)/
         POETRY_PREFIX = Stimulus::Manifest::POETRY_PREFIX
@@ -333,8 +341,8 @@ module Poetry
           # A valid helper with no component mapping (group / provider / item
           # wrapper): its registry-declared value contracts still check, and
           # NO wrapper yields anything to its block (a roster invariant) - a
-          # declared block param will be nil at render (the app_shell
-          # crash: `poetry_sidebar_group do |group|`).
+          # declared block param will be nil at render
+          # (e.g. `poetry_sidebar_group do |group|`).
           path = @catalog.path_for(helper)
           unless path
             return helper_findings(helper, call, base_line) + yieldless_findings(helper, call, line) +
@@ -353,8 +361,8 @@ module Poetry
             requires_any_findings(path, call, pairs, line, content_fed)
         end
 
-        # The requires_content tier (the floating crash class): a
-        # component that raises without a content block, called with none.
+        # The requires_content tier: a component that raises without a
+        # content block, called with none.
         # Positional arguments or a chained .with_content may carry content
         # invisibly - such calls are left alone.
         def content_findings(path, helper, call, line, content_fed)
@@ -369,8 +377,8 @@ module Poetry
                        message: "#{helper} requires a content block (#{hint})", line: line)]
         end
 
-        # The helper-arity rule (the blocks-gate site_nav crash class:
-        # `poetry_link "text", href:` on a kwargs-only helper). Enforced
+        # The helper-arity rule (e.g. `poetry_link "text", href:` on a
+        # kwargs-only helper - an ArgumentError at render). Enforced
         # only where the registry states an arity - introspected from the
         # helper module's real signatures, never assumed - and only on
         # receiverless calls (a form builder's poetry_select owns its own
@@ -422,8 +430,8 @@ module Poetry
           findings + (entry ? value_findings(entry, helper_of(path), key, value, line) : [])
         end
 
-        # The value-contract tier (the crash classes poetry check was
-        # blind to): enumerated values on any declared attribute, literal nil
+        # The value-contract tier: the call shapes that raise or misrender
+        # at render time - enumerated values on any declared attribute, literal nil
         # against required options, and icon-name format/membership.
         def value_findings(entry, owner, key, value, line)
           if value.equal?(NIL_LITERAL)
@@ -446,7 +454,7 @@ module Poetry
         end
 
         # Icon names are kebab-case names from the active icon set. Shape is
-        # always checkable (the :folder_plus crash); membership only when
+        # always checkable (a snake_case `:folder_plus` never renders); membership only when
         # the catalog carries the set's names.
         def icon_findings(key, value, line)
           unless value.match?(Icons::FileSet::NAME_FORMAT)
@@ -580,7 +588,7 @@ module Poetry
 
           # A typed slot IS a component call: same option/value rules, plus
           # the block-form trap (with_icon do ... end builds the component
-          # with no props - the alert crash).
+          # with no props at all).
           pairs = keyword_pairs(call)
           findings += pairs.flat_map do |key, value, kw_line|
             option_findings(component, key, value, base_line + kw_line - 1)
@@ -597,8 +605,8 @@ module Poetry
                                     message: "with_#{slot_name} renders #{helper_of(component)}, which " \
                                              "requires a content block (#{hint})", line: line)
           end
-          # The any-of contracts ride the component fact too (the toast
-          # crash was with_action(label:) - a Button through a
+          # The any-of contracts ride the component fact too
+          # (e.g. with_action(label:) - a Button through a
           # forwarding lambda, nothing visible). At a slot site the block
           # IS the content; sub-slot alternatives are unreachable and drop
           # out of the satisfiable set.
@@ -620,7 +628,7 @@ module Poetry
           findings
         end
 
-        # --- the required-slot tier (the menu crash class) ---
+        # --- the required-slot tier (setters a call cannot omit) ---
 
         # A required-slot component called with NO block cannot set the
         # slot at all (the setters live on the block param) - the blockless
@@ -647,8 +655,8 @@ module Poetry
           end
         end
 
-        # The conditional any-of tier (the two crash classes that
-        # survived every single-fact tier). A group passes when ANY listed
+        # The conditional any-of tier: the contracts no single-fact rule
+        # can state. A group passes when ANY listed
         # alternative is satisfied or possibly satisfied: a block counts
         # for content AND for slot alternatives (the setters may be called
         # inside), a listed option key counts by presence (a literal-false
@@ -714,8 +722,8 @@ module Poetry
         # The end-of-template accounting: every non-escaped binding must
         # have called each required setter of its owner (satisfied by the
         # slot's own setter, a collection's singular, or any polymorphic
-        # type - the runtime predicate, textually). The original menu crash
-        # passed FOUR truthful checks and failed on exactly this omission.
+        # type - the runtime predicate, textually). A call can pass every
+        # other rule truthfully and still fail on exactly this omission.
         def missing_slot_findings
           @instances.flat_map do |instance|
             next [] if instance[:escaped]
@@ -741,7 +749,7 @@ module Poetry
 
         # The block seam of a setter, both directions. A yieldless
         # setter (its lambda consumes the block as content) yields nothing -
-        # a declared block param is nil at render (the menu crash:
+        # a declared block param is nil at render (e.g.
         # `menu.with_item do |item|`). A required_content setter crashes
         # WITHOUT a block (Carousel with_item).
         def setter_block_findings(entry, slot_name, call, line)
@@ -760,8 +768,8 @@ module Poetry
           findings
         end
 
-        # Keywords a closed-signature setter does not accept (the
-        # artwork_carousel crash: `with_item(class:)` against
+        # Keywords a closed-signature setter does not accept
+        # (e.g. `with_item(class:)` against
         # `|classes: nil, &block|` - an ArgumentError at render, and NOT a
         # pass-through surface, unlike component options).
         def setter_keyword_findings(entry, slot_name, call, base_line)
@@ -778,9 +786,9 @@ module Poetry
           end
         end
 
-        # Positional args a setter does not take (the menu-item crash:
-        # `with_item(:item, ...)` guessed a type-as-argument dispatch no
-        # setter has - the type IS the setter). Arity comes from the
+        # Positional args a setter does not take (e.g.
+        # `with_item(:item, ...)` - a type-as-argument dispatch no
+        # setter has; the type IS the setter). Arity comes from the
         # registry's introspected lambda signatures; anything unknowable
         # (splats, untracked setters) is left alone.
         def arity_findings(entry, slot_name, call, line)
@@ -962,6 +970,8 @@ module Poetry
       # carries no set names (membership IS the question), and on files that
       # don't parse (broken Ruby is not this tier's finding). Prism ships
       # with Ruby - no new dependency, same optional-parse posture as herb.
+      #
+      # @api private
       class IconDeclarations
         # `icon:`, `menu_icon:`, `icons:`, `status_icons:` - but NOT
         # `icon_position:` (an enum, not a name; the FP that loose /icon/
@@ -1062,6 +1072,8 @@ module Poetry
 
       # Reads files, lints each, attaches the file to every finding. Ruby
       # files go through the declaration tier; everything else is ERB.
+      #
+      # @api private
       class Runner
         def initialize(catalog)
           @linter = Linter.new(catalog)

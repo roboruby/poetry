@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/jefawks3/fox_tail/blob/main/lib/fox_tail/html_attributes.rb
+    # HTML attribute plumbing: the merge-aware attributes hash.
     module HTML
       # A specialized hash for managing HTML attributes with intelligent merging capabilities.
       #

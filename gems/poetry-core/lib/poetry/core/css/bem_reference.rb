@@ -17,6 +17,8 @@ module Poetry
       # @example
       #   Poetry::Core::CSS::BemReference.new(MyApp::Button::Style).css
       #   # => "/* poetry BEM reference for `.button` - capsule 1a2b3c... */\n.button { ... }"
+      #
+      # @api private
       class BemReference
         def initialize(style_class, block: style_class.bem_block)
           raise ArgumentError, "#{style_class} has no derivable BEM block" unless block

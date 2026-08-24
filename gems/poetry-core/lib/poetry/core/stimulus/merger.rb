@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/jefawks3/fox_tail/blob/main/lib/fox_tail/stimulus_merger.rb
+    # The Stimulus layer: builders, declarations, and attribute merging.
     module Stimulus
       # Intelligently merges Stimulus controller data attributes from multiple sources.
       #

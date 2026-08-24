@@ -8,6 +8,8 @@ module Poetry
     #
     # @example
     #   Poetry::Core::LlmsText.new(registry: registry).index
+    #
+    # @api private
     class LlmsText
       PREAMBLE = <<~TEXT
         # Poetry for Rails
@@ -164,8 +166,8 @@ module Poetry
 
       # The Stimulus wiring surface: the controllers a component
       # renders, each with the targets / values / actions an agent may wire
-      # by hand and the events it may listen for. Base UI
-      # vocabulary. Absent for static components.
+      # by hand and the events it may listen for.
+      # Absent for static components.
       # Element-level when the entry carries the projection (use_stimulus
       # declarations); the controller-level capability view otherwise
       # (charts, external registries).
@@ -233,12 +235,12 @@ module Poetry
 
       # A typed slot renders another component: the call takes THAT
       # component's props, never a render block (with_icon(name: ...) - the
-      # alert crash was an agent block-form guess this line now
+      # block-form guess an agent would otherwise make, which this line now
       # forecloses). Untyped slots take blocks; many-slots say so; a
       # polymorphic slot lists its with_<type> setters - and when they are
-      # all kwargs-only, says so (the menu crash guessed a
-      # type-as-argument dispatch no setter has). The render-crash classes
-      # each get their sentence: yieldless setters (no |param| - it would be
+      # all kwargs-only, says so (foreclosing the type-as-argument
+      # dispatch no setter has). Each shape that raises at render
+      # gets its own sentence: yieldless setters (no |param| - it would be
       # nil), closed keyword signatures (the exact accepted set), and
       # setters that cannot omit their content block.
       def slot_summary(slot)
@@ -260,7 +262,7 @@ module Poetry
         (slot["required_content"] || {}).each do |setter, hint|
           qualifiers << "with_#{setter} REQUIRES a content block (#{hint})"
         end
-        # The nested requirement seam (the menu crash: with_menu
+        # The nested requirement seam (with_menu
         # without with_trigger raises - stated where agents read).
         (slot["builders"] || {}).each do |setter, surface|
           (surface["required_slots"] || {}).each do |required, hint|

@@ -2,7 +2,7 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/wrapped_helper.rb
+    # Opt-in helper mixins shipped alongside the core (wrapping, translations).
     module Contrib
       # Provides a convenient method to wrap components with custom HTML code.
       #

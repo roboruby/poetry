@@ -4,8 +4,8 @@ require "uri"
 
 module Poetry
   module Core
-    # The uniform registry address scheme - the shadcn
-    # CLI lesson applied verbatim: no --from flag, ONE classifier for every
+    # The uniform registry address scheme:
+    # no --from flag, ONE classifier for every
     # generator argument and every registryDependencies entry. An address is
     # exactly one of:
     #
@@ -16,12 +16,14 @@ module Poetry
     #
     # Item names normalize to kebab-case everywhere (InputGroup and
     # input_group are both input-group) - the block catalog's existing
-    # naming, and shadcn's.
+    # naming, and the wider registry ecosystem's.
     #
     # @example
     #   Poetry::Core::RegistryAddress.parse("@acme/fancy-chart").kind # => :namespace
     class RegistryAddress
+      # The @namespace/name address shape.
       NAMESPACED = %r{\A(@[a-z0-9][a-z0-9_-]*)/([A-Za-z0-9_-]+)\z}
+      # The bare item-name address shape (the installed gems).
       BARE = /\A[A-Za-z0-9_-]+\z/
 
       attr_reader :kind, :raw, :namespace, :name, :location

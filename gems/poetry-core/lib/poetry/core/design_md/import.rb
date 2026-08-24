@@ -24,6 +24,8 @@ module Poetry
       #   doc = Poetry::Core::DesignMd.parse(File.read("brand.DESIGN.md"))
       #   plan = Poetry::Core::DesignMd::Import.new.plan(doc)
       #   plan.overrides["light"] # => { "primary" => a Tokens::Color, ... }
+      #
+      # @api private
       class Import
         AA = 4.5
 

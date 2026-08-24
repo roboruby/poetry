@@ -2,7 +2,6 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/preview/default_template.rb
     module Preview
       # Provides flexible template resolution for ViewComponent previews.
       #

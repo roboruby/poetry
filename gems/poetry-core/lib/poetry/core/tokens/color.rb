@@ -20,11 +20,13 @@ module Poetry
         # WCAG 2.x contrast shared by Color and Blend: relative luminance is
         # computed from gamma-encoded sRGB (the value a browser actually paints).
         module Contrast
+          # WCAG 2.x relative luminance of the painted color.
           def luminance
             r, g, b = srgb.map { |v| v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)**2.4 }
             (0.2126 * r) + (0.7152 * g) + (0.0722 * b)
           end
 
+          # The WCAG contrast ratio against another color, from 1 to 21.
           def contrast_ratio(other)
             pair = [luminance, other.luminance].sort
             (pair[1] + 0.05) / (pair[0] + 0.05)
@@ -60,14 +62,18 @@ module Poetry
           new(l: l, c: c, h: h, alpha: value.fetch("alpha", 1.0))
         end
 
+        # Pure white - the literal foreground on destructive surfaces.
         WHITE = new(l: 1.0)
+        # Pure black.
         BLACK = new(l: 0.0)
 
         # The CSS color spellings DESIGN.md files carry across the design-skill
         # ecosystem: poetry emits oklch; foreign-authored files arrive in
         # hex or rgb().
         OKLCH_CSS = %r{\Aoklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:\s*/\s*([\d.]+)(%?))?\s*\)\z}i
+        # The hex color forms #parse accepts (3/4/6/8 digits).
         HEX_CSS = /\A#(\h{3}|\h{4}|\h{6}|\h{8})\z/
+        # The rgb()/rgba() color forms #parse accepts.
         RGB_CSS = %r{\Argba?\(\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})\s*[,\s]\s*(\d{1,3})(?:\s*[,/]\s*([\d.]+)(%?))?\s*\)\z}i
 
         class << self
@@ -91,7 +97,7 @@ module Poetry
 
           # Gamma-encoded sRGB [0,1] triplet -> Color, via Ottosson's inverse
           # path (linear sRGB -> LMS -> OKLab -> LCH). Components round to the
-          # 3-decimal precision shadcn themes publish.
+          # 3-decimal precision distributed theme files publish.
           def from_srgb(srgb, alpha: 1.0)
             r, g, b = srgb.map { |v| v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055)**2.4 }
 
@@ -129,7 +135,7 @@ module Poetry
           self.class.new(l: l, c: c, h: h, alpha: alpha)
         end
 
-        # The CSS serialization, matching shadcn's formatting:
+        # The CSS serialization, matching the distributed themes' formatting:
         # "oklch(0.577 0.245 27.325)" / "oklch(1 0 0 / 10%)".
         def css
           base = [l, c, h].map { |v| format("%g", v) }.join(" ")

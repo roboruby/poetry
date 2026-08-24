@@ -18,9 +18,14 @@ module Poetry
       # strictly (unknown one raises); host-app controllers are unknown to
       # poetry and pass through unvalidated.
       module Manifest
+        # Raised for a poetry-- identifier the manifest does not know.
         class UnknownController < Poetry::Core::Error; end
+        # Raised for a target/value/action name the controller's manifest
+        # entry does not list.
         class UnknownName < Poetry::Core::Error; end
 
+        # The identifier prefix marking a controller as poetry-owned (and
+        # therefore manifest-validated).
         POETRY_PREFIX = "poetry--"
 
         module_function

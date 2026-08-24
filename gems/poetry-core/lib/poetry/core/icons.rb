@@ -22,6 +22,8 @@ module Poetry
       # against a strict format before touching the filesystem (icon names
       # can carry user input - no path traversal).
       class FileSet
+        # The kebab-case shape every icon name must match before it touches
+        # the filesystem.
         NAME_FORMAT = /\A[a-z0-9][a-z0-9-]*\z/
 
         attr_reader :dir
@@ -50,6 +52,9 @@ module Poetry
           end
         end
 
+        # Every icon name in the set, sorted.
+        #
+        # @return [Array<Symbol>]
         def names
           @names ||= @dir.glob("*.svg").map { |path| path.basename(".svg").to_s.to_sym }.sort
         end
@@ -84,10 +89,28 @@ module Poetry
           DidYouMean::SpellChecker.new(dictionary: candidates).correct(name).first
         end
 
+        # The registered icon sets, library key => set object. Icon gems
+        # add themselves here on require.
+        #
+        # @return [Hash{Symbol => Object}]
         def registry
           @registry ||= {}
         end
 
+        # Registers an icon set under a library key - the extension point
+        # an icon gem calls on require. A set is any object responding to
+        # `#include?(name)`, `#fetch(name)` (returning inner SVG markup),
+        # and `#names`; see the SECURITY note above for the
+        # pre-sanitization requirement on custom sets.
+        #
+        # @param key [Symbol, String] the library key `config.icon_library`
+        #   selects the set by
+        # @param set [Object] the icon set (a {FileSet} over a directory of
+        #   vendored SVGs, or any object honoring the same contract)
+        # @example Register a vendored set and select it
+        #   Poetry::Core::Icons.register(:my_icons,
+        #     Poetry::Core::Icons::FileSet.new(dir: root.join("icons")))
+        #   # config/initializers/poetry.rb: config.icon_library = :my_icons
         def register(key, set)
           registry[key.to_sym] = set
         end

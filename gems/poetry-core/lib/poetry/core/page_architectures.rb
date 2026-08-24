@@ -11,8 +11,7 @@ module Poetry
     # skill and the block catalog does not move composition on its own; the
     # missing piece is directed retrieval at PLAN time, before any ERB.
     #
-    # Product framing: the eval measures whether guided planning
-    # moves the composition score, but the catalog exists for the person
+    # Product framing: the catalog exists for the person
     # building the page - it is the answer to "what does a real <kind of>
     # screen need", stated once, correctly.
     #
@@ -21,6 +20,8 @@ module Poetry
     # (the target is ~50); it grows as blocks and evidence
     # accrue. A brief that matches nothing is told so and routed to compose
     # + the five mechanics, never silently dropped.
+    #
+    # @api private
     module PageArchitectures
       # Each entry: name, title, purpose, keywords (matched, weighted x2),
       # sections (ordered macrostructure), states (what a real screen shows

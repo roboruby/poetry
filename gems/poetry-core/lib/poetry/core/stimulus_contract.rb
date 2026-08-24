@@ -38,6 +38,8 @@ module Poetry
     #   missing preview coverage (the declared-axis coverage rule)
     # - foreign-wiring:       hand-written wiring for an undeclared,
     #   manifest-known controller on an owned node
+    #
+    # @api private
     module StimulusContract
       module_function
 

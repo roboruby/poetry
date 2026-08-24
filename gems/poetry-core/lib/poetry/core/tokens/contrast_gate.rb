@@ -3,7 +3,7 @@
 module Poetry
   module Core
     class Tokens
-      # The AAA-contrast CI gate (locked 2026-06-24): every semantic
+      # The AAA-contrast CI gate: every semantic
       # text pair is asserted in BOTH modes against a locked ledger. WCAG 2.2
       # AA (4.5:1) is the floor; AAA (7:1) is enforced wherever it was
       # achievable at lock time. A pair may never regress below its locked
@@ -11,19 +11,21 @@ module Poetry
       # any token change that degrades contrast fails the build.
       #
       # The ledger models *rendered* reality: dark destructive is gated as
-      # shadcn actually paints it (bg-destructive/60 composited over the page
+      # the theme actually paints it (bg-destructive/60 composited over the page
       # background - 6.5:1); solid dark destructive under white text is 2.9:1
       # and therefore a forbidden pattern, documented here.
       #
       # @example
       #   gate = Poetry::Core::Tokens::ContrastGate.new(Poetry::Core::Tokens.load)
       #   gate.violations # => [] when every locked pair still holds
+      #
+      # @api private
       class ContrastGate
         THRESHOLDS = { aaa: 7.0, aa: 4.5 }.freeze
 
-        # Locked 2026-07-01 against the shipped neutral theme (ratios at lock
+        # Locked against the shipped neutral theme (ratios at lock
         # in comments). :fg / :bg name color tokens; fg: :white is the literal
-        # (shadcn's destructive surfaces render text-white; white is not a
+        # (destructive surfaces render text-white; white is not a
         # token). :bg_alpha + :bg_over composite the bg before measuring.
         LEDGER = {
           "light" => [
@@ -49,7 +51,7 @@ module Poetry
             { fg: "muted-foreground",           bg: "muted",           lock: :aa  }, #  5.83
             { fg: "muted-foreground",           bg: "background",      lock: :aaa }, #  7.63
             { fg: "accent-foreground",          bg: "accent",          lock: :aaa }, # 14.48
-            # shadcn dark renders bg-destructive/60 over the page background;
+            # Dark mode renders bg-destructive/60 over the page background;
             # measure the composite (6.48). Solid dark destructive is 2.9:1 -
             # never paint white text on it undiluted.
             { fg: :white, bg: "destructive", bg_alpha: 0.6, bg_over: "background", lock: :aa }, # 6.48

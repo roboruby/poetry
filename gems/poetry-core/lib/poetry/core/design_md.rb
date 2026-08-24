@@ -30,6 +30,8 @@ module Poetry
     # @example
     #   doc = Poetry::Core::DesignMd.parse(File.read("DESIGN.md"))
     #   doc.dig("colors", "light", "primary") # => a Tokens::Color
+    #
+    # @api private
     class DesignMd
       # The spec's canonical section order (its own linter warns on
       # out-of-order sections).

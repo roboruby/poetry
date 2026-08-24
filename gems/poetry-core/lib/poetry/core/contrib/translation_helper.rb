@@ -2,7 +2,6 @@
 
 module Poetry
   module Core
-    # Adapted from https://github.com/palkan/view_component-contrib/blob/master/lib/view_component_contrib/translation_helper.rb
     module Contrib
       # Provides internationalization (I18n) support for ViewComponents by managing
       # translation namespaces and scopes.
@@ -46,12 +45,16 @@ module Poetry
       #
       #   # Translations will be looked up under view_components.ui.modals
       module TranslationHelper
+        # The top-level locale key component translations live under when a
+        # class sets no i18n_namespace of its own.
         DEFAULT_NAMESPACE = "view_components"
 
         def self.included(base)
           base.extend ClassMethods
         end
 
+        # The class-level i18n surface: namespace, scope, and the virtual
+        # path Rails' I18n lookups resolve `t('.key')` against.
         module ClassMethods
           attr_writer :i18n_namespace
 

@@ -4,11 +4,15 @@ module Poetry
   module Core
     # The recipes projection: multi-file, non-UI payloads
     # - skill bundles, scaffold template sets, screen slices - served
-    # through the same shadcn registry-item schema as components and
+    # through the same registry-item schema as components and
     # blocks. Like RegistryItems, this is a LIVE projection: a recipe
     # declares its files as callables over gem-shipped sources, so the
     # served item can never drift from what the generators install.
+    #
+    # @api private
     class RecipeItems
+      # The published registry-item JSON schema recipes are served under -
+      # the same schema component items validate against.
       ITEM_SCHEMA = RegistryItems::ITEM_SCHEMA
 
       # @param recipes [Array<Hash>] declarations: "name" (flat kebab),

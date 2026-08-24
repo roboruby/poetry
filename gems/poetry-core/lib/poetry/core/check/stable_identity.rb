@@ -21,6 +21,8 @@ module Poetry
       #   each/map loop without key:/id: gets a fresh random id per
       #   render, so Turbo morph replaces it on any reorder instead of
       #   following the record.
+      #
+      # @api private
       class StableIdentity
         # Decorative/id-less helpers where the warnings would be noise.
         SKIP_HELPERS = %w[

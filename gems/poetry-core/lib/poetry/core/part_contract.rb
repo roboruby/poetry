@@ -37,6 +37,8 @@ module Poetry
     #                        absent from the sources
     # - unnamed-stateful:    an owned element carrying state attributes or
     #                        var seams without a data-slot name
+    #
+    # @api private
     module PartContract
       # Ruby mirror of app/javascript/poetry/core/helpers/state.js
       # VOCABULARY (the attributes setState can write). JS-toggled states

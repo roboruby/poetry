@@ -24,6 +24,8 @@ module Poetry
     # claimed by another record re-creates false identity), and poetry
     # preferring them while the host's own dom_id stays pk-based would
     # split one app into two id vocabularies.
+    #
+    # @api private
     module StableId
       # The thread-local sequence generator (the OPT-IN mode, default
       # off). Same page -> same seed -> identical id sequence across

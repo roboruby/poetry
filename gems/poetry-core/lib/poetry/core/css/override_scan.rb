@@ -23,6 +23,8 @@ module Poetry
       #     declarations: YAML.load_file("config/poetry_components.yml")["overrides"]
       #   )
       #   scan.ok? || scan.undeclared # => [["app/assets/site.css", ["cn-button"]]]
+      #
+      # @api private
       class OverrideScan
         CN_TOKEN = /\.(cn-[a-z0-9-]+)/
         COMMENT = %r{/\*.*?\*/}m

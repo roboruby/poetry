@@ -30,6 +30,8 @@ module Poetry
       #   resolver.base("inline-flex items-center")
       #           .variant(:color, red: "text-red-600", blue: "text-blue-600")
       #   resolver.render(color: :red) # => "inline-flex items-center text-red-600"
+      #
+      # @api private
       class Resolver
         Compound = Struct.new(:criteria, :classes)
 

@@ -16,6 +16,8 @@ module Poetry
       # @example
       #   result = Poetry::Core::CSS::TemplateClasses.extract('<div class="p-4 <%= extra %>">')
       #   result.classes # => ["p-4"]
+      #
+      # @api private
       class TemplateClasses
         ParseError = Struct.new(:path, :message) do
           def to_s
