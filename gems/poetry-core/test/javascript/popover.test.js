@@ -239,7 +239,7 @@ describe("poetry--core--popover", () => {
     })
   })
 
-  describe("portal-on-open (docs/portal-on-open.md S2)", () => {
+  describe("portal-on-open", () => {
     it("open portals the content to body + flips popper to absolute; close restores both and focus returns", async () => {
       await mount()
 

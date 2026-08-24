@@ -321,7 +321,7 @@ export default class SelectController extends Controller {
 
     const trigger = this.#trigger()
 
-    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // Portal-on-open: move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune. In
     // aligned mode the content fixed-positions ITSELF (viewport coords,

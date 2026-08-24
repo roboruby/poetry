@@ -1,6 +1,6 @@
 import { onBeforeCache } from "@poetry/controllers/helpers/turbo_cache"
 
-// The portal-on-open mechanism (docs/portal-on-open.md): move popper
+// The portal-on-open mechanism: move popper
 // content to a stable container (body by default) while open so it can
 // position `absolute` - static under compositor scroll, immune to
 // transformed ancestors - and return it HOME on close, exactly where a

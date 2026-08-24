@@ -106,7 +106,7 @@ export default class PopperController extends Controller {
     this.#start()
   }
 
-  // Reactive strategy (the portal seam, docs/portal-on-open.md D3): a
+  // Reactive strategy (the portal seam): a
   // consumer flips fixed <-> absolute when it portals/restores content;
   // re-arming repositions in the new coordinate space immediately.
   strategyValueChanged() {
@@ -388,7 +388,7 @@ export default class PopperController extends Controller {
       return this.contentTarget
     }
 
-    // The portal seam (docs/portal-on-open.md): while content is portaled
+    // The portal seam: while content is portaled
     // out, the Stimulus target no longer matches (targets scope to the
     // controller's subtree) - the cached node keeps being positioned.
     // Without the cache the fallback would position the ROOT.

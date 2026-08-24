@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from "vitest"
 // Side effect: index.js registers the union of every controller's declared
-// events as the bridge list (docs/portal-on-open.md).
+// events as the bridge list.
 import "@poetry/controllers"
 import {
   isPortaled, portalContent, resolvePortalContainer, restoreContent

@@ -333,7 +333,7 @@ describe("poetry--core--combobox", () => {
       expect(document.activeElement).toBe(el("trigger"))
     })
 
-    it("Tab closes WITHOUT commit and lands focus AFTER the trigger (D6 - the popup lives at body)", async () => {
+    it("Tab closes WITHOUT commit and lands focus AFTER the trigger (the portaled-Tab seam - the popup lives at body)", async () => {
       await open()
 
       const event = press(el("input"), "Tab")
@@ -349,7 +349,7 @@ describe("poetry--core--combobox", () => {
       expect(el("trigger").getAttribute("aria-expanded")).toBe("false")
     })
 
-    it("Shift+Tab closes WITHOUT commit and lands focus ON the trigger (D6)", async () => {
+    it("Shift+Tab closes WITHOUT commit and lands focus ON the trigger (the portaled-Tab seam)", async () => {
       await open()
 
       const event = press(el("input"), "Tab", { shiftKey: true })
@@ -450,7 +450,7 @@ describe("poetry--core--combobox", () => {
     })
   })
 
-  describe("portal-on-open (docs/portal-on-open.md S4)", () => {
+  describe("portal-on-open", () => {
     it("open portals the content to body + flips popper to absolute; a commit restores both", async () => {
       await open()
 
@@ -846,7 +846,7 @@ describe("poetry--core--combobox (multiple)", () => {
     })
   })
 
-  describe("portal-on-open (docs/portal-on-open.md S4 - the ROOT-mounted engine over a portaled popup)", () => {
+  describe("portal-on-open (the ROOT-mounted engine over a portaled popup)", () => {
     it("the popup portals while the chips field stays home; the engine still filters the portaled list", async () => {
       await openMultiple()
 
@@ -875,7 +875,7 @@ describe("poetry--core--combobox (multiple)", () => {
       expect(el("content").hidden).toBe(false, "multiple keeps the popup open on select")
     })
 
-    it("Tab from the HOME-side chips input closes and proceeds naturally (no D6 re-route)", async () => {
+    it("Tab from the HOME-side chips input closes and proceeds naturally (no portaled-Tab re-route)", async () => {
       await openMultiple()
 
       const event = press(el("input"), "Tab")

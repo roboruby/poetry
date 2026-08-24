@@ -777,7 +777,7 @@ describe("poetry--core--menu", () => {
     })
   })
 
-  describe("portal-on-open (docs/portal-on-open.md S5)", () => {
+  describe("portal-on-open", () => {
     it("open portals the content to body + flips popper absolute on the root AND every sub; close restores all", async () => {
       await mount()
       await openWithPointer()

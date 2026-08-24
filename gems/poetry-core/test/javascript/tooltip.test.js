@@ -362,7 +362,7 @@ describe("poetry--core--tooltip", () => {
     })
   })
 
-  describe("portal-on-open (docs/portal-on-open.md S1)", () => {
+  describe("portal-on-open", () => {
     it("open portals the content to body + flips popper to absolute; close restores both", async () => {
       await mount({ delay: 0 })
 

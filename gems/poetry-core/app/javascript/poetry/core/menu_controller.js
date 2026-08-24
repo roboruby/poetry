@@ -311,7 +311,7 @@ export default class MenuController extends Controller {
 
     const trigger = this.#trigger()
 
-    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // Portal-on-open: move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune. Each
     // SUB level portals on its own open (#showSub) - kept inside, the
@@ -550,7 +550,7 @@ export default class MenuController extends Controller {
         if (sibling !== subTrigger) this.#closeSubTree(sibling, { focusTrigger: false })
       }
 
-      // Portal the sub level like the root (docs/portal-on-open.md): left
+      // Portal the sub level like the root: left
       // absolute INSIDE the content it is clipped by the menu's own
       // overflow-y-auto scroller - the flyout opens invisible (upstream
       // portals every sub level for the same reason). Native events no

@@ -134,7 +134,7 @@ describe("poetry--core--date-picker", () => {
   })
 })
 
-// The PORTALED coordination (docs/portal-on-open.md - the event
+// The PORTALED coordination (the event
 // bridge's first production consumer): the calendar's change fires INSIDE
 // popover content that portal-on-open moved to body, and the picker's
 // root data-action still hears it because the bridge re-dispatches from

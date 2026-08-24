@@ -235,7 +235,7 @@ export default class TooltipController extends Controller {
 
     this.#scope().openCount += 1
 
-    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE any
+    // Portal-on-open: move BEFORE any
     // visual state lands (reparenting later would restart the enter
     // animation), then re-anchor absolute - static under compositor
     // scroll, transformed-ancestor immune. The strategy attribute write

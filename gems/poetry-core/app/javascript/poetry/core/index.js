@@ -179,7 +179,7 @@ export const controllers = {
 
 // The portal event bridge stays honest against the manifest surface: the
 // union of every controller's declared `static events` is the bridged
-// list (docs/portal-on-open.md D5). Registered here so portal.js never
+// list. Registered here so portal.js never
 // imports the controllers (no cycle).
 registerBridgeEvents(Object.values(controllers).flatMap((controller) => controller.events ?? []))
 

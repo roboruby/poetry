@@ -440,7 +440,7 @@ export default class ComboboxController extends Controller {
 
     const expander = this.#expander()
 
-    // Portal-on-open (docs/portal-on-open.md D1/D3): move BEFORE the
+    // Portal-on-open: move BEFORE the
     // enter presence (reparenting mid-animation restarts it), re-anchor
     // absolute - static under compositor scroll, transform-immune. In
     // multiple mode only the popup (listbox) moves; the chips field with
@@ -769,7 +769,7 @@ export default class ComboboxController extends Controller {
   // the focus-scope trap instead. Everything else inside the popup is
   // Command's activedescendant map - no second keyboard map lives here.
   //
-  // D6 (docs/portal-on-open.md): a Tab originating INSIDE the portaled
+  // The Tab seam: a Tab originating INSIDE the portaled
   // popup would proceed from body's end, not from the combobox - close
   // (unchanged) and place focus where the un-portaled DOM would have
   // landed it: the trigger on Shift+Tab, the next tabbable after it on

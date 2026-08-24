@@ -82,7 +82,7 @@ export default class CommandController extends Controller {
       this.#seat({ silent: true })
     }
 
-    // Portal delegation (docs/portal-on-open.md): Stimulus scopes
+    // Portal delegation: Stimulus scopes
     // data-actions to the controller's subtree, so the per-item
     // activate/pointerHighlight actions go DEAD when the popup portals
     // out of it (Combobox multiple mounts this engine on the ROOT while
@@ -408,7 +408,7 @@ export default class CommandController extends Controller {
   #announce(visible) {
     // Element scope first (the bare palette), then beside the resolved
     // list - Combobox multiple portals the popup (status included) out of
-    // this engine's root subtree (docs/portal-on-open.md).
+    // this engine's root subtree.
     const status = this.element.querySelector(STATUS_SELECTOR) ??
       this.#list()?.parentElement?.querySelector(STATUS_SELECTOR)
 
