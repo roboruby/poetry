@@ -28,3 +28,32 @@
   --typeset-leading: 1.75;
   --typeset-flow: 1.25em;
 }
+
+/* The logo shimmer: poetry's tw-shimmer sweep painted through the feather
+   glyph itself (the text-clip shimmer utility cannot reach an inline SVG's
+   strokes, so the icon shape becomes a mask over the animated gradient).
+   Same reduced-motion contract as the shimmer family: the sweep dies and
+   the mark falls back to a solid currentColor glyph. */
+@utility logo-shimmer {
+  --_spread: 12px;
+  background-image: linear-gradient(
+    110deg,
+    currentColor calc(50% - var(--_spread)),
+    oklch(from currentColor min(0.92, calc(l + 0.35)) c h) 50%,
+    currentColor calc(50% + var(--_spread))
+  );
+  background-repeat: no-repeat;
+  background-size: calc(200% + var(--_spread) * 2) 100%;
+  background-position: 0 0;
+  animation: tw-shimmer 2.4s linear infinite;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12.67 19a2 2 0 0 0 1.416-.588l6.154-6.172a6 6 0 0 0-8.49-8.49L5.586 9.914A2 2 0 0 0 5 11.328V18a1 1 0 0 0 1 1z'/%3E%3Cpath d='M16 8 2 22'/%3E%3Cpath d='M17.5 15H9'/%3E%3C/svg%3E")
+    center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-shimmer {
+    animation: none;
+    background-image: none;
+    background-color: currentColor;
+  }
+}

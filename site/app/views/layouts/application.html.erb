@@ -45,11 +45,12 @@
     <%= poetry_sidebar(collapsible: :icon) do |shell| %>
       <% shell.with_nav do %>
         <%= poetry_sidebar_header do %>
-          <%= link_to root_path, class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold " \
-                                        "group-data-[collapsible=icon]:size-8 " \
-                                        "group-data-[collapsible=icon]:justify-center " \
-                                        "group-data-[collapsible=icon]:p-2" do %>
-            <%= poetry_icon(name: :feather, class: "size-4 shrink-0") %>
+          <%= link_to root_path, "aria-label": "poetry",
+                      class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold " \
+                             "group-data-[collapsible=icon]:size-8 " \
+                             "group-data-[collapsible=icon]:justify-center " \
+                             "group-data-[collapsible=icon]:p-2" do %>
+            <span class="logo-shimmer size-4 shrink-0" aria-hidden="true"></span>
             <span class="group-data-[collapsible=icon]:hidden">poetry</span>
           <% end %>
         <% end %>
