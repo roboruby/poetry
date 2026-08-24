@@ -42,7 +42,7 @@
   </head>
 
   <body data-controller="theme" class="min-h-screen bg-background text-foreground antialiased">
-    <%= poetry_sidebar do |shell| %>
+    <%= poetry_sidebar(collapsible: :icon) do |shell| %>
       <% shell.with_nav do %>
         <%= poetry_sidebar_header do %>
           <%= link_to root_path, class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold" do %>
@@ -67,61 +67,34 @@
               <% end %>
             <% end %>
           <% end %>
-          <%= poetry_sidebar_group do %>
-            <%= poetry_sidebar_group_label { "Components" } %>
-            <%= poetry_sidebar_menu do %>
-              <% DocsCatalog.components.each do |entry| %>
-                <%= poetry_sidebar_menu_item do %>
-                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
-                    <span><%= entry.title %></span>
-                  <% end %>
+          <%# The catalog sections: disclosure groups closed by default, the
+              current page's section open. Hidden entirely in the icon rail
+              (their items carry no icons) - the rail face is Get Started. %>
+          <% [["Components", :component, "/components", DocsCatalog.components],
+              ["Charts", :"chart-area", "/charts", DocsCatalog.charts],
+              ["Blocks", :"layout-template", "/blocks", DocsCatalog.blocks],
+              ["Demos", :"monitor-play", "/demos", DocsCatalog.demos],
+              ["API", :braces, "/api", DocsCatalog.apis]].each do |title, icon, prefix, entries| %>
+            <%= poetry_sidebar_group(class: "py-1 group-data-[collapsible=icon]:hidden") do %>
+              <%= poetry_collapsible(open: request.path.start_with?(prefix), class: "group/collapsible") do |section| %>
+                <% section.with_trigger(class: "flex w-full items-center gap-2 rounded-md px-2 py-1.5 " \
+                                               "text-xs font-medium text-sidebar-foreground/70 transition-colors " \
+                                               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground") do %>
+                  <%= poetry_icon(name: icon, class: "size-4 shrink-0") %>
+                  <span><%= title %></span>
+                  <%= poetry_icon(name: :"chevron-right",
+                                  class: "ml-auto size-3.5 shrink-0 transition-transform duration-200 " \
+                                         "group-data-[open]/collapsible:rotate-90") %>
                 <% end %>
-              <% end %>
-            <% end %>
-          <% end %>
-          <%= poetry_sidebar_group do %>
-            <%= poetry_sidebar_group_label { "Charts" } %>
-            <%= poetry_sidebar_menu do %>
-              <% DocsCatalog.charts.each do |entry| %>
-                <%= poetry_sidebar_menu_item do %>
-                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
-                    <span><%= entry.title %></span>
-                  <% end %>
-                <% end %>
-              <% end %>
-            <% end %>
-          <% end %>
-          <%= poetry_sidebar_group do %>
-            <%= poetry_sidebar_group_label { "Blocks" } %>
-            <%= poetry_sidebar_menu do %>
-              <% DocsCatalog.blocks.each do |entry| %>
-                <%= poetry_sidebar_menu_item do %>
-                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
-                    <span><%= entry.title %></span>
-                  <% end %>
-                <% end %>
-              <% end %>
-            <% end %>
-          <% end %>
-          <%= poetry_sidebar_group do %>
-            <%= poetry_sidebar_group_label { "Demos" } %>
-            <%= poetry_sidebar_menu do %>
-              <% DocsCatalog.demos.each do |entry| %>
-                <%= poetry_sidebar_menu_item do %>
-                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
-                    <span><%= entry.title %></span>
-                  <% end %>
-                <% end %>
-              <% end %>
-            <% end %>
-          <% end %>
-          <%= poetry_sidebar_group do %>
-            <%= poetry_sidebar_group_label { "API" } %>
-            <%= poetry_sidebar_menu do %>
-              <% DocsCatalog.apis.each do |entry| %>
-                <%= poetry_sidebar_menu_item do %>
-                  <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
-                    <span><%= entry.title %></span>
+                <%= poetry_sidebar_group_content(class: "pt-1") do %>
+                  <%= poetry_sidebar_menu do %>
+                    <% entries.each do |entry| %>
+                      <%= poetry_sidebar_menu_item do %>
+                        <%= poetry_sidebar_menu_button(href: entry.path, active: current_page?(entry.path)) do %>
+                          <span><%= entry.title %></span>
+                        <% end %>
+                      <% end %>
+                    <% end %>
                   <% end %>
                 <% end %>
               <% end %>
