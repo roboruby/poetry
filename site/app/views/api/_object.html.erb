@@ -1,0 +1,82 @@
+<%# One exported class/module: docstring, constants, then methods grouped
+    by the export's group labels (Options / Style axes / Slots / nil). %>
+<section class="flex flex-col gap-5 border-t pt-8">
+  <header class="flex flex-col gap-1">
+    <h2 id="<%= object["path"].parameterize %>" class="font-mono text-xl font-semibold tracking-tight"><%= object["path"] %></h2>
+    <p class="text-xs text-muted-foreground">
+      <%= object["type"] %><%= " < #{object["superclass"]}" if object["superclass"].present? && object["superclass"] != "Object" %>
+      · <span class="font-mono"><%= object["file"] %></span>
+    </p>
+  </header>
+
+  <% if object["docstring"].present? %>
+    <div class="max-w-3xl flex flex-col gap-3 text-sm text-muted-foreground [&_strong]:text-foreground">
+      <%= ApiMarkdown.render(object["docstring"]) %>
+    </div>
+  <% end %>
+
+  <% object["examples"].each do |example| %>
+    <%= poetry_code_block(code: example["text"], language: "ruby", label: example["title"].presence || "Example") %>
+  <% end %>
+
+  <% if object["constants"].any? %>
+    <div class="overflow-x-auto">
+      <%= poetry_table do %>
+        <%= poetry_table_header do %>
+          <%= poetry_table_row do %>
+            <%= poetry_table_head { "Constant" } %>
+            <%= poetry_table_head { "Description" } %>
+          <% end %>
+        <% end %>
+        <%= poetry_table_body do %>
+          <% object["constants"].each do |const| %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { const["name"] } %>
+              <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(const["docstring"]).html_safe } %>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% object["methods"].group_by { |m| m["group"] }.each do |group, methods| %>
+    <div class="flex flex-col gap-4">
+      <% if group.present? %>
+        <h3 class="text-lg font-medium"><%= group %></h3>
+      <% end %>
+      <% methods.each do |m| %>
+        <article class="flex flex-col gap-2 rounded-lg border p-4">
+          <h4 class="font-mono text-sm font-semibold">
+            <%= m["scope"] == "class" ? "." : "#" %><%= m["signature"] %>
+          </h4>
+          <% if m["docstring"].present? %>
+            <div class="max-w-3xl flex flex-col gap-2 text-sm text-muted-foreground">
+              <%= ApiMarkdown.render(m["docstring"]) %>
+            </div>
+          <% end %>
+          <% if m["params"].any? %>
+            <ul class="flex flex-col gap-1 text-sm text-muted-foreground">
+              <% m["params"].each do |param| %>
+                <li>
+                  <code class="font-mono text-xs text-foreground"><%= param["name"] %></code>
+                  <span class="font-mono text-xs">(<%= param["types"].join(", ") %>)</span>
+                  — <%= ApiMarkdown.inline(param["text"]).html_safe %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+          <% if m["return"].present? && m["return"]["text"].present? %>
+            <p class="text-sm text-muted-foreground">
+              Returns <span class="font-mono text-xs">(<%= m["return"]["types"].join(", ") %>)</span>
+              — <%= ApiMarkdown.inline(m["return"]["text"]).html_safe %>
+            </p>
+          <% end %>
+          <% m["examples"].each do |example| %>
+            <%= poetry_code_block(code: example["text"], language: "ruby", label: example["title"].presence || "Example") %>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  <% end %>
+</section>

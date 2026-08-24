@@ -1,0 +1,31 @@
+<% content_for :title, "#{@meta["title"]} API" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("API", href: api_index_path) %>
+    <% crumb.with_item(@meta["title"]) %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight"><%= @meta["title"] %> API</h1>
+    <p class="max-w-2xl text-muted-foreground"><%= @meta["description"] %></p>
+    <p class="max-w-2xl text-sm text-muted-foreground">
+      Generated from the gem's source documentation. Component classes are documented on their
+      own <%= poetry_link(href: "/") { "gallery pages" } %> — this page carries the framework surface.
+    </p>
+  </header>
+
+  <nav class="flex flex-wrap gap-2" aria-label="On this page">
+    <% @objects.each do |object| %>
+      <%= poetry_badge(variant: :outline) do %>
+        <a href="#<%= object["path"].parameterize %>" class="font-mono text-xs"><%= object["path"] %></a>
+      <% end %>
+    <% end %>
+  </nav>
+
+  <% @objects.each do |object| %>
+    <%= render "api/object", object: object %>
+  <% end %>
+</div>

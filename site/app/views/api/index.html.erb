@@ -1,0 +1,30 @@
+<% content_for :title, "API Reference" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: root_path) %>
+    <% crumb.with_item("API") %>
+  <% end %>
+<% end %>
+
+<div class="flex flex-col gap-10">
+  <header class="flex flex-col gap-2">
+    <h1 class="text-3xl font-semibold tracking-tight">API reference</h1>
+    <p class="max-w-2xl text-muted-foreground">
+      The Ruby surface behind the gallery, generated from each gem's source documentation.
+      Component options, slots, and style axes live in the API section of each component's
+      own page; these pages carry everything else — the base classes, DSLs, helpers, and
+      supporting gems.
+    </p>
+  </header>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <% @pages.each do |entry| %>
+      <%= poetry_card do |card| %>
+        <% card.with_title do %>
+          <%= poetry_link(href: entry.path) { entry.title } %>
+        <% end %>
+        <% card.with_description { entry.description } %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

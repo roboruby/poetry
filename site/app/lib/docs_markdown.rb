@@ -137,7 +137,7 @@ class DocsMarkdown
       MD
       { "Guides" => DocsCatalog.docs, "Components" => DocsCatalog.components,
         "Charts" => DocsCatalog.charts, "Blocks" => DocsCatalog.blocks,
-        "Demos" => DocsCatalog.demos }.each do |title, entries|
+        "Demos" => DocsCatalog.demos, "API" => DocsCatalog.apis }.each do |title, entries|
         out << "## #{title}\n\n" + entries.map { |e| "- [#{e.title}](#{e.path}): #{e.description}" }.join("\n")
       end
       out << <<~MD

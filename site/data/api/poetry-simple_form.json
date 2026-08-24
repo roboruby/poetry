@@ -1,0 +1,303 @@
+{
+  "gem": "poetry-simple_form",
+  "objects": [
+    {
+      "path": "Poetry",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The poetry namespace.",
+      "examples": [],
+      "file": "lib/poetry/simple_form.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The simple_form migration bridge: the\nshim re-maps simple_form's input TYPES onto classes that render whole\npoetry Fields through Poetry::Ui::FormBuilder, bypassing the wrapper\ntree by design - a flat wrapper stack cannot express the Field quartet\n(label/hint/error/aria), so the poetry Field renders it whole. Existing\n`f.input` calls keep working; the end state is\nform_with(builder: Poetry::Ui::FormBuilder).",
+      "examples": [],
+      "file": "lib/poetry/simple_form.rb",
+      "methods": [
+        {
+          "name": "activate!",
+          "scope": "class",
+          "group": null,
+          "signature": "activate!",
+          "docstring": "Idempotent: map the 80% path + install the passthrough wrapper.\nCall from an initializer (`rails g poetry:simple_form:install`).",
+          "params": [],
+          "return": {
+            "types": [
+              "void"
+            ],
+            "text": ""
+          },
+          "examples": [
+            {
+              "title": "config/initializers/poetry_simple_form.rb",
+              "text": "Poetry::SimpleForm.activate!"
+            }
+          ],
+          "file": "lib/poetry/simple_form.rb",
+          "line": 23
+        }
+      ],
+      "constants": [
+        {
+          "name": "VERSION",
+          "value": "\"0.0.1\"",
+          "docstring": "The gem version."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::SimpleForm::Generators",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The gem's Rails generators.",
+      "examples": [],
+      "file": "lib/generators/poetry/simple_form/install/install_generator.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Generators::InstallGenerator",
+      "type": "class",
+      "superclass": "Rails::Generators::Base",
+      "docstring": "`rails g poetry:simple_form:install` - one initializer, the whole\nshim: activate! re-maps the input types and installs the\npassthrough wrapper. Delete the file to fall back to stock\nsimple_form rendering.",
+      "examples": [],
+      "file": "lib/generators/poetry/simple_form/install/install_generator.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The input classes the bridge maps simple_form's types onto.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/base.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::Base",
+      "type": "class",
+      "superclass": "SimpleForm::Inputs::Base",
+      "docstring": "The shim's shared floor: every input renders through a\nPoetry::Ui::FormBuilder bound to the SAME object/template, so the\npoetry Field quartet (label/hint/error/aria) is byte-identical to\nthe native-builder path - no duplicated derivation.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/base.rb",
+      "methods": [
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(wrapper_options = nil)",
+          "docstring": "Render the attribute as a whole poetry Field through the bound\nPoetry::Ui::FormBuilder; the subclass's `poetry_as` pins the\ncontrol type (nil lets poetry infer it).",
+          "params": [
+            {
+              "name": "wrapper_options",
+              "types": [
+                "Hash",
+                "nil"
+              ],
+              "text": "unused - the Field owns its chrome"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the rendered Field HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/simple_form/inputs/base.rb",
+          "line": 18
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::BooleanInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "The horizontal boolean Field (poetry's f.input boolean story);\ninput_html: { switch: true } opts into the setting-row Switch.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/boolean_input.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::CollectionBase",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "The collection floor: pairs from options[:collection] (both\nf.input(collection:) and f.association arrive here - association\nfetches the records first), label/value methods resolved with\nsimple_form's own detection chain.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::CollectionCheckBoxesInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::CollectionBase",
+      "docstring": "Serves `as: :check_boxes`: a poetry Field wrapping the checkbox\ngroup - one Checkbox row per collection item, posting an array.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+      "methods": [
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(_wrapper_options = nil)",
+          "docstring": "Render the collection as a Field-wrapped checkbox group.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the rendered Field HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+          "line": 61
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::CollectionRadioButtonsInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::CollectionBase",
+      "docstring": "Serves `as: :radio_buttons`: a poetry Field wrapping the\nRadioGroup component, one row per collection item.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+      "methods": [
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(_wrapper_options = nil)",
+          "docstring": "Render the collection as a Field-wrapped RadioGroup.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the rendered Field HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+          "line": 49
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::CollectionSelectInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::CollectionBase",
+      "docstring": "Serves `as: :select` (and f.association's default): a poetry Field\nwrapping the Select component; the hidden native <select> stays the\nserialization truth.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+      "methods": [
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(_wrapper_options = nil)",
+          "docstring": "Render the collection as a Field-wrapped Select;\ninclude_blank/prompt becomes the placeholder option.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the rendered Field HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/simple_form/inputs/collection_inputs.rb",
+          "line": 36
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::DateTimeInput",
+      "type": "class",
+      "superclass": "SimpleForm::Inputs::DateTimeInput",
+      "docstring": "date -> DateField, time -> TimeField; :datetime falls back to\nsimple_form's stock select trio (poetry has no composite control\nyet - a raise mid-migration would be hostile).",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/date_time_input.rb",
+      "methods": [
+        {
+          "name": "input",
+          "scope": "instance",
+          "group": null,
+          "signature": "input(wrapper_options = nil)",
+          "docstring": "Render :date/:time attributes as poetry DateField/TimeField;\n:datetime defers to the stock select trio via super.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the rendered HTML"
+          },
+          "examples": [],
+          "file": "lib/poetry/simple_form/inputs/date_time_input.rb",
+          "line": 14
+        }
+      ],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::FileInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "Serves `as: :file`: a poetry Field wrapping the FileInput\ncomponent (the native file control in poetry chrome; input_html\noptions such as variant:/multiple: pass through).",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/file_input.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::NumericInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "NumberField; poetry re-derives min/max/step from numericality, so\nthe shim passes nothing simple_form computed.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/numeric_input.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::PasswordInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "Serves `as: :password`: a poetry Field wrapping a type=password\nInput; the value never round-trips into the markup.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/password_input.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::StringInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "string/email/url/tel/search/citext: the resolved simple_form\ninput_type IS poetry's as: vocabulary (citext folds to string).",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/string_input.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::SimpleForm::Inputs::TextInput",
+      "type": "class",
+      "superclass": "Poetry::SimpleForm::Inputs::Base",
+      "docstring": "Serves `as: :text`: a poetry Field wrapping the Textarea\ncomponent.",
+      "examples": [],
+      "file": "lib/poetry/simple_form/inputs/text_input.rb",
+      "methods": [],
+      "constants": []
+    }
+  ]
+}

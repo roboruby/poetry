@@ -1,0 +1,91 @@
+<%# The page's API section: constructor options, slots, and public methods
+    for this component class, from the gems' YARD export (docs:api_reference).
+    Renders between the examples and the Styling tables. %>
+<% option_rows = api_option_rows(object) %>
+<% slot_rows = api_slot_rows(object) %>
+<% method_rows = api_public_methods(object) %>
+<% if option_rows.any? || slot_rows.any? || method_rows.any? %>
+  <section id="api" class="flex flex-col gap-6">
+    <header class="flex flex-col gap-2">
+      <h2 class="text-2xl font-semibold tracking-tight">API</h2>
+      <p class="max-w-2xl text-sm text-muted-foreground">
+        <code class="font-mono text-foreground"><%= object["path"] %></code> — options are
+        constructor keywords (the <code class="font-mono">poetry_*</code> helper forwards them);
+        slots are composed inside the block. Generated from the gem's source documentation.
+      </p>
+    </header>
+
+    <% if option_rows.any? %>
+      <div class="overflow-x-auto">
+        <%= poetry_table do %>
+          <%= poetry_table_header do %>
+            <%= poetry_table_row do %>
+              <%= poetry_table_head { "Option" } %>
+              <%= poetry_table_head { "Type" } %>
+              <%= poetry_table_head { "Details" } %>
+              <%= poetry_table_head { "Description" } %>
+            <% end %>
+          <% end %>
+          <%= poetry_table_body do %>
+            <% option_rows.each do |row| %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "#{row["name"]}:" } %>
+                <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs text-muted-foreground") { api_types(row) } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_details(row)).html_safe } %>
+                <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+              <% end %>
+            <% end %>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <% if slot_rows.any? %>
+      <div class="flex flex-col gap-3">
+        <h3 class="text-lg font-medium">Slots</h3>
+        <div class="overflow-x-auto">
+          <%= poetry_table do %>
+            <%= poetry_table_header do %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_head { "Writer" } %>
+                <%= poetry_table_head { "Description" } %>
+              <% end %>
+            <% end %>
+            <%= poetry_table_body do %>
+              <% slot_rows.each do |row| %>
+                <%= poetry_table_row do %>
+                  <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { row["name"] } %>
+                  <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if method_rows.any? %>
+      <div class="flex flex-col gap-3">
+        <h3 class="text-lg font-medium">Methods</h3>
+        <div class="overflow-x-auto">
+          <%= poetry_table do %>
+            <%= poetry_table_header do %>
+              <%= poetry_table_row do %>
+                <%= poetry_table_head { "Method" } %>
+                <%= poetry_table_head { "Description" } %>
+              <% end %>
+            <% end %>
+            <%= poetry_table_body do %>
+              <% method_rows.each do |row| %>
+                <%= poetry_table_row do %>
+                  <%= poetry_table_cell(class: "whitespace-nowrap font-mono text-xs") { "##{row["signature"]}" } %>
+                  <%= poetry_table_cell(class: "text-muted-foreground") { ApiMarkdown.inline(api_description(row)).html_safe } %>
+                <% end %>
+              <% end %>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </section>
+<% end %>

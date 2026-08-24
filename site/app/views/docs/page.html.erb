@@ -66,6 +66,10 @@
     <% end %>
   <% end %>
 
+  <% if (api_object = api_component_object(@entry.section, @entry.slug)) %>
+    <%= render "docs/api", object: api_object %>
+  <% end %>
+
   <% if (parts = DocsCatalog.parts_for(@entry.section, @entry.slug)).present? %>
     <%= render "docs/styling", parts: parts,
                                wiring: DocsCatalog.wiring_for(@entry.section, @entry.slug) %>

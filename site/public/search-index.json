@@ -402,6 +402,12 @@
     "path": "/editors#design-tools"
   },
   {
+    "title": "API Reference",
+    "page": "API Reference",
+    "section": "docs",
+    "path": "/api"
+  },
+  {
     "title": "Accordion",
     "page": "Accordion",
     "section": "components",
@@ -5344,5 +5350,101 @@
     "page": "Brush & Zoom",
     "section": "demos",
     "path": "/demos/window#default"
+  },
+  {
+    "title": "poetry-core",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core"
+  },
+  {
+    "title": "ActiveModel",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel"
+  },
+  {
+    "title": "ActiveModel::Type",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type"
+  },
+  {
+    "title": "ActiveModel::Type::List",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type-list"
+  },
+  {
+    "title": "ActiveModel::Type::Symbol",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#activemodel-type-symbol"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-core",
+    "section": "api",
+    "path": "/api/poetry-core#poetry"
+  },
+  {
+    "title": "poetry-ui",
+    "page": "poetry-ui",
+    "section": "api",
+    "path": "/api/poetry-ui"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-ui",
+    "section": "api",
+    "path": "/api/poetry-ui#poetry"
+  },
+  {
+    "title": "poetry-charts",
+    "page": "poetry-charts",
+    "section": "api",
+    "path": "/api/poetry-charts"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-charts",
+    "section": "api",
+    "path": "/api/poetry-charts#poetry"
+  },
+  {
+    "title": "poetry-reactive",
+    "page": "poetry-reactive",
+    "section": "api",
+    "path": "/api/poetry-reactive"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-reactive",
+    "section": "api",
+    "path": "/api/poetry-reactive#poetry"
+  },
+  {
+    "title": "poetry-simple_form",
+    "page": "poetry-simple_form",
+    "section": "api",
+    "path": "/api/poetry-simple_form"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-simple_form",
+    "section": "api",
+    "path": "/api/poetry-simple_form#poetry"
+  },
+  {
+    "title": "poetry-extract",
+    "page": "poetry-extract",
+    "section": "api",
+    "path": "/api/poetry-extract"
+  },
+  {
+    "title": "Poetry",
+    "page": "poetry-extract",
+    "section": "api",
+    "path": "/api/poetry-extract#poetry"
   }
 ]

@@ -73,6 +73,11 @@ Rails.application.routes.draw do
   get "examples/blocks/:slug" => "examples#block", as: :standalone_block, format: false,
       constraints: { slug: /[a-z0-9-]+/ }
 
+  # The API reference: framework-surface pages generated from the gems'
+  # YARD exports (data/api/*.json via docs:api_reference).
+  get "api" => "api#index", as: :api_index
+  get "api/:slug" => "api#show", as: :api_page, constraints: { slug: /[a-z_-]+/ }
+
   get "components/:slug" => "components#show", as: :component
   get "charts/:slug" => "charts#show", as: :chart
   get "blocks/:slug" => "blocks#show", as: :block

@@ -1,0 +1,468 @@
+{
+  "gem": "poetry-extract",
+  "objects": [
+    {
+      "path": "Poetry",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The poetry namespace.",
+      "examples": [],
+      "file": "lib/poetry/extract.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Extract",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The optional design-extraction gem: domain in, theme out. Produces a\nDESIGN.md + deterministic token stylesheets and hands them to\npoetry-core's AA-gated design importer - never the theme directly.",
+      "examples": [],
+      "file": "lib/poetry/extract.rb",
+      "methods": [],
+      "constants": [
+        {
+          "name": "VERSION",
+          "value": "\"0.0.1\"",
+          "docstring": "The gem version."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Extract::Compose",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The one model call: compose DESIGN.md from the fetched signals. The\nprompt spec is adapted from an MIT-licensed source (source and\nlicense in THIRD_PARTY_NOTICES.md). Direct Anthropic Messages API\nover Net::HTTP - no SDK dependency; the screenshot rides as a\nURL-source image block.",
+      "examples": [],
+      "file": "lib/poetry/extract/compose.rb",
+      "methods": [
+        {
+          "name": "design_md",
+          "scope": "class",
+          "group": null,
+          "signature": "design_md(domain:, signals:, http: method(:post_anthropic))",
+          "docstring": "Compose the DESIGN.md document for a domain from its fetched\nsignals in one model call; the screenshot, when present, is\nattached as an image block.",
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "String"
+              ],
+              "text": "bare host the document is written for"
+            },
+            {
+              "name": "signals",
+              "types": [
+                "Signals"
+              ],
+              "text": "the fetched evidence (nil members allowed)"
+            },
+            {
+              "name": "http",
+              "types": [
+                "#call"
+              ],
+              "text": "the transport: request payload hash in, parsed\nresponse hash out"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the composed DESIGN.md content"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/compose.rb",
+          "line": 64
+        }
+      ],
+      "constants": [
+        {
+          "name": "ANTHROPIC_URL",
+          "value": "\"https://api.anthropic.com/v1/messages\"",
+          "docstring": "The Messages API endpoint the compose call POSTs to."
+        },
+        {
+          "name": "ANTHROPIC_VERSION",
+          "value": "\"2023-06-01\"",
+          "docstring": "The pinned anthropic-version header value."
+        },
+        {
+          "name": "DEFAULT_MODEL",
+          "value": "\"claude-sonnet-5\"",
+          "docstring": "The model used when POETRY_EXTRACT_MODEL is unset."
+        },
+        {
+          "name": "SPEC_SUMMARY",
+          "value": "<<~SPEC.strip\n  DESIGN.md is a self-contained plain-text representation of a design system. It contains optional YAML frontmatter with normative machine-readable tokens and a Markdown body with human-",
+          "docstring": "The DESIGN.md format summary embedded in every prompt."
+        },
+        {
+          "name": "SYSTEM",
+          "value": "\"You are a senior design systems writer. Produce concise, implementation-grade \" \\\n\"DESIGN.md files that follow the requested spec.\"",
+          "docstring": "The system prompt for the compose call."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Extract::Error",
+      "type": "class",
+      "superclass": "StandardError",
+      "docstring": "The gem's one error class: fetch, compose, and write failures all\nraise it (missing API keys included).",
+      "examples": [],
+      "file": "lib/poetry/extract.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Extract::Fetch",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The fetch layer. Primary path: the context.dev SDK (the gem's one\nservice dependency - same four calls as upstream). Degraded path (no\nCONTEXT_DEV_API_KEY): a plain homepage fetch for the markdown signal,\nnil for the rest - extraction still works, on less evidence.",
+      "examples": [],
+      "file": "lib/poetry/extract/fetch.rb",
+      "methods": [
+        {
+          "name": "signals",
+          "scope": "class",
+          "group": null,
+          "signature": "signals(domain, client: default_client, homepage_fetcher: method(:fetch_homepage))",
+          "docstring": "Fetch the four design signals for a domain. Without a client\n(CONTEXT_DEV_API_KEY unset) it takes the degraded path: homepage\nmarkdown only, every other signal nil.",
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "String"
+              ],
+              "text": "bare host, e.g. \"stripe.com\""
+            },
+            {
+              "name": "client",
+              "types": [
+                "Object",
+                "nil"
+              ],
+              "text": "the context.dev SDK client; nil selects\nthe degraded path"
+            },
+            {
+              "name": "homepage_fetcher",
+              "types": [
+                "#call"
+              ],
+              "text": "degraded-path fetcher (domain in,\nmarkdown string out)"
+            }
+          ],
+          "return": {
+            "types": [
+              "Signals"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 33
+        }
+      ],
+      "constants": [
+        {
+          "name": "STYLEGUIDE_TIMEOUT_MS",
+          "value": "120_000",
+          "docstring": "Styleguide extraction is the slow call - allow it two minutes."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Extract::Railtie",
+      "type": "class",
+      "superclass": "Rails::Railtie",
+      "docstring": "Installs the poetry:design:extract task into any Rails host the\nmoment the gem is bundled.",
+      "examples": [],
+      "file": "lib/poetry/extract/railtie.rb",
+      "methods": [],
+      "constants": []
+    },
+    {
+      "path": "Poetry::Extract::Runner",
+      "type": "module",
+      "superclass": null,
+      "docstring": "The orchestration: fetch -> compose -> derive -> write. Never touches\nthe theme - the printed handoff goes through poetry:design:import,\nwhere the AA gate stays the single door.",
+      "examples": [],
+      "file": "lib/poetry/extract/runner.rb",
+      "methods": [
+        {
+          "name": "normalize_domain",
+          "scope": "class",
+          "group": null,
+          "signature": "normalize_domain(domain)",
+          "docstring": "Reduce a URL or bare domain to its lowercase host.",
+          "params": [],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": ""
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/runner.rb",
+          "line": 57
+        },
+        {
+          "name": "run!",
+          "scope": "class",
+          "group": null,
+          "signature": "run!(domain, out_root: OUT_ROOT, signals: nil, composer: Compose, io: $stdout)",
+          "docstring": "Extract a domain's design system: fetch the signals, compose\nDESIGN.md, derive the two token stylesheets, and write all three\nfiles under out_root. Prints the poetry:design:import handoff\ncommand - importing is deliberately left to the AA gate.",
+          "params": [
+            {
+              "name": "domain",
+              "types": [
+                "String"
+              ],
+              "text": "the domain to extract; a URL is normalized\ndown to its bare host"
+            },
+            {
+              "name": "out_root",
+              "types": [
+                "String"
+              ],
+              "text": "directory the per-domain folder lands in"
+            },
+            {
+              "name": "signals",
+              "types": [
+                "Signals",
+                "nil"
+              ],
+              "text": "pre-fetched signals (skips the fetch)"
+            },
+            {
+              "name": "composer",
+              "types": [
+                "#design_md"
+              ],
+              "text": "the DESIGN.md composer"
+            },
+            {
+              "name": "io",
+              "types": [
+                "IO"
+              ],
+              "text": "progress and handoff output"
+            }
+          ],
+          "return": {
+            "types": [
+              "String"
+            ],
+            "text": "the written directory path"
+          },
+          "examples": [
+            {
+              "title": "",
+              "text": "Poetry::Extract::Runner.run!(\"stripe.com\")\n# => \"tmp/poetry/design_extract/stripe.com\""
+            }
+          ],
+          "file": "lib/poetry/extract/runner.rb",
+          "line": 31
+        },
+        {
+          "name": "validate!",
+          "scope": "class",
+          "group": null,
+          "signature": "validate!(design_md, io)",
+          "docstring": "The composed document must at least parse as DESIGN.md; a missing\nfrontmatter is a warning, not a failure - prose-only documents\nstill carry the body sections, and import will say so again.",
+          "params": [],
+          "return": null,
+          "examples": [],
+          "file": "lib/poetry/extract/runner.rb",
+          "line": 65
+        }
+      ],
+      "constants": [
+        {
+          "name": "OUT_ROOT",
+          "value": "\"tmp/poetry/design_extract\"",
+          "docstring": "Default output root; run! writes into <OUT_ROOT>/<domain>/."
+        }
+      ]
+    },
+    {
+      "path": "Poetry::Extract::Signals",
+      "type": "class",
+      "superclass": "Struct",
+      "docstring": "The four design signals for a domain. Any member may be nil - the\nderivers and the prompt both accept the degraded shape.",
+      "examples": [],
+      "file": "lib/poetry/extract/fetch.rb",
+      "methods": [
+        {
+          "name": "brand",
+          "scope": "instance",
+          "group": null,
+          "signature": "brand",
+          "docstring": "Returns the value of attribute brand",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of brand"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "brand=",
+          "scope": "instance",
+          "group": null,
+          "signature": "brand=(value)",
+          "docstring": "Sets the attribute brand",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute brand to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "markdown",
+          "scope": "instance",
+          "group": null,
+          "signature": "markdown",
+          "docstring": "Returns the value of attribute markdown",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of markdown"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "markdown=",
+          "scope": "instance",
+          "group": null,
+          "signature": "markdown=(value)",
+          "docstring": "Sets the attribute markdown",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute markdown to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "screenshot_url",
+          "scope": "instance",
+          "group": null,
+          "signature": "screenshot_url",
+          "docstring": "Returns the value of attribute screenshot_url",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of screenshot_url"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "screenshot_url=",
+          "scope": "instance",
+          "group": null,
+          "signature": "screenshot_url=(value)",
+          "docstring": "Sets the attribute screenshot_url",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute screenshot_url to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "styleguide",
+          "scope": "instance",
+          "group": null,
+          "signature": "styleguide",
+          "docstring": "Returns the value of attribute styleguide",
+          "params": [],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the current value of styleguide"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        },
+        {
+          "name": "styleguide=",
+          "scope": "instance",
+          "group": null,
+          "signature": "styleguide=(value)",
+          "docstring": "Sets the attribute styleguide",
+          "params": [
+            {
+              "name": "value",
+              "types": [
+                "Object"
+              ],
+              "text": "the value to set the attribute styleguide to."
+            }
+          ],
+          "return": {
+            "types": [
+              "Object"
+            ],
+            "text": "the newly set value"
+          },
+          "examples": [],
+          "file": "lib/poetry/extract/fetch.rb",
+          "line": 11
+        }
+      ],
+      "constants": []
+    }
+  ]
+}
