@@ -26,6 +26,7 @@ module Poetry
       #     name: "quantity", value: 2, min: 0, label: "Quantity"
       #   )
       class Component < Poetry::Core::Component
+        include Poetry::Ui::InputGroupField
         AGENT_RULES = [
           "Use poetry_number_field / form.number_field - never a hand-rolled spinner or a bare " \
           "input type=number.",
@@ -152,10 +153,6 @@ module Poetry
           raise ArgumentError, "format: takes an Intl.NumberFormatOptions Hash"
         end
 
-        def control_id
-          @control_id ||= id.presence || poetry_instance_id("poetry-number-field")
-        end
-
         def root_attributes
           attrs = {
             "data-slot" => "number-field",
@@ -165,22 +162,6 @@ module Poetry
           attrs["data-invalid"] = "" if invalid
           attrs["data-filled"] = "" if value.present?
           html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
-        end
-
-        def group_attributes
-          {
-            "role" => "group",
-            "data-slot" => "number-field-group",
-            "class" => InputGroup::Style.css
-          }
-        end
-
-        def addon_attributes(align)
-          {
-            "data-slot" => "input-group-addon",
-            "data-align" => "inline-#{align}",
-            "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:"addon_inline_#{align}"))
-          }
         end
 
         def input_attributes
@@ -232,14 +213,9 @@ module Poetry
         # users step on the input (Base UI; aria-hidden deliberately NOT
         # applied so touch screen readers can still activate them).
         def stepper(direction)
-          Button::Component.new({
-            variant: :ghost, size: :"icon-xs", disabled: disabled,
-            label: t("poetry.number_field.#{direction}"),
-            class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
-            "data-slot" => "number-field-#{direction}",
-            "tabindex" => "-1",
-            "aria-controls" => control_id
-          }.merge(stimulus_attributes_for(direction)))
+          group_tool_button(slot: "number-field-#{direction}",
+                            label: t("poetry.number_field.#{direction}"),
+                            wiring: stimulus_attributes_for(direction))
         end
 
         def stepper_icon(direction)

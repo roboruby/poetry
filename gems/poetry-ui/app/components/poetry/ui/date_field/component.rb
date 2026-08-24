@@ -16,6 +16,7 @@ module Poetry
       # @example
       #   render Poetry::Ui::DateField::Component.new(name: "event[on]", label: "Event date")
       class Component < Poetry::Core::Component
+        include Poetry::Ui::InputGroupField
         AGENT_RULES = [
           "Date entry is a DateField (poetry_date_field / form.date_field) - never a masked " \
           "Input, three selects, or a bare input type=date when the design system is in play.",
@@ -94,10 +95,6 @@ module Poetry
              }
         part "date-field-input", "The native <input type=date> - THE form value in both " \
                                  "modes; tabindex -1 + aria-hidden once segments exist"
-
-        def control_id
-          @control_id ||= id.presence || poetry_instance_id("poetry-date-field")
-        end
 
         def root_attributes
           attrs = {

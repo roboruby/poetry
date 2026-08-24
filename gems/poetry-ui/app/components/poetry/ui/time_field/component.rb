@@ -61,10 +61,6 @@ module Poetry
         part "time-field-input", "The native <input type=time> - THE form value in both " \
                                  "modes; tabindex -1 + aria-hidden once segments exist"
 
-        def control_id
-          @control_id ||= id.presence || poetry_instance_id("poetry-time-field")
-        end
-
         private
 
         def input_type

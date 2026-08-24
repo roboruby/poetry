@@ -17,6 +17,7 @@ module Poetry
       # @example
       #   render Poetry::Ui::SearchField::Component.new(name: "q", label: "Search", placeholder: "Search...")
       class Component < Poetry::Core::Component
+        include Poetry::Ui::InputGroupField
         AGENT_RULES = [
           "Search inputs are a SearchField (poetry_search_field) - never a bare Input with a " \
           "hand-rolled clear button; Escape-clears and focus retention ride the controller.",
@@ -81,10 +82,6 @@ module Poetry
         # is documented here in prose only: tabindex -1 (Escape is the
         # keyboard path), hidden while empty, never steals focus.
 
-        def control_id
-          @control_id ||= id.presence || poetry_instance_id("poetry-search-field")
-        end
-
         def root_attributes
           attrs = {
             "data-slot" => "search-field",
@@ -92,22 +89,6 @@ module Poetry
           }.merge(component_data_attributes)
           attrs["data-empty"] = "" if value.blank?
           html_attributes.merge_if_not_set(attrs.merge(stimulus_attributes_for(:root)))
-        end
-
-        def group_attributes
-          {
-            "role" => "group",
-            "data-slot" => "search-field-group",
-            "class" => InputGroup::Style.css
-          }
-        end
-
-        def addon_attributes(align)
-          {
-            "data-slot" => "input-group-addon",
-            "data-align" => "inline-#{align}",
-            "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:"addon_inline_#{align}"))
-          }
         end
 
         def input_attributes
@@ -136,15 +117,10 @@ module Poetry
         # The clear affordance: a ghost icon Button (the NumberField
         # stepper chrome) that is NEVER a tab stop and never steals focus.
         def clear_button
-          Button::Component.new({
-            variant: :ghost, size: :"icon-xs", disabled: disabled,
-            label: t("poetry.search_field.clear"),
-            class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
-            "data-slot" => "search-field-clear",
-            "tabindex" => "-1",
-            "hidden" => value.blank? || readonly || disabled ? "" : nil,
-            "aria-controls" => control_id
-          }.compact.merge(stimulus_attributes_for(:clear)))
+          group_tool_button(slot: "search-field-clear",
+                            label: t("poetry.search_field.clear"),
+                            extra: { "hidden" => value.blank? || readonly || disabled ? "" : nil },
+                            wiring: stimulus_attributes_for(:clear))
         end
       end
     end

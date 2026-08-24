@@ -19,6 +19,7 @@ module Poetry
       #   render Poetry::Ui::SensitiveInput::Component.new(name: "api_key", label: "API key",
       #                                                    value: token, copy: true)
       class Component < Poetry::Core::Component
+        include Poetry::Ui::InputGroupField
         AGENT_RULES = [
           "Secrets shown-on-demand are a SensitiveInput (poetry_sensitive_input) - never a bare " \
           "password Input with a hand-rolled eye; the masked-container contract (role=button, " \
@@ -126,10 +127,6 @@ module Poetry
         # path), re-masks and hands focus back to the group; copy is a real
         # tab stop wired to the clipboard-text engine.
 
-        def control_id
-          @control_id ||= id.presence || poetry_instance_id("poetry-sensitive-input")
-        end
-
         def hint_id
           "#{control_id}-hint"
         end
@@ -161,12 +158,9 @@ module Poetry
           attrs
         end
 
+        # Fixed inline-end (the reveal/copy cell) - the kit shape.
         def addon_attributes
-          {
-            "data-slot" => "input-group-addon",
-            "data-align" => "inline-end",
-            "class" => InputGroup::Style.css(:addon, class: InputGroup::Style.css(:addon_inline_end))
-          }
+          super(:end)
         end
 
         # The mask overlay IS the reveal button while masked (never the
@@ -219,24 +213,18 @@ module Poetry
         # The eye: exists only while revealed (the masked group is the
         # reveal path), so the server always renders it hidden.
         def toggle_button
-          Button::Component.new({
-            variant: :ghost, size: :"icon-xs", disabled: disabled,
-            label: t("poetry.sensitive_input.hide"),
-            class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
-            "data-slot" => "sensitive-input-toggle",
-            "hidden" => "",
-            "aria-controls" => control_id
-          }.merge(stimulus_attributes_for(:toggle)))
+          group_tool_button(slot: "sensitive-input-toggle",
+                            label: t("poetry.sensitive_input.hide"),
+                            tabindex: nil, extra: { "hidden" => "" },
+                            wiring: stimulus_attributes_for(:toggle))
         end
 
+        # A REAL tab stop (no tabindex -1): copy must be keyboard-reachable.
         def copy_button
-          Button::Component.new({
-            variant: :ghost, size: :"icon-xs", disabled: disabled,
-            label: t("poetry.clipboard_text.copy"),
-            class: InputGroup::Style.css(:button, class: InputGroup::Style.css(:button_icon_xs)),
-            "data-slot" => "clipboard-text-copy",
-            "aria-controls" => control_id
-          }.merge(stimulus_attributes_for(:copy_button)))
+          group_tool_button(slot: "clipboard-text-copy",
+                            label: t("poetry.clipboard_text.copy"),
+                            tabindex: nil,
+                            wiring: stimulus_attributes_for(:copy_button))
         end
 
         def masked_label
