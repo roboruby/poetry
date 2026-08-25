@@ -282,7 +282,7 @@ module Poetry
     # @api private
     def announce_color_scheme
       say_status :note, "dark mode: render <%= poetry_color_scheme_script %> in your layout <head> " \
-                        "(docs/theming.md, \"Color scheme\")", :cyan
+                        "(the Theming guide, \"Color scheme\")", :cyan
     end
 
     # poetry_optimistic_form reconciles failures via a Turbo refresh, which
@@ -293,7 +293,7 @@ module Poetry
     def announce_optimistic_form
       say_status :note, "optimistic forms: add <meta name=\"turbo-refresh-method\" content=\"morph\"> " \
                         "+ <meta name=\"turbo-refresh-scroll\" content=\"preserve\"> to your layout " \
-                        "<head> before using poetry_optimistic_form (docs/optimistic-form.md)", :cyan
+                        "<head> before using poetry_optimistic_form (the Optimistic Forms guide)", :cyan
     end
 
     private

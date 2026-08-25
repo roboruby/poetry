@@ -237,9 +237,9 @@ HEADER = <<~CSS
    * (the .style-<name> wrapper arrives with the docs switcher); rule order
    * per component = base < elements < variants < compounds; split-side,
    * no-empty-rules and cross-component-last rules apply (see the default
-   * theme header + docs/theming.md).
+   * theme header).
    *
-   * Port disciplines (full ledger: docs/vega-port-ledger.txt):
+   * Port disciplines (deviation receipts: config/theme_fidelity/deviations.yml):
    *   - upstream token text kept VERBATIM wherever poetry's markup speaks
    *     the same vocabulary; translated where it does not (data-[state=on]
    *     -> data-pressed, data-vertical -> data-[orientation=vertical],

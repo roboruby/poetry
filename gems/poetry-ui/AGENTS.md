@@ -38,8 +38,8 @@ visual fragments under `themes/`.
   `config/theme_fidelity/deviations.yml`; `css:verify_fidelity` holds the
   file and the actual diff in exact agreement, so reconcile it in the same
   change as any theme edit
-- `docs/testing.md` — the three-tier testing doctrine (wiring / behavior /
-  browser)
+- the three-tier testing doctrine (wiring / behavior / browser) governs
+  `test/` — the consumer-facing guide lives on the docs site
 - `eval/` — the harness: frozen arms + runner (mechanical), judge + captures
   + committed results (judged); `eval/README.md` is the doctrine
 - `lib/generators/poetry/` — the install surface (installer, per-adapter

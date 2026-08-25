@@ -80,7 +80,7 @@ module Poetry
             force replacement. `key: record` derives via dom_id (a host `to_key`
             override propagates); explicit `id:` wins outright; repeated NEW
             records need explicit keys. `poetry:check` warns on unkeyed
-            components in cache blocks and loops. Full story: docs/stable-ids.md.
+            components in cache blocks and loops. Full story: the Stable IDs guide on the poetry docs site.
           - Upgrading poetry gems: after `bundle update`, re-run
             `bin/rails g poetry:install` - the vendored token/theme/safelist
             files refresh (the installed theme sticks; `--theme` switches),

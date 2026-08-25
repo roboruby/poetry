@@ -235,7 +235,7 @@ module Poetry
       # and reconciles (morph refresh) only when the server rejects. The
       # server contract - success answers 204 or a targeted stream, NEVER
       # a redirect; failure answers 4xx - and the morph-refresh meta
-      # prerequisite live in docs/optimistic-form.md.
+      # prerequisite live in the Optimistic Forms guide on the docs site.
       # attribute_name:/value: auto-inject the submitted-value hidden field
       # (false survives; form.optimistic_hidden_field places it explicitly).
       #
@@ -1704,7 +1704,7 @@ module Poetry
       # before the stylesheets. Also wires window.Poetry.colorScheme
       # (current/set/toggle/clear) for toggle controls; an unset preference
       # follows the OS and tracks its changes live. Full recipe:
-      # docs/theming.md, "Color scheme (dark mode)".
+      # the Theming guide, "Color scheme (dark mode)".
       #
       # @example
       #   <%# in the layout <head>, before the stylesheets %>
