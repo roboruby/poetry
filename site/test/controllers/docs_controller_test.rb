@@ -41,6 +41,14 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=collapsible][data-open]", 0 # an explicit close beats the section default
   end
 
+  test "the landing components flyout carries the whole catalog" do
+    get root_url
+
+    (DocsCatalog.components + DocsCatalog.charts + DocsCatalog.blocks).each do |entry|
+      assert_select "[data-slot=navigation-menu-content] a[href=?]", entry.path, 1
+    end
+  end
+
   test "a component page renders examples with preview and code tabs" do
     get "/components/button"
 

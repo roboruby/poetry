@@ -10,9 +10,46 @@
       <%= poetry_icon(name: :feather, class: "size-5 text-primary") %> poetry
     </a>
     <nav aria-label="Site" class="flex items-center gap-6">
-      <%= poetry_link(href: installation_path, class: "hidden text-sm sm:inline-flex") { "Docs" } %>
-      <%= poetry_link(href: theming_path, class: "hidden text-sm sm:inline-flex") { "Themes" } %>
-      <%= poetry_link(href: forms_path, class: "hidden text-sm sm:inline-flex") { "Forms" } %>
+      <div class="hidden sm:block">
+        <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
+          <% nav.with_link("Docs", href: installation_path) %>
+          <% nav.with_link("Themes", href: theming_path) %>
+          <% nav.with_link("Forms", href: forms_path) %>
+          <% nav.with_item("Components", value: "components") do %>
+            <%# The whole catalog, grouped by function; columns pair the
+                groups to keep heights close. Charts and Blocks ride the
+                catalog sections directly. %>
+            <% groups = DocsCatalog.component_groups %>
+            <% columns = [
+                 [ [ "Forms", groups["Forms"] ], [ "Blocks", DocsCatalog.blocks ] ],
+                 [ [ "Pickers & selection", groups["Pickers & selection"] ],
+                   [ "Chat & streaming", groups["Chat & streaming"] ] ],
+                 [ [ "Overlays & menus", groups["Overlays & menus"] ],
+                   [ "Feedback & status", groups["Feedback & status"] ] ],
+                 [ [ "Data display", groups["Data display"] ],
+                   [ "Layout & structure", groups["Layout & structure"] ] ],
+                 [ [ "Actions & navigation", groups["Actions & navigation"] ],
+                   [ "Charts", DocsCatalog.charts ] ]
+               ] %>
+            <div class="grid w-[min(90vw,56rem)] max-h-[calc(100vh-8rem)] grid-cols-3 gap-x-6 gap-y-4 overflow-y-auto p-2 lg:grid-cols-5">
+              <% columns.each do |column| %>
+                <div class="space-y-4">
+                  <% column.each do |title, entries| %>
+                    <div>
+                      <div class="px-2 pb-1 text-xs font-medium text-muted-foreground"><%= title %></div>
+                      <div class="grid gap-px">
+                        <% entries.each do |entry| %>
+                          <%= poetry_navigation_menu_link(href: entry.path, class: "px-2 py-0.5 text-sm") { entry.title } %>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
       <%= poetry_button(size: :sm, href: installation_path) { "Start building" } %>
     </nav>
   </div>
