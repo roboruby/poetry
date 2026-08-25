@@ -3,21 +3,20 @@
     no third-party script, style, or iframe rides the page. %>
 <%= poetry_dialog do |dialog| %>
   <% dialog.with_trigger(variant: :outline, size: :lg) { "Subscribe to Ruby AI News for Updates" } %>
-  <% dialog.with_title { "Subscribe to Ruby AI News" } %>
+  <% dialog.with_title { "Subscribe to the Ruby AI Newsletter for Updates" } %>
   <% dialog.with_description do %>
-    poetry updates ship through Ruby AI News, the newsletter covering Ruby
-    and AI. Unsubscribe any time.
+    Poetry updates are covered through Ruby AI News, the newsletter covering
+    everything at the intersection of Ruby and AI. Unsubscribe any time.
   <% end %>
   <div data-controller="newsletter">
     <form action="<%= subscriptions_path %>" method="post" class="mt-2 flex flex-col gap-4"
           data-newsletter-target="form" data-action="submit->newsletter#submit">
       <input type="text" name="website" value="" tabindex="-1" autocomplete="off" class="hidden">
-      <%= poetry_field(id: "newsletter-email", label_text: "Email") do |field| %>
-        <%= poetry_input(type: "email", name: "email", placeholder: "you@example.com",
-                         required: true, autocomplete: "email",
-                         data: { newsletter_target: "email" },
-                         **field.control_attributes.transform_keys(&:to_sym)) %>
-      <% end %>
+      <%# Label-free on purpose; the standalone input carries its
+          accessible name via aria-label. %>
+      <%= poetry_input(type: "email", name: "email", placeholder: "you@example.com",
+                       required: true, autocomplete: "email", "aria-label": "Email",
+                       data: { newsletter_target: "email" }) %>
       <p class="text-sm text-destructive" data-newsletter-target="error" hidden></p>
       <%= poetry_button(type: "submit", data: { newsletter_target: "submit" }) { "Subscribe" } %>
     </form>
