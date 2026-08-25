@@ -90,21 +90,75 @@ html.brand-aurum .cn-navigation-menu-popup {
   background-color: color-mix(in oklab, var(--popover) 80%, transparent);
 }
 
-/* The Possibilities stat: a primary-colored dash orbits the infinity
-   loop forever. 54.95 is the measured length of the vendored lucide
-   infinity path (pinned vendor, so the constant is stable); the dash is
-   10 units, the remainder is gap, and one full offset lap per iteration
-   makes the loop seamless. The static base icon underneath stays fully
-   drawn, so reduced motion simply hides the moving copy. */
+/* The Possibilities stat: a gold comet orbits the infinity loop and its
+   tail wraps the whole path, fading into the base stroke so the loop
+   reads as one continuous gradient chasing itself. A stroke gradient
+   cannot follow a path, so five dash layers approximate it: each layer
+   down is a longer dash at fainter opacity, and each layer's keyframes
+   are shifted by its dash length so every head rides the same point.
+   54.95 is the measured length of the vendored lucide infinity path
+   (pinned vendor, so the constant is stable); one full offset lap per
+   iteration keeps the orbit seamless. The static base icon underneath
+   stays fully drawn, so reduced motion simply hides the moving layers. */
 html.brand-aurum .stat-infinity-trace path {
-  stroke-dasharray: 10 44.95;
-  animation: stat-infinity-orbit 3.2s linear infinite;
+  animation-duration: 3.2s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
 }
 
-@keyframes stat-infinity-orbit {
-  to {
-    stroke-dashoffset: -54.95;
-  }
+html.brand-aurum .stat-infinity-trace-1 path {
+  stroke-dasharray: 50 4.95;
+  opacity: 0.14;
+  animation-name: stat-infinity-orbit-1;
+}
+
+html.brand-aurum .stat-infinity-trace-2 path {
+  stroke-dasharray: 40 14.95;
+  opacity: 0.18;
+  animation-name: stat-infinity-orbit-2;
+}
+
+html.brand-aurum .stat-infinity-trace-3 path {
+  stroke-dasharray: 30 24.95;
+  opacity: 0.24;
+  animation-name: stat-infinity-orbit-3;
+}
+
+html.brand-aurum .stat-infinity-trace-4 path {
+  stroke-dasharray: 20 34.95;
+  opacity: 0.34;
+  animation-name: stat-infinity-orbit-4;
+}
+
+html.brand-aurum .stat-infinity-trace-5 path {
+  stroke-dasharray: 10 44.95;
+  opacity: 0.9;
+  animation-name: stat-infinity-orbit-5;
+}
+
+@keyframes stat-infinity-orbit-1 {
+  from { stroke-dashoffset: 50; }
+  to { stroke-dashoffset: -4.95; }
+}
+
+@keyframes stat-infinity-orbit-2 {
+  from { stroke-dashoffset: 40; }
+  to { stroke-dashoffset: -14.95; }
+}
+
+@keyframes stat-infinity-orbit-3 {
+  from { stroke-dashoffset: 30; }
+  to { stroke-dashoffset: -24.95; }
+}
+
+@keyframes stat-infinity-orbit-4 {
+  from { stroke-dashoffset: 20; }
+  to { stroke-dashoffset: -34.95; }
+}
+
+@keyframes stat-infinity-orbit-5 {
+  from { stroke-dashoffset: 10; }
+  to { stroke-dashoffset: -44.95; }
 }
 
 @media (prefers-reduced-motion: reduce) {

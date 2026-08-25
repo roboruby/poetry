@@ -83,10 +83,15 @@
             hides the moving copy and keeps the static one). %>
         <%# scale + negative margin lift the glyph out of the lucide
             viewBox padding so its drawn size and left edge match the
-            numeral stats (tuned against the rendered cap height). %>
+            numeral stats (tuned against the rendered cap height). The
+            five stacked traces are the comet tail: same orbit, longer
+            dash and fainter gold each layer down, heads aligned - a
+            gradient that chases itself around the loop. %>
         <span class="relative -ml-1.5 inline-flex origin-left scale-[1.7]">
           <%= poetry_icon(name: :infinity, class: "size-9", label: "Infinite") %>
-          <%= poetry_icon(name: :infinity, class: "stat-infinity-trace absolute inset-0 size-9 text-primary") %>
+          <% [1, 2, 3, 4, 5].each do |layer| %>
+            <%= poetry_icon(name: :infinity, class: "stat-infinity-trace stat-infinity-trace-#{layer} absolute inset-0 size-9 text-primary") %>
+          <% end %>
         </span>
       <% end %>
     </div>
