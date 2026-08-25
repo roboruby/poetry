@@ -16,7 +16,7 @@ import { Controller } from "@hotwired/stimulus"
 // contention) - NEVER a redirect, because a redirect under morph
 // refreshes is itself a full reload and defeats the optimism. Failure
 // answers 4xx so event.detail.success is false and the refresh restores
-// authoritative truth. See poetry-ui docs/optimistic-form.md.
+// authoritative truth. Full story: the Optimistic Forms guide on the poetry docs site.
 export default class OptimisticFormController extends Controller {
   static targets = ["template"]
 

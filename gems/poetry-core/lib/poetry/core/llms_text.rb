@@ -24,7 +24,7 @@ module Poetry
 
         Verify your markup with `poetry check` (rake poetry:check) before it
         renders - it validates components, options, variants, and Stimulus
-        wiring against these contracts. Testing doctrine: docs/testing.md.
+        wiring against these contracts. Testing doctrine: the Testing guide on the poetry docs site.
       TEXT
 
       def initialize(registry:)
