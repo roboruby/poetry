@@ -12,6 +12,9 @@ Rails.application.routes.draw do
 
   post "subscriptions" => "subscriptions#create", as: :subscriptions
 
+  # Development-only: see the landing code sample rendered for real.
+  get "dev/card-sample" => "dev_samples#card" if Rails.env.development?
+
   get "docs" => "docs#index", as: :introduction
   get "installation" => "docs#installation", as: :installation
   get "theming" => "docs#theming", as: :theming

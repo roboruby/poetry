@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html class="style-default">
+  <head>
+    <title>Landing card sample — rendered</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <%= stylesheet_link_tag :app %>
+  </head>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    <main class="mx-auto flex min-h-screen max-w-sm items-center px-6">
+      <div class="w-full">
+        <%= @sample.html_safe %>
+        <p class="mt-6 text-center text-sm text-muted-foreground">
+          app/views/landing/compose_example.erb.sample, rendered live
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
