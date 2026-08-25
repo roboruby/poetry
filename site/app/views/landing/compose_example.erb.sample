@@ -4,9 +4,7 @@
   <% card.with_action do %>
     <%= poetry_badge(variant: :secondary) { "Live" } %>
   <% end %>
-  <p class="text-sm text-muted-foreground">
-    92 accounts renew this quarter.
-  </p>
+  <%= poetry_stat(label: "Accounts renewing", delta: "+4", trend: :up) { "92" } %>
   <% card.with_footer do %>
     <%= poetry_button(size: :sm) { "Open the report" } %>
   <% end %>
