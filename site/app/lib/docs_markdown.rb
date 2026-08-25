@@ -92,6 +92,14 @@ class DocsMarkdown
       MD
     end
 
+    def engines(entry)
+      <<~MD
+        #{header(entry)}
+
+        The recipe: the engine declares `spec.add_dependency "poetry-ui"`, renders in the host's chrome (`layout "application"` - in an isolated engine the bare name resolves to the host's layout), and composes views from the helpers, shipping no CSS, tokens, or theme. Helpers and Stimulus registration are host-global, and the host safelist emits every component class without scanning gems, so engine markup renders styled with zero build integration. The one wiring step covers the engine's own page-level utilities: the engine ships `app/assets/tailwind/<engine_name>/engine.css` containing `@source "../../../views";`, the host runs `bin/rails tailwindcss:engines` and adds `@import "../builds/tailwind/<engine_name>";`. Retheme = `bin/rails g poetry:install --theme <name>` + a CSS rebuild in the host; every mounted engine follows. Component customization is the subclass pair (`Billing::StatusAlert::Component < Poetry::Ui::Alert::Component` with sibling `Style` - the dictionary copies down and extends); there is no per-render style-class parameter. Doctrine: engines never ship visual CSS - one theme contract is what keeps the one-command retheme true across engines.
+      MD
+    end
+
     def stable_ids(entry)
       <<~MD
         #{header(entry)}

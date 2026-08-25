@@ -1,0 +1,234 @@
+<% content_for :title, "Rails Engines" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Rails Engines") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  gemspec_source = <<~CODE
+    # billing.gemspec
+    spec.add_dependency "poetry-ui"
+  CODE
+  controller_source = <<~CODE
+    # app/controllers/billing/application_controller.rb
+    module Billing
+      class ApplicationController < ActionController::Base
+        # In an isolated engine the engine's own layout is namespaced
+        # (layouts/billing/application), so the bare name resolves to the
+        # HOST's layouts/application - the file that links the host's
+        # compiled CSS and theme.
+        layout "application"
+      end
+    end
+  CODE
+  view_source = <<~CODE
+    <%# app/views/billing/invoices/index.html.erb - ships zero CSS #{e}
+    <div class="mx-auto flex max-w-4xl flex-col gap-6 p-8">
+      <div class="grid gap-4 md:grid-cols-3">
+        <%= poetry_stat(label: "Outstanding", delta: "+2", trend: :up) { "$3,640.00" } #{e}
+        <%= poetry_stat(label: "Collected", delta: "+12%", trend: :up) { "$3,965.00" } #{e}
+        <%= poetry_stat(label: "Overdue", delta: "1", trend: :down) { "$460.00" } #{e}
+      </div>
+      <%= poetry_alert(variant: :destructive) do |alert| #{e}
+        <% alert.with_title { "One invoice is overdue" } #{e}
+        INV-2043 passed its due date 6 days ago.
+      <% end #{e}
+    </div>
+  CODE
+  engine_css_source = <<~CODE
+    /* app/assets/tailwind/billing/engine.css (path: tailwind/<engine_name>/) */
+    @source "../../../views";
+  CODE
+  host_wiring_source = <<~CODE
+    $ bin/rails tailwindcss:engines
+    # writes app/assets/builds/tailwind/billing.css; then opt in:
+
+    /* app/assets/tailwind/application.css */
+    @import "../builds/tailwind/billing";
+  CODE
+  retheme_source = <<~CODE
+    $ bin/rails g poetry:install --theme lyra
+    $ bin/rails tailwindcss:build
+  CODE
+  subclass_source = <<~CODE
+    # The component and its sidecar Style travel as a pair - the subclass
+    # inherits the full dictionary and can extend or override axes.
+    module Billing
+      module StatusAlert
+        class Component < Poetry::Ui::Alert::Component
+          style :variant, default: :default, required: true,
+                          variants: %i[default destructive info]
+        end
+
+        class Style < Poetry::Ui::Alert::Style
+          variant :variant, { info: "cn-alert-variant-info" }
+        end
+      end
+    end
+
+    render Billing::StatusAlert::Component.new(variant: :info) { "..." }
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Rails Engines</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      A reusable engine built on poetry ships its views as Ruby and ERB and
+      ships no CSS at all. The host application owns the theme, so every
+      engine in the bundle renders in the host's design - and retheming the
+      host restyles the whole application, engines included, in one command.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="why-it-works">Why this works</h2>
+      <p>
+        Three properties of the architecture carry the whole story; none of
+        them need engine-specific configuration:
+      </p>
+      <ul>
+        <li>
+          <strong>Helpers are global.</strong> poetry-ui registers its
+          helpers with Action View itself, so <code>poetry_card</code> and
+          friends compose inside an isolated engine's views exactly as they
+          do in the host's. The same goes for behavior: the host's one-time
+          Stimulus registration covers components rendered from any engine.
+        </li>
+        <li>
+          <strong>Components carry names, the theme carries design.</strong>
+          Every component emits stable <code>cn-*</code> classes plus
+          structural utilities; its visual treatment lives in the host's one
+          theme fragment, loaded in <code>layer(base)</code>. Markup rendered
+          from an engine and markup rendered from the app resolve against the
+          same rules.
+        </li>
+        <li>
+          <strong>The safelist ships every component class.</strong> The
+          host's <code>poetry:install</code> writes a safelist of every
+          dictionary and template class, so the host's Tailwind build emits
+          poetry's own classes without ever scanning gem paths. An engine's
+          poetry markup needs no build integration to render styled.
+        </li>
+      </ul>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="the-engine-recipe">The engine recipe</h2>
+      <p>
+        Depend on poetry-ui, render inside the host's chrome, and compose
+        views from the helpers. That is the whole recipe:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemspec_source, language: "ruby", label: "Gemspec") %>
+    <%= poetry_code_block(code: controller_source, language: "ruby", label: "Render in the host's layout") %>
+    <%= poetry_code_block(code: view_source, language: "erb", label: "An engine view") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Ship no stylesheet, no tokens, and no theme from the engine. The
+        host's install decides all of it, which is precisely what keeps the
+        engine reusable across differently themed applications.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="page-level-utilities">Page-level utilities: the one wiring step</h2>
+      <p>
+        The host's Tailwind build scans the host's own files, not gem paths.
+        poetry's component classes are covered by the safelist, but the
+        engine's <em>page-level</em> layout classes - the
+        <code>md:grid-cols-3</code> on a stat row - are not, and get purged
+        from the host build unless the host happens to use them too. The
+        fix is tailwindcss-rails' engines convention. The engine ships one
+        file pointing the scanner at its own views:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: engine_css_source, language: "css", label: "Shipped by the engine") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>And the host opts in once:</p>
+    <% end %>
+    <%= poetry_code_block(code: host_wiring_source, language: "css", label: "Host wiring") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Document both lines in the engine's install instructions. An engine
+        whose views stick to component helpers and safelisted layout classes
+        can skip this entirely, but shipping the file costs nothing and
+        removes the failure mode.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="retheming">Retheming the whole application</h2>
+      <p>
+        Because every engine reads the host's theme, a retheme is two
+        commands in the host - no engine changes, no engine releases:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: retheme_source, language: "shell", label: "Host retheme") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Every poetry surface follows: the host's screens and every mounted
+        engine's screens, radii, palettes, and density together. The same
+        applies to brand themes imported from a
+        <a href="<%= theming_path %>#design-md-interop">DESIGN.md</a> via
+        <code>poetry:design:import</code> - study a brand once, and the
+        application and all of its engines adopt it in one pass.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="customizing-components">Customizing a component from an engine</h2>
+      <p>
+        A component binds to its style dictionary by a class-level
+        convention: <code>Alert::Component</code> resolves the sibling
+        <code>Alert::Style</code>. There is no per-render style-class
+        parameter - the render-time surface is each helper's options plus
+        <code>class:</code>, whose classes win conflicts. To give a
+        component your own dictionary, subclass the pair:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: subclass_source, language: "ruby", label: "Subclass pair") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The subclass dictionary starts as a copy of its parent's, so
+        existing variants keep working while new axes and values layer on.
+        For restyling without Ruby, the
+        <a href="<%= theming_path %>#overrides">override ladder</a> in the
+        Theming guide applies unchanged inside engines: template utilities,
+        token imports, and declared <code>cn-*</code> overrides.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="one-theme-contract">Keep one theme contract</h2>
+      <p>
+        The temptation for an engine author is to ship default styles "just
+        in case". Resist it. The value of poetry-built engines compounds
+        only while every engine speaks the host's theme: three engines that
+        each carry their own styling are three design systems in one
+        application, and the one-command retheme story dies with them. If an
+        engine must carry a visual identity, ship it as a poetry theme
+        fragment the host can choose to install - never as engine-loaded
+        CSS. And for a host that brings its own CSS entirely, the
+        <code>css_mode :bem</code> class vocabulary on the
+        <a href="<%= library_path("core") %>#styling-paths">poetry-core page</a>
+        covers engines the same way it covers apps.
+      </p>
+    <% end %>
+  </section>
+</div>
