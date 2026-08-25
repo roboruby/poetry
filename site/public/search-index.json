@@ -438,38 +438,38 @@
     "path": "/recipes#skill-poetry-design"
   },
   {
-    "title": "Agent",
-    "page": "Agent",
+    "title": "Page Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent"
   },
   {
     "title": "What this is",
-    "page": "Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent#what"
   },
   {
     "title": "Activate",
-    "page": "Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent#activate"
   },
   {
     "title": "Task list",
-    "page": "Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent#tasks"
   },
   {
     "title": "Sample implementation",
-    "page": "Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent#sample"
   },
   {
     "title": "Provenance & limits",
-    "page": "Agent",
+    "page": "Page Agent",
     "section": "docs",
     "path": "/agent#provenance"
   },
