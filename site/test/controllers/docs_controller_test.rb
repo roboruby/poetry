@@ -41,11 +41,20 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-slot=collapsible][data-open]", 0 # an explicit close beats the section default
   end
 
-  test "the landing components flyout carries the whole catalog" do
+  test "the landing nav links Components at the catalog's first page" do
     get root_url
 
+    assert_select "nav[aria-label=Site] a[href=?]", DocsCatalog.components.first.path, minimum: 1
+  end
+
+  test "the parked components flyout still resolves the whole catalog" do
+    # The mega-menu partial is not rendered on any page today, but it must
+    # stay restorable: the grouping drift-raise and the partial itself are
+    # exercised here so a new component cannot silently break the comeback.
+    html = ApplicationController.render(template: "landing/_components_flyout", layout: false)
+
     (DocsCatalog.components + DocsCatalog.charts + DocsCatalog.blocks).each do |entry|
-      assert_select "[data-slot=navigation-menu-content] a[href=?]", entry.path, 1
+      assert_includes html, %(href="#{entry.path}")
     end
   end
 

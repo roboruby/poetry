@@ -15,43 +15,7 @@
           <% nav.with_link("Docs", href: installation_path) %>
           <% nav.with_link("Themes", href: theming_path) %>
           <% nav.with_link("Forms", href: forms_path) %>
-          <% nav.with_item("Components", value: "components") do %>
-            <%# The whole catalog, grouped by function; columns pair the
-                groups to keep heights close. Charts and Blocks ride the
-                catalog sections directly. %>
-            <% groups = DocsCatalog.component_groups %>
-            <% columns = [
-                 [ [ "Forms", groups["Forms"] ], [ "Blocks", DocsCatalog.blocks ] ],
-                 [ [ "Pickers & selection", groups["Pickers & selection"] ],
-                   [ "Chat & streaming", groups["Chat & streaming"] ] ],
-                 [ [ "Overlays & menus", groups["Overlays & menus"] ],
-                   [ "Feedback & status", groups["Feedback & status"] ] ],
-                 [ [ "Data display", groups["Data display"] ],
-                   [ "Layout & structure", groups["Layout & structure"] ] ],
-                 [ [ "Actions & navigation", groups["Actions & navigation"] ],
-                   [ "Charts", DocsCatalog.charts ] ]
-               ] %>
-            <%# Full-width mega bar: the panel spans the viewport, the
-                group columns center in the page's content column. %>
-            <div class="max-h-[calc(100vh-7rem)] w-screen overflow-y-auto backdrop-blur-xl will-change-[backdrop-filter]">
-              <div class="mx-auto grid max-w-6xl grid-cols-3 gap-x-8 gap-y-4 px-6 py-4 lg:grid-cols-5">
-                <% columns.each do |column| %>
-                <div class="space-y-4">
-                  <% column.each do |title, entries| %>
-                    <div>
-                      <div class="px-2 pb-1 text-xs font-medium text-muted-foreground"><%= title %></div>
-                      <div class="grid gap-px">
-                        <% entries.each do |entry| %>
-                          <%= poetry_navigation_menu_link(href: entry.path, class: "px-2 py-0.5 text-sm") { entry.title } %>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% end %>
-              </div>
-            </div>
-          <% end %>
+          <% nav.with_link("Components", href: DocsCatalog.components.first.path) %>
         <% end %>
       </div>
       <%= poetry_button(size: :sm, href: installation_path) { "Start building" } %>
