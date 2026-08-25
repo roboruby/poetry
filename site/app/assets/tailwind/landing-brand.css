@@ -89,3 +89,26 @@ html.brand-aurum .wr-word[data-on] {
 html.brand-aurum .cn-navigation-menu-popup {
   background-color: color-mix(in oklab, var(--popover) 80%, transparent);
 }
+
+/* The Possibilities stat: a primary-colored dash orbits the infinity
+   loop forever. 54.95 is the measured length of the vendored lucide
+   infinity path (pinned vendor, so the constant is stable); the dash is
+   10 units, the remainder is gap, and one full offset lap per iteration
+   makes the loop seamless. The static base icon underneath stays fully
+   drawn, so reduced motion simply hides the moving copy. */
+html.brand-aurum .stat-infinity-trace path {
+  stroke-dasharray: 10 44.95;
+  animation: stat-infinity-orbit 3.2s linear infinite;
+}
+
+@keyframes stat-infinity-orbit {
+  to {
+    stroke-dashoffset: -54.95;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.brand-aurum .stat-infinity-trace {
+    display: none;
+  }
+}

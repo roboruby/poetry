@@ -77,7 +77,15 @@
       <%= poetry_stat(label: "Components") { "87" } %>
       <%= poetry_stat(label: "Chart families") { "9" } %>
       <%= poetry_stat(label: "Themes") { "9" } %>
-      <%= poetry_stat(label: "Vendored icons") { "1,745" } %>
+      <%= poetry_stat(label: "Possibilities") do %>
+        <%# The infinity stays fully drawn; a highlight dash orbits the
+            loop (landing-brand.css owns the keyframes, reduced motion
+            hides the moving copy and keeps the static one). %>
+        <span class="relative inline-flex">
+          <%= poetry_icon(name: :infinity, class: "size-9", label: "Infinite") %>
+          <%= poetry_icon(name: :infinity, class: "stat-infinity-trace absolute inset-0 size-9 text-primary") %>
+        </span>
+      <% end %>
     </div>
   </section>
 
