@@ -172,6 +172,17 @@ module DocsHelper
     }
   end
 
+# The user's explicit sidebar disclosure choices (written by the
+# sidebar-sections Stimulus controller as a name => open map). An
+# explicit choice overrides the current-section default when the
+# sidebar re-renders on the next visit.
+def sidebar_section_states
+  value = JSON.parse(cookies[:docs_sidebar].to_s)
+  value.is_a?(Hash) ? value : {}
+rescue JSON::ParserError
+  {}
+end
+
   # Example/block source panels ride the CodeBlock component: the
   # theme-owned syntax palette replaces the vendored GitHub rouge.css, and
   # every code tab gains the copy affordance.

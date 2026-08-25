@@ -41,7 +41,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body data-controller="theme" class="min-h-screen bg-background text-foreground antialiased">
+  <body data-controller="theme sidebar-sections" class="min-h-screen bg-background text-foreground antialiased">
     <%= poetry_sidebar(collapsible: :icon) do |shell| %>
       <% shell.with_nav do %>
         <%= poetry_sidebar_header do %>
@@ -66,7 +66,8 @@
           <% end %>
           <%# The nav sections, one per group, in two mode-gated forms: the
               expanded sidebar gets a disclosure (closed by default, the
-              current page's section open); the icon rail swaps it for a
+              current page's section open, explicit user choices remembered
+              via the sidebar-sections cookie); the icon rail swaps it for a
               HoverCard - hovering the icon flies the section's links out
               beside the rail, clicking it expands the sidebar. Get Started
               matches by its entries' exact paths (top-level slugs); the
@@ -81,6 +82,7 @@
               ["API", :braces, "/api/", DocsCatalog.apis]].each do |title, icon, prefix, entries| %>
             <%= poetry_sidebar_group(class: "py-1") do %>
               <% section_active = prefix ? request.path.start_with?(prefix) : entries.any? { |e| e.path == request.path } %>
+              <% section_open = sidebar_section_states.key?(title) ? sidebar_section_states[title] == true : section_active %>
               <div class="hidden group-data-[collapsible=icon]:block">
                 <%= poetry_hover_card(side: :right, align: :start, side_offset: 8, open_delay: 150,
                                       content_class: "w-60 max-h-[70vh] overflow-y-auto p-2") do |card| %>
@@ -102,11 +104,13 @@
                   </nav>
                 <% end %>
               </div>
-              <%= poetry_collapsible(open: section_active,
+              <%= poetry_collapsible(open: section_open,
                                      class: "group/collapsible group-data-[collapsible=icon]:hidden") do |section| %>
                 <% section.with_trigger(class: "flex w-full items-center gap-2 rounded-md px-2 py-1.5 " \
                                                "text-xs font-medium text-sidebar-foreground/70 transition-colors " \
-                                               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground") do %>
+                                               "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                                        data: { action: "click->sidebar-sections#remember",
+                                                sidebar_sections_section_param: title }) do %>
                   <%= poetry_icon(name: icon, class: "size-4 shrink-0") %>
                   <span><%= title %></span>
                   <%= poetry_icon(name: :"chevron-right",

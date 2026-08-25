@@ -25,6 +25,22 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "meta[name=robots]", count: 0
   end
 
+  test "explicit sidebar disclosure choices persist via the cookie" do
+    get "/theming"
+
+    assert_select "[data-slot=collapsible][data-open]", 1 # the current section opens by default
+
+    cookies[:docs_sidebar] = { "Advanced" => true }.to_json
+    get introduction_url
+
+    assert_select "[data-slot=collapsible][data-open]", 1 # remembered open on a sectionless page
+
+    cookies[:docs_sidebar] = { "Get Started" => false }.to_json
+    get "/theming"
+
+    assert_select "[data-slot=collapsible][data-open]", 0 # an explicit close beats the section default
+  end
+
   test "a component page renders examples with preview and code tabs" do
     get "/components/button"
 
