@@ -81,7 +81,10 @@
         <%# The infinity stays fully drawn; a highlight dash orbits the
             loop (landing-brand.css owns the keyframes, reduced motion
             hides the moving copy and keeps the static one). %>
-        <span class="relative inline-flex">
+        <%# scale + negative margin lift the glyph out of the lucide
+            viewBox padding so its drawn size and left edge match the
+            numeral stats (tuned against the rendered cap height). %>
+        <span class="relative -ml-1.5 inline-flex origin-left scale-[1.7]">
           <%= poetry_icon(name: :infinity, class: "size-9", label: "Infinite") %>
           <%= poetry_icon(name: :infinity, class: "stat-infinity-trace absolute inset-0 size-9 text-primary") %>
         </span>
