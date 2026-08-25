@@ -67,7 +67,7 @@ class ApiReference
       objects = objects(slug)
       objects = objects.reject { |o| o["path"] =~ meta["skip"] } if meta["skip"]
       pins = meta["pins"] || []
-      objects.sort_by { |o| [pins.index(o["path"]) || pins.length, o["path"]] }
+      objects.sort_by { |o| [ pins.index(o["path"]) || pins.length, o["path"] ] }
     end
 
     # One class's export entry (for the gallery pages' API section).

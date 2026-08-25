@@ -37,7 +37,7 @@ class ApiController < ApplicationController
   end
 
   def object_markdown(object)
-    parts = ["## #{object['path']}"]
+    parts = [ "## #{object['path']}" ]
     parts << object["docstring"] if object["docstring"].present?
     object["methods"].each do |m|
       sig = m["scope"] == "class" ? ".#{m['signature']}" : "##{m['signature']}"
