@@ -79,3 +79,13 @@ html.brand-aurum .wr-word[data-on] {
     transition: none;
   }
 }
+
+/* Frosted glass for the landing mega bar, half one: the popover surface
+   goes translucent. The blur half rides a backdrop-blur utility on the
+   panel's own wrapper in the view - the raw declaration gets its
+   standard backdrop-filter property stripped in compilation, keeping
+   only the -webkit- form. Declared under overrides: in
+   config/poetry_components.yml (the cn-* override contract). */
+html.brand-aurum .cn-navigation-menu-popup {
+  background-color: color-mix(in oklab, var(--popover) 72%, transparent);
+}

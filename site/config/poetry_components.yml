@@ -1,1 +1,6 @@
 components: {}
+overrides:
+  - cn: "cn-navigation-menu-popup"
+    files: ["app/assets/tailwind/landing-brand.css"]
+    reason: "Landing mega bar goes frosted glass over the hero art - translucent popover plus backdrop blur, scoped to html.brand-aurum so the docs shell keeps the solid popover."
+    created: 2026-08-24
