@@ -48,7 +48,7 @@
           The component library<br>Rails never shipped
         </h1>
         <p class="mt-6 max-w-170 text-lg text-muted-foreground" style="text-wrap: pretty">
-          87 components, 13 chart families, and 9 themes, rendered on the
+          87 components, 9 chart families, and 9 themes, rendered on the
           server in plain Ruby and ERB. No React, no build step, no
           node_modules.
         </p>
@@ -71,7 +71,7 @@
   <section class="border-y border-border bg-card">
     <div class="mx-auto grid max-w-6xl grid-cols-2 gap-8 px-6 py-12 sm:grid-cols-4" data-controller="reveal" data-reveal>
       <%= poetry_stat(label: "Components") { "87" } %>
-      <%= poetry_stat(label: "Chart families") { "13" } %>
+      <%= poetry_stat(label: "Chart families") { "9" } %>
       <%= poetry_stat(label: "Themes") { "9" } %>
       <%= poetry_stat(label: "Vendored icons") { "1,745" } %>
     </div>
@@ -118,7 +118,7 @@
           { icon: :accessibility, title: "Accessible by construction",
             body: "Keyboard contracts, focus management, and aria wiring live inside the components. Axe runs against every preview in CI, so the floor never quietly drops." },
           { icon: :"chart-line", title: "Charts with no client engine",
-            body: "All 13 chart families compute their geometry in Ruby and ship as SVG in the initial HTML. They hold up in print, PDF, email, and with JavaScript turned off." },
+            body: "All 9 chart families compute their geometry in Ruby and ship as SVG in the initial HTML. They hold up in print, PDF, email, and with JavaScript turned off." },
           { icon: :bot, title: "Legible to your coding agent",
             body: "A committed registry, llms.txt, an MCP server, and generated skills mean your agent composes the same vetted components you do, with the same guardrails." }
         ].each_with_index do |benefit, i| %>
