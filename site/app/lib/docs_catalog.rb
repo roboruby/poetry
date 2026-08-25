@@ -160,7 +160,7 @@ class DocsCatalog
     # order; Agent stays last in AI Native while it is experimental.
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing editors api],
-      "Advanced" => %w[forms pagination data-table deferred optimistic-forms caching stable-ids accessibility],
+      "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids],
       "AI Native" => %w[recipes agent-skills mcp agent]
     }.freeze
 
