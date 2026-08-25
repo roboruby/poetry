@@ -57,7 +57,7 @@
             Start building
             <% button.with_trailing { poetry_icon(name: :"arrow-right") } %>
           <% end %>
-          <%= poetry_button(variant: :outline, size: :lg, href: theming_path) { "See the nine themes" } %>
+          <%= render "landing/subscribe_dialog" %>
         </div>
         <p class="mt-6 text-sm text-muted-foreground">
           MIT licensed. 1,745 icons vendored. Every component legible to
