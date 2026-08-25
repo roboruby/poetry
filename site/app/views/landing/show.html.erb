@@ -31,8 +31,11 @@
                  [ [ "Actions & navigation", groups["Actions & navigation"] ],
                    [ "Charts", DocsCatalog.charts ] ]
                ] %>
-            <div class="grid w-[min(90vw,56rem)] max-h-[calc(100vh-8rem)] grid-cols-3 gap-x-6 gap-y-4 overflow-y-auto p-2 lg:grid-cols-5">
-              <% columns.each do |column| %>
+            <%# Full-width mega bar: the panel spans the viewport, the
+                group columns center in the page's content column. %>
+            <div class="max-h-[calc(100vh-7rem)] w-screen overflow-y-auto">
+              <div class="mx-auto grid max-w-6xl grid-cols-3 gap-x-8 gap-y-4 px-6 py-4 lg:grid-cols-5">
+                <% columns.each do |column| %>
                 <div class="space-y-4">
                   <% column.each do |title, entries| %>
                     <div>
@@ -46,6 +49,7 @@
                   <% end %>
                 </div>
               <% end %>
+              </div>
             </div>
           <% end %>
         <% end %>
