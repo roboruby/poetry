@@ -95,7 +95,7 @@ class DocsCatalog
               description: "What poetry guarantees by construction - required accessible names, " \
                        "Field-chain aria wiring, native form participation, overlay focus - " \
                        "and the keyboard and screen-reader checklist for verifying your app."),
-    Entry.new(slug: "mcp", title: "MCP", section: "docs", icon: :plug,
+    Entry.new(slug: "mcp", title: "MCP Server", section: "docs", icon: :plug,
               description: "The boot-free MCP server behind agent workflows: what each of the " \
                        "ten registry-backed tools does and when an agent reaches for it, " \
                        "and how it fits with llms.txt and the installable skills.")
@@ -161,7 +161,7 @@ class DocsCatalog
     DOC_SECTIONS = {
       "Get Started" => %w[installation theming typography testing editors api],
       "Advanced" => %w[accessibility forms pagination data-table deferred optimistic-forms caching stable-ids],
-      "AI Native" => %w[recipes agent-skills mcp agent]
+      "AI Native" => %w[mcp agent-skills recipes agent]
     }.freeze
 
     # DOC_SECTIONS resolved to entries. Raises when the section map and

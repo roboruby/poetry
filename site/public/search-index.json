@@ -750,50 +750,50 @@
     "path": "/accessibility#recording"
   },
   {
-    "title": "MCP",
-    "page": "MCP",
+    "title": "MCP Server",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp"
   },
   {
     "title": "The server",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#server"
   },
   {
     "title": "The loop it closes",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#loop"
   },
   {
     "title": "The ten tools",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#tools"
   },
   {
     "title": "Routing a brief",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#routing"
   },
   {
     "title": "The check verdict",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#check"
   },
   {
     "title": "Skills and guidance at runtime",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#skills"
   },
   {
     "title": "One source, every surface",
-    "page": "MCP",
+    "page": "MCP Server",
     "section": "docs",
     "path": "/mcp#one-source"
   },
