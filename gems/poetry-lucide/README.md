@@ -1,6 +1,6 @@
 # poetry-lucide
 
-The default poetry icon set: [Lucide](https://lucide.dev)'s 1,746 icons,
+The default poetry icon set: [Lucide](https://lucide.dev)'s 1,745 icons,
 **vendored at a pinned upstream commit and sanitized at vendor time** —
 render time never parses, never sanitizes, never touches the network.
 
