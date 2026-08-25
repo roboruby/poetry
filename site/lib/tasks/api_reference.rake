@@ -4,7 +4,7 @@ namespace :docs do
   desc "Regenerate data/api/*.json from the sibling gems' YARD registries"
   task :api_reference do
     root = Rails.root
-    gems = %w[poetry-core poetry-ui poetry-charts poetry-reactive poetry-simple_form poetry-extract]
+    gems = %w[poetry-core poetry-ui poetry-charts poetry-simple_form poetry-extract]
     out_dir = root.join("data/api")
     FileUtils.mkdir_p(out_dir)
 

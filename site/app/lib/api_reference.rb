@@ -34,12 +34,6 @@ class ApiReference
       "pins" => %w[Poetry::Charts::ComponentsHelper Poetry::Charts::Config Poetry::Charts::Spec],
       "skip" => /\A(Poetry::Charts::[A-Z]\w*Chart::|Poetry::Charts::Container::|Poetry::Charts::LegendContent::|Poetry::Charts::TooltipContent::|Poetry::Charts::TooltipLayer::)/
     },
-    "poetry-reactive" => {
-      "title" => "poetry-reactive",
-      "description" => "Signed, default-deny server actions for rendered components: the " \
-                       "reactive concern's DSL, the coercion grammar, and the endpoint.",
-      "pins" => %w[Poetry::Reactive::Component]
-    },
     "poetry-simple_form" => {
       "title" => "poetry-simple_form",
       "description" => "The simple_form adapter: activate! plus the input classes that map " \
