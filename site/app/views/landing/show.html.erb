@@ -38,7 +38,11 @@
                     alt: "",
                     aria: { hidden: true },
                     class: "absolute inset-0 -z-10 size-full object-cover" %>
-      <div class="absolute inset-0 bg-background/60"></div>
+      <%# A left-weighted scrim, not a flat tint: the text column needs a
+          calm dark zone while the artwork stays vivid on the right. The
+          deliberate exception to the flat-background rule - a scrim over
+          imagery, built from the background token so themes resolve it. %>
+      <div class="absolute inset-0 bg-linear-to-r from-background/88 via-background/78 via-45% to-background/45"></div>
     </div>
 
     <div class="mx-auto max-w-6xl px-6 pb-24 pt-40 sm:pb-32 sm:pt-48">
@@ -47,7 +51,7 @@
         <h1 class="mt-6 text-5xl font-semibold text-foreground" style="text-wrap: balance">
           The AI-Native<br>UI Component Library<br>For Ruby on Rails
         </h1>
-        <p class="mt-6 max-w-170 text-lg text-muted-foreground" style="text-wrap: pretty">
+        <p class="mt-6 max-w-170 text-lg text-foreground" style="text-wrap: pretty">
           87 components, 9 chart families, and 9 themes, rendered on the
           server in plain Ruby and ERB. No React, no build step, no
           node_modules.
@@ -59,7 +63,7 @@
           <% end %>
           <%= render "landing/subscribe_dialog" %>
         </div>
-        <p class="mt-6 text-sm text-muted-foreground">
+        <p class="mt-6 text-sm text-foreground">
           MIT licensed. 1,745 icons vendored. Every component legible to
           your coding agent.
         </p>
