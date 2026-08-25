@@ -17,7 +17,7 @@ reveal, bars growing from the value baseline, radar rising from the polar
 center). `animate: false` opts a chart out; `prefers-reduced-motion` users
 always get the finished chart in the initial paint.
 
-Engines are swappable (three doors — full recipes in `docs/adapters.md`):
+Engines are swappable (three doors — full recipes in the Charts adapter guide on the poetry docs site):
 
 1. **The frame** (container/config/style + tooltip/legend chrome) is
    engine-agnostic — the contract all three official shadcn ports share.
@@ -64,7 +64,7 @@ JS). Give a chart a stable `id:` and it **morphs** between those server
 renders — under any same-context swap (Turbo Drive/Frames/Streams), the
 new render starts from the old geometry and tweens to its own; a shape
 change (points added/removed) replays the entrance instead, recharts'
-own update behavior. See `docs/adapters.md` for BYO engines.
+own update behavior. See the Charts adapter guide on the poetry docs site for BYO engines.
 
 For data that can't round-trip (streaming metrics, tickers), the
 cartesian trio takes `live: true`: the chart embeds its `{spec, frame}`
