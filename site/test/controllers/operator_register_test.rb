@@ -56,7 +56,7 @@ class OperatorRegisterTest < ActionDispatch::IntegrationTest
   end
 
   test "the demo is opt-in: the vendored script rides no server-rendered page" do
-    get "/agent"
+    get "/page-agent"
 
     assert_response :success
     assert_includes response.body, "Activate agent"
@@ -68,11 +68,14 @@ class OperatorRegisterTest < ActionDispatch::IntegrationTest
 
     get "/components/button"
 
-    refute_includes response.body, "page-agent"
+    # The nav legitimately links /page-agent everywhere; the opt-in
+    # contract is that no page ships the vendored script itself.
+    refute_match %r{<script[^>]*src="[^"]*page-agent}, response.body
+    refute_includes response.body, "vendor/page-agent"
   end
 
   test "the agent page mirrors as markdown" do
-    get "/agent.md"
+    get "/page-agent.md"
 
     assert_response :success
     assert_includes response.body, "operator register".upcase.downcase

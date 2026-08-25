@@ -157,11 +157,11 @@ class DocsController < ApplicationController
     when "caching" then DocsMarkdown.caching(guide_entry("caching"))
     when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
-    when "mcp" then DocsMarkdown.mcp(guide_entry("mcp"))
+    when "mcp" then DocsMarkdown.mcp(guide_entry("mcp-server"))
     when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
     when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug}", icon_entry)
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
-    when "agent" then DocsMarkdown.agent(guide_entry("agent"))
+    when "agent" then DocsMarkdown.agent(guide_entry("page-agent"))
     when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)
     when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))
     end

@@ -441,37 +441,37 @@
     "title": "Page Agent",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent"
+    "path": "/page-agent"
   },
   {
     "title": "What this is",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent#what"
+    "path": "/page-agent#what"
   },
   {
     "title": "Activate",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent#activate"
+    "path": "/page-agent#activate"
   },
   {
     "title": "Task list",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent#tasks"
+    "path": "/page-agent#tasks"
   },
   {
     "title": "Sample implementation",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent#sample"
+    "path": "/page-agent#sample"
   },
   {
     "title": "Provenance & limits",
     "page": "Page Agent",
     "section": "docs",
-    "path": "/agent#provenance"
+    "path": "/page-agent#provenance"
   },
   {
     "title": "Agent Skills",
@@ -753,49 +753,49 @@
     "title": "MCP Server",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp"
+    "path": "/mcp-server"
   },
   {
     "title": "The server",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#server"
+    "path": "/mcp-server#server"
   },
   {
     "title": "The loop it closes",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#loop"
+    "path": "/mcp-server#loop"
   },
   {
     "title": "The ten tools",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#tools"
+    "path": "/mcp-server#tools"
   },
   {
     "title": "Routing a brief",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#routing"
+    "path": "/mcp-server#routing"
   },
   {
     "title": "The check verdict",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#check"
+    "path": "/mcp-server#check"
   },
   {
     "title": "Skills and guidance at runtime",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#skills"
+    "path": "/mcp-server#skills"
   },
   {
     "title": "One source, every surface",
     "page": "MCP Server",
     "section": "docs",
-    "path": "/mcp#one-source"
+    "path": "/mcp-server#one-source"
   },
   {
     "title": "Accordion",
