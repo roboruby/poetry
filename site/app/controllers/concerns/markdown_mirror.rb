@@ -39,15 +39,15 @@ module MarkdownMirror
 
   def markdown_mirror = nil
 
-  # Where this page's markdown twin lives, or nil. The root's twin is the
-  # llms.txt index (there is no routable "/.md").
+  # Where this page's markdown twin lives, or nil. The docs home's twin
+  # is the llms.txt index (the same bytes; one canonical address).
   def markdown_alternate_path
     return @markdown_alternate_path if defined?(@markdown_alternate_path)
 
     @markdown_alternate_path =
       begin
         if readable_request? && markdown_mirror.present?
-          request.path == "/" ? "/llms.txt" : "#{request.path}.md"
+          request.path == "/docs" ? "/llms.txt" : "#{request.path}.md"
         end
       rescue ActionController::RoutingError
         nil

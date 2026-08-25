@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <%# The landing page renders outside the docs chrome: fixed brand
-    (html.brand-aurum, dark native), its own font, no style switcher. %>
+    (html.brand-aurum, dark native), its own font, no style switcher.
+    Crossings into and out of the docs shell are full page loads (the
+    visit-control meta + data-turbo off below) so neither side's html
+    classes or tokens leak across the boundary under Turbo Drive. %>
 <html class="style-default dark brand-aurum">
   <head>
     <title>poetry — the component library Rails never shipped</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="turbo-visit-control" content="reload">
     <meta name="description" content="87 components, 13 chart families, and 9 themes for Rails, rendered on the server in plain Ruby and ERB. No React, no build step.">
-    <%# Pre-launch draft: keep it out of the index until it goes live at root. %>
-    <meta name="robots" content="noindex">
     <meta property="og:title" content="poetry — the component library Rails never shipped">
     <meta property="og:description" content="87 components, 13 chart families, and 9 themes for Rails, rendered on the server in plain Ruby and ERB.">
     <meta property="og:image" content="<%= image_url("landing-og.jpg") %>">
@@ -17,6 +19,7 @@
     <%= csp_meta_tag %>
 
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="alternate" type="text/markdown" href="/llms.txt">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -25,7 +28,7 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="min-h-screen bg-background text-foreground antialiased">
+  <body class="min-h-screen bg-background text-foreground antialiased" data-turbo="false">
     <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-card focus:px-3 focus:py-2 focus:text-sm">Skip to content</a>
     <%= yield %>
   </body>

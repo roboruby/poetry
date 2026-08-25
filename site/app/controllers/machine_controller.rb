@@ -42,7 +42,7 @@ class MachineController < ApplicationController
   # Absolute URLs derive from the request host - the site has no fixed
   # production domain, so nothing is hardcoded.
   def sitemap
-    urls = ([ "/" ] + DocsCatalog.all.map(&:path)).map do |path|
+    urls = ([ "/", "/docs" ] + DocsCatalog.all.map(&:path)).map do |path|
       "  <url><loc>#{request.base_url}#{path}</loc></url>"
     end
     xml = [ %(<?xml version="1.0" encoding="UTF-8"?>),

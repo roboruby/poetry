@@ -4,8 +4,8 @@ require "test_helper"
 # inside poetry's own Sidebar + palette + nav chrome - if any host seam
 # breaks (pins, tokens, safelist, engine load), these pages surface it.
 class DocsControllerTest < ActionDispatch::IntegrationTest
-  test "the home page serves the poetry shell" do
-    get root_url
+  test "the docs home serves the poetry shell" do
+    get introduction_url
 
     assert_response :success
     assert_select "[data-controller~=?]", "poetry--core--sidebar"
@@ -13,6 +13,16 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_select "[data-controller~=?]", "poetry--core--command"
     assert_select "[data-controller~=?]", "poetry--core--navigation-menu"
     assert_select "[data-action=?]", "click->theme#toggle"
+  end
+
+  test "the root serves the landing page behind a full-reload Turbo boundary" do
+    get root_url
+
+    assert_response :success
+    assert_match(/<html class="style-default dark brand-aurum">/, response.body)
+    assert_select "meta[name=turbo-visit-control][content=reload]"
+    assert_select "body[data-turbo=false]"
+    assert_select "meta[name=robots]", count: 0
   end
 
   test "a component page renders examples with preview and code tabs" do
@@ -49,7 +59,7 @@ class DocsControllerTest < ActionDispatch::IntegrationTest
     assert_equal SearchIndex.build, JSON.parse(SearchIndex::PATH.read),
                  "stale search index - run bin/rails docs:search_index and commit"
 
-    get root_url
+    get introduction_url
 
     assert_select "[data-slot=command-item][data-value=?]", "/typography#headings"
     assert_select "[data-slot=command-item][data-value=?]", "/theming#the-font-pairing"

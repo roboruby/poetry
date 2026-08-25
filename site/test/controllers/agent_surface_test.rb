@@ -80,7 +80,7 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
   test "Accept: text/markdown serves the same mirrors - and never 500s" do
     [ "/components/badge", "/charts/#{DocsCatalog.charts.first.slug}",
       "/blocks/#{DocsCatalog.blocks.first.slug}", "/demos/interactive",
-      "/typography", "/theming", "/" ].each do |path|
+      "/typography", "/theming", "/docs" ].each do |path|
       get path, headers: { "Accept" => "text/markdown" }
 
       assert_response :success, path
@@ -241,14 +241,14 @@ class AgentSurfaceTest < ActionDispatch::IntegrationTest
     assert_includes response.headers["Link"], '</components/badge.md>; rel="alternate"; type="text/markdown"'
     assert_includes response.body, '<link rel="alternate" type="text/markdown" href="/components/badge.md">'
 
-    get "/"
+    get "/docs"
 
     assert_includes response.headers["Link"], "</llms.txt>"
     assert_includes response.body, 'href="/llms.txt"'
   end
 
   test "every HTML page carries a describedby pointer at the llms.txt index" do
-    [ "/components/badge", "/theming", "/agent-skills", "/" ].each do |path|
+    [ "/components/badge", "/theming", "/agent-skills", "/docs" ].each do |path|
       get path
 
       assert_response :success, path

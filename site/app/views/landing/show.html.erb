@@ -6,7 +6,7 @@
 
 <header class="absolute inset-x-0 top-0 z-20">
   <div class="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-    <a href="<%= landing_path %>" class="flex items-center gap-2 text-base font-semibold">
+    <a href="<%= root_path %>" class="flex items-center gap-2 text-base font-semibold">
       <%= poetry_icon(name: :feather, class: "size-5 text-primary") %> poetry
     </a>
     <nav aria-label="Site" class="flex items-center gap-6">
@@ -258,7 +258,7 @@
     <nav aria-label="Footer" class="flex items-center gap-6">
       <%= poetry_link(href: installation_path) { "Docs" } %>
       <%= poetry_link(href: theming_path) { "Themes" } %>
-      <%= poetry_link(href: root_path) { "Component reference" } %>
+      <%= poetry_link(href: introduction_path) { "Component reference" } %>
     </nav>
   </div>
 </footer>

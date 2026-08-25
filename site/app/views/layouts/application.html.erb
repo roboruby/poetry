@@ -45,7 +45,7 @@
     <%= poetry_sidebar(collapsible: :icon) do |shell| %>
       <% shell.with_nav do %>
         <%= poetry_sidebar_header do %>
-          <%= link_to root_path, "aria-label": "poetry",
+          <%= link_to introduction_path, "aria-label": "poetry",
                       class: "flex items-center gap-2 px-2 py-1.5 text-sm font-semibold " \
                              "group-data-[collapsible=icon]:size-8 " \
                              "group-data-[collapsible=icon]:justify-center " \
@@ -58,7 +58,7 @@
           <%= poetry_sidebar_group do %>
             <%= poetry_sidebar_menu do %>
               <%= poetry_sidebar_menu_item do %>
-                <%= poetry_sidebar_menu_button(href: root_path, active: current_page?(root_path)) do %>
+                <%= poetry_sidebar_menu_button(href: introduction_path, active: current_page?(introduction_path)) do %>
                   <%= poetry_icon(name: :house) %><span>Introduction</span>
                 <% end %>
               <% end %>

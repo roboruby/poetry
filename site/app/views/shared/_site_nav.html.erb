@@ -4,7 +4,7 @@
   <%= poetry_navigation_menu(label: "Site", viewport: true) do |nav| %>
     <% nav.with_item("Get Started", value: "start") do %>
       <div class="grid w-64 gap-1">
-        <%= poetry_navigation_menu_link(href: root_path) { "Introduction" } %>
+        <%= poetry_navigation_menu_link(href: introduction_path) { "Introduction" } %>
         <%= poetry_navigation_menu_link(href: "/components/button") { "Components" } %>
         <%= poetry_navigation_menu_link(href: "/charts/area") { "Charts" } %>
       </div>
