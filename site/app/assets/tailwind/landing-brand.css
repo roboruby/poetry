@@ -87,5 +87,5 @@ html.brand-aurum .wr-word[data-on] {
    only the -webkit- form. Declared under overrides: in
    config/poetry_components.yml (the cn-* override contract). */
 html.brand-aurum .cn-navigation-menu-popup {
-  background-color: color-mix(in oklab, var(--popover) 72%, transparent);
+  background-color: color-mix(in oklab, var(--popover) 80%, transparent);
 }
