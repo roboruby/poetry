@@ -33,10 +33,13 @@ visual fragments under `themes/`.
 
 - `app/components/poetry/ui/<name>/` — component.rb + style.rb (the class
   dictionary) + preview sidecars
-- `themes/*.css` — the nine theme fragments; port-time edits go through the
-  plans in `script/theme_port/plans/`
+- `themes/*.css` — the nine theme fragments. Every deviation from the
+  pinned source is recorded with a reason in
+  `config/theme_fidelity/deviations.yml`; `css:verify_fidelity` holds the
+  file and the actual diff in exact agreement, so reconcile it in the same
+  change as any theme edit
 - `docs/testing.md` — the three-tier testing doctrine (wiring / behavior /
-  browser); `docs/*-port-ledger.txt` — per-theme residuals, kept current
+  browser)
 - `eval/` — the harness: frozen arms + runner (mechanical), judge + captures
   + committed results (judged); `eval/README.md` is the doctrine
 - `lib/generators/poetry/` — the install surface (installer, per-adapter

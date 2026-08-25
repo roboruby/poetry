@@ -2,7 +2,9 @@
 
 #
 # theme-port tooling (banked from the vega run - see
-# docs/vega-port-ledger.txt).
+# docs/vega-port-ledger.txt). SUPERSEDED: the ledgers are retired -
+# deviations live in config/theme_fidelity/deviations.yml under the
+# css:verify_fidelity gate.
 # For the NEXT port (nova/mira/rhea): point the upstream path at the new
 # style-<name>.css, re-run the detector for the diff/conflict report, then
 # author a fresh PLAN in a copy of the writer. NOTE: the writer is a
