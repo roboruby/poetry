@@ -28,6 +28,8 @@ Rails.application.routes.draw do
   get "stable-ids" => "docs#stable_ids", as: :stable_ids
   get "data-table" => "docs#data_table", as: :data_table_guide
   get "mcp" => "docs#mcp", as: :mcp
+  get "libraries/:slug" => "docs#library", as: :library, constraints: { slug: /[a-z-]+/ }
+  get "icons/:slug" => "docs#icon_set", as: :icon_set, constraints: { slug: /[a-z-]+/ }
   get "recipes" => "docs#recipes", as: :recipes
   get "agent" => "docs#agent", as: :agent
   get "operator-register.json" => "machine#operator_register", format: false

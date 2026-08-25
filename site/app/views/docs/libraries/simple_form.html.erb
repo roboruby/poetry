@@ -1,0 +1,150 @@
+<% content_for :title, "Simple Form" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Simple Form") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  gemfile_source = <<~CODE
+    gem "poetry-simple_form"
+  CODE
+  generate_source = <<~CODE
+    bin/rails g poetry:simple_form:install
+  CODE
+  initializer_source = <<~CODE
+    # config/initializers/poetry_simple_form.rb
+    Poetry::SimpleForm.activate!
+  CODE
+  bridge_source = <<~CODE
+    <%= simple_form_for @user do |f| #{e}
+      <%= f.input :email #{e}
+      <%= f.input :bio #{e}
+      <%= f.input :admin, input_html: { switch: true } #{e}
+      <%= f.input :role, collection: %w[admin member] #{e}
+      <%= f.association :company #{e}
+    <% end #{e}
+  CODE
+  native_source = <<~CODE
+    <%= form_with(model: @user, builder: Poetry::Ui::FormBuilder) do |f| #{e}
+      <%= f.input :email #{e}
+      <%= f.submit #{e}
+    <% end #{e}
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Simple Form</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-simple_form is the migration bridge for existing Simple Form
+      apps: one initializer re-maps the input types onto poetry fields, and
+      every <code>f.input</code> call in your views keeps working.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="how-it-works">How it works</h2>
+      <p>
+        The bridge re-maps Simple Form's input types onto classes that render
+        whole poetry fields through <code>Poetry::Ui::FormBuilder</code>,
+        bound to the same object and template. Label, hint, error, and aria
+        wiring derive from your model on the same code path the
+        <%= link_to "native builder", forms_path %> uses, so a bridged form
+        and a rewritten one render identical fields. Simple Form contributes
+        only type resolution; its wrapper tree is bypassed by design, because
+        a flat wrapper stack cannot express the field's label, hint, error,
+        and aria as one unit.
+      </p>
+      <p>
+        Your existing <code>simple_form.*</code> i18n keys (labels, hints,
+        placeholders) keep working: poetry's builder reads them as a
+        fallback chain.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Add the gem and run the install generator. It writes one initializer,
+        and that initializer is the whole integration.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: generate_source, language: "shell", label: "Generate") %>
+    <%= poetry_code_block(code: initializer_source, language: "ruby", label: "The initializer") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Delete the file and stock Simple Form rendering is back instantly.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-restyles">What restyles</h2>
+      <p>
+        Existing views need no edits. Each resolved input type renders the
+        matching poetry control, wrapped in a field with
+        <code>aria-required</code> (never the native attribute), maxlength,
+        min, max, and step derived from your validations, and errors wired
+        via <code>aria-describedby</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: bridge_source, language: "erb", label: "Unchanged views") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Simple Form type</th><th>Renders as</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>string</code> / <code>email</code> / <code>url</code> / <code>tel</code> / <code>search</code> / <code>citext</code></td><td>the input field, native type preserved</td></tr>
+          <tr><td><code>password</code></td><td>a password field; the value never round-trips into the markup</td></tr>
+          <tr><td><code>text</code></td><td>the textarea field</td></tr>
+          <tr><td><code>boolean</code></td><td>the horizontal checkbox field; <code>input_html: { switch: true }</code> opts into the setting-row switch</td></tr>
+          <tr><td><code>integer</code> / <code>decimal</code> / <code>float</code></td><td>the number field, min/max/step re-derived from numericality validations</td></tr>
+          <tr><td><code>date</code> / <code>time</code></td><td>the date and time fields</td></tr>
+          <tr><td><code>file</code></td><td>the file input</td></tr>
+          <tr><td><code>select</code> / <code>radio_buttons</code> / <code>check_boxes</code></td><td>the select, radio group, and checkbox group</td></tr>
+        </tbody>
+      </table>
+      <p>
+        <code>f.association</code> works unchanged: Simple Form fetches the
+        records, the bridge renders them as poetry pickers.
+        <code>:datetime</code> falls back to stock Simple Form rendering,
+        because poetry has no composite date-and-time control yet and a raise
+        mid-migration would be hostile. String <code>label:</code>,
+        <code>hint:</code>, and <code>placeholder:</code> options pass
+        through; the rest of <code>input_html:</code> lands on the control
+        minus its class and id, since poetry components own their classes.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="end-state">The end state</h2>
+      <p>
+        The bridge exists so views can migrate at their own pace. New forms,
+        and old ones as you touch them, move to poetry's own builder, where
+        <code>f.input</code> works the same and the rest of the
+        <%= link_to "form builder guide", forms_path %> applies.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: native_source, language: "erb", label: "Native builder") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Both paths derive the same
+        <%= link_to "field", component_path("field") %> from the same model,
+        so a half-migrated app has one look throughout and the bridge can be
+        removed the day the last <code>simple_form_for</code> goes.
+      </p>
+    <% end %>
+  </section>
+</div>

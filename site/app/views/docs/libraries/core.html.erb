@@ -1,0 +1,444 @@
+<% content_for :title, "Core" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Core") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  e = "%" + ">"
+  gemfile_source = <<~CODE
+    gem "poetry-core"
+  CODE
+  component_source = <<~CODE
+    # app/components/my_kit/pill/component.rb
+    module MyKit
+      module Pill
+        class Component < Poetry::Core::Component
+          style :variant, default: :neutral, required: true,
+                          variants: %i[neutral success danger],
+                          doc: "The visual intent axis."
+          style :interactive, variants: :boolean, default: false,
+                              doc: "Hover and focus affordances for clickable pills."
+
+          option :count, :integer,
+                 doc: "Optional trailing count, rendered after the text."
+
+          slot_doc :icon, "Optional leading visual."
+          renders_one :icon
+
+          part "pill", "The root span - the component's styling surface"
+
+          requires_content "the pill's visible text"
+
+          def before_render
+            ensure_content!
+          end
+
+          def call
+            tag.span(**root_attributes.to_attributes) do
+              safe_join([icon, content, count_tag].compact)
+            end
+          end
+
+          private
+
+          def root_attributes
+            html_attributes.merge_if_not_set(component_data_attributes)
+          end
+
+          def count_tag
+            tag.span(count, class: css(:count)) if count
+          end
+        end
+      end
+    end
+  CODE
+  style_source = <<~CODE
+    # app/components/my_kit/pill/style.rb
+    module MyKit
+      module Pill
+        class Style < Poetry::Core::Style
+          base "inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+
+          element :icon, "size-3 shrink-0"
+          element :count, "tabular-nums opacity-70"
+
+          variant :variant, neutral: "bg-muted text-muted-foreground",
+                            success: "bg-primary/10 text-primary",
+                            danger: "bg-destructive/10 text-destructive"
+
+          variant :interactive, { true => "cursor-pointer hover:opacity-80", false => "" }
+
+          compound({ variant: :danger, interactive: true }, "hover:bg-destructive/20")
+        end
+      end
+    end
+  CODE
+  render_source = <<~CODE
+    <%= render MyKit::Pill::Component.new(variant: :success, count: 3, class: "ml-2") do #{e}
+      Deployed
+    <% end #{e}
+  CODE
+  stimulus_source = <<~CODE
+    use_stimulus do
+      on :root do
+        controller :hover_card do
+          register
+          value :open
+          value :open_delay, unless: -> { open_delay.nil? }
+        end
+        controller :popper do
+          register
+          value :side
+        end
+      end
+      on :trigger do
+        controller :hover_card do
+          action :pointer_enter, on: :pointerenter
+        end
+        controller :popper do
+          target :anchor
+        end
+      end
+    end
+  CODE
+  registry_source = <<~CODE
+    # A rake task in your library's Rakefile
+    task :registry do
+      Poetry::Core::Registry.new(source_root: gem_root).generate!
+    end
+  CODE
+  bem_mode_source = <<~CODE
+    # config/initializers/poetry.rb
+    Poetry::Core::Config.current.css_mode = :bem
+  CODE
+  bem_classes_source = <<~CODE
+    pill = MyKit::Pill::Component.new(variant: :danger, interactive: true)
+    pill.css        # => "my-kit-pill my-kit-pill--interactive my-kit-pill--variant-danger"
+    pill.css(:icon) # => "my-kit-pill__icon"
+  CODE
+  bem_reference_source = <<~CODE
+    /* poetry BEM reference for `.my-kit-pill` - capsule 1a2b3c...
+       Generated from the Style dictionary; consumers on css_mode = :bem
+       style these selectors with their own CSS. */
+    .my-kit-pill { /* tailwind-equivalent: inline-flex items-center gap-1 rounded-full ... */ }
+    .my-kit-pill__icon { /* tailwind-equivalent: size-3 shrink-0 */ }
+    .my-kit-pill--variant-danger { /* tailwind-equivalent: bg-destructive/10 text-destructive */ }
+    .my-kit-pill--interactive { /* tailwind-equivalent: cursor-pointer hover:opacity-80 ... */ }
+  CODE
+  tokens_source = <<~CODE
+    :root {
+      --background: oklch(1 0 0);
+      --primary: oklch(0.205 0 0);
+      --destructive: oklch(0.577 0.245 27.325);
+      --radius: 0.625rem;
+    }
+    .dark {
+      --background: oklch(0.145 0 0);
+      /* every role redefined for dark */
+    }
+  CODE
+  check_source = <<~CODE
+    bin/rails poetry:check                     # sweep app views + app Ruby
+    POETRY_CHECK_JSON=1 bin/rails poetry:check # JSON for editors / CI
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Core</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-core is the engine gem: the component DSL, design tokens, and
+      Stimulus primitives every poetry gem is built on. The same public
+      surface is yours to build your own component library, styled with
+      Tailwind utilities or your own CSS.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        poetry-core is a Rails engine that carries the framework layer and
+        none of the catalog. The components you actually render live in
+        <%= link_to "poetry-ui", library_path("ui") %>; this gem is what
+        makes them uniform: one base class, one styling contract, one
+        wiring contract, one machine-readable index. At boot the engine
+        wires component autoload paths, previews, importmap pins, asset
+        paths, and the view helpers into the host.
+      </p>
+    <% end %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <table>
+        <thead>
+          <tr><th>Layer</th><th>What ships</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Component DSL</td>
+            <td><code>Poetry::Core::Component</code> with the <code>style</code> / <code>option</code> / slot / <code>part</code> declarations and <code>use_stimulus</code> wiring</td>
+          </tr>
+          <tr>
+            <td>Design tokens</td>
+            <td>the semantic token set as CSS custom properties, generated from one DTCG source and contrast-gated (see <%= link_to "theming", theming_path %>)</td>
+          </tr>
+          <tr>
+            <td>Primitives</td>
+            <td>53 Stimulus controllers: overlay, focus, presence, positioning, and the per-component behavior machines</td>
+          </tr>
+          <tr>
+            <td>Contract machinery</td>
+            <td>the generated component registry, the controllers manifest, the part contract, and stable DOM ids</td>
+          </tr>
+          <tr>
+            <td>The check</td>
+            <td>the static ERB linter behind <code>bin/rails poetry:check</code> and the MCP <code>check</code> tool</td>
+          </tr>
+          <tr>
+            <td>Agent CLI</td>
+            <td><code>poetry-agent</code>, the boot-free MCP server binary (see <%= link_to "the MCP guide", mcp_path %>)</td>
+          </tr>
+        </tbody>
+      </table>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Most apps get poetry-core as a dependency of poetry-ui; the
+        <%= link_to "installation guide", installation_path %> covers that
+        path. Depend on it directly when you are building components of
+        your own:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="build-your-own">Build your own component library</h2>
+      <p>
+        Everything poetry-ui's 87 components are made of is public API.
+        Subclass <code>Poetry::Core::Component</code> and your components
+        get the same declared surface: typed attributes, a style axis
+        vocabulary, documented slots, a part contract, and a place in the
+        machine-readable registry.
+      </p>
+      <h3 id="the-component-class">The component class</h3>
+      <p>
+        A component declares its whole public surface at the class level.
+        <code>style</code> defines a visual axis with a closed variant
+        vocabulary; <code>option</code> defines a typed non-visual
+        attribute. Both take static or proc defaults (a proc can reference
+        other attributes and stays live until explicitly set),
+        <code>required: true</code>, and a <code>doc:</code> string that
+        travels into the registry and the generated API docs.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: component_source, language: "ruby", label: "A library component") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The pieces at work:
+      </p>
+      <ul>
+        <li>
+          Slots are declared with <code>renders_one</code> /
+          <code>renders_many</code>; <code>slot_doc</code> gives each one a
+          reference sentence that projects into the registry.
+        </li>
+        <li>
+          <code>part</code> declares the component's rendered anatomy: the
+          <code>data-slot</code> parts its DOM exposes, with the state
+          attributes and CSS custom properties each part carries. The
+          declaration is verified against rendered DOM, so the published
+          contract cannot drift from the markup.
+        </li>
+        <li>
+          <code>requires_content</code> feeds two layers from one
+          declaration: <code>ensure_content!</code> raises at render, and
+          the registry marks the component so the check flags the omission
+          statically.
+        </li>
+        <li>
+          <code>html_attributes</code> merges everything the caller passed
+          (<code>class:</code>, <code>data:</code>, <code>aria:</code>)
+          over your defaults, with class conflicts resolved by the
+          configured merger. Attributes not on the declared surface flow
+          here automatically.
+        </li>
+        <li>
+          Declarations double as ActiveModel validations: variant
+          vocabularies become inclusion validations and
+          <code>required:</code> becomes presence, so an instance answers
+          <code>valid?</code> and the same facts drive static checking.
+        </li>
+        <li>
+          Inner classes of a family call <code>internal_component!</code>
+          to keep the full machinery without becoming published registry
+          entries.
+        </li>
+      </ul>
+      <h3 id="the-style-dictionary">The style dictionary</h3>
+      <p>
+        Styling lives in a sidecar <code>Style</code> class, found by
+        naming convention (<code>Pill::Component</code> resolves
+        <code>Pill::Style</code>). It is a dictionary from your declared
+        style values to CSS classes: <code>base</code> for the root,
+        <code>element</code> for named inner elements, <code>variant</code>
+        for each axis, and <code>compound</code> for classes that apply
+        only when several axes match at once. Defaults deliberately never
+        live here; declaring them in the dictionary raises, because the
+        component's <code>style :attr, default:</code> is the single
+        source of truth.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: style_source, language: "ruby", label: "The sidecar dictionary") %>
+    <%= poetry_code_block(code: render_source, language: "erb", label: "Rendering") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h3 id="behavior">Behavior from the primitives</h3>
+      <p>
+        The 53 shipped Stimulus controllers are a behavior kit your
+        components wire declaratively. <code>use_stimulus</code> is an
+        element-major declaration: for each named element, which
+        controllers attach, which values they read, and which actions and
+        targets they carry. Symbols name poetry controllers and are
+        validated against the controllers manifest when the class loads,
+        so a typo raises at boot rather than at first render; pass a
+        String to wire a controller of your own, which poetry does not
+        validate.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: stimulus_source, language: "ruby", label: "use_stimulus") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        At render time, <code>stimulus_attributes_for(:trigger)</code>
+        returns the element's merged attribute hash for your template, and
+        the declaration projects into the registry so agents and docs see
+        the wiring without reading your templates.
+      </p>
+      <h3 id="the-registry">The registry</h3>
+      <p>
+        Every declaration above is introspectable, and the registry is the
+        committed YAML index built from that introspection: styles with
+        their variants, options with their types, slots, parts, wiring,
+        and each dictionary's classes. poetry's own gems commit theirs at
+        <code>config/component_registry.yml</code> and verify it in CI so
+        it can never drift from source. Generate one for your library the
+        same way:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: registry_source, language: "ruby", label: "Generate the registry") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        One contract feeds every surface: the docs tables, the agent
+        surface, and the check all read the registry rather than your
+        source, which is what keeps them honest.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="styling-paths">Two styling paths: Tailwind or BEM</h2>
+      <p>
+        The style dictionary is written once; how its resolution reaches
+        the page is governed by <code>css_mode</code>. The default,
+        <code>:tailwind</code>, resolves style values through the
+        dictionary to utility classes and merges them with whatever the
+        caller passed, caller classes winning conflicts. For a host that
+        brings its own CSS, <code>:bem</code> skips the utilities entirely
+        and emits a stable class vocabulary instead:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: bem_mode_source, language: "ruby", label: "Switch globally") %>
+    <%= poetry_code_block(code: bem_classes_source, language: "ruby", label: "What :bem emits") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The scheme is derived, never hand-named: the block class comes
+        from the component path, each style value becomes a
+        <code>block--attribute-value</code> modifier, booleans become
+        presence modifiers, and named elements become
+        <code>block__element</code>. The mode is global through
+        <code>Poetry::Core::Config</code> or per call
+        (<code>css(css_mode: :bem)</code>); there is deliberately no mode
+        that emits both.
+      </p>
+      <p>
+        You style those classes against a generated reference stylesheet.
+        <code>Poetry::Core::CSS::BemReference</code> renders every class a
+        dictionary can emit as a documented selector skeleton, each rule
+        carrying a comment naming the utilities the Tailwind path would
+        have resolved, so the reference doubles as the class contract's
+        documentation:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: bem_reference_source, language: "css", label: "The generated reference") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The header embeds the dictionary's capsule digest as a leak-guard:
+        CSS written against an older dictionary is detectable by digest
+        mismatch instead of silently drifting on upgrade. Choose
+        <code>:tailwind</code> when your app runs Tailwind and wants the
+        token layer; choose <code>:bem</code> when your design system owns
+        the CSS and needs only a stable, framework-agnostic class
+        contract, with no Tailwind build in the app at all.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="tokens">Design tokens</h2>
+      <p>
+        The design system's colors, radius, and modes live in one DTCG
+        token file inside the gem; everything else is generated from it.
+        The generated stylesheet defines each semantic role as a CSS
+        custom property in both light and dark, and a companion file maps
+        the roles into Tailwind so utilities like <code>bg-primary</code>
+        resolve through the tokens:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: tokens_source, language: "css", label: "The generated token layer") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        A contrast gate holds every semantic text pair to WCAG AA at
+        minimum in both modes, and pairs locked at AAA may never regress.
+        Because components only ever reference roles, a theme is just a
+        different assignment of the same custom properties, which is how
+        the <%= link_to "nine shipped themes", theming_path %> work and
+        why the check flags raw palette classes in app markup.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="the-check">The check</h2>
+      <p>
+        <code>Poetry::Core::Check</code> is the static linter for the ERB
+        you (or your agent) write against any registry built by this gem.
+        It parses templates without rendering and validates every poetry
+        surface: unknown components, options, and variants with
+        did-you-mean suggestions, Stimulus wiring against the controllers
+        manifest, icon names against the active set, and raw color
+        classes that bypass the tokens.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: check_source, language: "shell", label: "Run it") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The same linter answers the MCP server's <code>check</code> tool,
+        so an agent gets a verdict in milliseconds without booting the
+        app. The <%= link_to "testing guide", testing_path %> places the
+        check in the wider test ladder, and the
+        <%= link_to "API reference", api_index_path %> documents the
+        framework surface this page introduces.
+      </p>
+    <% end %>
+  </section>
+</div>

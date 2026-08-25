@@ -39,6 +39,20 @@ class DocsController < ApplicationController
   def mcp
   end
 
+  # The per-gem library pages (/libraries/:slug) - templates live under
+  # docs/libraries/, named by the underscored slug.
+  def library
+    @entry = library_entry
+    render template: "docs/libraries/#{@entry.slug.tr("-", "_")}"
+  end
+
+  # The icon-set pages (/icons/:slug).
+  def icon_set
+    @entry = icon_entry
+    render template: "docs/icons/#{@entry.slug.tr("-", "_")}"
+  end
+
+
   def recipes
     @recipes = Poetry::Ui.recipe_items.summaries
   end
@@ -144,11 +158,26 @@ class DocsController < ApplicationController
     when "stable_ids" then DocsMarkdown.stable_ids(guide_entry("stable-ids"))
     when "data_table" then DocsMarkdown.data_table(guide_entry("data-table"))
     when "mcp" then DocsMarkdown.mcp(guide_entry("mcp"))
+    when "library" then DocsMarkdown.public_send("library_#{library_entry.slug.tr('-', '_')}", library_entry)
+    when "icon_set" then DocsMarkdown.public_send("icons_#{icon_entry.slug}", icon_entry)
     when "recipes" then DocsMarkdown.recipes(guide_entry("recipes"))
     when "agent" then DocsMarkdown.agent(guide_entry("agent"))
     when "agent_skills" then DocsMarkdown.agent_skills(guide_entry("agent-skills"), base_url: request.base_url)
     when *EXAMPLE_GUIDES then DocsMarkdown.example_page(guide_entry(action_name.tr("_", "-")))
     end
+  end
+
+  # Entry lookups shared by the actions and the markdown-mirror
+  # before_action (which runs before the action sets @entry); unknown
+  # slugs 404 through the concern's RoutingError contract.
+  def library_entry
+    DocsCatalog.libraries.find { |e| e.slug == params[:slug] } ||
+      raise(ActionController::RoutingError, "unknown library")
+  end
+
+  def icon_entry
+    DocsCatalog.icons.find { |e| e.slug == params[:slug] } ||
+      raise(ActionController::RoutingError, "unknown icon set")
   end
 
   def guide_entry(slug)

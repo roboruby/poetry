@@ -1,0 +1,256 @@
+<% content_for :title, "Charts" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Charts") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB delimiters are assembled by
+  # interpolation so none appear literally inside a heredoc.
+  eo = "<" + "%="
+  so = "<" + "%"
+  ce = "%" + ">"
+  gemfile_source = <<~CODE
+    # Gemfile
+    gem "poetry-charts"
+  CODE
+  install_source = <<~CODE
+    bundle install
+    bin/rails g poetry:install --charts
+  CODE
+  register_source = <<~CODE
+    import { registerPoetryChartsControllers } from "@poetry/charts"
+    registerPoetryChartsControllers(application)
+  CODE
+  css_source = <<~CODE
+    @import "poetry-charts/app/assets/stylesheets/poetry-charts.css";
+  CODE
+  data_source = <<~CODE
+    data = [
+      { month: "January", desktop: 186, mobile: 80 },
+      { month: "February", desktop: 305, mobile: 200 },
+      { month: "March", desktop: 237, mobile: 120 }
+    ]
+    config = {
+      desktop: { label: "Desktop", color: "var(--chart-1)" },
+      mobile: { label: "Mobile", color: "var(--chart-2)" }
+    }
+  CODE
+  usage_source = <<~CODE
+    #{eo} poetry_area_chart(id: "visits", data: data, config: config) do |chart| #{ce}
+      #{so} chart.with_grid #{ce}
+      #{so} chart.with_x_axis data_key: :month #{ce}
+      #{so} chart.with_area data_key: :desktop, stack: :a #{ce}
+      #{so} chart.with_area data_key: :mobile, stack: :a #{ce}
+      #{so} chart.with_tooltip #{ce}
+      #{so} chart.with_legend #{ce}
+    #{so} end #{ce}
+  CODE
+  dispatch_source = <<~CODE
+    #{eo} poetry_chart(:pie, data: browsers, config: config) do |chart| #{ce}
+      #{so} chart.with_pie data_key: :visitors, name_key: :browser, inner_radius: 60 #{ce}
+      #{so} chart.with_tooltip #{ce}
+    #{so} end #{ce}
+  CODE
+  live_source = <<~CODE
+    #{eo} poetry_line_chart(id: "visits-live", data: data, config: config, live: true) do |chart| #{ce}
+      #{so} chart.with_x_axis data_key: :month #{ce}
+      #{so} chart.with_line data_key: :desktop #{ce}
+      #{so} chart.with_tooltip #{ce}
+    #{so} end #{ce}
+  CODE
+  adapter_source = <<~CODE
+    #{eo} poetry_chart :bar, engine: "chartjs", data: data, config: config,
+                       series: [{ data_key: :desktop }, { data_key: :mobile }],
+                       axes: { x: { data_key: :month } } #{ce}
+  CODE
+  palette_source = <<~CODE
+    :root {
+      --chart-1: oklch(0.809 0.105 251.813);
+      --chart-2: oklch(0.623 0.214 259.815);
+    }
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Charts</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-charts computes every chart in Ruby on the server and ships the
+      finished SVG in the initial HTML. There is no client chart engine to
+      load: the geometry pipeline runs in Ruby, and the browser only adds
+      interactivity on top of coordinates the server already embedded.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        The chart tier of the poetry family. Data goes in as an array of
+        hashes; Ruby derives domains, scales, ticks, points, and paths, and
+        the chart arrives as SVG markup styled by the same theme tokens as
+        every other poetry component. Nine chart families ship in the
+        gallery:
+        <%= link_to "area", chart_path("area") %>,
+        <%= link_to "bar", chart_path("bar") %>,
+        <%= link_to "line", chart_path("line") %>,
+        <%= link_to "pie", chart_path("pie") %>,
+        <%= link_to "radar", chart_path("radar") %>,
+        <%= link_to "radial bar", chart_path("radial-bar") %>,
+        <%= link_to "scatter", chart_path("scatter") %>, and
+        <%= link_to "composed", chart_path("composed") %>, plus the
+        <%= link_to "adapter mount", chart_path("adapter") %> for
+        bring-your-own engines. A small Stimulus layer supplies the tooltip,
+        legend, and hover states by reading server-embedded coordinates, so
+        no chart math runs in the browser.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Add the gem next to poetry-ui and let the
+        <%= link_to "install generator", installation_path %> wire it:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>--charts</code> imports the chart stylesheet into your CSS
+        build and registers the controllers. Wiring by hand is two steps:
+        the engine merges the <code>@poetry/charts</code> importmap pins
+        automatically, so you register the controllers in your Stimulus
+        entrypoint and import the motion stylesheet in your CSS build. Skip
+        the stylesheet and charts render static.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: register_source, language: "javascript", label: "Stimulus entrypoint") %>
+    <%= poetry_code_block(code: css_source, language: "css", label: "CSS build") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="usage">Basic usage</h2>
+      <p>
+        A chart takes <code>data:</code> (one hash per x category) and
+        <code>config:</code> (label and color per series), then composes
+        declaratively from slots: grid, axes, series, tooltip, legend.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: data_source, language: "ruby", label: "Data and config") %>
+    <%= poetry_code_block(code: usage_source, language: "erb", label: "A stacked area chart") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        <code>poetry_area_chart</code>, <code>poetry_line_chart</code>, and
+        <code>poetry_bar_chart</code> are dedicated helpers; every family is
+        also reachable through the <code>poetry_chart(type, ...)</code>
+        dispatcher with <code>:area</code>, <code>:line</code>,
+        <code>:bar</code>, <code>:pie</code>, <code>:radar</code>,
+        <code>:radial</code>, <code>:scatter</code>, or
+        <code>:composed</code>. The chrome has helpers of its own:
+        <code>poetry_chart_container</code>,
+        <code>poetry_chart_tooltip_content</code>, and
+        <code>poetry_chart_legend_content</code>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: dispatch_source, language: "erb", label: "The dispatcher") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="everywhere">Works wherever HTML renders</h2>
+      <p>
+        Because the finished chart is already in the markup, it stays valid
+        with JavaScript disabled, in print stylesheets, in generated PDFs,
+        and in HTML email. Entrance animation is on by default and runs in
+        CSS between server-computed states; pass <code>animate: false</code>
+        for a static chart, and users with reduced motion always get the
+        finished chart in the initial paint.
+      </p>
+      <p>
+        Interactive charts are real forms: submit a filter and the chart
+        re-renders on the server. Give a chart a stable <code>id:</code> and
+        it morphs between those renders, starting from the old geometry and
+        tweening to the new one; a shape change replays the entrance
+        instead. The <%= link_to "interactive filter demo", demo_path("interactive") %>
+        shows the round trip, and the
+        <%= link_to "stable IDs guide", stable_ids_path %> covers the id
+        contract.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="live">Live updates</h2>
+      <p>
+        For data that cannot round-trip through a form submit, the cartesian
+        trio (area, line, bar) takes <code>live: true</code>: the chart
+        embeds its spec payload plus a client renderer proven byte-equal to
+        the Ruby engine, and redraws in place when new data arrives, either
+        by updating the embedded payload (what a
+        <code>turbo_stream.update</code> does) or through an update event on
+        the chart frame.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: live_source, language: "erb", label: "A live chart") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Updates tween through the same motion machinery and the tooltip keeps
+        serving fresh values mid-stream. Live data carries pre-formatted
+        category strings, since formatter lambdas cannot ride a JSON payload;
+        the server raises a teaching error if you try. Live mode also unlocks
+        the client-side window: <code>with_brush</code> and
+        <code>zoom: true</code> slice the data in the browser. See the
+        <%= link_to "live streaming", demo_path("live") %>,
+        <%= link_to "synced tooltips", demo_path("sync") %>, and
+        <%= link_to "brush and zoom", demo_path("window") %> demos.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="byo-engine">Bring your own engine</h2>
+      <p>
+        Every chart also compiles to a closed, versioned chart-spec. Pass
+        <code>engine:</code> and the same call routes to the adapter path:
+        the server embeds the frozen spec v1 next to a mount element, and a
+        client adapter registered under that name draws into it. An adapter
+        is a duck type over the spec (render, update, destroy), so any
+        engine fits per chart, canvas engines included for very large
+        datasets. The adapter path takes <code>series:</code> and
+        <code>axes:</code> arguments in place of slots.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: adapter_source, language: "erb", label: "Route one chart to an adapter") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        The <%= link_to "adapter guide", chart_path("adapter") %> documents
+        the reference adapter, the registration call, and the full adapter
+        protocol.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="palette">The theme palette</h2>
+      <p>
+        Series colors are theme decisions, not chart arguments. The active
+        <%= link_to "theme", theming_path %> defines the
+        <code>--chart-1</code> through <code>--chart-5</code> ramp, your
+        config points series at those variables, and the chart container
+        emits a <code>--color-&lt;key&gt;</code> variable per series for the
+        SVG to consume. Switching themes or flipping dark mode restyles
+        every chart with zero re-render.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: palette_source, language: "css", label: "The ramp, from the theme") %>
+  </section>
+</div>

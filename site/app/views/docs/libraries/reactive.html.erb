@@ -1,0 +1,214 @@
+<% content_for :title, "Reactive" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Reactive") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; ERB delimiters are assembled by
+  # interpolation so none appear literally inside a heredoc.
+  eo = "<" + "%="
+  so = "<" + "%"
+  ce = "%" + ">"
+  gemfile_source = <<~CODE
+    # Gemfile
+    gem "poetry-reactive"
+  CODE
+  register_source = <<~CODE
+    import { registerPoetryReactive } from "@poetry/reactive"
+    registerPoetryReactive(application)
+  CODE
+  config_source = <<~CODE
+    # config/initializers/poetry_reactive.rb
+    Poetry::Reactive.base_controller_name = "ApplicationController"
+    Poetry::Reactive.authorization_errors << NotAuthorizedError
+  CODE
+  component_source = <<~CODE
+    class NoteRowComponent < ViewComponent::Base
+      include Poetry::Reactive::Component
+
+      reactive_record :note
+      reactive_state :editing
+      action :edit
+      action :save, params: { title: :string }
+
+      def initialize(note:, editing: false)
+        @note = note
+        @editing = editing
+      end
+
+      def id = dom_id(@note)
+
+      def edit = @editing = true
+
+      def save(title:)
+        @note.update!(title: title)
+        @editing = false
+      end
+    end
+  CODE
+  template_source = <<~CODE
+    <li #{eo} tag.attributes(reactive_root_attributes) #{ce}>
+      #{so} if @editing #{ce}
+        <input #{eo} tag.attributes(reactive_field(:title, value: @note.title)) #{ce}>
+        <button #{eo} tag.attributes(reactive_trigger(:save)) #{ce}>Save</button>
+      #{so} else #{ce}
+        <span>#{eo} @note.title #{ce}</span>
+        <button #{eo} tag.attributes(reactive_trigger(:edit)) #{ce}>Edit</button>
+      #{so} end #{ce}
+    </li>
+  CODE
+  trigger_source = <<~CODE
+    reactive_trigger(:save, event: "submit")
+    reactive_trigger(:filter, event: "input", debounce: 300)
+    reactive_trigger(:destroy, confirm: "Really?")
+    reactive_trigger(:vote, direction: "up")
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Reactive</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-reactive adds signed, default-deny server actions to any
+      server-rendered component: one generic Stimulus controller, one
+      endpoint, and a Turbo Stream replace targeted by the component's id.
+      Its only runtime dependency is Rails.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        The reactive tier of the poetry family. You declare actions on a
+        component in Ruby and spread three attribute helpers into its
+        markup; a click then becomes an HTTP round trip in which the server
+        rebuilds the component, runs the action, re-renders, and replaces
+        the component in the DOM by its id. A user click and a server push
+        converge on the same re-render unit. It works with any class that
+        renders in a view context, which covers ViewComponent classes and
+        <%= link_to "poetry-ui", library_path("ui") %> components alike.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Add the gem and bundle. The engine mounts the single actions
+        endpoint at <code>/poetry/reactive/actions</code> on its own and
+        merges the <code>@poetry/reactive</code> importmap pins, so the one
+        client-side step is registering the controller in your Stimulus
+        entrypoint:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: register_source, language: "javascript", label: "Stimulus entrypoint") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Two optional settings: inherit the endpoint from your own
+        controller to pick up its authentication, CSRF, and Current
+        attributes, and register the exception your authorization layer
+        raises so the endpoint renders it as a 403. A boot-time guard warns
+        if a catch-all route shadows the action path, and
+        <code>Poetry::Reactive.action_path</code> relocates it with no
+        client changes.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: config_source, language: "ruby", label: "Initializer") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="usage">Declare actions in Ruby</h2>
+      <p>
+        Include <code>Poetry::Reactive::Component</code>, declare the
+        identity and the actions, and define each action as a plain method.
+        The component must expose a stable <code>id</code>: it is the
+        replace target, and a missing one raises at render rather than
+        failing silently later.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: component_source, language: "ruby", label: "An inline-edit row") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        In the template, three helpers wire the markup:
+        <code>reactive_root_attributes</code> on the root element,
+        <code>reactive_trigger</code> on anything that fires an action, and
+        <code>reactive_field</code> on form controls whose values should
+        travel with it.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: template_source, language: "erb", label: "The component template") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <p>
+        Triggers default to click and take <code>event:</code>,
+        <code>debounce:</code> (coalesced and flushed on blur),
+        <code>confirm:</code> (a prompt gate), and explicit params. Named
+        fields inside the component's root are collected automatically,
+        scoped so a nested reactive component's fields never leak into the
+        outer action.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: trigger_source, language: "ruby", label: "Trigger options") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="security">The security spine</h2>
+      <p>
+        Component state never ships to the browser. The DOM carries a
+        signed identity instead, in one of two modes:
+      </p>
+      <ul>
+        <li>
+          <strong>Record-backed.</strong> <code>reactive_record :note</code>
+          signs the record's GlobalID; the server re-finds the record on
+          every action. State lives in the database.
+        </li>
+        <li>
+          <strong>State-backed.</strong> <code>reactive_state :count</code>
+          signs the listed instance variables, for record-less components
+          such as a counter, or for transient mode (which field is being
+          edited) alongside a record, tamper-proof in the same token.
+        </li>
+      </ul>
+      <p>
+        Actions are default-deny: only methods declared with
+        <code>action :name</code> are invokable, and anything else is a 403
+        before any code runs. Params pass a schema declared on the action
+        and are coerced on the server; undeclared keys never reach the
+        method, and an unsupported schema type fails at load time. Every
+        response carries a fresh token, so state rolls forward with the
+        markup.
+      </p>
+      <p>
+        One boundary matters: the signature proves the token is yours, not
+        that this user may act. Authorization belongs inside the action;
+        raise, and the endpoint renders 403 through
+        <code>Poetry::Reactive.authorization_errors</code>. A tampered
+        token answers 400 and a record that no longer exists answers 404,
+        each before the action runs.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="scope">Scope</h2>
+      <p>
+        The current release is the spine: full-component replace with token
+        roll-forward. Partial updates, collections, file uploads, and the
+        server-push broadcast half are deliberately later. The replace
+        targets the component's id, so the
+        <%= link_to "stable IDs guide", stable_ids_path %> applies here the
+        same way it does to the rest of the family; the
+        <%= link_to "API reference", api_page_path("poetry-reactive") %>
+        documents the full surface.
+      </p>
+    <% end %>
+  </section>
+</div>

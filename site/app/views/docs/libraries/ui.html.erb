@@ -1,0 +1,264 @@
+<% content_for :title, "UI" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("UI") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so ERB samples interpolate it as #{e}.
+  e = "%" + ">"
+  install_source = <<~CODE
+    bundle add poetry-core poetry-ui poetry-lucide
+    bin/rails g poetry:install --theme default
+  CODE
+  first_source = <<~CODE
+    <%= poetry_button { "Save" } #{e}
+    <%= poetry_button(variant: :outline) { "Cancel" } #{e}
+
+    <%= poetry_dropdown_menu do |menu| #{e}
+      <% menu.with_trigger(variant: :outline) { "Open" } #{e}
+      <% menu.with_item(shortcut: "⌘S") { "Settings" } #{e}
+      <% menu.with_separator #{e}
+      <% menu.with_item(variant: :destructive) { "Log out" } #{e}
+    <% end #{e}
+  CODE
+  form_source = <<~CODE
+    <%= form_with(model: @post, builder: Poetry::Ui::FormBuilder) do |f| #{e}
+      <%= f.input(:title) #{e}
+      <%= f.input(:body) #{e}
+      <%= f.input(:published, hint: "Visible to everyone.") #{e}
+      <%= f.association(:category) #{e}
+      <%= f.submit #{e}
+    <% end #{e}
+  CODE
+  theme_source = <<~CODE
+    bin/rails g poetry:install --theme sera   # switch; everything else sticks
+  CODE
+  add_source = <<~CODE
+    bin/rails g poetry:add button             # copy the gem's source into app/components
+    bin/rails g poetry:add @acme/fancy-chart  # install from a configured registry
+    bin/rails g poetry:diff                   # read-only drift report for your copies
+  CODE
+  agent_source = <<~CODE
+    bundle exec poetry-agent   # the MCP server - reads the registry, no app boot
+    bin/rails poetry:check     # template verification - run it last
+  CODE
+  testing_source = <<~CODE
+    require "poetry/ui/testing"
+
+    class PlanSettingsTest < ApplicationSystemTestCase
+      include Poetry::Ui::Testing
+
+      test "picking a plan from the keyboard" do
+        visit settings_path
+
+        plan = poetry_select("#plan")
+        plan.select_option("Pro", via: :keyboard)
+        assert_equal "pro", plan.value
+      end
+    end
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">UI</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-ui is the component catalog: 87 accessible, themeable
+      components rendered server-side from Ruby helpers, with nine
+      complete themes, eight page blocks, a form builder, testing
+      helpers, and a full agent surface.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="what-it-is">What it is</h2>
+      <p>
+        Where <%= link_to "poetry-core", library_path("core") %> is the
+        framework, poetry-ui is the shadcn-parity catalog built on it:
+        every component from <%= link_to "Button", component_path("button") %>
+        and <%= link_to "Dialog", component_path("dialog") %> through
+        <%= link_to "Combobox", component_path("combobox") %>,
+        <%= link_to "Data table", component_path("data-table") %>, and
+        <%= link_to "Sidebar", component_path("sidebar") %>, each one a
+        ViewComponent wired to Stimulus behavior and rendered through a
+        <code>poetry_*</code> helper (140 of them, counting the group,
+        item, and wrapper helpers). The full gallery fills the components
+        section of the sidebar, and the registry that indexes all of it
+        ships in the gem at <code>config/component_registry.yml</code>.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install and first components</h2>
+      <p>
+        One generator wires the whole surface: the vendored CSS set, the
+        Tailwind imports, the safelist, Stimulus registration, the engine
+        mount, and the agent files. Every step is idempotent, and re-running
+        it after a gem bump is the upgrade path. The
+        <%= link_to "installation guide", installation_path %> has the
+        details.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: install_source, language: "shell", label: "Install") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Simple components are one helper call with the visible text as the
+        content block; composite components yield a builder whose
+        <code>with_*</code> slots mirror the component's anatomy:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: first_source, language: "erb", label: "First components") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Every helper accepts <code>class:</code>, <code>data:</code>, and
+        <code>aria:</code> passthroughs, merged over the component's own
+        attributes with your classes winning conflicts. Variant and size
+        vocabularies are closed sets recorded in the registry, so
+        <code>bin/rails poetry:check</code> flags a typo with a
+        did-you-mean suggestion before it ships.
+      </p>
+      <h3 id="forms">The form builder handoff</h3>
+      <p>
+        Inside a model-bound form you stop calling components directly and
+        hand off to <code>Poetry::Ui::FormBuilder</code>: the builder
+        derives label, value, error, and required state from the object,
+        infers each field's component from the attribute's type, and wires
+        the validation attributes for you. <code>as:</code> overrides the
+        inference, and <code>association</code> reflects the model's
+        associations into the right control.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: form_source, language: "erb", label: "Forms") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <%= link_to "forms guide", forms_path %> walks the whole
+        surface, including type inference and error rendering.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="themes">Nine themes ship in the gem</h2>
+      <p>
+        A theme is not a paid add-on or a separate package: the gem
+        carries nine complete visual themes (default, vega, nova, mira,
+        rhea, maia, luma, lyra, and sera), and the installer copies your
+        choice into the app. Components reference stable class names, the
+        theme file paints them, so switching restyles all 87 components
+        and every block at once:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: theme_source, language: "shell", label: "Switch themes") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <%= link_to "theming guide", theming_path %> covers the token
+        layer underneath, dark mode, and how to derive a theme of your
+        own; there is a live theme switcher in the docs header to compare
+        them on any page.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="own-the-code">Own the code when you want to</h2>
+      <p>
+        By default components are gem-owned and upgrade with
+        <code>bundle update</code>. When you need to change one,
+        <code>poetry:add</code> copies its source into
+        <code>app/components</code>, where Rails autoload precedence
+        shadows the gem; the copy is yours, dependencies come along
+        recursively, and nothing ever overwrites your edits. Addresses
+        beyond the bare names reach any compatible registry, including
+        <%= link_to "the one this site serves", registry_index_path %>:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: add_source, language: "shell", label: "Copy-ins") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Every copy records the gem version it came from in
+        <code>config/poetry_components.yml</code>, so after an upgrade the
+        <code>poetry:diff</code> report shows exactly where your copies
+        stand against what the gems now ship.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="blocks">Blocks and recipes</h2>
+      <p>
+        Above the components sit eight blocks, full page sections composed
+        from the catalog and installed as editable starting points:
+        <%= link_to "app-shell", block_path("app-shell") %>,
+        <%= link_to "data-index", block_path("data-index") %>,
+        <%= link_to "page-header", block_path("page-header") %>,
+        <%= link_to "section-card", block_path("section-card") %>,
+        <%= link_to "destructive-panel", block_path("destructive-panel") %>,
+        <%= link_to "stepper", block_path("stepper") %>,
+        <%= link_to "action-bar", block_path("action-bar") %>, and
+        <%= link_to "top-nav", block_path("top-nav") %>.
+        <%= link_to "Recipes", recipes_path %> go one step further:
+        multi-file slices like a working data-index screen with its
+        controller and system test, plus the scaffold template set that
+        makes <code>rails g scaffold</code> itself produce poetry-composed
+        views.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="agent-surface">The agent surface</h2>
+      <p>
+        poetry-ui treats coding agents as first-class users. The gem
+        serves <code>/poetry/llms.txt</code> and
+        <code>/poetry/llms-full.txt</code> from its engine, ships the
+        <code>poetry</code> MCP server with ten tools projected from the
+        committed registry, installs the <code>poetry</code>,
+        <code>poetry-design</code>, and <code>poetry-component</code>
+        skills plus an <code>AGENTS.md</code> section, and provides the
+        check as the executable verdict an agent finishes with:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: agent_source, language: "shell", label: "Agent surface") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <%= link_to "agent guide", agent_path %> maps the whole
+        surface, the <%= link_to "MCP guide", mcp_path %> documents the
+        ten tools, and the <%= link_to "editors guide", editors_path %>
+        wires it into your editor with one generator.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="testing">Testing helpers</h2>
+      <p>
+        The gem ships interaction testers for its composite components:
+        include <code>Poetry::Ui::Testing</code> in a system test and
+        drive a Select, Combobox, Dropdown menu, or Dialog through its
+        real keyboard and pointer contract instead of hand-rolled click
+        sequences. Assertions read the public attribute contract, the
+        same one the components guarantee across upgrades:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: testing_source, language: "ruby", label: "System tests") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The <%= link_to "testing guide", testing_path %> covers the full
+        ladder, from the boot-free check through wiring tests to browser
+        runs, and the <%= link_to "accessibility guide", accessibility_path %>
+        adds the manual verification pass.
+      </p>
+    <% end %>
+  </section>
+</div>

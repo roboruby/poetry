@@ -116,6 +116,40 @@ class DocsMarkdown
       MD
     end
 
+    # The Core library page's mirror.
+    def library_core(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry-core is the engine gem: subclass `Poetry::Core::Component` and declare the whole public surface at class level - `style :variant, default:, variants:, doc:` for visual axes (closed vocabularies become inclusion validations and registry facts), `option :count, :integer` for typed attributes, `renders_one`/`renders_many` slots documented with `slot_doc`, `part` for the DOM-verified anatomy contract, and `use_stimulus` to wire the 53 shipped Stimulus behavior controllers, validated against the controllers manifest at class load. A sidecar `Style` dictionary (`base`/`element`/`variant`/`compound`) maps style values to CSS classes; `css_mode :tailwind` (default) resolves Tailwind utilities through a conflict-aware merger, while `css_mode :bem` emits a stable derived class vocabulary (`my-kit-pill--variant-danger`) for bring-your-own-CSS hosts, styled against a `Poetry::Core::CSS::BemReference` skeleton whose capsule digest detects dictionary drift. Design tokens generate from one DTCG source into contrast-gated CSS custom properties, `Poetry::Core::Registry` builds the committed machine-readable index from introspection, and `Poetry::Core::Check` lints consumer ERB against it statically (`bin/rails poetry:check`, the MCP `check` tool).
+      MD
+    end
+
+    # The UI library page's mirror.
+    def library_ui(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry-ui is the component catalog: 87 shadcn-parity components rendered server-side through 140 `poetry_*` helpers (composites yield `with_*` slot builders), installed by the idempotent `bin/rails g poetry:install --theme <name>` and indexed by the committed registry at `config/component_registry.yml`. Nine complete themes ship in the gem (default, vega, nova, mira, rhea, maia, luma, lyra, sera); switching restyles the whole catalog. Model-bound forms hand off to `form_with(model:, builder: Poetry::Ui::FormBuilder)` - `f.input` infers the component from the attribute type, `f.association` reflects associations. Components are gem-owned until you want them: `bin/rails g poetry:add button` copies source into `app/components` where autoload precedence shadows the gem (never overwritten; `poetry:diff` reports drift; remote registry addresses install too). Eight blocks (app-shell, data-index, page-header, section-card, destructive-panel, stepper, action-bar, top-nav) and multi-file recipes sit above the components. The agent surface: `/poetry/llms.txt`, the ten-tool MCP server (`bundle exec poetry-agent`), the poetry/poetry-design/poetry-component skills, and `bin/rails poetry:check`. `include Poetry::Ui::Testing` drives Select, Combobox, Dropdown menu, and Dialog through real keyboard/pointer contracts in system tests.
+      MD
+    end
+
+    def library_charts(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry-charts computes chart geometry in Ruby - data to domains, scales, ticks, and paths - and ships the finished chart as SVG in the initial HTML, so charts stay valid with JavaScript disabled, in print, PDF, and email. Nine families ship in the gallery: area, bar, line, pie, radar, radial bar, scatter, and composed, plus the adapter mount; `poetry_area_chart`, `poetry_line_chart`, and `poetry_bar_chart` are dedicated helpers and `poetry_chart(:pie, ...)` dispatches every family, composed from slots (`with_grid`, `with_x_axis`, `with_area`, `with_tooltip`, `with_legend`). Install with `gem "poetry-charts"` plus `bin/rails g poetry:install --charts`. The cartesian trio takes `live: true` for data that cannot round-trip: the chart embeds its spec plus a client renderer proven byte-equal to the Ruby engine and redraws in place, and live mode unlocks the client-side brush and zoom window. Every chart also compiles to a frozen chart-spec v1; `engine:` routes the same call to a registered adapter (`series:`/`axes:` arguments instead of slots) for bring-your-own engines. Colors ride the theme's `--chart-1` through `--chart-5` ramp with a per-series `--color-<key>` variable, so theme and dark-mode flips restyle every chart with zero re-render.
+      MD
+    end
+
+    def library_reactive(entry)
+      <<~MD
+        #{header(entry)}
+
+        poetry-reactive adds signed, default-deny server actions to any server-rendered component (anything implementing `render_in` - ViewComponent classes and poetry-ui components alike): one generic Stimulus controller, one endpoint, and a Turbo-Stream replace targeted by the component's id. State never ships to the browser - the DOM carries a signed identity: `reactive_record :note` signs the record's GlobalID and the server re-finds it on every action, while `reactive_state :editing` signs listed instance variables for record-less components or transient mode alongside a record. Only methods declared `action :name` are invokable (anything else answers 403 before code runs); params pass a declared schema (`action :save, params: { title: :string }`) and are coerced server-side, and authorization belongs inside the action - raise, and `Poetry::Reactive.authorization_errors` renders it as 403. Templates spread `reactive_root_attributes`, `reactive_trigger` (`event:`, `debounce:`, `confirm:`, explicit params), and `reactive_field`; named fields inside the root are collected automatically, scoped so nested reactive components never leak into the outer action. Install with `gem "poetry-reactive"` and register `registerPoetryReactive(application)`; the engine mounts `/poetry/reactive/actions` and its importmap pins itself. The current release is the spine: full-component replace with token roll-forward.
+      MD
+    end
+
     # The recipes guide's mirror: the live projection, so the mirror lists
     # exactly what /r/ serves.
     def recipes(entry)
@@ -175,6 +209,33 @@ class DocsMarkdown
       MD
     end
 
+    # The Simple Form library page's mirror.
+    def library_simple_form(entry)
+      <<~MD
+        #{header(entry)}
+
+        The migration bridge from Simple Form: `bin/rails g poetry:simple_form:install` writes one initializer (`Poetry::SimpleForm.activate!`) that re-maps the input types onto classes rendering whole poetry fields through `Poetry::Ui::FormBuilder`, so existing `f.input` calls keep working with label, hint, error, and aria derived from the model on the same path the native builder uses. `f.association` works unchanged, `:datetime` falls back to stock Simple Form rendering, and `simple_form.*` i18n keys keep resolving as a fallback chain. Simple Form contributes only type resolution; its wrapper tree is bypassed by design. Delete the initializer to restore stock rendering instantly; the end state is `form_with(model:, builder: Poetry::Ui::FormBuilder)` per the [form builder guide](/forms).
+      MD
+    end
+
+    # The Extract library page's mirror.
+    def library_extract(entry)
+      <<~MD
+        #{header(entry)}
+
+        Domain in, theme out: `bin/rails "poetry:design:extract[stripe.com]"` writes `DESIGN.md` (YAML frontmatter tokens over a Markdown body), `theme.tailwind.css` (a complete Tailwind v4 stylesheet), and `tokens.css` (plain `:root`/`.dark` custom properties) under `tmp/poetry/design_extract/<domain>/`, all in poetry's token vocabulary. Fetch rides context.dev (`CONTEXT_DEV_API_KEY`; without a key it degrades to a homepage-only fetch), one Claude call composes the DESIGN.md (`ANTHROPIC_API_KEY`; `POETRY_EXTRACT_MODEL` overrides the model), and the token stylesheets are derived deterministically from the fetched styleguide and brand - same inputs, same bytes, no model output in them. Nothing touches your theme: the printed `bin/rails "poetry:design:import[...]"` runs poetry's existing importer, which drops any swatch failing WCAG AA.
+      MD
+    end
+
+    # The Lucide icon-set page's mirror.
+    def icons_lucide(entry)
+      <<~MD
+        #{header(entry)}
+
+        The default icon set: 1,745 Lucide icons vendored into the gem at a pinned upstream commit (`Poetry::Lucide.vendored_commit`) and sanitized at vendor time, so rendering never parses, never sanitizes, and never touches the network. Requiring the gem registers the set as `:lucide`; `poetry_icon(name: :"circle-check")` renders decorative (aria-hidden) by default, and `label:` makes an icon standalone (`role="img"` plus the accessible name). `poetry check` validates icon-name literals statically against the set; a dynamic miss raises with a did-you-mean in development and test and renders the configured fallback (`:"circle-question-mark"`) in production while `on_missing_icon` fires. The vendored Lucide icons remain under Lucide's ISC license - see `LICENSE-LUCIDE.txt`, which ships in the gem beside them.
+      MD
+    end
+
     # The root llms.txt: the whole site, indexed for agents - every docs
     # page with its one-liner, plus the machine-readable resources.
     def site_index
@@ -183,7 +244,8 @@ class DocsMarkdown
 
         > The documentation site for poetry, an AI-native, Rails-first component library: accessible, themeable ViewComponents on semantic design tokens. Every page below also serves a markdown mirror - append `.md` to its URL or send `Accept: text/markdown`.
       MD
-      { "Guides" => DocsCatalog.docs, "Components" => DocsCatalog.components,
+      { "Guides" => DocsCatalog.docs, "Libraries" => DocsCatalog.libraries,
+        "Icons" => DocsCatalog.icons, "Components" => DocsCatalog.components,
         "Charts" => DocsCatalog.charts, "Blocks" => DocsCatalog.blocks,
         "Demos" => DocsCatalog.demos, "API" => DocsCatalog.apis }.each do |title, entries|
         out << "## #{title}\n\n" + entries.map { |e| "- [#{e.title}](#{e.path}): #{e.description}" }.join("\n")

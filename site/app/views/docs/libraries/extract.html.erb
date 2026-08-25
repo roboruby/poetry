@@ -1,0 +1,158 @@
+<% content_for :title, "Extract" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Extract") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag; keep ERB delimiters out of them.
+  gemfile_source = <<~CODE
+    gem "poetry-extract"
+  CODE
+  run_source = <<~'CODE'
+    bin/rails "poetry:design:extract[stripe.com]"
+    # wrote tmp/poetry/design_extract/stripe.com/{DESIGN.md, theme.tailwind.css, tokens.css}
+    # next: bin/rails "poetry:design:import[tmp/poetry/design_extract/stripe.com/DESIGN.md]"
+  CODE
+  keys_source = <<~CODE
+    CONTEXT_DEV_API_KEY=...   # fetch: styleguide, brand, screenshot, homepage
+    ANTHROPIC_API_KEY=...     # compose: the one model call
+    POETRY_EXTRACT_MODEL=...  # optional model override
+  CODE
+  tokens_source = <<~CODE
+    /* stripe.com — design tokens (vanilla CSS) */
+    :root {
+      --background: #ffffff;
+      --primary: #635bff;
+      --muted-foreground: #6c6c6c;
+      --font-sans: ui-sans-serif, system-ui, sans-serif;
+      --radius: 0.5rem;
+      /* ...the full poetry token vocabulary... */
+    }
+
+    .dark {
+      /* the same variables, dark values */
+    }
+  CODE
+  import_source = <<~'CODE'
+    bin/rails "poetry:design:import[tmp/poetry/design_extract/stripe.com/DESIGN.md]"
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Extract</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-extract turns a public website into theme material: point it at
+      a domain and it writes a DESIGN.md plus deterministic design tokens,
+      ready for poetry's AA-gated theme importer.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="run">Install and run</h2>
+      <p>
+        The gem adds one rake task. Hand it a domain; it prints what it wrote
+        and the exact import command to run next.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: run_source, language: "shell", label: "Extract") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="pipeline">The pipeline</h2>
+      <ol>
+        <li>
+          <strong>Fetch.</strong> The site's styleguide, brand colors, a
+          screenshot, and the homepage as markdown, via context.dev. Without
+          a key it degrades to a plain homepage fetch: less evidence, same
+          pipeline.
+        </li>
+        <li>
+          <strong>Compose.</strong> One Claude call writes the DESIGN.md,
+          with the screenshot as vision input and the fetched styleguide as
+          the primary token source.
+        </li>
+        <li>
+          <strong>Derive.</strong> The two token stylesheets are computed
+          deterministically from the fetched styleguide and brand: same
+          inputs, same bytes, every run. No model output lands in them.
+        </li>
+        <li>
+          <strong>Handoff.</strong> Nothing touches your theme. The printed
+          <code>poetry:design:import</code> command runs poetry's existing
+          importer, which drops any swatch failing WCAG AA.
+        </li>
+      </ol>
+    <% end %>
+    <%= poetry_code_block(code: keys_source, language: "shell", label: "Keys") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-3xl") do %>
+      <h2 id="output">What it emits</h2>
+      <p>
+        Three files land under
+        <code>tmp/poetry/design_extract/&lt;domain&gt;/</code>:
+      </p>
+      <table>
+        <thead>
+          <tr><th>File</th><th>Contents</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>DESIGN.md</code></td>
+            <td>YAML frontmatter tokens (colors, typography, rounded, spacing,
+            components) over a Markdown body with the spec's sections in
+            order, overview through do's and don'ts</td>
+          </tr>
+          <tr>
+            <td><code>theme.tailwind.css</code></td>
+            <td>a complete Tailwind v4 stylesheet: <code>:root</code> and
+            <code>.dark</code> token blocks, the inline theme mapping, and a
+            base layer</td>
+          </tr>
+          <tr>
+            <td><code>tokens.css</code></td>
+            <td>the same tokens as plain CSS custom properties on
+            <code>:root</code> and <code>.dark</code></td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        The variables use poetry's own token vocabulary: the color pairs from
+        <code>--background</code> through <code>--sidebar-ring</code>,
+        <code>--chart-1</code> through <code>--chart-5</code>, the three font
+        stacks, <code>--radius</code>, shadows, letter spacing, and spacing.
+        The stylesheets drop straight into anything that already reads
+        <%= link_to "poetry tokens", theming_path %>.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: tokens_source, language: "css", label: "tokens.css shape") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="import">From extract to theme</h2>
+      <p>
+        The importer is the single door into your theme. It reads the
+        DESIGN.md and writes <code>design-overrides.css</code>; any swatch
+        failing WCAG AA is dropped and reported with the nearest passing
+        value, never shipped.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: import_source, language: "shell", label: "Import") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        The same importer serves the design-tool paths described in
+        <%= link_to "editors", editors_path %>, and the
+        <%= link_to "theming guide", theming_path %> covers where the
+        overrides sit in the token layer and how to review them.
+      </p>
+    <% end %>
+  </section>
+</div>

@@ -5848,5 +5848,293 @@
     "page": "poetry-extract",
     "section": "api",
     "path": "/api/poetry-extract#poetry"
+  },
+  {
+    "title": "Core",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core"
+  },
+  {
+    "title": "What it is",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#install"
+  },
+  {
+    "title": "Build your own component library",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#build-your-own"
+  },
+  {
+    "title": "The component class",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-component-class"
+  },
+  {
+    "title": "The style dictionary",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-style-dictionary"
+  },
+  {
+    "title": "Behavior from the primitives",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#behavior"
+  },
+  {
+    "title": "The registry",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-registry"
+  },
+  {
+    "title": "Two styling paths: Tailwind or BEM",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#styling-paths"
+  },
+  {
+    "title": "Design tokens",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#tokens"
+  },
+  {
+    "title": "The check",
+    "page": "Core",
+    "section": "libraries",
+    "path": "/libraries/core#the-check"
+  },
+  {
+    "title": "UI",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui"
+  },
+  {
+    "title": "What it is",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#what-it-is"
+  },
+  {
+    "title": "Install and first components",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#install"
+  },
+  {
+    "title": "The form builder handoff",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#forms"
+  },
+  {
+    "title": "Nine themes ship in the gem",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#themes"
+  },
+  {
+    "title": "Own the code when you want to",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#own-the-code"
+  },
+  {
+    "title": "Blocks and recipes",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#blocks"
+  },
+  {
+    "title": "The agent surface",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#agent-surface"
+  },
+  {
+    "title": "Testing helpers",
+    "page": "UI",
+    "section": "libraries",
+    "path": "/libraries/ui#testing"
+  },
+  {
+    "title": "Charts",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts"
+  },
+  {
+    "title": "What it is",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#install"
+  },
+  {
+    "title": "Basic usage",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#usage"
+  },
+  {
+    "title": "Works wherever HTML renders",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#everywhere"
+  },
+  {
+    "title": "Live updates",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#live"
+  },
+  {
+    "title": "Bring your own engine",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#byo-engine"
+  },
+  {
+    "title": "The theme palette",
+    "page": "Charts",
+    "section": "libraries",
+    "path": "/libraries/charts#palette"
+  },
+  {
+    "title": "Reactive",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive"
+  },
+  {
+    "title": "What it is",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive#what-it-is"
+  },
+  {
+    "title": "Install",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive#install"
+  },
+  {
+    "title": "Declare actions in Ruby",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive#usage"
+  },
+  {
+    "title": "The security spine",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive#security"
+  },
+  {
+    "title": "Scope",
+    "page": "Reactive",
+    "section": "libraries",
+    "path": "/libraries/reactive#scope"
+  },
+  {
+    "title": "Simple Form",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form"
+  },
+  {
+    "title": "How it works",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#how-it-works"
+  },
+  {
+    "title": "Install",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#install"
+  },
+  {
+    "title": "What restyles",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#what-restyles"
+  },
+  {
+    "title": "The end state",
+    "page": "Simple Form",
+    "section": "libraries",
+    "path": "/libraries/simple-form#end-state"
+  },
+  {
+    "title": "Extract",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract"
+  },
+  {
+    "title": "Install and run",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#run"
+  },
+  {
+    "title": "The pipeline",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#pipeline"
+  },
+  {
+    "title": "What it emits",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#output"
+  },
+  {
+    "title": "From extract to theme",
+    "page": "Extract",
+    "section": "libraries",
+    "path": "/libraries/extract#import"
+  },
+  {
+    "title": "Lucide",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide"
+  },
+  {
+    "title": "Install",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#install"
+  },
+  {
+    "title": "Names, misses, and the fallback",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#names"
+  },
+  {
+    "title": "The pin",
+    "page": "Lucide",
+    "section": "icons",
+    "path": "/icons/lucide#pin"
   }
 ]

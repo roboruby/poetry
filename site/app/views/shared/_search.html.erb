@@ -16,6 +16,18 @@
       <% end %>
     <% end %>
     <% palette.with_separator %>
+    <% palette.with_group(heading: "Libraries") do |group| %>
+      <% DocsCatalog.libraries.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
+    <% palette.with_group(heading: "Icons") do |group| %>
+      <% DocsCatalog.icons.each do |entry| %>
+        <% group.with_item(value: entry.path) { entry.title } %>
+      <% end %>
+    <% end %>
+    <% palette.with_separator %>
     <% palette.with_group(heading: "Components") do |group| %>
       <% DocsCatalog.components.each do |entry| %>
         <% group.with_item(value: entry.path) { entry.title } %>

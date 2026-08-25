@@ -1,0 +1,109 @@
+<% content_for :title, "Lucide" %>
+<% content_for :breadcrumb do %>
+  <%= poetry_breadcrumb do |crumb| %>
+    <% crumb.with_item("Docs", href: introduction_path) %>
+    <% crumb.with_item("Lucide") %>
+  <% end %>
+<% end %>
+<%
+  # Heredocs live inside ONE scriptlet tag. A literal ERB closer would end
+  # this scriptlet early, so the samples interpolate it as #{e}.
+  e = "%" + ">"
+  gemfile_source = <<~CODE
+    gem "poetry-lucide"
+  CODE
+  usage_source = <<~CODE
+    <%= poetry_icon(name: :"circle-check") #{e}
+    <%= poetry_icon(name: :search, label: "Search") #{e}
+    <%= poetry_icon(name: :plus, class: "size-4 text-muted-foreground") #{e}
+  CODE
+  config_source = <<~CODE
+    # config/initializers/poetry.rb (defaults shown)
+    Poetry::Core::Config.current.icon_library = :lucide
+    Poetry::Core::Config.current.icon_fallback = :"circle-question-mark"
+    Poetry::Core::Config.current.on_missing_icon =
+      ->(name:, library:, error:) { Rails.logger.warn("missing icon \#{name}") }
+  CODE
+  pin_source = <<~CODE
+    Poetry::Lucide.vendored_commit  # the upstream commit the icons ship from
+  CODE
+%>
+
+<div class="flex flex-col gap-8">
+  <header class="flex flex-col gap-3">
+    <h1 class="text-4xl font-semibold tracking-tight">Lucide</h1>
+    <p class="max-w-2xl text-lg text-muted-foreground">
+      poetry-lucide is the default poetry icon set: 1,745 Lucide icons
+      vendored into the gem at a pinned upstream commit and sanitized at
+      vendor time, so rendering never parses, never sanitizes, and never
+      touches the network.
+    </p>
+  </header>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="install">Install</h2>
+      <p>
+        Requiring the gem is the setup: it registers the set with the icon
+        registry as <code>:lucide</code>, and the
+        <%= link_to "Icon component", component_path("icon") %> finds it as
+        the default library with no further wiring. The
+        <%= link_to "install guide", installation_path %> already includes it
+        in the starting Gemfile.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: gemfile_source, language: "ruby", label: "Gemfile") %>
+    <%= poetry_code_block(code: usage_source, language: "erb", label: "Usage") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        An icon is decorative by default (<code>aria-hidden</code>); pass
+        <code>label:</code> when it stands alone and it renders as
+        <code>role="img"</code> with that accessible name. Icons ship
+        Lucide's intrinsic 24px box and draw their stroke in
+        <code>currentColor</code>, so they inherit the surrounding text
+        color; inside poetry components the component's own sizing rules
+        take over, and anywhere else <code>class:</code> utilities size
+        them.
+      </p>
+    <% end %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="names">Names, misses, and the fallback</h2>
+      <p>
+        Names are kebab-case symbols, one per vendored file.
+        <code>poetry check</code> validates icon-name literals statically
+        against the set, so a misspelled literal is caught before it can
+        reach a render. A dynamic name (a database value, a user setting)
+        only surfaces at render: in development and test it raises with a
+        did-you-mean, and in production the configured fallback renders
+        instead while the optional <code>on_missing_icon</code> callable
+        fires. The default fallback is <code>:"circle-question-mark"</code>,
+        which this set ships.
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: config_source, language: "ruby", label: "Configuration") %>
+  </section>
+
+  <section class="flex flex-col gap-4">
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <h2 id="pin">The pin</h2>
+      <p>
+        The icons vendor from a single upstream commit, never a mutable tag,
+        and the SHA ships in the gem:
+      </p>
+    <% end %>
+    <%= poetry_code_block(code: pin_source, language: "ruby", label: "Introspection") %>
+    <%= poetry_typeset(preset: "docs", class: "max-w-2xl") do %>
+      <p>
+        Each vendored file holds an icon's sanitized inner markup; the Icon
+        component owns the <code>svg</code> wrapper and the ARIA contract
+        riding on it. Sanitization runs once at vendor time, so the render
+        path trusts the files by construction. The vendored Lucide icons
+        remain under Lucide's ISC license; <code>LICENSE-LUCIDE.txt</code>
+        ships in the gem beside them.
+      </p>
+    <% end %>
+  </section>
+</div>

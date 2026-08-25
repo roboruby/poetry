@@ -248,7 +248,47 @@ class DocsCatalog
       list.find { |entry| entry.slug == slug }
     end
 
-    def all = docs + components + charts + blocks + demos + apis
+    # The library pages - one per gem in the family, prose-first guides at
+    # /libraries/<slug>. Descriptions are the sidebar/palette cards.
+    LIBRARIES = [
+      Entry.new(slug: "core", title: "Core", section: "libraries", icon: :cpu,
+                description: "The engine gem: the component DSL, design tokens, and 53 Stimulus " \
+                           "primitives poetry-ui is built on - the same public surface you use " \
+                           "to build your own component library, styled with Tailwind utilities " \
+                           "or a stable BEM class contract."),
+      Entry.new(slug: "ui", title: "UI", section: "libraries", icon: :"layout-dashboard",
+                description: "The component catalog: 87 accessible components rendered server-side " \
+                           "from Ruby helpers, with nine themes in the gem, copy-in ownership " \
+                           "via poetry:add, testing helpers, and a full agent surface."),
+      Entry.new(slug: "charts", title: "Charts", section: "libraries", icon: :"chart-line",
+                description: "Nine chart families computed in Ruby and shipped as finished SVG in " \
+                           "the initial HTML - valid in print, PDF, email, and without " \
+                           "JavaScript, with live streaming and a frozen chart-spec for BYO engines."),
+      Entry.new(slug: "reactive", title: "Reactive", section: "libraries", icon: :zap,
+                description: "Signed, default-deny server actions for any server-rendered " \
+                           "component - state never leaves the server; one generic Stimulus " \
+                           "controller, one endpoint, and a replace-by-id Turbo Stream round trip."),
+      Entry.new(slug: "simple-form", title: "Simple Form", section: "libraries", icon: :"clipboard-list",
+                description: "The migration bridge from Simple Form: one initializer re-maps " \
+                           "f.input onto poetry fields, so existing forms restyle without a rewrite."),
+      Entry.new(slug: "extract", title: "Extract", section: "libraries", icon: :pipette,
+                description: "Domain-to-theme extraction: point it at a public site and it writes " \
+                           "a DESIGN.md plus deterministic poetry tokens, ready for the " \
+                           "AA-gated importer.")
+    ].freeze
+
+    def libraries = LIBRARIES
+
+    # The icon-set pages at /icons/<slug> - one per icon library.
+    ICONS = [
+      Entry.new(slug: "lucide", title: "Lucide", section: "icons", icon: :feather,
+                description: "The vendored icon set: 1,745 icons served from the gem, rendered " \
+                             "through poetry_icon with literal-name validation.")
+    ].freeze
+
+    def icons = ICONS
+
+    def all = docs + components + charts + blocks + demos + apis + libraries + icons
 
     # The component class behind a gallery page - keys the YARD-export
     # lookup for the page's API section.
