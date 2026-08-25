@@ -4,12 +4,12 @@ cn-accordion-content: identical
 cn-accordion-content-inner: mechanical (nova minus inline dups)
 cn-accordion-item: mechanical (nova minus inline dups)
 cn-accordion-trigger: judged
-cn-alert: judged
+cn-alert: judged; gap made y-only 2026-08-24 (an x-gap insets icon-less text against the phantom-column grid)
 cn-alert-description: judged
-cn-alert-dialog-content: judged
+cn-alert-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-alert-dialog-description: mechanical (nova minus inline dups)
 cn-alert-dialog-footer: judged
-cn-alert-dialog-header: judged
+cn-alert-dialog-header: judged; with-media gap-x moved theme-side 2026-08-24 (this theme: gap-x-4; it was dictionary-inline and untunable)
 cn-alert-dialog-media: poetry-idiom (kept default)
 cn-alert-dialog-title: judged
 cn-alert-title: judged
@@ -31,7 +31,7 @@ cn-avatar-badge: poetry-idiom (kept default)
 cn-avatar-fallback: identical
 cn-avatar-group-count: identical
 cn-avatar-image: identical
-cn-badge: judged
+cn-badge: judged; base focus/invalid ring chain added theme-side 2026-08-24 (split-side doctrine - only default carried it; the variant ring recolors were inert without it)
 cn-badge-variant-default: mechanical (nova minus inline dups)
 cn-badge-variant-destructive: judged
 cn-badge-variant-outline: mechanical (nova minus inline dups)
@@ -90,7 +90,7 @@ cn-command-dialog: mechanical (nova minus inline dups)
 cn-command-empty: identical
 cn-command-group: judged
 cn-command-input: judged
-cn-command-input-wrapper: judged
+cn-command-input-wrapper: judged CORRECTION 2026-08-24 - upstream's inner input-group box ABSORBED onto the wrapper per the vega/lyra precedent (the port transcribed the flat OUTER row and dropped the box: tint, border, height - the palette/combobox search rendered as an unboxed strip)
 cn-command-item: judged
 cn-command-list: mechanical (nova minus inline dups)
 cn-command-separator: identical
@@ -106,7 +106,7 @@ cn-context-menu-shortcut: mechanical (nova minus inline dups)
 cn-context-menu-sub-trigger: judged
 cn-context-menu-subcontent: judged
 cn-dialog-close: mechanical (nova minus inline dups)
-cn-dialog-content: judged
+cn-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-dialog-description: mechanical (nova minus inline dups)
 cn-dialog-header: mechanical (nova minus inline dups)
 cn-dialog-title: mechanical (nova minus inline dups)
@@ -243,7 +243,7 @@ cn-sidebar-inner: identical
 cn-sidebar-menu: mechanical (nova minus inline dups)
 cn-sidebar-menu-action: mechanical (nova minus inline dups)
 cn-sidebar-menu-badge: mechanical (nova minus inline dups)
-cn-sidebar-menu-button: mechanical (nova minus inline dups)
+cn-sidebar-menu-button: mechanical (nova minus inline dups); [&_svg]:size-4 restored 2026-08-24 (the reference bare-icon sizing contract - the port dropped it, icons rendered intrinsic-size)
 cn-sidebar-menu-button-size-default: identical
 cn-sidebar-menu-button-size-lg: mechanical (nova minus inline dups)
 cn-sidebar-menu-button-size-sm: identical
@@ -301,7 +301,7 @@ cn-carousel-previous: dropped: machinery-exempt component (utility-only by the u
 cn-checkbox-indicator: dropped: indicator styling lives inline/on poetry's own hook
 cn-combobox-chip: dropped: poetry's combobox anatomy has no such part (trigger is poetry-own box; no chips mode)
 cn-combobox-chip-remove: dropped: poetry's combobox anatomy has no such part (trigger is poetry-own box; no chips mode)
-cn-combobox-chips: dropped: poetry's combobox anatomy has no such part (trigger is poetry-own box; no chips mode)
+cn-combobox-chips: stale entry rewritten 2026-08-24 - the chips family shipped after the port (poetry-authored theme-side blocks in every theme); upstream's has-aria-invalid cluster adopted at this theme's ring width in the fidelity pass
 cn-combobox-content-logical: dropped: Base UI logical-side (side=inline-start/end) values poetry's floating controller never emits
 cn-combobox-empty: dropped: poetry's combobox anatomy has no such part (trigger is poetry-own box; no chips mode)
 cn-combobox-item: dropped: poetry's combobox anatomy has no such part (trigger is poetry-own box; no chips mode)

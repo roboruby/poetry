@@ -4,11 +4,11 @@ cn-accordion-content: mechanical (lyra minus inline dups)
 cn-accordion-content-inner: mechanical (lyra minus inline dups)
 cn-accordion-item: mechanical (lyra minus inline dups)
 cn-accordion-trigger: judged
-cn-alert: judged
+cn-alert: judged; gap made y-only 2026-08-24 (an x-gap insets icon-less text against the phantom-column grid)
 cn-alert-description: judged
-cn-alert-dialog-content: judged
+cn-alert-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-alert-dialog-description: mechanical (lyra minus inline dups)
-cn-alert-dialog-header: judged
+cn-alert-dialog-header: judged; with-media gap-x moved theme-side 2026-08-24 (this theme: gap-x-4; it was dictionary-inline and untunable)
 cn-alert-dialog-media: poetry-idiom (kept default)
 cn-alert-dialog-title: judged
 cn-alert-title: judged
@@ -30,9 +30,9 @@ cn-avatar-badge: poetry-idiom (kept default)
 cn-avatar-fallback: identical
 cn-avatar-group-count: mechanical (lyra minus inline dups)
 cn-avatar-image: identical
-cn-badge: judged
+cn-badge: judged; base focus/invalid ring chain added theme-side 2026-08-24 (split-side doctrine - only default carried it; the variant ring recolors were inert without it)
 cn-badge-variant-default: mechanical (lyra minus inline dups)
-cn-badge-variant-destructive: judged
+cn-badge-variant-destructive: judged; focus-visible destructive ring recolor pair restored 2026-08-24
 cn-badge-variant-outline: mechanical (lyra minus inline dups)
 cn-badge-variant-secondary: mechanical (lyra minus inline dups)
 cn-breadcrumb-ellipsis: identical
@@ -102,7 +102,7 @@ cn-context-menu-shortcut: mechanical (lyra minus inline dups)
 cn-context-menu-sub-trigger: judged
 cn-context-menu-subcontent: judged
 cn-dialog-close: mechanical (lyra minus inline dups)
-cn-dialog-content: judged
+cn-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-dialog-description: mechanical (lyra minus inline dups)
 cn-dialog-header: mechanical (lyra minus inline dups)
 cn-dialog-title: mechanical (lyra minus inline dups)
@@ -239,7 +239,7 @@ cn-sidebar-inner: mechanical (lyra minus inline dups)
 cn-sidebar-menu: mechanical (lyra minus inline dups)
 cn-sidebar-menu-action: mechanical (lyra minus inline dups)
 cn-sidebar-menu-badge: mechanical (lyra minus inline dups)
-cn-sidebar-menu-button: mechanical (lyra minus inline dups)
+cn-sidebar-menu-button: mechanical (lyra minus inline dups); [&_svg]:size-4 restored 2026-08-24 (the reference bare-icon sizing contract - the port dropped it, icons rendered intrinsic-size)
 cn-sidebar-menu-button-size-default: mechanical (lyra minus inline dups)
 cn-sidebar-menu-button-size-lg: mechanical (lyra minus inline dups)
 cn-sidebar-menu-button-size-sm: identical
@@ -295,7 +295,7 @@ cn-calendar-dropdown-root: dropped
 cn-checkbox-indicator: dropped
 cn-combobox-chip: dropped
 cn-combobox-chip-remove: dropped
-cn-combobox-chips: dropped
+cn-combobox-chips: stale entry rewritten 2026-08-24 - the chips family shipped after the port (poetry-authored theme-side blocks in every theme); upstream's has-aria-invalid cluster adopted at this theme's ring width in the fidelity pass
 cn-combobox-content-logical: dropped
 cn-combobox-empty: dropped
 cn-combobox-item: dropped
@@ -374,7 +374,7 @@ cn-tooltip-content-logical: dropped
 cn-sheet-content: judged CORRECTION - shadow-lg restored (upstream ships it; the plan first over-generalized dialog flatness to sheets; judge receipt = served rule --tw-shadow 0 10px 15px -3px)
 cn-sidebar-mobile: shadow-lg restored (rides the sheet posture)
 cn-alert-dialog-media: poetry-idiom -> judged - poetry size anatomy (size-16/svg-8) at THEME radius (rounded-none); a rounded-md chip inside a radius-0 theme is an identity break (same rule as drawer directions)
-cn-tabs-trigger: judged CORRECTION - default-variant data-active:shadow-sm dropped; at d0fae528 only vega's upstream rule ships the active shadow pair, all other styles render box-shadow none (settled-read receipt; the same-tick flip read returns phantoms - trap confirmed on cross-style flips). Roster note: the five earlier-ported fragments still carry the token (roster-pass candidate).
+cn-tabs-trigger: judged CORRECTION - default-variant data-active:shadow-sm dropped; receipt corrected 2026-08-24: vega AND nova ship the active shadow pair at d0fae528; lyra's upstream does not - the drop stands here (settled-read receipt; the same-tick flip read returns phantoms - trap confirmed on cross-style flips). Roster note: the five earlier-ported fragments still carry the token (roster-pass candidate).
 cn-command-input-wrapper: judged CORRECTION - upstream's command-input-group box (h-8 bg-input/30 border-input/30) ABSORBED onto the wrapper per the vega precedent (first cut dropped height+tint, judge-measured 17px flat row); also fixes the combobox search row (poetry mounts the command wrapper; the combobox *:input-group cluster is inert roster-wide)
 KNOWN-NUANCE (judged unification, 1px-tier): upstream lyra renders the BARE command row flush full-width with a border-b hairline and a borderless tinted group (while leaving base rounded-md unoverridden - probable upstream oversight), but insets the combobox row; poetry unifies both contexts into the vega-precedent inset box (m-1, border-input/30 outline). Three 1px-tier deltas on bare command (no hairline, 1px outline, 4px inset); no upstream lyra command capture exists to render-confirm. Context-scoped in-data-[slot=combobox-content] split possible if it ever matters
 

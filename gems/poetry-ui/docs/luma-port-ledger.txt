@@ -5,11 +5,11 @@ cn-accordion-content: mechanical (luma minus inline dups)
 cn-accordion-content-inner: identical
 cn-accordion-item: mechanical (luma minus inline dups)
 cn-accordion-trigger: judged
-cn-alert: judged
+cn-alert: judged; gap made y-only 2026-08-24 (an x-gap insets icon-less text against the phantom-column grid)
 cn-alert-description: judged
-cn-alert-dialog-content: judged
+cn-alert-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-alert-dialog-description: mechanical (luma minus inline dups)
-cn-alert-dialog-header: judged
+cn-alert-dialog-header: judged; with-media gap-x moved theme-side 2026-08-24 (this theme: gap-x-6; it was dictionary-inline and untunable)
 cn-alert-dialog-media: poetry-idiom (kept default)
 cn-alert-dialog-title: judged
 cn-alert-title: judged
@@ -31,7 +31,7 @@ cn-avatar-badge: poetry-idiom (kept default)
 cn-avatar-fallback: identical
 cn-avatar-group-count: identical
 cn-avatar-image: identical
-cn-badge: judged
+cn-badge: judged; base focus/invalid ring chain added theme-side 2026-08-24 (split-side doctrine - only default carried it; the variant ring recolors were inert without it)
 cn-badge-variant-default: mechanical (luma minus inline dups)
 cn-badge-variant-destructive: judged
 cn-badge-variant-outline: mechanical (luma minus inline dups)
@@ -90,7 +90,7 @@ cn-command-dialog: mechanical (luma minus inline dups)
 cn-command-empty: identical
 cn-command-group: judged
 cn-command-input: judged
-cn-command-input-wrapper: judged
+cn-command-input-wrapper: judged CORRECTION 2026-08-24 - upstream's inner input-group box ABSORBED onto the wrapper per the vega/lyra precedent (the port transcribed the flat OUTER row and dropped the box: tint, border, height - the palette/combobox search rendered as an unboxed strip)
 cn-command-item: mechanical (luma minus inline dups)
 cn-command-list: mechanical (luma minus inline dups)
 cn-command-separator: mechanical (luma minus inline dups)
@@ -106,7 +106,7 @@ cn-context-menu-shortcut: mechanical (luma minus inline dups)
 cn-context-menu-sub-trigger: judged
 cn-context-menu-subcontent: judged
 cn-dialog-close: mechanical (luma minus inline dups)
-cn-dialog-content: judged
+cn-dialog-content: judged; data-closed exit cluster added 2026-08-24 (the presence-hold close shipped in the shared dialog controller)
 cn-dialog-description: mechanical (luma minus inline dups)
 cn-dialog-header: mechanical (luma minus inline dups)
 cn-dialog-title: mechanical (luma minus inline dups)
@@ -243,7 +243,7 @@ cn-sidebar-inner: mechanical (luma minus inline dups)
 cn-sidebar-menu: mechanical (luma minus inline dups)
 cn-sidebar-menu-action: mechanical (luma minus inline dups)
 cn-sidebar-menu-badge: mechanical (luma minus inline dups)
-cn-sidebar-menu-button: mechanical (luma minus inline dups)
+cn-sidebar-menu-button: mechanical (luma minus inline dups); [&_svg]:size-4 restored 2026-08-24 (the reference bare-icon sizing contract - the port dropped it, icons rendered intrinsic-size)
 cn-sidebar-menu-button-size-default: mechanical (luma minus inline dups)
 cn-sidebar-menu-button-size-lg: mechanical (luma minus inline dups)
 cn-sidebar-menu-button-size-sm: mechanical (luma minus inline dups)
@@ -301,7 +301,7 @@ cn-carousel-previous: dropped
 cn-checkbox-indicator: dropped
 cn-combobox-chip: dropped
 cn-combobox-chip-remove: dropped
-cn-combobox-chips: dropped
+cn-combobox-chips: stale entry rewritten 2026-08-24 - the chips family shipped after the port (poetry-authored theme-side blocks in every theme); upstream's has-aria-invalid cluster adopted at this theme's ring width in the fidelity pass
 cn-combobox-content-logical: dropped
 cn-combobox-empty: dropped
 cn-combobox-item: dropped
