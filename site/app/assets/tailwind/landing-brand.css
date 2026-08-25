@@ -101,38 +101,38 @@ html.brand-aurum .cn-navigation-menu-popup {
    iteration keeps the orbit seamless. The static base icon underneath
    stays fully drawn, so reduced motion simply hides the moving layers. */
 html.brand-aurum .stat-infinity-trace path {
-  animation-duration: 3.2s;
+  animation-duration: 1.8s;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
 
 html.brand-aurum .stat-infinity-trace-1 path {
   stroke-dasharray: 50 4.95;
-  opacity: 0.14;
+  opacity: 0.07;
   animation-name: stat-infinity-orbit-1;
 }
 
 html.brand-aurum .stat-infinity-trace-2 path {
   stroke-dasharray: 40 14.95;
-  opacity: 0.18;
+  opacity: 0.09;
   animation-name: stat-infinity-orbit-2;
 }
 
 html.brand-aurum .stat-infinity-trace-3 path {
   stroke-dasharray: 30 24.95;
-  opacity: 0.24;
+  opacity: 0.12;
   animation-name: stat-infinity-orbit-3;
 }
 
 html.brand-aurum .stat-infinity-trace-4 path {
   stroke-dasharray: 20 34.95;
-  opacity: 0.34;
+  opacity: 0.17;
   animation-name: stat-infinity-orbit-4;
 }
 
 html.brand-aurum .stat-infinity-trace-5 path {
   stroke-dasharray: 10 44.95;
-  opacity: 0.9;
+  opacity: 0.45;
   animation-name: stat-infinity-orbit-5;
 }
 
